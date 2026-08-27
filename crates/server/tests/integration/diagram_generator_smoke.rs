@@ -185,7 +185,8 @@ fn a_sequence_view_projects_lifelines_messages_and_their_order() {
         assert_eq!(
             metadata["participants"].as_array().map(Vec::len),
             Some(3),
-            "the three typed lifelines are participants: {metadata}"
+            "only the three lifelines are participants -- not the ports or nested parts of \
+             their types: {metadata}"
         );
         assert_eq!(
             metadata["messages"].as_array().map(Vec::len),

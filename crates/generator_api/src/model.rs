@@ -1762,6 +1762,21 @@ fn diagram_metadata(
             .map(|element| element.occurrence.clone())
             .collect::<Vec<_>>()
     };
+    // A sequence scenario's lifelines and messages are the direct members of the exposed
+    // occurrence, not the ports and nested parts of a lifeline's type.
+    let direct_ids = |classes: &[Metaclass]| {
+        elements
+            .iter()
+            .filter(|element| classes.contains(&element.metaclass))
+            .filter(|element| {
+                element
+                    .owner
+                    .as_ref()
+                    .is_some_and(|owner| roots.contains(owner))
+            })
+            .map(|element| element.occurrence.clone())
+            .collect::<Vec<_>>()
+    };
     match kind {
         DiagramViewKind::GeneralView => DiagramViewMetadata::General {
             roots: roots.to_vec(),
@@ -1800,12 +1815,12 @@ fn diagram_metadata(
             final_nodes: ids(&[Metaclass::FinalState]),
         },
         DiagramViewKind::SequenceView => DiagramViewMetadata::Sequence {
-            participants: ids(&[
+            participants: direct_ids(&[
                 Metaclass::PartUsage,
                 Metaclass::PortUsage,
                 Metaclass::ActorUsage,
             ]),
-            messages: ids(&[Metaclass::FlowUsage]),
+            messages: direct_ids(&[Metaclass::FlowUsage]),
         },
         DiagramViewKind::BrowserView => DiagramViewMetadata::Browser {
             roots: roots.to_vec(),

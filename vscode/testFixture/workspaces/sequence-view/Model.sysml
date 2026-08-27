@@ -1,7 +1,9 @@
 package InteractionDemo {
 	item def CheckoutRequest;
-	part def Storefront;
-	part def ApiGateway;
+	port def CheckoutApi;
+	// A lifeline's type may carry ports and nested parts; those are not lifelines.
+	part def Storefront { port checkoutApi : CheckoutApi; }
+	part def ApiGateway { port checkoutApi : ~CheckoutApi; part edgeCache; }
 	part def CheckoutService;
 
 	// A sequence scenario in the standard SysML v2 interaction vocabulary:
