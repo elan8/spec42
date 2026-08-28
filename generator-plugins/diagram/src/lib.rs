@@ -174,12 +174,12 @@ impl NormalizedProduct {
                     collect_reference(&mut references, &value.reference);
                     collect_endpoint_occurrences(&mut references, &value.occurrence)
                 }
-                model::DiagramRelationshipTarget::Ambiguous(values) => values
-                    .iter()
-                    .for_each(|value| {
+                model::DiagramRelationshipTarget::Ambiguous(values) => {
+                    values.iter().for_each(|value| {
                         collect_reference(&mut references, &value.reference);
                         collect_endpoint_occurrences(&mut references, &value.occurrence);
-                    }),
+                    })
+                }
                 model::DiagramRelationshipTarget::Unresolved
                 | model::DiagramRelationshipTarget::Unsupported => {}
             }
@@ -314,7 +314,22 @@ impl NormalizedProduct {
             model::DiagramScene::General => marker("general"),
             model::DiagramScene::Interconnection => marker("interconnection"),
             model::DiagramScene::ActionFlow => marker("action-flow"),
-            model::DiagramScene::Sequence => marker("sequence"),
+            model::DiagramScene::Sequence(scene) => json!({
+                "kind": "sequence",
+                "lifelines": scene.lifelines.iter().map(|value| self.node(value)).collect::<Result<Vec<_>, _>>()?,
+                "messages": scene.messages.iter().map(|message| Ok(json!({
+                    "node": self.node(&message.occurrence)?,
+                    "label": message.label,
+                    "source": sequence_endpoint(&message.source, self)?,
+                    "target": sequence_endpoint(&message.target, self)?,
+                    "order": match message.order {
+                        model::SequenceOrder::Resolved(order) => json!({ "status": "resolved", "value": order }),
+                        model::SequenceOrder::Cyclic => json!({ "status": "cyclic" }),
+                    },
+                    "provenance": provenance(&message.provenance),
+                    "navigation": self.source(&message.source_reference)?,
+                }))).collect::<Result<Vec<Value>, String>>()?,
+            }),
             model::DiagramScene::Browser => marker("browser"),
             model::DiagramScene::Grid => marker("grid"),
             model::DiagramScene::Geometry => marker("geometry"),
@@ -448,6 +463,7 @@ impl NormalizedProduct {
             "reference": self.reference(&value.reference)?,
             "source": self.node(&value.source_occurrence)?,
             "target": self.node(&value.target_occurrence)?,
+            "origin": self.node(&value.origin_occurrence)?,
             "kind": edge_kind(&value.kind),
             "provenance": provenance(&value.provenance),
             "navigation": value.source.as_ref().map(|source| self.source(source)).transpose()?,
@@ -543,6 +559,12 @@ impl NormalizedProduct {
             model::DiagramIncompleteReason::GeometryFactsUnavailable => {
                 json!({ "code": "geometry-facts-unavailable" })
             }
+            model::DiagramIncompleteReason::SequenceMessageEndpointOutsideLifeline => {
+                json!({ "code": "sequence-message-endpoint-outside-lifeline" })
+            }
+            model::DiagramIncompleteReason::SequenceOrderingCycle => {
+                json!({ "code": "sequence-ordering-cycle" })
+            }
         })
     }
 
@@ -630,9 +652,7 @@ impl NormalizedProduct {
         self.node_indexes
             .get(&occurrence_key(value))
             .copied()
-            .ok_or_else(|| {
-                "diagram occurrence is outside the projected node set".to_owned()
-            })
+            .ok_or_else(|| "diagram occurrence is outside the projected node set".to_owned())
     }
 }
 
@@ -702,6 +722,12 @@ fn collect_scene_sources(
     values: &mut BTreeMap<SourceKey, model::SourceReference>,
     scene: &model::DiagramScene,
 ) {
+    if let model::DiagramScene::Sequence(scene) = scene {
+        for message in &scene.messages {
+            collect_source(values, &message.source_reference);
+        }
+        return;
+    }
     let model::DiagramScene::StateTransition(scene) = scene else {
         return;
     };
@@ -722,6 +748,21 @@ fn collect_scene_sources(
             }
         }
     }
+}
+
+fn sequence_endpoint(
+    value: &model::SequenceEndpoint,
+    normalized: &NormalizedProduct,
+) -> Result<Value, String> {
+    Ok(match value {
+        model::SequenceEndpoint::Resolved(occurrence) => {
+            json!({ "status": "resolved", "lifeline": normalized.node(occurrence)? })
+        }
+        model::SequenceEndpoint::Ambiguous => json!({ "status": "ambiguous" }),
+        model::SequenceEndpoint::Unresolved => json!({ "status": "unresolved" }),
+        model::SequenceEndpoint::Unsupported => json!({ "status": "unsupported" }),
+        model::SequenceEndpoint::OutsideLifeline => json!({ "status": "outside-lifeline" }),
+    })
 }
 
 fn state_vertex_kind(value: &model::StateTransitionNodeKind) -> &'static str {

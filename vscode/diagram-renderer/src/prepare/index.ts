@@ -5,7 +5,7 @@ import { prepareGraph } from "./graph";
 import { prepareInterconnection } from "./interconnection";
 import { prepareBrowser, prepareGeometry, prepareGrid } from "./standard-views";
 import type { PreparedEdge, PreparedNode, PreparedView, VisualizationPayload } from "./types";
-import { asRecord } from "./util";
+import { asArray, asRecord, asString } from "./util";
 
 export type {
   InterconnectionLayoutDto,
@@ -74,6 +74,47 @@ export function prepareViewData(visualizationInput: unknown): PreparedView {
   if (view === "grid-view") return prepareGrid(visualization);
   if (view === "geometry-view") return prepareGeometry(visualization);
   return prepareGraph(visualization?.generalViewGraph ?? visualization?.graph, visualization);
+}
+
+/**
+ * Adapt the authority-owned schema-5 sequence scene into the legacy shape the renderer consumes.
+ * Endpoint ownership and temporal ordering are semantic facts already settled by the scene.
+ */
+function sequenceDiagramFromScene(
+  name: string,
+  nodes: PreparedNode[],
+  scene: Record<string, unknown>,
+): Record<string, unknown> | undefined {
+  const asIndex = (value: unknown): number | undefined =>
+    typeof value === "number" && nodes[value] !== undefined ? value : undefined;
+  if (asString(scene.kind) !== "sequence") return undefined;
+  const participantIdx = asArray(scene.lifelines)
+    .map(asIndex)
+    .filter((value): value is number => value !== undefined);
+
+  const lifelines = participantIdx.map((index) => ({
+    id: nodes[index].id,
+    name: nodes[index].label || nodes[index].kind,
+  }));
+  const messages = asArray(scene.messages).map(asRecord).map((message) => {
+    const index = asIndex(message.node);
+    const source = asRecord(message.source);
+    const target = asRecord(message.target);
+    const order = asRecord(message.order);
+    const sourceIndex = source.status === "resolved" ? asIndex(source.lifeline) : undefined;
+    const targetIndex = target.status === "resolved" ? asIndex(target.lifeline) : undefined;
+    return {
+      id: index === undefined ? undefined : nodes[index].id,
+      name: typeof message.label === "string" ? message.label : index === undefined ? "" : nodes[index].label,
+      source: sourceIndex === undefined ? undefined : nodes[sourceIndex].id,
+      target: targetIndex === undefined ? undefined : nodes[targetIndex].id,
+      kind: index === undefined ? "FlowUsage" : nodes[index].kind,
+      order: order.status === "resolved" && typeof order.value === "number" ? order.value : undefined,
+    };
+  }).filter((message) => message.id !== undefined && message.source !== undefined &&
+    message.target !== undefined && message.order !== undefined);
+
+  return { name, lifelines, messages, activations: [], fragments: [] };
 }
 
 function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
@@ -223,6 +264,9 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
     };
   });
   const metadata = asRecord(projection.metadata);
+  const sequenceDiagram = selected.kind === "sequence-view"
+    ? sequenceDiagramFromScene(selected.name, nodes, asRecord(projection.scene))
+    : undefined;
   const gridRows = Array.isArray(metadata.rows)
     ? metadata.rows.filter((value): value is number => typeof value === "number" && nodes[value] !== undefined)
     : [];
@@ -251,6 +295,7 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
         ? projection.exposedRoots.map((index) => `n:${String(index)}`)
         : [],
       viewMetadata: projection.metadata,
+      ...(sequenceDiagram ? { sequenceDiagram } : {}),
       ...(selected.kind === "grid-view" ? {
         cells: gridCells,
         columns: [

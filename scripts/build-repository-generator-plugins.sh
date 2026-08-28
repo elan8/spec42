@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds repository-owned WebAssembly plugins reproducibly and refreshes packaged artifacts.
+# Builds repository-owned WebAssembly plugins and optionally stages them for extension packaging.
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -30,14 +30,12 @@ RUSTFLAGS="${RUSTFLAGS:-} --remap-path-prefix=${root_native}=/spec42 --remap-pat
   --target wasm32-unknown-unknown
 
 if [[ "${SPEC42_PACKAGE_REPOSITORY_GENERATORS:-1}" == "1" ]]; then
+  mkdir -p "$root/vscode/generators"
   cp \
     "$root/generator-plugins/target/wasm32-unknown-unknown/release/spec42_diagram_generator.wasm" \
     "$root/vscode/generators/diagram.wasm"
 
   echo "repository plugins built; refreshed vscode/generators/diagram.wasm"
-  echo "note: the committed diagram.wasm must be the bytes CI's ubuntu job builds (a guest links the"
-  echo "      host toolchain's precompiled wasm32 std, so hosts differ by a few bytes); to refresh the"
-  echo "      committed file, download the repository-generator-plugins artifact from a CI run."
 else
   echo "repository plugins built without refreshing packaged artifacts"
 fi

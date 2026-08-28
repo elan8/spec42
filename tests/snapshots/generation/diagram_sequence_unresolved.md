@@ -203,7 +203,9 @@ package SequenceNegative {
     "nodes": [],
     "relationships": [],
     "scene": {
-      "kind": "sequence"
+      "kind": "sequence",
+      "lifelines": [],
+      "messages": []
     }
   }
 }

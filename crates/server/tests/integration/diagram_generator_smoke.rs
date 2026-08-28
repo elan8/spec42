@@ -121,3 +121,132 @@ fn an_authored_standard_view_generates_a_complete_scene_from_its_catalog_handle(
         );
     });
 }
+
+#[test]
+fn a_sequence_view_projects_lifelines_messages_and_their_order() {
+    let Some(module) = diagram_plugin() else {
+        eprintln!("skipping: run scripts/build-repository-generator-plugins.sh first");
+        return;
+    };
+    with_isolated_data_dir(|| {
+        let workspace = repo_root().join("vscode/testFixture/workspaces/sequence-view");
+        let model_document = workspace.join("Model.sysml");
+
+        let cli = stdlib_cli();
+        let snapshot = load_snapshot_for_paths(&cli, &model_document, Some(&workspace), false)
+            .expect("the sequence-view fixture publishes");
+        let publication = snapshot.published_model_arc();
+        let model = Arc::new(
+            GeneratorModelView::new(
+                Arc::clone(&publication),
+                publication.publication().model_digest().to_string(),
+                env!("CARGO_PKG_VERSION"),
+                QueryLimits::default(),
+            )
+            .expect("complete generator model"),
+        );
+
+        let views = model.diagram_views().expect("the view catalog lists");
+        let view = views
+            .iter()
+            .find(|view| view.kind == DiagramViewKind::SequenceView)
+            .unwrap_or_else(|| panic!("the fixture authors a SequenceView; catalog: {views:?}"));
+
+        let runtime = GeneratorRuntime::new().expect("generator runtime");
+        let prepared = runtime
+            .prepare(&module)
+            .expect("the diagram plugin is a valid module");
+        let execution = runtime
+            .execute_prepared(
+                &prepared,
+                Arc::clone(&model),
+                std::slice::from_ref(&view.handle),
+                RuntimeLimits::default(),
+                ArtifactLimits::default(),
+                CancellationHandle::new(),
+            )
+            .unwrap_or_else(|error| panic!("the diagram guest generates: {error}"));
+
+        let diagram = execution
+            .artifacts
+            .entries()
+            .find(|(path, _)| path.as_str() == "diagram.json")
+            .map(|(_, bytes)| String::from_utf8(bytes.to_vec()).expect("diagram.json is UTF-8"))
+            .expect("the guest writes diagram.json");
+        let product: serde_json::Value =
+            serde_json::from_str(&diagram).expect("diagram.json is JSON");
+
+        assert_eq!(product["selectedView"]["kind"], "sequence-view");
+        assert_eq!(
+            product["completeness"]["status"], "complete",
+            "every message end and succession resolves: {}",
+            product["completeness"]
+        );
+
+        let metadata = &product["projection"]["metadata"];
+        assert_eq!(
+            metadata["participants"].as_array().map(Vec::len),
+            Some(3),
+            "only the three lifelines are participants -- not the ports or nested parts of \
+             their types: {metadata}"
+        );
+        assert_eq!(
+            metadata["messages"].as_array().map(Vec::len),
+            Some(4),
+            "each `message` usage is classified as a message, not left unrecognised: {metadata}"
+        );
+
+        let edge_kinds: std::collections::BTreeSet<&str> = product["projection"]["edges"]
+            .as_array()
+            .expect("edges")
+            .iter()
+            .filter_map(|edge| edge["kind"].as_str())
+            .collect();
+        assert!(
+            edge_kinds.contains("flow"),
+            "message send/receive ends project as flow edges: {edge_kinds:?}"
+        );
+        assert!(
+            edge_kinds.contains("succession"),
+            "authored message order projects as succession edges: {edge_kinds:?}"
+        );
+
+        let scene = &product["projection"]["scene"];
+        assert_eq!(scene["kind"], "sequence");
+        assert_eq!(scene["lifelines"].as_array().map(Vec::len), Some(3));
+        let messages = scene["messages"].as_array().expect("sequence messages");
+        assert_eq!(messages.len(), 4);
+        let mut orders = Vec::new();
+        for message in messages {
+            assert_eq!(message["source"]["status"], "resolved");
+            assert!(message["source"]["lifeline"].is_number());
+            assert_eq!(message["target"]["status"], "resolved");
+            assert!(message["target"]["lifeline"].is_number());
+            assert_eq!(message["order"]["status"], "resolved");
+            orders.push(message["order"]["value"].as_u64().expect("numeric order"));
+        }
+        orders.sort_unstable();
+        assert_eq!(orders, vec![1, 2, 3, 4]);
+
+        let svg = spec42::headless_renderer::render_shared_svg(&diagram)
+            .unwrap_or_else(|error| panic!("the generated SequenceView renders as SVG: {error}"));
+        assert_eq!(svg.matches("class=\"sequence-lifeline\"").count(), 3);
+        assert_eq!(
+            svg.matches("<line class=\"sequence-message").count()
+                + svg.matches("<path class=\"sequence-message").count(),
+            4
+        );
+        for label in [
+            "apiGateway",
+            "storefront",
+            "checkoutService",
+            "submitCheckout",
+            "forwardCheckout",
+            "checkoutOutcome",
+            "apiResponse",
+        ] {
+            assert!(svg.contains(label), "the SVG contains {label}: {svg}");
+        }
+        assert!(!svg.contains("NaN"), "the SVG has finite geometry: {svg}");
+    });
+}

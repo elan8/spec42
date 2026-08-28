@@ -10,9 +10,10 @@ use spec42_generator_protocol::{
     DiagramRelationshipEndpoint, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
     DiagramSourceDomain, DiagramViewKind, DiagramViewMetadata, DiagramViewProjection,
     DiagramViewSummary, ElementIdentity, ProjectionCompleteness, ProjectionFeature,
-    SourceReference, StateMachineIdentity, StateMachineSummary, StateTransitionEdge,
-    StateTransitionNode, StateTransitionNodeKind, StateTransitionScene,
-    StateTransitionViewProjection, StateTransitionViewSummary, TransitionTrigger,
+    SequenceEndpoint, SequenceMessage, SequenceOrder, SequenceScene, SourceReference,
+    StateMachineIdentity, StateMachineSummary, StateTransitionEdge, StateTransitionNode,
+    StateTransitionNodeKind, StateTransitionScene, StateTransitionViewProjection,
+    StateTransitionViewSummary, TransitionTrigger,
 };
 use spec42_generator_protocol::{Metaclass, RelationshipKind as ApiRelationshipKind};
 use sysml_query::resolved_slice::{
@@ -877,6 +878,11 @@ impl GeneratorModelView {
                     }
                     DiagramEdgeKind::Relationship(kind) => kind.clone(),
                 };
+                let origin_occurrence = projection
+                    .elements
+                    .get(edge.origin as usize)
+                    .map(|element| &element.occurrence_id)
+                    .ok_or(ModelQueryError::Incomplete)?;
                 Ok(DiagramEdge {
                     reference: self.diagram_relationship_reference(
                         edge.source_semantic_id,
@@ -887,6 +893,7 @@ impl GeneratorModelView {
                     target_element: self.diagram_reference(edge.target_semantic_id)?,
                     source_occurrence: self.diagram_occurrence(&edge.source)?,
                     target_occurrence: self.diagram_occurrence(&edge.target)?,
+                    origin_occurrence: self.diagram_occurrence(origin_occurrence)?,
                     kind,
                     provenance: relationship_provenance(edge.provenance),
                     source: edge.source_location.as_ref().map(|location| {
@@ -919,7 +926,6 @@ impl GeneratorModelView {
             .cloned()
             .map(|reason| self.diagram_incomplete_reason(reason))
             .collect::<Result<Vec<_>, _>>()?;
-        let metadata = diagram_metadata(view.kind, &roots, &elements, &relationships);
         let scene_feature =
             |feature: &sysml_query::resolved_slice::DiagramTransitionFeature| match feature {
                 sysml_query::resolved_slice::DiagramTransitionFeature::Absent => {
@@ -956,7 +962,67 @@ impl GeneratorModelView {
                 DiagramScene::Interconnection
             }
             sysml_query::resolved_slice::DiagramScene::ActionFlow => DiagramScene::ActionFlow,
-            sysml_query::resolved_slice::DiagramScene::Sequence => DiagramScene::Sequence,
+            sysml_query::resolved_slice::DiagramScene::Sequence(sequence) => {
+                let endpoint = |value: &sysml_query::resolved_slice::DiagramSequenceEndpoint| {
+                    Ok(match value {
+                        sysml_query::resolved_slice::DiagramSequenceEndpoint::Resolved(value) => {
+                            SequenceEndpoint::Resolved(self.diagram_occurrence(value)?)
+                        }
+                        sysml_query::resolved_slice::DiagramSequenceEndpoint::Ambiguous => {
+                            SequenceEndpoint::Ambiguous
+                        }
+                        sysml_query::resolved_slice::DiagramSequenceEndpoint::Unresolved => {
+                            SequenceEndpoint::Unresolved
+                        }
+                        sysml_query::resolved_slice::DiagramSequenceEndpoint::Unsupported => {
+                            SequenceEndpoint::Unsupported
+                        }
+                        sysml_query::resolved_slice::DiagramSequenceEndpoint::OutsideLifeline => {
+                            SequenceEndpoint::OutsideLifeline
+                        }
+                    })
+                };
+                DiagramScene::Sequence(SequenceScene {
+                    lifelines: sequence
+                        .lifelines
+                        .iter()
+                        .map(|value| self.diagram_occurrence(value))
+                        .collect::<Result<Vec<_>, _>>()?,
+                    messages: sequence
+                        .messages
+                        .iter()
+                        .map(|message| {
+                            let occurrence = projection
+                                .elements
+                                .get(message.origin as usize)
+                                .ok_or(ModelQueryError::Incomplete)?
+                                .occurrence_id
+                                .clone();
+                            Ok(SequenceMessage {
+                                occurrence: self.diagram_occurrence(&occurrence)?,
+                                label: message.label.as_deref().map(str::to_owned),
+                                source: endpoint(&message.source)?,
+                                target: endpoint(&message.target)?,
+                                order: match message.order {
+                                    sysml_query::resolved_slice::DiagramSequenceOrder::Resolved(
+                                        order,
+                                    ) => SequenceOrder::Resolved(order),
+                                    sysml_query::resolved_slice::DiagramSequenceOrder::Cyclic => {
+                                        SequenceOrder::Cyclic
+                                    }
+                                },
+                                provenance: relationship_provenance(message.provenance),
+                                source_reference: source_reference(
+                                    &message.source_location,
+                                    self.model
+                                        .document_identity(message.source_location.document)
+                                        .unwrap_or_default(),
+                                ),
+                            })
+                        })
+                        .collect::<Result<Vec<_>, ModelQueryError>>()?,
+                })
+            }
             sysml_query::resolved_slice::DiagramScene::Browser => DiagramScene::Browser,
             sysml_query::resolved_slice::DiagramScene::Grid => DiagramScene::Grid,
             sysml_query::resolved_slice::DiagramScene::Geometry => DiagramScene::Geometry,
@@ -1075,6 +1141,7 @@ impl GeneratorModelView {
                 })
             }
         };
+        let metadata = diagram_metadata(view.kind, &roots, &elements, &relationships, &scene);
         Ok(DiagramViewProjection {
             schema_version: 1,
             model_digest: self.model_digest.clone(),
@@ -1565,6 +1632,10 @@ impl GeneratorModelView {
             Owned::ViewFilterAmbiguous => DiagramIncompleteReason::ViewFilterAmbiguous,
             Owned::ViewFilterUnsupported => DiagramIncompleteReason::ViewFilterUnsupported,
             Owned::GeometryFactsUnavailable => DiagramIncompleteReason::GeometryFactsUnavailable,
+            Owned::SequenceMessageEndpointOutsideLifeline => {
+                DiagramIncompleteReason::SequenceMessageEndpointOutsideLifeline
+            }
+            Owned::SequenceOrderingCycle => DiagramIncompleteReason::SequenceOrderingCycle,
         })
     }
 
@@ -1748,6 +1819,7 @@ fn diagram_metadata(
     roots: &[DiagramOccurrenceIdentity],
     elements: &[DiagramElement],
     relationships: &[DiagramRelationship],
+    scene: &DiagramScene,
 ) -> DiagramViewMetadata {
     let ids = |classes: &[Metaclass]| {
         elements
@@ -1794,12 +1866,18 @@ fn diagram_metadata(
             final_nodes: ids(&[Metaclass::FinalState]),
         },
         DiagramViewKind::SequenceView => DiagramViewMetadata::Sequence {
-            participants: ids(&[
-                Metaclass::PartUsage,
-                Metaclass::PortUsage,
-                Metaclass::ActorUsage,
-            ]),
-            messages: ids(&[Metaclass::FlowUsage]),
+            participants: match scene {
+                DiagramScene::Sequence(scene) => scene.lifelines.clone(),
+                _ => Vec::new(),
+            },
+            messages: match scene {
+                DiagramScene::Sequence(scene) => scene
+                    .messages
+                    .iter()
+                    .map(|message| message.occurrence.clone())
+                    .collect(),
+                _ => Vec::new(),
+            },
         },
         DiagramViewKind::BrowserView => DiagramViewMetadata::Browser {
             roots: roots.to_vec(),
@@ -1886,6 +1964,14 @@ fn summary_order(a: &ElementSummary, b: &ElementSummary) -> std::cmp::Ordering {
         .then_with(|| a.semantic_id.cmp(&b.semantic_id))
 }
 fn api_metaclass(kind: ElementKind) -> Metaclass {
+    // The semantic vocabulary uses the concrete `FlowConnection*` spelling while the generator
+    // wire contract uses SysML's `Flow*` metaclass spelling. Keep the typed bridge at this boundary;
+    // `Metaclass::parse` is for its own vocabulary, not a second semantic classification table.
+    match kind {
+        ElementKind::FlowConnectionDefinition => return Metaclass::FlowDefinition,
+        ElementKind::FlowConnectionUsage => return Metaclass::FlowUsage,
+        _ => {}
+    }
     let parsed = Metaclass::parse(kind.as_str());
     if parsed.is_unrecognized() {
         Metaclass::Unrecognized(kind.as_str().to_owned())

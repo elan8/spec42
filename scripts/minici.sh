@@ -88,6 +88,11 @@ if ! cmp -s "$abi_manifest" docs/generation/generator-abi.json; then
   exit 1
 fi
 
+step "Repository generator guests"
+# Rust integration tests execute the real diagram guest. Build repository guests before those
+# tests, without staging a package-only copy beneath vscode/.
+SPEC42_PACKAGE_REPOSITORY_GENERATORS=0 scripts/build-repository-generator-plugins.sh
+
 step "Reference tooling"
 python3 -m unittest tools/sysml_reference/test_tools.py
 
@@ -107,14 +112,6 @@ if [[ "${CI:-false}" == "true" ]]; then
 fi
 cargo test -p server --test integration generator_cli
 
-# Build the local guests needed by smoke tests and snapshots, but do not overwrite the packaged
-# diagram.wasm: its exact bytes are produced and checked by CI's Ubuntu artifact job.
-if [[ "${CI:-false}" == "true" ]]; then
-  scripts/build-repository-generator-plugins.sh
-  git diff --exit-code vscode/generators/diagram.wasm
-else
-  SPEC42_PACKAGE_REPOSITORY_GENERATORS=0 scripts/build-repository-generator-plugins.sh
-fi
 cargo run -p server --bin spec42 -- --no-stdlib generate \
   generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm \
   vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust

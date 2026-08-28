@@ -143,11 +143,11 @@ pub mod model {
         ElementDetail, ElementIdentity, ElementSummary, Metaclass, ModelInfo, Multiplicity,
         ProjectionCompleteness, ProjectionFeature, Relationship, RelationshipKind,
         RelationshipProvenance, RequirementUsageTyping, RequirementVerification, SatisfyEndpoint,
-        SatisfyPolarity, SatisfyRelationship, SourceRange, SourceReference, StateMachineIdentity,
-        StateMachineSummary, StateTransitionEdge, StateTransitionNode, StateTransitionNodeKind,
-        StateTransitionScene, StateTransitionViewProjection, StateTransitionViewSummary,
-        TransitionTrigger, TypingProvenance, UnsupportedReason, VerificationOutcome,
-        VerificationRequirement,
+        SatisfyPolarity, SatisfyRelationship, SequenceEndpoint, SequenceMessage, SequenceOrder,
+        SequenceScene, SourceRange, SourceReference, StateMachineIdentity, StateMachineSummary,
+        StateTransitionEdge, StateTransitionNode, StateTransitionNodeKind, StateTransitionScene,
+        StateTransitionViewProjection, StateTransitionViewSummary, TransitionTrigger,
+        TypingProvenance, UnsupportedReason, VerificationOutcome, VerificationRequirement,
     };
 
     use super::call;

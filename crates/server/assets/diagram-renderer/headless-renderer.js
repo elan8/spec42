@@ -18,44 +18,13 @@ var Spec42HeadlessRendererBundle = (() => {
   };
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-  // ../shared/diagram-renderer/src/headless-export.ts
+  // diagram-renderer/src/headless-export.ts
   var headless_export_exports = {};
   __export(headless_export_exports, {
     exportHeadlessSvg: () => exportHeadlessSvg
   });
 
-  // ../shared/diagram-renderer/src/node-notation.ts
-  function isDefinitionKind(kind) {
-    const normalized = kind.trim().toLowerCase();
-    return normalized.includes(" def") || normalized.includes("_def") || normalized.endsWith(" def") || normalized.includes("definition");
-  }
-  function isReferenceKind(kind) {
-    const k = kind.trim().toLowerCase();
-    if (k === "ref") return true;
-    if (k.endsWith("-ref")) return true;
-    if (k.endsWith(" ref")) return true;
-    if (/\bref\b/.test(k) && !k.includes("refine")) return true;
-    return false;
-  }
-  function nodeCategory(kind) {
-    const k = kind.toLowerCase();
-    if (k.includes("requirement") || k.includes("concern") || k.includes("viewpoint") || k.includes("stakeholder")) {
-      return "requirement";
-    }
-    if (k.includes("action") || k.includes("state") || k.includes("calc") || k.includes("analysis") || k.includes("enumeration")) {
-      return "behavior";
-    }
-    if (k.includes("part") || k.includes("port") || k.includes("item") || k.includes("attribute") || k.includes("interface") || k.includes("occurrence")) {
-      return "structural";
-    }
-    return "other";
-  }
-  function usageCornerRadius(kind) {
-    const cat = nodeCategory(kind);
-    if (cat === "requirement") return 16;
-    if (cat === "behavior") return 12;
-    return 8;
-  }
+  // diagram-renderer/src/node-notation.ts
   function nodeBodyStrokeDasharray(chrome, isPackageContainer = false) {
     if (chrome.isContainer && isPackageContainer) return "none";
     return chrome.strokeDasharray ?? "none";
@@ -64,20 +33,28 @@ var Spec42HeadlessRendererBundle = (() => {
     const selected = opts?.selected ?? false;
     const isContainer = opts?.isContainer ?? chrome.isContainer;
     let strokeWidthPx = 2;
-    if (selected) strokeWidthPx = 4;
-    else if (isContainer) strokeWidthPx = 2;
-    else if (opts?.generalView) strokeWidthPx = chrome.isDefinition ? 3 : 2;
+    if (selected) strokeWidthPx = 3;
+    else if (isContainer) strokeWidthPx = 1.5;
+    else if (opts?.generalView) strokeWidthPx = chrome.isDefinition ? 2 : 1.5;
     else strokeWidthPx = chrome.isDefinition ? 2 : 3;
     return {
       cornerRadius: chrome.cornerRadius,
       strokeDasharray: nodeBodyStrokeDasharray(chrome, opts?.isPackageContainer),
-      strokeWidthPx,
-      headerCornerRadius: chrome.isDefinition ? 0 : Math.max(2, chrome.cornerRadius - 2)
+      strokeWidthPx
     };
   }
-  function resolveNodeChrome(kind, opts) {
-    const normalized = kind.toLowerCase();
-    const isContainer = opts?.isContainer ?? (normalized.includes("container") || normalized.includes("part_usage"));
+  function notationRoleFromAttributes(attributes) {
+    const attrs = attributes ?? {};
+    const role = attrs.notationRole;
+    if (role === "definition" || role === "usage" || role === "reference-usage" || role === "namespace" || role === "annotation" || role === "unsupported") {
+      return role;
+    }
+    if (attrs.isReference === true) return "reference-usage";
+    if (attrs.isDefinition === true) return "definition";
+    return "unsupported";
+  }
+  function resolveNodeChrome(role, opts) {
+    const isContainer = opts?.isContainer ?? role === "namespace";
     if (isContainer) {
       const isPackageContainer = opts?.isPackageContainer ?? false;
       return {
@@ -90,20 +67,18 @@ var Spec42HeadlessRendererBundle = (() => {
         nodeClassSuffix: ""
       };
     }
-    const isReference = opts?.isReference ?? isReferenceKind(kind);
-    const isDefinition = !isReference && (opts?.isDefinition ?? isDefinitionKind(kind));
-    if (isReference) {
+    if (role === "reference-usage") {
       return {
         isDefinition: false,
         isReference: true,
         isContainer: false,
-        cornerRadius: usageCornerRadius(kind),
+        cornerRadius: 8,
         strokeDasharray: "2,4",
         structureClass: "viz-node--reference",
         nodeClassSuffix: " reference-node"
       };
     }
-    if (isDefinition) {
+    if (role === "definition") {
       return {
         isDefinition: true,
         isReference: false,
@@ -114,18 +89,54 @@ var Spec42HeadlessRendererBundle = (() => {
         nodeClassSuffix: " definition-node"
       };
     }
+    if (role === "unsupported") {
+      return {
+        isDefinition: false,
+        isReference: false,
+        isContainer: false,
+        cornerRadius: 4,
+        strokeDasharray: "3,3",
+        structureClass: "viz-node--unsupported",
+        nodeClassSuffix: " unsupported-node"
+      };
+    }
     return {
       isDefinition: false,
       isReference: false,
       isContainer: false,
-      cornerRadius: usageCornerRadius(kind),
+      cornerRadius: 8,
       strokeDasharray: null,
       structureClass: "viz-node--usage",
       nodeClassSuffix: " usage-node"
     };
   }
+  function headerFillPath(width, headerBottom, radius, strokeWidthPx) {
+    const inset = strokeWidthPx / 2;
+    const left = inset;
+    const top = inset;
+    const right = Math.max(left, width - inset);
+    const bottom = Math.max(top, headerBottom - inset);
+    const r = Math.max(0, Math.min(radius - inset, (right - left) / 2, bottom - top));
+    if (r <= 0) {
+      return `M${left},${top}H${right}V${bottom}H${left}Z`;
+    }
+    return [
+      `M${left + r},${top}`,
+      `H${right - r}`,
+      `A${r},${r} 0 0 1 ${right},${top + r}`,
+      `V${bottom}`,
+      `H${left}`,
+      `V${top + r}`,
+      `A${r},${r} 0 0 1 ${left + r},${top}`,
+      "Z"
+    ].join("");
+  }
+  function nodeInnerSpan(width, strokeWidthPx) {
+    const inset = strokeWidthPx / 2;
+    return { x1: inset, x2: Math.max(inset, width - inset) };
+  }
 
-  // ../shared/diagram-renderer/src/graph-normalization.ts
+  // diagram-renderer/src/graph-normalization.ts
   function normalizeEdgeKind(relationshipType) {
     const type2 = relationshipType.trim().toLowerCase();
     if (!type2) return "relationship";
@@ -163,7 +174,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return !isPackageElementType(elementType) && !isNonDiagramSemanticElementType(elementType);
   }
 
-  // ../shared/diagram-renderer/src/prepare/util.ts
+  // diagram-renderer/src/prepare/util.ts
   function asRecord(value) {
     return value && typeof value === "object" ? value : {};
   }
@@ -217,7 +228,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return values.find((value) => value != null && asString(value).trim() !== "");
   }
 
-  // ../shared/diagram-renderer/src/prepare/diagram-select.ts
+  // diagram-renderer/src/prepare/diagram-select.ts
   function normalizeDiagramKey(value) {
     return value.replace(/::/g, ".").trim().toLowerCase();
   }
@@ -308,7 +319,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return { title: asString(diagram.name, fallbackTitle), view, nodes, edges };
   }
 
-  // ../shared/diagram-renderer/src/prepare/behavior/common.ts
+  // diagram-renderer/src/prepare/behavior/common.ts
   function buildActivityNodeAliasMap(nodes) {
     const aliases = /* @__PURE__ */ new Map();
     const register = (alias, nodeId) => {
@@ -337,7 +348,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return aliases.get(key) ?? aliases.get(normalized) ?? (last ? aliases.get(last) : void 0) ?? (first ? aliases.get(first) : void 0) ?? key;
   }
 
-  // ../shared/diagram-renderer/src/prepare/behavior/action-flow.ts
+  // diagram-renderer/src/prepare/behavior/action-flow.ts
   function activityDiagramCatalog(visualization) {
     const normalized = asArray(visualization.diagrams).map(asRecord);
     if (normalized.length > 0) {
@@ -465,7 +476,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/prepare/behavior/state.ts
+  // diagram-renderer/src/prepare/behavior/state.ts
   function stateMachineCatalog(visualization) {
     const normalized = asArray(visualization.stateMachines).map(asRecord);
     if (normalized.length > 0) {
@@ -701,7 +712,20 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/prepare/graph.ts
+  // diagram-renderer/src/prepare/legacy-notation.ts
+  function legacyNotationRole(kind) {
+    const normalized = kind.trim().toLowerCase();
+    if (normalized === "ref" || normalized.endsWith("-ref") || normalized.endsWith(" ref")) {
+      return "reference-usage";
+    }
+    if (normalized.includes(" def") || normalized.includes("_def") || normalized.includes("definition")) {
+      return "definition";
+    }
+    if (normalized === "package") return "namespace";
+    return "usage";
+  }
+
+  // diagram-renderer/src/prepare/graph.ts
   function isGeneralViewDiagramNode(node) {
     if (isSyntheticPackage(node)) {
       return false;
@@ -742,8 +766,7 @@ var Spec42HeadlessRendererBundle = (() => {
         ...asRecord(node.attributes),
         qualifiedName: asString(node.qualifiedName ?? asRecord(node.attributes).qualifiedName),
         isPackage: isPackage(node),
-        isDefinition: isDefinitionKind(asString(node.type ?? node.element_type, "")),
-        isReference: isReferenceKind(asString(node.type ?? node.element_type, ""))
+        notationRole: legacyNotationRole(asString(node.type ?? node.element_type, ""))
       }
     }));
     const edges = asArray(graph.edges).map(asRecord).filter((edge) => nodeIds.has(asString(edge.source)) && nodeIds.has(asString(edge.target))).map((edge, index) => {
@@ -771,7 +794,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/prepare/behavior/sequence.ts
+  // diagram-renderer/src/prepare/behavior/sequence.ts
   function prepareSequence(visualization) {
     const selected = selectNamedDiagram(
       visualization?.sequenceDiagrams,
@@ -794,7 +817,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return prepareGraph(visualization?.graph, visualization);
   }
 
-  // ../shared/diagram-renderer/src/prepare/normalize-payload.ts
+  // diagram-renderer/src/prepare/normalize-payload.ts
   function asArray2(value) {
     return Array.isArray(value) ? value : [];
   }
@@ -859,7 +882,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   }
 
-  // ../shared/diagram-renderer/src/prepare/interconnection-scene.ts
+  // diagram-renderer/src/prepare/interconnection-scene.ts
   function portsForNode(ownerNodeId, ports) {
     return ports.filter((port) => port.ownerNodeId === ownerNodeId);
   }
@@ -915,8 +938,7 @@ var Spec42HeadlessRendererBundle = (() => {
           partType: node.typeName,
           ports: portDetails.map((port) => port.name),
           portDetails,
-          isDefinition: isDefinitionKind(node.kind),
-          isReference: isReferenceKind(node.kind) || node.kind === "ref",
+          notationRole: legacyNotationRole(node.kind),
           sceneNodeId: node.id
         }
       };
@@ -973,7 +995,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/prepare/interconnection.ts
+  // diagram-renderer/src/prepare/interconnection.ts
   function prepareInterconnection(visualization) {
     const scene = visualization.interconnectionScene;
     if (scene && scene.schemaVersion >= 2) {
@@ -996,7 +1018,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/prepare/standard-views.ts
+  // diagram-renderer/src/prepare/standard-views.ts
   function graphNodesForStandardView(visualization) {
     const graph = asRecord(visualization?.generalViewGraph ?? visualization?.graph);
     return asArray(graph.nodes).map(asRecord);
@@ -1022,7 +1044,14 @@ var Spec42HeadlessRendererBundle = (() => {
     return asArray(projectionHints(visualization).treeRoots).map((value) => asString(value)).filter(Boolean);
   }
   function columnViewsHint(visualization) {
-    return asArray(projectionHints(visualization).columnViews).map(asRecord).map((entry) => ({ label: asString(entry.label, "Column") }));
+    return asArray(projectionHints(visualization).columnViews).map(asRecord).map((entry) => {
+      const renderingType = asString(entry.renderingType);
+      return {
+        label: asString(entry.label, "Column"),
+        renderingType,
+        supported: renderingType === "asTextualNotation"
+      };
+    });
   }
   function optionalUri(node) {
     return nodeUri(node) ?? void 0;
@@ -1124,6 +1153,7 @@ var Spec42HeadlessRendererBundle = (() => {
         attributeCount: asArray(attrs.attributes).length,
         partCount: asArray(attrs.parts).length,
         portCount: asArray(attrs.ports).length,
+        unsupportedRendering: "Unsupported rendering",
         uri: optionalUri(node),
         range: optionalRange(node)
       };
@@ -1149,10 +1179,15 @@ var Spec42HeadlessRendererBundle = (() => {
         matrixRowIds: relationshipMatrix ? nodeIds : [],
         matrixColIds: relationshipMatrix ? nodeIds : [],
         matrixCells,
-        columns: columnViews.length > 0 ? columnViews.map((column) => ({ key: "name", label: column.label })) : void 0,
+        columns: columnViews.length > 0 ? columnViews.map((column) => ({
+          key: column.supported ? "name" : "unsupportedRendering",
+          label: column.label,
+          renderingType: column.renderingType,
+          notationStatus: column.supported ? "normative" : "unsupported"
+        })) : void 0,
         // Both an element table and a relationship matrix are rectangular GridView
         // presentations described by §9.2.20.2.5.
-        provisional: false
+        provisional: columnViews.some((column) => !column.supported)
       }
     };
   }
@@ -1195,13 +1230,15 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/prepare/types.ts
+  // diagram-renderer/src/prepare/types.ts
   function interconnectionPreparedForLayout(prepared) {
     return prepared;
   }
 
-  // ../shared/diagram-renderer/src/prepare/index.ts
+  // diagram-renderer/src/prepare/index.ts
   function prepareViewData(visualizationInput) {
+    const typed = prepareTypedDiagramProduct(visualizationInput);
+    if (typed) return typed;
     const passthrough = asRecord(visualizationInput).preparedView;
     if (passthrough && typeof passthrough === "object") {
       const candidate = asRecord(passthrough);
@@ -1221,8 +1258,208 @@ var Spec42HeadlessRendererBundle = (() => {
     if (view === "geometry-view") return prepareGeometry(visualization);
     return prepareGraph(visualization?.generalViewGraph ?? visualization?.graph, visualization);
   }
+  function sequenceDiagramFromScene(name, nodes, scene) {
+    const asIndex = (value) => typeof value === "number" && nodes[value] !== void 0 ? value : void 0;
+    if (asString(scene.kind) !== "sequence") return void 0;
+    const participantIdx = asArray(scene.lifelines).map(asIndex).filter((value) => value !== void 0);
+    const lifelines = participantIdx.map((index) => ({
+      id: nodes[index].id,
+      name: nodes[index].label || nodes[index].kind
+    }));
+    const messages = asArray(scene.messages).map(asRecord).map((message) => {
+      const index = asIndex(message.node);
+      const source = asRecord(message.source);
+      const target = asRecord(message.target);
+      const order = asRecord(message.order);
+      const sourceIndex = source.status === "resolved" ? asIndex(source.lifeline) : void 0;
+      const targetIndex = target.status === "resolved" ? asIndex(target.lifeline) : void 0;
+      return {
+        id: index === void 0 ? void 0 : nodes[index].id,
+        name: typeof message.label === "string" ? message.label : index === void 0 ? "" : nodes[index].label,
+        source: sourceIndex === void 0 ? void 0 : nodes[sourceIndex].id,
+        target: targetIndex === void 0 ? void 0 : nodes[targetIndex].id,
+        kind: index === void 0 ? "FlowUsage" : nodes[index].kind,
+        order: order.status === "resolved" && typeof order.value === "number" ? order.value : void 0
+      };
+    }).filter((message) => message.id !== void 0 && message.source !== void 0 && message.target !== void 0 && message.order !== void 0);
+    return { name, lifelines, messages, activations: [], fragments: [] };
+  }
+  function prepareTypedDiagramProduct(input) {
+    const product = asRecord(input);
+    if (product.schemaVersion !== 5) return null;
+    const selected = asRecord(product.selectedView);
+    const projection = asRecord(product.projection);
+    const documents = Array.isArray(product.documents) ? product.documents.map(asRecord) : [];
+    const sources = Array.isArray(product.sources) ? product.sources.map(asRecord) : [];
+    const references = Array.isArray(product.references) ? product.references : [];
+    if (typeof selected.kind !== "string" || projection.kind !== selected.kind || typeof selected.name !== "string" || !Array.isArray(projection.nodes) || !Array.isArray(projection.edges)) return null;
+    const navigation = (index) => {
+      const source = typeof index === "number" ? sources[index] : void 0;
+      const document2 = source && typeof source.document === "number" ? documents[source.document] : void 0;
+      const range = source && Array.isArray(source.range) ? source.range : [];
+      return {
+        uri: document2 && typeof document2.uri === "string" ? document2.uri : null,
+        range: range.length === 4 ? {
+          start: { line: range[0], character: range[1] },
+          end: { line: range[2], character: range[3] }
+        } : {}
+      };
+    };
+    if (selected.kind === "state-transition-view") {
+      const scene = asRecord(projection.scene);
+      if (scene.kind !== "state-transition" || !Array.isArray(scene.vertices) || !Array.isArray(scene.transitions)) return null;
+      const frame2 = asRecord(scene.frame);
+      const nodes2 = scene.vertices.map((raw, index) => {
+        const vertex = asRecord(raw);
+        const source = navigation(vertex.navigation);
+        const semanticId = typeof vertex.id === "string" && vertex.id ? vertex.id : String(index);
+        return {
+          id: `state:${semanticId}`,
+          label: typeof vertex.label === "string" ? vertex.label : "",
+          kind: String(vertex.kind ?? "state"),
+          uri: source.uri,
+          range: source.range,
+          attributes: { semanticSceneId: vertex.id }
+        };
+      });
+      const featureLabel = (value) => {
+        const feature = asRecord(value);
+        return feature.status === "supported" && typeof feature.label === "string" ? feature.label : "";
+      };
+      const triggerLabel = (value) => {
+        const trigger = asRecord(value);
+        return trigger.status === "accept" && typeof trigger.label === "string" ? trigger.label : "";
+      };
+      const edges2 = scene.transitions.map((raw, index) => {
+        const transition2 = asRecord(raw);
+        const sourceIndex = transition2.source;
+        const targetIndex = transition2.target;
+        const trigger = triggerLabel(transition2.trigger);
+        const guard = featureLabel(transition2.guard);
+        const effect = featureLabel(transition2.effect);
+        const sourceNavigation = navigation(transition2.navigation);
+        return {
+          id: `transition:${index}`,
+          source: nodes2[sourceIndex].id,
+          target: nodes2[targetIndex].id,
+          label: [trigger, guard ? `[${guard}]` : "", effect].filter(Boolean).join(" / ") || String(transition2.label ?? ""),
+          edgeKind: "transition",
+          attributes: {
+            semanticSceneId: transition2.id,
+            relationType: "transition",
+            selfLoop: transition2.source === transition2.target,
+            trigger,
+            guard,
+            effect,
+            provenance: transition2.provenance,
+            sourceNavigation
+          }
+        };
+      });
+      return {
+        title: typeof frame2.label === "string" ? frame2.label : selected.name,
+        view: selected.kind,
+        nodes: nodes2,
+        edges: edges2,
+        meta: {
+          sceneKind: scene.kind,
+          frame: frame2,
+          layoutDirection: "horizontal"
+        }
+      };
+    }
+    const nodes = projection.nodes.map((raw, index) => {
+      const element = asRecord(raw);
+      const source = navigation(element.source);
+      const typing = asRecord(element.typing);
+      const typeLabels = Array.isArray(typing.types) ? typing.types.map(asRecord).map((type2) => type2.label).filter((label) => typeof label === "string") : [];
+      return {
+        id: `n:${index}`,
+        label: typeof element.name === "string" ? element.name : String(element.metaclass ?? ""),
+        kind: String(element.metaclass ?? "Unrecognized"),
+        uri: source.uri,
+        range: source.range,
+        attributes: {
+          notationRole: element.notationRole,
+          semanticReference: typeof element.reference === "number" ? references[element.reference] : void 0,
+          owner: element.owner,
+          typingStatus: typing.status,
+          typedByName: (typing.status === "resolved" || typing.status === "partial") && typeLabels.length > 0 ? typeLabels.join(" & ") : void 0
+        }
+      };
+    });
+    for (const [ownerIndex, raw] of projection.nodes.entries()) {
+      const element = asRecord(raw);
+      const compartments = Array.isArray(element.compartments) ? element.compartments.map(asRecord) : [];
+      nodes[ownerIndex].attributes = {
+        ...nodes[ownerIndex].attributes,
+        typedCompartments: compartments.map((compartment) => ({
+          kind: String(compartment.kind ?? "members"),
+          provenance: String(compartment.provenance ?? "direct"),
+          members: (Array.isArray(compartment.members) ? compartment.members : []).filter((member) => typeof member === "number" && nodes[member] !== void 0).map((member) => ({
+            id: nodes[member].id,
+            name: nodes[member].label,
+            kind: nodes[member].kind,
+            typeName: typeof nodes[member].attributes?.typedByName === "string" ? nodes[member].attributes?.typedByName : void 0
+          }))
+        }))
+      };
+    }
+    const edges = projection.edges.map((raw, index) => {
+      const edge = asRecord(raw);
+      return {
+        id: `e:${index}`,
+        source: `n:${String(edge.source ?? "")}`,
+        target: `n:${String(edge.target ?? "")}`,
+        label: "",
+        edgeKind: String(edge.kind ?? "relationship"),
+        attributes: {
+          semanticReference: typeof edge.reference === "number" ? references[edge.reference] : void 0,
+          provenance: edge.provenance,
+          sourceNavigation: edge.navigation === null ? null : navigation(edge.navigation)
+        }
+      };
+    });
+    const metadata = asRecord(projection.metadata);
+    const sequenceDiagram = selected.kind === "sequence-view" ? sequenceDiagramFromScene(selected.name, nodes, asRecord(projection.scene)) : void 0;
+    const gridRows = Array.isArray(metadata.rows) ? metadata.rows.filter((value) => typeof value === "number" && nodes[value] !== void 0) : [];
+    const gridColumns = Array.isArray(metadata.columns) ? metadata.columns.filter((value) => typeof value === "string") : [];
+    const gridRelationships = Array.isArray(metadata.cells) ? metadata.cells.map(asRecord) : [];
+    const gridCells = selected.kind === "grid-view" ? gridRows.map((nodeIndex) => {
+      const node = nodes[nodeIndex];
+      const values = Object.fromEntries(gridColumns.map((column) => [
+        `relationship:${column}`,
+        gridRelationships.some((cell) => cell.row === nodeIndex && cell.column === column) ? "\u2713" : ""
+      ]));
+      return { id: node.id, name: node.label, kind: node.kind, ...values };
+    }) : void 0;
+    return {
+      title: selected.name,
+      view: selected.kind,
+      nodes,
+      edges,
+      meta: {
+        selectedDiagramReference: typeof selected.reference === "number" ? references[selected.reference] : void 0,
+        exposedRoots: Array.isArray(projection.exposedRoots) ? projection.exposedRoots.map((index) => `n:${String(index)}`) : [],
+        viewMetadata: projection.metadata,
+        ...sequenceDiagram ? { sequenceDiagram } : {},
+        ...selected.kind === "grid-view" ? {
+          cells: gridCells,
+          columns: [
+            { key: "name", label: "Element", notationStatus: "normative" },
+            ...gridColumns.map((column) => ({
+              key: `relationship:${column}`,
+              label: column,
+              notationStatus: "normative"
+            }))
+          ],
+          provisional: false
+        } : {}
+      }
+    };
+  }
 
-  // ../shared/diagram-renderer/node_modules/d3-dispatch/src/dispatch.js
+  // diagram-renderer/node_modules/d3-dispatch/src/dispatch.js
   var noop = { value: () => {
   } };
   function dispatch() {
@@ -1292,7 +1529,7 @@ var Spec42HeadlessRendererBundle = (() => {
   }
   var dispatch_default = dispatch;
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/namespaces.js
+  // diagram-renderer/node_modules/d3-selection/src/namespaces.js
   var xhtml = "http://www.w3.org/1999/xhtml";
   var namespaces_default = {
     svg: "http://www.w3.org/2000/svg",
@@ -1302,14 +1539,14 @@ var Spec42HeadlessRendererBundle = (() => {
     xmlns: "http://www.w3.org/2000/xmlns/"
   };
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/namespace.js
+  // diagram-renderer/node_modules/d3-selection/src/namespace.js
   function namespace_default(name) {
     var prefix = name += "", i = prefix.indexOf(":");
     if (i >= 0 && (prefix = name.slice(0, i)) !== "xmlns") name = name.slice(i + 1);
     return namespaces_default.hasOwnProperty(prefix) ? { space: namespaces_default[prefix], local: name } : name;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/creator.js
+  // diagram-renderer/node_modules/d3-selection/src/creator.js
   function creatorInherit(name) {
     return function() {
       var document2 = this.ownerDocument, uri = this.namespaceURI;
@@ -1326,7 +1563,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return (fullname.local ? creatorFixed : creatorInherit)(fullname);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selector.js
+  // diagram-renderer/node_modules/d3-selection/src/selector.js
   function none() {
   }
   function selector_default(selector) {
@@ -1335,7 +1572,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/select.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/select.js
   function select_default(select) {
     if (typeof select !== "function") select = selector_default(select);
     for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
@@ -1349,12 +1586,12 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Selection(subgroups, this._parents);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/array.js
+  // diagram-renderer/node_modules/d3-selection/src/array.js
   function array(x2) {
     return x2 == null ? [] : Array.isArray(x2) ? x2 : Array.from(x2);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selectorAll.js
+  // diagram-renderer/node_modules/d3-selection/src/selectorAll.js
   function empty() {
     return [];
   }
@@ -1364,7 +1601,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/selectAll.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/selectAll.js
   function arrayAll(select) {
     return function() {
       return array(select.apply(this, arguments));
@@ -1384,7 +1621,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Selection(subgroups, parents);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/matcher.js
+  // diagram-renderer/node_modules/d3-selection/src/matcher.js
   function matcher_default(selector) {
     return function() {
       return this.matches(selector);
@@ -1396,7 +1633,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/selectChild.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/selectChild.js
   var find = Array.prototype.find;
   function childFind(match) {
     return function() {
@@ -1410,7 +1647,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.select(match == null ? childFirst : childFind(typeof match === "function" ? match : childMatcher(match)));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/selectChildren.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/selectChildren.js
   var filter = Array.prototype.filter;
   function children() {
     return Array.from(this.children);
@@ -1424,7 +1661,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.selectAll(match == null ? children : childrenFilter(typeof match === "function" ? match : childMatcher(match)));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/filter.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/filter.js
   function filter_default(match) {
     if (typeof match !== "function") match = matcher_default(match);
     for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
@@ -1437,12 +1674,12 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Selection(subgroups, this._parents);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/sparse.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/sparse.js
   function sparse_default(update) {
     return new Array(update.length);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/enter.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/enter.js
   function enter_default() {
     return new Selection(this._enter || this._groups.map(sparse_default), this._parents);
   }
@@ -1469,14 +1706,14 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   };
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/constant.js
+  // diagram-renderer/node_modules/d3-selection/src/constant.js
   function constant_default(x2) {
     return function() {
       return x2;
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/data.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/data.js
   function bindIndex(parent, group, enter, update, exit, data) {
     var i = 0, node, groupLength = group.length, dataLength = data.length;
     for (; i < dataLength; ++i) {
@@ -1548,12 +1785,12 @@ var Spec42HeadlessRendererBundle = (() => {
     return typeof data === "object" && "length" in data ? data : Array.from(data);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/exit.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/exit.js
   function exit_default() {
     return new Selection(this._exit || this._groups.map(sparse_default), this._parents);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/join.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/join.js
   function join_default(onenter, onupdate, onexit) {
     var enter = this.enter(), update = this, exit = this.exit();
     if (typeof onenter === "function") {
@@ -1571,7 +1808,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return enter && update ? enter.merge(update).order() : update;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/merge.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/merge.js
   function merge_default(context) {
     var selection2 = context.selection ? context.selection() : context;
     for (var groups0 = this._groups, groups1 = selection2._groups, m0 = groups0.length, m1 = groups1.length, m = Math.min(m0, m1), merges = new Array(m0), j = 0; j < m; ++j) {
@@ -1587,7 +1824,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Selection(merges, this._parents);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/order.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/order.js
   function order_default() {
     for (var groups = this._groups, j = -1, m = groups.length; ++j < m; ) {
       for (var group = groups[j], i = group.length - 1, next = group[i], node; --i >= 0; ) {
@@ -1600,7 +1837,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/sort.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/sort.js
   function sort_default(compare) {
     if (!compare) compare = ascending;
     function compareNode(a, b) {
@@ -1620,7 +1857,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/call.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/call.js
   function call_default() {
     var callback = arguments[0];
     arguments[0] = this;
@@ -1628,12 +1865,12 @@ var Spec42HeadlessRendererBundle = (() => {
     return this;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/nodes.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/nodes.js
   function nodes_default() {
     return Array.from(this);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/node.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/node.js
   function node_default() {
     for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
       for (var group = groups[j], i = 0, n = group.length; i < n; ++i) {
@@ -1644,19 +1881,19 @@ var Spec42HeadlessRendererBundle = (() => {
     return null;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/size.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/size.js
   function size_default() {
     let size = 0;
     for (const node of this) ++size;
     return size;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/empty.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/empty.js
   function empty_default() {
     return !this.node();
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/each.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/each.js
   function each_default(callback) {
     for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
       for (var group = groups[j], i = 0, n = group.length, node; i < n; ++i) {
@@ -1666,7 +1903,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/attr.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/attr.js
   function attrRemove(name) {
     return function() {
       this.removeAttribute(name);
@@ -1710,12 +1947,12 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.each((value == null ? fullname.local ? attrRemoveNS : attrRemove : typeof value === "function" ? fullname.local ? attrFunctionNS : attrFunction : fullname.local ? attrConstantNS : attrConstant)(fullname, value));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/window.js
+  // diagram-renderer/node_modules/d3-selection/src/window.js
   function window_default(node) {
     return node.ownerDocument && node.ownerDocument.defaultView || node.document && node || node.defaultView;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/style.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/style.js
   function styleRemove(name) {
     return function() {
       this.style.removeProperty(name);
@@ -1740,7 +1977,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return node.style.getPropertyValue(name) || window_default(node).getComputedStyle(node, null).getPropertyValue(name);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/property.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/property.js
   function propertyRemove(name) {
     return function() {
       delete this[name];
@@ -1762,7 +1999,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return arguments.length > 1 ? this.each((value == null ? propertyRemove : typeof value === "function" ? propertyFunction : propertyConstant)(name, value)) : this.node()[name];
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/classed.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/classed.js
   function classArray(string) {
     return string.trim().split(/^|\s+/);
   }
@@ -1825,7 +2062,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.each((typeof value === "function" ? classedFunction : value ? classedTrue : classedFalse)(names, value));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/text.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/text.js
   function textRemove() {
     this.textContent = "";
   }
@@ -1844,7 +2081,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return arguments.length ? this.each(value == null ? textRemove : (typeof value === "function" ? textFunction : textConstant)(value)) : this.node().textContent;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/html.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/html.js
   function htmlRemove() {
     this.innerHTML = "";
   }
@@ -1863,7 +2100,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return arguments.length ? this.each(value == null ? htmlRemove : (typeof value === "function" ? htmlFunction : htmlConstant)(value)) : this.node().innerHTML;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/raise.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/raise.js
   function raise() {
     if (this.nextSibling) this.parentNode.appendChild(this);
   }
@@ -1871,7 +2108,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.each(raise);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/lower.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/lower.js
   function lower() {
     if (this.previousSibling) this.parentNode.insertBefore(this, this.parentNode.firstChild);
   }
@@ -1879,7 +2116,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.each(lower);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/append.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/append.js
   function append_default(name) {
     var create2 = typeof name === "function" ? name : creator_default(name);
     return this.select(function() {
@@ -1887,7 +2124,7 @@ var Spec42HeadlessRendererBundle = (() => {
     });
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/insert.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/insert.js
   function constantNull() {
     return null;
   }
@@ -1898,7 +2135,7 @@ var Spec42HeadlessRendererBundle = (() => {
     });
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/remove.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/remove.js
   function remove() {
     var parent = this.parentNode;
     if (parent) parent.removeChild(this);
@@ -1907,7 +2144,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.each(remove);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/clone.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/clone.js
   function selection_cloneShallow() {
     var clone = this.cloneNode(false), parent = this.parentNode;
     return parent ? parent.insertBefore(clone, this.nextSibling) : clone;
@@ -1920,12 +2157,12 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.select(deep ? selection_cloneDeep : selection_cloneShallow);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/datum.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/datum.js
   function datum_default(value) {
     return arguments.length ? this.property("__data__", value) : this.node().__data__;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/on.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/on.js
   function contextListener(listener) {
     return function(event) {
       listener.call(this, event, this.__data__);
@@ -1988,7 +2225,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/dispatch.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/dispatch.js
   function dispatchEvent(node, type2, params) {
     var window2 = window_default(node), event = window2.CustomEvent;
     if (typeof event === "function") {
@@ -2014,7 +2251,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.each((typeof params === "function" ? dispatchFunction : dispatchConstant)(type2, params));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/iterator.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/iterator.js
   function* iterator_default() {
     for (var groups = this._groups, j = 0, m = groups.length; j < m; ++j) {
       for (var group = groups[j], i = 0, n = group.length, node; i < n; ++i) {
@@ -2023,7 +2260,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/selection/index.js
+  // diagram-renderer/node_modules/d3-selection/src/selection/index.js
   var root = [null];
   function Selection(groups, parents) {
     this._groups = groups;
@@ -2075,19 +2312,19 @@ var Spec42HeadlessRendererBundle = (() => {
   };
   var selection_default = selection;
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/select.js
+  // diagram-renderer/node_modules/d3-selection/src/select.js
   function select_default2(selector) {
     return typeof selector === "string" ? new Selection([[document.querySelector(selector)]], [document.documentElement]) : new Selection([[selector]], root);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/sourceEvent.js
+  // diagram-renderer/node_modules/d3-selection/src/sourceEvent.js
   function sourceEvent_default(event) {
     let sourceEvent;
     while (sourceEvent = event.sourceEvent) event = sourceEvent;
     return event;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-selection/src/pointer.js
+  // diagram-renderer/node_modules/d3-selection/src/pointer.js
   function pointer_default(event, node) {
     event = sourceEvent_default(event);
     if (node === void 0) node = event.currentTarget;
@@ -2107,14 +2344,14 @@ var Spec42HeadlessRendererBundle = (() => {
     return [event.pageX, event.pageY];
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-drag/src/noevent.js
+  // diagram-renderer/node_modules/d3-drag/src/noevent.js
   var nonpassivecapture = { capture: true, passive: false };
   function noevent_default(event) {
     event.preventDefault();
     event.stopImmediatePropagation();
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-drag/src/nodrag.js
+  // diagram-renderer/node_modules/d3-drag/src/nodrag.js
   function nodrag_default(view) {
     var root2 = view.document.documentElement, selection2 = select_default2(view).on("dragstart.drag", noevent_default, nonpassivecapture);
     if ("onselectstart" in root2) {
@@ -2140,7 +2377,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-color/src/define.js
+  // diagram-renderer/node_modules/d3-color/src/define.js
   function define_default(constructor, factory, prototype) {
     constructor.prototype = factory.prototype = prototype;
     prototype.constructor = constructor;
@@ -2151,7 +2388,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return prototype;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-color/src/color.js
+  // diagram-renderer/node_modules/d3-color/src/color.js
   function Color() {
   }
   var darker = 0.7;
@@ -2488,7 +2725,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return (h < 60 ? m1 + (m2 - m1) * h / 60 : h < 180 ? m2 : h < 240 ? m1 + (m2 - m1) * (240 - h) / 60 : m1) * 255;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/basis.js
+  // diagram-renderer/node_modules/d3-interpolate/src/basis.js
   function basis(t1, v0, v1, v2, v3) {
     var t2 = t1 * t1, t3 = t2 * t1;
     return ((1 - 3 * t1 + 3 * t2 - t3) * v0 + (4 - 6 * t2 + 3 * t3) * v1 + (1 + 3 * t1 + 3 * t2 - 3 * t3) * v2 + t3 * v3) / 6;
@@ -2501,7 +2738,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/basisClosed.js
+  // diagram-renderer/node_modules/d3-interpolate/src/basisClosed.js
   function basisClosed_default(values) {
     var n = values.length;
     return function(t) {
@@ -2510,10 +2747,10 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/constant.js
+  // diagram-renderer/node_modules/d3-interpolate/src/constant.js
   var constant_default2 = (x2) => () => x2;
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/color.js
+  // diagram-renderer/node_modules/d3-interpolate/src/color.js
   function linear(a, d) {
     return function(t) {
       return a + t * d;
@@ -2534,7 +2771,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return d ? linear(a, d) : constant_default2(isNaN(a) ? b : a);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/rgb.js
+  // diagram-renderer/node_modules/d3-interpolate/src/rgb.js
   var rgb_default = function rgbGamma(y2) {
     var color2 = gamma(y2);
     function rgb2(start2, end) {
@@ -2574,14 +2811,14 @@ var Spec42HeadlessRendererBundle = (() => {
   var rgbBasis = rgbSpline(basis_default);
   var rgbBasisClosed = rgbSpline(basisClosed_default);
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/number.js
+  // diagram-renderer/node_modules/d3-interpolate/src/number.js
   function number_default(a, b) {
     return a = +a, b = +b, function(t) {
       return a * (1 - t) + b * t;
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/string.js
+  // diagram-renderer/node_modules/d3-interpolate/src/string.js
   var reA = /[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?/g;
   var reB = new RegExp(reA.source, "g");
   function zero(b) {
@@ -2623,7 +2860,7 @@ var Spec42HeadlessRendererBundle = (() => {
     });
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/transform/decompose.js
+  // diagram-renderer/node_modules/d3-interpolate/src/transform/decompose.js
   var degrees = 180 / Math.PI;
   var identity = {
     translateX: 0,
@@ -2649,7 +2886,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/transform/parse.js
+  // diagram-renderer/node_modules/d3-interpolate/src/transform/parse.js
   var svgNode;
   function parseCss(value) {
     const m = new (typeof DOMMatrix === "function" ? DOMMatrix : WebKitCSSMatrix)(value + "");
@@ -2664,7 +2901,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return decompose_default(value.a, value.b, value.c, value.d, value.e, value.f);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/transform/index.js
+  // diagram-renderer/node_modules/d3-interpolate/src/transform/index.js
   function interpolateTransform(parse, pxComma, pxParen, degParen) {
     function pop(s) {
       return s.length ? s.pop() + " " : "";
@@ -2719,7 +2956,7 @@ var Spec42HeadlessRendererBundle = (() => {
   var interpolateTransformCss = interpolateTransform(parseCss, "px, ", "px)", "deg)");
   var interpolateTransformSvg = interpolateTransform(parseSvg, ", ", ")", ")");
 
-  // ../shared/diagram-renderer/node_modules/d3-interpolate/src/zoom.js
+  // diagram-renderer/node_modules/d3-interpolate/src/zoom.js
   var epsilon2 = 1e-12;
   function cosh(x2) {
     return ((x2 = Math.exp(x2)) + 1 / x2) / 2;
@@ -2764,7 +3001,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return zoom;
   }(Math.SQRT2, 2, 4);
 
-  // ../shared/diagram-renderer/node_modules/d3-timer/src/timer.js
+  // diagram-renderer/node_modules/d3-timer/src/timer.js
   var frame = 0;
   var timeout = 0;
   var interval = 0;
@@ -2866,7 +3103,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-timer/src/timeout.js
+  // diagram-renderer/node_modules/d3-timer/src/timeout.js
   function timeout_default(callback, delay, time) {
     var t = new Timer();
     delay = delay == null ? 0 : +delay;
@@ -2877,7 +3114,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return t;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/schedule.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/schedule.js
   var emptyOn = dispatch_default("start", "end", "cancel", "interrupt");
   var emptyTween = [];
   var CREATED = 0;
@@ -2988,7 +3225,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/interrupt.js
+  // diagram-renderer/node_modules/d3-transition/src/interrupt.js
   function interrupt_default(node, name) {
     var schedules = node.__transition, schedule, active, empty2 = true, i;
     if (!schedules) return;
@@ -3007,14 +3244,14 @@ var Spec42HeadlessRendererBundle = (() => {
     if (empty2) delete node.__transition;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/selection/interrupt.js
+  // diagram-renderer/node_modules/d3-transition/src/selection/interrupt.js
   function interrupt_default2(name) {
     return this.each(function() {
       interrupt_default(this, name);
     });
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/tween.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/tween.js
   function tweenRemove(id2, name) {
     var tween0, tween1;
     return function() {
@@ -3075,13 +3312,13 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/interpolate.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/interpolate.js
   function interpolate_default(a, b) {
     var c;
     return (typeof b === "number" ? number_default : b instanceof color ? rgb_default : (c = color(b)) ? (b = c, rgb_default) : string_default)(a, b);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/attr.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/attr.js
   function attrRemove2(name) {
     return function() {
       this.removeAttribute(name);
@@ -3131,7 +3368,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.attrTween(name, typeof value === "function" ? (fullname.local ? attrFunctionNS2 : attrFunction2)(fullname, i, tweenValue(this, "attr." + name, value)) : value == null ? (fullname.local ? attrRemoveNS2 : attrRemove2)(fullname) : (fullname.local ? attrConstantNS2 : attrConstant2)(fullname, i, value));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/attrTween.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/attrTween.js
   function attrInterpolate(name, i) {
     return function(t) {
       this.setAttribute(name, i.call(this, t));
@@ -3171,7 +3408,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.tween(key, (fullname.local ? attrTweenNS : attrTween)(fullname, value));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/delay.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/delay.js
   function delayFunction(id2, value) {
     return function() {
       init(this, id2).delay = +value.apply(this, arguments);
@@ -3187,7 +3424,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return arguments.length ? this.each((typeof value === "function" ? delayFunction : delayConstant)(id2, value)) : get2(this.node(), id2).delay;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/duration.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/duration.js
   function durationFunction(id2, value) {
     return function() {
       set2(this, id2).duration = +value.apply(this, arguments);
@@ -3203,7 +3440,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return arguments.length ? this.each((typeof value === "function" ? durationFunction : durationConstant)(id2, value)) : get2(this.node(), id2).duration;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/ease.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/ease.js
   function easeConstant(id2, value) {
     if (typeof value !== "function") throw new Error();
     return function() {
@@ -3215,7 +3452,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return arguments.length ? this.each(easeConstant(id2, value)) : get2(this.node(), id2).ease;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/easeVarying.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/easeVarying.js
   function easeVarying(id2, value) {
     return function() {
       var v = value.apply(this, arguments);
@@ -3228,7 +3465,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.each(easeVarying(this._id, value));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/filter.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/filter.js
   function filter_default2(match) {
     if (typeof match !== "function") match = matcher_default(match);
     for (var groups = this._groups, m = groups.length, subgroups = new Array(m), j = 0; j < m; ++j) {
@@ -3241,7 +3478,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Transition(subgroups, this._parents, this._name, this._id);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/merge.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/merge.js
   function merge_default2(transition2) {
     if (transition2._id !== this._id) throw new Error();
     for (var groups0 = this._groups, groups1 = transition2._groups, m0 = groups0.length, m1 = groups1.length, m = Math.min(m0, m1), merges = new Array(m0), j = 0; j < m; ++j) {
@@ -3257,7 +3494,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Transition(merges, this._parents, this._name, this._id);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/on.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/on.js
   function start(name) {
     return (name + "").trim().split(/^|\s+/).every(function(t) {
       var i = t.indexOf(".");
@@ -3278,7 +3515,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return arguments.length < 2 ? get2(this.node(), id2).on.on(name) : this.each(onFunction(id2, name, listener));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/remove.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/remove.js
   function removeFunction(id2) {
     return function() {
       var parent = this.parentNode;
@@ -3290,7 +3527,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.on("end.remove", removeFunction(this._id));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/select.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/select.js
   function select_default3(select) {
     var name = this._name, id2 = this._id;
     if (typeof select !== "function") select = selector_default(select);
@@ -3306,7 +3543,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Transition(subgroups, this._parents, name, id2);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/selectAll.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/selectAll.js
   function selectAll_default2(select) {
     var name = this._name, id2 = this._id;
     if (typeof select !== "function") select = selectorAll_default(select);
@@ -3326,13 +3563,13 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Transition(subgroups, parents, name, id2);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/selection.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/selection.js
   var Selection2 = selection_default.prototype.constructor;
   function selection_default2() {
     return new Selection2(this._groups, this._parents);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/style.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/style.js
   function styleNull(name, interpolate) {
     var string00, string10, interpolate0;
     return function() {
@@ -3373,7 +3610,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return value == null ? this.styleTween(name, styleNull(name, i)).on("end.style." + name, styleRemove2(name)) : typeof value === "function" ? this.styleTween(name, styleFunction2(name, i, tweenValue(this, "style." + name, value))).each(styleMaybeRemove(this._id, name)) : this.styleTween(name, styleConstant2(name, i, value), priority).on("end.style." + name, null);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/styleTween.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/styleTween.js
   function styleInterpolate(name, i, priority) {
     return function(t) {
       this.style.setProperty(name, i.call(this, t), priority);
@@ -3397,7 +3634,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.tween(key, styleTween(name, value, priority == null ? "" : priority));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/text.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/text.js
   function textConstant2(value) {
     return function() {
       this.textContent = value;
@@ -3413,7 +3650,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.tween("text", typeof value === "function" ? textFunction2(tweenValue(this, "text", value)) : textConstant2(value == null ? "" : value + ""));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/textTween.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/textTween.js
   function textInterpolate(i) {
     return function(t) {
       this.textContent = i.call(this, t);
@@ -3437,7 +3674,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return this.tween(key, textTween(value));
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/transition.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/transition.js
   function transition_default() {
     var name = this._name, id0 = this._id, id1 = newId();
     for (var groups = this._groups, m = groups.length, j = 0; j < m; ++j) {
@@ -3456,7 +3693,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Transition(groups, this._parents, name, id1);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/end.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/end.js
   function end_default() {
     var on0, on1, that = this, id2 = that._id, size = that.size();
     return new Promise(function(resolve, reject) {
@@ -3477,7 +3714,7 @@ var Spec42HeadlessRendererBundle = (() => {
     });
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/transition/index.js
+  // diagram-renderer/node_modules/d3-transition/src/transition/index.js
   var id = 0;
   function Transition(groups, parents, name, id2) {
     this._groups = groups;
@@ -3525,12 +3762,12 @@ var Spec42HeadlessRendererBundle = (() => {
     [Symbol.iterator]: selection_prototype[Symbol.iterator]
   };
 
-  // ../shared/diagram-renderer/node_modules/d3-ease/src/cubic.js
+  // diagram-renderer/node_modules/d3-ease/src/cubic.js
   function cubicInOut(t) {
     return ((t *= 2) <= 1 ? t * t * t : (t -= 2) * t * t + 2) / 2;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/selection/transition.js
+  // diagram-renderer/node_modules/d3-transition/src/selection/transition.js
   var defaultTiming = {
     time: null,
     // Set on use.
@@ -3564,11 +3801,11 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Transition(groups, this._parents, name, id2);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-transition/src/selection/index.js
+  // diagram-renderer/node_modules/d3-transition/src/selection/index.js
   selection_default.prototype.interrupt = interrupt_default2;
   selection_default.prototype.transition = transition_default2;
 
-  // ../shared/diagram-renderer/node_modules/d3-brush/src/brush.js
+  // diagram-renderer/node_modules/d3-brush/src/brush.js
   var { abs, max, min } = Math;
   function number1(e) {
     return [+e[0], +e[1]];
@@ -3610,7 +3847,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return { type: t };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-path/src/path.js
+  // diagram-renderer/node_modules/d3-path/src/path.js
   var pi = Math.PI;
   var tau = 2 * pi;
   var epsilon = 1e-6;
@@ -3704,14 +3941,14 @@ var Spec42HeadlessRendererBundle = (() => {
   }
   path.prototype = Path.prototype;
 
-  // ../shared/diagram-renderer/node_modules/d3-shape/src/constant.js
+  // diagram-renderer/node_modules/d3-shape/src/constant.js
   function constant_default4(x2) {
     return function constant() {
       return x2;
     };
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-shape/src/path.js
+  // diagram-renderer/node_modules/d3-shape/src/path.js
   function withPath(shape) {
     let digits = 3;
     shape.digits = function(_) {
@@ -3728,13 +3965,13 @@ var Spec42HeadlessRendererBundle = (() => {
     return () => new Path(digits);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-shape/src/array.js
+  // diagram-renderer/node_modules/d3-shape/src/array.js
   var slice = Array.prototype.slice;
   function array_default(x2) {
     return typeof x2 === "object" && "length" in x2 ? x2 : Array.from(x2);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-shape/src/curve/linear.js
+  // diagram-renderer/node_modules/d3-shape/src/curve/linear.js
   function Linear(context) {
     this._context = context;
   }
@@ -3772,7 +4009,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new Linear(context);
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-shape/src/point.js
+  // diagram-renderer/node_modules/d3-shape/src/point.js
   function x(p) {
     return p[0];
   }
@@ -3780,7 +4017,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return p[1];
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-shape/src/line.js
+  // diagram-renderer/node_modules/d3-shape/src/line.js
   function line_default(x2, y2) {
     var defined = constant_default4(true), context = null, curve = linear_default, output = null, path2 = withPath(line);
     x2 = typeof x2 === "function" ? x2 : x2 === void 0 ? x : constant_default4(x2);
@@ -3815,10 +4052,10 @@ var Spec42HeadlessRendererBundle = (() => {
     return line;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-zoom/src/constant.js
+  // diagram-renderer/node_modules/d3-zoom/src/constant.js
   var constant_default5 = (x2) => () => x2;
 
-  // ../shared/diagram-renderer/node_modules/d3-zoom/src/event.js
+  // diagram-renderer/node_modules/d3-zoom/src/event.js
   function ZoomEvent(type2, {
     sourceEvent,
     target,
@@ -3834,7 +4071,7 @@ var Spec42HeadlessRendererBundle = (() => {
     });
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-zoom/src/transform.js
+  // diagram-renderer/node_modules/d3-zoom/src/transform.js
   function Transform(k, x2, y2) {
     this.k = k;
     this.x = x2;
@@ -3883,7 +4120,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return node.__zoom;
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-zoom/src/noevent.js
+  // diagram-renderer/node_modules/d3-zoom/src/noevent.js
   function nopropagation2(event) {
     event.stopImmediatePropagation();
   }
@@ -3892,7 +4129,7 @@ var Spec42HeadlessRendererBundle = (() => {
     event.stopImmediatePropagation();
   }
 
-  // ../shared/diagram-renderer/node_modules/d3-zoom/src/zoom.js
+  // diagram-renderer/node_modules/d3-zoom/src/zoom.js
   function defaultFilter(event) {
     return (!event.ctrlKey || event.type === "wheel") && !event.button;
   }
@@ -4207,28 +4444,42 @@ var Spec42HeadlessRendererBundle = (() => {
     return zoom;
   }
 
-  // ../shared/diagram-renderer/src/theme.ts
+  // diagram-renderer/src/theme.ts
   var NOTATION_THEME_LIGHT = {
-    canvasBackground: "#ffffff",
-    panelBackground: "#f3f4f6",
+    canvasBackground: "#f6f7f9",
+    panelBackground: "#eef0f4",
     nodeFill: "#ffffff",
     nodeBorder: "#374151",
     textPrimary: "#111827",
     textSecondary: "#6b7280",
     divider: "#d1d5db",
     highlight: "#d97706",
+    controlFill: "#ffffff",
+    controlStroke: "#6b7280",
+    controlForeground: "#374151",
+    controlHoverFill: "#e5e7eb",
+    focusRing: "#2563eb",
+    badgeFill: "#e5e7eb",
+    badgeText: "#374151",
     edge: { default: "#374151" },
     frame: { stroke: "#9ca3af", text: "#374151" }
   };
   var NOTATION_THEME_DARK = {
-    canvasBackground: "#1e1e1e",
-    panelBackground: "#2d2d2d",
-    nodeFill: "#1e1e1e",
+    canvasBackground: "#1a1a1a",
+    panelBackground: "#2c2c2c",
+    nodeFill: "#232323",
     nodeBorder: "#d4d4d4",
     textPrimary: "#e5e5e5",
     textSecondary: "#a3a3a3",
     divider: "#525252",
     highlight: "#fbbf24",
+    controlFill: "#232323",
+    controlStroke: "#a3a3a3",
+    controlForeground: "#e5e5e5",
+    controlHoverFill: "#3f3f3f",
+    focusRing: "#60a5fa",
+    badgeFill: "#3a3a3a",
+    badgeText: "#e5e5e5",
     edge: { default: "#d4d4d4" },
     frame: { stroke: "#737373", text: "#e5e5e5" }
   };
@@ -4241,6 +4492,13 @@ var Spec42HeadlessRendererBundle = (() => {
     textSecondary: "var(--vscode-descriptionForeground)",
     divider: "var(--vscode-panel-border)",
     highlight: "var(--vscode-focusBorder, #d97706)",
+    controlFill: "var(--vscode-editor-background)",
+    controlStroke: "var(--vscode-descriptionForeground)",
+    controlForeground: "var(--vscode-editor-foreground)",
+    controlHoverFill: "var(--vscode-toolbar-hoverBackground, var(--vscode-button-secondaryBackground))",
+    focusRing: "var(--vscode-focusBorder)",
+    badgeFill: "var(--vscode-badge-background, var(--vscode-button-secondaryBackground))",
+    badgeText: "var(--vscode-badge-foreground, var(--vscode-editor-foreground))",
     edge: { default: "var(--vscode-editor-foreground)" },
     frame: {
       stroke: "var(--vscode-panel-border)",
@@ -4285,7 +4543,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return theme.edge.default;
   }
 
-  // ../shared/diagram-renderer/src/render/diagram-tooltip.ts
+  // diagram-renderer/src/render/diagram-tooltip.ts
   var activeTooltipControllers = /* @__PURE__ */ new WeakMap();
   function text(value) {
     return String(value ?? "").trim();
@@ -4549,7 +4807,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return cleanup;
   }
 
-  // ../shared/diagram-renderer/src/views/behavior-interaction.ts
+  // diagram-renderer/src/views/behavior-interaction.ts
   function nodeSupportsSourceNavigation(node) {
     const attrs = node.attributes ?? {};
     const qualifiedName = asString2(attrs.qualifiedName ?? node.id);
@@ -4593,7 +4851,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return fallback;
   }
 
-  // ../shared/diagram-renderer/src/headless-elk-shim.ts
+  // diagram-renderer/src/headless-elk-shim.ts
   var HeadlessElk = class {
     constructor(options = {}) {
       const global = globalThis;
@@ -4609,7 +4867,7 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   };
 
-  // ../shared/diagram-renderer/src/views/elk-label-utils.ts
+  // diagram-renderer/src/views/elk-label-utils.ts
   function estimateElkLabelBox(id2, text2, options) {
     const paddingX = options?.paddingX ?? 10;
     const paddingY = options?.paddingY ?? 8;
@@ -4670,7 +4928,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/render/elk-options.ts
+  // diagram-renderer/src/render/elk-options.ts
   var COMMON_ELK_OPTIONS = {
     "elk.algorithm": "layered",
     "elk.edgeRouting": "ORTHOGONAL",
@@ -4734,7 +4992,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return merged;
   }
 
-  // ../shared/diagram-renderer/src/views/behavior-common.ts
+  // diagram-renderer/src/views/behavior-common.ts
   var behaviorElk = new HeadlessElk();
   function nodeKind(node) {
     return String(node.kind || "action").toLowerCase();
@@ -4885,7 +5143,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return trimmed.length > max2 ? `${trimmed.slice(0, max2 - 2)}..` : trimmed;
   }
 
-  // ../shared/diagram-renderer/src/views/action-flow.ts
+  // diagram-renderer/src/views/action-flow.ts
   function isInitial(kind) {
     return kind.includes("initial") || kind.includes("start");
   }
@@ -5037,7 +5295,7 @@ var Spec42HeadlessRendererBundle = (() => {
     defs.append("marker").attr("id", "action-flow-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 8).attr("refY", 0).attr("markerWidth", 6).attr("markerHeight", 6).attr("orient", "auto").append("path").attr("d", "M0,-5L10,0L0,5").style("fill", theme.edge.default);
   }
 
-  // ../shared/diagram-renderer/src/views/sequence.ts
+  // diagram-renderer/src/views/sequence.ts
   var HEADER_Y = 64;
   var LIFELINE_TOP = 118;
   var LIFELINE_GAP = 220;
@@ -5188,7 +5446,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/views/state-transition.ts
+  // diagram-renderer/src/views/state-transition.ts
   function transitionDisplayLabel2(label) {
     const trimmed = label.trim();
     if (!trimmed || trimmed.toLowerCase() === "entry") return "";
@@ -5299,15 +5557,30 @@ var Spec42HeadlessRendererBundle = (() => {
     defs.append("marker").attr("id", "state-transition-arrow").attr("viewBox", "0 -5 10 10").attr("refX", 8).attr("refY", 0).attr("markerWidth", 6).attr("markerHeight", 6).attr("orient", "auto").append("path").attr("d", "M0,-5L10,0L0,5").style("fill", theme.edge.default);
   }
 
-  // ../shared/diagram-renderer/src/sysml-node-builder.ts
+  // diagram-renderer/src/sysml-node-builder.ts
   var LINE_HEIGHT = 12;
-  var COMPARTMENT_LABEL_HEIGHT = 14;
-  var COMPARTMENT_GAP = 2;
+  var COMPARTMENT_LABEL_HEIGHT = 15;
   var COMPARTMENT_PADDING = 4;
-  var HEADER_COMPARTMENT_HEIGHT = 44;
-  var TYPED_BY_HEIGHT = 14;
-  var PADDING = 6;
-  var SHOW_MORE_LINE_HEIGHT = 12;
+  var PADDING = 8;
+  var HEADER_PADDING_X = 8;
+  var HEADER_PADDING_TOP = 7;
+  var HEADER_PADDING_BOTTOM = 7;
+  var STEREOTYPE_FONT_SIZE = 9;
+  var STEREOTYPE_LINE_HEIGHT = 11;
+  var NAME_FONT_SIZE = 11;
+  var NAME_LINE_HEIGHT = 14;
+  var NAME_MAX_LINES = 2;
+  var TYPING_FONT_SIZE = 9.5;
+  var TYPING_LINE_HEIGHT = 12;
+  var COMPARTMENT_FONT_SIZE = 9;
+  var DISCLOSURE_TARGET_SIZE = 24;
+  var DISCLOSURE_BOX_SIZE = 13;
+  var BADGE_HEIGHT = 15;
+  var CONTROL_EDGE_INSET = 3;
+  var BADGE_MIN_WIDTH = 18;
+  var OVERFLOW_LINE_HEIGHT = 12;
+  var AVERAGE_GLYPH_RATIO_BOLD = 0.6;
+  var AVERAGE_GLYPH_RATIO_REGULAR = 0.54;
   var DEFAULT_SYSML_NODE_CONFIG = {
     showHeader: true,
     showAttributes: true,
@@ -5353,12 +5626,16 @@ var Spec42HeadlessRendererBundle = (() => {
   function detailItems(attributes, key) {
     return asArray4(attributes[key]).map((item) => normalizeDetailItem(item)).filter((item) => Boolean(item));
   }
+  function lineToDetailItem(line) {
+    const text2 = normalizeUnitBrackets(line.trim());
+    return { name: text2, displayText: text2 };
+  }
   function fallbackDetailItems(attributes, key) {
     return asArray4(attributes[key]).map((item) => normalizeDetailItem(item)).filter((item) => Boolean(item));
   }
   function collectCompartments(node) {
     const attributes = node.attributes ?? {};
-    const typedByName = asString4(attributes.partType) || asString4(attributes.type) || asString4(attributes.typedBy) || asString4(attributes.typing) || null;
+    const typedByName = asString4(attributes.typedByName) || asString4(attributes.partType) || asString4(attributes.type) || asString4(attributes.typedBy) || asString4(attributes.typing) || null;
     const directAttributes = detailItems(attributes, "generalViewDirectAttributes");
     const directParts = detailItems(attributes, "generalViewDirectParts");
     const directPorts = detailItems(attributes, "generalViewDirectPorts");
@@ -5374,10 +5651,32 @@ var Spec42HeadlessRendererBundle = (() => {
       ...detailItems(attributes, "imports")
     ];
     const collapsibleSections = [];
+    const typedCompartments = asArray4(attributes.typedCompartments);
+    const titleFor = (kind) => kind ? kind[0].toUpperCase() + kind.slice(1) : "Members";
+    for (const raw of typedCompartments) {
+      if (!raw || typeof raw !== "object") continue;
+      const compartment = raw;
+      const kind = asString4(compartment.kind, "members");
+      const inherited = asString4(compartment.provenance) === "inherited";
+      const items = asArray4(compartment.members).map((member) => {
+        const record = member && typeof member === "object" ? member : {};
+        const name = asString4(record.name, "Unnamed");
+        const typeName = asString4(record.typeName);
+        return normalizeDetailItem({ name, typeName, displayText: typeName ? `${name} : ${typeName}` : name });
+      }).filter((item) => Boolean(item));
+      if (items.length > 0) {
+        collapsibleSections.push({
+          key: `${inherited ? "inherited" : "direct"}-${kind}`,
+          title: titleFor(kind),
+          items,
+          collapsed: inherited
+        });
+      }
+    }
     if (inheritedAttributes.length > 0) {
       collapsibleSections.push({
         key: "inherited-attributes",
-        title: "Inherited Attributes",
+        title: "Attributes",
         items: inheritedAttributes,
         collapsed: true
       });
@@ -5385,7 +5684,7 @@ var Spec42HeadlessRendererBundle = (() => {
     if (inheritedParts.length > 0) {
       collapsibleSections.push({
         key: "inherited-parts",
-        title: "Inherited Parts",
+        title: "Parts",
         items: inheritedParts,
         collapsed: true
       });
@@ -5406,67 +5705,322 @@ var Spec42HeadlessRendererBundle = (() => {
         collapsed: true
       });
     }
+    const sectionState = attributes.compartmentSectionState;
+    const resolvedSections = sectionState && typeof sectionState === "object" ? collapsibleSections.map((section) => {
+      const state = sectionState[section.key];
+      return typeof state === "boolean" ? { ...section, collapsed: !state } : section;
+    }) : collapsibleSections;
     return {
-      header: { stereotype: node.kind.toLowerCase() || "element", name: node.label || "Unnamed" },
+      header: { stereotype: node.kind || "element", name: node.label || "Unnamed" },
       typedByName,
       attributes: directAttributes.length > 0 ? directAttributes : fallbackDetailItems(attributes, "attributes"),
       parts: directParts.length > 0 ? directParts : fallbackDetailItems(attributes, "parts"),
       ports: directPorts.length > 0 ? directPorts : fallbackDetailItems(attributes, "ports"),
-      collapsibleSections
+      collapsibleSections: resolvedSections
     };
   }
-  function computeNodeHeight(compartments, config = {}) {
-    const cfg = { ...DEFAULT_CONFIG, ...config };
-    let height = PADDING * 2;
-    if (cfg.showHeader) {
-      height += HEADER_COMPARTMENT_HEIGHT;
-      if (compartments.typedByName) height += TYPED_BY_HEIGHT;
-    }
-    const hasBodyCompartments = cfg.showAttributes && compartments.attributes.length > 0 || cfg.showParts && compartments.parts.length > 0 || cfg.showPorts && compartments.ports.length > 0 || !!compartments.collapsibleSections?.some((section) => section.items.length > 0) || cfg.showOther && !!compartments.other?.some((section) => section.lines.length > 0);
-    if (cfg.showHeader && hasBodyCompartments) {
-      height += COMPARTMENT_PADDING;
-    }
-    const addCompartment = (items) => {
-      if (items.length === 0) return;
-      const shown = cfg.maxLinesPerCompartment ? Math.min(items.length, cfg.maxLinesPerCompartment) : items.length;
-      height += COMPARTMENT_PADDING * 2 + COMPARTMENT_LABEL_HEIGHT + shown * LINE_HEIGHT + COMPARTMENT_GAP;
-      if (cfg.maxLinesPerCompartment && items.length > cfg.maxLinesPerCompartment) {
-        height += SHOW_MORE_LINE_HEIGHT;
+  function maxChars(availableWidth, fontSize, ratio) {
+    return Math.max(1, Math.floor(availableWidth / (fontSize * ratio)));
+  }
+  function truncateToChars(value, limit) {
+    const text2 = String(value ?? "");
+    if (text2.length <= limit) return text2;
+    if (limit <= 1) return "\u2026";
+    return `${text2.slice(0, limit - 1)}\u2026`;
+  }
+  function wrapElementName(name, limit, maxLines = NAME_MAX_LINES) {
+    const text2 = String(name ?? "").trim();
+    if (!text2) return [""];
+    if (text2.length <= limit || maxLines <= 1) return [truncateToChars(text2, limit)];
+    const segments = [];
+    let current = "";
+    for (let index2 = 0; index2 < text2.length; index2 += 1) {
+      const char = text2[index2];
+      const next = text2[index2 + 1];
+      current += char;
+      const separator = char === " " || char === "_" || char === "." || char === ":" || char === "-";
+      const camelBoundary = next !== void 0 && /[a-z0-9]/.test(char) && /[A-Z]/.test(next);
+      if (separator || camelBoundary) {
+        segments.push(current);
+        current = "";
       }
-    };
-    const addCollapsibleSection = (section) => {
-      if (section.items.length === 0) return;
-      height += COMPARTMENT_PADDING * 2 + COMPARTMENT_LABEL_HEIGHT + COMPARTMENT_GAP;
-      if (!section.collapsed) {
-        const shown = section.showAll || !cfg.maxLinesPerCompartment ? section.items.length : Math.min(section.items.length, cfg.maxLinesPerCompartment);
-        height += shown * LINE_HEIGHT;
-        if (cfg.maxLinesPerCompartment && section.items.length > cfg.maxLinesPerCompartment) {
-          height += SHOW_MORE_LINE_HEIGHT;
-        }
+    }
+    if (current) segments.push(current);
+    const lines = [];
+    let index = 0;
+    while (index < segments.length && lines.length < maxLines) {
+      let line = segments[index];
+      index += 1;
+      while (index < segments.length && line.length + segments[index].length <= limit) {
+        line += segments[index];
+        index += 1;
       }
+      lines.push(line.trimEnd());
+    }
+    const overflowed = index < segments.length;
+    const rendered = lines.map((line) => truncateToChars(line, limit));
+    if (overflowed) {
+      rendered[rendered.length - 1] = truncateToChars(`${lines[lines.length - 1]}\u2026`, limit);
+    }
+    return rendered;
+  }
+  function badgeWidthFor(text2) {
+    return Math.max(BADGE_MIN_WIDTH, 10 + text2.length * 6);
+  }
+  function layoutNodeHeader(compartments, input) {
+    const state = input.state ?? {};
+    const hiddenCount = state.hiddenRelationshipCount ?? 0;
+    const badgeText = hiddenCount > 0 ? String(hiddenCount) : null;
+    const hasDisclosure = state.disclosure === "expanded" || state.disclosure === "collapsed";
+    const controlReserve = hasDisclosure ? CONTROL_EDGE_INSET + DISCLOSURE_TARGET_SIZE + 2 : 0;
+    const badgeReserve = badgeText ? CONTROL_EDGE_INSET + badgeWidthFor(badgeText) + 2 : 0;
+    const gutter = Math.max(controlReserve, badgeReserve, HEADER_PADDING_X);
+    const textLeft = gutter;
+    const textRight = Math.max(textLeft + 1, input.width - gutter);
+    const availableText = textRight - textLeft;
+    const nameLines = wrapElementName(
+      compartments.header.name || "Unnamed",
+      maxChars(availableText, NAME_FONT_SIZE, AVERAGE_GLYPH_RATIO_BOLD)
+    );
+    const typingRaw = compartments.typedByName ? `: ${compartments.typedByName}` : null;
+    const typingText = typingRaw ? truncateToChars(typingRaw, maxChars(availableText, TYPING_FONT_SIZE, AVERAGE_GLYPH_RATIO_REGULAR)) : null;
+    const contentHeight = HEADER_PADDING_TOP + STEREOTYPE_LINE_HEIGHT + nameLines.length * NAME_LINE_HEIGHT + (typingText ? TYPING_LINE_HEIGHT : 0) + HEADER_PADDING_BOTTOM;
+    const height = Math.max(contentHeight, DISCLOSURE_TARGET_SIZE + 4);
+    const stereotypeBaseline = HEADER_PADDING_TOP + STEREOTYPE_LINE_HEIGHT - 3;
+    const nameBaselines = nameLines.map(
+      (_line, index) => HEADER_PADDING_TOP + STEREOTYPE_LINE_HEIGHT + (index + 1) * NAME_LINE_HEIGHT - 4
+    );
+    const typingBaseline = typingText ? HEADER_PADDING_TOP + STEREOTYPE_LINE_HEIGHT + nameLines.length * NAME_LINE_HEIGHT + TYPING_LINE_HEIGHT - 3 : null;
+    const disclosureTarget = hasDisclosure ? {
+      x: CONTROL_EDGE_INSET,
+      y: (height - DISCLOSURE_TARGET_SIZE) / 2,
+      width: DISCLOSURE_TARGET_SIZE,
+      height: DISCLOSURE_TARGET_SIZE
+    } : null;
+    const badge = badgeText ? {
+      x: input.width - CONTROL_EDGE_INSET - badgeWidthFor(badgeText),
+      y: (height - BADGE_HEIGHT) / 2,
+      width: badgeWidthFor(badgeText),
+      height: BADGE_HEIGHT,
+      text: badgeText
+    } : null;
+    return {
+      height,
+      centerX: input.width / 2,
+      textLeft,
+      textRight,
+      stereotypeBaseline,
+      nameLines,
+      nameBaselines,
+      typingText,
+      typingBaseline,
+      disclosureTarget,
+      badge
     };
-    if (cfg.showAttributes) addCompartment(compartments.attributes);
-    if (cfg.showParts) addCompartment(compartments.parts);
-    if (cfg.showPorts) addCompartment(compartments.ports);
+  }
+  function compartmentSections(compartments, cfg) {
+    const sections = [];
+    if (cfg.showAttributes && compartments.attributes.length > 0) {
+      sections.push({ key: "attributes", title: "Attributes", items: compartments.attributes });
+    }
+    if (cfg.showParts && compartments.parts.length > 0) {
+      sections.push({ key: "parts", title: "Parts", items: compartments.parts });
+    }
+    if (cfg.showPorts && compartments.ports.length > 0) {
+      sections.push({ key: "ports", title: "Ports", items: compartments.ports });
+    }
     for (const section of compartments.collapsibleSections ?? []) {
-      addCollapsibleSection(section);
+      if (section.items.length > 0) sections.push(section);
     }
-    if (cfg.showOther && compartments.other?.length) {
-      for (const section of compartments.other) {
-        const shown = cfg.maxLinesPerCompartment ? Math.min(section.lines.length, cfg.maxLinesPerCompartment) : section.lines.length;
-        height += COMPARTMENT_PADDING * 2 + COMPARTMENT_LABEL_HEIGHT + shown * LINE_HEIGHT + COMPARTMENT_GAP;
+    if (cfg.showOther) {
+      for (const section of compartments.other ?? []) {
+        if (section.lines.length === 0) continue;
+        sections.push({
+          key: `other:${section.title}`,
+          title: section.title,
+          items: section.lines.map((line) => lineToDetailItem(line))
+        });
       }
     }
-    return Math.max(60, height);
+    return sections;
   }
-  function truncate(value, max2) {
-    return value.length > max2 ? `${value.slice(0, max2 - 2)}..` : value;
+  function layoutSysMLNode(compartments, input) {
+    const cfg = { ...DEFAULT_CONFIG, ...input.config ?? {} };
+    const inset = input.strokeWidthPx / 2;
+    const header = cfg.showHeader ? layoutNodeHeader(compartments, input) : {
+      height: 0,
+      centerX: input.width / 2,
+      textLeft: inset,
+      textRight: input.width - inset,
+      stereotypeBaseline: 0,
+      nameLines: [],
+      nameBaselines: [],
+      typingText: null,
+      typingBaseline: null,
+      disclosureTarget: null,
+      badge: null
+    };
+    const sections = compartmentSections(compartments, cfg);
+    const blocks = [];
+    let cursor = header.height;
+    for (const section of sections) {
+      const collapsible = Boolean(section.collapsed !== void 0);
+      const collapsed = Boolean(section.collapsed);
+      const limit = section.showAll || !cfg.maxLinesPerCompartment ? section.items.length : Math.min(section.items.length, cfg.maxLinesPerCompartment);
+      const shownItems = collapsed ? [] : section.items.slice(0, limit);
+      const overflowCount = collapsed ? 0 : section.items.length - shownItems.length;
+      const labelTop = cursor + COMPARTMENT_PADDING;
+      const labelBaseline = labelTop + COMPARTMENT_LABEL_HEIGHT - 5;
+      const disclosureBox = collapsible ? {
+        x: PADDING,
+        y: labelTop + (COMPARTMENT_LABEL_HEIGHT - DISCLOSURE_BOX_SIZE) / 2 - 1,
+        width: DISCLOSURE_BOX_SIZE,
+        height: DISCLOSURE_BOX_SIZE
+      } : null;
+      const labelTextX = collapsible ? PADDING + DISCLOSURE_BOX_SIZE + 5 : PADDING;
+      const itemTop = labelTop + COMPARTMENT_LABEL_HEIGHT;
+      const itemBaselines = shownItems.map((_item, index) => itemTop + (index + 1) * LINE_HEIGHT - 3);
+      const overflowBaseline = overflowCount > 0 ? itemTop + shownItems.length * LINE_HEIGHT + OVERFLOW_LINE_HEIGHT - 3 : null;
+      const height = COMPARTMENT_PADDING + COMPARTMENT_LABEL_HEIGHT + shownItems.length * LINE_HEIGHT + (overflowCount > 0 ? OVERFLOW_LINE_HEIGHT : 0) + COMPARTMENT_PADDING;
+      blocks.push({
+        key: section.key,
+        title: section.title,
+        collapsible,
+        collapsed,
+        totalItems: section.items.length,
+        shownItems,
+        overflowCount,
+        dividerY: cursor,
+        labelBaseline,
+        labelTextX,
+        itemBaselines,
+        overflowBaseline,
+        labelRegion: {
+          // Inset past the body stroke so a focus ring on the row never sits on the node border.
+          x: inset + CONTROL_EDGE_INSET,
+          y: cursor + 1,
+          width: Math.max(0, input.width - (inset + CONTROL_EDGE_INSET) * 2),
+          height: COMPARTMENT_PADDING + COMPARTMENT_LABEL_HEIGHT
+        },
+        disclosureBox,
+        height
+      });
+      cursor += height;
+    }
+    return {
+      header,
+      blocks,
+      showHeaderFill: blocks.length > 0,
+      height: Math.max(cursor, header.height, DISCLOSURE_TARGET_SIZE + 4)
+    };
   }
+  var NODE_WIDTH_MIN = 200;
+  var NODE_WIDTH_MAX = 320;
+  function computeNodeWidth(compartments, config = {}, state) {
+    const cfg = { ...DEFAULT_CONFIG, ...config };
+    const hiddenCount = state?.hiddenRelationshipCount ?? 0;
+    const badgeText = hiddenCount > 0 ? String(hiddenCount) : null;
+    const hasDisclosure = state?.disclosure === "expanded" || state?.disclosure === "collapsed";
+    const gutter = Math.max(
+      hasDisclosure ? CONTROL_EDGE_INSET + DISCLOSURE_TARGET_SIZE + 2 : 0,
+      badgeText ? CONTROL_EDGE_INSET + badgeWidthFor(badgeText) + 2 : 0,
+      HEADER_PADDING_X
+    );
+    const name = compartments.header.name || "Unnamed";
+    const perNameLine = Math.ceil(name.length / NAME_MAX_LINES);
+    const headerContent = Math.max(
+      perNameLine * NAME_FONT_SIZE * AVERAGE_GLYPH_RATIO_BOLD,
+      formatStereotype(compartments.header.stereotype).length * STEREOTYPE_FONT_SIZE * AVERAGE_GLYPH_RATIO_REGULAR,
+      compartments.typedByName ? (compartments.typedByName.length + 2) * TYPING_FONT_SIZE * AVERAGE_GLYPH_RATIO_REGULAR : 0
+    );
+    let widest = gutter * 2 + headerContent;
+    for (const section of compartmentSections(compartments, cfg)) {
+      const labelWidth = PADDING + DISCLOSURE_BOX_SIZE + 5 + section.title.length * COMPARTMENT_FONT_SIZE * AVERAGE_GLYPH_RATIO_BOLD + PADDING;
+      widest = Math.max(widest, labelWidth);
+      if (section.collapsed) continue;
+      const limit = section.showAll || !cfg.maxLinesPerCompartment ? section.items.length : Math.min(section.items.length, cfg.maxLinesPerCompartment);
+      for (const item of section.items.slice(0, limit)) {
+        widest = Math.max(
+          widest,
+          PADDING * 2 + 4 + item.displayText.length * COMPARTMENT_FONT_SIZE * AVERAGE_GLYPH_RATIO_REGULAR
+        );
+      }
+    }
+    const rounded = Math.ceil(widest / 2) * 2;
+    return Math.min(NODE_WIDTH_MAX, Math.max(NODE_WIDTH_MIN, rounded));
+  }
+  function computeNodeHeight(compartments, config = {}, input) {
+    return layoutSysMLNode(compartments, {
+      width: input?.width ?? 200,
+      strokeWidthPx: input?.strokeWidthPx ?? 2,
+      config,
+      state: input?.state
+    }).height;
+  }
+  var NOTATION_KEYWORDS = {
+    PartDefinition: "part def",
+    PartUsage: "part",
+    PortDefinition: "port def",
+    PortUsage: "port",
+    AttributeDefinition: "attribute def",
+    AttributeUsage: "attribute",
+    ItemDefinition: "item def",
+    ItemUsage: "item",
+    OccurrenceDefinition: "occurrence def",
+    OccurrenceUsage: "occurrence",
+    ConnectionDefinition: "connection def",
+    ConnectionUsage: "connection",
+    InterfaceDefinition: "interface def",
+    InterfaceUsage: "interface",
+    AllocationDefinition: "allocation def",
+    AllocationUsage: "allocation",
+    ActionDefinition: "action def",
+    ActionUsage: "action",
+    StateDefinition: "state def",
+    StateUsage: "state",
+    CalculationDefinition: "calc def",
+    CalculationUsage: "calc",
+    ConstraintDefinition: "constraint def",
+    ConstraintUsage: "constraint",
+    RequirementDefinition: "requirement def",
+    RequirementUsage: "requirement",
+    ConcernDefinition: "concern def",
+    ConcernUsage: "concern",
+    CaseDefinition: "case def",
+    CaseUsage: "case",
+    AnalysisCaseDefinition: "analysis def",
+    AnalysisCaseUsage: "analysis",
+    VerificationCaseDefinition: "verification def",
+    VerificationCaseUsage: "verification",
+    UseCaseDefinition: "use case def",
+    UseCaseUsage: "use case",
+    ViewDefinition: "view def",
+    ViewUsage: "view",
+    ViewpointDefinition: "viewpoint def",
+    ViewpointUsage: "viewpoint",
+    RenderingDefinition: "rendering def",
+    RenderingUsage: "rendering",
+    MetadataDefinition: "metadata def",
+    MetadataUsage: "metadata",
+    ReferenceUsage: "ref"
+  };
   function formatStereotype(type2) {
-    return `\xAB${type2.replace(/_/g, " ")}\xBB`;
+    return `\xAB${NOTATION_KEYWORDS[type2] ?? type2.replace(/_/g, " ")}\xBB`;
+  }
+  function disclosureGlyphPaths(box, expanded) {
+    const thickness = Math.max(1.4, box.width * 0.14);
+    const arm = box.width * 0.54;
+    const cx = box.x + box.width / 2;
+    const cy = box.y + box.height / 2;
+    const horizontal = `M${cx - arm / 2},${cy - thickness / 2}h${arm}v${thickness}h${-arm}Z`;
+    if (expanded) return [horizontal];
+    const vertical = `M${cx - thickness / 2},${cy - arm / 2}v${arm}h${thickness}v${-arm}Z`;
+    return [horizontal, vertical];
+  }
+  function appendTitle(selection2, text2) {
+    selection2.append("title").text(text2);
   }
   function renderSysMLNode(parent, compartments, options) {
-    const cfg = { ...DEFAULT_CONFIG, ...options.config ?? {} };
     const theme = options.theme;
     const nodeFill = theme?.nodeFill ?? "var(--vscode-editor-background)";
     const panelBackground = theme?.panelBackground ?? "var(--vscode-button-secondaryBackground)";
@@ -5474,53 +6028,133 @@ var Spec42HeadlessRendererBundle = (() => {
     const textSecondary = theme?.textSecondary ?? "var(--vscode-descriptionForeground)";
     const divider = theme?.divider ?? "var(--vscode-panel-border)";
     const highlight = theme?.highlight ?? "#FFD700";
-    const chrome = options.chrome ?? resolveNodeChrome(options.kind ?? "", {
-      isDefinition: options.isDefinition,
-      isReference: options.isReference
+    const controlStroke = theme?.controlStroke ?? textSecondary;
+    const controlFill = theme?.controlFill ?? nodeFill;
+    const controlForeground = theme?.controlForeground ?? textPrimary;
+    const badgeFill = theme?.badgeFill ?? panelBackground;
+    const badgeText = theme?.badgeText ?? textPrimary;
+    const chrome = options.chrome ?? resolveNodeChrome(options.isReference ? "reference-usage" : options.isDefinition ? "definition" : "unsupported");
+    const body = nodeBodyChromeStyle(chrome, { selected: options.selected, generalView: true });
+    const layout = layoutSysMLNode(compartments, {
+      width: options.width,
+      strokeWidthPx: body.strokeWidthPx,
+      config: options.config,
+      state: options.state
     });
+    const span = nodeInnerSpan(options.width, body.strokeWidthPx);
     const node = parent.append("g").attr(
       "class",
       `${options.nodeClass}${chrome.nodeClassSuffix}${options.selected ? " is-selected" : ""}`
     ).attr("transform", `translate(${options.x},${options.y})`).attr("data-element-name", options.dataElementName);
-    const body = nodeBodyChromeStyle(chrome, { selected: options.selected, generalView: true });
     node.append("rect").attr("width", options.width).attr("height", options.height).attr("rx", body.cornerRadius).attr("class", "graph-node-background sysml-node-bg").attr("data-original-stroke", options.strokeColor).attr("data-original-width", `${body.strokeWidthPx}px`).style("fill", nodeFill).style("stroke", options.selected ? highlight : options.strokeColor).style("stroke-width", `${body.strokeWidthPx}px`).style("stroke-dasharray", body.strokeDasharray);
-    const headerHeight = HEADER_COMPARTMENT_HEIGHT + (compartments.typedByName ? TYPED_BY_HEIGHT : 0);
-    const headerRx = body.headerCornerRadius;
-    node.append("rect").attr("y", 0).attr("width", options.width).attr("height", headerHeight).attr("rx", headerRx).attr("class", "sysml-header-compartment").style("fill", panelBackground);
-    node.append("text").attr("x", options.width / 2).attr("y", 17).attr("text-anchor", "middle").text(formatStereotype(compartments.header.stereotype)).style("font-size", "9px").style("fill", options.strokeColor);
-    node.append("text").attr("class", "node-name-text viz-node-name").attr("x", options.width / 2).attr("y", 31).attr("text-anchor", "middle").text(truncate(compartments.header.name, 26)).style("font-size", "11px").style("font-weight", "bold").style("fill", textPrimary);
-    if (compartments.typedByName) {
-      node.append("text").attr("x", options.width / 2).attr("y", 43).attr("text-anchor", "middle").text(`: ${truncate(compartments.typedByName, 22)}`).style("font-size", "10px").style("font-style", "italic").style("fill", options.strokeColor);
+    const header = layout.header;
+    if (layout.showHeaderFill) {
+      node.append("path").attr("class", "sysml-header-compartment").attr("d", headerFillPath(options.width, header.height, body.cornerRadius, body.strokeWidthPx)).style("fill", panelBackground);
     }
-    let contentY = headerHeight + COMPARTMENT_PADDING;
-    const renderCompartment = (title, items, collapsed = false) => {
-      if (items.length === 0) return;
-      const limit = cfg.maxLinesPerCompartment ? Math.min(items.length, cfg.maxLinesPerCompartment) : items.length;
-      const shownItems = collapsed ? [] : items.slice(0, limit);
-      node.append("line").attr("x1", PADDING).attr("y1", contentY).attr("x2", options.width - PADDING).attr("y2", contentY).attr("class", "sysml-compartment-divider").style("stroke", divider).style("stroke-width", "1px");
-      contentY += 4;
-      node.append("text").attr("x", PADDING).attr("y", contentY + 9).text(collapsed ? `> ${title}` : title).style("font-size", "9px").style("font-weight", "bold").style("fill", textSecondary);
-      contentY += COMPARTMENT_LABEL_HEIGHT;
-      for (const item of shownItems) {
-        node.append("text").attr("x", PADDING).attr("y", contentY + 9).text(truncate(item.displayText, 32)).style("font-size", "9px").style("fill", textSecondary).append("title").text(item.declaredIn ? `${item.displayText} (from ${item.declaredIn})` : item.displayText);
-        contentY += LINE_HEIGHT;
+    node.append("text").attr("class", "sysml-node-stereotype").attr("x", header.centerX).attr("y", header.stereotypeBaseline).attr("text-anchor", "middle").text(formatStereotype(compartments.header.stereotype)).style("font-size", `${STEREOTYPE_FONT_SIZE}px`).style("fill", textSecondary);
+    const nameGroup = node.append("g").attr("class", "node-name-text viz-node-name");
+    header.nameLines.forEach((line, index) => {
+      nameGroup.append("text").attr("x", header.centerX).attr("y", header.nameBaselines[index]).attr("text-anchor", "middle").text(line).style("font-size", `${NAME_FONT_SIZE}px`).style("font-weight", "600").style("fill", textPrimary);
+    });
+    appendTitle(nameGroup, compartments.header.name);
+    if (header.typingText && header.typingBaseline !== null) {
+      const typing = node.append("text").attr("class", "sysml-node-typing").attr("x", header.centerX).attr("y", header.typingBaseline).attr("text-anchor", "middle").text(header.typingText).style("font-size", `${TYPING_FONT_SIZE}px`).style("font-style", "italic").style("fill", textSecondary);
+      appendTitle(typing, `: ${compartments.typedByName ?? ""}`);
+    }
+    if (header.disclosureTarget && options.disclosure) {
+      const target = header.disclosureTarget;
+      const binding = options.disclosure;
+      const box = {
+        x: target.x + (target.width - DISCLOSURE_BOX_SIZE) / 2,
+        y: target.y + (target.height - DISCLOSURE_BOX_SIZE) / 2,
+        width: DISCLOSURE_BOX_SIZE,
+        height: DISCLOSURE_BOX_SIZE
+      };
+      const control = node.append("g").attr("class", "general-node-toggle sysml-disclosure").attr("role", "button").attr("tabindex", 0).attr("aria-label", binding.label).attr("aria-expanded", binding.expanded ? "true" : "false").attr("data-disclosure-state", binding.expanded ? "expanded" : "collapsed");
+      appendTitle(control, binding.tooltip);
+      control.append("rect").attr("class", "sysml-disclosure-target").attr("x", target.x).attr("y", target.y).attr("width", target.width).attr("height", target.height).attr("rx", 4).style("fill", "transparent").style("pointer-events", "all");
+      control.append("rect").attr("class", "sysml-disclosure-box").attr("x", box.x).attr("y", box.y).attr("width", box.width).attr("height", box.height).attr("rx", 2).style("fill", controlFill).style("stroke", controlStroke).style("stroke-width", "1px");
+      for (const d of disclosureGlyphPaths(box, binding.expanded)) {
+        control.append("path").attr("class", "sysml-disclosure-glyph").attr("d", d).style("fill", controlForeground);
       }
-      if (!collapsed && cfg.maxLinesPerCompartment && items.length > cfg.maxLinesPerCompartment) {
-        node.append("text").attr("x", PADDING).attr("y", contentY + 9).text(`+${items.length - cfg.maxLinesPerCompartment} more`).style("font-size", "9px").style("font-weight", "bold").style("fill", options.strokeColor);
-        contentY += SHOW_MORE_LINE_HEIGHT;
+      control.on("click", (event) => {
+        event.stopPropagation?.();
+        binding.onToggle(event);
+      });
+      control.on("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " " && event.key !== "Spacebar") return;
+        event.preventDefault?.();
+        event.stopPropagation?.();
+        binding.onToggle(event);
+      });
+    }
+    if (header.badge) {
+      const badge = header.badge;
+      const group = node.append("g").attr("class", "general-hidden-relationships sysml-badge").attr("role", "img").attr("aria-label", options.hiddenRelationshipTooltip ?? `${badge.text} hidden relationships`);
+      appendTitle(group, options.hiddenRelationshipTooltip ?? `${badge.text} hidden relationships`);
+      group.append("rect").attr("x", badge.x).attr("y", badge.y).attr("width", badge.width).attr("height", badge.height).attr("rx", badge.height / 2).style("fill", badgeFill).style("stroke", divider).style("stroke-width", "1px");
+      group.append("text").attr("x", badge.x + badge.width / 2).attr("y", badge.y + badge.height - 4.5).attr("text-anchor", "middle").text(badge.text).style("font-size", "9px").style("font-weight", "600").style("fill", badgeText);
+    }
+    const itemChars = maxChars(
+      Math.max(1, options.width - PADDING * 2 - 4),
+      COMPARTMENT_FONT_SIZE,
+      AVERAGE_GLYPH_RATIO_REGULAR
+    );
+    for (const block of layout.blocks) {
+      node.append("line").attr("x1", span.x1).attr("y1", block.dividerY).attr("x2", span.x2).attr("y2", block.dividerY).attr("class", "sysml-compartment-divider").style("stroke", divider).style("stroke-width", "1px");
+      const labelGroup = block.collapsible ? node.append("g").attr("class", "sysml-compartment-label sysml-disclosure sysml-compartment-toggle").attr("role", "button").attr("tabindex", 0).attr("aria-expanded", block.collapsed ? "false" : "true").attr("data-compartment-key", block.key).attr(
+        "aria-label",
+        options.compartmentDisclosure?.label(block) ?? `${block.collapsed ? "Show" : "Hide"} ${block.title}`
+      ) : node.append("g").attr("class", "sysml-compartment-label").attr("data-compartment-key", block.key);
+      appendTitle(
+        labelGroup,
+        block.collapsible ? `${block.title} \u2014 ${block.totalItems} member${block.totalItems === 1 ? "" : "s"}` : `${block.title} \u2014 ${block.totalItems} member${block.totalItems === 1 ? "" : "s"}`
+      );
+      if (block.collapsible) {
+        labelGroup.append("rect").attr("class", "sysml-disclosure-target").attr("x", block.labelRegion.x).attr("y", block.labelRegion.y).attr("width", block.labelRegion.width).attr("height", block.labelRegion.height).attr("rx", 3).style("fill", "transparent").style("pointer-events", "all");
       }
-      contentY += COMPARTMENT_PADDING + COMPARTMENT_GAP;
-    };
-    if (cfg.showAttributes) renderCompartment("Attributes", compartments.attributes);
-    if (cfg.showParts) renderCompartment("Parts", compartments.parts);
-    if (cfg.showPorts) renderCompartment("Ports", compartments.ports);
-    for (const section of compartments.collapsibleSections ?? []) {
-      renderCompartment(section.title, section.items, Boolean(section.collapsed));
+      if (block.disclosureBox) {
+        labelGroup.append("rect").attr("class", "sysml-disclosure-box").attr("x", block.disclosureBox.x).attr("y", block.disclosureBox.y).attr("width", block.disclosureBox.width).attr("height", block.disclosureBox.height).attr("rx", 2).style("fill", controlFill).style("stroke", controlStroke).style("stroke-width", "1px");
+        for (const d of disclosureGlyphPaths(block.disclosureBox, !block.collapsed)) {
+          labelGroup.append("path").attr("class", "sysml-disclosure-glyph").attr("d", d).style("fill", controlForeground);
+        }
+      }
+      labelGroup.append("text").attr("x", block.labelTextX).attr("y", block.labelBaseline).text(block.title).style("font-size", `${COMPARTMENT_FONT_SIZE}px`).style("font-weight", "600").style("letter-spacing", "0.02em").style("fill", textSecondary).style("pointer-events", "none");
+      if (block.collapsible && options.compartmentDisclosure) {
+        const binding = options.compartmentDisclosure;
+        labelGroup.on("click", (event) => {
+          event.stopPropagation?.();
+          binding.onToggle(block.key, event, !block.collapsed);
+        });
+        labelGroup.on("keydown", (event) => {
+          if (event.key !== "Enter" && event.key !== " " && event.key !== "Spacebar") return;
+          event.preventDefault?.();
+          event.stopPropagation?.();
+          binding.onToggle(block.key, event, !block.collapsed);
+        });
+      }
+      block.shownItems.forEach((item, index) => {
+        const text2 = node.append("text").attr("class", "sysml-compartment-item").attr("x", PADDING).attr("y", block.itemBaselines[index]).text(truncateToChars(item.displayText, itemChars)).style("font-size", `${COMPARTMENT_FONT_SIZE}px`).style("fill", textSecondary);
+        appendTitle(text2, item.declaredIn ? `${item.displayText} (from ${item.declaredIn})` : item.displayText);
+      });
+      if (block.overflowCount > 0 && block.overflowBaseline !== null) {
+        const overflow = node.append("text").attr("class", "sysml-compartment-overflow").attr("x", PADDING).attr("y", block.overflowBaseline).text(`+${block.overflowCount} more`).style("font-size", `${COMPARTMENT_FONT_SIZE}px`).style("font-style", "italic").style("fill", textSecondary);
+        appendTitle(overflow, `${block.overflowCount} further ${block.title.toLowerCase()} not shown`);
+      }
     }
     return node;
   }
+  function nodeChromeStateFromAttributes(attributes) {
+    const attrs = attributes ?? {};
+    const disclosure = attrs.disclosure;
+    const hidden = attrs.hiddenRelationshipCount;
+    return {
+      disclosure: disclosure === "expanded" || disclosure === "collapsed" ? disclosure : null,
+      hiddenRelationshipCount: typeof hidden === "number" && hidden > 0 ? hidden : 0
+    };
+  }
 
-  // ../shared/diagram-renderer/src/views/standard-views-render.ts
+  // diagram-renderer/src/views/standard-views-render.ts
   function visibilityGlyph(visibility) {
     switch (visibility) {
       case "Public":
@@ -5626,13 +6260,14 @@ var Spec42HeadlessRendererBundle = (() => {
     const columns = columnViews.length > 0 ? columnViews.map((column) => ({
       key: asString(column.key, "name"),
       label: asString(column.label, "Column"),
+      notationStatus: asString(column.notationStatus),
       width: 220
     })) : [
-      { key: "name", label: "Name", width: 220 },
-      { key: "kind", label: "Kind", width: 150 },
-      { key: "attributeCount", label: "Attrs", width: 80 },
-      { key: "partCount", label: "Parts", width: 80 },
-      { key: "portCount", label: "Ports", width: 80 }
+      { key: "name", label: "Name", notationStatus: "", width: 220 },
+      { key: "kind", label: "Kind", notationStatus: "", width: 150 },
+      { key: "attributeCount", label: "Attrs", notationStatus: "", width: 80 },
+      { key: "partCount", label: "Parts", notationStatus: "", width: 80 },
+      { key: "portCount", label: "Ports", notationStatus: "", width: 80 }
     ];
     const tableWidth = columns.reduce((sum, column) => sum + column.width, 0);
     const rowHeight = 30;
@@ -5653,7 +6288,7 @@ var Spec42HeadlessRendererBundle = (() => {
       const group = table.append("g").attr("class", "grid-row").attr("data-node-id", preparedNode?.id ?? asString(row.id, `grid-row-${rowIndex}`)).attr("transform", `translate(0,${(rowIndex + 1) * rowHeight})`);
       columns.forEach((column) => {
         group.append("rect").attr("class", "grid-cell").attr("x", x2).attr("width", column.width).attr("height", rowHeight).style("fill", rowIndex % 2 === 0 ? ctx.theme.nodeFill : ctx.theme.canvasBackground).style("stroke", ctx.theme.nodeBorder).style("stroke-width", "1px");
-        group.append("text").attr("x", x2 + 10).attr("y", 20).style("font-size", "10px").style("fill", ctx.theme.textPrimary).text(truncateLabel(asString(row[column.key]), column.width > 100 ? 28 : 8));
+        group.append("text").attr("data-notation-status", column.notationStatus || null).attr("x", x2 + 10).attr("y", 20).style("font-size", "10px").style("fill", ctx.theme.textPrimary).text(truncateLabel(asString(row[column.key]), column.width > 100 ? 28 : 8));
         x2 += column.width;
       });
       if (preparedNode) {
@@ -5737,7 +6372,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return { minX: 0, minY: 0, maxX: left + width, maxY: top + height };
   }
 
-  // ../shared/diagram-renderer/src/render/types.ts
+  // diagram-renderer/src/render/types.ts
   var nodeWidth = 200;
   var nodeHeight = 70;
   var ibdNodeWidth = 280;
@@ -5784,7 +6419,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return Math.min(340, Math.max(ibdNodeHeight, headerHeight + contentHeight + portsHeight));
   }
 
-  // ../shared/diagram-renderer/src/render/export.ts
+  // diagram-renderer/src/render/export.ts
   function contentBounds(layout) {
     if (!layout.nodes.length) return { x: 0, y: 0, width: 100, height: 100 };
     const minX = Math.min(...layout.nodes.map((node) => node.x || 0));
@@ -5838,7 +6473,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return new XMLSerializer().serializeToString(clone);
   }
 
-  // ../shared/diagram-renderer/src/render/ibd-route.ts
+  // diagram-renderer/src/render/ibd-route.ts
   function pruneRoutePoints(points) {
     const pruned = [];
     for (const point of points) {
@@ -5975,7 +6610,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return snapRouteEndpoints(bestPoints, sourcePort, targetPort);
   }
 
-  // ../shared/diagram-renderer/src/render/interconnection-layout-dto.ts
+  // diagram-renderer/src/render/interconnection-layout-dto.ts
   function createInterconnectionLayoutBuildState() {
     return { nodes: /* @__PURE__ */ new Map(), containers: [], diagnostics: [] };
   }
@@ -6009,7 +6644,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/render/ibd-port-label.ts
+  // diagram-renderer/src/render/ibd-port-label.ts
   var IBD_PORT_LABEL_FONT_SIZE = 8;
   var IBD_PORT_LABEL_HEIGHT = 10;
   var IBD_PORT_LABEL_MAX_LENGTH = 20;
@@ -6025,8 +6660,9 @@ var Spec42HeadlessRendererBundle = (() => {
     return Math.max(12, text2.length * IBD_PORT_LABEL_CHARACTER_WIDTH);
   }
 
-  // ../shared/diagram-renderer/src/render/drawing.ts
-  function truncate2(value, max2) {
+  // diagram-renderer/src/render/drawing.ts
+  var GENERAL_NODE_CONFIG = { maxLinesPerCompartment: 8 };
+  function truncate(value, max2) {
     const text2 = String(value || "");
     return text2.length > max2 ? `${text2.slice(0, max2 - 1)}...` : text2;
   }
@@ -6058,7 +6694,7 @@ var Spec42HeadlessRendererBundle = (() => {
     if (labels.length === 0) return;
     const labelLayer = root2.append("g").attr("class", "viz-edge-labels").style("pointer-events", "none");
     for (const { edge, edgeKind, displayLabel, anchor } of labels) {
-      labelLayer.append("text").attr("class", `viz-edge-label viz-edge-label--${edgeKind}`).attr("data-connector-id", edge.id).attr("x", anchor.x).attr("y", anchor.y).attr("text-anchor", anchor.textAnchor).attr("dy", anchor.dy).attr("fill", theme.textPrimary).attr("font-size", 11).attr("paint-order", "stroke fill").attr("stroke", theme.canvasBackground).attr("stroke-width", 4).attr("stroke-linejoin", "round").text(truncate2(displayLabel, 18));
+      labelLayer.append("text").attr("class", `viz-edge-label viz-edge-label--${edgeKind}`).attr("data-connector-id", edge.id).attr("x", anchor.x).attr("y", anchor.y).attr("text-anchor", anchor.textAnchor).attr("dy", anchor.dy).attr("fill", theme.textPrimary).attr("font-size", 11).attr("paint-order", "stroke fill").attr("stroke", theme.canvasBackground).attr("stroke-width", 4).attr("stroke-linejoin", "round").text(truncate(displayLabel, 18));
     }
   }
   function shouldRenderEdgeLabel(edge, edgeKind, isInterconnectionView) {
@@ -6122,9 +6758,7 @@ var Spec42HeadlessRendererBundle = (() => {
       const isLayoutContainer = Boolean(
         attrs.isSyntheticContainer || attrs.isPackageContainer || attrs._isLayoutContainer
       );
-      const structureClass = resolveNodeChrome(d.kind || "part", {
-        ...typeof attrs.isDefinition === "boolean" ? { isDefinition: attrs.isDefinition } : {},
-        ...typeof attrs.isReference === "boolean" ? { isReference: attrs.isReference } : {},
+      const structureClass = resolveNodeChrome(notationRoleFromAttributes(attrs), {
         isContainer: isLayoutContainer,
         isPackageContainer: Boolean(attrs.isPackageContainer)
       }).structureClass;
@@ -6148,23 +6782,36 @@ var Spec42HeadlessRendererBundle = (() => {
         group.selectAll("*").remove();
         const compartments = d.compartments ?? collectCompartments(d);
         const attrs = d.attributes ?? {};
-        const chrome = resolveNodeChrome(d.kind, {
-          ...typeof attrs.isDefinition === "boolean" ? { isDefinition: attrs.isDefinition } : {},
-          ...typeof attrs.isReference === "boolean" ? { isReference: attrs.isReference } : {}
-        });
+        const chrome = resolveNodeChrome(notationRoleFromAttributes(attrs));
+        const state = nodeChromeStateFromAttributes(attrs);
+        const width = d.width || nodeWidth;
+        const hiddenCount = state.hiddenRelationshipCount ?? 0;
+        const disclosure = options.disclosure;
         renderSysMLNode(group, compartments, {
           x: 0,
           y: 0,
-          width: d.width || nodeWidth,
-          height: d.height || computeNodeHeight(compartments, { maxLinesPerCompartment: 8 }),
+          width,
+          height: d.height ?? computeNodeHeight(compartments, GENERAL_NODE_CONFIG, { width, state }),
           nodeClass: "",
           dataElementName: d.label,
           strokeColor: strokeColorForNode(theme),
           kind: d.kind,
           chrome,
           selected: Boolean(options.selectedNodeId && d.id === options.selectedNodeId),
-          config: { maxLinesPerCompartment: 8 },
-          theme
+          config: GENERAL_NODE_CONFIG,
+          theme,
+          state,
+          disclosure: state.disclosure && disclosure ? {
+            expanded: state.disclosure === "expanded",
+            label: `${state.disclosure === "expanded" ? "Collapse" : "Expand"} ${d.label}`,
+            tooltip: state.disclosure === "expanded" ? `Collapse ${d.label}: hide its nested elements and their relationships.` : `Expand ${d.label}: show its nested elements and their relationships.`,
+            onToggle: () => disclosure.toggleNode(d.id)
+          } : null,
+          compartmentDisclosure: disclosure ? {
+            label: (block) => `${block.collapsed ? "Show" : "Hide"} ${block.title} of ${d.label} (${block.totalItems})`,
+            onToggle: (sectionKey, _event, currentlyExpanded) => disclosure.toggleSection(d.id, sectionKey, currentlyExpanded)
+          } : null,
+          hiddenRelationshipTooltip: hiddenCount > 0 ? `${hiddenCount} relationship${hiddenCount === 1 ? "" : "s"} of nested elements are hidden while ${d.label} is collapsed. Expand it to show them.` : void 0
         });
       });
       return;
@@ -6187,8 +6834,8 @@ var Spec42HeadlessRendererBundle = (() => {
     return;
     groups.append("rect").attr("width", (d) => d.width || nodeWidth).attr("height", (d) => d.height || nodeHeight).attr("rx", 8).attr("fill", "var(--vscode-editor-background, #1e1e1e)").attr("stroke", "var(--vscode-panel-border, #666)").attr("stroke-width", 1.6);
     if (isInterconnectionView) {
-      groups.append("text").attr("class", "viz-node-kind").attr("x", 14).attr("y", 22).attr("text-anchor", "start").attr("fill", "var(--vscode-descriptionForeground, #a8a8a8)").attr("font-size", 11).text((d) => `<<${truncate2(d.kind, 24)}>>`);
-      groups.append("text").attr("class", "viz-node-name").attr("x", 14).attr("y", 44).attr("text-anchor", "start").attr("fill", "var(--vscode-editor-foreground, #d0d0d0)").attr("font-size", 12).text((d) => truncate2(d.label, 34));
+      groups.append("text").attr("class", "viz-node-kind").attr("x", 14).attr("y", 22).attr("text-anchor", "start").attr("fill", "var(--vscode-descriptionForeground, #a8a8a8)").attr("font-size", 11).text((d) => `<<${truncate(d.kind, 24)}>>`);
+      groups.append("text").attr("class", "viz-node-name").attr("x", 14).attr("y", 44).attr("text-anchor", "start").attr("fill", "var(--vscode-editor-foreground, #d0d0d0)").attr("font-size", 12).text((d) => truncate(d.label, 34));
       groups.append("line").attr("x1", 10).attr("x2", (d) => (d.width || ibdNodeWidth) - 10).attr("y1", 56).attr("y2", 56).attr("stroke", "currentColor").attr("opacity", 0.18);
       groups.append("text").attr("class", "viz-node-kind").attr("x", 14).attr("y", 74).attr("text-anchor", "start").attr("fill", "var(--vscode-descriptionForeground, #a8a8a8)").attr("font-size", 10).text((d) => {
         const ports = Array.isArray(d.attributes?.ports) ? d.attributes.ports : [];
@@ -6197,8 +6844,8 @@ var Spec42HeadlessRendererBundle = (() => {
       });
       return;
     }
-    groups.append("text").attr("class", "viz-node-kind").attr("x", nodeWidth / 2).attr("y", 22).attr("text-anchor", "middle").attr("fill", "var(--vscode-descriptionForeground, #a8a8a8)").attr("font-size", 11).text((d) => `<<${truncate2(d.kind, 24)}>>`);
-    groups.append("text").attr("class", "viz-node-name").attr("x", nodeWidth / 2).attr("y", 48).attr("text-anchor", "middle").attr("fill", "var(--vscode-editor-foreground, #d0d0d0)").attr("font-size", 12).text((d) => truncate2(d.label, 30));
+    groups.append("text").attr("class", "viz-node-kind").attr("x", nodeWidth / 2).attr("y", 22).attr("text-anchor", "middle").attr("fill", "var(--vscode-descriptionForeground, #a8a8a8)").attr("font-size", 11).text((d) => `<<${truncate(d.kind, 24)}>>`);
+    groups.append("text").attr("class", "viz-node-name").attr("x", nodeWidth / 2).attr("y", 48).attr("text-anchor", "middle").attr("fill", "var(--vscode-editor-foreground, #d0d0d0)").attr("font-size", 12).text((d) => truncate(d.label, 30));
     groups.append("line").attr("x1", 10).attr("x2", (d) => (d.width || nodeWidth) - 10).attr("y1", 58).attr("y2", 58).attr("stroke", "var(--vscode-panel-border, #666)").attr("opacity", 0.5);
     groups.append("text").attr("class", "viz-node-attrs").attr("x", 12).attr("y", 74).attr("text-anchor", "start").attr("fill", "var(--vscode-descriptionForeground, #a8a8a8)").attr("font-size", 10).text((d) => formatCompartmentSummary(d.attributes));
   }
@@ -6248,7 +6895,7 @@ var Spec42HeadlessRendererBundle = (() => {
       } else if (edgeKind === "connection" || edgeKind === "relationship") {
         path2.attr("stroke", strokeColorForEdge("connection", theme)).attr("stroke-width", 2).style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
       } else {
-        path2.style("marker-start", "url(#ibd-connection-dot)").style("marker-end", "url(#ibd-connection-dot)");
+        path2.attr("data-notation-status", "unsupported").style("stroke-dasharray", "2,4").style("marker-start", "none").style("marker-end", "none");
       }
       return;
     }
@@ -6271,18 +6918,15 @@ var Spec42HeadlessRendererBundle = (() => {
     } else if (edgeKind === "satisfy" || edgeKind === "verify" || edgeKind === "derivation") {
       path2.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "7,4");
     } else {
-      path2.style("marker-end", "url(#general-d3-arrow)");
+      path2.attr("data-notation-status", "unsupported").style("stroke-dasharray", "2,4").style("marker-start", "none").style("marker-end", "none");
     }
   }
   function renderIbdNode(group, node, selected, theme, layoutNode) {
     const attrs = node.attributes ?? {};
-    const kind = (node.kind || "part").toLowerCase();
     const isContainer = Boolean(attrs.isSyntheticContainer) || Boolean(attrs.isPackageContainer) || Boolean(attrs._isLayoutContainer);
     const width = node.width ?? ibdNodeWidth;
     const height = node.height ?? ibdNodeHeight;
-    const chrome = resolveNodeChrome(kind, {
-      ...typeof attrs.isDefinition === "boolean" ? { isDefinition: attrs.isDefinition } : {},
-      ...typeof attrs.isReference === "boolean" ? { isReference: attrs.isReference } : {},
+    const chrome = resolveNodeChrome(notationRoleFromAttributes(attrs), {
       isContainer,
       isPackageContainer: Boolean(attrs.isPackageContainer)
     });
@@ -6301,12 +6945,12 @@ var Spec42HeadlessRendererBundle = (() => {
       drawIbdPorts(group, node, width, headerHeight, theme, layoutNode);
       return;
     }
-    const stereo = kind.includes("part def") ? "part def" : kind.includes("part") ? "part" : (node.kind || "part").replace(/_/g, " ");
+    const stereo = (node.kind || "part").replace(/_/g, " ");
     group.append("text").attr("x", width / 2).attr("y", 17).attr("text-anchor", "middle").text(`\xAB${stereo}\xBB`).style("font-size", "9px").style("fill", theme.textPrimary);
-    group.append("text").attr("class", "node-name-text viz-node-name").attr("x", width / 2).attr("y", 31).attr("text-anchor", "middle").text(truncate2(node.label, 18)).style("font-size", "11px").style("font-weight", "bold").style("fill", theme.textPrimary);
+    group.append("text").attr("class", "node-name-text viz-node-name").attr("x", width / 2).attr("y", 31).attr("text-anchor", "middle").text(truncate(node.label, 18)).style("font-size", "11px").style("font-weight", "bold").style("fill", theme.textPrimary);
     const typedBy = String(attrs.partType || "");
     if (typedBy) {
-      group.append("text").attr("x", width / 2).attr("y", 43).attr("text-anchor", "middle").text(`: ${truncate2(typedBy, 18)}`).style("font-size", "10px").style("font-style", "italic").style("fill", theme.textPrimary);
+      group.append("text").attr("x", width / 2).attr("y", 43).attr("text-anchor", "middle").text(`: ${truncate(typedBy, 18)}`).style("font-size", "10px").style("font-style", "italic").style("fill", theme.textPrimary);
     }
     const contentStartY = typedBy ? 50 : 38;
     const children2 = Array.isArray(attrs.children) ? attrs.children : [];
@@ -6316,7 +6960,7 @@ var Spec42HeadlessRendererBundle = (() => {
       const prefix = childType.includes("attribute") ? "[attr] " : childType.includes("state") ? "[state] " : childType.includes("part") ? "[part] " : "";
       const name = String(childRecord.name || "");
       if (!name) return;
-      group.append("text").attr("x", 6).attr("y", contentStartY + 8 + index * 12).text(truncate2(`${prefix}${name}`, 28)).style("font-size", "9px").style("fill", theme.textSecondary);
+      group.append("text").attr("x", 6).attr("y", contentStartY + 8 + index * 12).text(truncate(`${prefix}${name}`, 28)).style("font-size", "9px").style("fill", theme.textSecondary);
     });
     drawIbdPorts(group, node, width, contentStartY + 20, theme, layoutNode);
   }
@@ -6507,7 +7151,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return { x: 0, y: 0, textAnchor: "middle", dy: "-0.35em" };
   }
 
-  // ../shared/diagram-renderer/src/render/interconnection-elk-input.ts
+  // diagram-renderer/src/render/interconnection-elk-input.ts
   function buildInterconnectionElkBuild(prepared) {
     const nodesById = new Map(prepared.nodes.map((node) => [node.id, node]));
     const childrenByParent = /* @__PURE__ */ new Map();
@@ -6728,28 +7372,33 @@ var Spec42HeadlessRendererBundle = (() => {
     return { elkGraphInput, elkEdges, nodesById, preparedIdForElkId, portDrawOrderFor };
   }
 
-  // ../shared/diagram-renderer/src/render/layout.ts
+  // diagram-renderer/src/render/layout.ts
   var elk = new HeadlessElk();
+  function generalNodeBox(node, compartments) {
+    const state = nodeChromeStateFromAttributes(node.attributes);
+    const width = computeNodeWidth(compartments, { maxLinesPerCompartment: 8 }, state);
+    return {
+      width,
+      height: computeNodeHeight(compartments, { maxLinesPerCompartment: 8 }, { width, state })
+    };
+  }
   function fallbackGeneralLayout(nodes, edges) {
     const columns = Math.max(1, Math.ceil(Math.sqrt(nodes.length)));
     const horizontalGap = 90;
     const verticalGap = 90;
     const nodeData = nodes.map((node) => {
       const compartments = collectCompartments(node);
-      const height = Math.max(
-        nodeHeight,
-        computeNodeHeight(compartments, { maxLinesPerCompartment: 8 })
-      );
-      return { node, compartments, height };
+      return { node, compartments, ...generalNodeBox(node, compartments) };
     });
     const rowHeight = Math.max(nodeHeight, ...nodeData.map(({ height }) => height));
-    const laidOutNodes = nodeData.map(({ node, compartments, height }, index) => {
+    const columnWidth = Math.max(nodeWidth, ...nodeData.map(({ width }) => width));
+    const laidOutNodes = nodeData.map(({ node, compartments, width, height }, index) => {
       return {
         ...node,
         compartments,
-        x: index % columns * (nodeWidth + horizontalGap),
+        x: index % columns * (columnWidth + horizontalGap),
         y: Math.floor(index / columns) * (rowHeight + verticalGap),
-        width: nodeWidth,
+        width,
         height
       };
     });
@@ -6800,15 +7449,10 @@ var Spec42HeadlessRendererBundle = (() => {
       (edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target)
     );
     if (!diagramNodes.length) return { nodes: [], edges: [] };
-    const width = nodeWidth;
-    const height = nodeHeight;
     const leafElkNode = (node) => {
       const compartments = collectCompartments(node);
-      return {
-        id: node.id,
-        width,
-        height: Math.max(height, computeNodeHeight(compartments, { maxLinesPerCompartment: 8 }))
-      };
+      const box = generalNodeBox(node, compartments);
+      return { id: node.id, width: box.width, height: box.height };
     };
     const WIDE_SIBLING_THRESHOLD = 8;
     const chunkedElkChildren = (idPrefix, elkNodes) => {
@@ -7093,7 +7737,28 @@ var Spec42HeadlessRendererBundle = (() => {
     }
   }
 
-  // ../shared/diagram-renderer/src/renderer.ts
+  // diagram-renderer/src/render/node-chrome-style.ts
+  function nodeChromeStyleSheet(theme) {
+    return [
+      ".sysml-disclosure { cursor: pointer; outline: none; }",
+      ".sysml-disclosure .sysml-disclosure-box,",
+      ".sysml-disclosure .sysml-disclosure-glyph { pointer-events: none; }",
+      // The hit target carries an inline `fill: transparent` so it stays invisible even when this
+      // stylesheet is absent (standalone `renderSysMLNode` callers); the hover and focus fills
+      // therefore have to override that inline declaration.
+      `.sysml-disclosure:hover .sysml-disclosure-target { fill: ${theme.controlHoverFill} !important; fill-opacity: 0.55; }`,
+      `.sysml-disclosure:hover .sysml-disclosure-box { fill: ${theme.controlHoverFill}; stroke: ${theme.controlForeground}; }`,
+      `.sysml-disclosure:focus-visible .sysml-disclosure-target { stroke: ${theme.focusRing}; stroke-width: 2px; fill: ${theme.controlHoverFill} !important; fill-opacity: 0.35; }`,
+      `.sysml-disclosure:focus-visible .sysml-disclosure-box { stroke: ${theme.focusRing}; }`,
+      ".sysml-compartment-label text { user-select: none; }",
+      ".viz-node text { user-select: none; }"
+    ].join("\n");
+  }
+  function installNodeChromeStyles(svg, theme) {
+    svg.append("style").attr("class", "sysml-node-chrome-style").text(nodeChromeStyleSheet(theme));
+  }
+
+  // diagram-renderer/src/renderer.ts
   async function renderVisualization(target, prepared, options = {}) {
     const renderStartedAt = Date.now();
     target.innerHTML = "";
@@ -7108,6 +7773,7 @@ var Spec42HeadlessRendererBundle = (() => {
     svg.append("rect").attr("class", "viz-bg").attr("width", width).attr("height", height);
     svg.select(".viz-bg").attr("fill", theme.canvasBackground);
     addMarkers(svg, theme);
+    installNodeChromeStyles(svg, theme);
     const root2 = svg.append("g").attr("class", "viz-root");
     const delegateZoom = options.delegateZoom === true;
     const zoom = zoom_default2().scaleExtent([0.08, 5]).on("start", () => svg.style("cursor", "grabbing")).on("zoom", (event) => {
@@ -7130,6 +7796,7 @@ var Spec42HeadlessRendererBundle = (() => {
     const isInterconnectionView = view === "interconnection-view";
     const isBehaviorView = view === "action-flow-view" || view === "state-transition-view" || view === "sequence-view" || view === "browser-view" || view === "grid-view" || view === "geometry-view";
     let bounds;
+    let generalRenderGeneration = 0;
     if (view === "action-flow-view") {
       addActionFlowMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
       const drawStartedAt = Date.now();
@@ -7171,9 +7838,107 @@ var Spec42HeadlessRendererBundle = (() => {
         drawEdges(root2, layout.edges, isInterconnectionView, theme, layout.interconnectionLayout);
         drawInterconnectionPortOverlays(root2);
       } else {
-        drawGeneralPackageContainers(root2, prepared, layout.nodes, theme);
-        drawEdges(root2, layout.edges, isInterconnectionView, theme);
-        drawNodes(root2, layout.nodes, options, isInterconnectionView, theme);
+        const expanded = /* @__PURE__ */ new Set();
+        const sectionState = /* @__PURE__ */ new Map();
+        const sectionKey = (nodeId, key) => `${nodeId}\0${key}`;
+        const roots = new Set(Array.isArray(prepared.meta?.exposedRoots) ? prepared.meta?.exposedRoots : []);
+        const ownerOf = (node) => {
+          const owner = node.attributes?.owner;
+          return typeof owner === "number" ? `n:${owner}` : void 0;
+        };
+        const owners = new Set(
+          prepared.nodes.map(ownerOf).filter((value) => Boolean(value))
+        );
+        const compartmentSectionStateFor = (nodeId) => {
+          const prefix = `${nodeId}\0`;
+          let state;
+          for (const [key, value] of sectionState) {
+            if (!key.startsWith(prefix)) continue;
+            state = state ?? {};
+            state[key.slice(prefix.length)] = value;
+          }
+          return state;
+        };
+        const visibleProjection = () => {
+          const visible = /* @__PURE__ */ new Set();
+          const visit = (node) => {
+            if (visible.has(node.id)) return true;
+            const owner = ownerOf(node);
+            if (!owner) {
+              if (roots.size === 0 || roots.has(node.id)) visible.add(node.id);
+              return visible.has(node.id);
+            }
+            const parent = prepared.nodes.find((candidate) => candidate.id === owner);
+            if (!parent || !visit(parent) || !expanded.has(owner)) return false;
+            visible.add(node.id);
+            return true;
+          };
+          prepared.nodes.forEach(visit);
+          return {
+            ...prepared,
+            nodes: prepared.nodes.filter((node) => visible.has(node.id)).map((node) => {
+              const isExpanded = expanded.has(node.id);
+              const attributes = { ...node.attributes };
+              if (owners.has(node.id)) {
+                attributes.disclosure = isExpanded ? "expanded" : "collapsed";
+              }
+              if (isExpanded) {
+                const typed = Array.isArray(node.attributes?.typedCompartments) ? node.attributes.typedCompartments : [];
+                attributes.typedCompartments = typed.map((compartment) => {
+                  const members = Array.isArray(compartment.members) ? compartment.members : [];
+                  return {
+                    ...compartment,
+                    members: members.filter((member) => {
+                      const id2 = member && typeof member === "object" ? member.id : void 0;
+                      return !(typeof id2 === "string" && visible.has(id2));
+                    })
+                  };
+                }).filter((compartment) => compartment.members.length > 0);
+              }
+              const sections = compartmentSectionStateFor(node.id);
+              if (sections) attributes.compartmentSectionState = sections;
+              return { ...node, attributes };
+            }),
+            edges: prepared.edges.filter((edge) => visible.has(edge.source) && visible.has(edge.target))
+          };
+        };
+        const disclosure = {
+          toggleNode: (nodeId) => {
+            if (expanded.has(nodeId)) expanded.delete(nodeId);
+            else expanded.add(nodeId);
+            void redrawGeneral({ refocusNodeControl: nodeId });
+          },
+          toggleSection: (nodeId, key, currentlyExpanded) => {
+            sectionState.set(sectionKey(nodeId, key), !currentlyExpanded);
+            void redrawGeneral({ refocusSection: { nodeId, key } });
+          }
+        };
+        const generalOptions = { ...options, disclosure };
+        const restoreFocus = (selector) => {
+          const element = target.querySelector(selector);
+          if (element && typeof element.focus === "function") {
+            element.focus();
+          }
+        };
+        const redrawGeneral = async (focus) => {
+          const generation = ++generalRenderGeneration;
+          const visible = visibleProjection();
+          const nextLayout = await layoutPrepared(visible);
+          if (generation !== generalRenderGeneration) return;
+          root2.selectAll("*").remove();
+          drawGeneralPackageContainers(root2, visible, nextLayout.nodes, theme);
+          drawEdges(root2, nextLayout.edges, false, theme);
+          drawNodes(root2, nextLayout.nodes, generalOptions, false, theme);
+          bounds = contentBounds(nextLayout);
+          if (focus?.refocusNodeControl) {
+            restoreFocus(`[data-node-id="${focus.refocusNodeControl}"] .general-node-toggle`);
+          } else if (focus?.refocusSection) {
+            restoreFocus(
+              `[data-node-id="${focus.refocusSection.nodeId}"] [data-compartment-key="${focus.refocusSection.key}"]`
+            );
+          }
+        };
+        await redrawGeneral();
       }
       options.onPerformance?.("sharedRenderer:layout", {
         view,
@@ -7187,7 +7952,7 @@ var Spec42HeadlessRendererBundle = (() => {
         laidOutNodes: layout.nodes.length,
         laidOutEdges: layout.edges.length
       });
-      bounds = contentBounds(layout);
+      if (isInterconnectionView) bounds = contentBounds(layout);
     }
     let lastFitTransform = identity2;
     const fitView = () => {
@@ -7221,7 +7986,7 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
-  // ../shared/diagram-renderer/src/headless-export.ts
+  // diagram-renderer/src/headless-export.ts
   function preparedViewFromPayload(payload) {
     const prepared = payload.preparedView;
     if (!prepared || typeof prepared !== "object") {

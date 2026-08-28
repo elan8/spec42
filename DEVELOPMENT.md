@@ -336,7 +336,10 @@ cd vscode
 npm run package
 ```
 
-The package prepublish hook stages the example and domain-library content before compiling the extension.
+The package prepublish hook builds and stages the repository-owned diagram Wasm generator, stages
+the example and domain-library content, and then compiles the extension. Packaging therefore
+requires the pinned Rust toolchain and the `wasm32-unknown-unknown` target; the generated Wasm is not
+checked into source control.
 
 ## Performance Checks
 

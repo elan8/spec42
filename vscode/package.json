@@ -617,8 +617,10 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run stage:package-content && npm run compile",
+    "vscode:prepublish": "npm run build:diagram-generator && npm run stage:package-content && npm run build:headless-renderer && npm run compile",
+    "build:diagram-generator": "../scripts/build-repository-generator-plugins.sh",
     "stage:package-content": "node scripts/stage-package-content.js",
+    "build:headless-renderer": "node scripts/build-headless-renderer.js",
     "build:extension": "node scripts/build-extension.js",
     "build:diagram-webview": "node scripts/build-diagram-webview.js",
     "compile": "npm run typecheck && tsc -p ./ && npm run build:extension && npm run build:diagram-webview",
@@ -642,7 +644,8 @@
     "@vscode/test-electron": "^2.4.1",
     "@vscode/vsce": "^3.2.2",
     "esbuild": "^0.24.0",
-    "typescript": "~5.6.0"
+    "typescript": "~5.6.0",
+    "yauzl": "^2.10.0"
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.0",

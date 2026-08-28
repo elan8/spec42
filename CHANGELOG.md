@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`SequenceView` projects message edges and their order.** A `message` on an `occurrence def`
+  lifeline already lowered with resolved `flowSource` / `flowTarget` and `succession` order, but
+  the projection dropped it: `ElementKind::FlowConnectionUsage` did not bridge to
+  `Metaclass::FlowUsage` (so message nodes never reached `metadata.messages`), and nothing was
+  required of a `SequenceView` (so an unresolved message end reported `complete`). The generator
+  ABI now also carries `DiagramEdge.origin_occurrence` -- the element a composed edge was
+  declared by -- and the VS Code sequence renderer builds its lifelines and ordered messages
+  from the schema-5 projection instead of a legacy DTO it was never handed. Wire schema
+  fingerprint and compatibility token move; generator guests must be rebuilt. The `examples`
+  submodule is bumped so `examples/webshop` uses the normative `occurrence def` + `message`
+  form.
+
 - **Bumped the pinned `sysml-v2-parser` revision `c81e0b6` -> `695b2b4`.** The parser now
   preserves ordered and repeated flow-payload and feature-specialization clauses, binding body
   ends, directed action parameter kinds, action-body transitions, and invalid-owner

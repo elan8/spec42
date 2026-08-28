@@ -85,6 +85,8 @@ pub enum DiagramIncompleteReason {
     ViewFilterAmbiguous,
     ViewFilterUnsupported,
     GeometryFactsUnavailable,
+    SequenceMessageEndpointOutsideLifeline,
+    SequenceOrderingCycle,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -251,10 +253,43 @@ pub enum DiagramScene {
     Interconnection,
     ActionFlow,
     StateTransition(DiagramStateTransitionScene),
-    Sequence,
+    Sequence(DiagramSequenceScene),
     Browser,
     Grid,
     Geometry,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DiagramSequenceScene {
+    pub lifelines: Box<[DiagramOccurrenceIdentity]>,
+    pub messages: Box<[DiagramSequenceMessage]>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DiagramSequenceMessage {
+    /// Index into the projection's `elements` of the message usage.
+    pub origin: u32,
+    pub label: Option<Box<str>>,
+    pub source: DiagramSequenceEndpoint,
+    pub target: DiagramSequenceEndpoint,
+    pub order: DiagramSequenceOrder,
+    pub provenance: RelationshipProvenance,
+    pub source_location: SourceLocation,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DiagramSequenceEndpoint {
+    Resolved(DiagramOccurrenceIdentity),
+    Ambiguous,
+    Unresolved,
+    Unsupported,
+    OutsideLifeline,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DiagramSequenceOrder {
+    Resolved(u32),
+    Cyclic,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -801,6 +836,7 @@ impl PublishedResolution {
             &relationships,
             &edges,
             &all,
+            &mut reasons,
         );
         if view_entry.kind == DiagramViewKind::Geometry && !elements.is_empty() {
             reasons.insert(DiagramIncompleteReason::GeometryFactsUnavailable);
@@ -903,9 +939,14 @@ fn relationship_is_required(view: DiagramViewKind, kind: DiagramRelationshipKind
                 | DiagramRelationshipKind::TransitionTrigger
                 | DiagramRelationshipKind::TransitionEffect
         ),
-        // No reference kind publishes a sequence message end, so nothing is required of a
-        // sequence view yet; the enum says so where a string comparison could not.
-        DiagramViewKind::Sequence => false,
+        // A message (`FlowConnectionUsage`) on an occurrence lifeline publishes its ends as
+        // `flowSource` / `flowTarget`; `succession` between messages carries their order.
+        DiagramViewKind::Sequence => matches!(
+            kind,
+            DiagramRelationshipKind::FlowSource
+                | DiagramRelationshipKind::FlowTarget
+                | DiagramRelationshipKind::Succession
+        ),
         DiagramViewKind::General
         | DiagramViewKind::Browser
         | DiagramViewKind::Grid
@@ -1032,12 +1073,19 @@ fn diagram_scene(
     relationships: &[DiagramRelationship],
     edges: &[DiagramEdge],
     entries: &BTreeMap<SymbolId, SymbolEntry>,
+    reasons: &mut BTreeSet<DiagramIncompleteReason>,
 ) -> DiagramScene {
     match kind {
         DiagramViewKind::General => DiagramScene::General,
         DiagramViewKind::Interconnection => DiagramScene::Interconnection,
         DiagramViewKind::ActionFlow => DiagramScene::ActionFlow,
-        DiagramViewKind::Sequence => DiagramScene::Sequence,
+        DiagramViewKind::Sequence => DiagramScene::Sequence(sequence_scene(
+            roots,
+            elements,
+            relationships,
+            edges,
+            reasons,
+        )),
         DiagramViewKind::Browser => DiagramScene::Browser,
         DiagramViewKind::Grid => DiagramScene::Grid,
         DiagramViewKind::Geometry => DiagramScene::Geometry,
@@ -1112,6 +1160,199 @@ fn diagram_scene(
             })
         }
     }
+}
+
+fn sequence_scene(
+    roots: &BTreeSet<SymbolId>,
+    elements: &[DiagramElement],
+    relationships: &[DiagramRelationship],
+    edges: &[DiagramEdge],
+    reasons: &mut BTreeSet<DiagramIncompleteReason>,
+) -> DiagramSequenceScene {
+    let is_direct_member = |element: &&DiagramElement| {
+        element
+            .owner
+            .as_ref()
+            .is_some_and(|owner| roots.contains(&owner.semantic_id()))
+    };
+    let lifelines = elements
+        .iter()
+        .filter(is_direct_member)
+        .filter(|element| {
+            matches!(
+                element.kind,
+                ElementKind::PartUsage | ElementKind::PortUsage
+            )
+        })
+        .map(|element| element.occurrence_id.clone())
+        .collect::<Vec<_>>();
+    let lifeline_set = lifelines.iter().cloned().collect::<BTreeSet<_>>();
+    let messages = elements
+        .iter()
+        .enumerate()
+        .filter(|(_, element)| element.kind == ElementKind::FlowConnectionUsage)
+        .filter(|(_, element)| is_direct_member(element))
+        .map(|(index, element)| (index as u32, element))
+        .collect::<Vec<_>>();
+
+    let owner_by_occurrence = elements
+        .iter()
+        .filter_map(|element| {
+            element
+                .owner
+                .as_ref()
+                .map(|owner| (element.occurrence_id.clone(), owner.clone()))
+        })
+        .collect::<BTreeMap<_, _>>();
+    let endpoint = |message: &DiagramElement, kind: DiagramRelationshipKind| {
+        let Some(relationship) = relationships.iter().find(|relationship| {
+            relationship.source == message.occurrence_id && relationship.kind == kind
+        }) else {
+            return DiagramSequenceEndpoint::Unresolved;
+        };
+        let occurrence = match &relationship.target {
+            DiagramRelationshipTarget::Resolved(target) => match &target.occurrence {
+                DiagramEndpointOccurrence::Resolved(occurrence) => occurrence,
+                DiagramEndpointOccurrence::Ambiguous(_) => {
+                    return DiagramSequenceEndpoint::Ambiguous;
+                }
+                DiagramEndpointOccurrence::OutsideProjection => {
+                    return DiagramSequenceEndpoint::OutsideLifeline;
+                }
+            },
+            DiagramRelationshipTarget::Ambiguous(_) => {
+                return DiagramSequenceEndpoint::Ambiguous;
+            }
+            DiagramRelationshipTarget::Unresolved => {
+                return DiagramSequenceEndpoint::Unresolved;
+            }
+            DiagramRelationshipTarget::Unsupported => {
+                return DiagramSequenceEndpoint::Unsupported;
+            }
+        };
+        let mut current = occurrence.clone();
+        let mut seen = BTreeSet::new();
+        loop {
+            if lifeline_set.contains(&current) {
+                return DiagramSequenceEndpoint::Resolved(current);
+            }
+            if !seen.insert(current.clone()) {
+                return DiagramSequenceEndpoint::OutsideLifeline;
+            }
+            let Some(owner) = owner_by_occurrence.get(&current) else {
+                return DiagramSequenceEndpoint::OutsideLifeline;
+            };
+            current = owner.clone();
+        }
+    };
+
+    // Kahn's algorithm gives a true topological order. The element index is the deterministic
+    // tie-break for unrelated messages and therefore preserves the projection's canonical order.
+    let message_indexes = messages
+        .iter()
+        .map(|(index, _)| *index)
+        .collect::<BTreeSet<_>>();
+    let occurrence_to_index = messages
+        .iter()
+        .map(|(index, element)| (element.occurrence_id.clone(), *index))
+        .collect::<BTreeMap<_, _>>();
+    let precedence = edges
+        .iter()
+        .filter(|edge| edge.kind == DiagramEdgeKind::Succession)
+        .filter_map(|edge| {
+            Some((
+                *occurrence_to_index.get(&edge.source)?,
+                *occurrence_to_index.get(&edge.target)?,
+            ))
+        });
+    let order = canonical_sequence_order(&message_indexes, precedence);
+    if order.len() != messages.len() {
+        reasons.insert(DiagramIncompleteReason::SequenceOrderingCycle);
+    }
+
+    let messages = messages
+        .into_iter()
+        .map(|(index, element)| {
+            let source = endpoint(element, DiagramRelationshipKind::FlowSource);
+            let target = endpoint(element, DiagramRelationshipKind::FlowTarget);
+            if matches!(source, DiagramSequenceEndpoint::OutsideLifeline)
+                || matches!(target, DiagramSequenceEndpoint::OutsideLifeline)
+            {
+                reasons.insert(DiagramIncompleteReason::SequenceMessageEndpointOutsideLifeline);
+            }
+            DiagramSequenceMessage {
+                origin: index,
+                label: element.name.clone(),
+                source,
+                target,
+                order: order
+                    .get(&index)
+                    .copied()
+                    .map(DiagramSequenceOrder::Resolved)
+                    .unwrap_or(DiagramSequenceOrder::Cyclic),
+                provenance: if relationships
+                    .iter()
+                    .filter(|relationship| {
+                        relationship.source == element.occurrence_id
+                            && matches!(
+                                relationship.kind,
+                                DiagramRelationshipKind::FlowSource
+                                    | DiagramRelationshipKind::FlowTarget
+                            )
+                    })
+                    .all(|relationship| relationship.provenance == RelationshipProvenance::Authored)
+                {
+                    RelationshipProvenance::Authored
+                } else {
+                    RelationshipProvenance::Implied
+                },
+                source_location: element.source,
+            }
+        })
+        .collect::<Vec<_>>();
+    DiagramSequenceScene {
+        lifelines: lifelines.into_boxed_slice(),
+        messages: messages.into_boxed_slice(),
+    }
+}
+
+fn canonical_sequence_order(
+    message_indexes: &BTreeSet<u32>,
+    precedence: impl IntoIterator<Item = (u32, u32)>,
+) -> BTreeMap<u32, u32> {
+    let mut successors = BTreeMap::<u32, BTreeSet<u32>>::new();
+    let mut incoming = message_indexes
+        .iter()
+        .map(|index| (*index, 0_u32))
+        .collect::<BTreeMap<_, _>>();
+    for (source, target) in precedence {
+        if !message_indexes.contains(&source) || !message_indexes.contains(&target) {
+            continue;
+        }
+        if successors.entry(source).or_default().insert(target) {
+            *incoming
+                .get_mut(&target)
+                .expect("every message has an indegree") += 1;
+        }
+    }
+    let mut ready = incoming
+        .iter()
+        .filter_map(|(index, degree)| (*degree == 0).then_some(*index))
+        .collect::<BTreeSet<_>>();
+    let mut order = BTreeMap::new();
+    while let Some(index) = ready.pop_first() {
+        order.insert(index, order.len() as u32 + 1);
+        for successor in successors.get(&index).into_iter().flatten() {
+            let degree = incoming
+                .get_mut(successor)
+                .expect("a successor is a projected message");
+            *degree -= 1;
+            if *degree == 0 {
+                ready.insert(*successor);
+            }
+        }
+    }
+    order
 }
 
 fn transition_feature(
@@ -1335,7 +1576,9 @@ impl DiagramViewProjection {
 
 #[cfg(test)]
 mod tests {
-    use super::{compartment_kind, usable_value, DiagramCompartmentKind};
+    use std::collections::BTreeSet;
+
+    use super::{canonical_sequence_order, compartment_kind, usable_value, DiagramCompartmentKind};
     use crate::{
         ElementKind, PublicationCompleteness, PublicationObstacle, QueryAnswer, QueryOutcome,
     };
@@ -1402,5 +1645,22 @@ mod tests {
             Some(DiagramCompartmentKind::Occurrences)
         );
         assert_eq!(compartment_kind(ElementKind::PartDefinition), None);
+    }
+
+    #[test]
+    fn sequence_order_respects_every_predecessor_in_a_diamond() {
+        let messages = BTreeSet::from([0, 1, 2, 3]);
+        let order = canonical_sequence_order(&messages, [(0, 1), (0, 2), (1, 3), (2, 3)]);
+        assert_eq!(order.len(), 4);
+        for (before, after) in [(0, 1), (0, 2), (1, 3), (2, 3)] {
+            assert!(order[&before] < order[&after]);
+        }
+    }
+
+    #[test]
+    fn sequence_order_leaves_cycles_explicit() {
+        let messages = BTreeSet::from([0, 1, 2]);
+        let order = canonical_sequence_order(&messages, [(0, 1), (1, 0)]);
+        assert_eq!(order, [(2, 1)].into_iter().collect());
     }
 }

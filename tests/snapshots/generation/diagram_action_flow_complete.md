@@ -426,6 +426,7 @@ package ActionFlowExample {
       {
         "kind": "containment",
         "navigation": 3,
+        "origin": 1,
         "provenance": "authored",
         "reference": 9,
         "source": 0,
@@ -434,6 +435,7 @@ package ActionFlowExample {
       {
         "kind": "succession",
         "navigation": 4,
+        "origin": 1,
         "provenance": "implied",
         "reference": 21,
         "source": 3,
@@ -442,6 +444,7 @@ package ActionFlowExample {
       {
         "kind": "containment",
         "navigation": 2,
+        "origin": 2,
         "provenance": "authored",
         "reference": 10,
         "source": 0,
@@ -450,6 +453,7 @@ package ActionFlowExample {
       {
         "kind": "containment",
         "navigation": 1,
+        "origin": 3,
         "provenance": "authored",
         "reference": 11,
         "source": 0,

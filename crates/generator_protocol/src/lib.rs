@@ -772,6 +772,8 @@ pub enum DiagramIncompleteReason {
     ViewFilterAmbiguous,
     ViewFilterUnsupported,
     GeometryFactsUnavailable,
+    SequenceMessageEndpointOutsideLifeline,
+    SequenceOrderingCycle,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -906,6 +908,14 @@ pub struct DiagramEdge {
     pub target_element: DiagramSemanticReference,
     pub source_occurrence: DiagramOccurrenceIdentity,
     pub target_occurrence: DiagramOccurrenceIdentity,
+    /// The element the edge was composed for, when it differs from `source_occurrence`.
+    ///
+    /// Containment and initial-state edges originate at their own source, so this repeats it.
+    /// A composed edge (flow, succession, transition, connector) originates at the usage that
+    /// declared the relationship -- the `message` for a flow edge, the `succession` usage for a
+    /// succession edge -- while its source/target occurrences are the resolved ends. A renderer
+    /// that needs the declaring element (its name, its place in an authored order) reads this.
+    pub origin_occurrence: DiagramOccurrenceIdentity,
     pub kind: DiagramEdgeKind,
     pub provenance: RelationshipProvenance,
     pub source: Option<SourceReference>,
@@ -966,10 +976,42 @@ pub enum DiagramScene {
     Interconnection,
     ActionFlow,
     StateTransition(StateTransitionScene),
-    Sequence,
+    Sequence(SequenceScene),
     Browser,
     Grid,
     Geometry,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct SequenceScene {
+    pub lifelines: Vec<DiagramOccurrenceIdentity>,
+    pub messages: Vec<SequenceMessage>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct SequenceMessage {
+    pub occurrence: DiagramOccurrenceIdentity,
+    pub label: Option<String>,
+    pub source: SequenceEndpoint,
+    pub target: SequenceEndpoint,
+    pub order: SequenceOrder,
+    pub provenance: RelationshipProvenance,
+    pub source_reference: SourceReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum SequenceEndpoint {
+    Resolved(DiagramOccurrenceIdentity),
+    Ambiguous,
+    Unresolved,
+    Unsupported,
+    OutsideLifeline,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum SequenceOrder {
+    Resolved(u32),
+    Cyclic,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1186,7 +1228,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0xc866_694d_05d9_4950,
+            SCHEMA_FINGERPRINT, 0x8809_7278_aeea_4c32,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1194,7 +1236,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x24da_ed65_34b4_630d,
+            COMPATIBILITY_TOKEN, 0x4ffc_d7a3_08b9_6277,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

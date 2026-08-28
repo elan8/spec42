@@ -99,14 +99,6 @@ if [[ ! -d "$stdlib_cache" ]]; then
 	"$root_dir/scripts/fetch-stdlib-bundle.sh"
 fi
 
-echo "Building repository-owned Rust generator plugins..."
-"$root_dir/scripts/build-repository-generator-plugins.sh"
-
-if [[ ! -f "$plugin_path" ]]; then
-	echo "error: diagram plugin build did not produce $plugin_path" >&2
-	exit 1
-fi
-
 echo "Building the matching Spec42 server with its embedded standard library..."
 CARGO_TARGET_DIR="$target_dir" cargo build \
 	--manifest-path "$root_dir/Cargo.toml" \
@@ -128,6 +120,11 @@ echo "Installing VS Code extension dependencies and packaging the VSIX..."
 	npm ci
 	npm run package -- --out "$vsix_path"
 )
+
+if [[ ! -f "$plugin_path" ]]; then
+	echo "error: extension packaging did not produce $plugin_path" >&2
+	exit 1
+fi
 
 echo "Installing the VSIX into an isolated extension directory..."
 "$code_bin" \
