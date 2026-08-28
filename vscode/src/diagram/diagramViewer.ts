@@ -64,25 +64,10 @@ const PUBLICATION_DEBOUNCE_MS = 250;
 const DIGEST_MISMATCH_RETRIES = 2;
 const MODEL_GLOB = "**/*.{sysml,kerml}";
 
-function prepareCacheLabel(artifact: RenderedArtifact): string {
-  if (artifact.preparedReused) return " (memory cache)";
-  if (artifact.compilationCacheHits > 0) return " (native cache)";
-  if (artifact.compilationCacheError) return " (cache unavailable)";
-  if (artifact.compilationCacheMisses > 0) return " (compiled)";
-  return "";
-}
-
 function artifactHeader(artifact: RenderedArtifact): string {
-  const status = artifact.product.completeness.status === "complete"
-    ? "complete projection"
-    : `incomplete projection (${artifact.product.completeness.reasons.length})`;
-  return [
-    artifact.product.selectedView.name,
-    status,
-    `model ${artifact.product.modelDigest}`,
-    `prepare ${artifact.modulePrepareMs} ms${prepareCacheLabel(artifact)}`,
-    `execute ${(artifact.guestExecutionUs / 1000).toFixed(2)} ms`,
-  ].join(" · ");
+  if (artifact.product.completeness.status === "complete") return "Complete projection";
+  const count = artifact.product.completeness.reasons.length;
+  return `Incomplete projection · ${count} ${count === 1 ? "limitation" : "limitations"}`;
 }
 
 function isModelDocument(document: vscode.TextDocument | undefined): document is vscode.TextDocument {
