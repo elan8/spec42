@@ -16,5 +16,10 @@ crates/workspace/tests/fixtures/sysml_compatibility/** -whitespace
 # ABI/schema manifests are byte-compared against a freshly derived (LF) copy.
 docs/generation/** text eol=lf
 
+# Generated snapshots are byte-compared against a freshly derived (LF) copy by
+# spec42-snapshot, and the renderer's vitest suites parse them by splitting on
+# "# GENERATED\n"; autocrlf would rewrite every fixture and fail both.
+tests/snapshots/** text eol=lf
+
 # Shell scripts must stay LF -- a CRLF shebang line is exit 127 on Linux.
 *.sh text eol=lf
