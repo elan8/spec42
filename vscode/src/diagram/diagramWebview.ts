@@ -22,7 +22,7 @@ const vscode = acquireVsCodeApi();
 const canvas = must<HTMLElement>("diagram");
 const viewSelect = must<HTMLSelectElement>("view-select");
 const statusEl = must<HTMLElement>("status");
-const refreshButton = must<HTMLButtonElement>("refresh");
+const homeButton = must<HTMLButtonElement>("home");
 const copyButton = must<HTMLButtonElement>("copy-json");
 const exportSvgButton = must<HTMLButtonElement>("export-svg");
 const exportPngButton = must<HTMLButtonElement>("export-png");
@@ -210,7 +210,7 @@ async function exportImage(format: "svg" | "png"): Promise<void> {
 viewSelect.addEventListener("change", () => {
   vscode.postMessage({ type: "switchView", handle: viewSelect.value });
 });
-refreshButton.addEventListener("click", () => vscode.postMessage({ type: "refresh" }));
+homeButton.addEventListener("click", () => controller?.reset());
 copyButton.addEventListener("click", () => vscode.postMessage({ type: "copyJson" }));
 exportSvgButton.addEventListener("click", () => void exportImage("svg"));
 exportPngButton.addEventListener("click", () => void exportImage("png"));

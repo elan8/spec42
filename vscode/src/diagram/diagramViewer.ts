@@ -152,10 +152,6 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     await this.regenerate("manual");
   }
 
-  async refresh(): Promise<void> {
-    await this.regenerate("manual");
-  }
-
   async copyJson(): Promise<void> {
     if (!this.lastArtifact) {
       await vscode.window.showInformationMessage("Generate a Spec42 diagram before copying its JSON.");
@@ -204,7 +200,6 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       }
       return;
     }
-    if (kind === "refresh") { void this.regenerate("manual"); return; }
     if (kind === "copyJson") { void this.copyJson(); return; }
     if (kind === "switchView") {
       const handle = (message as { handle?: unknown }).handle;
@@ -533,7 +528,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
 </style></head><body>
 <header>
   <select id="view-select" title="Authored diagram view"></select>
-  <button id="refresh" title="Regenerate from the current model">Refresh</button>
+  <button id="home" title="Fit and center the entire diagram">Home</button>
   <button id="copy-json" title="Copy the generated diagram JSON">JSON</button>
   <button id="export-svg" title="Export as SVG">SVG</button>
   <button id="export-png" title="Export as PNG">PNG</button>
@@ -590,6 +585,5 @@ export function registerDiagramViewer(context: vscode.ExtensionContext, handles:
     }),
     vscode.commands.registerCommand("spec42.diagram.open", () => provider.open()),
     vscode.commands.registerCommand("spec42.diagram.copyJson", () => provider.copyJson()),
-    vscode.commands.registerCommand("spec42.diagram.refresh", () => provider.refresh()),
   );
 }

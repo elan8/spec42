@@ -116,6 +116,7 @@ export async function renderVisualization(
 
   let bounds: ContentBounds;
   let generalRenderGeneration = 0;
+  let fitView = (): void => undefined;
   let getDisclosureState = (): DisclosureState => ({ expandedNodeIds: [], sectionStates: [] });
   if (view === "action-flow-view") {
     addActionFlowMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
@@ -254,11 +255,11 @@ export async function renderVisualization(
         toggleNode: (nodeId: string): void => {
           if (expanded.has(nodeId)) expanded.delete(nodeId);
           else expanded.add(nodeId);
-          void redrawGeneral({ refocusNodeControl: nodeId });
+          void redrawGeneral({ refocusNodeControl: nodeId }, true);
         },
         toggleSection: (nodeId: string, key: string, currentlyExpanded: boolean): void => {
           sectionState.set(sectionKey(nodeId, key), !currentlyExpanded);
-          void redrawGeneral({ refocusSection: { nodeId, key } });
+          void redrawGeneral({ refocusSection: { nodeId, key } }, true);
         },
       };
       const generalOptions: RenderOptions = { ...options, disclosure };
@@ -270,6 +271,7 @@ export async function renderVisualization(
       };
       const redrawGeneral = async (
         focus?: { refocusNodeControl?: string; refocusSection?: { nodeId: string; key: string } },
+        fitAfter = false,
       ): Promise<void> => {
         const generation = ++generalRenderGeneration;
         const visible = visibleProjection();
@@ -280,6 +282,7 @@ export async function renderVisualization(
         drawEdges(root, nextLayout.edges, false, theme);
         drawNodes(root, nextLayout.nodes, generalOptions, false, theme);
         bounds = contentBounds(nextLayout);
+        if (fitAfter) fitView();
         if (focus?.refocusNodeControl) {
           restoreFocus(`[data-node-id="${focus.refocusNodeControl}"] .general-node-toggle`);
         } else if (focus?.refocusSection) {
@@ -306,7 +309,7 @@ export async function renderVisualization(
   }
 
   let lastFitTransform = d3.zoomIdentity;
-  const fitView = () => {
+  fitView = () => {
     lastFitTransform = applyFit(
       svg,
       zoom,

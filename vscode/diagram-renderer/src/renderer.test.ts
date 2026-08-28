@@ -82,7 +82,9 @@ describe("shared renderer", () => {
     }
     expect(target.querySelector('[data-node-id="n:1"]')).toBeTruthy();
     expect(target.querySelector(".general-hidden-relationships")).toBeNull();
-    expect(target.querySelector(".viz-root")?.getAttribute("transform")).toBe(transformBefore);
+    await new Promise((resolve) => setTimeout(resolve, 220));
+    expect(target.querySelector(".viz-root")?.getAttribute("transform")).not.toBe(transformBefore);
+    expectFiniteRootTransform(target);
   });
 
   it("uses notation-neutral ink for all kinds", () => {
