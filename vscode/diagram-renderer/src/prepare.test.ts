@@ -762,7 +762,30 @@ describe("shared prepareViewData", () => {
           { source: 7, target: 8, origin: 9, kind: "succession", provenance: "authored", navigation: null },
         ],
         metadata: { participants: [1, 4], messages: [7, 8] },
-        scene: { kind: "sequence" },
+        scene: {
+          kind: "sequence",
+          lifelines: [1, 4],
+          messages: [
+            {
+              node: 7,
+              label: "submitCheckout",
+              source: { status: "resolved", lifeline: 1 },
+              target: { status: "resolved", lifeline: 4 },
+              order: { status: "resolved", value: 1 },
+              provenance: "authored",
+              navigation: 0,
+            },
+            {
+              node: 8,
+              label: "apiResponse",
+              source: { status: "resolved", lifeline: 4 },
+              target: { status: "resolved", lifeline: 1 },
+              order: { status: "resolved", value: 2 },
+              provenance: "authored",
+              navigation: 0,
+            },
+          ],
+        },
       },
     });
 

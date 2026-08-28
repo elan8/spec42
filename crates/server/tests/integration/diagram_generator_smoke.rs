@@ -210,5 +210,43 @@ fn a_sequence_view_projects_lifelines_messages_and_their_order() {
             edge_kinds.contains("succession"),
             "authored message order projects as succession edges: {edge_kinds:?}"
         );
+
+        let scene = &product["projection"]["scene"];
+        assert_eq!(scene["kind"], "sequence");
+        assert_eq!(scene["lifelines"].as_array().map(Vec::len), Some(3));
+        let messages = scene["messages"].as_array().expect("sequence messages");
+        assert_eq!(messages.len(), 4);
+        let mut orders = Vec::new();
+        for message in messages {
+            assert_eq!(message["source"]["status"], "resolved");
+            assert!(message["source"]["lifeline"].is_number());
+            assert_eq!(message["target"]["status"], "resolved");
+            assert!(message["target"]["lifeline"].is_number());
+            assert_eq!(message["order"]["status"], "resolved");
+            orders.push(message["order"]["value"].as_u64().expect("numeric order"));
+        }
+        orders.sort_unstable();
+        assert_eq!(orders, vec![1, 2, 3, 4]);
+
+        let svg = spec42::headless_renderer::render_shared_svg(&diagram)
+            .unwrap_or_else(|error| panic!("the generated SequenceView renders as SVG: {error}"));
+        assert_eq!(svg.matches("class=\"sequence-lifeline\"").count(), 3);
+        assert_eq!(
+            svg.matches("<line class=\"sequence-message").count()
+                + svg.matches("<path class=\"sequence-message").count(),
+            4
+        );
+        for label in [
+            "apiGateway",
+            "storefront",
+            "checkoutService",
+            "submitCheckout",
+            "forwardCheckout",
+            "checkoutOutcome",
+            "apiResponse",
+        ] {
+            assert!(svg.contains(label), "the SVG contains {label}: {svg}");
+        }
+        assert!(!svg.contains("NaN"), "the SVG has finite geometry: {svg}");
     });
 }

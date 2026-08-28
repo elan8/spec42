@@ -253,6 +253,12 @@ jobs:
       - name: npm ci (vscode)
         run: cd vscode && npm ci
 
+      - name: Check headless renderer bundle
+        run: |
+          cd vscode
+          npm run build:headless-renderer
+          git diff --exit-code ../crates/server/assets/diagram-renderer/headless-renderer.js
+
       - name: npm audit (vscode)
         run: cd vscode && npm audit --omit=dev
 
@@ -434,6 +440,7 @@ jobs:
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
+          targets: wasm32-unknown-unknown
 
       - name: Prepare SysML stdlib bundle
         run: |
@@ -517,6 +524,13 @@ jobs:
 
       - name: Package VSIX
         run: cd vscode && npm run package
+
+      - name: Verify packaged VSIX layout
+        run: |
+          cd vscode
+          VSIX_FILE="$(find . -maxdepth 1 -name '*.vsix' | head -n 1)"
+          test -n "$VSIX_FILE"
+          node scripts/verify-package-layout.js --vsix "$VSIX_FILE"
 
       - name: Smoke test packaged VSIX activation
         run: |

@@ -77,104 +77,42 @@ export function prepareViewData(visualizationInput: unknown): PreparedView {
 }
 
 /**
- * Adapt a schema-5 `sequence-view` projection into the `{ lifelines, messages }` shape the
- * sequence renderer consumes.
- *
- * The projection gives us: `metadata.participants` (lifeline node indices),
- * `metadata.messages` (message node indices), `flow` edges (send event -> receive event,
- * `origin` = the message), `succession` edges (message -> message, authored order), and
- * `containment` edges (lifeline -> ... -> event). We climb containment to map each message
- * end to its lifeline, and topologically order the messages by succession.
+ * Adapt the authority-owned schema-5 sequence scene into the legacy shape the renderer consumes.
+ * Endpoint ownership and temporal ordering are semantic facts already settled by the scene.
  */
-function sequenceDiagramFromProjection(
+function sequenceDiagramFromScene(
   name: string,
-  projection: Record<string, unknown>,
   nodes: PreparedNode[],
-  metadata: Record<string, unknown>,
+  scene: Record<string, unknown>,
 ): Record<string, unknown> | undefined {
-  const rawEdges = asArray(projection.edges).map(asRecord);
   const asIndex = (value: unknown): number | undefined =>
     typeof value === "number" && nodes[value] !== undefined ? value : undefined;
-  const participantIdx = asArray(metadata.participants)
+  if (asString(scene.kind) !== "sequence") return undefined;
+  const participantIdx = asArray(scene.lifelines)
     .map(asIndex)
     .filter((value): value is number => value !== undefined);
-  const messageIdx = asArray(metadata.messages)
-    .map(asIndex)
-    .filter((value): value is number => value !== undefined);
-  if (participantIdx.length === 0 || messageIdx.length === 0) return undefined;
-
-  const participantSet = new Set(participantIdx);
-  const ownerOf = new Map<number, number>();
-  for (const edge of rawEdges) {
-    if (asString(edge.kind) !== "containment") continue;
-    const owner = asIndex(edge.source);
-    const child = asIndex(edge.target);
-    if (owner !== undefined && child !== undefined) ownerOf.set(child, owner);
-  }
-  const lifelineOf = (node: number): number | undefined => {
-    let current: number | undefined = node;
-    const seen = new Set<number>();
-    while (current !== undefined && !seen.has(current)) {
-      if (participantSet.has(current)) return current;
-      seen.add(current);
-      current = ownerOf.get(current);
-    }
-    return undefined;
-  };
-
-  const ends = new Map<number, { from?: number; to?: number }>();
-  for (const edge of rawEdges) {
-    if (asString(edge.kind) !== "flow") continue;
-    const origin = asIndex(edge.origin);
-    const source = asIndex(edge.source);
-    const target = asIndex(edge.target);
-    if (origin === undefined) continue;
-    ends.set(origin, {
-      from: source === undefined ? undefined : lifelineOf(source),
-      to: target === undefined ? undefined : lifelineOf(target),
-    });
-  }
-
-  // Authored order: a chain of `succession` edges between message nodes. Messages with no
-  // incoming succession start; ties and unordered messages keep declaration order.
-  const nextOf = new Map<number, number[]>();
-  const hasIncoming = new Set<number>();
-  for (const edge of rawEdges) {
-    if (asString(edge.kind) !== "succession") continue;
-    const from = asIndex(edge.source);
-    const to = asIndex(edge.target);
-    if (from === undefined || to === undefined) continue;
-    const successors = nextOf.get(from) ?? [];
-    successors.push(to);
-    nextOf.set(from, successors);
-    hasIncoming.add(to);
-  }
-  const ordered: number[] = [];
-  const placed = new Set<number>();
-  const visit = (node: number): void => {
-    if (placed.has(node) || !messageIdx.includes(node)) return;
-    placed.add(node);
-    ordered.push(node);
-    for (const next of nextOf.get(node) ?? []) visit(next);
-  };
-  for (const message of messageIdx) if (!hasIncoming.has(message)) visit(message);
-  for (const message of messageIdx) visit(message);
 
   const lifelines = participantIdx.map((index) => ({
     id: nodes[index].id,
     name: nodes[index].label || nodes[index].kind,
   }));
-  const messages = ordered.map((index, position) => {
-    const end = ends.get(index) ?? {};
+  const messages = asArray(scene.messages).map(asRecord).map((message) => {
+    const index = asIndex(message.node);
+    const source = asRecord(message.source);
+    const target = asRecord(message.target);
+    const order = asRecord(message.order);
+    const sourceIndex = source.status === "resolved" ? asIndex(source.lifeline) : undefined;
+    const targetIndex = target.status === "resolved" ? asIndex(target.lifeline) : undefined;
     return {
-      id: nodes[index].id,
-      name: nodes[index].label,
-      source: end.from === undefined ? undefined : nodes[end.from].id,
-      target: end.to === undefined ? undefined : nodes[end.to].id,
-      kind: nodes[index].kind,
-      order: position + 1,
+      id: index === undefined ? undefined : nodes[index].id,
+      name: typeof message.label === "string" ? message.label : index === undefined ? "" : nodes[index].label,
+      source: sourceIndex === undefined ? undefined : nodes[sourceIndex].id,
+      target: targetIndex === undefined ? undefined : nodes[targetIndex].id,
+      kind: index === undefined ? "FlowUsage" : nodes[index].kind,
+      order: order.status === "resolved" && typeof order.value === "number" ? order.value : undefined,
     };
-  }).filter((message) => message.source !== undefined && message.target !== undefined);
+  }).filter((message) => message.id !== undefined && message.source !== undefined &&
+    message.target !== undefined && message.order !== undefined);
 
   return { name, lifelines, messages, activations: [], fragments: [] };
 }
@@ -327,7 +265,7 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
   });
   const metadata = asRecord(projection.metadata);
   const sequenceDiagram = selected.kind === "sequence-view"
-    ? sequenceDiagramFromProjection(selected.name, projection, nodes, metadata)
+    ? sequenceDiagramFromScene(selected.name, nodes, asRecord(projection.scene))
     : undefined;
   const gridRows = Array.isArray(metadata.rows)
     ? metadata.rows.filter((value): value is number => typeof value === "number" && nodes[value] !== undefined)

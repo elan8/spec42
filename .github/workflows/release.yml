@@ -304,6 +304,12 @@ jobs:
           cache: "npm"
           cache-dependency-path: vscode/package-lock.json
 
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
+          targets: wasm32-unknown-unknown
+
       - name: Install vscode deps and package
         run: |
           cd vscode && npm ci && npm run compile && npm run package

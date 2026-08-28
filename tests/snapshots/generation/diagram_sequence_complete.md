@@ -1596,7 +1596,49 @@ package SequenceExample {
       }
     ],
     "scene": {
-      "kind": "sequence"
+      "kind": "sequence",
+      "lifelines": [
+        4,
+        7
+      ],
+      "messages": [
+        {
+          "label": "call",
+          "navigation": 8,
+          "node": 2,
+          "order": {
+            "status": "resolved",
+            "value": 1
+          },
+          "provenance": "authored",
+          "source": {
+            "lifeline": 4,
+            "status": "resolved"
+          },
+          "target": {
+            "lifeline": 7,
+            "status": "resolved"
+          }
+        },
+        {
+          "label": "result",
+          "navigation": 11,
+          "node": 3,
+          "order": {
+            "status": "resolved",
+            "value": 2
+          },
+          "provenance": "authored",
+          "source": {
+            "lifeline": 7,
+            "status": "resolved"
+          },
+          "target": {
+            "lifeline": 4,
+            "status": "resolved"
+          }
+        }
+      ]
     }
   }
 }

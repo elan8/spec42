@@ -118,6 +118,60 @@ describe("headless SVG export", () => {
     expect(sequenceSvg).toContain("sequence-message");
   });
 
+  it("exports a schema-5 sequence scene without rediscovering endpoints or order", async () => {
+    const node = (metaclass: string, name: string, owner: number | null) => ({
+      reference: 0,
+      metaclass,
+      notationRole: "usage",
+      name,
+      typing: { status: "absent" },
+      owner,
+      source: 0,
+      compartments: [],
+    });
+    const svg = await exportHeadlessSvg({
+      schemaVersion: 5,
+      documents: [{ uri: "file:///model.sysml" }],
+      sources: [{ document: 0, range: [0, 0, 0, 1] }],
+      references: [{ kind: "qualified-name" }],
+      selectedView: { reference: 0, kind: "sequence-view", name: "Interaction", source: 0 },
+      completeness: { status: "complete", reasons: [] },
+      projection: {
+        kind: "sequence-view",
+        exposedRoots: [0],
+        nodes: [
+          node("OccurrenceDefinition", "Interaction", null),
+          node("PartUsage", "client", 0),
+          node("PartUsage", "server", 0),
+          node("FlowUsage", "request", 0),
+        ],
+        relationships: [],
+        // Generic edges deliberately carry no endpoint/order information: the typed scene owns it.
+        edges: [],
+        metadata: { participants: [1, 2], messages: [3] },
+        scene: {
+          kind: "sequence",
+          lifelines: [1, 2],
+          messages: [{
+            node: 3,
+            label: "request",
+            source: { status: "resolved", lifeline: 1 },
+            target: { status: "resolved", lifeline: 2 },
+            order: { status: "resolved", value: 1 },
+            provenance: "authored",
+            navigation: 0,
+          }],
+        },
+      },
+    });
+
+    expect(svg).toContain("sequence-lifeline");
+    expect(svg).toContain("sequence-message");
+    expect(svg).toContain("client");
+    expect(svg).toContain("server");
+    expect(svg).toContain("request");
+  });
+
   it("exports Browser View as an indented expandable hierarchy", async () => {
     const svg = await exportHeadlessSvg({
       ...basePayload,

@@ -301,11 +301,8 @@ impl Metaclass {
             "Documentation" => Self::Documentation,
             "EnumerationDefinition" => Self::EnumerationDefinition,
             "EnumerationUsage" => Self::EnumerationUsage,
-            // The Flow clause (SysML v2.0 §8.3.16) names these `FlowDefinition` / `FlowUsage`;
-            // §8.3.13.5 still spells the concrete usage `FlowConnectionUsage`, which is the name
-            // `sysml_contract::ElementKind` carries. Both denote the same metaclass.
-            "FlowDefinition" | "FlowConnectionDefinition" => Self::FlowDefinition,
-            "FlowUsage" | "FlowConnectionUsage" => Self::FlowUsage,
+            "FlowDefinition" => Self::FlowDefinition,
+            "FlowUsage" => Self::FlowUsage,
             "IndividualDefinition" => Self::IndividualDefinition,
             "IndividualUsage" => Self::IndividualUsage,
             "InterfaceDefinition" => Self::InterfaceDefinition,
@@ -775,6 +772,8 @@ pub enum DiagramIncompleteReason {
     ViewFilterAmbiguous,
     ViewFilterUnsupported,
     GeometryFactsUnavailable,
+    SequenceMessageEndpointOutsideLifeline,
+    SequenceOrderingCycle,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -977,10 +976,42 @@ pub enum DiagramScene {
     Interconnection,
     ActionFlow,
     StateTransition(StateTransitionScene),
-    Sequence,
+    Sequence(SequenceScene),
     Browser,
     Grid,
     Geometry,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct SequenceScene {
+    pub lifelines: Vec<DiagramOccurrenceIdentity>,
+    pub messages: Vec<SequenceMessage>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct SequenceMessage {
+    pub occurrence: DiagramOccurrenceIdentity,
+    pub label: Option<String>,
+    pub source: SequenceEndpoint,
+    pub target: SequenceEndpoint,
+    pub order: SequenceOrder,
+    pub provenance: RelationshipProvenance,
+    pub source_reference: SourceReference,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum SequenceEndpoint {
+    Resolved(DiagramOccurrenceIdentity),
+    Ambiguous,
+    Unresolved,
+    Unsupported,
+    OutsideLifeline,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum SequenceOrder {
+    Resolved(u32),
+    Cyclic,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1197,7 +1228,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0xebb7_9301_d32f_e776,
+            SCHEMA_FINGERPRINT, 0x8809_7278_aeea_4c32,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1205,7 +1236,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x1fdd_a093_e945_bfbf,
+            COMPATIBILITY_TOKEN, 0x4ffc_d7a3_08b9_6277,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

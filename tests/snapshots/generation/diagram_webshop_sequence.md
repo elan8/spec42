@@ -19533,7 +19533,179 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       }
     ],
     "scene": {
-      "kind": "sequence"
+      "kind": "sequence",
+      "lifelines": [
+        18,
+        32,
+        41,
+        59,
+        70,
+        82
+      ],
+      "messages": [
+        {
+          "label": "reserveStock",
+          "navigation": 102,
+          "node": 9,
+          "order": {
+            "status": "resolved",
+            "value": 5
+          },
+          "provenance": "authored",
+          "source": {
+            "lifeline": 41,
+            "status": "resolved"
+          },
+          "target": {
+            "lifeline": 70,
+            "status": "resolved"
+          }
+        },
+        {
+          "label": "stockReserved",
+          "navigation": 106,
+          "node": 10,
+          "order": {
+            "status": "resolved",
+            "value": 6
+          },
+          "provenance": "authored",
+          "source": {
+            "lifeline": 70,
+            "status": "resolved"
+          },
+          "target": {
+            "lifeline": 41,
+            "status": "resolved"
+          }
+        },
+        {
+          "label": "submitCheckout",
+          "navigation": 86,
+          "node": 11,
+          "order": {
+            "status": "resolved",
+            "value": 1
+          },
+          "provenance": "authored",
+          "source": {
+            "lifeline": 32,
+            "status": "resolved"
+          },
+          "target": {
+            "lifeline": 18,
+            "status": "resolved"
+          }
+        },
+        {
+          "label": "checkoutOutcome",
+          "navigation": 118,
+          "node": 12,
+          "order": {
+            "status": "resolved",
+            "value": 9
+          },
+          "provenance": "authored",
+          "source": {
+            "lifeline": 18,
+            "status": "resolved"
+          },
+          "target": {
+            "lifeline": 32,
+            "status": "resolved"
+          }
+        },
+        {
+          "label": "forwardCheckout",
+          "navigation": 90,
+          "node": 13,
+          "order": {
+            "status": "resolved",
+            "value": 2
+          },
+          "provenance": "authored",
+          "source": {
+            "lifeline": 18,
+            "status": "resolved"
+          },
+          "target": {
+            "lifeline": 41,
+            "status": "resolved"
+          }
+        },
+        {
+          "label": "paymentApproved",
+          "navigation": 98,
+          "node": 14,
+          "order": {
+            "status": "resolved",
+            "value": 4
+          },
+          "provenance": "authored",
+          "source": {
+            "lifeline": 59,
+            "status": "resolved"
+          },
+          "target": {
+            "lifeline": 41,
+            "status": "resolved"
+          }
+        },
+        {
+          "label": "authorizePayment",
+          "navigation": 94,
+          "node": 15,
+          "order": {
+            "status": "resolved",
+            "value": 3
+          },
+          "provenance": "authored",
+          "source": {
+            "lifeline": 41,
+            "status": "resolved"
+          },
+          "target": {
+            "lifeline": 59,
+            "status": "resolved"
+          }
+        },
+        {
+          "label": "checkoutAccepted",
+          "navigation": 114,
+          "node": 16,
+          "order": {
+            "status": "resolved",
+            "value": 8
+          },
+          "provenance": "authored",
+          "source": {
+            "lifeline": 41,
+            "status": "resolved"
+          },
+          "target": {
+            "lifeline": 18,
+            "status": "resolved"
+          }
+        },
+        {
+          "label": "publishOrderCreated",
+          "navigation": 110,
+          "node": 17,
+          "order": {
+            "status": "resolved",
+            "value": 7
+          },
+          "provenance": "authored",
+          "source": {
+            "lifeline": 41,
+            "status": "resolved"
+          },
+          "target": {
+            "lifeline": 82,
+            "status": "resolved"
+          }
+        }
+      ]
     }
   }
 }
