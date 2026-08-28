@@ -539,12 +539,12 @@ mod tests {
         .expect("valid guest")
     }
 
-    fn packaged_diagram_generator() -> Vec<u8> {
+    fn repository_diagram_generator() -> Vec<u8> {
         std::fs::read(
             std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-                .join("../../vscode/generators/diagram.wasm"),
+                .join("../../generator-plugins/target/wasm32-unknown-unknown/release/spec42_diagram_generator.wasm"),
         )
-        .expect("packaged diagram generator; run scripts/build-repository-generator-plugins.sh")
+        .expect("repository diagram generator; run scripts/build-repository-generator-plugins.sh")
     }
 
     #[test]
@@ -601,7 +601,7 @@ mod tests {
 
         let generated = service
             .generate(
-                &packaged_diagram_generator(),
+                &repository_diagram_generator(),
                 Arc::clone(&publication),
                 std::slice::from_ref(&view.handle),
                 Some(&catalog.model_digest),
