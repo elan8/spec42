@@ -19,6 +19,7 @@ pub(crate) async fn initialize(
         .standard_library_paths
         .iter()
         .filter_map(|path| Url::from_file_path(path).ok())
+        .map(|uri| util::normalize_file_uri(&uri))
         .collect::<Vec<_>>();
     let startup_trace_id =
         util::parse_startup_trace_id_from_value(params.initialization_options.as_ref());
