@@ -62,8 +62,14 @@ pub enum ProjectDependencyResolution {
 pub struct ProjectDependencyAdmission {
     pub manifest_present: bool,
     pub resolutions: Vec<ProjectDependencyResolution>,
+    /// Complete library baseline admitted for this project: the mandatory standard libraries plus
+    /// roots selected by authored project usages.
     pub library_roots: Vec<PathBuf>,
+    /// The mandatory KerML/SysML library subset of [`Self::library_roots`].
+    pub standard_library_roots: Vec<PathBuf>,
     pub candidate_roots: Vec<PathBuf>,
+    /// Roots selected specifically by authored project usages. This excludes mandatory roots that
+    /// are admitted independently of the manifest.
     pub selected_candidate_roots: Vec<PathBuf>,
 }
 
@@ -191,9 +197,11 @@ pub fn resolve_project_manifest_dependencies(
 
 /// Resolve the exact library roots admitted for one filesystem project.
 ///
-/// Manifestless projects retain catalog defaults. Manifest projects admit only roots selected by
-/// authored, satisfied usages; unidentified generic paths are not implicit dependencies. Any
-/// unresolved authored usage fails explicitly and never falls back to bundled defaults.
+/// Every project admits the configured KerML/SysML standard-library baseline. Manifestless
+/// projects additionally retain catalog defaults. Manifest projects additionally admit roots
+/// selected by authored, satisfied usages; unidentified generic paths are not implicit
+/// dependencies. Any unresolved authored usage fails explicitly and never falls back to an
+/// undeclared project dependency.
 pub fn resolve_project_dependency_admission(
     project_root: &Path,
     catalog: &LibraryCatalog,
@@ -204,6 +212,7 @@ pub fn resolve_project_dependency_admission(
             manifest_present: false,
             resolutions: Vec::new(),
             library_roots: catalog.package_roots.clone(),
+            standard_library_roots: catalog.stdlib.roots.clone(),
             candidate_roots: Vec::new(),
             selected_candidate_roots: Vec::new(),
         });
@@ -245,19 +254,54 @@ pub fn resolve_project_dependency_admission(
     selected_candidate_roots.sort();
     selected_candidate_roots.dedup();
 
-    // A manifest-bearing project is reproducible only when every admitted library has an
-    // authored resource identity. Generic configured paths have no identity by which a usage can
-    // select them, so they remain available to manifestless workspaces but are not silently
-    // injected here.
-    let library_roots = selected_candidate_roots.clone();
+    let standard_library_roots = catalog.stdlib.roots.clone();
+    let library_roots = mandatory_and_selected_roots(
+        &catalog.package_roots,
+        &standard_library_roots,
+        &selected_candidate_roots,
+    );
 
     Ok(ProjectDependencyAdmission {
         manifest_present: true,
         resolutions,
         library_roots,
+        standard_library_roots,
         candidate_roots,
         selected_candidate_roots,
     })
+}
+
+/// Preserve catalog precedence while restricting a manifest project to its language baseline and
+/// explicitly selected project dependencies.
+fn mandatory_and_selected_roots(
+    catalog_roots: &[PathBuf],
+    mandatory_roots: &[PathBuf],
+    selected_roots: &[PathBuf],
+) -> Vec<PathBuf> {
+    let admitted = mandatory_roots
+        .iter()
+        .chain(selected_roots)
+        .map(|root| root.canonicalize().unwrap_or_else(|_| root.clone()))
+        .collect::<BTreeSet<_>>();
+    let mut roots = catalog_roots
+        .iter()
+        .filter(|root| {
+            let canonical = root.canonicalize().unwrap_or_else(|_| (*root).clone());
+            admitted.contains(&canonical)
+        })
+        .cloned()
+        .collect::<Vec<_>>();
+    for root in admitted {
+        if !roots.iter().any(|candidate| {
+            candidate
+                .canonicalize()
+                .unwrap_or_else(|_| candidate.clone())
+                == root
+        }) {
+            roots.push(root);
+        }
+    }
+    roots
 }
 
 fn resolve_usage(
@@ -432,5 +476,41 @@ mod tests {
             resolutions[0],
             ProjectDependencyResolution::Ambiguous { .. }
         ));
+    }
+
+    #[test]
+    fn mandatory_roots_survive_an_empty_manifest_selection() {
+        let mandatory = vec![PathBuf::from("kernel"), PathBuf::from("sysml")];
+        let catalog = vec![
+            PathBuf::from("custom"),
+            PathBuf::from("sysml"),
+            PathBuf::from("kernel"),
+        ];
+
+        assert_eq!(
+            mandatory_and_selected_roots(&catalog, &mandatory, &[]),
+            vec![PathBuf::from("sysml"), PathBuf::from("kernel")]
+        );
+    }
+
+    #[test]
+    fn selected_projects_are_added_without_admitting_other_catalog_roots() {
+        let mandatory = vec![PathBuf::from("kernel"), PathBuf::from("sysml")];
+        let selected = vec![PathBuf::from("declared")];
+        let catalog = vec![
+            PathBuf::from("undeclared"),
+            PathBuf::from("declared"),
+            PathBuf::from("sysml"),
+            PathBuf::from("kernel"),
+        ];
+
+        assert_eq!(
+            mandatory_and_selected_roots(&catalog, &mandatory, &selected),
+            vec![
+                PathBuf::from("declared"),
+                PathBuf::from("sysml"),
+                PathBuf::from("kernel")
+            ]
+        );
     }
 }

@@ -307,7 +307,11 @@ impl ProjectRegistry {
                         Err(error) => return (Vec::new(), Vec::new(), Some(error)),
                     };
                 if resolutions.is_empty() {
-                    return (Vec::new(), Vec::new(), None);
+                    return (
+                        fallback_standard_library_paths.to_vec(),
+                        fallback_standard_library_paths.to_vec(),
+                        None,
+                    );
                 }
                 return (
                     Vec::new(),
@@ -333,7 +337,11 @@ impl ProjectRegistry {
                     .iter()
                     .filter_map(|root| Url::from_directory_path(root).ok())
                     .collect(),
-                Vec::new(),
+                admission
+                    .standard_library_roots
+                    .iter()
+                    .filter_map(|root| Url::from_directory_path(root).ok())
+                    .collect(),
                 None,
             ),
             Ok(_) => (

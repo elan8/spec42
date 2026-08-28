@@ -164,9 +164,11 @@ pub(crate) fn build_workspace_snapshot(
             let Ok(path) = document.uri().to_file_path() else {
                 return false;
             };
+            let path = path.canonicalize().unwrap_or(path);
             admission
-                .selected_candidate_roots
+                .library_roots
                 .iter()
+                .map(|root| root.canonicalize().unwrap_or_else(|_| root.clone()))
                 .any(|root| path.starts_with(root))
         });
     }
