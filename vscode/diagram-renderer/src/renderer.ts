@@ -22,17 +22,18 @@ import {
 } from "./render/drawing";
 import { layoutPrepared } from "./render/layout";
 import { contentBoundsFromExtents, type ContentBounds } from "./render/types";
-import type { RenderOptions } from "./render/types";
+import type { DisclosureState, RenderOptions } from "./render/types";
 import { installDiagramTooltips } from "./render/diagram-tooltip";
 import { installNodeChromeStyles } from "./render/node-chrome-style";
 
-export type { RenderOptions } from "./render/types";
+export type { DisclosureState, RenderOptions } from "./render/types";
 
 export interface RenderController {
   reset: () => void;
   exportSvg: () => string;
   destroy: () => void;
   getFitTransform: () => d3.ZoomTransform;
+  getDisclosureState: () => DisclosureState;
 }
 
 import type { PreparedNode } from "./prepare";
@@ -115,6 +116,7 @@ export async function renderVisualization(
 
   let bounds: ContentBounds;
   let generalRenderGeneration = 0;
+  let getDisclosureState = (): DisclosureState => ({ expandedNodeIds: [], sectionStates: [] });
   if (view === "action-flow-view") {
     addActionFlowMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
     const drawStartedAt = Date.now();
@@ -159,9 +161,25 @@ export async function renderVisualization(
       // Expansion and compartment disclosure are renderer-owned presentation state. They live for
       // the lifetime of this controller, so redraws inside one instance preserve what the viewer
       // opened. The projection below is the single place that state reaches layout and drawing.
-      const expanded = new Set<string>();
-      const sectionState = new Map<string, boolean>();
       const sectionKey = (nodeId: string, key: string) => `${nodeId}\u0000${key}`;
+      const expanded = new Set(options.disclosureState?.expandedNodeIds ?? []);
+      const sectionState = new Map<string, boolean>(
+        (options.disclosureState?.sectionStates ?? []).map((state) => [
+          sectionKey(state.nodeId, state.sectionKey),
+          state.expanded,
+        ]),
+      );
+      getDisclosureState = () => ({
+        expandedNodeIds: [...expanded],
+        sectionStates: [...sectionState].map(([key, expandedState]) => {
+          const separator = key.indexOf("\u0000");
+          return {
+            nodeId: key.slice(0, separator),
+            sectionKey: key.slice(separator + 1),
+            expanded: expandedState,
+          };
+        }),
+      });
       const roots = new Set(Array.isArray(prepared.meta?.exposedRoots) ? prepared.meta?.exposedRoots as string[] : []);
       const ownerOf = (node: PreparedNode): string | undefined => {
         const owner = node.attributes?.owner;
@@ -312,6 +330,7 @@ export async function renderVisualization(
   return {
     reset: () => fitView(),
     getFitTransform: () => lastFitTransform,
+    getDisclosureState,
     exportSvg: () => exportSvg(svg.node() as SVGSVGElement, bounds),
     destroy: () => {
       destroyTooltips();

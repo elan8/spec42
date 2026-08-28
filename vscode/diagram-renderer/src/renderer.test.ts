@@ -157,6 +157,50 @@ describe("shared renderer", () => {
     controller.destroy();
   });
 
+  it("transfers expanded General view state to a standalone export renderer", async () => {
+    const prepared = {
+      title: "General",
+      view: "general-view" as const,
+      meta: { exposedRoots: ["n:0"] },
+      nodes: [
+        {
+          id: "n:0",
+          label: "System",
+          kind: "PartUsage",
+          attributes: {
+            owner: null,
+            typedCompartments: [
+              { kind: "parts", provenance: "direct", members: [{ id: "n:1", name: "child", kind: "PartUsage" }] },
+            ],
+          },
+        },
+        { id: "n:1", label: "child", kind: "PartUsage", attributes: { owner: 0 } },
+      ],
+      edges: [],
+    };
+    const visibleTarget = document.createElement("div");
+    const visible = await renderVisualization(visibleTarget, prepared, { theme: { colorScheme: "vscode" } });
+
+    visibleTarget.querySelector<SVGGElement>('[data-node-id="n:0"] .general-node-toggle')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    for (let attempt = 0; attempt < 50 && !visibleTarget.querySelector('[data-node-id="n:1"]'); attempt += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 5));
+    }
+
+    const exportTarget = document.createElement("div");
+    const exported = await renderVisualization(exportTarget, prepared, {
+      delegateZoom: true,
+      disclosureState: visible.getDisclosureState(),
+      theme: LIGHT_THEME,
+    });
+    const svg = exported.exportSvg();
+    expect(svg).toContain('data-node-id="n:1"');
+    expect(svg).toContain('aria-expanded="true"');
+    expect(svg).not.toContain("--vscode-");
+    visible.destroy();
+    exported.destroy();
+  });
+
   it("renders General view as SysML notation nodes with compartments", async () => {
     const target = document.createElement("div");
     Object.defineProperty(target, "clientWidth", { value: 1400, configurable: true });

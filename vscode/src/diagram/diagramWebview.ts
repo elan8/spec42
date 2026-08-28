@@ -141,6 +141,7 @@ function withText(text: string): HTMLElement {
 /** Re-render off-screen with a literal (non-CSS-variable) theme so the SVG stands alone. */
 async function standaloneSvg(): Promise<string> {
   if (!currentProduct) throw new Error("Open a diagram before exporting it.");
+  if (!controller) throw new Error("Wait for the diagram to finish rendering before exporting it.");
   const scheme = currentColorScheme();
   const prepared: PreparedView = prepareViewData(currentProduct);
   const holder = document.createElement("div");
@@ -150,6 +151,7 @@ async function standaloneSvg(): Promise<string> {
     const offscreen = await renderVisualization(holder, prepared, {
       theme: { colorScheme: scheme },
       delegateZoom: true,
+      disclosureState: controller.getDisclosureState(),
     });
     const svg = offscreen.exportSvg();
     offscreen.destroy();
