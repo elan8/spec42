@@ -42,6 +42,7 @@ type RenderMessage = {
   header: string;
   incompleteReasons: string[];
   placeholder?: string;
+  loading?: boolean;
   error?: string;
 };
 
@@ -96,6 +97,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   private publicationDebounce: ReturnType<typeof setTimeout> | undefined;
   private firstLoadRetry: ReturnType<typeof setTimeout> | undefined;
   private firstLoadAttempt = 0;
+  private emptyCatalogDigest: string | undefined;
   private readonly disposables: vscode.Disposable[] = [];
 
   constructor(
@@ -140,7 +142,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       }
     }, undefined, this.disposables);
     this.firstLoadAttempt = 0;
-    this.postPlaceholder("Waiting for the SysML language server…");
+    this.postLoading();
     void this.handles.clientReadyPromise
       .then(() => this.regenerate("resolve"))
       .catch(() => this.regenerate("resolve"));
@@ -292,9 +294,16 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
         this.catalogModelDigest = catalog.modelDigest;
         this.options = allDiagramViewOptions(catalog);
         if (this.options.length === 0) {
+          if (!this.lastArtifact && this.emptyCatalogDigest !== catalog.modelDigest) {
+            this.emptyCatalogDigest = catalog.modelDigest;
+            this.postLoading();
+            this.scheduleFirstLoadRetry();
+            return;
+          }
           this.postPlaceholder("This model authors no diagram views. Add a `view … : GeneralView { expose … }` to see one here.");
           return;
         }
+        this.emptyCatalogDigest = undefined;
 
         const remembered = this.selectedHandle
           ? this.options.find((option) => option.handle === this.selectedHandle)
@@ -343,11 +352,11 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       if (!this.lastArtifact) {
         // No render has ever landed — the LSP is probably still indexing. Say so and keep
         // trying with backoff; `spec42/publicationChanged` also retriggers this path.
-        this.postPlaceholder(
-          this.firstLoadAttempt >= 6
-            ? `Could not generate a diagram: ${message}`
-            : "Waiting for the SysML language server…",
-        );
+        if (this.firstLoadAttempt >= 6) {
+          this.postPlaceholder(`Could not generate a diagram: ${message}`);
+        } else {
+          this.postLoading();
+        }
         this.scheduleFirstLoadRetry();
       } else if (isServerNotReady(error)) {
         this.postRender("the language server is catching up");
@@ -392,6 +401,19 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       header: placeholder,
       incompleteReasons: [],
       placeholder,
+    });
+  }
+
+  private postLoading(): void {
+    this.send({
+      type: "render",
+      productJson: JSON.stringify(emptyProduct()),
+      views: this.viewList(),
+      selectedHandle: this.selectedHandle ?? "",
+      header: "Loading diagram…",
+      incompleteReasons: [],
+      placeholder: "Loading diagram…",
+      loading: true,
     });
   }
 
@@ -525,6 +547,9 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   .canvas{flex:1;min-height:0;position:relative}
   .canvas svg{display:block;width:100%;height:100%}
   .empty{padding:24px 16px;color:var(--vscode-descriptionForeground);font:13px var(--vscode-font-family)}
+  .loading{display:flex;align-items:center;gap:9px}
+  .loading-spinner{width:13px;height:13px;border:2px solid var(--vscode-progressBar-background);border-right-color:transparent;border-radius:50%;animation:diagram-spin .8s linear infinite}
+  @keyframes diagram-spin{to{transform:rotate(360deg)}}
 </style></head><body>
 <header>
   <select id="view-select" title="Authored diagram view"></select>

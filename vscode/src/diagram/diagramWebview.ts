@@ -14,6 +14,7 @@ type RenderMessage = {
   header: string;
   incompleteReasons: string[];
   placeholder?: string;
+  loading?: boolean;
   error?: string;
 };
 
@@ -86,7 +87,7 @@ async function render(message: RenderMessage): Promise<void> {
     controller?.destroy();
     controller = undefined;
     currentProduct = undefined;
-    canvas.replaceChildren(withText(message.placeholder));
+    canvas.replaceChildren(message.loading ? withLoading(message.placeholder) : withText(message.placeholder));
     return;
   }
 
@@ -135,6 +136,18 @@ function withText(text: string): HTMLElement {
   const div = document.createElement("div");
   div.className = "empty";
   div.textContent = text;
+  return div;
+}
+
+function withLoading(text: string): HTMLElement {
+  const div = withText(text);
+  div.classList.add("loading");
+  const spinner = document.createElement("span");
+  spinner.className = "loading-spinner";
+  spinner.setAttribute("aria-hidden", "true");
+  div.prepend(spinner);
+  div.setAttribute("role", "status");
+  div.setAttribute("aria-live", "polite");
   return div;
 }
 
