@@ -1166,9 +1166,9 @@ var Spec42HeadlessRendererBundle = (() => {
     const normalized = metaclass.toLowerCase();
     return normalized === "portusage" || normalized === "portdefinition" || normalized === "conjugatedportdefinition";
   }
+  var INTERCONNECTION_EDGE_KINDS = /* @__PURE__ */ new Set(["connection", "flow", "bind", "interface"]);
   function isInterconnectionEdgeKind(kind) {
-    const normalized = kind.toLowerCase();
-    return normalized === "connector" || normalized === "connection" || normalized === "flow" || normalized === "bind" || normalized === "binding" || normalized === "interface";
+    return INTERCONNECTION_EDGE_KINDS.has(normalizeEdgeKind(kind));
   }
 
   // diagram-renderer/src/prepare/standard-views.ts
