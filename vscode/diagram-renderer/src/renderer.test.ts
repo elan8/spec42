@@ -132,6 +132,31 @@ describe("shared renderer", () => {
     controller.destroy();
   });
 
+  it("exports content coordinates without the live viewport transform", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1600, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 1000, configurable: true });
+
+    const controller = await renderVisualization(
+      target,
+      {
+        title: "General",
+        view: "general-view",
+        nodes: [{ id: "root", label: "Root", kind: "PartUsage" }],
+        edges: [],
+      },
+      { delegateZoom: true, theme: LIGHT_THEME },
+    );
+
+    expect(target.querySelector(".viz-root")?.hasAttribute("transform")).toBe(true);
+    const exported = controller.exportSvg();
+    const exportedRoot = /<g class="viz-root"([^>]*)>/.exec(exported);
+    expect(exportedRoot).toBeTruthy();
+    expect(exportedRoot?.[1]).not.toContain("transform=");
+    expect(exported).toContain('data-node-id="root"');
+    controller.destroy();
+  });
+
   it("renders General view as SysML notation nodes with compartments", async () => {
     const target = document.createElement("div");
     Object.defineProperty(target, "clientWidth", { value: 1400, configurable: true });

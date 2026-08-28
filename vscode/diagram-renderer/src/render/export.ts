@@ -55,6 +55,10 @@ export function addMarkers(svg: d3.Selection<SVGSVGElement, unknown, null, undef
 
 export function exportSvg(svgNode: SVGSVGElement, bounds: ContentBounds): string {
   const clone = svgNode.cloneNode(true) as SVGSVGElement;
+  // The live canvas fits and pans the content by transforming `.viz-root`. Export instead uses a
+  // content-sized viewBox, so retaining that viewport transform would position the drawing twice
+  // and can move every visible element outside the exported image.
+  clone.querySelector<SVGGElement>(".viz-root")?.removeAttribute("transform");
   for (const element of Array.from(clone.querySelectorAll<SVGElement>("[data-tooltip-title]"))) {
     const hasTitle = Array.from(element.children)
       .some((child) => child.tagName.toLowerCase() === "title");
