@@ -23,7 +23,9 @@ export function normalizeEdgeKind(relationshipType: string): NormalizedEdgeKind 
   if (type.includes("interface-connection") || type.includes("interface connection")) return "interface";
   if (type.includes("interface")) return "interface";
   if (type.includes("binding-connection") || type.includes("binding connection")) return "bind";
+  if (type.includes("binding-connector") || type.includes("binding connector")) return "bind";
   if (type.includes("connection") || type === "connect") return "connection";
+  if (type.includes("connector")) return "connection";
   if (type.includes("reference") || type === "ref") return "reference";
   if (type.includes("satisfy")) return "satisfy";
   if (type.includes("verify")) return "verify";

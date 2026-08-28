@@ -46,13 +46,14 @@ describe("shared prepareViewData", () => {
           { reference: 2, metaclass: "PartUsage", notationRole: "usage", name: "b", typing: { status: "resolved", types: [{ reference: 2, label: "Battery" }] }, owner: 0, source: 0, compartments: [] },
         ],
         relationships: [],
-        edges: [{ reference: 3, source: 0, target: 1, kind: "flow", provenance: "authored", navigation: 0 }],
+        edges: [{ reference: 3, origin: 0, source: 0, target: 1, kind: "flow", provenance: "authored", navigation: 0 }],
         metadata: { roots: [0] },
         scene: { kind: "general" },
       },
     });
     expect(prepared.nodes.map((node) => node.id)).toEqual(["n:0", "n:1"]);
     expect(prepared.edges[0]).toMatchObject({ id: "e:0", source: "n:0", target: "n:1", edgeKind: "flow" });
+    expect(prepared.edges[0]?.attributes?.originNodeId).toBe("n:0");
     expect(prepared.nodes[0]).toMatchObject({ uri: "file:///model.sysml", range: { start: { line: 1, character: 2 } } });
     expect(prepared.nodes[0]?.attributes?.semanticReference).toEqual({ kind: "qualified-name", document: 0, qualifiedName: "P::a" });
     expect(prepared.nodes[0]?.attributes?.notationRole).toBe("usage");
