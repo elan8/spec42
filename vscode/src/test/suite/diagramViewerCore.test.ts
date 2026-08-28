@@ -1,8 +1,12 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  allDiagramViewOptions,
+  authoredDiagramViewOptions,
   buildGenerateArgv,
+  diagramRenderIsStale,
   diagramViewsForDocument,
+  diagramViewKindForHandle,
   DIAGRAM_VIEWS,
   isPathInsideWorkspace,
   parseDiagramProduct,
@@ -11,6 +15,7 @@ import {
   parseLspGenerationResult,
   parseStateTransitionViewCatalog,
   parseSourceNavigation,
+  resolveDiagramSelection,
   selectSingleDiagramJson,
   visibleSourceColumn,
 } from "../../diagram/diagramViewerCore";
@@ -210,6 +215,57 @@ describe("diagram viewer core", () => {
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, projection: { ...value.projection, kind: "grid-view" } })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, selectedView: { ...value.selectedView, reference: 1 } })));
     assert.throws(() => parseDiagramProduct(JSON.stringify({ ...value, sources: [{ document: 1, range: [0, 0, 0, 1] }] })));
+  });
+
+  it("lists every authored view in the model, grouped by file and keyed by handle", () => {
+    const catalog = parseDiagramViewCatalog({
+      modelDigest: "blake3:model",
+      views: [{
+        handle: "view:b",
+        kind: "sequence-view",
+        reference: { kind: "qualified-name", document: "file:///w/views.sysml", qualifiedName: "P::flow", sourceDomain: "workspace" },
+        name: "checkoutFlow",
+        source: { uri: "file:///w/views.sysml" },
+      }, {
+        handle: "view:a",
+        kind: "general-view",
+        reference: { kind: "qualified-name", document: "file:///w/views.sysml", qualifiedName: "P::structure", sourceDomain: "workspace" },
+        name: "structure",
+        source: { uri: "file:///w/views.sysml" },
+      }, {
+        handle: "view:elsewhere",
+        kind: "grid-view",
+        reference: { kind: "qualified-name", document: "file:///w/aaa.sysml", qualifiedName: "Q::matrix", sourceDomain: "workspace" },
+        name: "matrix",
+        source: { uri: "file:///w/aaa.sysml" },
+      }],
+    });
+    const all = allDiagramViewOptions(catalog);
+    // Ordered by file basename (aaa before views), then kind, then name.
+    assert.deepEqual(all.map((option) => option.handle), ["view:elsewhere", "view:a", "view:b"]);
+    assert.deepEqual(all.map((option) => option.group), ["aaa.sysml", "views.sysml", "views.sysml"]);
+    assert.equal(all[1].label, "structure · General View");
+
+    const authored = authoredDiagramViewOptions(catalog, "file:///w/views.sysml");
+    assert.deepEqual(authored.map((option) => option.handle), ["view:a", "view:b"]);
+    assert.equal(diagramViewKindForHandle(catalog, "view:b"), "sequence-view");
+    assert.equal(diagramViewKindForHandle(catalog, "missing"), undefined);
+  });
+
+  it("keeps the remembered view when it survives a catalog refresh, else falls back", () => {
+    const options = [
+      { handle: "h1", kind: "general-view" as const, name: "a", label: "a · General View", documentUri: "file:///w/x.sysml", group: "x.sysml" },
+      { handle: "h2", kind: "sequence-view" as const, name: "b", label: "b · Sequence View", documentUri: "file:///w/x.sysml", group: "x.sysml" },
+    ];
+    assert.equal(resolveDiagramSelection(options, "h2")?.handle, "h2");
+    assert.equal(resolveDiagramSelection(options, "gone")?.handle, "h1");
+    assert.equal(resolveDiagramSelection([], "h1"), undefined);
+  });
+
+  it("treats a publication digest as stale only against a known rendered digest", () => {
+    assert.equal(diagramRenderIsStale(undefined, "blake3:new"), false);
+    assert.equal(diagramRenderIsStale("blake3:old", "blake3:new"), true);
+    assert.equal(diagramRenderIsStale("blake3:same", "blake3:same"), false);
   });
 
   it("validates bounded source navigation", () => {

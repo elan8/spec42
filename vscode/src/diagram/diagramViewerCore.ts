@@ -158,6 +158,102 @@ export function diagramViewsForDocument(
   return DIAGRAM_VIEWS.filter((view) => authoredKinds.has(view.id));
 }
 
+/** One selectable entry in the diagram view's dropdown. */
+export type DiagramViewOption = {
+  handle: string;
+  kind: DiagramViewId;
+  name: string;
+  label: string;
+  /** Workspace URI of the file that authors this view — the dropdown groups by its basename. */
+  documentUri: string;
+  group: string;
+};
+
+const DIAGRAM_VIEW_LABELS = new Map<DiagramViewId, string>(
+  DIAGRAM_VIEWS.map((view) => [view.id, view.label]),
+);
+
+function basename(uri: string): string {
+  const trimmed = uri.replace(/[/\\]+$/, "");
+  const slash = Math.max(trimmed.lastIndexOf("/"), trimmed.lastIndexOf("\\"));
+  const tail = slash >= 0 ? trimmed.slice(slash + 1) : trimmed;
+  try {
+    return decodeURIComponent(tail);
+  } catch {
+    return tail;
+  }
+}
+
+function toOption(view: DiagramViewCatalog["views"][number]): DiagramViewOption {
+  return {
+    handle: view.handle,
+    kind: view.kind,
+    name: view.name,
+    label: `${view.name} · ${DIAGRAM_VIEW_LABELS.get(view.kind) ?? view.kind}`,
+    documentUri: view.source.uri,
+    group: basename(view.source.uri),
+  };
+}
+
+/**
+ * Every authored diagram view in the model — the Diagram view is project-scoped, not tied to one
+ * source file. Ordered by file, then kind, then name so the dropdown is stable across
+ * regenerations. A document may author several views of one kind, so entries are keyed by handle.
+ */
+export function allDiagramViewOptions(catalog: DiagramViewCatalog): DiagramViewOption[] {
+  return catalog.views
+    .map(toOption)
+    .sort(
+      (a, b) =>
+        a.group.localeCompare(b.group) ||
+        a.kind.localeCompare(b.kind) ||
+        a.name.localeCompare(b.name),
+    );
+}
+
+/** The subset authored in `documentUri` (used to pick a sensible default when a file is active). */
+export function authoredDiagramViewOptions(
+  catalog: DiagramViewCatalog,
+  documentUri: string,
+): DiagramViewOption[] {
+  return allDiagramViewOptions(catalog).filter((option) => option.documentUri === documentUri);
+}
+
+export function diagramViewKindForHandle(
+  catalog: DiagramViewCatalog,
+  handle: string,
+): DiagramViewId | undefined {
+  return catalog.views.find((view) => view.handle === handle)?.kind;
+}
+
+/**
+ * Which handle a regeneration should target, given the panel's remembered handle and a freshly
+ * fetched catalog. Keeps the current selection when it still exists; otherwise falls back to the
+ * first authored view so a renamed or removed view does not dead-end the panel.
+ */
+export function resolveDiagramSelection(
+  options: DiagramViewOption[],
+  rememberedHandle: string | undefined,
+): DiagramViewOption | undefined {
+  if (rememberedHandle) {
+    const kept = options.find((option) => option.handle === rememberedHandle);
+    if (kept) return kept;
+  }
+  return options[0];
+}
+
+/**
+ * Whether a `spec42/publicationChanged` notification means the panel's current render is stale.
+ * A render with no known digest (nothing drawn yet) is not "stale" — it just has nothing to
+ * compare — so this returns false and the caller leaves the panel alone.
+ */
+export function diagramRenderIsStale(
+  renderedModelDigest: string | undefined,
+  publishedModelDigest: string,
+): boolean {
+  return renderedModelDigest !== undefined && renderedModelDigest !== publishedModelDigest;
+}
+
 export function parseStateTransitionViewCatalog(value: unknown): StateTransitionViewCatalog {
   if (!value || typeof value !== "object") throw new Error("Spec42 returned an invalid state-transition catalog.");
   const candidate = value as Record<string, unknown>;

@@ -3,10 +3,14 @@ import * as path from "path";
 import * as vscode from "vscode";
 import type { LspClientHandles } from "../activation/lspClient";
 import {
+  allDiagramViewOptions,
+  authoredDiagramViewOptions,
   type DiagramProduct,
   type DiagramViewCatalog,
   type DiagramViewId,
-  diagramViewsForDocument,
+  type DiagramViewOption,
+  diagramRenderIsStale,
+  diagramViewKindForHandle,
   isPathInsideWorkspace,
   parseDiagramProduct,
   parseDiagramViewCatalog,
@@ -15,6 +19,8 @@ import {
   selectSingleDiagramJson,
   visibleSourceColumn,
 } from "./diagramViewerCore";
+
+export const DIAGRAM_VIEW_ID = "spec42DiagramView";
 
 type RenderedArtifact = {
   product: DiagramProduct;
@@ -25,6 +31,18 @@ type RenderedArtifact = {
   compilationCacheHits: number;
   compilationCacheMisses: number;
   compilationCacheError: string | null;
+};
+
+/** A payload the webview can draw without any further round trip. */
+type RenderMessage = {
+  type: "render";
+  productJson: string;
+  views: Array<{ handle: string; label: string; group: string }>;
+  selectedHandle: string;
+  header: string;
+  incompleteReasons: string[];
+  placeholder?: string;
+  error?: string;
 };
 
 export type DiagramViewerDependencies = {
@@ -42,6 +60,10 @@ function pluginPath(context: vscode.ExtensionContext): string {
 
 const defaultDependencies: DiagramViewerDependencies = { resolvePluginPath: pluginPath };
 
+const PUBLICATION_DEBOUNCE_MS = 250;
+const DIGEST_MISMATCH_RETRIES = 2;
+const MODEL_GLOB = "**/*.{sysml,kerml}";
+
 function prepareCacheLabel(artifact: RenderedArtifact): string {
   if (artifact.preparedReused) return " (memory cache)";
   if (artifact.compilationCacheHits > 0) return " (native cache)";
@@ -50,111 +72,379 @@ function prepareCacheLabel(artifact: RenderedArtifact): string {
   return "";
 }
 
-async function requireSavedModel(): Promise<vscode.TextDocument | undefined> {
-  const document = vscode.window.activeTextEditor?.document;
-  if (!document || document.languageId !== "sysml" || document.uri.scheme !== "file") {
-    await vscode.window.showErrorMessage("Open a saved SysML file before rendering a diagram.");
-    return undefined;
-  }
-  const dirty = vscode.workspace.textDocuments.filter(
-    (candidate) => candidate.isDirty && (candidate.languageId === "sysml" || candidate.languageId === "kerml")
-  );
-  if (dirty.length === 0) return document;
-  const choice = await vscode.window.showWarningMessage(
-    "Diagram generation uses the saved workspace. Save all changed SysML/KerML files?",
-    { modal: true },
-    "Save All"
-  );
-  if (choice !== "Save All") return undefined;
-  const saved = await Promise.all(dirty.map((candidate) => candidate.save()));
-  if (saved.some((ok) => !ok)) {
-    await vscode.window.showErrorMessage("Could not save every changed model file; generation was cancelled.");
-    return undefined;
-  }
-  return document;
+function artifactHeader(artifact: RenderedArtifact): string {
+  const status = artifact.product.completeness.status === "complete"
+    ? "complete projection"
+    : `incomplete projection (${artifact.product.completeness.reasons.length})`;
+  return [
+    artifact.product.selectedView.name,
+    status,
+    `model ${artifact.product.modelDigest}`,
+    `prepare ${artifact.modulePrepareMs} ms${prepareCacheLabel(artifact)}`,
+    `execute ${(artifact.guestExecutionUs / 1000).toFixed(2)} ms`,
+  ].join(" · ");
 }
 
-export class DiagramViewer {
-  private panel: vscode.WebviewPanel | undefined;
+function isModelDocument(document: vscode.TextDocument | undefined): document is vscode.TextDocument {
+  return (
+    !!document &&
+    document.uri.scheme === "file" &&
+    (document.languageId === "sysml" || document.languageId === "kerml")
+  );
+}
+
+/**
+ * The diagram view in the secondary side bar. Project-scoped: it lists every authored diagram
+ * view in the model and regenerates the selected one whenever the publication changes.
+ */
+export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.Disposable {
+  private view: vscode.WebviewView | undefined;
+  private options: DiagramViewOption[] = [];
+  private catalogModelDigest: string | undefined;
+  private selectedHandle: string | undefined;
+  private anchorUri: string | undefined;
   private lastArtifact: RenderedArtifact | undefined;
   private generation = 0;
   private activeAbort: AbortController | undefined;
+  private webviewReady = false;
+  private pendingRender: RenderMessage | undefined;
+  private publicationDebounce: ReturnType<typeof setTimeout> | undefined;
+  private firstLoadRetry: ReturnType<typeof setTimeout> | undefined;
+  private firstLoadAttempt = 0;
+  private readonly disposables: vscode.Disposable[] = [];
 
   constructor(
     private readonly context: vscode.ExtensionContext,
     private readonly handles: LspClientHandles,
     private readonly dependencies: DiagramViewerDependencies = defaultDependencies
-  ) {}
+  ) {
+    this.disposables.push(
+      this.handles.client.onNotification("spec42/publicationChanged", (params: unknown) => {
+        const digest = (params as { modelDigest?: unknown } | null)?.modelDigest;
+        if (typeof digest === "string") this.onPublicationChanged(digest);
+      }),
+    );
+  }
 
+  dispose(): void {
+    if (this.publicationDebounce) clearTimeout(this.publicationDebounce);
+    if (this.firstLoadRetry) clearTimeout(this.firstLoadRetry);
+    this.activeAbort?.abort();
+    for (const disposable of this.disposables.splice(0)) disposable.dispose();
+  }
+
+  resolveWebviewView(webviewView: vscode.WebviewView): void {
+    this.view = webviewView;
+    this.webviewReady = false;
+    this.pendingRender = undefined;
+    webviewView.webview.options = {
+      enableScripts: true,
+      localResourceRoots: [vscode.Uri.joinPath(this.context.extensionUri, "media")],
+    };
+    webviewView.webview.html = this.shellHtml(webviewView.webview);
+    webviewView.webview.onDidReceiveMessage((message) => this.onWebviewMessage(message), undefined, this.disposables);
+    webviewView.onDidChangeVisibility(() => {
+      if (webviewView.visible) void this.regenerate("visibility");
+    }, undefined, this.disposables);
+    webviewView.onDidDispose(() => {
+      if (this.view === webviewView) {
+        this.view = undefined;
+        this.webviewReady = false;
+        this.pendingRender = undefined;
+        this.activeAbort?.abort();
+      }
+    }, undefined, this.disposables);
+    this.firstLoadAttempt = 0;
+    this.postPlaceholder("Waiting for the SysML language server…");
+    void this.handles.clientReadyPromise
+      .then(() => this.regenerate("resolve"))
+      .catch(() => this.regenerate("resolve"));
+  }
+
+  /** Command entry point — reveal the view and regenerate. */
   async open(): Promise<void> {
-    const document = await requireSavedModel();
-    if (!document) return;
-    const diagramCatalog = parseDiagramViewCatalog(await this.handles.client.sendRequest(
-      "spec42/diagramViews",
-      { modelUri: document.uri.toString() }
-    ));
-    const availableViews = diagramViewsForDocument(diagramCatalog, document.uri.toString());
-    if (availableViews.length === 0) {
-      await vscode.window.showInformationMessage("The active file does not author a supported diagram view.");
+    await vscode.commands.executeCommand(`${DIAGRAM_VIEW_ID}.focus`);
+    await this.regenerate("manual");
+  }
+
+  async refresh(): Promise<void> {
+    await this.regenerate("manual");
+  }
+
+  async copyJson(): Promise<void> {
+    if (!this.lastArtifact) {
+      await vscode.window.showInformationMessage("Generate a Spec42 diagram before copying its JSON.");
       return;
     }
-    const selectedView = await vscode.window.showQuickPick(
-      availableViews.map((view) => ({
-        label: view.label,
-        description: view.queryStatus === "implemented" ? "typed query available" : "typed query stub",
-        view,
-      })),
-      { placeHolder: "Select a SysML diagram view" }
+    await vscode.env.clipboard.writeText(this.lastArtifact.productJson);
+    await vscode.window.showInformationMessage("Copied the generated diagram JSON.");
+  }
+
+  private onPublicationChanged(publishedModelDigest: string): void {
+    if (!this.view) return;
+    // A publication signal is worth acting on when it invalidates what we drew, and also when we
+    // never got a first render (the initial attempt raced an in-progress index).
+    const worthRegenerating =
+      !this.lastArtifact ||
+      diagramRenderIsStale(this.lastArtifact.product.modelDigest, publishedModelDigest);
+    if (!worthRegenerating) return;
+    if (this.publicationDebounce) clearTimeout(this.publicationDebounce);
+    this.publicationDebounce = setTimeout(() => {
+      this.publicationDebounce = undefined;
+      void this.regenerate("publication");
+    }, PUBLICATION_DEBOUNCE_MS);
+  }
+
+  /** The first render can lose a race with workspace indexing; retry with backoff until it
+   * lands or the caller triggers a fresh attempt. */
+  private scheduleFirstLoadRetry(): void {
+    if (this.lastArtifact || this.firstLoadRetry) return;
+    if (this.firstLoadAttempt >= 6) return;
+    const wait = Math.min(4000, 500 * 2 ** this.firstLoadAttempt);
+    this.firstLoadAttempt += 1;
+    this.firstLoadRetry = setTimeout(() => {
+      this.firstLoadRetry = undefined;
+      void this.regenerate("retry");
+    }, wait);
+  }
+
+  private onWebviewMessage(message: unknown): void {
+    if (!message || typeof message !== "object") return;
+    const kind = (message as { type?: unknown }).type;
+    if (kind === "ready") {
+      this.webviewReady = true;
+      if (this.pendingRender) {
+        void this.view?.webview.postMessage(this.pendingRender);
+        this.pendingRender = undefined;
+      }
+      return;
+    }
+    if (kind === "refresh") { void this.regenerate("manual"); return; }
+    if (kind === "copyJson") { void this.copyJson(); return; }
+    if (kind === "switchView") {
+      const handle = (message as { handle?: unknown }).handle;
+      if (typeof handle === "string" && handle !== this.selectedHandle) {
+        this.selectedHandle = handle;
+        void this.regenerate("switchView");
+      }
+      return;
+    }
+    if (kind === "export") {
+      const format = (message as { format?: unknown }).format;
+      const data = (message as { data?: unknown }).data;
+      if ((format === "svg" || format === "png") && typeof data === "string") {
+        void this.saveExport(format, data);
+      }
+      return;
+    }
+    if (kind === "openSource") {
+      void this.navigate(message);
+    }
+  }
+
+  /** A workspace model file to anchor `spec42/diagramViews` on; the catalog it returns is
+   * model-wide regardless of which file is used. */
+  private async resolveAnchorUri(): Promise<string | undefined> {
+    const active = vscode.window.activeTextEditor?.document;
+    if (isModelDocument(active)) {
+      this.anchorUri = active.uri.toString();
+      return this.anchorUri;
+    }
+    const open = vscode.workspace.textDocuments.find(isModelDocument);
+    if (open) {
+      this.anchorUri = open.uri.toString();
+      return this.anchorUri;
+    }
+    if (this.anchorUri) {
+      try {
+        await vscode.workspace.fs.stat(vscode.Uri.parse(this.anchorUri));
+        return this.anchorUri;
+      } catch {
+        this.anchorUri = undefined;
+      }
+    }
+    const found = await vscode.workspace.findFiles(MODEL_GLOB, "**/node_modules/**", 1);
+    this.anchorUri = found[0]?.toString();
+    return this.anchorUri;
+  }
+
+  private async fetchCatalog(anchorUri: string): Promise<DiagramViewCatalog> {
+    return parseDiagramViewCatalog(
+      await this.handles.client.sendRequest("spec42/diagramViews", { modelUri: anchorUri }),
     );
-    if (!selectedView) return;
+  }
+
+  private async regenerate(
+    reason: "resolve" | "visibility" | "manual" | "switchView" | "publication" | "retry",
+  ): Promise<void> {
+    if (!this.view) return;
+    if (reason === "visibility" && this.lastArtifact && this.view.visible) {
+      // Becoming visible with a current render already drawn: nothing to do.
+      if (!diagramRenderIsStale(this.lastArtifact.product.modelDigest, this.catalogModelDigest ?? "")) {
+        return;
+      }
+    }
+    if (reason === "manual" || reason === "switchView") {
+      // A user-driven attempt gets a fresh first-load retry budget.
+      this.firstLoadAttempt = 0;
+      if (this.firstLoadRetry) { clearTimeout(this.firstLoadRetry); this.firstLoadRetry = undefined; }
+    }
 
     this.activeAbort?.abort();
     const abort = new AbortController();
     this.activeAbort = abort;
     const current = ++this.generation;
+
+    void this.view.webview.postMessage({ type: "busy", busy: true });
     try {
-      const selection = await this.resolveSelection(document, selectedView.view.id, diagramCatalog);
-      if (!selection || abort.signal.aborted || current !== this.generation) return;
-      const artifact = await this.generate(document, selectedView.view.id, selection.modelDigest, selection.handle, abort.signal);
-      if (current !== this.generation) return;
-      this.lastArtifact = artifact;
-      this.show(artifact);
+      const anchorUri = await this.resolveAnchorUri();
+      if (current !== this.generation || abort.signal.aborted) return;
+      if (!anchorUri) {
+        this.postPlaceholder("This workspace has no SysML files.");
+        return;
+      }
+
+      let attempt = 0;
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const catalog = await this.fetchCatalog(anchorUri);
+        if (current !== this.generation || abort.signal.aborted) return;
+        this.catalogModelDigest = catalog.modelDigest;
+        this.options = allDiagramViewOptions(catalog);
+        if (this.options.length === 0) {
+          this.postPlaceholder("This model authors no diagram views. Add a `view … : GeneralView { expose … }` to see one here.");
+          return;
+        }
+
+        const remembered = this.selectedHandle
+          ? this.options.find((option) => option.handle === this.selectedHandle)
+          : undefined;
+        const selected = remembered ?? this.defaultSelection(catalog) ?? this.options[0];
+        if (!selected) {
+          this.postPlaceholder("This model authors no diagram views.");
+          return;
+        }
+        this.selectedHandle = selected.handle;
+
+        const document = vscode.workspace.textDocuments.find(
+          (candidate) => candidate.uri.toString() === selected.documentUri,
+        ) ?? await this.openHidden(selected.documentUri);
+        if (!document) {
+          this.postPlaceholder(`Could not open ${selected.group} to generate its diagram.`);
+          return;
+        }
+        const kind = diagramViewKindForHandle(catalog, selected.handle);
+        if (!kind) {
+          this.postPlaceholder("The selected diagram view is no longer in the catalog.");
+          return;
+        }
+
+        try {
+          const artifact = await this.generate(document, kind, catalog.modelDigest, selected.handle, abort.signal);
+          if (current !== this.generation) return;
+          this.lastArtifact = artifact;
+          this.firstLoadAttempt = 0;
+          if (this.firstLoadRetry) { clearTimeout(this.firstLoadRetry); this.firstLoadRetry = undefined; }
+          this.postRender();
+          return;
+        } catch (error) {
+          if (current !== this.generation || abort.signal.aborted) return;
+          if (isDigestMismatch(error) && attempt < DIGEST_MISMATCH_RETRIES) {
+            attempt += 1;
+            await delay(150);
+            continue;
+          }
+          throw error;
+        }
+      }
     } catch (error) {
       if (current !== this.generation) return;
-      const message = error instanceof Error ? error.message : String(error);
-      if (this.panel && this.lastArtifact) this.show(this.lastArtifact, message);
-      await vscode.window.showErrorMessage(`Diagram generation failed: ${message}`);
+      const message = describeError(error);
+      if (!this.lastArtifact) {
+        // No render has ever landed — the LSP is probably still indexing. Say so and keep
+        // trying with backoff; `spec42/publicationChanged` also retriggers this path.
+        this.postPlaceholder(
+          this.firstLoadAttempt >= 6
+            ? `Could not generate a diagram: ${message}`
+            : "Waiting for the SysML language server…",
+        );
+        this.scheduleFirstLoadRetry();
+      } else if (isServerNotReady(error)) {
+        this.postRender("the language server is catching up");
+      } else {
+        this.postRender(message);
+        if (reason === "manual" || reason === "switchView") {
+          await vscode.window.showErrorMessage(`Diagram generation failed: ${message}`);
+        }
+      }
+    } finally {
+      if (current === this.generation) void this.view?.webview.postMessage({ type: "busy", busy: false });
     }
   }
 
-  private async resolveSelection(
-    document: vscode.TextDocument,
-    view: DiagramViewId,
-    catalog: DiagramViewCatalog
-  ): Promise<{ modelDigest: string; handle: string } | undefined> {
-    const choices = catalog.views.filter((candidate) =>
-      candidate.kind === view && candidate.source.uri === document.uri.toString());
-    if (choices.length === 0) throw new Error("The active file does not author the selected diagram view kind.");
-    if (choices.length === 1) return { modelDigest: catalog.modelDigest, handle: choices[0].handle };
-    const picked = await vscode.window.showQuickPick(
-      choices.map((candidate) => ({
-        label: candidate.name,
-        description: candidate.kind,
-        detail: candidate.reference.kind === "qualified-name"
-          ? `${candidate.reference.document}#${candidate.reference.qualifiedName}`
-          : candidate.reference.kind,
-        candidate,
-      })),
-      { placeHolder: "Select an authored diagram view", matchOnDescription: true, matchOnDetail: true }
-    );
-    return picked ? { modelDigest: catalog.modelDigest, handle: picked.candidate.handle } : undefined;
+  private defaultSelection(catalog: DiagramViewCatalog): DiagramViewOption | undefined {
+    const active = vscode.window.activeTextEditor?.document;
+    if (isModelDocument(active)) {
+      const authored = authoredDiagramViewOptions(catalog, active.uri.toString());
+      if (authored.length > 0) return authored[0];
+    }
+    return this.options[0];
+  }
+
+  private async openHidden(uri: string): Promise<vscode.TextDocument | undefined> {
+    try {
+      return await vscode.workspace.openTextDocument(vscode.Uri.parse(uri));
+    } catch {
+      return undefined;
+    }
+  }
+
+  private viewList(): RenderMessage["views"] {
+    return this.options.map((option) => ({ handle: option.handle, label: option.label, group: option.group }));
+  }
+
+  private postPlaceholder(placeholder: string): void {
+    this.send({
+      type: "render",
+      productJson: JSON.stringify(emptyProduct()),
+      views: this.viewList(),
+      selectedHandle: this.selectedHandle ?? "",
+      header: placeholder,
+      incompleteReasons: [],
+      placeholder,
+    });
+  }
+
+  private postRender(error?: string): void {
+    const artifact = this.lastArtifact;
+    if (!artifact) {
+      this.postPlaceholder(error ?? "No diagram generated yet.");
+      return;
+    }
+    this.send({
+      type: "render",
+      productJson: artifact.productJson,
+      views: this.viewList(),
+      selectedHandle: this.selectedHandle ?? "",
+      header: artifactHeader(artifact),
+      incompleteReasons: artifact.product.completeness.reasons.map((reason) => reason.code),
+      error,
+    });
+  }
+
+  private send(message: RenderMessage): void {
+    if (this.webviewReady) {
+      void this.view?.webview.postMessage(message);
+    } else {
+      this.pendingRender = message;
+    }
   }
 
   private async generate(
     document: vscode.TextDocument,
     view: DiagramViewId,
     expectedModelDigest: string | undefined,
-    handle: string | undefined,
+    handle: string,
     signal: AbortSignal
   ): Promise<RenderedArtifact> {
     const plugin = this.dependencies.resolvePluginPath(this.context);
@@ -165,7 +455,7 @@ export class DiagramViewer {
     const result = parseLspGenerationResult(await this.handles.client.sendRequest("spec42/generate", {
       generatorBase64: module.toString("base64"),
       modelUri: document.uri.toString(),
-      args: handle ? [handle] : [],
+      args: [handle],
       ...(expectedModelDigest ? { expectedModelDigest } : {}),
     }));
     if (signal.aborted) throw new Error("generation was cancelled");
@@ -181,29 +471,30 @@ export class DiagramViewer {
     return { product, productJson, ...result.timings };
   }
 
-  async copyJson(): Promise<void> {
-    if (!this.lastArtifact) {
-      await vscode.window.showInformationMessage("Open a Spec42 diagram before copying its JSON.");
-      return;
+  private async saveExport(format: "svg" | "png", data: string): Promise<void> {
+    const base = this.lastArtifact?.product.selectedView.name?.replace(/[^\w.-]+/g, "_") || "diagram";
+    const folder = vscode.workspace.workspaceFolders?.[0]?.uri;
+    const defaultUri = folder
+      ? vscode.Uri.joinPath(folder, `${base}.${format}`)
+      : vscode.Uri.file(`${base}.${format}`);
+    const target = await vscode.window.showSaveDialog({
+      defaultUri,
+      filters: format === "svg" ? { "SVG image": ["svg"] } : { "PNG image": ["png"] },
+    });
+    if (!target) return;
+    let bytes: Uint8Array;
+    if (format === "svg") {
+      bytes = Buffer.from(data, "utf8");
+    } else {
+      const comma = data.indexOf(",");
+      bytes = Buffer.from(comma >= 0 ? data.slice(comma + 1) : data, "base64");
     }
-    await vscode.env.clipboard.writeText(this.lastArtifact.productJson);
-    await vscode.window.showInformationMessage("Copied the generated diagram JSON.");
-  }
-
-  private show(artifact: RenderedArtifact, error?: string): void {
-    if (!this.panel) {
-      this.panel = vscode.window.createWebviewPanel(
-        "spec42.diagram",
-        "SysML Diagram",
-        vscode.ViewColumn.Beside,
-        { enableScripts: true, retainContextWhenHidden: true }
-      );
-      this.panel.onDidDispose(() => { this.panel = undefined; });
-      this.panel.webview.onDidReceiveMessage((message) => this.navigate(message));
+    try {
+      await vscode.workspace.fs.writeFile(target, bytes);
+      await vscode.window.showInformationMessage(`Saved ${vscode.workspace.asRelativePath(target)}.`);
+    } catch (error) {
+      await vscode.window.showErrorMessage(`Could not save the diagram: ${describeError(error)}`);
     }
-    this.panel.title = artifact.product.selectedView.name;
-    this.panel.webview.html = this.html(this.panel.webview, artifact, error);
-    this.panel.reveal(vscode.ViewColumn.Beside, true);
   }
 
   private async navigate(message: unknown): Promise<void> {
@@ -227,7 +518,7 @@ export class DiagramViewer {
         })),
       );
       const editor = await vscode.window.showTextDocument(document, {
-        viewColumn: existingColumn ?? vscode.ViewColumn.Beside,
+        viewColumn: existingColumn ?? vscode.ViewColumn.Active,
         preview: false,
       });
       editor.selection = new vscode.Selection(range.start, range.start);
@@ -235,27 +526,84 @@ export class DiagramViewer {
     } catch { /* Invalid or unavailable provenance remains inert. */ }
   }
 
-  private html(webview: vscode.Webview, artifact: RenderedArtifact, error?: string): string {
+  private shellHtml(webview: vscode.Webview): string {
     const nonce = `${Date.now()}${Math.random().toString(36).slice(2)}`;
-    const escaped = (value: string) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    const productJson = artifact.productJson.replace(/</g, "\\u003c");
     const script = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, "media", "diagram-viewer.js"));
-    const status = artifact.product.completeness.status === "complete"
-      ? "complete projection"
-      : `incomplete projection (${artifact.product.completeness.reasons.length})`;
     return `<!doctype html><html><head><meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}' ${webview.cspSource};">
-<style>html,body{height:100%}body{padding:0;margin:0;color:var(--vscode-foreground);background:var(--vscode-editor-background);display:flex;flex-direction:column}header{padding:8px 12px;border-bottom:1px solid var(--vscode-panel-border);font:12px var(--vscode-font-family)}.error{color:var(--vscode-errorForeground);font-weight:600}.canvas{flex:1;min-height:0;position:relative}.empty{padding:32px;max-width:720px;color:var(--vscode-descriptionForeground);font:14px var(--vscode-font-family)}.canvas svg{display:block;width:100%;height:100%}</style></head><body>
-<header><strong>${escaped(artifact.product.selectedView.name)}</strong> · ${escaped(status)} · model ${escaped(artifact.product.modelDigest)} · prepare ${artifact.modulePrepareMs} ms${prepareCacheLabel(artifact)} · execute ${(artifact.guestExecutionUs / 1000).toFixed(2)} ms${error ? ` · <span class="error">stale: ${escaped(error)}</span>` : ""}</header>
-<main id="diagram" class="canvas"></main><script id="diagram-product" type="application/json">${productJson}</script>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${webview.cspSource} data:; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}' ${webview.cspSource};">
+<style>
+  html,body{height:100%}
+  body{padding:0;margin:0;color:var(--vscode-foreground);background:var(--vscode-editor-background);display:flex;flex-direction:column;font:12px var(--vscode-font-family)}
+  body.busy .canvas{opacity:.5}
+  header{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;padding:6px 8px;border-bottom:1px solid var(--vscode-panel-border)}
+  header select,header button{font:inherit;color:var(--vscode-foreground);background:var(--vscode-button-secondaryBackground);border:1px solid var(--vscode-panel-border);border-radius:3px;padding:2px 5px;cursor:pointer}
+  header select{flex:1 1 140px;min-width:0}
+  header button:hover,header select:hover{background:var(--vscode-toolbar-hoverBackground)}
+  .status{flex-basis:100%;color:var(--vscode-descriptionForeground);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .status .error{color:var(--vscode-errorForeground);font-weight:600}
+  .canvas{flex:1;min-height:0;position:relative}
+  .canvas svg{display:block;width:100%;height:100%}
+  .empty{padding:24px 16px;color:var(--vscode-descriptionForeground);font:13px var(--vscode-font-family)}
+</style></head><body>
+<header>
+  <select id="view-select" title="Authored diagram view"></select>
+  <button id="refresh" title="Regenerate from the current model">Refresh</button>
+  <button id="copy-json" title="Copy the generated diagram JSON">JSON</button>
+  <button id="export-svg" title="Export as SVG">SVG</button>
+  <button id="export-png" title="Export as PNG">PNG</button>
+  <span class="status" id="status"></span>
+</header>
+<main id="diagram" class="canvas"></main>
 <script nonce="${nonce}" src="${script}"></script></body></html>`;
   }
 }
 
+function emptyProduct(): DiagramProduct {
+  return {
+    schemaVersion: 5,
+    modelDigest: "",
+    documents: [],
+    sources: [],
+    references: [],
+    selectedView: { reference: 0, kind: "general-view", name: "", source: 0 },
+    completeness: { status: "incomplete", reasons: [] },
+    projection: { kind: "general-view", exposedRoots: [], nodes: [], relationships: [], edges: [], metadata: {}, scene: { kind: "general" } },
+  } as unknown as DiagramProduct;
+}
+
+function describeError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+function isDigestMismatch(error: unknown): boolean {
+  const message = describeError(error).toLowerCase();
+  return message.includes("publication changed") || message.includes("model digest");
+}
+
+function isServerNotReady(error: unknown): boolean {
+  const message = describeError(error).toLowerCase();
+  return (
+    message.includes("not part of the current workspace publication") ||
+    message.includes("client is not running") ||
+    message.includes("connection") ||
+    message.includes("server is not ready") ||
+    message.includes("no workspace")
+  );
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export function registerDiagramViewer(context: vscode.ExtensionContext, handles: LspClientHandles): void {
-  const viewer = new DiagramViewer(context, handles);
+  const provider = new DiagramViewProvider(context, handles);
   context.subscriptions.push(
-    vscode.commands.registerCommand("spec42.diagram.open", () => viewer.open()),
-    vscode.commands.registerCommand("spec42.diagram.copyJson", () => viewer.copyJson()),
+    provider,
+    vscode.window.registerWebviewViewProvider(DIAGRAM_VIEW_ID, provider, {
+      webviewOptions: { retainContextWhenHidden: true },
+    }),
+    vscode.commands.registerCommand("spec42.diagram.open", () => provider.open()),
+    vscode.commands.registerCommand("spec42.diagram.copyJson", () => provider.copyJson()),
+    vscode.commands.registerCommand("spec42.diagram.refresh", () => provider.refresh()),
   );
 }

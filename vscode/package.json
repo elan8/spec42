@@ -184,6 +184,12 @@
         "category": "Spec42"
       },
       {
+        "command": "spec42.diagram.refresh",
+        "title": "Refresh Diagram",
+        "icon": "$(refresh)",
+        "category": "Spec42"
+      },
+      {
         "command": "spec42.examples.refresh",
         "title": "Refresh Examples View",
         "icon": "$(refresh)",
@@ -318,6 +324,11 @@
           "command": "spec42.examples.refresh",
           "when": "view == spec42Examples",
           "group": "navigation"
+        },
+        {
+          "command": "spec42.diagram.refresh",
+          "when": "view == spec42DiagramView",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
@@ -412,6 +423,12 @@
         }
       ],
       "sysmlInspectorContainer": [
+        {
+          "type": "webview",
+          "id": "spec42DiagramView",
+          "name": "Diagram",
+          "contextualTitle": "Spec42 Diagram"
+        },
         {
           "type": "webview",
           "id": "sysmlFeatureInspectorView",
