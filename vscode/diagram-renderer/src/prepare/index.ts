@@ -4,6 +4,7 @@ import { prepareActivity, prepareSequence, prepareState } from "./behavior";
 import { normalizeVisualizationPayload } from "./normalize-payload";
 import { prepareGraph } from "./graph";
 import { prepareInterconnection } from "./interconnection";
+import { prepareInterconnectionFromTypedProjection } from "./interconnection-typed";
 import { prepareBrowser, prepareGeometry, prepareGrid } from "./standard-views";
 import type { PreparedEdge, PreparedNode, PreparedView, VisualizationPayload } from "./types";
 import { asArray, asRecord, asString } from "./util";
@@ -203,6 +204,17 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
         layoutDirection: "horizontal",
       },
     };
+  }
+  if (selected.kind === "interconnection-view") {
+    return prepareInterconnectionFromTypedProjection({
+      name: selected.name,
+      nodes: projection.nodes,
+      edges: projection.edges,
+      exposedRoots: projection.exposedRoots,
+      metadata: asRecord(projection.metadata),
+      references,
+      navigation,
+    });
   }
   const nodes = projection.nodes.map((raw, index): PreparedNode => {
     const element = asRecord(raw);

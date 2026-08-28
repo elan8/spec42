@@ -1,6 +1,21 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { normalizeEdgeKind } from "./graph-normalization";
 import { prepareViewData } from "./prepare";
+
+function generatedProduct(fixtureName: string): unknown {
+  const path = join(
+    dirname(fileURLToPath(import.meta.url)),
+    "../../../tests/snapshots/generation",
+    fixtureName,
+  );
+  const markdown = readFileSync(path, "utf8");
+  const match = markdown.match(/# GENERATED\r?\n## diagram\.json\r?\n~~~json\r?\n([\s\S]*?)\n~~~/);
+  if (!match?.[1]) throw new Error(`no generated json in ${fixtureName}`);
+  return JSON.parse(match[1]);
+}
 
 describe("shared graph normalization", () => {
   it("normalizes known relationship kinds", () => {
@@ -64,6 +79,133 @@ describe("shared prepareViewData", () => {
       { kind: "parts", provenance: "direct", members: [{ id: "n:1", name: "b", kind: "PartUsage", typeName: "Battery" }] },
     ]);
     expect(prepared.meta?.exposedRoots).toEqual(["n:0"]);
+  });
+
+  it("adapts a typed interconnection projection into nested parts with boundary ports", () => {
+    const prepared = prepareViewData({
+      schemaVersion: 5,
+      documents: [{ uri: "file:///model.sysml" }],
+      sources: [
+        { document: 0, range: [0, 0, 0, 8] },
+        { document: 0, range: [1, 0, 1, 5] },
+        { document: 0, range: [2, 0, 2, 6] },
+        { document: 0, range: [3, 0, 3, 7] },
+      ],
+      references: [
+        { kind: "qualified-name", document: 0, qualifiedName: "P::selected" },
+        { kind: "qualified-name", document: 0, qualifiedName: "P::Assembly" },
+        { kind: "qualified-name", document: 0, qualifiedName: "P::Assembly::nested" },
+        { kind: "qualified-name", document: 0, qualifiedName: "P::Assembly::input" },
+        { kind: "qualified-name", document: 0, qualifiedName: "P::Assembly::output" },
+      ],
+      selectedView: { reference: 0, kind: "interconnection-view", name: "selected", source: 0 },
+      completeness: { status: "complete", reasons: [] },
+      projection: {
+        kind: "interconnection-view",
+        exposedRoots: [0],
+        nodes: [
+          {
+            reference: 1,
+            metaclass: "PartDefinition",
+            notationRole: "definition",
+            name: "Assembly",
+            typing: { status: "absent" },
+            owner: null,
+            source: 0,
+            compartments: [
+              { kind: "parts", provenance: "direct", members: [1] },
+              { kind: "ports", provenance: "direct", members: [2, 3] },
+            ],
+          },
+          {
+            reference: 2,
+            metaclass: "PartUsage",
+            notationRole: "usage",
+            name: "nested",
+            typing: { status: "absent" },
+            owner: 0,
+            source: 1,
+            compartments: [],
+          },
+          {
+            reference: 3,
+            metaclass: "PortUsage",
+            notationRole: "usage",
+            name: "input",
+            typing: { status: "absent" },
+            owner: 0,
+            source: 2,
+            compartments: [],
+          },
+          {
+            reference: 4,
+            metaclass: "PortUsage",
+            notationRole: "usage",
+            name: "output",
+            typing: { status: "absent" },
+            owner: 0,
+            source: 3,
+            compartments: [],
+          },
+          {
+            reference: 5,
+            metaclass: "ConnectionUsage",
+            notationRole: "usage",
+            name: null,
+            typing: { status: "absent" },
+            owner: 0,
+            source: 3,
+            compartments: [],
+          },
+          {
+            reference: 6,
+            metaclass: "AttributeUsage",
+            notationRole: "usage",
+            name: "count",
+            typing: { status: "absent" },
+            owner: 0,
+            source: 3,
+            compartments: [],
+          },
+        ],
+        relationships: [],
+        edges: [
+          { source: 0, target: 1, origin: 1, kind: "containment", provenance: "authored", navigation: 1 },
+          { source: 0, target: 2, origin: 2, kind: "containment", provenance: "authored", navigation: 2 },
+          { source: 0, target: 3, origin: 3, kind: "containment", provenance: "authored", navigation: 3 },
+          { source: 2, target: 3, origin: 0, kind: "connector", provenance: "authored", navigation: 0 },
+        ],
+        metadata: { parts: [0, 1], ports: [2, 3], connectors: [] },
+        scene: { kind: "interconnection" },
+      },
+    });
+
+    expect(prepared.view).toBe("interconnection-view");
+    expect(prepared.meta?.canonicalScene).toBe(true);
+    expect(prepared.nodes.map((node) => node.label)).toEqual(["Assembly", "nested"]);
+    expect(prepared.nodes.map((node) => node.kind)).toEqual(["part", "part"]);
+    expect(prepared.nodes[1]?.attributes?.containerId).toBe("n:0");
+    const assemblyPorts = prepared.nodes[0]?.attributes?.portDetails as Array<{ name: string; id: string }>;
+    expect(assemblyPorts.map((port) => port.name)).toEqual(["input", "output"]);
+    expect(prepared.nodes.some((node) => node.kind.toLowerCase().includes("port"))).toBe(false);
+    expect(prepared.edges).toHaveLength(1);
+    expect(prepared.edges[0]).toMatchObject({
+      source: "n:0",
+      target: "n:0",
+      edgeKind: "connection",
+      attributes: { sourcePortId: "n:2", targetPortId: "n:3" },
+    });
+  });
+
+  it("adapts the published interconnection snapshot, not the generic node dump", () => {
+    const prepared = prepareViewData(generatedProduct("diagram_interconnection_complete.md"));
+    expect(prepared.view).toBe("interconnection-view");
+    expect(prepared.meta?.canonicalScene).toBe(true);
+    expect(prepared.nodes.map((node) => node.label)).toEqual(["Assembly", "nested"]);
+    expect(prepared.nodes[1]?.attributes?.containerId).toBe("n:0");
+    const assemblyPorts = prepared.nodes[0]?.attributes?.portDetails as Array<{ name: string }>;
+    expect(assemblyPorts.map((port) => port.name)).toEqual(["input", "output"]);
+    expect(prepared.nodes.some((node) => /port|connection|attribute/i.test(node.kind))).toBe(false);
   });
 
   it("uses typed grid metadata for relationship-valued columns", () => {

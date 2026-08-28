@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Interconnection views render as nested parts with ports on the node boundary.** Schema-5
+  products were being drawn as a generic graph, so `PortUsage` nodes became a vertical stack of
+  boxes. The renderer now adapts the published `parts` / `ports` / `connectors` metadata into the
+  SysML 8.2.3.11 interconnection notation (the same IBD layout the pre-schema-5 scene used).
+
+- **Diagram node labels show authored types only.** Compact `typing` on a projected element is
+  the FeatureTyping the author wrote (`part root : Assembly` → `: Assembly`), not the effective
+  type closure that every `part` inherits from `Parts::parts`, `Items::items`, and the rest of
+  the kernel chain. Untyped usages render with no `: Type` line. Hover and the Feature Inspector
+  still list the full effective-type set.
+
 - **The VS Code diagram viewer is a persistent, project-scoped view in the secondary side bar.**
   It lists every authored diagram view in the model (grouped by file) and keeps a live render of
   the selected one: a toolbar dropdown switches views and re-generates in place, `Refresh` /

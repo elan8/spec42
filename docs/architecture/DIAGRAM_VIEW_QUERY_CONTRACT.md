@@ -4,7 +4,10 @@ The immutable resolved publication owns diagram-view selection and meaning. The 
 exposes one catalog and one view-specific projection operation. A catalog handle is scoped to the
 publication identity; it is opaque to guests and is rejected when stale or foreign. Renderers may
 lay out and style a projection, but may not infer relationships, membership, geometry, direction,
-or ordering from labels.
+or ordering from labels. Projected node `typing` is the authored FeatureTyping family on every
+view that carries element nodes, not the effective-type closure: compact labels must not dump
+implied library types inherited through `Parts::parts`, `Items::items`, and the rest of the
+kernel chain.
 
 Every catalog entry shares a typed public semantic reference, standard view kind, authored display
 name, source URI/range, and completeness. Named elements use a document-scoped qualified name;
@@ -19,8 +22,8 @@ is the sole renderer product for this contract.
 
 | View | Authoritative semantic inputs | Projection |
 | --- | --- | --- |
-| General | Resolved exposed roots; owned declarations; containment; published relationships and direct typing; relationship provenance; source locations | Exposed roots plus their owned semantic scope as typed nodes, containment/typing/relevant relationship edges, and navigation |
-| Interconnection | Exposed parts; ports; nested ownership; connector declarations and resolved connector ends; authored direction/conjugation when published; provenance | Part/port hierarchy and connector edges. Missing or unsupported connector ends/direction remain typed incomplete facts |
+| General | Resolved exposed roots; owned declarations; containment; published relationships and authored FeatureTyping; relationship provenance; source locations | Exposed roots plus their owned semantic scope as typed nodes, containment/typing/relevant relationship edges, and navigation |
+| Interconnection | Exposed parts; ports; nested ownership; connector declarations and resolved connector ends; authored direction/conjugation when published; provenance | Nested part nodes with ports on the node boundary and connector edges (SysML 8.2.3.11). Ports and connector usages are not peer boxes. Missing or unsupported connector ends/direction remain typed incomplete facts |
 | Action flow | Exposed action definitions/usages and control nodes; resolved successions/flows; guards/effects when published | Action/control nodes and ordered flow edges. Unsupported decisions, merges, forks, joins, guards, or effects are explicit reasons |
 | State transition | Exposed state definitions; states; final nodes; initial/succession and transition endpoints; trigger/guard/effect facts; provenance | State/control nodes and transition edges with typed trigger, guard, effect, source, and completeness |
 | Sequence | Exposed participants/lifelines; authored sends/messages and resolved ends; authoritative ordering; activations/fragments only when published | Lifeline columns and message edges. No activation, fragment, or message order is fabricated |

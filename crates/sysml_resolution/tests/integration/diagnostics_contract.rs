@@ -522,7 +522,16 @@ fn diagram_projection_preserves_resolved_facts_from_unsupported_inspections() {
         .iter()
         .find(|element| element.name.as_deref() == Some("root"))
         .unwrap();
-    assert!(matches!(root.typing, DiagramElementTyping::Resolved(_)));
+    let DiagramElementTyping::Resolved(types) = &root.typing else {
+        panic!("expected authored typing, got {:?}", root.typing);
+    };
+    assert_eq!(
+        types
+            .iter()
+            .map(|identity| published.qualified_name(*identity).unwrap_or_default())
+            .collect::<Vec<_>>(),
+        ["Model::Assembly"]
+    );
     assert!(projection.relationships.iter().any(|relationship| {
         relationship.source == root.occurrence_id
             && relationship.source_semantic_id == root.semantic_id
