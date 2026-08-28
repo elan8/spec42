@@ -537,7 +537,8 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   body.busy .canvas{opacity:.5}
   header{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;padding:6px 8px;border-bottom:1px solid var(--vscode-panel-border)}
   header select,header button{font:inherit;color:var(--vscode-foreground);background:var(--vscode-button-secondaryBackground);border:1px solid var(--vscode-panel-border);border-radius:3px;padding:2px 5px;cursor:pointer}
-  header select{flex:1 1 140px;min-width:0}
+  header select{flex:1 1 140px;min-width:0;color:var(--vscode-dropdown-foreground);background:var(--vscode-dropdown-background);border-color:var(--vscode-dropdown-border,var(--vscode-panel-border))}
+  header select option,header select optgroup{color:var(--vscode-dropdown-foreground);background:var(--vscode-dropdown-background)}
   header button:hover,header select:hover{background:var(--vscode-toolbar-hoverBackground)}
   .status{flex-basis:100%;color:var(--vscode-descriptionForeground);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .status .error{color:var(--vscode-errorForeground);font-weight:600}
