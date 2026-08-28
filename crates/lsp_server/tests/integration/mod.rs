@@ -10,6 +10,7 @@ mod completion;
 mod concurrency_regressions;
 mod definition;
 mod diagnostics;
+mod diagram_views;
 mod experimental_capabilities;
 mod experimental_requests;
 mod feature_inspector;

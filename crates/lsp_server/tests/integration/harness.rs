@@ -168,7 +168,11 @@ pub struct TestSession {
 
 impl TestSession {
     pub fn new() -> Self {
-        let mut child = spawn_server();
+        Self::new_with_env(&[])
+    }
+
+    pub fn new_with_env(env: &[(&str, &std::path::Path)]) -> Self {
+        let mut child = spawn_server_with_env(env);
         let stdin = child.stdin.take().expect("stdin");
         let stdout = child.stdout.take().expect("stdout");
         Self {
@@ -179,7 +183,11 @@ impl TestSession {
     }
 
     pub fn initialize_default(&mut self, client_name: &str) {
-        self.initialize_with_options(client_name, None);
+        self.initialize_with_root_and_options(client_name, None, None);
+    }
+
+    pub fn initialize_with_root(&mut self, client_name: &str, root_uri: &url::Url) {
+        self.initialize_with_root_and_options(client_name, Some(root_uri), None);
     }
 
     pub fn initialize_with_options(
@@ -187,10 +195,19 @@ impl TestSession {
         client_name: &str,
         initialization_options: Option<serde_json::Value>,
     ) {
+        self.initialize_with_root_and_options(client_name, None, initialization_options);
+    }
+
+    fn initialize_with_root_and_options(
+        &mut self,
+        client_name: &str,
+        root_uri: Option<&url::Url>,
+        initialization_options: Option<serde_json::Value>,
+    ) {
         let init_id = next_id();
         let mut params = serde_json::json!({
             "processId": null,
-            "rootUri": null,
+            "rootUri": root_uri,
             "capabilities": {},
             "clientInfo": { "name": client_name, "version": "0.1.0" }
         });
@@ -264,6 +281,10 @@ impl TestSession {
     /// (e.g. didOpen/didChange) are processed in-order before assertions.
     pub fn barrier(&mut self) {
         let _ = self.request("workspace/symbol", serde_json::json!({ "query": "" }));
+    }
+
+    pub fn wait_for_publications(&mut self, uris: &[&str]) {
+        wait_for_publications(&mut self.stdout, uris);
     }
 }
 
