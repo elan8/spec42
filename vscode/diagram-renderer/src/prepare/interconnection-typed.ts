@@ -1,3 +1,4 @@
+import { normalizeEdgeKind } from "../graph-normalization";
 import { prepareInterconnectionScene } from "./interconnection-scene";
 import type {
   InterconnectionSceneDto,
@@ -214,14 +215,14 @@ function isPortMetaclass(metaclass: string): boolean {
   );
 }
 
+/**
+ * The generator emits an edge kind as `connector` / `flow` / `containment` or a
+ * `DiagramRelationshipKind` spelling (`binding-connector`, `interface-connection`, …).
+ * Normalize before matching so binding and interface connectors are not silently dropped —
+ * the same normalization `interconnection-scene` applies to the resulting DTO.
+ */
+const INTERCONNECTION_EDGE_KINDS = new Set(["connection", "flow", "bind", "interface"]);
+
 function isInterconnectionEdgeKind(kind: string): boolean {
-  const normalized = kind.toLowerCase();
-  return (
-    normalized === "connector" ||
-    normalized === "connection" ||
-    normalized === "flow" ||
-    normalized === "bind" ||
-    normalized === "binding" ||
-    normalized === "interface"
-  );
+  return INTERCONNECTION_EDGE_KINDS.has(normalizeEdgeKind(kind));
 }

@@ -197,6 +197,42 @@ describe("shared prepareViewData", () => {
     });
   });
 
+  it("keeps binding and interface connectors in a typed interconnection projection", () => {
+    const node = (metaclass: string, name: string | null, owner: number | null, source: number) => ({
+      reference: 0, metaclass, notationRole: "usage", name, typing: { status: "absent" }, owner, source, compartments: [],
+    });
+    const prepared = prepareViewData({
+      schemaVersion: 5,
+      documents: [{ uri: "file:///model.sysml" }],
+      sources: [0, 1, 2, 3].map((line) => ({ document: 0, range: [line, 0, line, 4] })),
+      references: [{ kind: "qualified-name", document: 0, qualifiedName: "P::selected" }],
+      selectedView: { reference: 0, kind: "interconnection-view", name: "selected", source: 0 },
+      completeness: { status: "complete", reasons: [] },
+      projection: {
+        kind: "interconnection-view",
+        exposedRoots: [0],
+        nodes: [
+          { ...node("PartDefinition", "Assembly", null, 0), notationRole: "definition" },
+          node("PortUsage", "left", 0, 1),
+          node("PortUsage", "right", 0, 2),
+          node("BindingConnectorUsage", null, 0, 3),
+          node("InterfaceUsage", null, 0, 3),
+        ],
+        relationships: [],
+        edges: [
+          { source: 0, target: 1, origin: 1, kind: "containment", provenance: "authored", navigation: null },
+          { source: 0, target: 2, origin: 2, kind: "containment", provenance: "authored", navigation: null },
+          { source: 1, target: 2, origin: 3, kind: "binding-connector", provenance: "authored", navigation: null },
+          { source: 1, target: 2, origin: 4, kind: "interface-connection", provenance: "authored", navigation: null },
+        ],
+        metadata: { parts: [0], ports: [1, 2], connectors: [] },
+        scene: { kind: "interconnection" },
+      },
+    });
+
+    expect(prepared.edges.map((edge) => edge.edgeKind).sort()).toEqual(["bind", "interface"]);
+  });
+
   it("adapts the published interconnection snapshot, not the generic node dump", () => {
     const prepared = prepareViewData(generatedProduct("diagram_interconnection_complete.md"));
     expect(prepared.view).toBe("interconnection-view");
