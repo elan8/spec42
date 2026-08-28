@@ -72,6 +72,19 @@ export function isOverviewVisualElementType(elementType: string): boolean {
   return !isPackageElementType(elementType) && !isNonDiagramSemanticElementType(elementType);
 }
 
+/**
+ * Connector usages describe relationships between structural elements. In a General View they
+ * are represented by edges (when their ends resolve), rather than by peer boxes in the structure
+ * hierarchy. Definitions remain eligible as nodes because they are classifiers in their own
+ * right.
+ */
+export function isConnectorUsageElementType(elementType: string): boolean {
+  const normalized = elementType.trim().toLowerCase().replace(/[^a-z0-9]+/g, "");
+  return normalized === "connectionusage" ||
+    normalized === "bindingconnectorusage" ||
+    normalized === "flowconnectionusage";
+}
+
 export function isArchitectureElement(element: ArchitectureLikeElement): boolean {
   const qn = element.qualified_name ?? "";
   if (qn.startsWith("Architecture::") || qn.includes("::Architecture::")) {

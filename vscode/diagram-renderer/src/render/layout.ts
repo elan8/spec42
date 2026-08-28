@@ -1,5 +1,9 @@
 import ELK from "elkjs/lib/elk.bundled.js";
-import { isOverviewVisualElementType, normalizeEdgeKind } from "../graph-normalization";
+import {
+  isConnectorUsageElementType,
+  isOverviewVisualElementType,
+  normalizeEdgeKind,
+} from "../graph-normalization";
 import {
   collectCompartments,
   computeNodeHeight,
@@ -216,9 +220,11 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
   // Only general-view reaches here — interconnection-view returned above, and the other 6 kinds
   // returned `{ nodes: [], edges: [] }` (laid out elsewhere; see views/behavior-common.ts and
   // views/standard-views-render.ts).
-  // A connector/flow/etc. usage remains in the prepared semantic projection for compartments,
-  // navigation and traceability. Once that usage has composed a visible edge, however, drawing it
-  // as an additional peer node duplicates the same relationship and distorts the hierarchy.
+  // Relationship usages remain in the prepared semantic projection for compartments, navigation
+  // and traceability. Connector usages are never structural peers in a General View: when their
+  // ends resolve they are drawn as edges, and when they do not resolve there is no meaningful
+  // structural box to draw. Other relationship declarations are suppressed once represented by
+  // a composed edge.
   const representedRelationshipNodes = new Set(
     prepared.edges.flatMap((edge) => {
       const origin = edge.attributes?.originNodeId;
@@ -229,7 +235,9 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
     }),
   );
   const diagramNodes = prepared.nodes.filter(
-    (node) => isOverviewVisualElementType(node.kind) && !representedRelationshipNodes.has(node.id),
+    (node) => isOverviewVisualElementType(node.kind) &&
+      !isConnectorUsageElementType(node.kind) &&
+      !representedRelationshipNodes.has(node.id),
   );
   const visibleIds = new Set(diagramNodes.map((node) => node.id));
   const diagramEdges = prepared.edges.filter(

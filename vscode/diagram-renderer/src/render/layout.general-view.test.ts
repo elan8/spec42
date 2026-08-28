@@ -101,7 +101,7 @@ describe("general-view layout package hierarchy", () => {
     expect(memberYs[0]).toBeGreaterThan(ownerLayout.y ?? 0);
   });
 
-  it("does not draw a relationship usage that is already represented by its composed edge", async () => {
+  it("draws connector usages as edges rather than structure nodes", async () => {
     const prepared = {
       title: "Structure",
       view: "general-view",
@@ -110,11 +110,13 @@ describe("general-view layout package hierarchy", () => {
         { id: "n:1", label: "source", kind: "PartUsage" },
         { id: "n:2", label: "target", kind: "PartUsage" },
         { id: "n:3", label: "ConnectionUsage", kind: "ConnectionUsage" },
+        { id: "n:4", label: "unresolved", kind: "ConnectionUsage" },
       ],
       edges: [
         { id: "owns-1", source: "n:0", target: "n:1", label: "", edgeKind: "hierarchy", attributes: { originNodeId: "n:1" } },
         { id: "owns-2", source: "n:0", target: "n:2", label: "", edgeKind: "hierarchy", attributes: { originNodeId: "n:2" } },
         { id: "connects", source: "n:1", target: "n:2", label: "", edgeKind: "connection", attributes: { originNodeId: "n:3" } },
+        { id: "owns-unresolved", source: "n:0", target: "n:4", label: "", edgeKind: "hierarchy", attributes: { originNodeId: "n:4" } },
       ],
     };
 
