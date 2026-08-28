@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Bumped the pinned `sysml-v2-parser` revision `4b65812` -> `65c67de`.** The merged parser fix
+  accepts keyword-less `first ... then ...` succession usages in occurrence and item definition
+  bodies, preserves whether `succession` was authored, and keeps malformed attribute-body recovery
+  from consuming a following valid succession. Spec42 lowers both spellings through the same
+  canonical succession relationship path.
+
 - **`SequenceView` projects message edges and their order.** A `message` on an `occurrence def`
   lifeline already lowered with resolved `flowSource` / `flowTarget` and `succession` order, but
   the projection dropped it: `ElementKind::FlowConnectionUsage` did not bridge to
