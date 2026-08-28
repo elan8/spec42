@@ -20,14 +20,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **The VS Code diagram viewer is a persistent, project-scoped view in the secondary side bar.**
   It lists every authored diagram view in the model (grouped by file) and keeps a live render of
-  the selected one: a toolbar dropdown switches views and re-generates in place, `Refresh` /
+  the selected one: a toolbar dropdown switches views and re-generates in place, `Home` /
   `JSON` / `SVG` / `PNG` sit next to it, and the view regenerates on its own whenever the model
-  changes. The server now emits a `spec42/publicationChanged` notification after each workspace
-  publication rebuild (carrying the new `modelDigest`); the view compares it against the digest
-  of what it drew and regenerates only when they differ, retrying briefly if the digest moves
-  again mid-generation. `Spec42: Open Diagram` now focuses the view rather than opening an editor
-  tab. PNG / standalone-SVG export re-renders with a literal colour scheme so the file stands
-  alone outside the webview.
+  changes. The server emits a `spec42/publicationChanged` notification after each workspace
+  publication rebuild; the view reconciles against it. A backoff reconcile loop runs whenever the
+  view is visible and its render does not match the current publication, so a slow index, a
+  missed notification, a language-server restart, or a stalled webview all recover with no user
+  action and no manual refresh control. `Spec42: Open Diagram` focuses the view. PNG /
+  standalone-SVG export re-renders with a literal colour scheme so the file stands alone outside
+  the webview.
 
 - **`SequenceView` projects message edges and their order.** A `message` on an `occurrence def`
   lifeline already lowered with resolved `flowSource` / `flowTarget` and `succession` order, but

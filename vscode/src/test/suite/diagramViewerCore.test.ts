@@ -15,6 +15,7 @@ import {
   parseLspGenerationResult,
   parseStateTransitionViewCatalog,
   parseSourceNavigation,
+  reconcileDelayMs,
   resolveDiagramSelection,
   selectSingleDiagramJson,
   visibleSourceColumn,
@@ -260,6 +261,16 @@ describe("diagram viewer core", () => {
     assert.equal(resolveDiagramSelection(options, "h2")?.handle, "h2");
     assert.equal(resolveDiagramSelection(options, "gone")?.handle, "h1");
     assert.equal(resolveDiagramSelection([], "h1"), undefined);
+  });
+
+  it("backs the reconcile loop off exponentially, then settles slow", () => {
+    assert.equal(reconcileDelayMs(0, false), 600);
+    assert.equal(reconcileDelayMs(1, false), 1_200);
+    assert.equal(reconcileDelayMs(4, false), 9_600);
+    assert.equal(reconcileDelayMs(6, false), 15_000);
+    assert.equal(reconcileDelayMs(20, false), 15_000, "capped");
+    assert.equal(reconcileDelayMs(-3, false), 600, "clamped to attempt 0");
+    assert.equal(reconcileDelayMs(0, true), 45_000, "settled cadence ignores attempt");
   });
 
   it("treats a publication digest as stale only against a known rendered digest", () => {

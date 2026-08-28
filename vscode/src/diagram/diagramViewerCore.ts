@@ -243,6 +243,18 @@ export function resolveDiagramSelection(
 }
 
 /**
+ * Backoff for the diagram view's reconcile loop, which runs while the view is visible and its
+ * render does not yet match the publication. `attempt` is the 0-based consecutive-failure count;
+ * `settled` is set once an answer looks final (no model files, or a genuinely empty catalog) so
+ * the loop drops to a slow keep-checking cadence instead of a spinner-speed retry.
+ */
+export function reconcileDelayMs(attempt: number, settled: boolean): number {
+  if (settled) return 45_000;
+  const capped = Math.min(Math.max(0, Math.trunc(attempt)), 6);
+  return Math.min(15_000, 600 * 2 ** capped);
+}
+
+/**
  * Whether a `spec42/publicationChanged` notification means the panel's current render is stale.
  * A render with no known digest (nothing drawn yet) is not "stale" — it just has nothing to
  * compare — so this returns false and the caller leaves the panel alone.

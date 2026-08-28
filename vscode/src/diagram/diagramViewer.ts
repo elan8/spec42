@@ -1,6 +1,7 @@
 import * as fs from "fs/promises";
 import * as path from "path";
 import * as vscode from "vscode";
+import { State } from "vscode-languageclient/node";
 import type { LspClientHandles } from "../activation/lspClient";
 import {
   allDiagramViewOptions,
@@ -16,6 +17,7 @@ import {
   parseDiagramViewCatalog,
   parseLspGenerationResult,
   parseSourceNavigation,
+  reconcileDelayMs,
   selectSingleDiagramJson,
   visibleSourceColumn,
 } from "./diagramViewerCore";
@@ -64,6 +66,11 @@ const defaultDependencies: DiagramViewerDependencies = { resolvePluginPath: plug
 const PUBLICATION_DEBOUNCE_MS = 250;
 const DIGEST_MISMATCH_RETRIES = 2;
 const MODEL_GLOB = "**/*.{sysml,kerml}";
+/** After this many consecutive empty-catalog reads at one digest, treat "no views" as the
+ * answer and let the reconcile loop drop to its slow keep-checking cadence. */
+const EMPTY_CATALOG_PATIENCE = 4;
+/** If the webview never reports `ready`, its bundle probably failed to load — re-inject once. */
+const WEBVIEW_READY_TIMEOUT_MS = 4_000;
 
 function artifactHeader(artifact: RenderedArtifact): string {
   if (artifact.product.completeness.status === "complete") return "Complete projection";
@@ -86,7 +93,6 @@ function isModelDocument(document: vscode.TextDocument | undefined): document is
 export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.Disposable {
   private view: vscode.WebviewView | undefined;
   private options: DiagramViewOption[] = [];
-  private catalogModelDigest: string | undefined;
   private selectedHandle: string | undefined;
   private anchorUri: string | undefined;
   private lastArtifact: RenderedArtifact | undefined;
@@ -95,9 +101,17 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   private webviewReady = false;
   private pendingRender: RenderMessage | undefined;
   private publicationDebounce: ReturnType<typeof setTimeout> | undefined;
-  private firstLoadRetry: ReturnType<typeof setTimeout> | undefined;
-  private firstLoadAttempt = 0;
+  private webviewWatchdog: ReturnType<typeof setTimeout> | undefined;
+  // The reconcile loop is the single source of eventual consistency: as long as the view is
+  // visible and the render does not match the current publication, it keeps retrying with
+  // backoff, so no missed `spec42/publicationChanged`, slow index, or server restart can leave
+  // the panel permanently stuck. It is idle (no timer) once converged.
+  private reconcileTimer: ReturnType<typeof setTimeout> | undefined;
+  private reconcileAttempt = 0;
+  private regenerating = false;
+  private converged = false;
   private emptyCatalogDigest: string | undefined;
+  private emptyCatalogAttempts = 0;
   private readonly disposables: vscode.Disposable[] = [];
 
   constructor(
@@ -110,12 +124,21 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
         const digest = (params as { modelDigest?: unknown } | null)?.modelDigest;
         if (typeof digest === "string") this.onPublicationChanged(digest);
       }),
+      // A server restart rebuilds the publication from scratch; the notification for that build
+      // can land before this view resolves, so treat "Running" as a reason to reconcile.
+      this.handles.client.onDidChangeState(({ newState }) => {
+        if (newState === State.Running) {
+          this.converged = false;
+          this.kickReconcile();
+        }
+      }),
     );
   }
 
   dispose(): void {
     if (this.publicationDebounce) clearTimeout(this.publicationDebounce);
-    if (this.firstLoadRetry) clearTimeout(this.firstLoadRetry);
+    if (this.reconcileTimer) clearTimeout(this.reconcileTimer);
+    if (this.webviewWatchdog) clearTimeout(this.webviewWatchdog);
     this.activeAbort?.abort();
     for (const disposable of this.disposables.splice(0)) disposable.dispose();
   }
@@ -131,26 +154,80 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     webviewView.webview.html = this.shellHtml(webviewView.webview);
     webviewView.webview.onDidReceiveMessage((message) => this.onWebviewMessage(message), undefined, this.disposables);
     webviewView.onDidChangeVisibility(() => {
-      if (webviewView.visible) void this.regenerate("visibility");
+      if (webviewView.visible) this.kickReconcile();
+      else this.stopReconcile();
     }, undefined, this.disposables);
     webviewView.onDidDispose(() => {
       if (this.view === webviewView) {
         this.view = undefined;
         this.webviewReady = false;
         this.pendingRender = undefined;
+        this.stopReconcile();
         this.activeAbort?.abort();
       }
     }, undefined, this.disposables);
-    this.firstLoadAttempt = 0;
+
+    this.reconcileAttempt = 0;
+    this.converged = false;
+    this.armWebviewWatchdog();
     this.postLoading();
-    void this.handles.clientReadyPromise
-      .then(() => this.regenerate("resolve"))
-      .catch(() => this.regenerate("resolve"));
+    // Both the reconcile loop and this one-shot both aim at the first render; whichever the LSP
+    // is ready for first wins, and the loop keeps trying if neither does yet.
+    void this.handles.clientReadyPromise.then(() => this.kickReconcile(), () => this.kickReconcile());
+    this.kickReconcile();
   }
 
-  /** Command entry point — reveal the view and regenerate. */
+  /** Re-inject the shell if the webview never reported `ready` — its script bundle probably
+   * failed to load, and without this the panel would sit on a stale placeholder forever. */
+  private armWebviewWatchdog(): void {
+    if (this.webviewWatchdog) clearTimeout(this.webviewWatchdog);
+    this.webviewWatchdog = setTimeout(() => {
+      this.webviewWatchdog = undefined;
+      if (this.webviewReady || !this.view) return;
+      this.webviewReady = false;
+      this.pendingRender = undefined;
+      this.view.webview.html = this.shellHtml(this.view.webview);
+      // The re-injected script sends a fresh `ready`; queue what should be on screen for it.
+      if (this.lastArtifact) this.postRender();
+      else this.postLoading();
+      this.armWebviewWatchdog();
+    }, WEBVIEW_READY_TIMEOUT_MS);
+  }
+
+  /** Reconcile now if there is something to do, and make sure the backoff loop is armed. */
+  private kickReconcile(): void {
+    if (!this.view) return;
+    if (this.reconcileTimer) { clearTimeout(this.reconcileTimer); this.reconcileTimer = undefined; }
+    if (this.converged || this.regenerating || !this.view.visible) {
+      if (!this.converged && this.view.visible) this.scheduleReconcile();
+      return;
+    }
+    void this.regenerate("reconcile");
+  }
+
+  private stopReconcile(): void {
+    if (this.reconcileTimer) { clearTimeout(this.reconcileTimer); this.reconcileTimer = undefined; }
+  }
+
+  private scheduleReconcile(): void {
+    if (this.reconcileTimer || this.converged || !this.view?.visible) return;
+    const wait = reconcileDelayMs(
+      this.reconcileAttempt++,
+      this.emptyCatalogAttempts >= EMPTY_CATALOG_PATIENCE,
+    );
+    this.reconcileTimer = setTimeout(() => {
+      this.reconcileTimer = undefined;
+      void this.regenerate("reconcile");
+    }, wait);
+  }
+
+  /** Command entry point — reveal the view and force a fresh generate. */
   async open(): Promise<void> {
     await vscode.commands.executeCommand(`${DIAGRAM_VIEW_ID}.focus`);
+    this.converged = false;
+    this.reconcileAttempt = 0;
+    this.emptyCatalogAttempts = 0;
+    this.emptyCatalogDigest = undefined;
     await this.regenerate("manual");
   }
 
@@ -165,30 +242,19 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
 
   private onPublicationChanged(publishedModelDigest: string): void {
     if (!this.view) return;
-    // A publication signal is worth acting on when it invalidates what we drew, and also when we
-    // never got a first render (the initial attempt raced an in-progress index).
-    const worthRegenerating =
-      !this.lastArtifact ||
-      diagramRenderIsStale(this.lastArtifact.product.modelDigest, publishedModelDigest);
-    if (!worthRegenerating) return;
+    const stillCurrent =
+      this.lastArtifact !== undefined &&
+      !diagramRenderIsStale(this.lastArtifact.product.modelDigest, publishedModelDigest);
+    if (stillCurrent) return;
+    this.converged = false;
+    this.reconcileAttempt = 0;
+    // A digest change is a fresh chance for an empty catalog to have gained a view.
+    if (this.emptyCatalogDigest !== publishedModelDigest) this.emptyCatalogAttempts = 0;
     if (this.publicationDebounce) clearTimeout(this.publicationDebounce);
     this.publicationDebounce = setTimeout(() => {
       this.publicationDebounce = undefined;
-      void this.regenerate("publication");
+      this.kickReconcile();
     }, PUBLICATION_DEBOUNCE_MS);
-  }
-
-  /** The first render can lose a race with workspace indexing; retry with backoff until it
-   * lands or the caller triggers a fresh attempt. */
-  private scheduleFirstLoadRetry(): void {
-    if (this.lastArtifact || this.firstLoadRetry) return;
-    if (this.firstLoadAttempt >= 6) return;
-    const wait = Math.min(4000, 500 * 2 ** this.firstLoadAttempt);
-    this.firstLoadAttempt += 1;
-    this.firstLoadRetry = setTimeout(() => {
-      this.firstLoadRetry = undefined;
-      void this.regenerate("retry");
-    }, wait);
   }
 
   private onWebviewMessage(message: unknown): void {
@@ -196,6 +262,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     const kind = (message as { type?: unknown }).type;
     if (kind === "ready") {
       this.webviewReady = true;
+      if (this.webviewWatchdog) { clearTimeout(this.webviewWatchdog); this.webviewWatchdog = undefined; }
       if (this.pendingRender) {
         void this.view?.webview.postMessage(this.pendingRender);
         this.pendingRender = undefined;
@@ -257,32 +324,33 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   }
 
   private async regenerate(
-    reason: "resolve" | "visibility" | "manual" | "switchView" | "publication" | "retry",
+    reason: "manual" | "switchView" | "reconcile",
   ): Promise<void> {
     if (!this.view) return;
-    if (reason === "visibility" && this.lastArtifact && this.view.visible) {
-      // Becoming visible with a current render already drawn: nothing to do.
-      if (!diagramRenderIsStale(this.lastArtifact.product.modelDigest, this.catalogModelDigest ?? "")) {
-        return;
-      }
-    }
+    // A background reconcile never stacks, interrupts an in-flight attempt, or fires once the
+    // render already matches the publication; a user action always runs.
+    if (reason === "reconcile" && (this.regenerating || this.converged)) return;
     if (reason === "manual" || reason === "switchView") {
-      // A user-driven attempt gets a fresh first-load retry budget.
-      this.firstLoadAttempt = 0;
-      if (this.firstLoadRetry) { clearTimeout(this.firstLoadRetry); this.firstLoadRetry = undefined; }
+      this.reconcileAttempt = 0;
+      this.emptyCatalogAttempts = 0;
+      this.emptyCatalogDigest = undefined;
     }
 
+    this.stopReconcile();
     this.activeAbort?.abort();
     const abort = new AbortController();
     this.activeAbort = abort;
     const current = ++this.generation;
+    this.regenerating = true;
 
     void this.view.webview.postMessage({ type: "busy", busy: true });
     try {
       const anchorUri = await this.resolveAnchorUri();
       if (current !== this.generation || abort.signal.aborted) return;
       if (!anchorUri) {
-        this.postPlaceholder("This workspace has no SysML files.");
+        // Recoverable: a model file may be added later; the reconcile loop keeps checking.
+        this.emptyCatalogAttempts = EMPTY_CATALOG_PATIENCE;
+        this.showWaiting("This workspace has no SysML files.");
         return;
       }
 
@@ -291,19 +359,22 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
       while (true) {
         const catalog = await this.fetchCatalog(anchorUri);
         if (current !== this.generation || abort.signal.aborted) return;
-        this.catalogModelDigest = catalog.modelDigest;
         this.options = allDiagramViewOptions(catalog);
         if (this.options.length === 0) {
-          if (!this.lastArtifact && this.emptyCatalogDigest !== catalog.modelDigest) {
+          if (this.emptyCatalogDigest !== catalog.modelDigest) {
             this.emptyCatalogDigest = catalog.modelDigest;
-            this.postLoading();
-            this.scheduleFirstLoadRetry();
-            return;
+            this.emptyCatalogAttempts = 0;
           }
-          this.postPlaceholder("This model authors no diagram views. Add a `view … : GeneralView { expose … }` to see one here.");
+          this.emptyCatalogAttempts += 1;
+          if (!this.lastArtifact && this.emptyCatalogAttempts < EMPTY_CATALOG_PATIENCE) {
+            this.postLoading();
+          } else {
+            this.postPlaceholder("This model authors no diagram views. Add a `view … : GeneralView { expose … }` to see one here.");
+          }
           return;
         }
         this.emptyCatalogDigest = undefined;
+        this.emptyCatalogAttempts = 0;
 
         const remembered = this.selectedHandle
           ? this.options.find((option) => option.handle === this.selectedHandle)
@@ -319,12 +390,12 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
           (candidate) => candidate.uri.toString() === selected.documentUri,
         ) ?? await this.openHidden(selected.documentUri);
         if (!document) {
-          this.postPlaceholder(`Could not open ${selected.group} to generate its diagram.`);
+          this.showWaiting(`Waiting for ${selected.group}…`);
           return;
         }
         const kind = diagramViewKindForHandle(catalog, selected.handle);
         if (!kind) {
-          this.postPlaceholder("The selected diagram view is no longer in the catalog.");
+          this.showWaiting("The selected diagram view is no longer in the catalog.");
           return;
         }
 
@@ -332,8 +403,9 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
           const artifact = await this.generate(document, kind, catalog.modelDigest, selected.handle, abort.signal);
           if (current !== this.generation) return;
           this.lastArtifact = artifact;
-          this.firstLoadAttempt = 0;
-          if (this.firstLoadRetry) { clearTimeout(this.firstLoadRetry); this.firstLoadRetry = undefined; }
+          this.converged = true;
+          this.reconcileAttempt = 0;
+          this.stopReconcile();
           this.postRender();
           return;
         } catch (error) {
@@ -349,26 +421,32 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     } catch (error) {
       if (current !== this.generation) return;
       const message = describeError(error);
-      if (!this.lastArtifact) {
-        // No render has ever landed — the LSP is probably still indexing. Say so and keep
-        // trying with backoff; `spec42/publicationChanged` also retriggers this path.
-        if (this.firstLoadAttempt >= 6) {
-          this.postPlaceholder(`Could not generate a diagram: ${message}`);
-        } else {
-          this.postLoading();
-        }
-        this.scheduleFirstLoadRetry();
-      } else if (isServerNotReady(error)) {
-        this.postRender("the language server is catching up");
-      } else {
+      if (this.lastArtifact && !isServerNotReady(error)) {
+        // Keep the last good render on screen, flagged stale; the loop retries in the background.
         this.postRender(message);
-        if (reason === "manual" || reason === "switchView") {
-          await vscode.window.showErrorMessage(`Diagram generation failed: ${message}`);
-        }
+      } else if (isServerNotReady(error) || this.reconcileAttempt < 5) {
+        this.showWaiting("Loading diagram…", true);
+      } else {
+        // Real, non-transient failure (e.g. missing generator plugin). Surface it, but the
+        // reconcile loop keeps trying slowly so fixing the cause recovers with no user action.
+        this.showWaiting(`Could not generate a diagram: ${message}`);
       }
     } finally {
-      if (current === this.generation) void this.view?.webview.postMessage({ type: "busy", busy: false });
+      // Only the currently-active attempt owns these; a superseded one must not touch them or it
+      // would clear `regenerating` / restart the loop underneath its replacement.
+      if (current === this.generation) {
+        this.regenerating = false;
+        void this.view?.webview.postMessage({ type: "busy", busy: false });
+        if (!this.converged && this.view?.visible) this.scheduleReconcile();
+      }
     }
+  }
+
+  /** A non-fatal "not there yet" state: show the message and let the reconcile loop keep going. */
+  private showWaiting(message: string, spinner = false): void {
+    this.converged = false;
+    if (spinner) this.postLoading();
+    else this.postPlaceholder(message);
   }
 
   private defaultSelection(catalog: DiagramViewCatalog): DiagramViewOption | undefined {
