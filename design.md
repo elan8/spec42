@@ -235,20 +235,25 @@ the ceiling, the containing fallback project remains usable for small and experi
 Documents opened outside every editor root form an independent loose project rather than entering
 an unrelated publication.
 
-`library_catalog` owns the local dependency-candidate set and the canonical admission operation.
-Every authored `usage` in `.project.json` is resolved by exact resource identity and compatible
-version against that set. Project name and version come from validated KPAR metadata; paths and
-filenames never infer dependency identity. A manifest project admits only the roots selected by all
-of its satisfied usages. An unresolved, invalid, mismatched, or ambiguous usage rejects admission
-explicitly and never falls back to another candidate.
+`library_catalog` owns the host-selected KerML/SysML language baseline, the local
+dependency-candidate set, and the canonical project-admission operation. The baseline is an explicit
+host input whose availability is `available`, `disabled`, or `unavailable`; it is independent of the
+used-project list in `.project.json`. Every project admits the available baseline. An explicitly
+disabled or unavailable baseline remains distinguishable in the published model so diagnostics can
+explain the missing language context without pretending that it resolved.
 
-The standard library has no privileged dependency semantics. Its bundled KPAR contributes ordinary
-resource/version candidates; its only special property is host convenience: a manifestless project
-receives the bundled catalog defaults. A manifest that selects a different standard-library version
-must be supplied a matching local KPAR and resolves it through the same operation as every other
-library. `spec42 init` turns that convenience into an explicit project by writing exact usages for
-the resolved standard-library KPAR resources; it never infers them from paths or names. Provisioning
-is explicit and local-only; project loading never fetches a dependency.
+Every authored `usage` is resolved by exact resource identity and compatible version. Project name
+and version come from validated KPAR metadata; paths and filenames never infer dependency identity.
+A usage naming a configured standard-library resource is a compatibility constraint on the selected
+baseline: a match confirms the baseline without admitting a second copy, while a disabled,
+unavailable, or incompatible baseline rejects admission explicitly. Every other satisfied usage is
+additive. An unresolved, invalid, mismatched, ambiguous, or conflicting usage never falls back to a
+different candidate. Manifestless projects additionally receive catalog defaults; manifest projects
+exclude unselected generic and project-library roots.
+
+`spec42 init` writes exact usages for the resolved standard-library resources, turning the selected
+baseline into reproducible compatibility constraints without making those entries a second source of
+library roots. Provisioning is explicit and local-only; project loading never fetches a dependency.
 
 The batch host performs admission before publishing a snapshot. The editor host keeps one
 `PublicationSession` per project root, routes every document-scoped request by URI, and applies the
@@ -322,7 +327,7 @@ Each invariant above is checked in a place the constrained crates cannot disable
 | no consumer re-implements a facade query, revives a retired heuristic, holds a parsed tree or stratum outside the allow-listed host fields, or reads SysML files | `crates/sysml_query/tests/syntax_authority.rs` (retired-name list, shadowed-name set, source-probe detector with predicate-backed exemptions, field and I/O bans) |
 | a host declares no SysML text entry point and no document-keyed map outside the session's index, both against a shrinking allow-list | `crates/sysml_query/tests/architecture.rs` (AST visitors over `lsp_server/src` and `server/src`) |
 | one `Services` per host; library closure never on the edit path | `crates/lsp_server/tests/debt_guardrails.rs` |
-| nearest-manifest project ownership, nested-project isolation, manifestless defaults, and exact local dependency admission are shared by batch and editor hosts; the standard library has no privileged resolver path | `crates/sysml_source` project-boundary tests; `crates/workspace/tests/integration/project_dependencies.rs`; `crates/library_catalog` dependency and explicit-project-library tests; `crates/lsp_server/src/lsp_runtime/project_registry.rs` tests and `crates/lsp_server/tests/integration/project_workspaces.rs` |
+| nearest-manifest project ownership, nested-project isolation, host-selected language-baseline availability and compatibility constraints, manifestless defaults, and exact local dependency admission are shared by batch and editor hosts | `crates/sysml_source` project-boundary tests; `crates/workspace/tests/integration/project_dependencies.rs`; `crates/library_catalog` dependency and explicit-project-library tests; `crates/lsp_server/src/lsp_runtime/project_registry.rs` tests and `crates/lsp_server/tests/integration/project_workspaces.rs` |
 | reporting policy decides nothing semantic | `crates/sysml_diagnostics/tests/dependency_guardrails.rs` |
 | phases only depend on earlier products; evaluation has one writer; a sealed publication holds no parse tree or source text | `crates/sysml_resolution/tests/integration/phase_order.rs` |
 | asynchronous publication admits only a build whose owner, semantic-input revision, generation, and exact expected identity are still current; successful admission invalidates old publication tokens; superseded and failed builds retain the last coherent publication | `crates/sysml_resolution/src/publication/session.rs` unit tests and `crates/lsp_server/src/session/handle.rs` concurrency tests |
