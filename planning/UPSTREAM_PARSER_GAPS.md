@@ -4,15 +4,18 @@ This is the active record of information the parser must preserve or distinguish
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
 The canonical parser currently pinned by the root workspace is
-`elan8/sysml-v2-parser@4b65812da4b4b03aa6e781674f1cab8844cadc88` (the `v0.55.0` release commit;
-identical parser code to the previously pinned `lukewilliamboswell/sysml-v2-parser@695b2b44`, which
-merged unchanged into `elan8/sysml-v2-parser` main as `#123`). Every gap below was
-re-exercised against that exact revision, one spelling per document through `spec42 check` (a
+`elan8/sysml-v2-parser@f04d51ee79e63989684fca64e7769d700ae8f5c4` (parser `main`). The gap list
+below was last re-exercised against `65c67de8a38269f8bcaf1bc42500bde30083ff81` (the merge commit
+for `elan8/sysml-v2-parser#129`, including the follow-up attribute-body recovery boundary fix),
+one spelling per document through `spec42 check` (a
 second error in the same document suppresses the first as `recovery_cascade_suppressed`, which
 made an earlier multi-spelling probe read as "parses"), and by re-reading the owning
-`sysml_resolution` lowering; the entries the bump closed were removed rather than annotated. New
-upstream work must be based on the full pinned identity, not an abbreviated revision or the old
-`sysml-v2-parser-next` dependency alias.
+`sysml_resolution` lowering; the entries the bump closed were removed rather than annotated. The
+three upstream commits since `65c67de8` — directed `ref` declarations in port bodies, serde
+prefix-tampering hardening, and feature-chain targets on `verify` — touch areas outside this gap
+list; adopting them only added a `PortDefBodyElement::AliasDef` arm to port-definition lowering.
+New upstream work must be based on the full pinned identity, not an abbreviated revision or the
+old `sysml-v2-parser-next` dependency alias.
 
 The bump from `c81e0b69236d57c64df127104232b54f72646484` closes parser gaps 62, 66, 69, 74,
 79 and 82: flow payload and feature-specialization clause identity, binding body ends, directed

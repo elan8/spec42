@@ -871,7 +871,9 @@ fn collect_semantic_ranges_attribute_body_element(
         }
         // §6 G27: this body is shared with `item def`/`item` usage bodies. `Connect` has no
         // dedicated highlighting elsewhere in this file either (see e.g. `PDBE::Connect`).
-        AttributeBodyElement::OccurrenceUsage(_) | AttributeBodyElement::Connect(_) => {}
+        AttributeBodyElement::OccurrenceUsage(_)
+        | AttributeBodyElement::SuccessionUsage(_)
+        | AttributeBodyElement::Connect(_) => {}
         AttributeBodyElement::Error(_) => {}
         // `ref`/`ref part` members (validation `15_11`/`15_19`/`17a`/`17b`) -- same
         // collector every other body kind's `RefDecl` arm already uses.

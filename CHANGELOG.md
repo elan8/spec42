@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Bumped the pinned `sysml-v2-parser` revision `4b65812` -> `f04d51e`.** Picks up keyword-less
+  `first ... then ...` succession usages in occurrence and item definition bodies (authored
+  `succession` spelling preserved, malformed attribute-body recovery no longer swallows a following
+  valid succession), directed `ref` declarations in port bodies, feature-chain targets on `verify`,
+  and hardened serde prefix-tampering checks.
+
 - **Interconnection views render as nested parts with ports on the node boundary.** Schema-5
   products were being drawn as a generic graph, so `PortUsage` nodes became a vertical stack of
   boxes. The renderer now adapts the published `parts` / `ports` / `connectors` metadata into the

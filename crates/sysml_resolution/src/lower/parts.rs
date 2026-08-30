@@ -1098,6 +1098,12 @@ impl SemanticModelBuilder {
             AttributeBodyElement::OccurrenceUsage(occurrence_usage) => {
                 self.lower_occurrence_usage(document, Some(owner), occurrence_usage)?;
             }
+            AttributeBodyElement::SuccessionUsage(node) => self.lower_succession_usage(
+                document,
+                owner,
+                UnsupportedFamily::AttributeMember,
+                node,
+            )?,
             AttributeBodyElement::ItemUsage(item_usage) => {
                 self.lower_item_usage(document, Some(owner), item_usage)?;
             }
