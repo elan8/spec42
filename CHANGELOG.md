@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Recursive imports (`import P::**`, `import P::*::**`) bring nested-namespace members into
+  scope.** The suffix parsed and lowered, but name resolution left the reference `Unsupported`, so
+  it was reported as `unsupported_filtered_import` and every name that depended on it cascaded to
+  `unresolved_*`. A recursive import now re-exports the importable members of the target namespace
+  and, transitively, of every publicly-visible namespace nested under it; a private nested package
+  and its subtree stay excluded. Filtered recursive imports (`import P::** [ ... ]`) remain
+  unsupported. Fixes #102.
+
 - **Bumped the pinned `sysml-v2-parser` revision `4b65812` -> `f04d51e`.** Picks up keyword-less
   `first ... then ...` succession usages in occurrence and item definition bodies (authored
   `succession` spelling preserved, malformed attribute-body recovery no longer swallows a following

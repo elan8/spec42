@@ -1471,14 +1471,17 @@ pub(crate) fn supported_import_domain(
         // A view's `expose` names any member, so it resolves through the same lookup an ordinary
         // reference does rather than the import domains.
         ReferenceKind::ViewExpose => Some(DeclarationDomain::Any),
-        ReferenceKind::NamespaceImport
-            if reference.flags().wildcard && !reference.flags().recursive =>
-        {
+        // `import A::B::*` and its recursive `import A::B::*::**` form both denote a namespace
+        // whose members (the latter also every nested namespace's members) are brought into scope.
+        ReferenceKind::NamespaceImport if reference.flags().wildcard => {
             Some(DeclarationDomain::Namespace)
         }
-        ReferenceKind::MembershipImport
-            if !reference.flags().wildcard && !reference.flags().recursive =>
-        {
+        // `import A::B::**` names a namespace whose own membership plus every nested namespace's
+        // members are brought into scope, so its target is a namespace, not an arbitrary member.
+        ReferenceKind::MembershipImport if reference.flags().recursive => {
+            Some(DeclarationDomain::Namespace)
+        }
+        ReferenceKind::MembershipImport if !reference.flags().wildcard => {
             Some(DeclarationDomain::Any)
         }
         ReferenceKind::NamespaceImport
