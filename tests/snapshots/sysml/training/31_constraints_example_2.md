@@ -44,7 +44,7 @@ package 'Constraints Example-2' {
   (document "memory://snapshot/31_constraints_example_2.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 22))

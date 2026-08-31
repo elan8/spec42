@@ -2207,13 +2207,9 @@ fn a_view_typed_by_a_workspace_definition_is_never_reported_as_non_standard() {
         .any(|diagnostic| diagnostic.code() == &DiagnosticCode::ViewTypeNonStandard));
 }
 
-/// The library-context hint is a fact about the publication, not about a host's configuration.
-///
-/// Both admission paths answer the same way, which is what makes the hint safe for a host that
-/// reuses a solved library stratum: a workspace that admitted a library never reports it,
-/// whether the library came in as a source or as a stratum.
+/// The library-context hint consumes the host-owned standard-library availability fact.
 #[test]
-fn the_library_context_hint_reads_what_the_publication_admitted() {
+fn the_library_context_hint_reads_standard_library_availability() {
     let workspace = "package P { import Lib::*; part def D :> Missing; }";
     let codes = |published: PublishedResolution| {
         published
@@ -2252,7 +2248,8 @@ fn the_library_context_hint_reads_what_the_publication_admitted() {
             "contract-v1",
             library_stratum(),
         )
-        .unwrap(),
+        .unwrap()
+        .with_standard_library_availability(StandardLibraryAvailability::Available),
     )
     .unwrap();
     assert!(
@@ -2277,7 +2274,8 @@ fn the_library_context_hint_reads_what_the_publication_admitted() {
             ConstructionSchedule::Sequential,
             "contract-v1",
         )
-        .unwrap(),
+        .unwrap()
+        .with_standard_library_availability(StandardLibraryAvailability::Available),
     )
     .unwrap();
     assert!(

@@ -60,7 +60,9 @@ pub use relationship::{
     SpecializationCheckPrerequisite, SpecializationScope, SubsettingConformance,
     TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
 };
-pub use source_identity::{PublicationEvaluationPolicy, PublicationModelDigest};
+pub use source_identity::{
+    PublicationEvaluationPolicy, PublicationModelDigest, StandardLibraryAvailability,
+};
 pub use symbol::{SymbolId, SymbolToken};
 pub use syntax::{ImportScope, SyntaxOutlineKind};
 pub use text::TextId;

@@ -639,7 +639,7 @@ semantic_diagnostic_codes! {
         "This part usage declares no type.";
     }
     MissingContext {
-    /// A workspace document imports names it cannot resolve and no library source was admitted.
+    /// A workspace document imports names it cannot resolve without its standard-library baseline.
     MissingLibraryContext => "missing_library_context",
         "This document imports names that do not resolve and no library source was \
                          admitted to the publication.";

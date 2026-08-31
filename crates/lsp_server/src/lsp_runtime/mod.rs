@@ -739,6 +739,7 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     let projects = ProjectRegistry::new(
         config.services.clone(),
         config.project_library_catalog.clone(),
+        config.standard_library_availability,
     );
     let start_time = Instant::now();
     let server_name = server_name.to_string();

@@ -272,7 +272,7 @@ standard library package <USCU> USCustomaryUnits {
   (document "memory://snapshot/us_customary_units.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 8 19) (end 8 43))

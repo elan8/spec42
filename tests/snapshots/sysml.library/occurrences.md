@@ -1004,7 +1004,7 @@ standard library package Occurrences {
   (document "memory://snapshot/occurrences.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 7 16) (end 7 30))

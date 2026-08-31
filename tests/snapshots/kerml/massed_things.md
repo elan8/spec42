@@ -25,7 +25,7 @@ package MassedThings {
   (document "memory://snapshot/massed_things.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 0 15) (end 0 30))

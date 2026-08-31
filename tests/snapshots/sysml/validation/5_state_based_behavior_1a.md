@@ -250,7 +250,7 @@ package '5-State-based Behavior-1a' {
   (document "memory://snapshot/5_state_based_behavior_1a.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 31))

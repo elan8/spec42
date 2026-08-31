@@ -390,7 +390,7 @@ standard library package SI {
   (document "memory://snapshot/si.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 9 19) (end 9 43))

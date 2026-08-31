@@ -305,7 +305,7 @@ standard library package Performances {
   (document "memory://snapshot/performances.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 6 16) (end 6 30))

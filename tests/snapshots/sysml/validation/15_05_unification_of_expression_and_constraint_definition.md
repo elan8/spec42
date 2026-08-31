@@ -68,7 +68,7 @@ package '15_05-Unification of Expression and Constraint Definition' {
   (document "memory://snapshot/15_05_unification_of_expression_and_constraint_definition.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 43))

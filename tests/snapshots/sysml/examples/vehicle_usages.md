@@ -108,7 +108,7 @@ package VehicleUsages {
   (document "memory://snapshot/vehicle_usages.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 6 16) (end 6 21))

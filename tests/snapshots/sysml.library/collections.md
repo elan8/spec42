@@ -159,7 +159,7 @@ standard library package Collections {
   (document "memory://snapshot/collections.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 8 16) (end 8 23))

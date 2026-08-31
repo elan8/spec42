@@ -37,7 +37,7 @@ package 'Derivation Constraints' {
   (document "memory://snapshot/31_derivation_constraints.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 21))

@@ -32,7 +32,7 @@ package ServerSequenceModelOutside {
   (document "memory://snapshot/server_sequence_model_outside.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 15) (end 1 37))

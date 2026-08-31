@@ -142,6 +142,7 @@ pub(crate) fn build_workspace_snapshot(
         resolve_workspace_root(&request.targets, request.workspace_root.as_deref())?;
     let admission = resolve_project_dependency_admission(&workspace_root, catalog)
         .map_err(WorkspaceError::unresolved_library_environment)?;
+    let standard_library_availability = admission.standard_library_availability;
     let project_dependencies = admission.resolutions;
     // A batch snapshot is all-or-nothing: a file the provider could not admit is an error here,
     // not a warning.
@@ -189,7 +190,7 @@ pub(crate) fn build_workspace_snapshot(
     let published_model = engine
         .services()
         .publication
-        .publish(&documents, [])
+        .publish_with_standard_library_availability(&documents, standard_library_availability, [])
         .map_err(|error| WorkspaceError::internal_invariant_failure(error.to_string()))?;
 
     context.check_continue(HostPipelinePhase::CollectingValidation)?;

@@ -55,7 +55,7 @@ standard library package NumericalFunctions {
   (document "memory://snapshot/numerical_functions.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 6 15) (end 6 30))

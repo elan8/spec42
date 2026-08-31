@@ -74,7 +74,7 @@ package SequencesExecution {
   (document "memory://snapshot/a_3_6_sequences.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 23 16) (end 23 24))

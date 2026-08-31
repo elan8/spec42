@@ -58,7 +58,7 @@ package '15_07-System of Units and Scales' {
   (document "memory://snapshot/15_07_system_of_units_and_scales.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 19) (end 1 25))

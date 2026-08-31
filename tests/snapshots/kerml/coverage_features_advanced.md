@@ -120,7 +120,7 @@ package FeatureAdvancedCoverage {
         (range (start 25 4) (end 28 4))
       )
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 28 11) (end 28 16))

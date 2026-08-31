@@ -163,7 +163,7 @@ package ProductSelection_N_ary {
         (range (start 41 36) (end 41 59))
       )
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 42 18) (end 42 24))

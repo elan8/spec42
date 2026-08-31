@@ -44,7 +44,7 @@ package 'Constraint Assertions-1' {
   (document "memory://snapshot/31_constraint_assertions_1.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 22))
