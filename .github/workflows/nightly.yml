@@ -9,6 +9,22 @@ permissions:
   contents: read
 
 jobs:
+  audit:
+    name: Dependency audit (full tree)
+    runs-on: ubuntu-latest
+    # The advisory gate: a new RustSec advisory against an existing dependency fails here rather
+    # than blocking an unrelated PR. CI's `audit` job still runs on any lockfile change.
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install cargo-audit
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
+
+      - name: cargo audit
+        run: cargo audit
+
   sysml-release-validation:
     name: SysML release validation (informational)
     runs-on: ubuntu-latest
