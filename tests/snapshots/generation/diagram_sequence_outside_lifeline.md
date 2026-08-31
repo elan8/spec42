@@ -240,7 +240,6 @@ package SequenceOutside {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:032cd2167e2c60a2ebe3772eab17e9cfb8ce4720ff5e5f933b0d355ed50b1b78",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_outside_lifeline.md",

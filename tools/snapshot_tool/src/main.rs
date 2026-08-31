@@ -2763,8 +2763,8 @@ fn regenerate_snapshot(
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?
     };
     let fixture = if let Some(generation) = &meta.generation {
-        let canonical_generated =
-            execute_generation(Arc::clone(&canonical_model), generation, path)?;
+        let generated = execute_generation(Arc::clone(&canonical_model), generation, path)?;
+        let canonical_generated = snapshot_generated_artifacts(generation, generated, path)?;
         replace_or_insert_generated_section(&fixture, &canonical_generated)
     } else {
         fixture
@@ -6643,6 +6643,52 @@ fn execute_generation(
     Ok(artifacts)
 }
 
+/// Projects generated artifacts onto their stable snapshot contract.
+///
+/// A diagram's model digest remains part of the actual product contract and is checked by the
+/// generator/runtime integration tests. It is intentionally absent from checked-in snapshots:
+/// the digest commits the complete publication, so an unrelated semantic-contract version bump
+/// would otherwise rewrite every diagram fixture without changing the behavior under test.
+fn snapshot_generated_artifacts(
+    request: &GenerationRequest,
+    mut artifacts: GeneratedArtifacts,
+    fixture_path: &Path,
+) -> Result<GeneratedArtifacts, String> {
+    if request.plugin != GeneratorPlugin::RepositoryDiagram {
+        return Ok(artifacts);
+    }
+
+    let diagram = artifacts.files.get_mut("diagram.json").ok_or_else(|| {
+        format!(
+            "{}: repository diagram generator did not emit diagram.json",
+            fixture_path.display()
+        )
+    })?;
+    let digest_line = diagram
+        .lines()
+        .find(|line| line.trim_start().starts_with("\"modelDigest\":"))
+        .ok_or_else(|| {
+            format!(
+                "{}: repository diagram product has no modelDigest",
+                fixture_path.display()
+            )
+        })?;
+    digest_line
+        .trim()
+        .strip_prefix("\"modelDigest\": \"")
+        .and_then(|value| value.strip_suffix("\","))
+        .filter(|value| value.starts_with("blake3:") && value.len() > "blake3:".len())
+        .ok_or_else(|| {
+            format!(
+                "{}: repository diagram product has a malformed modelDigest",
+                fixture_path.display()
+            )
+        })?;
+    let line_with_newline = format!("{digest_line}\n");
+    *diagram = diagram.replacen(&line_with_newline, "", 1);
+    Ok(artifacts)
+}
+
 fn generator_plugin_label(plugin: &GeneratorPlugin) -> String {
     match plugin {
         GeneratorPlugin::Conformance(name) => format!("conformance:{name}"),
@@ -9524,6 +9570,29 @@ mod tests {
         assert_eq!(
             parse_generated_artifacts(&fixture, "fixture.md").unwrap(),
             Some(artifacts)
+        );
+    }
+
+    #[test]
+    fn diagram_snapshot_projection_omits_only_the_volatile_model_digest() {
+        let request = GenerationRequest {
+            plugin: GeneratorPlugin::RepositoryDiagram,
+            diagram_selection: None,
+        };
+        let mut artifacts = GeneratedArtifacts::default();
+        artifacts
+            .insert_utf8(
+                "diagram.json",
+                "{\n  \"schemaVersion\": 5,\n  \"modelDigest\": \"blake3:abc\",\n  \"projection\": {}\n}\n".to_string(),
+            )
+            .unwrap();
+
+        let projected =
+            snapshot_generated_artifacts(&request, artifacts, Path::new("fixture.md")).unwrap();
+
+        assert_eq!(
+            projected.files["diagram.json"],
+            "{\n  \"schemaVersion\": 5,\n  \"projection\": {}\n}\n"
         );
     }
 

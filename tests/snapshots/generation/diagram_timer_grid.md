@@ -5114,7 +5114,6 @@ package TimerGrid {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:0259bafeeef187504a2958e88b3a3ded370242dd23a7501e08ba8d15df97d9c7",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_timer_grid.md",
