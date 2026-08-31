@@ -78,6 +78,23 @@ impl SemanticModelBuilder {
         }
         if let PartDefBody::Brace { elements, .. } = &node.value.body {
             for element in elements {
+                // A body-less `#tag` prefix (`#refinement dependency X to Y;`) is a standalone
+                // sibling that annotates the member immediately after it; buffer it and bind it to
+                // that member's declaration. Any other member flushes an unbound prefix as an
+                // explicit unsupported member first, so a stray `#tag` never leaks onto a later
+                // declaration.
+                if let PartDefBodyElement::MetadataKeywordUsage(keyword) = &element.value {
+                    if keyword.value.body.is_none() {
+                        self.buffer_prefix_metadata_keyword(keyword);
+                        continue;
+                    }
+                }
+                if !matches!(&element.value, PartDefBodyElement::Dependency(_)) {
+                    self.flush_pending_prefix_metadata(
+                        document,
+                        UnsupportedFamily::PartDefinitionMember,
+                    );
+                }
                 match &element.value {
                     PartDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span);
@@ -342,7 +359,9 @@ impl SemanticModelBuilder {
                         )?;
                     }
                     PartDefBodyElement::Dependency(node) => {
-                        self.lower_dependency(document, Some(declaration), node)?;
+                        let dependency =
+                            self.lower_dependency(document, Some(declaration), node)?;
+                        self.bind_pending_prefix_metadata(document, dependency)?;
                     }
                     PartDefBodyElement::Connect(node) => {
                         self.lower_bare_connect(
@@ -384,6 +403,7 @@ impl SemanticModelBuilder {
                     ),
                 }
             }
+            self.flush_pending_prefix_metadata(document, UnsupportedFamily::PartDefinitionMember);
         }
         Ok(())
     }

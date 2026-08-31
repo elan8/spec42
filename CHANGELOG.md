@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Metadata-prefixed dependencies lower in definition bodies.** `#refinement dependency X to Y;`
+  in a `requirement def`, `action def`, or `part def` body no longer reports the `#refinement`
+  prefix as an `unsupported_*_definition_member`. The dependency lowers with resolved
+  client/supplier endpoints and the `#tag` prefix (stacked prefixes included) becomes an authored
+  metadata annotation on the dependency, the same fact `#Tag` on a usage and `@Tag` already
+  publish. A prefix that does not precede a dependency stays an explicit unsupported member.
+
 - **Bumped the pinned `sysml-v2-parser` revision `4b65812` -> `f04d51e`.** Picks up keyword-less
   `first ... then ...` succession usages in occurrence and item definition bodies (authored
   `succession` spelling preserved, malformed attribute-body recovery no longer swallows a following
