@@ -113,6 +113,9 @@ impl SemanticModelBuilder {
                     PortDefBodyElement::RefDecl(ref_decl) => {
                         self.lower_ref_decl(document, Some(declaration), ref_decl)?;
                     }
+                    PortDefBodyElement::AliasDef(alias_def) => {
+                        self.lower_alias_def(document, Some(declaration), alias_def)?;
+                    }
                     PortDefBodyElement::InOutDecl(param) => {
                         self.lower_parameter_declaration(
                             document,

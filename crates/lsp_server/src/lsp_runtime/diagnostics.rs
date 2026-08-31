@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use std::time::Instant;
 
-use tower_lsp::lsp_types::{Diagnostic, Url};
+use tower_lsp::lsp_types::{notification::Notification, Diagnostic, Url};
 use tower_lsp::Client;
 use tracing::info;
 
@@ -12,6 +12,16 @@ use sysml_query::resolved_slice::PublishedModel;
 
 use crate::session::state::supports_semantic_queries;
 use crate::session::{RuntimeConfig, WorkspaceHandle};
+use crate::views::dto::PublicationChangedNotificationDto;
+
+/// `spec42/publicationChanged`: sent to the client after each workspace publication rebuild,
+/// once its diagnostics have been republished (see [`publish_workspace_diagnostics`]).
+pub(crate) struct PublicationChanged;
+
+impl Notification for PublicationChanged {
+    type Params = PublicationChangedNotificationDto;
+    const METHOD: &'static str = "spec42/publicationChanged";
+}
 
 fn perf_logging_enabled(runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>) -> bool {
     runtime_config
@@ -192,6 +202,24 @@ pub(crate) async fn publish_workspace_diagnostics(
             published_count += 1;
         }
     }
+
+    // Announce the rebuilt publication only while it is still the one the author is looking at --
+    // the same `may_publish` rule the per-document tasks used. A superseding relink already has
+    // its own `publish_workspace_diagnostics` call in flight that will send the newer digest.
+    if may_publish(handle, publication) {
+        client
+            .send_notification::<PublicationChanged>(PublicationChangedNotificationDto {
+                model_digest: snap
+                    .session
+                    .current()
+                    .publication()
+                    .model_digest()
+                    .to_string(),
+                semantic_state_version: snap.session.version(),
+            })
+            .await;
+    }
+
     if perf_logging_enabled(runtime_config) {
         info!(
             event = "diagnostics:workspace",
@@ -316,5 +344,21 @@ mod tests {
         let foreign = first.snapshot().session.publication();
 
         assert!(!may_publish(&second, foreign));
+    }
+
+    /// The `spec42/publicationChanged` payload serializes to the camelCase wire shape the VS Code
+    /// diagram panel matches on (`modelDigest`, `semanticStateVersion`).
+    #[test]
+    fn publication_changed_notification_serializes_to_camel_case() {
+        let json = serde_json::to_value(PublicationChangedNotificationDto {
+            model_digest: "blake3:abc123".to_string(),
+            semantic_state_version: 7,
+        })
+        .expect("serialize");
+        assert_eq!(
+            json,
+            serde_json::json!({ "modelDigest": "blake3:abc123", "semanticStateVersion": 7 })
+        );
+        assert_eq!(PublicationChanged::METHOD, "spec42/publicationChanged");
     }
 }

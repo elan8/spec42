@@ -23,7 +23,9 @@ export function normalizeEdgeKind(relationshipType: string): NormalizedEdgeKind 
   if (type.includes("interface-connection") || type.includes("interface connection")) return "interface";
   if (type.includes("interface")) return "interface";
   if (type.includes("binding-connection") || type.includes("binding connection")) return "bind";
+  if (type.includes("binding-connector") || type.includes("binding connector")) return "bind";
   if (type.includes("connection") || type === "connect") return "connection";
+  if (type.includes("connector")) return "connection";
   if (type.includes("reference") || type === "ref") return "reference";
   if (type.includes("satisfy")) return "satisfy";
   if (type.includes("verify")) return "verify";
@@ -68,6 +70,19 @@ export function isNonDiagramSemanticElementType(elementType: string): boolean {
 
 export function isOverviewVisualElementType(elementType: string): boolean {
   return !isPackageElementType(elementType) && !isNonDiagramSemanticElementType(elementType);
+}
+
+/**
+ * Connector usages describe relationships between structural elements. In a General View they
+ * are represented by edges (when their ends resolve), rather than by peer boxes in the structure
+ * hierarchy. Definitions remain eligible as nodes because they are classifiers in their own
+ * right.
+ */
+export function isConnectorUsageElementType(elementType: string): boolean {
+  const normalized = elementType.trim().toLowerCase().replace(/[^a-z0-9]+/g, "");
+  return normalized === "connectionusage" ||
+    normalized === "bindingconnectorusage" ||
+    normalized === "flowconnectionusage";
 }
 
 export function isArchitectureElement(element: ArchitectureLikeElement): boolean {

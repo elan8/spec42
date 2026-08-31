@@ -414,6 +414,12 @@
       "sysmlInspectorContainer": [
         {
           "type": "webview",
+          "id": "spec42DiagramView",
+          "name": "Diagram",
+          "contextualTitle": "Spec42 Diagram"
+        },
+        {
+          "type": "webview",
           "id": "sysmlFeatureInspectorView",
           "name": "Feature Inspector"
         }

@@ -82,7 +82,9 @@ describe("shared renderer", () => {
     }
     expect(target.querySelector('[data-node-id="n:1"]')).toBeTruthy();
     expect(target.querySelector(".general-hidden-relationships")).toBeNull();
-    expect(target.querySelector(".viz-root")?.getAttribute("transform")).toBe(transformBefore);
+    await new Promise((resolve) => setTimeout(resolve, 220));
+    expect(target.querySelector(".viz-root")?.getAttribute("transform")).not.toBe(transformBefore);
+    expectFiniteRootTransform(target);
   });
 
   it("uses notation-neutral ink for all kinds", () => {
@@ -130,6 +132,75 @@ describe("shared renderer", () => {
 
     controller.reset();
     controller.destroy();
+  });
+
+  it("exports content coordinates without the live viewport transform", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 1600, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 1000, configurable: true });
+
+    const controller = await renderVisualization(
+      target,
+      {
+        title: "General",
+        view: "general-view",
+        nodes: [{ id: "root", label: "Root", kind: "PartUsage" }],
+        edges: [],
+      },
+      { delegateZoom: true, theme: LIGHT_THEME },
+    );
+
+    expect(target.querySelector(".viz-root")?.hasAttribute("transform")).toBe(true);
+    const exported = controller.exportSvg();
+    const exportedRoot = /<g class="viz-root"([^>]*)>/.exec(exported);
+    expect(exportedRoot).toBeTruthy();
+    expect(exportedRoot?.[1]).not.toContain("transform=");
+    expect(exported).toContain('data-node-id="root"');
+    controller.destroy();
+  });
+
+  it("transfers expanded General view state to a standalone export renderer", async () => {
+    const prepared = {
+      title: "General",
+      view: "general-view" as const,
+      meta: { exposedRoots: ["n:0"] },
+      nodes: [
+        {
+          id: "n:0",
+          label: "System",
+          kind: "PartUsage",
+          attributes: {
+            owner: null,
+            typedCompartments: [
+              { kind: "parts", provenance: "direct", members: [{ id: "n:1", name: "child", kind: "PartUsage" }] },
+            ],
+          },
+        },
+        { id: "n:1", label: "child", kind: "PartUsage", attributes: { owner: 0 } },
+      ],
+      edges: [],
+    };
+    const visibleTarget = document.createElement("div");
+    const visible = await renderVisualization(visibleTarget, prepared, { theme: { colorScheme: "vscode" } });
+
+    visibleTarget.querySelector<SVGGElement>('[data-node-id="n:0"] .general-node-toggle')
+      ?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    for (let attempt = 0; attempt < 50 && !visibleTarget.querySelector('[data-node-id="n:1"]'); attempt += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 5));
+    }
+
+    const exportTarget = document.createElement("div");
+    const exported = await renderVisualization(exportTarget, prepared, {
+      delegateZoom: true,
+      disclosureState: visible.getDisclosureState(),
+      theme: LIGHT_THEME,
+    });
+    const svg = exported.exportSvg();
+    expect(svg).toContain('data-node-id="n:1"');
+    expect(svg).toContain('aria-expanded="true"');
+    expect(svg).not.toContain("--vscode-");
+    visible.destroy();
+    exported.destroy();
   });
 
   it("renders General view as SysML notation nodes with compartments", async () => {

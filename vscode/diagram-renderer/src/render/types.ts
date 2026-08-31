@@ -13,9 +13,16 @@ export interface DisclosureActions {
   toggleSection: (nodeId: string, sectionKey: string, currentlyExpanded: boolean) => void;
 }
 
+/** Serializable disclosure state for transferring the current General view to another renderer. */
+export interface DisclosureState {
+  expandedNodeIds: string[];
+  sectionStates: Array<{ nodeId: string; sectionKey: string; expanded: boolean }>;
+}
+
 export interface RenderOptions {
   onNodeClick?: (node: PreparedNode) => void;
   disclosure?: DisclosureActions;
+  disclosureState?: DisclosureState;
   selectedNodeId?: string | null;
   theme?: DiagramThemeOverrides;
   delegateZoom?: boolean;

@@ -7,11 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- **Bumped the pinned `sysml-v2-parser` revision `4b65812` -> `65c67de`.** The merged parser fix
-  accepts keyword-less `first ... then ...` succession usages in occurrence and item definition
-  bodies, preserves whether `succession` was authored, and keeps malformed attribute-body recovery
-  from consuming a following valid succession. Spec42 lowers both spellings through the same
-  canonical succession relationship path.
+- **Bumped the pinned `sysml-v2-parser` revision `4b65812` -> `f04d51e`.** Picks up keyword-less
+  `first ... then ...` succession usages in occurrence and item definition bodies (authored
+  `succession` spelling preserved, malformed attribute-body recovery no longer swallows a following
+  valid succession), directed `ref` declarations in port bodies, feature-chain targets on `verify`,
+  and hardened serde prefix-tampering checks.
+
+- **Interconnection views render as nested parts with ports on the node boundary.** Schema-5
+  products were being drawn as a generic graph, so `PortUsage` nodes became a vertical stack of
+  boxes. The renderer now adapts the published `parts` / `ports` / `connectors` metadata into the
+  SysML 8.2.3.11 interconnection notation (the same IBD layout the pre-schema-5 scene used).
+
+- **Diagram node labels show authored types only.** Compact `typing` on a projected element is
+  the FeatureTyping the author wrote (`part root : Assembly` → `: Assembly`), not the effective
+  type closure that every `part` inherits from `Parts::parts`, `Items::items`, and the rest of
+  the kernel chain. Untyped usages render with no `: Type` line. Hover and the Feature Inspector
+  still list the full effective-type set.
+
+- **The VS Code diagram viewer is a persistent, project-scoped view in the secondary side bar.**
+  It lists every authored diagram view in the model (grouped by file) and keeps a live render of
+  the selected one: a toolbar dropdown switches views and re-generates in place, `Home` /
+  `JSON` / `SVG` / `PNG` sit next to it, and the view regenerates on its own whenever the model
+  changes. The server emits a `spec42/publicationChanged` notification after each workspace
+  publication rebuild; the view reconciles against it. A backoff reconcile loop runs whenever the
+  view is visible and its render does not match the current publication, so a slow index, a
+  missed notification, a language-server restart, or a stalled webview all recover with no user
+  action and no manual refresh control. `Spec42: Open Diagram` focuses the view. PNG /
+  standalone-SVG export re-renders with a literal colour scheme so the file stands alone outside
+  the webview.
 
 - **`SequenceView` projects message edges and their order.** A `message` on an `occurrence def`
   lifeline already lowered with resolved `flowSource` / `flowTarget` and `succession` order, but

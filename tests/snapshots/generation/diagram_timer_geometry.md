@@ -5281,18 +5281,6 @@ package TimerGeometry {
       "sourceDomain": "standard-library"
     },
     {
-      "uri": "memory://snapshot/sysml.library/items.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/objects.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
       "uri": "memory://snapshot/sysml.library/parts.md",
       "sourceDomain": "standard-library"
     },
@@ -7559,27 +7547,12 @@ package TimerGeometry {
     {
       "document": 5,
       "kind": "qualified-name",
-      "qualifiedName": "Actions::Action"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
       "qualifiedName": "Actions::TransitionAction::accepter"
     },
     {
       "document": 5,
       "kind": "qualified-name",
       "qualifiedName": "Actions::transitionActions"
-    },
-    {
-      "document": 6,
-      "kind": "qualified-name",
-      "qualifiedName": "Base::Anything"
-    },
-    {
-      "document": 6,
-      "kind": "qualified-name",
-      "qualifiedName": "Base::DataValue"
     },
     {
       "document": 6,
@@ -7624,75 +7597,40 @@ package TimerGeometry {
     {
       "document": 11,
       "kind": "qualified-name",
-      "qualifiedName": "Items::Item"
-    },
-    {
-      "document": 12,
-      "kind": "qualified-name",
-      "qualifiedName": "Objects::Object"
-    },
-    {
-      "document": 13,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence"
-    },
-    {
-      "document": 14,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part"
-    },
-    {
-      "document": 14,
-      "kind": "qualified-name",
       "qualifiedName": "Parts::Part::ownedPorts"
     },
     {
-      "document": 14,
+      "document": 11,
       "kind": "qualified-name",
       "qualifiedName": "Parts::parts"
     },
     {
-      "document": 15,
-      "kind": "qualified-name",
-      "qualifiedName": "Performances::Performance"
-    },
-    {
-      "document": 15,
+      "document": 12,
       "kind": "qualified-name",
       "qualifiedName": "Performances::evaluations"
     },
     {
-      "document": 16,
-      "kind": "qualified-name",
-      "qualifiedName": "Ports::Port"
-    },
-    {
-      "document": 16,
+      "document": 13,
       "kind": "qualified-name",
       "qualifiedName": "Ports::ports"
     },
     {
-      "document": 17,
+      "document": 14,
       "kind": "qualified-name",
       "qualifiedName": "ScalarValues::Boolean"
     },
     {
-      "document": 17,
+      "document": 14,
       "kind": "qualified-name",
       "qualifiedName": "ScalarValues::Real"
     },
     {
-      "document": 17,
+      "document": 14,
       "kind": "qualified-name",
       "qualifiedName": "ScalarValues::String"
     },
     {
-      "document": 18,
-      "kind": "qualified-name",
-      "qualifiedName": "States::StateAction"
-    },
-    {
-      "document": 18,
+      "document": 15,
       "kind": "qualified-name",
       "qualifiedName": "States::stateActions"
     },
@@ -11453,7 +11391,7 @@ package TimerGeometry {
         "navigation": 162,
         "origin": 6,
         "provenance": "implied",
-        "reference": 188,
+        "reference": 178,
         "source": 0,
         "target": 6
       },
@@ -11462,7 +11400,7 @@ package TimerGeometry {
         "navigation": 130,
         "origin": 33,
         "provenance": "implied",
-        "reference": 636,
+        "reference": 626,
         "source": 6,
         "target": 33
       },
@@ -11471,7 +11409,7 @@ package TimerGeometry {
         "navigation": 89,
         "origin": 36,
         "provenance": "implied",
-        "reference": 746,
+        "reference": 736,
         "source": 33,
         "target": 36
       },
@@ -11480,7 +11418,7 @@ package TimerGeometry {
         "navigation": 53,
         "origin": 43,
         "provenance": "implied",
-        "reference": 677,
+        "reference": 667,
         "source": 36,
         "target": 43
       },
@@ -11489,7 +11427,7 @@ package TimerGeometry {
         "navigation": 55,
         "origin": 40,
         "provenance": "implied",
-        "reference": 678,
+        "reference": 668,
         "source": 36,
         "target": 40
       },
@@ -11498,7 +11436,7 @@ package TimerGeometry {
         "navigation": 56,
         "origin": 41,
         "provenance": "authored",
-        "reference": 388,
+        "reference": 378,
         "source": 40,
         "target": 41
       },
@@ -11507,7 +11445,7 @@ package TimerGeometry {
         "navigation": 56,
         "origin": 42,
         "provenance": "authored",
-        "reference": 416,
+        "reference": 406,
         "source": 41,
         "target": 42
       },
@@ -11516,7 +11454,7 @@ package TimerGeometry {
         "navigation": 91,
         "origin": 44,
         "provenance": "authored",
-        "reference": 679,
+        "reference": 669,
         "source": 36,
         "target": 44
       },
@@ -11525,7 +11463,7 @@ package TimerGeometry {
         "navigation": 93,
         "origin": 45,
         "provenance": "authored",
-        "reference": 685,
+        "reference": 675,
         "source": 44,
         "target": 45
       },
@@ -11534,7 +11472,7 @@ package TimerGeometry {
         "navigation": 93,
         "origin": 46,
         "provenance": "authored",
-        "reference": 689,
+        "reference": 679,
         "source": 45,
         "target": 46
       },
@@ -11543,7 +11481,7 @@ package TimerGeometry {
         "navigation": 57,
         "origin": 37,
         "provenance": "implied",
-        "reference": 680,
+        "reference": 670,
         "source": 36,
         "target": 37
       },
@@ -11552,7 +11490,7 @@ package TimerGeometry {
         "navigation": 58,
         "origin": 38,
         "provenance": "authored",
-        "reference": 318,
+        "reference": 308,
         "source": 37,
         "target": 38
       },
@@ -11561,7 +11499,7 @@ package TimerGeometry {
         "navigation": 58,
         "origin": 39,
         "provenance": "authored",
-        "reference": 346,
+        "reference": 336,
         "source": 38,
         "target": 39
       },
@@ -11570,7 +11508,7 @@ package TimerGeometry {
         "navigation": 81,
         "origin": 47,
         "provenance": "implied",
-        "reference": 747,
+        "reference": 737,
         "source": 33,
         "target": 47
       },
@@ -11579,7 +11517,7 @@ package TimerGeometry {
         "navigation": 61,
         "origin": 48,
         "provenance": "implied",
-        "reference": 647,
+        "reference": 637,
         "source": 47,
         "target": 48
       },
@@ -11588,7 +11526,7 @@ package TimerGeometry {
         "navigation": 63,
         "origin": 49,
         "provenance": "implied",
-        "reference": 648,
+        "reference": 638,
         "source": 47,
         "target": 49
       },
@@ -11597,7 +11535,7 @@ package TimerGeometry {
         "navigation": 59,
         "origin": 50,
         "provenance": "implied",
-        "reference": 649,
+        "reference": 639,
         "source": 47,
         "target": 50
       },
@@ -11606,7 +11544,7 @@ package TimerGeometry {
         "navigation": 67,
         "origin": 51,
         "provenance": "implied",
-        "reference": 650,
+        "reference": 640,
         "source": 47,
         "target": 51
       },
@@ -11615,7 +11553,7 @@ package TimerGeometry {
         "navigation": 65,
         "origin": 52,
         "provenance": "implied",
-        "reference": 651,
+        "reference": 641,
         "source": 47,
         "target": 52
       },
@@ -11624,7 +11562,7 @@ package TimerGeometry {
         "navigation": 85,
         "origin": 53,
         "provenance": "implied",
-        "reference": 748,
+        "reference": 738,
         "source": 33,
         "target": 53
       },
@@ -11633,7 +11571,7 @@ package TimerGeometry {
         "navigation": 71,
         "origin": 54,
         "provenance": "implied",
-        "reference": 672,
+        "reference": 662,
         "source": 53,
         "target": 54
       },
@@ -11642,7 +11580,7 @@ package TimerGeometry {
         "navigation": 87,
         "origin": 55,
         "provenance": "implied",
-        "reference": 749,
+        "reference": 739,
         "source": 33,
         "target": 55
       },
@@ -11651,7 +11589,7 @@ package TimerGeometry {
         "navigation": 73,
         "origin": 56,
         "provenance": "implied",
-        "reference": 656,
+        "reference": 646,
         "source": 55,
         "target": 56
       },
@@ -11660,7 +11598,7 @@ package TimerGeometry {
         "navigation": 94,
         "origin": 57,
         "provenance": "implied",
-        "reference": 750,
+        "reference": 740,
         "source": 33,
         "target": 57
       },
@@ -11669,7 +11607,7 @@ package TimerGeometry {
         "navigation": 5,
         "origin": 83,
         "provenance": "implied",
-        "reference": 696,
+        "reference": 686,
         "source": 57,
         "target": 83
       },
@@ -11678,7 +11616,7 @@ package TimerGeometry {
         "navigation": 9,
         "origin": 84,
         "provenance": "implied",
-        "reference": 697,
+        "reference": 687,
         "source": 57,
         "target": 84
       },
@@ -11687,7 +11625,7 @@ package TimerGeometry {
         "navigation": 3,
         "origin": 82,
         "provenance": "implied",
-        "reference": 698,
+        "reference": 688,
         "source": 57,
         "target": 82
       },
@@ -11696,7 +11634,7 @@ package TimerGeometry {
         "navigation": 4,
         "origin": 82,
         "provenance": "authored",
-        "reference": 199,
+        "reference": 189,
         "source": 82,
         "target": 83
       },
@@ -11705,7 +11643,7 @@ package TimerGeometry {
         "navigation": 11,
         "origin": 85,
         "provenance": "implied",
-        "reference": 699,
+        "reference": 689,
         "source": 57,
         "target": 85
       },
@@ -11714,7 +11652,7 @@ package TimerGeometry {
         "navigation": 7,
         "origin": 86,
         "provenance": "implied",
-        "reference": 700,
+        "reference": 690,
         "source": 57,
         "target": 86
       },
@@ -11723,7 +11661,7 @@ package TimerGeometry {
         "navigation": 29,
         "origin": 79,
         "provenance": "implied",
-        "reference": 701,
+        "reference": 691,
         "source": 57,
         "target": 79
       },
@@ -11732,7 +11670,7 @@ package TimerGeometry {
         "navigation": 30,
         "origin": 79,
         "provenance": "implied",
-        "reference": 248,
+        "reference": 238,
         "source": 86,
         "target": 84
       },
@@ -11741,7 +11679,7 @@ package TimerGeometry {
         "navigation": 28,
         "origin": 80,
         "provenance": "authored",
-        "reference": 285,
+        "reference": 275,
         "source": 79,
         "target": 80
       },
@@ -11750,7 +11688,7 @@ package TimerGeometry {
         "navigation": 30,
         "origin": 80,
         "provenance": "authored",
-        "reference": 246,
+        "reference": 236,
         "source": 86,
         "target": 84
       },
@@ -11759,7 +11697,7 @@ package TimerGeometry {
         "navigation": 28,
         "origin": 81,
         "provenance": "authored",
-        "reference": 286,
+        "reference": 276,
         "source": 79,
         "target": 81
       },
@@ -11768,7 +11706,7 @@ package TimerGeometry {
         "navigation": 34,
         "origin": 58,
         "provenance": "implied",
-        "reference": 702,
+        "reference": 692,
         "source": 57,
         "target": 58
       },
@@ -11777,7 +11715,7 @@ package TimerGeometry {
         "navigation": 35,
         "origin": 58,
         "provenance": "implied",
-        "reference": 249,
+        "reference": 239,
         "source": 86,
         "target": 85
       },
@@ -11786,7 +11724,7 @@ package TimerGeometry {
         "navigation": 33,
         "origin": 59,
         "provenance": "authored",
-        "reference": 252,
+        "reference": 242,
         "source": 58,
         "target": 59
       },
@@ -11795,7 +11733,7 @@ package TimerGeometry {
         "navigation": 35,
         "origin": 59,
         "provenance": "authored",
-        "reference": 247,
+        "reference": 237,
         "source": 86,
         "target": 85
       },
@@ -11804,7 +11742,7 @@ package TimerGeometry {
         "navigation": 33,
         "origin": 60,
         "provenance": "authored",
-        "reference": 253,
+        "reference": 243,
         "source": 58,
         "target": 60
       },
@@ -11813,7 +11751,7 @@ package TimerGeometry {
         "navigation": 14,
         "origin": 61,
         "provenance": "implied",
-        "reference": 703,
+        "reference": 693,
         "source": 57,
         "target": 61
       },
@@ -11822,7 +11760,7 @@ package TimerGeometry {
         "navigation": 15,
         "origin": 61,
         "provenance": "implied",
-        "reference": 222,
+        "reference": 212,
         "source": 83,
         "target": 86
       },
@@ -11831,7 +11769,7 @@ package TimerGeometry {
         "navigation": 13,
         "origin": 62,
         "provenance": "authored",
-        "reference": 296,
+        "reference": 286,
         "source": 61,
         "target": 62
       },
@@ -11840,7 +11778,7 @@ package TimerGeometry {
         "navigation": 15,
         "origin": 62,
         "provenance": "authored",
-        "reference": 219,
+        "reference": 209,
         "source": 83,
         "target": 86
       },
@@ -11849,7 +11787,7 @@ package TimerGeometry {
         "navigation": 13,
         "origin": 63,
         "provenance": "authored",
-        "reference": 297,
+        "reference": 287,
         "source": 61,
         "target": 63
       },
@@ -11858,7 +11796,7 @@ package TimerGeometry {
         "navigation": 24,
         "origin": 64,
         "provenance": "implied",
-        "reference": 704,
+        "reference": 694,
         "source": 57,
         "target": 64
       },
@@ -11867,7 +11805,7 @@ package TimerGeometry {
         "navigation": 25,
         "origin": 64,
         "provenance": "implied",
-        "reference": 223,
+        "reference": 213,
         "source": 83,
         "target": 83
       },
@@ -11876,7 +11814,7 @@ package TimerGeometry {
         "navigation": 23,
         "origin": 65,
         "provenance": "authored",
-        "reference": 202,
+        "reference": 192,
         "source": 64,
         "target": 65
       },
@@ -11885,7 +11823,7 @@ package TimerGeometry {
         "navigation": 25,
         "origin": 65,
         "provenance": "authored",
-        "reference": 220,
+        "reference": 210,
         "source": 83,
         "target": 83
       },
@@ -11894,7 +11832,7 @@ package TimerGeometry {
         "navigation": 23,
         "origin": 66,
         "provenance": "authored",
-        "reference": 203,
+        "reference": 193,
         "source": 64,
         "target": 66
       },
@@ -11903,7 +11841,7 @@ package TimerGeometry {
         "navigation": 19,
         "origin": 67,
         "provenance": "implied",
-        "reference": 705,
+        "reference": 695,
         "source": 57,
         "target": 67
       },
@@ -11912,7 +11850,7 @@ package TimerGeometry {
         "navigation": 20,
         "origin": 67,
         "provenance": "implied",
-        "reference": 224,
+        "reference": 214,
         "source": 83,
         "target": 83
       },
@@ -11921,7 +11859,7 @@ package TimerGeometry {
         "navigation": 18,
         "origin": 68,
         "provenance": "authored",
-        "reference": 227,
+        "reference": 217,
         "source": 67,
         "target": 68
       },
@@ -11930,7 +11868,7 @@ package TimerGeometry {
         "navigation": 20,
         "origin": 68,
         "provenance": "authored",
-        "reference": 221,
+        "reference": 211,
         "source": 83,
         "target": 83
       },
@@ -11939,7 +11877,7 @@ package TimerGeometry {
         "navigation": 18,
         "origin": 69,
         "provenance": "authored",
-        "reference": 228,
+        "reference": 218,
         "source": 67,
         "target": 69
       },
@@ -11948,7 +11886,7 @@ package TimerGeometry {
         "navigation": 39,
         "origin": 70,
         "provenance": "implied",
-        "reference": 706,
+        "reference": 696,
         "source": 57,
         "target": 70
       },
@@ -11957,7 +11895,7 @@ package TimerGeometry {
         "navigation": 40,
         "origin": 70,
         "provenance": "implied",
-        "reference": 241,
+        "reference": 231,
         "source": 84,
         "target": 86
       },
@@ -11966,7 +11904,7 @@ package TimerGeometry {
         "navigation": 38,
         "origin": 71,
         "provenance": "authored",
-        "reference": 307,
+        "reference": 297,
         "source": 70,
         "target": 71
       },
@@ -11975,7 +11913,7 @@ package TimerGeometry {
         "navigation": 40,
         "origin": 71,
         "provenance": "authored",
-        "reference": 239,
+        "reference": 229,
         "source": 84,
         "target": 86
       },
@@ -11984,7 +11922,7 @@ package TimerGeometry {
         "navigation": 38,
         "origin": 72,
         "provenance": "authored",
-        "reference": 308,
+        "reference": 298,
         "source": 70,
         "target": 72
       },
@@ -11993,7 +11931,7 @@ package TimerGeometry {
         "navigation": 44,
         "origin": 73,
         "provenance": "implied",
-        "reference": 707,
+        "reference": 697,
         "source": 57,
         "target": 73
       },
@@ -12002,7 +11940,7 @@ package TimerGeometry {
         "navigation": 45,
         "origin": 73,
         "provenance": "implied",
-        "reference": 242,
+        "reference": 232,
         "source": 84,
         "target": 83
       },
@@ -12011,7 +11949,7 @@ package TimerGeometry {
         "navigation": 43,
         "origin": 74,
         "provenance": "authored",
-        "reference": 274,
+        "reference": 264,
         "source": 73,
         "target": 74
       },
@@ -12020,7 +11958,7 @@ package TimerGeometry {
         "navigation": 45,
         "origin": 74,
         "provenance": "authored",
-        "reference": 240,
+        "reference": 230,
         "source": 84,
         "target": 83
       },
@@ -12029,7 +11967,7 @@ package TimerGeometry {
         "navigation": 43,
         "origin": 75,
         "provenance": "authored",
-        "reference": 275,
+        "reference": 265,
         "source": 73,
         "target": 75
       },
@@ -12038,7 +11976,7 @@ package TimerGeometry {
         "navigation": 49,
         "origin": 76,
         "provenance": "implied",
-        "reference": 708,
+        "reference": 698,
         "source": 57,
         "target": 76
       },
@@ -12047,7 +11985,7 @@ package TimerGeometry {
         "navigation": 50,
         "origin": 76,
         "provenance": "implied",
-        "reference": 215,
+        "reference": 205,
         "source": 85,
         "target": 83
       },
@@ -12056,7 +11994,7 @@ package TimerGeometry {
         "navigation": 48,
         "origin": 77,
         "provenance": "authored",
-        "reference": 263,
+        "reference": 253,
         "source": 76,
         "target": 77
       },
@@ -12065,7 +12003,7 @@ package TimerGeometry {
         "navigation": 50,
         "origin": 77,
         "provenance": "authored",
-        "reference": 214,
+        "reference": 204,
         "source": 85,
         "target": 83
       },
@@ -12074,7 +12012,7 @@ package TimerGeometry {
         "navigation": 48,
         "origin": 78,
         "provenance": "authored",
-        "reference": 264,
+        "reference": 254,
         "source": 76,
         "target": 78
       },
@@ -12083,7 +12021,7 @@ package TimerGeometry {
         "navigation": 83,
         "origin": 34,
         "provenance": "implied",
-        "reference": 751,
+        "reference": 741,
         "source": 33,
         "target": 34
       },
@@ -12092,7 +12030,7 @@ package TimerGeometry {
         "navigation": 69,
         "origin": 35,
         "provenance": "implied",
-        "reference": 664,
+        "reference": 654,
         "source": 34,
         "target": 35
       },
@@ -12101,7 +12039,7 @@ package TimerGeometry {
         "navigation": 79,
         "origin": 88,
         "provenance": "implied",
-        "reference": 752,
+        "reference": 742,
         "source": 33,
         "target": 88
       },
@@ -12110,7 +12048,7 @@ package TimerGeometry {
         "navigation": 77,
         "origin": 89,
         "provenance": "implied",
-        "reference": 753,
+        "reference": 743,
         "source": 33,
         "target": 89
       },
@@ -12119,7 +12057,7 @@ package TimerGeometry {
         "navigation": 75,
         "origin": 87,
         "provenance": "implied",
-        "reference": 754,
+        "reference": 744,
         "source": 33,
         "target": 87
       },
@@ -12128,7 +12066,7 @@ package TimerGeometry {
         "navigation": 138,
         "origin": 7,
         "provenance": "implied",
-        "reference": 637,
+        "reference": 627,
         "source": 6,
         "target": 7
       },
@@ -12137,7 +12075,7 @@ package TimerGeometry {
         "navigation": 141,
         "origin": 8,
         "provenance": "implied",
-        "reference": 638,
+        "reference": 628,
         "source": 6,
         "target": 8
       },
@@ -12146,7 +12084,7 @@ package TimerGeometry {
         "navigation": 144,
         "origin": 9,
         "provenance": "implied",
-        "reference": 639,
+        "reference": 629,
         "source": 6,
         "target": 9
       },
@@ -12155,7 +12093,7 @@ package TimerGeometry {
         "navigation": 147,
         "origin": 10,
         "provenance": "implied",
-        "reference": 640,
+        "reference": 630,
         "source": 6,
         "target": 10
       },
@@ -12164,7 +12102,7 @@ package TimerGeometry {
         "navigation": 134,
         "origin": 90,
         "provenance": "implied",
-        "reference": 641,
+        "reference": 631,
         "source": 6,
         "target": 90
       },
@@ -12173,7 +12111,7 @@ package TimerGeometry {
         "navigation": 118,
         "origin": 91,
         "provenance": "implied",
-        "reference": 728,
+        "reference": 718,
         "source": 90,
         "target": 91
       },
@@ -12182,7 +12120,7 @@ package TimerGeometry {
         "navigation": 53,
         "origin": 98,
         "provenance": "implied",
-        "reference": 501,
+        "reference": 491,
         "source": 91,
         "target": 98
       },
@@ -12191,7 +12129,7 @@ package TimerGeometry {
         "navigation": 55,
         "origin": 95,
         "provenance": "implied",
-        "reference": 502,
+        "reference": 492,
         "source": 91,
         "target": 95
       },
@@ -12200,7 +12138,7 @@ package TimerGeometry {
         "navigation": 56,
         "origin": 96,
         "provenance": "authored",
-        "reference": 389,
+        "reference": 379,
         "source": 95,
         "target": 96
       },
@@ -12209,7 +12147,7 @@ package TimerGeometry {
         "navigation": 56,
         "origin": 97,
         "provenance": "authored",
-        "reference": 417,
+        "reference": 407,
         "source": 96,
         "target": 97
       },
@@ -12218,7 +12156,7 @@ package TimerGeometry {
         "navigation": 57,
         "origin": 92,
         "provenance": "implied",
-        "reference": 503,
+        "reference": 493,
         "source": 91,
         "target": 92
       },
@@ -12227,7 +12165,7 @@ package TimerGeometry {
         "navigation": 58,
         "origin": 93,
         "provenance": "authored",
-        "reference": 319,
+        "reference": 309,
         "source": 92,
         "target": 93
       },
@@ -12236,7 +12174,7 @@ package TimerGeometry {
         "navigation": 58,
         "origin": 94,
         "provenance": "authored",
-        "reference": 347,
+        "reference": 337,
         "source": 93,
         "target": 94
       },
@@ -12245,7 +12183,7 @@ package TimerGeometry {
         "navigation": 120,
         "origin": 99,
         "provenance": "authored",
-        "reference": 504,
+        "reference": 494,
         "source": 91,
         "target": 99
       },
@@ -12254,7 +12192,7 @@ package TimerGeometry {
         "navigation": 122,
         "origin": 100,
         "provenance": "authored",
-        "reference": 509,
+        "reference": 499,
         "source": 99,
         "target": 100
       },
@@ -12263,7 +12201,7 @@ package TimerGeometry {
         "navigation": 122,
         "origin": 101,
         "provenance": "authored",
-        "reference": 513,
+        "reference": 503,
         "source": 100,
         "target": 101
       },
@@ -12272,7 +12210,7 @@ package TimerGeometry {
         "navigation": 116,
         "origin": 102,
         "provenance": "implied",
-        "reference": 729,
+        "reference": 719,
         "source": 90,
         "target": 102
       },
@@ -12281,7 +12219,7 @@ package TimerGeometry {
         "navigation": 61,
         "origin": 103,
         "provenance": "implied",
-        "reference": 492,
+        "reference": 482,
         "source": 102,
         "target": 103
       },
@@ -12290,7 +12228,7 @@ package TimerGeometry {
         "navigation": 63,
         "origin": 104,
         "provenance": "implied",
-        "reference": 493,
+        "reference": 483,
         "source": 102,
         "target": 104
       },
@@ -12299,7 +12237,7 @@ package TimerGeometry {
         "navigation": 59,
         "origin": 105,
         "provenance": "implied",
-        "reference": 494,
+        "reference": 484,
         "source": 102,
         "target": 105
       },
@@ -12308,7 +12246,7 @@ package TimerGeometry {
         "navigation": 67,
         "origin": 106,
         "provenance": "implied",
-        "reference": 495,
+        "reference": 485,
         "source": 102,
         "target": 106
       },
@@ -12317,7 +12255,7 @@ package TimerGeometry {
         "navigation": 65,
         "origin": 107,
         "provenance": "implied",
-        "reference": 496,
+        "reference": 486,
         "source": 102,
         "target": 107
       },
@@ -12326,7 +12264,7 @@ package TimerGeometry {
         "navigation": 132,
         "origin": 108,
         "provenance": "implied",
-        "reference": 642,
+        "reference": 632,
         "source": 6,
         "target": 108
       },
@@ -12335,7 +12273,7 @@ package TimerGeometry {
         "navigation": 107,
         "origin": 109,
         "provenance": "implied",
-        "reference": 739,
+        "reference": 729,
         "source": 108,
         "target": 109
       },
@@ -12344,7 +12282,7 @@ package TimerGeometry {
         "navigation": 69,
         "origin": 110,
         "provenance": "implied",
-        "reference": 564,
+        "reference": 554,
         "source": 109,
         "target": 110
       },
@@ -12353,7 +12291,7 @@ package TimerGeometry {
         "navigation": 111,
         "origin": 111,
         "provenance": "implied",
-        "reference": 740,
+        "reference": 730,
         "source": 108,
         "target": 111
       },
@@ -12362,7 +12300,7 @@ package TimerGeometry {
         "navigation": 53,
         "origin": 118,
         "provenance": "implied",
-        "reference": 577,
+        "reference": 567,
         "source": 111,
         "target": 118
       },
@@ -12371,7 +12309,7 @@ package TimerGeometry {
         "navigation": 55,
         "origin": 115,
         "provenance": "implied",
-        "reference": 578,
+        "reference": 568,
         "source": 111,
         "target": 115
       },
@@ -12380,7 +12318,7 @@ package TimerGeometry {
         "navigation": 56,
         "origin": 116,
         "provenance": "authored",
-        "reference": 390,
+        "reference": 380,
         "source": 115,
         "target": 116
       },
@@ -12389,7 +12327,7 @@ package TimerGeometry {
         "navigation": 56,
         "origin": 117,
         "provenance": "authored",
-        "reference": 418,
+        "reference": 408,
         "source": 116,
         "target": 117
       },
@@ -12398,7 +12336,7 @@ package TimerGeometry {
         "navigation": 57,
         "origin": 112,
         "provenance": "implied",
-        "reference": 579,
+        "reference": 569,
         "source": 111,
         "target": 112
       },
@@ -12407,7 +12345,7 @@ package TimerGeometry {
         "navigation": 58,
         "origin": 113,
         "provenance": "authored",
-        "reference": 320,
+        "reference": 310,
         "source": 112,
         "target": 113
       },
@@ -12416,7 +12354,7 @@ package TimerGeometry {
         "navigation": 58,
         "origin": 114,
         "provenance": "authored",
-        "reference": 348,
+        "reference": 338,
         "source": 113,
         "target": 114
       },
@@ -12425,7 +12363,7 @@ package TimerGeometry {
         "navigation": 113,
         "origin": 119,
         "provenance": "authored",
-        "reference": 580,
+        "reference": 570,
         "source": 111,
         "target": 119
       },
@@ -12434,7 +12372,7 @@ package TimerGeometry {
         "navigation": 115,
         "origin": 120,
         "provenance": "authored",
-        "reference": 585,
+        "reference": 575,
         "source": 119,
         "target": 120
       },
@@ -12443,7 +12381,7 @@ package TimerGeometry {
         "navigation": 115,
         "origin": 121,
         "provenance": "authored",
-        "reference": 589,
+        "reference": 579,
         "source": 120,
         "target": 121
       },
@@ -12452,7 +12390,7 @@ package TimerGeometry {
         "navigation": 109,
         "origin": 122,
         "provenance": "implied",
-        "reference": 741,
+        "reference": 731,
         "source": 108,
         "target": 122
       },
@@ -12461,7 +12399,7 @@ package TimerGeometry {
         "navigation": 71,
         "origin": 123,
         "provenance": "implied",
-        "reference": 572,
+        "reference": 562,
         "source": 122,
         "target": 123
       },
@@ -12470,7 +12408,7 @@ package TimerGeometry {
         "navigation": 105,
         "origin": 124,
         "provenance": "implied",
-        "reference": 742,
+        "reference": 732,
         "source": 108,
         "target": 124
       },
@@ -12479,7 +12417,7 @@ package TimerGeometry {
         "navigation": 136,
         "origin": 11,
         "provenance": "implied",
-        "reference": 643,
+        "reference": 633,
         "source": 6,
         "target": 11
       },
@@ -12488,7 +12426,7 @@ package TimerGeometry {
         "navigation": 98,
         "origin": 20,
         "provenance": "implied",
-        "reference": 733,
+        "reference": 723,
         "source": 11,
         "target": 20
       },
@@ -12497,7 +12435,7 @@ package TimerGeometry {
         "navigation": 53,
         "origin": 27,
         "provenance": "implied",
-        "reference": 548,
+        "reference": 538,
         "source": 20,
         "target": 27
       },
@@ -12506,7 +12444,7 @@ package TimerGeometry {
         "navigation": 55,
         "origin": 24,
         "provenance": "implied",
-        "reference": 549,
+        "reference": 539,
         "source": 20,
         "target": 24
       },
@@ -12515,7 +12453,7 @@ package TimerGeometry {
         "navigation": 56,
         "origin": 25,
         "provenance": "authored",
-        "reference": 391,
+        "reference": 381,
         "source": 24,
         "target": 25
       },
@@ -12524,7 +12462,7 @@ package TimerGeometry {
         "navigation": 56,
         "origin": 26,
         "provenance": "authored",
-        "reference": 419,
+        "reference": 409,
         "source": 25,
         "target": 26
       },
@@ -12533,7 +12471,7 @@ package TimerGeometry {
         "navigation": 57,
         "origin": 21,
         "provenance": "implied",
-        "reference": 550,
+        "reference": 540,
         "source": 20,
         "target": 21
       },
@@ -12542,7 +12480,7 @@ package TimerGeometry {
         "navigation": 58,
         "origin": 22,
         "provenance": "authored",
-        "reference": 321,
+        "reference": 311,
         "source": 21,
         "target": 22
       },
@@ -12551,7 +12489,7 @@ package TimerGeometry {
         "navigation": 58,
         "origin": 23,
         "provenance": "authored",
-        "reference": 349,
+        "reference": 339,
         "source": 22,
         "target": 23
       },
@@ -12560,7 +12498,7 @@ package TimerGeometry {
         "navigation": 100,
         "origin": 28,
         "provenance": "authored",
-        "reference": 551,
+        "reference": 541,
         "source": 20,
         "target": 28
       },
@@ -12569,7 +12507,7 @@ package TimerGeometry {
         "navigation": 102,
         "origin": 29,
         "provenance": "authored",
-        "reference": 556,
+        "reference": 546,
         "source": 28,
         "target": 29
       },
@@ -12578,7 +12516,7 @@ package TimerGeometry {
         "navigation": 102,
         "origin": 30,
         "provenance": "authored",
-        "reference": 560,
+        "reference": 550,
         "source": 29,
         "target": 30
       },
@@ -12587,7 +12525,7 @@ package TimerGeometry {
         "navigation": 96,
         "origin": 31,
         "provenance": "implied",
-        "reference": 734,
+        "reference": 724,
         "source": 11,
         "target": 31
       },
@@ -12596,7 +12534,7 @@ package TimerGeometry {
         "navigation": 73,
         "origin": 32,
         "provenance": "implied",
-        "reference": 543,
+        "reference": 533,
         "source": 31,
         "target": 32
       },
@@ -12605,7 +12543,7 @@ package TimerGeometry {
         "navigation": 103,
         "origin": 12,
         "provenance": "implied",
-        "reference": 735,
+        "reference": 725,
         "source": 11,
         "target": 12
       },
@@ -12614,7 +12552,7 @@ package TimerGeometry {
         "navigation": 53,
         "origin": 19,
         "provenance": "implied",
-        "reference": 536,
+        "reference": 526,
         "source": 12,
         "target": 19
       },
@@ -12623,7 +12561,7 @@ package TimerGeometry {
         "navigation": 55,
         "origin": 16,
         "provenance": "implied",
-        "reference": 537,
+        "reference": 527,
         "source": 12,
         "target": 16
       },
@@ -12632,7 +12570,7 @@ package TimerGeometry {
         "navigation": 56,
         "origin": 17,
         "provenance": "authored",
-        "reference": 392,
+        "reference": 382,
         "source": 16,
         "target": 17
       },
@@ -12641,7 +12579,7 @@ package TimerGeometry {
         "navigation": 56,
         "origin": 18,
         "provenance": "authored",
-        "reference": 420,
+        "reference": 410,
         "source": 17,
         "target": 18
       },
@@ -12650,7 +12588,7 @@ package TimerGeometry {
         "navigation": 57,
         "origin": 13,
         "provenance": "implied",
-        "reference": 538,
+        "reference": 528,
         "source": 12,
         "target": 13
       },
@@ -12659,7 +12597,7 @@ package TimerGeometry {
         "navigation": 58,
         "origin": 14,
         "provenance": "authored",
-        "reference": 322,
+        "reference": 312,
         "source": 13,
         "target": 14
       },
@@ -12668,7 +12606,7 @@ package TimerGeometry {
         "navigation": 58,
         "origin": 15,
         "provenance": "authored",
-        "reference": 350,
+        "reference": 340,
         "source": 14,
         "target": 15
       },
@@ -12677,7 +12615,7 @@ package TimerGeometry {
         "navigation": 166,
         "origin": 125,
         "provenance": "implied",
-        "reference": 189,
+        "reference": 179,
         "source": 0,
         "target": 125
       },
@@ -12686,7 +12624,7 @@ package TimerGeometry {
         "navigation": 125,
         "origin": 126,
         "provenance": "implied",
-        "reference": 626,
+        "reference": 616,
         "source": 125,
         "target": 126
       },
@@ -12695,7 +12633,7 @@ package TimerGeometry {
         "navigation": 53,
         "origin": 133,
         "provenance": "implied",
-        "reference": 520,
+        "reference": 510,
         "source": 126,
         "target": 133
       },
@@ -12704,7 +12642,7 @@ package TimerGeometry {
         "navigation": 55,
         "origin": 130,
         "provenance": "implied",
-        "reference": 521,
+        "reference": 511,
         "source": 126,
         "target": 130
       },
@@ -12713,7 +12651,7 @@ package TimerGeometry {
         "navigation": 56,
         "origin": 131,
         "provenance": "authored",
-        "reference": 393,
+        "reference": 383,
         "source": 130,
         "target": 131
       },
@@ -12722,7 +12660,7 @@ package TimerGeometry {
         "navigation": 56,
         "origin": 132,
         "provenance": "authored",
-        "reference": 421,
+        "reference": 411,
         "source": 131,
         "target": 132
       },
@@ -12731,7 +12669,7 @@ package TimerGeometry {
         "navigation": 57,
         "origin": 127,
         "provenance": "implied",
-        "reference": 522,
+        "reference": 512,
         "source": 126,
         "target": 127
       },
@@ -12740,7 +12678,7 @@ package TimerGeometry {
         "navigation": 58,
         "origin": 128,
         "provenance": "authored",
-        "reference": 323,
+        "reference": 313,
         "source": 127,
         "target": 128
       },
@@ -12749,7 +12687,7 @@ package TimerGeometry {
         "navigation": 58,
         "origin": 129,
         "provenance": "authored",
-        "reference": 351,
+        "reference": 341,
         "source": 128,
         "target": 129
       },
@@ -12758,7 +12696,7 @@ package TimerGeometry {
         "navigation": 127,
         "origin": 134,
         "provenance": "authored",
-        "reference": 523,
+        "reference": 513,
         "source": 126,
         "target": 134
       },
@@ -12767,7 +12705,7 @@ package TimerGeometry {
         "navigation": 129,
         "origin": 135,
         "provenance": "authored",
-        "reference": 528,
+        "reference": 518,
         "source": 134,
         "target": 135
       },
@@ -12776,7 +12714,7 @@ package TimerGeometry {
         "navigation": 129,
         "origin": 136,
         "provenance": "authored",
-        "reference": 532,
+        "reference": 522,
         "source": 135,
         "target": 136
       },
@@ -12785,7 +12723,7 @@ package TimerGeometry {
         "navigation": 123,
         "origin": 137,
         "provenance": "implied",
-        "reference": 627,
+        "reference": 617,
         "source": 125,
         "target": 137
       },
@@ -12794,7 +12732,7 @@ package TimerGeometry {
         "navigation": 170,
         "origin": 1,
         "provenance": "implied",
-        "reference": 190,
+        "reference": 180,
         "source": 0,
         "target": 1
       },
@@ -12803,7 +12741,7 @@ package TimerGeometry {
         "navigation": 173,
         "origin": 2,
         "provenance": "implied",
-        "reference": 191,
+        "reference": 181,
         "source": 0,
         "target": 2
       },
@@ -12812,7 +12750,7 @@ package TimerGeometry {
         "navigation": 176,
         "origin": 3,
         "provenance": "implied",
-        "reference": 192,
+        "reference": 182,
         "source": 0,
         "target": 3
       },
@@ -12821,7 +12759,7 @@ package TimerGeometry {
         "navigation": 179,
         "origin": 4,
         "provenance": "implied",
-        "reference": 193,
+        "reference": 183,
         "source": 0,
         "target": 4
       },
@@ -12830,7 +12768,7 @@ package TimerGeometry {
         "navigation": 182,
         "origin": 5,
         "provenance": "implied",
-        "reference": 194,
+        "reference": 184,
         "source": 0,
         "target": 5
       },
@@ -12839,7 +12777,7 @@ package TimerGeometry {
         "navigation": 164,
         "origin": 138,
         "provenance": "implied",
-        "reference": 195,
+        "reference": 185,
         "source": 0,
         "target": 138
       },
@@ -12848,7 +12786,7 @@ package TimerGeometry {
         "navigation": 156,
         "origin": 139,
         "provenance": "implied",
-        "reference": 619,
+        "reference": 609,
         "source": 138,
         "target": 139
       },
@@ -12857,7 +12795,7 @@ package TimerGeometry {
         "navigation": 53,
         "origin": 146,
         "provenance": "implied",
-        "reference": 482,
+        "reference": 472,
         "source": 139,
         "target": 146
       },
@@ -12866,7 +12804,7 @@ package TimerGeometry {
         "navigation": 55,
         "origin": 143,
         "provenance": "implied",
-        "reference": 483,
+        "reference": 473,
         "source": 139,
         "target": 143
       },
@@ -12875,7 +12813,7 @@ package TimerGeometry {
         "navigation": 56,
         "origin": 144,
         "provenance": "authored",
-        "reference": 394,
+        "reference": 384,
         "source": 143,
         "target": 144
       },
@@ -12884,7 +12822,7 @@ package TimerGeometry {
         "navigation": 56,
         "origin": 145,
         "provenance": "authored",
-        "reference": 422,
+        "reference": 412,
         "source": 144,
         "target": 145
       },
@@ -12893,7 +12831,7 @@ package TimerGeometry {
         "navigation": 57,
         "origin": 140,
         "provenance": "implied",
-        "reference": 484,
+        "reference": 474,
         "source": 139,
         "target": 140
       },
@@ -12902,7 +12840,7 @@ package TimerGeometry {
         "navigation": 58,
         "origin": 141,
         "provenance": "authored",
-        "reference": 324,
+        "reference": 314,
         "source": 140,
         "target": 141
       },
@@ -12911,7 +12849,7 @@ package TimerGeometry {
         "navigation": 58,
         "origin": 142,
         "provenance": "authored",
-        "reference": 352,
+        "reference": 342,
         "source": 141,
         "target": 142
       },
@@ -12920,7 +12858,7 @@ package TimerGeometry {
         "navigation": 150,
         "origin": 149,
         "provenance": "implied",
-        "reference": 620,
+        "reference": 610,
         "source": 138,
         "target": 149
       },
@@ -12929,7 +12867,7 @@ package TimerGeometry {
         "navigation": 152,
         "origin": 147,
         "provenance": "implied",
-        "reference": 621,
+        "reference": 611,
         "source": 138,
         "target": 147
       },
@@ -12938,7 +12876,7 @@ package TimerGeometry {
         "navigation": 154,
         "origin": 148,
         "provenance": "implied",
-        "reference": 622,
+        "reference": 612,
         "source": 138,
         "target": 148
       },
@@ -12947,7 +12885,7 @@ package TimerGeometry {
         "navigation": 168,
         "origin": 150,
         "provenance": "implied",
-        "reference": 196,
+        "reference": 186,
         "source": 0,
         "target": 150
       },
@@ -12956,7 +12894,7 @@ package TimerGeometry {
         "navigation": 160,
         "origin": 152,
         "provenance": "implied",
-        "reference": 631,
+        "reference": 621,
         "source": 150,
         "target": 152
       },
@@ -12965,7 +12903,7 @@ package TimerGeometry {
         "navigation": 158,
         "origin": 151,
         "provenance": "implied",
-        "reference": 632,
+        "reference": 622,
         "source": 150,
         "target": 151
       }
@@ -13167,26 +13105,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Item",
-              "reference": 128
-            },
-            {
-              "label": "Part",
-              "reference": 131
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "KitchenTimer",
               "reference": 90
             }
@@ -13199,7 +13117,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 176,
+        "reference": 166,
         "source": 170,
         "typing": {
           "status": "absent"
@@ -13211,7 +13129,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 177,
+        "reference": 167,
         "source": 173,
         "typing": {
           "status": "absent"
@@ -13223,7 +13141,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 178,
+        "reference": 168,
         "source": 176,
         "typing": {
           "status": "absent"
@@ -13235,7 +13153,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 179,
+        "reference": 169,
         "source": 179,
         "typing": {
           "status": "absent"
@@ -13247,7 +13165,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 180,
+        "reference": 170,
         "source": 182,
         "typing": {
           "status": "absent"
@@ -13286,26 +13204,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Item",
-              "reference": 128
-            },
-            {
-              "label": "Part",
-              "reference": 131
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "PCB",
               "reference": 109
             }
@@ -13318,7 +13216,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 184,
+        "reference": 174,
         "source": 138,
         "typing": {
           "status": "absent"
@@ -13330,7 +13228,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 185,
+        "reference": 175,
         "source": 141,
         "typing": {
           "status": "absent"
@@ -13342,7 +13240,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 186,
+        "reference": 176,
         "source": 144,
         "typing": {
           "status": "absent"
@@ -13354,7 +13252,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 6,
-        "reference": 187,
+        "reference": 177,
         "source": 147,
         "typing": {
           "status": "absent"
@@ -13381,26 +13279,6 @@ package TimerGeometry {
         "typing": {
           "status": "resolved",
           "types": [
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Item",
-              "reference": 128
-            },
-            {
-              "label": "Part",
-              "reference": 131
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
             {
               "label": "BuzzerDriver",
               "reference": 71
@@ -13430,22 +13308,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "BatteryOutlet",
               "reference": 34
             }
@@ -13470,7 +13332,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 13,
-        "reference": 160,
+        "reference": 150,
         "source": 58,
         "typing": {
           "status": "absent"
@@ -13482,7 +13344,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 14,
-        "reference": 161,
+        "reference": 151,
         "source": 58,
         "typing": {
           "status": "absent"
@@ -13506,7 +13368,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 16,
-        "reference": 162,
+        "reference": 152,
         "source": 56,
         "typing": {
           "status": "absent"
@@ -13518,7 +13380,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 17,
-        "reference": 163,
+        "reference": 153,
         "source": 56,
         "typing": {
           "status": "absent"
@@ -13537,7 +13399,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "electricPower",
-              "reference": 126
+              "reference": 123
             }
           ]
         }
@@ -13571,22 +13433,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "BatteryOutlet",
               "reference": 34
             }
@@ -13611,7 +13457,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 21,
-        "reference": 160,
+        "reference": 150,
         "source": 58,
         "typing": {
           "status": "absent"
@@ -13623,7 +13469,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 22,
-        "reference": 161,
+        "reference": 151,
         "source": 58,
         "typing": {
           "status": "absent"
@@ -13647,7 +13493,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 24,
-        "reference": 162,
+        "reference": 152,
         "source": 56,
         "typing": {
           "status": "absent"
@@ -13659,7 +13505,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 25,
-        "reference": 163,
+        "reference": 153,
         "source": 56,
         "typing": {
           "status": "absent"
@@ -13678,7 +13524,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "electricPower",
-              "reference": 126
+              "reference": 123
             }
           ]
         }
@@ -13689,20 +13535,10 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 20,
-        "reference": 170,
+        "reference": 160,
         "source": 100,
         "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "DataValue",
-              "reference": 119
-            },
-            {
-              "label": "Anything",
-              "reference": 118
-            }
-          ]
+          "status": "absent"
         }
       },
       {
@@ -13711,7 +13547,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 28,
-        "reference": 171,
+        "reference": 161,
         "source": 102,
         "typing": {
           "status": "absent"
@@ -13723,7 +13559,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 29,
-        "reference": 172,
+        "reference": 162,
         "source": 102,
         "typing": {
           "status": "absent"
@@ -13749,22 +13585,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "BuzzerCommandPort",
               "reference": 48
             }
@@ -13784,7 +13604,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 138
+              "reference": 129
             }
           ]
         }
@@ -13829,26 +13649,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Item",
-              "reference": 128
-            },
-            {
-              "label": "Part",
-              "reference": 131
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "MCU",
               "reference": 96
             }
@@ -13875,22 +13675,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "DisplayCommandPort",
               "reference": 50
             }
@@ -13910,7 +13694,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "String",
-              "reference": 140
+              "reference": 131
             }
           ]
         }
@@ -13944,22 +13728,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "BatteryOutlet",
               "reference": 34
             }
@@ -13984,7 +13752,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 37,
-        "reference": 160,
+        "reference": 150,
         "source": 58,
         "typing": {
           "status": "absent"
@@ -13996,7 +13764,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 38,
-        "reference": 161,
+        "reference": 151,
         "source": 58,
         "typing": {
           "status": "absent"
@@ -14020,7 +13788,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 40,
-        "reference": 162,
+        "reference": 152,
         "source": 56,
         "typing": {
           "status": "absent"
@@ -14032,7 +13800,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 41,
-        "reference": 163,
+        "reference": 153,
         "source": 56,
         "typing": {
           "status": "absent"
@@ -14051,7 +13819,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "electricPower",
-              "reference": 126
+              "reference": 123
             }
           ]
         }
@@ -14062,20 +13830,10 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 36,
-        "reference": 181,
+        "reference": 171,
         "source": 91,
         "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "DataValue",
-              "reference": 119
-            },
-            {
-              "label": "Anything",
-              "reference": 118
-            }
-          ]
+          "status": "absent"
         }
       },
       {
@@ -14084,7 +13842,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 44,
-        "reference": 182,
+        "reference": 172,
         "source": 93,
         "typing": {
           "status": "absent"
@@ -14096,7 +13854,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 45,
-        "reference": 183,
+        "reference": 173,
         "source": 93,
         "typing": {
           "status": "absent"
@@ -14126,22 +13884,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "ButtonInputPort",
               "reference": 42
             }
@@ -14161,7 +13903,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 138
+              "reference": 129
             }
           ]
         }
@@ -14179,7 +13921,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 138
+              "reference": 129
             }
           ]
         }
@@ -14197,7 +13939,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 138
+              "reference": 129
             }
           ]
         }
@@ -14215,7 +13957,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 138
+              "reference": 129
             }
           ]
         }
@@ -14233,7 +13975,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 138
+              "reference": 129
             }
           ]
         }
@@ -14258,22 +14000,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "LcdSegmentDrivePort",
               "reference": 52
             }
@@ -14293,7 +14019,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "String",
-              "reference": 140
+              "reference": 131
             }
           ]
         }
@@ -14318,22 +14044,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "BuzzerCommandPort",
               "reference": 48
             }
@@ -14353,7 +14063,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 138
+              "reference": 129
             }
           ]
         }
@@ -14380,26 +14090,6 @@ package TimerGeometry {
         "typing": {
           "status": "resolved",
           "types": [
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "StateAction",
-              "reference": 141
-            },
-            {
-              "label": "Action",
-              "reference": 115
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
-              "label": "Performance",
-              "reference": 134
-            },
             {
               "label": "TimerStateMachine",
               "reference": 12
@@ -14433,7 +14123,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 58,
-        "reference": 149,
+        "reference": 139,
         "source": 33,
         "typing": {
           "status": "absent"
@@ -14445,7 +14135,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 58,
-        "reference": 148,
+        "reference": 138,
         "source": 33,
         "typing": {
           "status": "absent"
@@ -14477,7 +14167,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 61,
-        "reference": 157,
+        "reference": 147,
         "source": 13,
         "typing": {
           "status": "absent"
@@ -14489,7 +14179,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 61,
-        "reference": 156,
+        "reference": 146,
         "source": 13,
         "typing": {
           "status": "absent"
@@ -14521,7 +14211,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 64,
-        "reference": 145,
+        "reference": 135,
         "source": 23,
         "typing": {
           "status": "absent"
@@ -14533,7 +14223,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 64,
-        "reference": 144,
+        "reference": 134,
         "source": 23,
         "typing": {
           "status": "absent"
@@ -14565,7 +14255,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 67,
-        "reference": 147,
+        "reference": 137,
         "source": 18,
         "typing": {
           "status": "absent"
@@ -14577,7 +14267,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 67,
-        "reference": 146,
+        "reference": 136,
         "source": 18,
         "typing": {
           "status": "absent"
@@ -14609,7 +14299,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 70,
-        "reference": 159,
+        "reference": 149,
         "source": 38,
         "typing": {
           "status": "absent"
@@ -14621,7 +14311,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 70,
-        "reference": 158,
+        "reference": 148,
         "source": 38,
         "typing": {
           "status": "absent"
@@ -14653,7 +14343,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 73,
-        "reference": 153,
+        "reference": 143,
         "source": 43,
         "typing": {
           "status": "absent"
@@ -14665,7 +14355,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 73,
-        "reference": 152,
+        "reference": 142,
         "source": 43,
         "typing": {
           "status": "absent"
@@ -14697,7 +14387,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 76,
-        "reference": 151,
+        "reference": 141,
         "source": 48,
         "typing": {
           "status": "absent"
@@ -14709,7 +14399,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 76,
-        "reference": 150,
+        "reference": 140,
         "source": 48,
         "typing": {
           "status": "absent"
@@ -14741,7 +14431,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 79,
-        "reference": 155,
+        "reference": 145,
         "source": 28,
         "typing": {
           "status": "absent"
@@ -14753,7 +14443,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 79,
-        "reference": 154,
+        "reference": 144,
         "source": 28,
         "typing": {
           "status": "absent"
@@ -14765,7 +14455,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 57,
-        "reference": 143,
+        "reference": 133,
         "source": 3,
         "typing": {
           "status": "absent"
@@ -14782,26 +14472,6 @@ package TimerGeometry {
         "typing": {
           "status": "resolved",
           "types": [
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "StateAction",
-              "reference": 141
-            },
-            {
-              "label": "Action",
-              "reference": 115
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
-              "label": "Performance",
-              "reference": 134
-            },
             {
               "label": "Idle",
               "reference": 5
@@ -14821,26 +14491,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "StateAction",
-              "reference": 141
-            },
-            {
-              "label": "Action",
-              "reference": 115
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
-              "label": "Performance",
-              "reference": 134
-            },
-            {
               "label": "Paused",
               "reference": 7
             }
@@ -14858,26 +14508,6 @@ package TimerGeometry {
         "typing": {
           "status": "resolved",
           "types": [
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "StateAction",
-              "reference": 141
-            },
-            {
-              "label": "Action",
-              "reference": 115
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
-              "label": "Performance",
-              "reference": 134
-            },
             {
               "label": "Expired",
               "reference": 4
@@ -14897,26 +14527,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "StateAction",
-              "reference": 141
-            },
-            {
-              "label": "Action",
-              "reference": 115
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
-              "label": "Performance",
-              "reference": 134
-            },
-            {
               "label": "Running",
               "reference": 9
             }
@@ -14935,16 +14545,8 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "DataValue",
-              "reference": 119
-            },
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
               "label": "FrequencyValue",
-              "reference": 127
+              "reference": 124
             }
           ]
         }
@@ -14961,16 +14563,8 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "DataValue",
-              "reference": 119
-            },
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
               "label": "Real",
-              "reference": 139
+              "reference": 130
             }
           ]
         }
@@ -14987,16 +14581,8 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "DataValue",
-              "reference": 119
-            },
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
               "label": "Real",
-              "reference": 139
+              "reference": 130
             }
           ]
         }
@@ -15021,26 +14607,6 @@ package TimerGeometry {
         "typing": {
           "status": "resolved",
           "types": [
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Item",
-              "reference": 128
-            },
-            {
-              "label": "Part",
-              "reference": 131
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
             {
               "label": "ButtonInterface",
               "reference": 59
@@ -15077,22 +14643,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "BatteryOutlet",
               "reference": 34
             }
@@ -15117,7 +14667,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 92,
-        "reference": 160,
+        "reference": 150,
         "source": 58,
         "typing": {
           "status": "absent"
@@ -15129,7 +14679,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 93,
-        "reference": 161,
+        "reference": 151,
         "source": 58,
         "typing": {
           "status": "absent"
@@ -15153,7 +14703,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 95,
-        "reference": 162,
+        "reference": 152,
         "source": 56,
         "typing": {
           "status": "absent"
@@ -15165,7 +14715,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 96,
-        "reference": 163,
+        "reference": 153,
         "source": 56,
         "typing": {
           "status": "absent"
@@ -15184,7 +14734,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "electricPower",
-              "reference": 126
+              "reference": 123
             }
           ]
         }
@@ -15195,20 +14745,10 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 91,
-        "reference": 164,
+        "reference": 154,
         "source": 120,
         "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "DataValue",
-              "reference": 119
-            },
-            {
-              "label": "Anything",
-              "reference": 118
-            }
-          ]
+          "status": "absent"
         }
       },
       {
@@ -15217,7 +14757,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 99,
-        "reference": 165,
+        "reference": 155,
         "source": 122,
         "typing": {
           "status": "absent"
@@ -15229,7 +14769,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 100,
-        "reference": 166,
+        "reference": 156,
         "source": 122,
         "typing": {
           "status": "absent"
@@ -15259,22 +14799,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "ButtonInputPort",
               "reference": 42
             }
@@ -15294,7 +14818,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 138
+              "reference": 129
             }
           ]
         }
@@ -15312,7 +14836,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 138
+              "reference": 129
             }
           ]
         }
@@ -15330,7 +14854,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 138
+              "reference": 129
             }
           ]
         }
@@ -15348,7 +14872,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 138
+              "reference": 129
             }
           ]
         }
@@ -15366,7 +14890,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "Boolean",
-              "reference": 138
+              "reference": 129
             }
           ]
         }
@@ -15400,26 +14924,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Item",
-              "reference": 128
-            },
-            {
-              "label": "Part",
-              "reference": 131
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "Display",
               "reference": 79
             }
@@ -15446,22 +14950,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "DisplayCommandPort",
               "reference": 50
             }
@@ -15481,7 +14969,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "String",
-              "reference": 140
+              "reference": 131
             }
           ]
         }
@@ -15515,22 +15003,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "BatteryOutlet",
               "reference": 34
             }
@@ -15555,7 +15027,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 112,
-        "reference": 160,
+        "reference": 150,
         "source": 58,
         "typing": {
           "status": "absent"
@@ -15567,7 +15039,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 113,
-        "reference": 161,
+        "reference": 151,
         "source": 58,
         "typing": {
           "status": "absent"
@@ -15591,7 +15063,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 115,
-        "reference": 162,
+        "reference": 152,
         "source": 56,
         "typing": {
           "status": "absent"
@@ -15603,7 +15075,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 116,
-        "reference": 163,
+        "reference": 153,
         "source": 56,
         "typing": {
           "status": "absent"
@@ -15622,7 +15094,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "electricPower",
-              "reference": 126
+              "reference": 123
             }
           ]
         }
@@ -15633,20 +15105,10 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 111,
-        "reference": 173,
+        "reference": 163,
         "source": 113,
         "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "DataValue",
-              "reference": 119
-            },
-            {
-              "label": "Anything",
-              "reference": 118
-            }
-          ]
+          "status": "absent"
         }
       },
       {
@@ -15655,7 +15117,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 119,
-        "reference": 174,
+        "reference": 164,
         "source": 115,
         "typing": {
           "status": "absent"
@@ -15667,7 +15129,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 120,
-        "reference": 175,
+        "reference": 165,
         "source": 115,
         "typing": {
           "status": "absent"
@@ -15693,22 +15155,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "LcdSegmentDrivePort",
               "reference": 52
             }
@@ -15728,7 +15174,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "String",
-              "reference": 140
+              "reference": 131
             }
           ]
         }
@@ -15745,16 +15191,8 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "DataValue",
-              "reference": 119
-            },
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
               "label": "String",
-              "reference": 140
+              "reference": 131
             }
           ]
         }
@@ -15785,26 +15223,6 @@ package TimerGeometry {
         "typing": {
           "status": "resolved",
           "types": [
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Item",
-              "reference": 128
-            },
-            {
-              "label": "Part",
-              "reference": 131
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
             {
               "label": "Buzzer",
               "reference": 65
@@ -15841,22 +15259,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "BatteryOutlet",
               "reference": 34
             }
@@ -15881,7 +15283,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 127,
-        "reference": 160,
+        "reference": 150,
         "source": 58,
         "typing": {
           "status": "absent"
@@ -15893,7 +15295,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 128,
-        "reference": 161,
+        "reference": 151,
         "source": 58,
         "typing": {
           "status": "absent"
@@ -15917,7 +15319,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 130,
-        "reference": 162,
+        "reference": 152,
         "source": 56,
         "typing": {
           "status": "absent"
@@ -15929,7 +15331,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 131,
-        "reference": 163,
+        "reference": 153,
         "source": 56,
         "typing": {
           "status": "absent"
@@ -15948,7 +15350,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "electricPower",
-              "reference": 126
+              "reference": 123
             }
           ]
         }
@@ -15959,20 +15361,10 @@ package TimerGeometry {
         "name": null,
         "notationRole": "usage",
         "owner": 126,
-        "reference": 167,
+        "reference": 157,
         "source": 127,
         "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "DataValue",
-              "reference": 119
-            },
-            {
-              "label": "Anything",
-              "reference": 118
-            }
-          ]
+          "status": "absent"
         }
       },
       {
@@ -15981,7 +15373,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 134,
-        "reference": 168,
+        "reference": 158,
         "source": 129,
         "typing": {
           "status": "absent"
@@ -15993,7 +15385,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 135,
-        "reference": 169,
+        "reference": 159,
         "source": 129,
         "typing": {
           "status": "absent"
@@ -16011,16 +15403,8 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "DataValue",
-              "reference": 119
-            },
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
               "label": "DurationValue",
-              "reference": 123
+              "reference": 120
             }
           ]
         }
@@ -16054,26 +15438,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Item",
-              "reference": 128
-            },
-            {
-              "label": "Part",
-              "reference": 131
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "Battery",
               "reference": 54
             }
@@ -16102,22 +15466,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Port",
-              "reference": 136
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "BatteryOutlet",
               "reference": 34
             }
@@ -16142,7 +15490,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 140,
-        "reference": 160,
+        "reference": 150,
         "source": 58,
         "typing": {
           "status": "absent"
@@ -16154,7 +15502,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 141,
-        "reference": 161,
+        "reference": 151,
         "source": 58,
         "typing": {
           "status": "absent"
@@ -16178,7 +15526,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 143,
-        "reference": 162,
+        "reference": 152,
         "source": 56,
         "typing": {
           "status": "absent"
@@ -16190,7 +15538,7 @@ package TimerGeometry {
         "name": null,
         "notationRole": "unsupported",
         "owner": 144,
-        "reference": 163,
+        "reference": 153,
         "source": 56,
         "typing": {
           "status": "absent"
@@ -16209,7 +15557,7 @@ package TimerGeometry {
           "types": [
             {
               "label": "electricPower",
-              "reference": 126
+              "reference": 123
             }
           ]
         }
@@ -16226,16 +15574,8 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "DataValue",
-              "reference": 119
-            },
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
               "label": "ElectricPotentialDifferenceValue",
-              "reference": 125
+              "reference": 122
             }
           ]
         }
@@ -16252,16 +15592,8 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "DataValue",
-              "reference": 119
-            },
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
               "label": "DurationValue",
-              "reference": 123
+              "reference": 120
             }
           ]
         }
@@ -16278,16 +15610,8 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "DataValue",
-              "reference": 119
-            },
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
               "label": "ElectricChargeValue",
-              "reference": 124
+              "reference": 121
             }
           ]
         }
@@ -16313,26 +15637,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Item",
-              "reference": 128
-            },
-            {
-              "label": "Part",
-              "reference": 131
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "Housing",
               "reference": 87
             }
@@ -16350,26 +15654,6 @@ package TimerGeometry {
         "typing": {
           "status": "resolved",
           "types": [
-            {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Item",
-              "reference": 128
-            },
-            {
-              "label": "Part",
-              "reference": 131
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
             {
               "label": "Cover",
               "reference": 78
@@ -16389,26 +15673,6 @@ package TimerGeometry {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 118
-            },
-            {
-              "label": "Item",
-              "reference": 128
-            },
-            {
-              "label": "Part",
-              "reference": 131
-            },
-            {
-              "label": "Object",
-              "reference": 129
-            },
-            {
-              "label": "Occurrence",
-              "reference": 130
-            },
-            {
               "label": "Cover",
               "reference": 78
             }
@@ -16421,7 +15685,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 198,
+        "reference": 188,
         "source": 0,
         "target": {
           "reference": 90,
@@ -16432,10 +15696,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 197,
+        "reference": 187,
         "source": 0,
         "target": {
-          "reference": 133,
+          "reference": 126,
           "status": "resolved"
         }
       },
@@ -16443,7 +15707,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 163,
         "provenance": "authored",
-        "reference": 646,
+        "reference": 636,
         "source": 6,
         "target": {
           "reference": 109,
@@ -16454,10 +15718,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 644,
+        "reference": 634,
         "source": 6,
         "target": {
-          "reference": 133,
+          "reference": 126,
           "status": "resolved"
         }
       },
@@ -16465,7 +15729,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 645,
+        "reference": 635,
         "source": 6,
         "target": {
           "reference": 90,
@@ -16476,7 +15740,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 131,
         "provenance": "authored",
-        "reference": 757,
+        "reference": 747,
         "source": 33,
         "target": {
           "reference": 96,
@@ -16487,10 +15751,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 755,
+        "reference": 745,
         "source": 33,
         "target": {
-          "reference": 133,
+          "reference": 126,
           "status": "resolved"
         }
       },
@@ -16498,7 +15762,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 756,
+        "reference": 746,
         "source": 33,
         "target": {
           "reference": 109,
@@ -16509,7 +15773,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 90,
         "provenance": "authored",
-        "reference": 684,
+        "reference": 674,
         "source": 36,
         "target": {
           "reference": 34,
@@ -16520,10 +15784,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 681,
+        "reference": 671,
         "source": 36,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -16531,10 +15795,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 682,
+        "reference": 672,
         "source": 36,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -16542,7 +15806,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 683,
+        "reference": 673,
         "source": 36,
         "target": {
           "reference": 96,
@@ -16553,10 +15817,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 54,
         "provenance": "authored",
-        "reference": 381,
+        "reference": 371,
         "source": 43,
         "target": {
-          "reference": 126,
+          "reference": 123,
           "status": "resolved"
         }
       },
@@ -16564,7 +15828,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 374,
+        "reference": 364,
         "source": 43,
         "target": {
           "reference": 34,
@@ -16575,10 +15839,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 395,
+        "reference": 385,
         "source": 40,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -16586,7 +15850,7 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 396,
+        "reference": 386,
         "source": 40,
         "target": {
           "node": 42,
@@ -16597,7 +15861,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 409,
+        "reference": 399,
         "source": 40,
         "target": {
           "reference": 34,
@@ -16608,10 +15872,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 423,
+        "reference": 413,
         "source": 41,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -16619,10 +15883,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 430,
+        "reference": 420,
         "source": 42,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -16630,7 +15894,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 437,
+        "reference": 427,
         "source": 42,
         "target": {
           "node": 41,
@@ -16641,7 +15905,7 @@ package TimerGeometry {
         "kind": "redefinition",
         "navigation": 92,
         "provenance": "authored",
-        "reference": 686,
+        "reference": 676,
         "source": 44,
         "target": {
           "node": 37,
@@ -16652,10 +15916,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 687,
+        "reference": 677,
         "source": 44,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -16663,7 +15927,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 688,
+        "reference": 678,
         "source": 44,
         "target": {
           "node": 36,
@@ -16674,10 +15938,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 690,
+        "reference": 680,
         "source": 45,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -16685,10 +15949,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 691,
+        "reference": 681,
         "source": 46,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -16696,7 +15960,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 692,
+        "reference": 682,
         "source": 46,
         "target": {
           "node": 45,
@@ -16707,10 +15971,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 325,
+        "reference": 315,
         "source": 37,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -16718,7 +15982,7 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 326,
+        "reference": 316,
         "source": 37,
         "target": {
           "node": 39,
@@ -16729,7 +15993,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 339,
+        "reference": 329,
         "source": 37,
         "target": {
           "reference": 34,
@@ -16740,10 +16004,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 353,
+        "reference": 343,
         "source": 38,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -16751,10 +16015,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 360,
+        "reference": 350,
         "source": 39,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -16762,7 +16026,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 367,
+        "reference": 357,
         "source": 39,
         "target": {
           "node": 38,
@@ -16773,7 +16037,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 82,
         "provenance": "authored",
-        "reference": 655,
+        "reference": 645,
         "source": 47,
         "target": {
           "reference": 42,
@@ -16784,10 +16048,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 652,
+        "reference": 642,
         "source": 47,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -16795,10 +16059,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 653,
+        "reference": 643,
         "source": 47,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -16806,7 +16070,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 654,
+        "reference": 644,
         "source": 47,
         "target": {
           "reference": 96,
@@ -16817,10 +16081,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 62,
         "provenance": "authored",
-        "reference": 462,
+        "reference": 452,
         "source": 48,
         "target": {
-          "reference": 138,
+          "reference": 129,
           "status": "resolved"
         }
       },
@@ -16828,7 +16092,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 460,
+        "reference": 450,
         "source": 48,
         "target": {
           "reference": 42,
@@ -16839,10 +16103,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 64,
         "provenance": "authored",
-        "reference": 454,
+        "reference": 444,
         "source": 49,
         "target": {
-          "reference": 138,
+          "reference": 129,
           "status": "resolved"
         }
       },
@@ -16850,7 +16114,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 452,
+        "reference": 442,
         "source": 49,
         "target": {
           "reference": 42,
@@ -16861,10 +16125,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 60,
         "provenance": "authored",
-        "reference": 458,
+        "reference": 448,
         "source": 50,
         "target": {
-          "reference": 138,
+          "reference": 129,
           "status": "resolved"
         }
       },
@@ -16872,7 +16136,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 456,
+        "reference": 446,
         "source": 50,
         "target": {
           "reference": 42,
@@ -16883,10 +16147,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 68,
         "provenance": "authored",
-        "reference": 446,
+        "reference": 436,
         "source": 51,
         "target": {
-          "reference": 138,
+          "reference": 129,
           "status": "resolved"
         }
       },
@@ -16894,7 +16158,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 444,
+        "reference": 434,
         "source": 51,
         "target": {
           "reference": 42,
@@ -16905,10 +16169,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 66,
         "provenance": "authored",
-        "reference": 450,
+        "reference": 440,
         "source": 52,
         "target": {
-          "reference": 138,
+          "reference": 129,
           "status": "resolved"
         }
       },
@@ -16916,7 +16180,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 448,
+        "reference": 438,
         "source": 52,
         "target": {
           "reference": 42,
@@ -16927,7 +16191,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 86,
         "provenance": "authored",
-        "reference": 676,
+        "reference": 666,
         "source": 53,
         "target": {
           "reference": 52,
@@ -16938,10 +16202,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 673,
+        "reference": 663,
         "source": 53,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -16949,10 +16213,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 674,
+        "reference": 664,
         "source": 53,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -16960,7 +16224,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 675,
+        "reference": 665,
         "source": 53,
         "target": {
           "reference": 96,
@@ -16971,10 +16235,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 72,
         "provenance": "authored",
-        "reference": 474,
+        "reference": 464,
         "source": 54,
         "target": {
-          "reference": 140,
+          "reference": 131,
           "status": "resolved"
         }
       },
@@ -16982,7 +16246,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 472,
+        "reference": 462,
         "source": 54,
         "target": {
           "reference": 52,
@@ -16993,7 +16257,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 88,
         "provenance": "authored",
-        "reference": 660,
+        "reference": 650,
         "source": 55,
         "target": {
           "reference": 48,
@@ -17004,10 +16268,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 657,
+        "reference": 647,
         "source": 55,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -17015,10 +16279,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 658,
+        "reference": 648,
         "source": 55,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -17026,7 +16290,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 659,
+        "reference": 649,
         "source": 55,
         "target": {
           "reference": 96,
@@ -17037,10 +16301,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 74,
         "provenance": "authored",
-        "reference": 466,
+        "reference": 456,
         "source": 56,
         "target": {
-          "reference": 138,
+          "reference": 129,
           "status": "resolved"
         }
       },
@@ -17048,7 +16312,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 464,
+        "reference": 454,
         "source": 56,
         "target": {
           "reference": 48,
@@ -17059,7 +16323,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 95,
         "provenance": "authored",
-        "reference": 711,
+        "reference": 701,
         "source": 57,
         "target": {
           "reference": 12,
@@ -17070,10 +16334,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 709,
+        "reference": 699,
         "source": 57,
         "target": {
-          "reference": 142,
+          "reference": 132,
           "status": "resolved"
         }
       },
@@ -17081,7 +16345,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 710,
+        "reference": 700,
         "source": 57,
         "target": {
           "reference": 96,
@@ -17092,7 +16356,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 226,
+        "reference": 216,
         "source": 83,
         "target": {
           "reference": 5,
@@ -17103,10 +16367,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 218,
+        "reference": 208,
         "source": 83,
         "target": {
-          "reference": 142,
+          "reference": 132,
           "status": "resolved"
         }
       },
@@ -17114,7 +16378,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 225,
+        "reference": 215,
         "source": 83,
         "target": {
           "reference": 12,
@@ -17125,7 +16389,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 244,
+        "reference": 234,
         "source": 84,
         "target": {
           "reference": 7,
@@ -17136,10 +16400,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 238,
+        "reference": 228,
         "source": 84,
         "target": {
-          "reference": 142,
+          "reference": 132,
           "status": "resolved"
         }
       },
@@ -17147,7 +16411,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 243,
+        "reference": 233,
         "source": 84,
         "target": {
           "reference": 12,
@@ -17158,7 +16422,7 @@ package TimerGeometry {
         "kind": "initialState",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 200,
+        "reference": 190,
         "source": 82,
         "target": {
           "node": 83,
@@ -17169,7 +16433,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 201,
+        "reference": 191,
         "source": 82,
         "target": {
           "reference": 12,
@@ -17180,7 +16444,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 217,
+        "reference": 207,
         "source": 85,
         "target": {
           "reference": 4,
@@ -17191,10 +16455,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 213,
+        "reference": 203,
         "source": 85,
         "target": {
-          "reference": 142,
+          "reference": 132,
           "status": "resolved"
         }
       },
@@ -17202,7 +16466,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 216,
+        "reference": 206,
         "source": 85,
         "target": {
           "reference": 12,
@@ -17213,7 +16477,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 251,
+        "reference": 241,
         "source": 86,
         "target": {
           "reference": 9,
@@ -17224,10 +16488,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 245,
+        "reference": 235,
         "source": 86,
         "target": {
-          "reference": 142,
+          "reference": 132,
           "status": "resolved"
         }
       },
@@ -17235,7 +16499,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 250,
+        "reference": 240,
         "source": 86,
         "target": {
           "reference": 12,
@@ -17246,10 +16510,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 287,
+        "reference": 277,
         "source": 79,
         "target": {
-          "reference": 117,
+          "reference": 116,
           "status": "resolved"
         }
       },
@@ -17257,7 +16521,7 @@ package TimerGeometry {
         "kind": "transitionSource",
         "navigation": 30,
         "provenance": "authored",
-        "reference": 288,
+        "reference": 278,
         "source": 79,
         "target": {
           "node": 86,
@@ -17268,7 +16532,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 32,
         "provenance": "authored",
-        "reference": 289,
+        "reference": 279,
         "source": 79,
         "target": {
           "node": 84,
@@ -17279,7 +16543,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 31,
         "provenance": "authored",
-        "reference": 290,
+        "reference": 280,
         "source": 79,
         "target": {
           "reference": 11,
@@ -17290,7 +16554,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 291,
+        "reference": 281,
         "source": 79,
         "target": {
           "reference": 12,
@@ -17301,7 +16565,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 30,
         "provenance": "authored",
-        "reference": 293,
+        "reference": 283,
         "source": 80,
         "target": {
           "node": 86,
@@ -17312,7 +16576,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 32,
         "provenance": "authored",
-        "reference": 294,
+        "reference": 284,
         "source": 80,
         "target": {
           "node": 84,
@@ -17323,10 +16587,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 292,
+        "reference": 282,
         "source": 81,
         "target": {
-          "reference": 116,
+          "reference": 115,
           "status": "resolved"
         }
       },
@@ -17334,7 +16598,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 295,
+        "reference": 285,
         "source": 81,
         "target": {
           "node": 79,
@@ -17345,10 +16609,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 254,
+        "reference": 244,
         "source": 58,
         "target": {
-          "reference": 117,
+          "reference": 116,
           "status": "resolved"
         }
       },
@@ -17356,7 +16620,7 @@ package TimerGeometry {
         "kind": "transitionSource",
         "navigation": 35,
         "provenance": "authored",
-        "reference": 255,
+        "reference": 245,
         "source": 58,
         "target": {
           "node": 86,
@@ -17367,7 +16631,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 37,
         "provenance": "authored",
-        "reference": 256,
+        "reference": 246,
         "source": 58,
         "target": {
           "node": 85,
@@ -17378,7 +16642,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 36,
         "provenance": "authored",
-        "reference": 257,
+        "reference": 247,
         "source": 58,
         "target": {
           "reference": 2,
@@ -17389,7 +16653,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 258,
+        "reference": 248,
         "source": 58,
         "target": {
           "reference": 12,
@@ -17400,7 +16664,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 35,
         "provenance": "authored",
-        "reference": 260,
+        "reference": 250,
         "source": 59,
         "target": {
           "node": 86,
@@ -17411,7 +16675,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 37,
         "provenance": "authored",
-        "reference": 261,
+        "reference": 251,
         "source": 59,
         "target": {
           "node": 85,
@@ -17422,10 +16686,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 259,
+        "reference": 249,
         "source": 60,
         "target": {
-          "reference": 116,
+          "reference": 115,
           "status": "resolved"
         }
       },
@@ -17433,7 +16697,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 262,
+        "reference": 252,
         "source": 60,
         "target": {
           "node": 58,
@@ -17444,10 +16708,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 298,
+        "reference": 288,
         "source": 61,
         "target": {
-          "reference": 117,
+          "reference": 116,
           "status": "resolved"
         }
       },
@@ -17455,7 +16719,7 @@ package TimerGeometry {
         "kind": "transitionSource",
         "navigation": 15,
         "provenance": "authored",
-        "reference": 299,
+        "reference": 289,
         "source": 61,
         "target": {
           "node": 83,
@@ -17466,7 +16730,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 17,
         "provenance": "authored",
-        "reference": 300,
+        "reference": 290,
         "source": 61,
         "target": {
           "node": 86,
@@ -17477,7 +16741,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 301,
+        "reference": 291,
         "source": 61,
         "target": {
           "reference": 10,
@@ -17488,7 +16752,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 302,
+        "reference": 292,
         "source": 61,
         "target": {
           "reference": 12,
@@ -17499,7 +16763,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 15,
         "provenance": "authored",
-        "reference": 304,
+        "reference": 294,
         "source": 62,
         "target": {
           "node": 83,
@@ -17510,7 +16774,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 17,
         "provenance": "authored",
-        "reference": 305,
+        "reference": 295,
         "source": 62,
         "target": {
           "node": 86,
@@ -17521,10 +16785,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 303,
+        "reference": 293,
         "source": 63,
         "target": {
-          "reference": 116,
+          "reference": 115,
           "status": "resolved"
         }
       },
@@ -17532,7 +16796,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 306,
+        "reference": 296,
         "source": 63,
         "target": {
           "node": 61,
@@ -17543,10 +16807,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 204,
+        "reference": 194,
         "source": 64,
         "target": {
-          "reference": 117,
+          "reference": 116,
           "status": "resolved"
         }
       },
@@ -17554,7 +16818,7 @@ package TimerGeometry {
         "kind": "transitionSource",
         "navigation": 25,
         "provenance": "authored",
-        "reference": 205,
+        "reference": 195,
         "source": 64,
         "target": {
           "node": 83,
@@ -17565,7 +16829,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 27,
         "provenance": "authored",
-        "reference": 206,
+        "reference": 196,
         "source": 64,
         "target": {
           "node": 83,
@@ -17576,7 +16840,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 26,
         "provenance": "authored",
-        "reference": 207,
+        "reference": 197,
         "source": 64,
         "target": {
           "reference": 3,
@@ -17587,7 +16851,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 208,
+        "reference": 198,
         "source": 64,
         "target": {
           "reference": 12,
@@ -17598,7 +16862,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 25,
         "provenance": "authored",
-        "reference": 210,
+        "reference": 200,
         "source": 65,
         "target": {
           "node": 83,
@@ -17609,7 +16873,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 27,
         "provenance": "authored",
-        "reference": 211,
+        "reference": 201,
         "source": 65,
         "target": {
           "node": 83,
@@ -17620,10 +16884,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 209,
+        "reference": 199,
         "source": 66,
         "target": {
-          "reference": 116,
+          "reference": 115,
           "status": "resolved"
         }
       },
@@ -17631,7 +16895,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 212,
+        "reference": 202,
         "source": 66,
         "target": {
           "node": 64,
@@ -17642,10 +16906,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 229,
+        "reference": 219,
         "source": 67,
         "target": {
-          "reference": 117,
+          "reference": 116,
           "status": "resolved"
         }
       },
@@ -17653,7 +16917,7 @@ package TimerGeometry {
         "kind": "transitionSource",
         "navigation": 20,
         "provenance": "authored",
-        "reference": 230,
+        "reference": 220,
         "source": 67,
         "target": {
           "node": 83,
@@ -17664,7 +16928,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 22,
         "provenance": "authored",
-        "reference": 231,
+        "reference": 221,
         "source": 67,
         "target": {
           "node": 83,
@@ -17675,7 +16939,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 21,
         "provenance": "authored",
-        "reference": 232,
+        "reference": 222,
         "source": 67,
         "target": {
           "reference": 6,
@@ -17686,7 +16950,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 233,
+        "reference": 223,
         "source": 67,
         "target": {
           "reference": 12,
@@ -17697,7 +16961,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 20,
         "provenance": "authored",
-        "reference": 235,
+        "reference": 225,
         "source": 68,
         "target": {
           "node": 83,
@@ -17708,7 +16972,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 22,
         "provenance": "authored",
-        "reference": 236,
+        "reference": 226,
         "source": 68,
         "target": {
           "node": 83,
@@ -17719,10 +16983,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 234,
+        "reference": 224,
         "source": 69,
         "target": {
-          "reference": 116,
+          "reference": 115,
           "status": "resolved"
         }
       },
@@ -17730,7 +16994,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 237,
+        "reference": 227,
         "source": 69,
         "target": {
           "node": 67,
@@ -17741,10 +17005,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 309,
+        "reference": 299,
         "source": 70,
         "target": {
-          "reference": 117,
+          "reference": 116,
           "status": "resolved"
         }
       },
@@ -17752,7 +17016,7 @@ package TimerGeometry {
         "kind": "transitionSource",
         "navigation": 40,
         "provenance": "authored",
-        "reference": 310,
+        "reference": 300,
         "source": 70,
         "target": {
           "node": 84,
@@ -17763,7 +17027,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 42,
         "provenance": "authored",
-        "reference": 311,
+        "reference": 301,
         "source": 70,
         "target": {
           "node": 86,
@@ -17774,7 +17038,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 41,
         "provenance": "authored",
-        "reference": 312,
+        "reference": 302,
         "source": 70,
         "target": {
           "reference": 10,
@@ -17785,7 +17049,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 313,
+        "reference": 303,
         "source": 70,
         "target": {
           "reference": 12,
@@ -17796,7 +17060,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 40,
         "provenance": "authored",
-        "reference": 315,
+        "reference": 305,
         "source": 71,
         "target": {
           "node": 84,
@@ -17807,7 +17071,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 42,
         "provenance": "authored",
-        "reference": 316,
+        "reference": 306,
         "source": 71,
         "target": {
           "node": 86,
@@ -17818,10 +17082,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 314,
+        "reference": 304,
         "source": 72,
         "target": {
-          "reference": 116,
+          "reference": 115,
           "status": "resolved"
         }
       },
@@ -17829,7 +17093,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 317,
+        "reference": 307,
         "source": 72,
         "target": {
           "node": 70,
@@ -17840,10 +17104,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 276,
+        "reference": 266,
         "source": 73,
         "target": {
-          "reference": 117,
+          "reference": 116,
           "status": "resolved"
         }
       },
@@ -17851,7 +17115,7 @@ package TimerGeometry {
         "kind": "transitionSource",
         "navigation": 45,
         "provenance": "authored",
-        "reference": 277,
+        "reference": 267,
         "source": 73,
         "target": {
           "node": 84,
@@ -17862,7 +17126,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 47,
         "provenance": "authored",
-        "reference": 278,
+        "reference": 268,
         "source": 73,
         "target": {
           "node": 83,
@@ -17873,7 +17137,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 46,
         "provenance": "authored",
-        "reference": 279,
+        "reference": 269,
         "source": 73,
         "target": {
           "reference": 8,
@@ -17884,7 +17148,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 280,
+        "reference": 270,
         "source": 73,
         "target": {
           "reference": 12,
@@ -17895,7 +17159,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 45,
         "provenance": "authored",
-        "reference": 282,
+        "reference": 272,
         "source": 74,
         "target": {
           "node": 84,
@@ -17906,7 +17170,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 47,
         "provenance": "authored",
-        "reference": 283,
+        "reference": 273,
         "source": 74,
         "target": {
           "node": 83,
@@ -17917,10 +17181,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 281,
+        "reference": 271,
         "source": 75,
         "target": {
-          "reference": 116,
+          "reference": 115,
           "status": "resolved"
         }
       },
@@ -17928,7 +17192,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 284,
+        "reference": 274,
         "source": 75,
         "target": {
           "node": 73,
@@ -17939,10 +17203,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 265,
+        "reference": 255,
         "source": 76,
         "target": {
-          "reference": 117,
+          "reference": 116,
           "status": "resolved"
         }
       },
@@ -17950,7 +17214,7 @@ package TimerGeometry {
         "kind": "transitionSource",
         "navigation": 50,
         "provenance": "authored",
-        "reference": 266,
+        "reference": 256,
         "source": 76,
         "target": {
           "node": 85,
@@ -17961,7 +17225,7 @@ package TimerGeometry {
         "kind": "transitionTarget",
         "navigation": 52,
         "provenance": "authored",
-        "reference": 267,
+        "reference": 257,
         "source": 76,
         "target": {
           "node": 83,
@@ -17972,7 +17236,7 @@ package TimerGeometry {
         "kind": "transitionTrigger",
         "navigation": 51,
         "provenance": "authored",
-        "reference": 268,
+        "reference": 258,
         "source": 76,
         "target": {
           "reference": 8,
@@ -17983,7 +17247,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 269,
+        "reference": 259,
         "source": 76,
         "target": {
           "reference": 12,
@@ -17994,7 +17258,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 50,
         "provenance": "authored",
-        "reference": 271,
+        "reference": 261,
         "source": 77,
         "target": {
           "node": 85,
@@ -18005,7 +17269,7 @@ package TimerGeometry {
         "kind": "succession",
         "navigation": 52,
         "provenance": "authored",
-        "reference": 272,
+        "reference": 262,
         "source": 77,
         "target": {
           "node": 83,
@@ -18016,10 +17280,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 270,
+        "reference": 260,
         "source": 78,
         "target": {
-          "reference": 116,
+          "reference": 115,
           "status": "resolved"
         }
       },
@@ -18027,7 +17291,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 273,
+        "reference": 263,
         "source": 78,
         "target": {
           "node": 76,
@@ -18038,7 +17302,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 84,
         "provenance": "authored",
-        "reference": 668,
+        "reference": 658,
         "source": 34,
         "target": {
           "reference": 50,
@@ -18049,10 +17313,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 665,
+        "reference": 655,
         "source": 34,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -18060,10 +17324,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 666,
+        "reference": 656,
         "source": 34,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -18071,7 +17335,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 667,
+        "reference": 657,
         "source": 34,
         "target": {
           "reference": 96,
@@ -18082,10 +17346,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 70,
         "provenance": "authored",
-        "reference": 470,
+        "reference": 460,
         "source": 35,
         "target": {
-          "reference": 140,
+          "reference": 131,
           "status": "resolved"
         }
       },
@@ -18093,7 +17357,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 468,
+        "reference": 458,
         "source": 35,
         "target": {
           "reference": 50,
@@ -18104,10 +17368,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 80,
         "provenance": "authored",
-        "reference": 695,
+        "reference": 685,
         "source": 88,
         "target": {
-          "reference": 139,
+          "reference": 130,
           "status": "resolved"
         }
       },
@@ -18115,10 +17379,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 693,
+        "reference": 683,
         "source": 88,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -18126,7 +17390,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 694,
+        "reference": 684,
         "source": 88,
         "target": {
           "reference": 96,
@@ -18137,10 +17401,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 78,
         "provenance": "authored",
-        "reference": 671,
+        "reference": 661,
         "source": 89,
         "target": {
-          "reference": 139,
+          "reference": 130,
           "status": "resolved"
         }
       },
@@ -18148,10 +17412,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 669,
+        "reference": 659,
         "source": 89,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -18159,7 +17423,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 670,
+        "reference": 660,
         "source": 89,
         "target": {
           "reference": 96,
@@ -18170,10 +17434,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 76,
         "provenance": "authored",
-        "reference": 663,
+        "reference": 653,
         "source": 87,
         "target": {
-          "reference": 127,
+          "reference": 124,
           "status": "resolved"
         }
       },
@@ -18181,10 +17445,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 661,
+        "reference": 651,
         "source": 87,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -18192,7 +17456,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 662,
+        "reference": 652,
         "source": 87,
         "target": {
           "reference": 96,
@@ -18203,10 +17467,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 724,
+        "reference": 714,
         "source": 7,
         "target": {
-          "reference": 122,
+          "reference": 119,
           "status": "resolved"
         }
       },
@@ -18214,7 +17478,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 139,
         "provenance": "authored",
-        "reference": 712,
+        "reference": 702,
         "source": 7,
         "target": {
           "node": 102,
@@ -18225,7 +17489,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 140,
         "provenance": "authored",
-        "reference": 713,
+        "reference": 703,
         "source": 7,
         "target": {
           "node": 47,
@@ -18236,7 +17500,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 720,
+        "reference": 710,
         "source": 7,
         "target": {
           "reference": 109,
@@ -18247,10 +17511,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 725,
+        "reference": 715,
         "source": 8,
         "target": {
-          "reference": 122,
+          "reference": 119,
           "status": "resolved"
         }
       },
@@ -18258,7 +17522,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 142,
         "provenance": "authored",
-        "reference": 714,
+        "reference": 704,
         "source": 8,
         "target": {
           "node": 34,
@@ -18269,7 +17533,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 143,
         "provenance": "authored",
-        "reference": 715,
+        "reference": 705,
         "source": 8,
         "target": {
           "node": 109,
@@ -18280,7 +17544,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 721,
+        "reference": 711,
         "source": 8,
         "target": {
           "reference": 109,
@@ -18291,10 +17555,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 726,
+        "reference": 716,
         "source": 9,
         "target": {
-          "reference": 122,
+          "reference": 119,
           "status": "resolved"
         }
       },
@@ -18302,7 +17566,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 145,
         "provenance": "authored",
-        "reference": 716,
+        "reference": 706,
         "source": 9,
         "target": {
           "node": 53,
@@ -18313,7 +17577,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 146,
         "provenance": "authored",
-        "reference": 717,
+        "reference": 707,
         "source": 9,
         "target": {
           "node": 122,
@@ -18324,7 +17588,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 722,
+        "reference": 712,
         "source": 9,
         "target": {
           "reference": 109,
@@ -18335,10 +17599,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 727,
+        "reference": 717,
         "source": 10,
         "target": {
-          "reference": 122,
+          "reference": 119,
           "status": "resolved"
         }
       },
@@ -18346,7 +17610,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 148,
         "provenance": "authored",
-        "reference": 718,
+        "reference": 708,
         "source": 10,
         "target": {
           "node": 55,
@@ -18357,7 +17621,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 149,
         "provenance": "authored",
-        "reference": 719,
+        "reference": 709,
         "source": 10,
         "target": {
           "node": 31,
@@ -18368,7 +17632,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 723,
+        "reference": 713,
         "source": 10,
         "target": {
           "reference": 109,
@@ -18379,7 +17643,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 135,
         "provenance": "authored",
-        "reference": 732,
+        "reference": 722,
         "source": 90,
         "target": {
           "reference": 59,
@@ -18390,10 +17654,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 730,
+        "reference": 720,
         "source": 90,
         "target": {
-          "reference": 133,
+          "reference": 126,
           "status": "resolved"
         }
       },
@@ -18401,7 +17665,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 731,
+        "reference": 721,
         "source": 90,
         "target": {
           "reference": 109,
@@ -18412,7 +17676,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 119,
         "provenance": "authored",
-        "reference": 508,
+        "reference": 498,
         "source": 91,
         "target": {
           "reference": 34,
@@ -18423,10 +17687,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 505,
+        "reference": 495,
         "source": 91,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -18434,10 +17698,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 506,
+        "reference": 496,
         "source": 91,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -18445,7 +17709,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 507,
+        "reference": 497,
         "source": 91,
         "target": {
           "reference": 59,
@@ -18456,10 +17720,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 54,
         "provenance": "authored",
-        "reference": 382,
+        "reference": 372,
         "source": 98,
         "target": {
-          "reference": 126,
+          "reference": 123,
           "status": "resolved"
         }
       },
@@ -18467,7 +17731,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 375,
+        "reference": 365,
         "source": 98,
         "target": {
           "reference": 34,
@@ -18478,10 +17742,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 397,
+        "reference": 387,
         "source": 95,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -18489,7 +17753,7 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 398,
+        "reference": 388,
         "source": 95,
         "target": {
           "node": 97,
@@ -18500,7 +17764,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 410,
+        "reference": 400,
         "source": 95,
         "target": {
           "reference": 34,
@@ -18511,10 +17775,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 424,
+        "reference": 414,
         "source": 96,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -18522,10 +17786,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 431,
+        "reference": 421,
         "source": 97,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -18533,7 +17797,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 438,
+        "reference": 428,
         "source": 97,
         "target": {
           "node": 96,
@@ -18544,10 +17808,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 327,
+        "reference": 317,
         "source": 92,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -18555,7 +17819,7 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 328,
+        "reference": 318,
         "source": 92,
         "target": {
           "node": 94,
@@ -18566,7 +17830,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 340,
+        "reference": 330,
         "source": 92,
         "target": {
           "reference": 34,
@@ -18577,10 +17841,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 354,
+        "reference": 344,
         "source": 93,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -18588,10 +17852,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 361,
+        "reference": 351,
         "source": 94,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -18599,7 +17863,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 368,
+        "reference": 358,
         "source": 94,
         "target": {
           "node": 93,
@@ -18610,7 +17874,7 @@ package TimerGeometry {
         "kind": "redefinition",
         "navigation": 121,
         "provenance": "authored",
-        "reference": 510,
+        "reference": 500,
         "source": 99,
         "target": {
           "node": 92,
@@ -18621,10 +17885,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 511,
+        "reference": 501,
         "source": 99,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -18632,7 +17896,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 512,
+        "reference": 502,
         "source": 99,
         "target": {
           "node": 91,
@@ -18643,10 +17907,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 514,
+        "reference": 504,
         "source": 100,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -18654,10 +17918,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 515,
+        "reference": 505,
         "source": 101,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -18665,7 +17929,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 516,
+        "reference": 506,
         "source": 101,
         "target": {
           "node": 100,
@@ -18676,7 +17940,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 117,
         "provenance": "authored",
-        "reference": 500,
+        "reference": 490,
         "source": 102,
         "target": {
           "reference": 42,
@@ -18687,10 +17951,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 497,
+        "reference": 487,
         "source": 102,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -18698,10 +17962,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 498,
+        "reference": 488,
         "source": 102,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -18709,7 +17973,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 499,
+        "reference": 489,
         "source": 102,
         "target": {
           "reference": 59,
@@ -18720,10 +17984,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 62,
         "provenance": "authored",
-        "reference": 463,
+        "reference": 453,
         "source": 103,
         "target": {
-          "reference": 138,
+          "reference": 129,
           "status": "resolved"
         }
       },
@@ -18731,7 +17995,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 461,
+        "reference": 451,
         "source": 103,
         "target": {
           "reference": 42,
@@ -18742,10 +18006,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 64,
         "provenance": "authored",
-        "reference": 455,
+        "reference": 445,
         "source": 104,
         "target": {
-          "reference": 138,
+          "reference": 129,
           "status": "resolved"
         }
       },
@@ -18753,7 +18017,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 453,
+        "reference": 443,
         "source": 104,
         "target": {
           "reference": 42,
@@ -18764,10 +18028,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 60,
         "provenance": "authored",
-        "reference": 459,
+        "reference": 449,
         "source": 105,
         "target": {
-          "reference": 138,
+          "reference": 129,
           "status": "resolved"
         }
       },
@@ -18775,7 +18039,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 457,
+        "reference": 447,
         "source": 105,
         "target": {
           "reference": 42,
@@ -18786,10 +18050,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 68,
         "provenance": "authored",
-        "reference": 447,
+        "reference": 437,
         "source": 106,
         "target": {
-          "reference": 138,
+          "reference": 129,
           "status": "resolved"
         }
       },
@@ -18797,7 +18061,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 445,
+        "reference": 435,
         "source": 106,
         "target": {
           "reference": 42,
@@ -18808,10 +18072,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 66,
         "provenance": "authored",
-        "reference": 451,
+        "reference": 441,
         "source": 107,
         "target": {
-          "reference": 138,
+          "reference": 129,
           "status": "resolved"
         }
       },
@@ -18819,7 +18083,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 449,
+        "reference": 439,
         "source": 107,
         "target": {
           "reference": 42,
@@ -18830,7 +18094,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 133,
         "provenance": "authored",
-        "reference": 745,
+        "reference": 735,
         "source": 108,
         "target": {
           "reference": 79,
@@ -18841,10 +18105,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 743,
+        "reference": 733,
         "source": 108,
         "target": {
-          "reference": 133,
+          "reference": 126,
           "status": "resolved"
         }
       },
@@ -18852,7 +18116,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 744,
+        "reference": 734,
         "source": 108,
         "target": {
           "reference": 109,
@@ -18863,7 +18127,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 108,
         "provenance": "authored",
-        "reference": 568,
+        "reference": 558,
         "source": 109,
         "target": {
           "reference": 50,
@@ -18874,10 +18138,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 565,
+        "reference": 555,
         "source": 109,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -18885,10 +18149,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 566,
+        "reference": 556,
         "source": 109,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -18896,7 +18160,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 567,
+        "reference": 557,
         "source": 109,
         "target": {
           "reference": 79,
@@ -18907,10 +18171,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 70,
         "provenance": "authored",
-        "reference": 471,
+        "reference": 461,
         "source": 110,
         "target": {
-          "reference": 140,
+          "reference": 131,
           "status": "resolved"
         }
       },
@@ -18918,7 +18182,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 469,
+        "reference": 459,
         "source": 110,
         "target": {
           "reference": 50,
@@ -18929,7 +18193,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 112,
         "provenance": "authored",
-        "reference": 584,
+        "reference": 574,
         "source": 111,
         "target": {
           "reference": 34,
@@ -18940,10 +18204,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 581,
+        "reference": 571,
         "source": 111,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -18951,10 +18215,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 582,
+        "reference": 572,
         "source": 111,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -18962,7 +18226,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 583,
+        "reference": 573,
         "source": 111,
         "target": {
           "reference": 79,
@@ -18973,10 +18237,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 54,
         "provenance": "authored",
-        "reference": 383,
+        "reference": 373,
         "source": 118,
         "target": {
-          "reference": 126,
+          "reference": 123,
           "status": "resolved"
         }
       },
@@ -18984,7 +18248,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 376,
+        "reference": 366,
         "source": 118,
         "target": {
           "reference": 34,
@@ -18995,10 +18259,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 399,
+        "reference": 389,
         "source": 115,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -19006,7 +18270,7 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 400,
+        "reference": 390,
         "source": 115,
         "target": {
           "node": 117,
@@ -19017,7 +18281,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 411,
+        "reference": 401,
         "source": 115,
         "target": {
           "reference": 34,
@@ -19028,10 +18292,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 425,
+        "reference": 415,
         "source": 116,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -19039,10 +18303,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 432,
+        "reference": 422,
         "source": 117,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -19050,7 +18314,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 439,
+        "reference": 429,
         "source": 117,
         "target": {
           "node": 116,
@@ -19061,10 +18325,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 329,
+        "reference": 319,
         "source": 112,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -19072,7 +18336,7 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 330,
+        "reference": 320,
         "source": 112,
         "target": {
           "node": 114,
@@ -19083,7 +18347,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 341,
+        "reference": 331,
         "source": 112,
         "target": {
           "reference": 34,
@@ -19094,10 +18358,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 355,
+        "reference": 345,
         "source": 113,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -19105,10 +18369,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 362,
+        "reference": 352,
         "source": 114,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -19116,7 +18380,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 369,
+        "reference": 359,
         "source": 114,
         "target": {
           "node": 113,
@@ -19127,7 +18391,7 @@ package TimerGeometry {
         "kind": "redefinition",
         "navigation": 114,
         "provenance": "authored",
-        "reference": 586,
+        "reference": 576,
         "source": 119,
         "target": {
           "node": 112,
@@ -19138,10 +18402,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 587,
+        "reference": 577,
         "source": 119,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -19149,7 +18413,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 588,
+        "reference": 578,
         "source": 119,
         "target": {
           "node": 111,
@@ -19160,10 +18424,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 590,
+        "reference": 580,
         "source": 120,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -19171,10 +18435,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 591,
+        "reference": 581,
         "source": 121,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -19182,7 +18446,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 592,
+        "reference": 582,
         "source": 121,
         "target": {
           "node": 120,
@@ -19193,7 +18457,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 110,
         "provenance": "authored",
-        "reference": 576,
+        "reference": 566,
         "source": 122,
         "target": {
           "reference": 52,
@@ -19204,10 +18468,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 573,
+        "reference": 563,
         "source": 122,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -19215,10 +18479,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 574,
+        "reference": 564,
         "source": 122,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -19226,7 +18490,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 575,
+        "reference": 565,
         "source": 122,
         "target": {
           "reference": 79,
@@ -19237,10 +18501,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 72,
         "provenance": "authored",
-        "reference": 475,
+        "reference": 465,
         "source": 123,
         "target": {
-          "reference": 140,
+          "reference": 131,
           "status": "resolved"
         }
       },
@@ -19248,7 +18512,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 473,
+        "reference": 463,
         "source": 123,
         "target": {
           "reference": 52,
@@ -19259,10 +18523,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 106,
         "provenance": "authored",
-        "reference": 571,
+        "reference": 561,
         "source": 124,
         "target": {
-          "reference": 140,
+          "reference": 131,
           "status": "resolved"
         }
       },
@@ -19270,10 +18534,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 569,
+        "reference": 559,
         "source": 124,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -19281,7 +18545,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 570,
+        "reference": 560,
         "source": 124,
         "target": {
           "reference": 79,
@@ -19292,7 +18556,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 137,
         "provenance": "authored",
-        "reference": 738,
+        "reference": 728,
         "source": 11,
         "target": {
           "reference": 71,
@@ -19303,10 +18567,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 736,
+        "reference": 726,
         "source": 11,
         "target": {
-          "reference": 133,
+          "reference": 126,
           "status": "resolved"
         }
       },
@@ -19314,7 +18578,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 737,
+        "reference": 727,
         "source": 11,
         "target": {
           "reference": 109,
@@ -19325,7 +18589,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 99,
         "provenance": "authored",
-        "reference": 555,
+        "reference": 545,
         "source": 20,
         "target": {
           "reference": 34,
@@ -19336,10 +18600,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 552,
+        "reference": 542,
         "source": 20,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -19347,10 +18611,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 553,
+        "reference": 543,
         "source": 20,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -19358,7 +18622,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 554,
+        "reference": 544,
         "source": 20,
         "target": {
           "reference": 71,
@@ -19369,10 +18633,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 54,
         "provenance": "authored",
-        "reference": 384,
+        "reference": 374,
         "source": 27,
         "target": {
-          "reference": 126,
+          "reference": 123,
           "status": "resolved"
         }
       },
@@ -19380,7 +18644,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 377,
+        "reference": 367,
         "source": 27,
         "target": {
           "reference": 34,
@@ -19391,10 +18655,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 401,
+        "reference": 391,
         "source": 24,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -19402,7 +18666,7 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 402,
+        "reference": 392,
         "source": 24,
         "target": {
           "node": 26,
@@ -19413,7 +18677,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 412,
+        "reference": 402,
         "source": 24,
         "target": {
           "reference": 34,
@@ -19424,10 +18688,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 426,
+        "reference": 416,
         "source": 25,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -19435,10 +18699,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 433,
+        "reference": 423,
         "source": 26,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -19446,7 +18710,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 440,
+        "reference": 430,
         "source": 26,
         "target": {
           "node": 25,
@@ -19457,10 +18721,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 331,
+        "reference": 321,
         "source": 21,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -19468,7 +18732,7 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 332,
+        "reference": 322,
         "source": 21,
         "target": {
           "node": 23,
@@ -19479,7 +18743,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 342,
+        "reference": 332,
         "source": 21,
         "target": {
           "reference": 34,
@@ -19490,10 +18754,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 356,
+        "reference": 346,
         "source": 22,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -19501,10 +18765,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 363,
+        "reference": 353,
         "source": 23,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -19512,7 +18776,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 370,
+        "reference": 360,
         "source": 23,
         "target": {
           "node": 22,
@@ -19523,7 +18787,7 @@ package TimerGeometry {
         "kind": "redefinition",
         "navigation": 101,
         "provenance": "authored",
-        "reference": 557,
+        "reference": 547,
         "source": 28,
         "target": {
           "node": 21,
@@ -19534,10 +18798,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 558,
+        "reference": 548,
         "source": 28,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -19545,7 +18809,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 559,
+        "reference": 549,
         "source": 28,
         "target": {
           "node": 20,
@@ -19556,10 +18820,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 561,
+        "reference": 551,
         "source": 29,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -19567,10 +18831,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 562,
+        "reference": 552,
         "source": 30,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -19578,7 +18842,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 563,
+        "reference": 553,
         "source": 30,
         "target": {
           "node": 29,
@@ -19589,7 +18853,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 97,
         "provenance": "authored",
-        "reference": 547,
+        "reference": 537,
         "source": 31,
         "target": {
           "reference": 48,
@@ -19600,10 +18864,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 544,
+        "reference": 534,
         "source": 31,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -19611,10 +18875,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 545,
+        "reference": 535,
         "source": 31,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -19622,7 +18886,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 546,
+        "reference": 536,
         "source": 31,
         "target": {
           "reference": 71,
@@ -19633,10 +18897,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 74,
         "provenance": "authored",
-        "reference": 467,
+        "reference": 457,
         "source": 32,
         "target": {
-          "reference": 138,
+          "reference": 129,
           "status": "resolved"
         }
       },
@@ -19644,7 +18908,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 465,
+        "reference": 455,
         "source": 32,
         "target": {
           "reference": 48,
@@ -19655,7 +18919,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 104,
         "provenance": "authored",
-        "reference": 542,
+        "reference": 532,
         "source": 12,
         "target": {
           "reference": 34,
@@ -19666,10 +18930,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 539,
+        "reference": 529,
         "source": 12,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -19677,10 +18941,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 540,
+        "reference": 530,
         "source": 12,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -19688,7 +18952,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 541,
+        "reference": 531,
         "source": 12,
         "target": {
           "reference": 71,
@@ -19699,10 +18963,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 54,
         "provenance": "authored",
-        "reference": 385,
+        "reference": 375,
         "source": 19,
         "target": {
-          "reference": 126,
+          "reference": 123,
           "status": "resolved"
         }
       },
@@ -19710,7 +18974,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 378,
+        "reference": 368,
         "source": 19,
         "target": {
           "reference": 34,
@@ -19721,10 +18985,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 403,
+        "reference": 393,
         "source": 16,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -19732,7 +18996,7 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 404,
+        "reference": 394,
         "source": 16,
         "target": {
           "node": 18,
@@ -19743,7 +19007,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 413,
+        "reference": 403,
         "source": 16,
         "target": {
           "reference": 34,
@@ -19754,10 +19018,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 427,
+        "reference": 417,
         "source": 17,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -19765,10 +19029,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 434,
+        "reference": 424,
         "source": 18,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -19776,7 +19040,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 441,
+        "reference": 431,
         "source": 18,
         "target": {
           "node": 17,
@@ -19787,10 +19051,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 333,
+        "reference": 323,
         "source": 13,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -19798,7 +19062,7 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 334,
+        "reference": 324,
         "source": 13,
         "target": {
           "node": 15,
@@ -19809,7 +19073,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 343,
+        "reference": 333,
         "source": 13,
         "target": {
           "reference": 34,
@@ -19820,10 +19084,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 357,
+        "reference": 347,
         "source": 14,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -19831,10 +19095,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 364,
+        "reference": 354,
         "source": 15,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -19842,7 +19106,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 371,
+        "reference": 361,
         "source": 15,
         "target": {
           "node": 14,
@@ -19853,7 +19117,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 167,
         "provenance": "authored",
-        "reference": 630,
+        "reference": 620,
         "source": 125,
         "target": {
           "reference": 65,
@@ -19864,10 +19128,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 628,
+        "reference": 618,
         "source": 125,
         "target": {
-          "reference": 133,
+          "reference": 126,
           "status": "resolved"
         }
       },
@@ -19875,7 +19139,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 629,
+        "reference": 619,
         "source": 125,
         "target": {
           "reference": 90,
@@ -19886,7 +19150,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 126,
         "provenance": "authored",
-        "reference": 527,
+        "reference": 517,
         "source": 126,
         "target": {
           "reference": 34,
@@ -19897,10 +19161,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 524,
+        "reference": 514,
         "source": 126,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -19908,10 +19172,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 525,
+        "reference": 515,
         "source": 126,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -19919,7 +19183,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 526,
+        "reference": 516,
         "source": 126,
         "target": {
           "reference": 65,
@@ -19930,10 +19194,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 54,
         "provenance": "authored",
-        "reference": 386,
+        "reference": 376,
         "source": 133,
         "target": {
-          "reference": 126,
+          "reference": 123,
           "status": "resolved"
         }
       },
@@ -19941,7 +19205,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 379,
+        "reference": 369,
         "source": 133,
         "target": {
           "reference": 34,
@@ -19952,10 +19216,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 405,
+        "reference": 395,
         "source": 130,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -19963,7 +19227,7 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 406,
+        "reference": 396,
         "source": 130,
         "target": {
           "node": 132,
@@ -19974,7 +19238,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 414,
+        "reference": 404,
         "source": 130,
         "target": {
           "reference": 34,
@@ -19985,10 +19249,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 428,
+        "reference": 418,
         "source": 131,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -19996,10 +19260,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 435,
+        "reference": 425,
         "source": 132,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -20007,7 +19271,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 442,
+        "reference": 432,
         "source": 132,
         "target": {
           "node": 131,
@@ -20018,10 +19282,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 335,
+        "reference": 325,
         "source": 127,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -20029,7 +19293,7 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 336,
+        "reference": 326,
         "source": 127,
         "target": {
           "node": 129,
@@ -20040,7 +19304,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 344,
+        "reference": 334,
         "source": 127,
         "target": {
           "reference": 34,
@@ -20051,10 +19315,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 358,
+        "reference": 348,
         "source": 128,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -20062,10 +19326,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 365,
+        "reference": 355,
         "source": 129,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -20073,7 +19337,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 372,
+        "reference": 362,
         "source": 129,
         "target": {
           "node": 128,
@@ -20084,7 +19348,7 @@ package TimerGeometry {
         "kind": "redefinition",
         "navigation": 128,
         "provenance": "authored",
-        "reference": 529,
+        "reference": 519,
         "source": 134,
         "target": {
           "node": 127,
@@ -20095,10 +19359,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 530,
+        "reference": 520,
         "source": 134,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -20106,7 +19370,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 531,
+        "reference": 521,
         "source": 134,
         "target": {
           "node": 126,
@@ -20117,10 +19381,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 533,
+        "reference": 523,
         "source": 135,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -20128,10 +19392,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 534,
+        "reference": 524,
         "source": 136,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -20139,7 +19403,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 535,
+        "reference": 525,
         "source": 136,
         "target": {
           "node": 135,
@@ -20150,18 +19414,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 124,
         "provenance": "authored",
-        "reference": 519,
-        "source": 137,
-        "target": {
-          "reference": 123,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 517,
+        "reference": 509,
         "source": 137,
         "target": {
           "reference": 120,
@@ -20169,10 +19422,21 @@ package TimerGeometry {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 507,
+        "source": 137,
+        "target": {
+          "reference": 117,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 518,
+        "reference": 508,
         "source": 137,
         "target": {
           "reference": 65,
@@ -20183,10 +19447,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 614,
+        "reference": 604,
         "source": 1,
         "target": {
-          "reference": 122,
+          "reference": 119,
           "status": "resolved"
         }
       },
@@ -20194,7 +19458,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 171,
         "provenance": "authored",
-        "reference": 599,
+        "reference": 589,
         "source": 1,
         "target": {
           "node": 139,
@@ -20205,7 +19469,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 172,
         "provenance": "authored",
-        "reference": 600,
+        "reference": 590,
         "source": 1,
         "target": {
           "node": 36,
@@ -20216,7 +19480,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 609,
+        "reference": 599,
         "source": 1,
         "target": {
           "reference": 90,
@@ -20227,10 +19491,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 615,
+        "reference": 605,
         "source": 2,
         "target": {
-          "reference": 122,
+          "reference": 119,
           "status": "resolved"
         }
       },
@@ -20238,7 +19502,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 174,
         "provenance": "authored",
-        "reference": 601,
+        "reference": 591,
         "source": 2,
         "target": {
           "node": 139,
@@ -20249,7 +19513,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 175,
         "provenance": "authored",
-        "reference": 602,
+        "reference": 592,
         "source": 2,
         "target": {
           "node": 111,
@@ -20260,7 +19524,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 610,
+        "reference": 600,
         "source": 2,
         "target": {
           "reference": 90,
@@ -20271,10 +19535,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 616,
+        "reference": 606,
         "source": 3,
         "target": {
-          "reference": 122,
+          "reference": 119,
           "status": "resolved"
         }
       },
@@ -20282,7 +19546,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 177,
         "provenance": "authored",
-        "reference": 603,
+        "reference": 593,
         "source": 3,
         "target": {
           "node": 139,
@@ -20293,7 +19557,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 178,
         "provenance": "authored",
-        "reference": 604,
+        "reference": 594,
         "source": 3,
         "target": {
           "node": 91,
@@ -20304,7 +19568,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 611,
+        "reference": 601,
         "source": 3,
         "target": {
           "reference": 90,
@@ -20315,10 +19579,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 617,
+        "reference": 607,
         "source": 4,
         "target": {
-          "reference": 122,
+          "reference": 119,
           "status": "resolved"
         }
       },
@@ -20326,7 +19590,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 180,
         "provenance": "authored",
-        "reference": 605,
+        "reference": 595,
         "source": 4,
         "target": {
           "node": 139,
@@ -20337,7 +19601,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 181,
         "provenance": "authored",
-        "reference": 606,
+        "reference": 596,
         "source": 4,
         "target": {
           "node": 20,
@@ -20348,7 +19612,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 612,
+        "reference": 602,
         "source": 4,
         "target": {
           "reference": 90,
@@ -20359,10 +19623,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 618,
+        "reference": 608,
         "source": 5,
         "target": {
-          "reference": 122,
+          "reference": 119,
           "status": "resolved"
         }
       },
@@ -20370,7 +19634,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 183,
         "provenance": "authored",
-        "reference": 607,
+        "reference": 597,
         "source": 5,
         "target": {
           "node": 12,
@@ -20381,7 +19645,7 @@ package TimerGeometry {
         "kind": "memberAccessOperand",
         "navigation": 184,
         "provenance": "authored",
-        "reference": 608,
+        "reference": 598,
         "source": 5,
         "target": {
           "node": 126,
@@ -20392,7 +19656,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 613,
+        "reference": 603,
         "source": 5,
         "target": {
           "reference": 90,
@@ -20403,7 +19667,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 165,
         "provenance": "authored",
-        "reference": 625,
+        "reference": 615,
         "source": 138,
         "target": {
           "reference": 54,
@@ -20414,10 +19678,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 623,
+        "reference": 613,
         "source": 138,
         "target": {
-          "reference": 133,
+          "reference": 126,
           "status": "resolved"
         }
       },
@@ -20425,7 +19689,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 624,
+        "reference": 614,
         "source": 138,
         "target": {
           "reference": 90,
@@ -20436,7 +19700,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 157,
         "provenance": "authored",
-        "reference": 488,
+        "reference": 478,
         "source": 139,
         "target": {
           "reference": 34,
@@ -20447,10 +19711,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 485,
+        "reference": 475,
         "source": 139,
         "target": {
-          "reference": 132,
+          "reference": 125,
           "status": "resolved"
         }
       },
@@ -20458,10 +19722,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 486,
+        "reference": 476,
         "source": 139,
         "target": {
-          "reference": 137,
+          "reference": 128,
           "status": "resolved"
         }
       },
@@ -20469,7 +19733,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 487,
+        "reference": 477,
         "source": 139,
         "target": {
           "reference": 54,
@@ -20480,10 +19744,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 54,
         "provenance": "authored",
-        "reference": 387,
+        "reference": 377,
         "source": 146,
         "target": {
-          "reference": 126,
+          "reference": 123,
           "status": "resolved"
         }
       },
@@ -20491,7 +19755,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 380,
+        "reference": 370,
         "source": 146,
         "target": {
           "reference": 34,
@@ -20502,10 +19766,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 407,
+        "reference": 397,
         "source": 143,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -20513,7 +19777,7 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 408,
+        "reference": 398,
         "source": 143,
         "target": {
           "node": 145,
@@ -20524,7 +19788,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 415,
+        "reference": 405,
         "source": 143,
         "target": {
           "reference": 34,
@@ -20535,10 +19799,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 429,
+        "reference": 419,
         "source": 144,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -20546,10 +19810,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 436,
+        "reference": 426,
         "source": 145,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -20557,7 +19821,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 443,
+        "reference": 433,
         "source": 145,
         "target": {
           "node": 144,
@@ -20568,10 +19832,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 337,
+        "reference": 327,
         "source": 140,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -20579,7 +19843,7 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 338,
+        "reference": 328,
         "source": 140,
         "target": {
           "node": 142,
@@ -20590,7 +19854,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 345,
+        "reference": 335,
         "source": 140,
         "target": {
           "reference": 34,
@@ -20601,10 +19865,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 359,
+        "reference": 349,
         "source": 141,
         "target": {
-          "reference": 135,
+          "reference": 127,
           "status": "resolved"
         }
       },
@@ -20612,10 +19876,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 366,
+        "reference": 356,
         "source": 142,
         "target": {
-          "reference": 121,
+          "reference": 118,
           "status": "resolved"
         }
       },
@@ -20623,7 +19887,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 373,
+        "reference": 363,
         "source": 142,
         "target": {
           "node": 141,
@@ -20634,10 +19898,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 151,
         "provenance": "authored",
-        "reference": 478,
+        "reference": 468,
         "source": 149,
         "target": {
-          "reference": 124,
+          "reference": 121,
           "status": "resolved"
         }
       },
@@ -20645,10 +19909,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 476,
+        "reference": 466,
         "source": 149,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -20656,7 +19920,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 477,
+        "reference": 467,
         "source": 149,
         "target": {
           "reference": 54,
@@ -20667,10 +19931,10 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 153,
         "provenance": "authored",
-        "reference": 481,
+        "reference": 471,
         "source": 147,
         "target": {
-          "reference": 125,
+          "reference": 122,
           "status": "resolved"
         }
       },
@@ -20678,10 +19942,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 479,
+        "reference": 469,
         "source": 147,
         "target": {
-          "reference": 120,
+          "reference": 117,
           "status": "resolved"
         }
       },
@@ -20689,7 +19953,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 480,
+        "reference": 470,
         "source": 147,
         "target": {
           "reference": 54,
@@ -20700,18 +19964,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 155,
         "provenance": "authored",
-        "reference": 491,
-        "source": 148,
-        "target": {
-          "reference": 123,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 489,
+        "reference": 481,
         "source": 148,
         "target": {
           "reference": 120,
@@ -20719,10 +19972,21 @@ package TimerGeometry {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 479,
+        "source": 148,
+        "target": {
+          "reference": 117,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 490,
+        "reference": 480,
         "source": 148,
         "target": {
           "reference": 54,
@@ -20733,7 +19997,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 169,
         "provenance": "authored",
-        "reference": 635,
+        "reference": 625,
         "source": 150,
         "target": {
           "reference": 87,
@@ -20744,10 +20008,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 633,
+        "reference": 623,
         "source": 150,
         "target": {
-          "reference": 133,
+          "reference": 126,
           "status": "resolved"
         }
       },
@@ -20755,7 +20019,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 634,
+        "reference": 624,
         "source": 150,
         "target": {
           "reference": 90,
@@ -20766,7 +20030,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 161,
         "provenance": "authored",
-        "reference": 595,
+        "reference": 585,
         "source": 152,
         "target": {
           "reference": 78,
@@ -20777,10 +20041,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 593,
+        "reference": 583,
         "source": 152,
         "target": {
-          "reference": 133,
+          "reference": 126,
           "status": "resolved"
         }
       },
@@ -20788,7 +20052,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 594,
+        "reference": 584,
         "source": 152,
         "target": {
           "reference": 87,
@@ -20799,7 +20063,7 @@ package TimerGeometry {
         "kind": "typing",
         "navigation": 159,
         "provenance": "authored",
-        "reference": 598,
+        "reference": 588,
         "source": 151,
         "target": {
           "reference": 78,
@@ -20810,10 +20074,10 @@ package TimerGeometry {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 596,
+        "reference": 586,
         "source": 151,
         "target": {
-          "reference": 133,
+          "reference": 126,
           "status": "resolved"
         }
       },
@@ -20821,7 +20085,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 597,
+        "reference": 587,
         "source": 151,
         "target": {
           "reference": 87,

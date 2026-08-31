@@ -1,5 +1,9 @@
 import ELK from "elkjs/lib/elk.bundled.js";
-import { isOverviewVisualElementType, normalizeEdgeKind } from "../graph-normalization";
+import {
+  isConnectorUsageElementType,
+  isOverviewVisualElementType,
+  normalizeEdgeKind,
+} from "../graph-normalization";
 import {
   collectCompartments,
   computeNodeHeight,
@@ -108,6 +112,96 @@ function fallbackGeneralLayout(
   };
 }
 
+/** GeneralView hierarchy is semantic, so ownership depth—not unrelated connector direction—owns
+ * row placement. Keep every depth on one horizontal row and route relationships afterwards. */
+function hierarchyGeneralLayout(
+  nodes: PreparedNode[],
+  edges: PreparedView["edges"],
+  parentById: Map<string, string>,
+): LayoutResult {
+  const nodeOrder = new Map(nodes.map((node, index) => [node.id, index]));
+  const childrenByParent = new Map<string, PreparedNode[]>();
+  for (const node of nodes) {
+    const parent = parentById.get(node.id);
+    if (!parent) continue;
+    const children = childrenByParent.get(parent) ?? [];
+    children.push(node);
+    childrenByParent.set(parent, children);
+  }
+  for (const children of childrenByParent.values()) {
+    children.sort((left, right) => (nodeOrder.get(left.id) ?? 0) - (nodeOrder.get(right.id) ?? 0));
+  }
+
+  const rows: PreparedNode[][] = [];
+  const visited = new Set<string>();
+  let current = nodes.filter((node) => !parentById.has(node.id));
+  while (current.length > 0) {
+    const row = current.filter((node) => !visited.has(node.id));
+    if (row.length === 0) break;
+    rows.push(row);
+    row.forEach((node) => visited.add(node.id));
+    current = row.flatMap((node) => childrenByParent.get(node.id) ?? []);
+  }
+  const unvisited = nodes.filter((node) => !visited.has(node.id));
+  if (unvisited.length > 0) rows.push(unvisited);
+
+  const horizontalGap = 140;
+  const verticalGap = 180;
+  const measuredRows = rows.map((row) => row.map((node) => {
+    const compartments = collectCompartments(node);
+    return { node, compartments, ...generalNodeBox(node, compartments) };
+  }));
+  const rowWidths = measuredRows.map((row) =>
+    row.reduce((sum, item) => sum + item.width, 0) + Math.max(0, row.length - 1) * horizontalGap,
+  );
+  const diagramWidth = Math.max(0, ...rowWidths);
+  const laidOutNodes: LaidOutNode[] = [];
+  let y = 0;
+  for (const [rowIndex, row] of measuredRows.entries()) {
+    let x = (diagramWidth - rowWidths[rowIndex]) / 2;
+    const rowHeight = Math.max(nodeHeight, ...row.map((item) => item.height));
+    for (const item of row) {
+      laidOutNodes.push({ ...item.node, compartments: item.compartments, x, y, width: item.width, height: item.height });
+      x += item.width + horizontalGap;
+    }
+    y += rowHeight + verticalGap;
+  }
+
+  const byId = new Map(laidOutNodes.map((node) => [node.id, node]));
+  const rowFor = new Map(rows.flatMap((row, depth) => row.map((node) => [node.id, depth] as const)));
+  let sameRowLane = 0;
+  const routedEdges: LaidOutEdge[] = edges.map((edge) => {
+    const sourceNode = byId.get(edge.source);
+    const targetNode = byId.get(edge.target);
+    if (!sourceNode || !targetNode) return { ...edge, sourceNode, targetNode };
+    const sourceX = (sourceNode.x ?? 0) + (sourceNode.width ?? nodeWidth) / 2;
+    const targetX = (targetNode.x ?? 0) + (targetNode.width ?? nodeWidth) / 2;
+    const sourceDepth = rowFor.get(edge.source) ?? 0;
+    const targetDepth = rowFor.get(edge.target) ?? 0;
+    let section: EdgeSection;
+    if (sourceDepth === targetDepth) {
+      const laneY = Math.min(sourceNode.y ?? 0, targetNode.y ?? 0) - 28 - (sameRowLane++ % 12) * 10;
+      section = {
+        startPoint: { x: sourceX, y: sourceNode.y ?? 0 },
+        bendPoints: [{ x: sourceX, y: laneY }, { x: targetX, y: laneY }],
+        endPoint: { x: targetX, y: targetNode.y ?? 0 },
+      };
+    } else {
+      const downward = (targetNode.y ?? 0) > (sourceNode.y ?? 0);
+      const startY = (sourceNode.y ?? 0) + (downward ? (sourceNode.height ?? nodeHeight) : 0);
+      const endY = (targetNode.y ?? 0) + (downward ? 0 : (targetNode.height ?? nodeHeight));
+      const middleY = (startY + endY) / 2;
+      section = {
+        startPoint: { x: sourceX, y: startY },
+        bendPoints: [{ x: sourceX, y: middleY }, { x: targetX, y: middleY }],
+        endPoint: { x: targetX, y: endY },
+      };
+    }
+    return { ...edge, sourceNode, targetNode, layout: { sections: [section] } };
+  });
+  return { nodes: laidOutNodes, edges: routedEdges };
+}
+
 export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResult> {
   if (!prepared.nodes.length) return { nodes: [], edges: [] };
   if (prepared.view === "interconnection-view") {
@@ -126,42 +220,59 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
   // Only general-view reaches here — interconnection-view returned above, and the other 6 kinds
   // returned `{ nodes: [], edges: [] }` (laid out elsewhere; see views/behavior-common.ts and
   // views/standard-views-render.ts).
-  const diagramNodes = prepared.nodes.filter((node) => isOverviewVisualElementType(node.kind));
+  // Relationship usages remain in the prepared semantic projection for compartments, navigation
+  // and traceability. Connector usages are never structural peers in a General View: when their
+  // ends resolve they are drawn as edges, and when they do not resolve there is no meaningful
+  // structural box to draw. Other relationship declarations are suppressed once represented by
+  // a composed edge.
+  const representedRelationshipNodes = new Set(
+    prepared.edges.flatMap((edge) => {
+      const origin = edge.attributes?.originNodeId;
+      const kind = normalizeEdgeKind(edge.edgeKind ?? edge.label);
+      return typeof origin === "string" && origin !== edge.source && origin !== edge.target && kind !== "hierarchy"
+        ? [origin]
+        : [];
+    }),
+  );
+  const diagramNodes = prepared.nodes.filter(
+    (node) => isOverviewVisualElementType(node.kind) &&
+      !isConnectorUsageElementType(node.kind) &&
+      !representedRelationshipNodes.has(node.id),
+  );
   const visibleIds = new Set(diagramNodes.map((node) => node.id));
   const diagramEdges = prepared.edges.filter(
     (edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target),
   );
   if (!diagramNodes.length) return { nodes: [], edges: [] };
 
+  const packageGroups =
+    (prepared.meta?.packageContainerGroups as
+      | Array<{ id: string; name: string; memberIds: string[] }>
+      | undefined) ?? [];
+  const useHierarchy = packageGroups.length >= 2;
+  const containmentParent = new Map(
+    diagramEdges
+      .filter((edge) => normalizeEdgeKind(edge.edgeKind ?? edge.label) === "hierarchy")
+      .map((edge) => [edge.target, edge.source]),
+  );
+  const useContainmentRows = !useHierarchy && containmentParent.size > 0;
+  if (useContainmentRows) {
+    return hierarchyGeneralLayout(diagramNodes, diagramEdges, containmentParent);
+  }
+
   const leafElkNode = (node: PreparedNode) => {
     const compartments = collectCompartments(node);
     const box = generalNodeBox(node, compartments);
-    return { id: node.id, width: box.width, height: box.height };
+    return {
+      id: node.id,
+      width: box.width,
+      height: box.height,
+    };
   };
 
-  // O-4: a same-depth sibling set large enough to dominate a single ELK layer (e.g. a def with
-  // many members and few edges between them, robot-vacuum PhysicalArchitecture -- specifically
-  // BaseModule's 11 direct members exposed by the `baseDecomposition` view -- being the motivating
-  // case) otherwise lays out as one very wide row: `elk.layered.wrapping.strategy` does not split a
-  // single edge-sparse layer into multiple rows (confirmed empirically against that fixture: no
-  // effect at any wrapping strategy/aspect ratio combination tried, because the graph only has ~3
-  // real rank tiers -- too few for ELK's wrap cutting to find a useful cut point). Chunk any node
-  // set above the threshold into roughly-square synthetic sub-containers so ELK's hierarchical
-  // layered algorithm treats each chunk as its own compact block instead of one flat row; edges
-  // crossing chunk boundaries still route correctly via `elk.hierarchyHandling: INCLUDE_CHILDREN`
-  // at the root, the same mechanism already used for real package containers below. Chunking by
-  // containment ("hierarchy" edge) siblings only, keeping same-rank members together, was tried
-  // first and produced a *wider* result than plain array-order chunking on the motivating fixture
-  // (2792px vs 2273px bounding-box width) -- grouping every sibling set under its own container
-  // left the surrounding rank-1/rank-2 nodes (a shared def's own type-def targets, still one per
-  // distinct type) needing to route edges into several different chunks at once, which spread the
-  // layout back out; plain order-based chunking doesn't have that failure mode since everything
-  // (including those less-numerous neighbors) gets folded into the same compact chunk set.
-  // `baseDecomposition`'s 19-node bounding box went from 3600x820 (aspect ratio 4.4) unchunked to
-  // 2273x1158 (aspect ratio 2.0) with chunk size `ceil(sqrt(n)/2)` -- a fixed chunk size of 3 or
-  // the unhalved `ceil(sqrt(n))` were both tried and came out wider on this fixture. Synthetic
-  // chunk ids are never added to `packageContainerGroups`, so no extra frame is drawn around them
-  // -- this is layout-only and mustn't be confused with real package containment.
+  // Large graphs without a containment hierarchy still need compact wrapping. Semantic
+  // containment graphs returned above and deliberately retain one horizontal row per depth.
+  // Synthetic chunk ids remain layout-only and are never drawn as package containers.
   const WIDE_SIBLING_THRESHOLD = 8;
   const chunkedElkChildren = (idPrefix: string, elkNodes: unknown[]): unknown[] => {
     if (elkNodes.length <= WIDE_SIBLING_THRESHOLD) return elkNodes;
@@ -184,11 +295,6 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
   // interconnection-elk-input.ts) so each package lays out as a compact block instead of a flat
   // layered graph scattering package members anywhere, which otherwise produces very wide,
   // tangled diagrams for models with more than a handful of packages.
-  const packageGroups =
-    (prepared.meta?.packageContainerGroups as
-      | Array<{ id: string; name: string; memberIds: string[] }>
-      | undefined) ?? [];
-  const useHierarchy = packageGroups.length >= 2;
   let children: unknown[];
   let flatChildrenWereChunked = false;
   if (useHierarchy) {
@@ -222,6 +328,8 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
     children = [...containers, ...orphans];
   } else {
     const flatChildren = diagramNodes.map(leafElkNode);
+    // A containment projection already has meaningful ranks: one horizontal row per ownership
+    // depth. Preserve that hierarchy even for wide sibling sets. Chunk only unrelated flat graphs.
     children = chunkedElkChildren("root", flatChildren);
     flatChildrenWereChunked = children !== flatChildren;
   }
