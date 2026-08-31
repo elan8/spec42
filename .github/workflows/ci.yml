@@ -129,15 +129,41 @@ jobs:
   audit:
     name: Dependency audit
     runs-on: ubuntu-latest
+    # A RustSec advisory is a property of time, not of a diff: the unconditional full-tree audit
+    # runs nightly (`.github/workflows/nightly.yml`). Here it runs only when the push or PR
+    # actually touches a lockfile -- the case a PR author introduced and can act on.
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect lockfile changes
+        id: lock
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base='${{ github.event.pull_request.base.sha }}'
+            head='${{ github.event.pull_request.head.sha }}'
+          else
+            base='${{ github.event.before }}'
+            head='${{ github.sha }}'
+          fi
+          if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ] \
+            || ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif git diff --name-only "$base" "$head" | grep -qE '(^|/)Cargo\.lock$'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Install cargo-audit
+        if: steps.lock.outputs.changed == 'true'
         uses: taiki-e/install-action@v2
         with:
           tool: cargo-audit
 
       - name: cargo audit
+        if: steps.lock.outputs.changed == 'true'
         run: cargo audit
 
   rust-surfaces:
