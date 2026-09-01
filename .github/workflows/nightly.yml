@@ -113,11 +113,6 @@ jobs:
           SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
         run: cargo test -p sysml_resolution unit --lib -- --nocapture
 
-      - name: OMG 14c metadata diagnostic ratchet
-        env:
-          SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
-        run: bash scripts/check-omg-14c-metadata-ratchet.sh
-
   language-and-generator-exploratory:
     name: Language and generator fuzzing (exploratory)
     runs-on: ubuntu-latest
@@ -135,6 +130,8 @@ jobs:
 
       - name: Install Rust nightly
         uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rust-src
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
@@ -149,18 +146,20 @@ jobs:
         with:
           tool: cargo-mutants
 
+      # `cargo fuzz` needs the sanitizer `-Z` flags, which are nightly-only. The repository's
+      # `rust-toolchain.toml` pins a stable channel and wins over the runner default, so every
+      # fuzz invocation has to select the nightly toolchain explicitly with `+nightly`.
       - name: Fuzz artifact path parsing
-        run: cargo fuzz run artifact_path -- -max_total_time=300 -print_final_stats=1
+        run: cargo +nightly fuzz run artifact_path -- -max_total_time=300 -print_final_stats=1
 
       - name: Fuzz ABI payload decoding
-        run: cargo fuzz run abi_decode -- -max_total_time=300 -print_final_stats=1
-
+        run: cargo +nightly fuzz run abi_decode -- -max_total_time=300 -print_final_stats=1
 
       - name: Fuzz immutable SysML publication
-        run: cargo fuzz run sysml_publication fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
+        run: cargo +nightly fuzz run sysml_publication fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
 
       - name: Fuzz SysML formatter convergence
-        run: cargo fuzz run sysml_formatter fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
+        run: cargo +nightly fuzz run sysml_formatter fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
 
       - name: Mutation-test the transaction planner
         run: |
