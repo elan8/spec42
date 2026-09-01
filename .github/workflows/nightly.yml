@@ -166,6 +166,9 @@ jobs:
 
       - name: Mutation-test the transaction planner
         run: |
+          # cargo-mutants creates the final --output component but not its parents, and nothing
+          # in this job has populated target/ yet (the fuzz builds live under fuzz/target/).
+          mkdir -p target/mutants
           cargo mutants --package server --file 'src/generation/plan.rs' \
             --timeout 60 --output target/mutants
 
