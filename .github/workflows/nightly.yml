@@ -146,20 +146,23 @@ jobs:
         with:
           tool: cargo-mutants
 
-      # `cargo fuzz` needs the sanitizer `-Z` flags, which are nightly-only. The repository's
-      # `rust-toolchain.toml` pins a stable channel and wins over the runner default, so every
-      # fuzz invocation has to select the nightly toolchain explicitly with `+nightly`.
+      # Two things every `cargo fuzz` invocation here has to override:
+      #   * `+nightly` -- the sanitizer `-Z` flags are nightly-only, but `rust-toolchain.toml`
+      #     pins a stable channel that wins over the runner default.
+      #   * `--target x86_64-unknown-linux-gnu` -- cargo-fuzz defaults the target to the triple
+      #     it was itself built for. install-action has no cargo-fuzz binary, so it falls back to
+      #     cargo-binstall's musl build, whose static libc is incompatible with the sanitizer.
       - name: Fuzz artifact path parsing
-        run: cargo +nightly fuzz run artifact_path -- -max_total_time=300 -print_final_stats=1
+        run: cargo +nightly fuzz run --target x86_64-unknown-linux-gnu artifact_path -- -max_total_time=300 -print_final_stats=1
 
       - name: Fuzz ABI payload decoding
-        run: cargo +nightly fuzz run abi_decode -- -max_total_time=300 -print_final_stats=1
+        run: cargo +nightly fuzz run --target x86_64-unknown-linux-gnu abi_decode -- -max_total_time=300 -print_final_stats=1
 
       - name: Fuzz immutable SysML publication
-        run: cargo +nightly fuzz run sysml_publication fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
+        run: cargo +nightly fuzz run --target x86_64-unknown-linux-gnu sysml_publication fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
 
       - name: Fuzz SysML formatter convergence
-        run: cargo +nightly fuzz run sysml_formatter fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
+        run: cargo +nightly fuzz run --target x86_64-unknown-linux-gnu sysml_formatter fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
 
       - name: Mutation-test the transaction planner
         run: |
