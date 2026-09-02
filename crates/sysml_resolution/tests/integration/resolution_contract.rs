@@ -2282,6 +2282,40 @@ fn the_library_context_hint_reads_standard_library_availability() {
         !codes(with_source).contains(&"missing_library_context".to_string()),
         "admitting the library as a source is the same fact as admitting it as a stratum"
     );
+
+    // A project that draws its language context from an authored project library resolves those
+    // names even with no standard-library baseline. An unrelated unresolved name there is not the
+    // baseline's fault, so the hint stays suppressed whenever a non-workspace source took part.
+    let with_project_library = build(
+        BuildRequest::new(
+            vec![
+                SourceInput::new(
+                    "memory://project-lib.sysml",
+                    "library package Lib { part def Base; }".to_string(),
+                    SourceKind::Library,
+                ),
+                SourceInput::new(
+                    "memory://workspace.sysml",
+                    workspace.to_string(),
+                    SourceKind::Workspace,
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap()
+        .with_standard_library_availability(StandardLibraryAvailability::Unavailable),
+    )
+    .unwrap();
+    let project_library_codes = codes(with_project_library);
+    assert!(
+        project_library_codes.contains(&"unresolved_specializes_reference".to_string()),
+        "the unrelated name is still unresolved without a standard-library baseline"
+    );
+    assert!(
+        !project_library_codes.contains(&"missing_library_context".to_string()),
+        "an admitted project-library source suppresses the baseline hint"
+    );
 }
 
 /// A library document is reported only when the host names it as an authoring surface.

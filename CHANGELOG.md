@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Project manifests now constrain rather than select the standard-library baseline.** Every
   project retains the host-admitted KerML/SysML baseline, including manifests with `usage: []`;
-  matching authored stdlib usages act as compatibility pins, while disabled, unavailable, or
-  version-incompatible baselines fail explicitly. Unresolved imports now distinguish an
-  intentionally disabled baseline from one that is unavailable and explain how to recover.
+  matching authored stdlib usages act as compatibility pins. A version-incompatible baseline fails
+  admission explicitly; a disabled (`--no-stdlib`) or unavailable baseline leaves the pin inert so
+  loading still proceeds. Unresolved imports then distinguish an intentionally disabled baseline
+  from one that is unavailable and explain how to recover.
 
 - **`SequenceView` projects message edges and their order.** A `message` on an `occurrence def`
   lifeline already lowered with resolved `flowSource` / `flowTarget` and `succession` order, but

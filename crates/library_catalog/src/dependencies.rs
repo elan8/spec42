@@ -256,9 +256,21 @@ pub fn resolve_project_dependency_admission(
         )
     })?;
     let resolutions = resolve_project_dependencies_for_catalog(&project, catalog);
+    // An authored standard-library usage constrains the host-selected baseline; it never selects
+    // one. When that baseline is disabled (`--no-stdlib` / `no_stdlib`) or unavailable, the pin has
+    // nothing to constrain and is inert rather than a hard failure: admission proceeds so the
+    // publication can surface the disabled or unavailable state as an actionable per-import
+    // diagnostic, exactly as it does for a manifestless or `usage: []` project. A genuine identity
+    // or version incompatibility against an *available* baseline stays a hard failure.
     let failures = resolutions
         .iter()
-        .filter(|resolution| !matches!(resolution, ProjectDependencyResolution::Satisfied { .. }))
+        .filter(|resolution| {
+            !matches!(
+                resolution,
+                ProjectDependencyResolution::Satisfied { .. }
+                    | ProjectDependencyResolution::StandardLibraryUnavailable { .. }
+            )
+        })
         .collect::<Vec<_>>();
     if !failures.is_empty() {
         let states = serde_json::to_string(&failures)
@@ -710,6 +722,53 @@ mod tests {
                 availability: StandardLibraryAvailability::Disabled,
             }]
         );
+    }
+
+    fn project_root_with_manifest(manifest: &Project) -> tempfile::TempDir {
+        let dir = tempfile::tempdir().expect("temp project dir");
+        fs::write(
+            dir.path().join(kpar::PROJECT_FILE),
+            serde_json::to_vec_pretty(manifest).expect("serialize manifest"),
+        )
+        .expect("write manifest");
+        dir
+    }
+
+    #[test]
+    fn a_disabled_baseline_leaves_an_authored_stdlib_pin_inert_instead_of_failing_admission() {
+        let dir = project_root_with_manifest(&project(vec![usage(
+            "https://example.test/stdlib",
+            Some("1.0.0"),
+        )]));
+        let catalog = catalog_with_standard_library(StandardLibraryAvailability::Disabled);
+
+        let admission = resolve_project_dependency_admission(dir.path(), &catalog)
+            .expect("a disabled baseline must not abort admission");
+
+        assert_eq!(
+            admission.standard_library_availability,
+            StandardLibraryAvailability::Disabled
+        );
+        assert_eq!(
+            admission.resolutions,
+            vec![ProjectDependencyResolution::StandardLibraryUnavailable {
+                resource: "https://example.test/stdlib".into(),
+                version_constraint: Some("1.0.0".into()),
+                availability: StandardLibraryAvailability::Disabled,
+            }]
+        );
+        assert!(admission.selected_candidate_roots.is_empty());
+    }
+
+    #[test]
+    fn an_incompatible_pin_against_an_available_baseline_still_fails_admission() {
+        let dir = project_root_with_manifest(&project(vec![usage(
+            "https://example.test/stdlib",
+            Some("9.0.0"),
+        )]));
+        let catalog = catalog_with_standard_library(StandardLibraryAvailability::Available);
+
+        assert!(resolve_project_dependency_admission(dir.path(), &catalog).is_err());
     }
 
     #[test]

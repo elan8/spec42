@@ -245,11 +245,14 @@ explain the missing language context without pretending that it resolved.
 Every authored `usage` is resolved by exact resource identity and compatible version. Project name
 and version come from validated KPAR metadata; paths and filenames never infer dependency identity.
 A usage naming a configured standard-library resource is a compatibility constraint on the selected
-baseline: a match confirms the baseline without admitting a second copy, while a disabled,
-unavailable, or incompatible baseline rejects admission explicitly. Every other satisfied usage is
-additive. An unresolved, invalid, mismatched, ambiguous, or conflicting usage never falls back to a
-different candidate. Manifestless projects additionally receive catalog defaults; manifest projects
-exclude unselected generic and project-library roots.
+baseline, never a second source of roots: a match confirms the baseline without admitting a second
+copy, and a version incompatible with an available baseline rejects admission explicitly. A disabled
+or unavailable baseline leaves such a usage inert rather than failing admission — loading proceeds,
+and the published model still carries the disabled or unavailable state so diagnostics explain the
+missing language context. Every other satisfied usage is additive. An unresolved, invalid,
+mismatched, ambiguous, or conflicting usage never falls back to a different candidate. Manifestless
+projects additionally receive catalog defaults; manifest projects exclude unselected generic and
+project-library roots.
 
 `spec42 init` writes exact usages for the resolved standard-library resources, turning the selected
 baseline into reproducible compatibility constraints without making those entries a second source of

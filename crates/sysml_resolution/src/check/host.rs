@@ -1841,7 +1841,13 @@ impl<D> SemanticModel<D> {
 
     /// Reports a document whose imports cannot resolve when the host did not admit its required
     /// standard-library baseline. Availability is a typed publication prerequisite, so this rule
-    /// does not infer host policy from source kinds or paths.
+    /// keys on it rather than inferring host policy from source paths.
+    ///
+    /// A missing baseline is still not what a reader is missing when some other library source was
+    /// admitted: a project that draws its language context from an authored project-library usage
+    /// resolves those names even with the standard-library baseline disabled or unavailable, and an
+    /// unrelated unresolved name there must not be blamed on the baseline. So the hint is also
+    /// suppressed whenever any non-workspace source took part in this publication.
     ///
     /// `already` is where this document's diagnostics start, so the rule reads the unresolved
     /// outcomes the earlier producers settled instead of re-deciding them.
@@ -1853,6 +1859,14 @@ impl<D> SemanticModel<D> {
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         if availability == sysml_contract::StandardLibraryAvailability::Available {
+            return Ok(());
+        }
+        if self
+            .storage
+            .documents
+            .iter()
+            .any(|admitted| admitted.role != source_identity::SourceRole::Workspace)
+        {
             return Ok(());
         }
         if !diagnostics[already..].iter().any(|diagnostic| {
