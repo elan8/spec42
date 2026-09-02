@@ -199,6 +199,26 @@ impl SemanticModelBuilder {
                     UnsupportedFamily::StateDefinitionMember,
                     element.span,
                 ),
+                // `first <node>;` / `then <target>;` action-flow statements, produced only for an
+                // `entry`/`do`/`exit` action body (a SysML `ActionBody`), never a plain `state`
+                // body (Apollo 11 `state def PrepareForMissionPhase`'s `do action`). Lowered
+                // through the same succession machinery the action-def/action-usage bodies use.
+                StateDefBodyElement::FirstStmt(node) => {
+                    self.lower_first_stmt(
+                        document,
+                        owner,
+                        UnsupportedFamily::StateDefinitionMember,
+                        node,
+                    )?;
+                }
+                StateDefBodyElement::ThenAction(node) => {
+                    self.lower_then_action(
+                        document,
+                        owner,
+                        UnsupportedFamily::StateDefinitionMember,
+                        node,
+                    )?;
+                }
             }
         }
         Ok(())

@@ -1831,6 +1831,18 @@ impl SemanticModelBuilder {
                     );
                     self.lower_calc_expression(document, owner, unsupported, expression)?;
                 }
+                // Keyword-less feature usage with an explicit typing/redefinition/value
+                // (`launchVehicle : SaturnV = apollo11Mission...launchVehicle;`, Apollo 11
+                // `analysis` body). Shares the `DefaultReferenceUsage` node and lowering the
+                // calc/constraint/part/action def bodies already use for the same shape.
+                UseCaseDefBodyElement::DefaultReferenceUsage(node) => {
+                    self.lower_default_reference_usage(
+                        document,
+                        Some(owner),
+                        unsupported,
+                        node,
+                    )?;
+                }
                 UseCaseDefBodyElement::MetadataKeywordUsage(_)
                 | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)
                 | UseCaseDefBodyElement::FirstSuccession(_)

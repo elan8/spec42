@@ -1649,10 +1649,10 @@ impl SemanticModelBuilder {
     /// enum/`BinaryOp`/`FeatureRef` leaf shapes slices 1-4 already handle, so this is pure wiring
     /// into the same pipeline -- no new evaluation logic.
     ///
-    /// `is_redefine` (`return :>> name = expr;`) and `is_subsetting` (`return name :> Type = expr;`)
-    /// spelling variants are not modeled as distinct relationship kinds here (mirrors
-    /// `lower_parameter_declaration`'s own `InOutDecl::redefines`-shaped field being out of
-    /// scope); both spellings still get the same `FeatureTyping` reference and evaluation fact.
+    /// A `:>>` redefinition clause (`return :>> ISQ::power = expr;`, whether it stands in for the
+    /// declaration name or trails a named form) lowers to an authored `Redefinition` reference
+    /// through `lower_subsetting_relationship`, mirroring `lower_case_return_decl`. `is_subsetting`
+    /// (`return name :> Type = expr;`) is still folded into the same `FeatureTyping` reference.
     pub(crate) fn lower_return_decl(
         &mut self,
         document: DocumentIdx,
@@ -1701,6 +1701,14 @@ impl SemanticModelBuilder {
                 span,
                 import: None,
             })?;
+        }
+        // Trailing / leading `:>>` redefinition targets (`return :>> ISQ::power = …;`, Apollo 11;
+        // `return resultValues : Anything [*] nonunique redefines result redefines values;`,
+        // Kernel Semantic Library). The leading `return :>> <target>` form carries no declaration
+        // name -- the redefinition target stands in for it -- exactly as `lower_case_return_decl`
+        // already treats `CaseReturnDecl`.
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         if let Some(feature_value) = &node.value.value {
             let endpoints = self.record_feature_value(document, declaration, feature_value)?;

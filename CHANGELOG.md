@@ -29,6 +29,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and its subtree stay excluded. Filtered recursive imports (`import P::** [ ... ]`) remain
   unsupported. Fixes #102.
 
+- **Bumped the pinned `sysml-v2-parser` revision `f04d51e` -> `7634eaf`.** Picks up the five Apollo
+  11 normative-form parser fixes (`elan8/sysml-v2-parser#133`, for `#132` / issue #100). Three now
+  reach typed lowering in spec42: a keyword-less feature usage with an explicit typing/redefinition/
+  value in a use-case-family body (`analysis`/`use case`/`verification` and their `def`s) lowers as
+  a `DefaultReferenceUsage` instead of `recovered_use_case_body_element`; a nested `action` usage
+  with a multiplicity written before the typing (`action subfunctions[*] : Function :>> subactions;`)
+  and a `def`-less `abstract connection` usage of the same shape both parse without recovery or
+  `unsupported_grammar_form`. A calc-body `return :>>` now lowers its `::`-qualified redefinition
+  target as an authored `Redefinition` reference (matching the case-family `return`), so a leading
+  `return :>> <target>` no longer silently drops the authored intent. `first`/`then` action-flow
+  statements are accepted in the new `StateDefBodyElement::FirstStmt` / `ThenAction` members.
+  Two forms remain parser-blocked and are tracked in `planning/UPSTREAM_PARSER_GAPS.md` (gaps 83,
+  84): `return :>` (subsetting) with a qualified target still recovers, and `do action <name> { … }`
+  with a body but no typing clause is still parsed as an action reference. Partially addresses #100.
+
 - **Bumped the pinned `sysml-v2-parser` revision `4b65812` -> `f04d51e`.** Picks up keyword-less
   `first ... then ...` succession usages in occurrence and item definition bodies (authored
   `succession` spelling preserved, malformed attribute-body recovery no longer swallows a following

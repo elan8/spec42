@@ -4,7 +4,12 @@ This is the active record of information the parser must preserve or distinguish
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
 The canonical parser currently pinned by the root workspace is
-`elan8/sysml-v2-parser@f04d51ee79e63989684fca64e7769d700ae8f5c4` (parser `main`). The gap list
+`elan8/sysml-v2-parser@7634eaf195d5ea571e38ddbe2a56ee0193fd3f6e` (parser `main`, PR
+`elan8/sysml-v2-parser#133`, the five Apollo 11 normative-form fixes for
+`elan8/sysml-v2-parser#132` / `elan8/spec42#100`). Forms 1, 3, and 5 (keyword-less feature usage
+in use-case-family bodies, multiplicity before typing on nested action usages, and the `abstract`
+prefix on `def`-less connection usages) now reach typed lowering. Forms 2 and 4 are only partly
+closed — recorded as gaps 83 and 84 below. The gap list
 below was last re-exercised against `65c67de8a38269f8bcaf1bc42500bde30083ff81` (the merge commit
 for `elan8/sysml-v2-parser#129`, including the follow-up attribute-body recovery boundary fix),
 one spelling per document through `spec42 check` (a
@@ -74,6 +79,8 @@ rerun against the exact replacement revision when fixed.
 
 | Gap | Information unavailable to consumers | Minimum upstream acceptance evidence |
 | --- | --- | --- |
+| 83 | `return :>` / `return :>>` with a `::`-qualified subsetting target in a calc/constraint body | `elan8/sysml-v2-parser#133` fixed only the `:>>` (redefinition) spelling. `return :> ISQ::power = system.subparts->select { … }->collect { … }->sum();` (Apollo 11 `Analysis/CalculationsPackage.sysml`, `spec42#100` form 2) still recovers as `recovered_calc_body_element`: `return_decl` parses the leading `:>` target with a single-identifier `name()` that truncates `ISQ::power`. Store the `:>` target as a `qualified_reference` on `ReturnDecl` with no declaration name, exactly as `:>>` now does |
+| 84 | `do`/`entry`/`exit` `action <name> { <body> }` distinguishes a declared nested action from a referenced one | `elan8/sysml-v2-parser#133` made `first`/`then` parse inside these bodies (`spec42#100` form 4), but `state_behavior_action_target` still only treats `action <name>` as a *declaration* when a `: Type` or `:>>` clause follows; `do action prepareForMissionPhaseOperations { first start; … }` (Apollo 11 `Purpose/MissionPhasesPackage.sysml`) parses `prepareForMissionPhaseOperations` as an `action_reference`, so spec42 emits a spurious `unresolved_reference` and every downstream feature chain through `.<name>.` cascades. Treat a name immediately followed by `{` as a `declared_name`, as a body-carrying nested action |
 | 61 | `message` has no member variant in a calc-shaped body | Give `message` a typed member variant in the calc-shaped body grammar; prove `message m of T;` produces one node whose keyword never reaches the AST as a feature reference |
 | 76 | The shorthand `else` branch as an action-body statement | Add the `if <cond> then <a> else <b>;` alternative; prove it reaches one member with both branches, as `if <cond> then <a>;` already does |
 | 77 | A transition effect-action member in a state body | Admit the effect-action spelling used by `sysml_transition_feature_membership_effect_action.md` rather than returning `recovered_state_body_element`; transitions in action bodies are already typed |
@@ -88,6 +95,26 @@ as `#123` and is no longer the target). References below to `elan8/sysml-v2-pars
 where the arena-backed work originated; they do not authorize changing spec42 to follow a moving
 upstream branch. A fix is consumed only by updating the single full revision in spec42 and
 regenerating the lockfile through the normal dependency workflow.
+
+- Gap 83. Verified at `7634eaf1`: `package P { calc def C { in system : Anything; return :> ISQ::power
+  = system.subparts->select { in sys : Part; sys istype PowerProvider }->collect { in sys :
+  PowerProvider; sys.powerGenerated }->sum(); } }` is `recovered_calc_body_element` at `3:4`, while
+  the same fixture with `return :>>` parses to a typed `ReturnDecl` (anonymous, `redefines ISQ::power`).
+  `spec42_resolution` already lowers the `:>>` redefinition target (`lower_return_decl`); the `:>`
+  subsetting target needs the same qualified-reference storage upstream before spec42 can lower it.
+  The Apollo 11 `rollupPowerGeneration` / `rollupPowerConsumption` calc defs use the `:>` spelling.
+
+- Gap 84. Verified at `7634eaf1`: `package P { state def S { do action ops { first start; then done;
+  } } }` parses with no recovery, but `ops` is an `action_reference`, so `spec42 check` reports
+  `unresolved_reference` at the `ops` token. `state_behavior_action_target`
+  (`src/parser/state.rs`) only enters its `declaration_attempt` branch when a `: Type` or `:>>`
+  clause follows the name; a name followed directly by `{` falls through to the referenced-usage
+  path. spec42's `lower_state_do_action` / `lower_state_entry_action` / `lower_state_exit_action`
+  read `action_reference` and lower a binding reference; the `first`/`then` arms are wired in
+  `lower_state_def_body` but unreachable until the parser both routes the name to `declared_name`
+  and the do/entry/exit body is walked. Apollo 11's `Purpose/MissionPhasesPackage.sysml` states
+  and the `satisfy … by …operations.<action>` feature chains in `MissionSpecificationPackage.sysml`
+  all depend on this.
 
 - Gap 61. One member spelling of three remains unrepresentable in a calc-shaped body, and it is
   rejected honestly rather than shredded: `classifier C { message m of T; }` is
