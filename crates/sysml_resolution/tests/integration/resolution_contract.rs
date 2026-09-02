@@ -1725,6 +1725,136 @@ fn metadata_usage_typed_by_a_metadata_def_resolves() {
     );
 }
 
+/// `import P::**` re-exports the members of `P` and, transitively, the members of every
+/// publicly-visible namespace nested under it. Before, the recursive suffix parsed and lowered
+/// but name resolution left the reference `Unsupported`, reporting `unsupported_filtered_import`
+/// and cascading every dependent name to `unresolved_*` (#102).
+#[test]
+fn recursive_membership_import_brings_nested_namespace_members_into_scope() {
+    let output = build_semantic_sexpr(
+        "package Lib {\n\
+         \tpart def Surface;\n\
+         \tpackage Inner {\n\
+         \t\tpart def Rover;\n\
+         \t}\n\
+         }\n\
+         package Model {\n\
+         \tprivate import Lib::**;\n\
+         \tpart surface : Surface;\n\
+         \tpart rover : Rover;\n\
+         }\n",
+    );
+    assert!(
+        output.contains("(authored-target \"Surface\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Lib::Surface\"))))"),
+        "expected `Surface` (a direct member of the recursively imported namespace) to resolve, got:\n{output}"
+    );
+    assert!(
+        output.contains("(authored-target \"Rover\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Lib::Inner::Rover\"))))"),
+        "expected `Rover` (nested one namespace deep) to resolve through `import Lib::**`, got:\n{output}"
+    );
+    assert!(
+        !build_diagnostics_sexpr(
+            "package Lib { part def Surface; package Inner { part def Rover; } }\n\
+             package Model { private import Lib::**; part surface : Surface; part rover : Rover; }\n"
+        )
+        .contains("unsupported_filtered_import"),
+        "a plain `::**` import is a recursive namespace import, not a filtered one"
+    );
+}
+
+/// The `::*::**` spelling imports the members of the target namespace's subtree but not the
+/// target namespace itself.
+#[test]
+fn recursive_wildcard_import_resolves_deeply_nested_members() {
+    let output = build_semantic_sexpr(
+        "package Lib {\n\
+         \tpackage A {\n\
+         \t\tpackage B {\n\
+         \t\t\tpackage C {\n\
+         \t\t\t\tpart def Deep;\n\
+         \t\t\t}\n\
+         \t\t}\n\
+         \t}\n\
+         }\n\
+         package Model {\n\
+         \tprivate import Lib::*::**;\n\
+         \tpart deep : Deep;\n\
+         }\n",
+    );
+    assert!(
+        output.contains("(authored-target \"Deep\")\n      (outcome (status resolved) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Lib::A::B::C::Deep\"))))"),
+        "expected `Deep`, nested four namespaces deep, to resolve through `import Lib::*::**`, got:\n{output}"
+    );
+}
+
+/// A privately-owned nested package is not importable, so a recursive import never reaches its
+/// members.
+#[test]
+fn recursive_import_does_not_leak_a_private_nested_package() {
+    let output = build_semantic_sexpr(
+        "package Lib {\n\
+         \tpart def Public;\n\
+         \tprivate package Secret {\n\
+         \t\tpart def Hidden;\n\
+         \t}\n\
+         }\n\
+         package Model {\n\
+         \tprivate import Lib::**;\n\
+         \tpart ok : Public;\n\
+         \tpart leaked : Hidden;\n\
+         }\n",
+    );
+    assert!(
+        output.contains("(authored-target \"Public\")\n      (outcome (status resolved)"),
+        "expected the public member to resolve, got:\n{output}"
+    );
+    assert!(
+        output.contains("(authored-target \"Hidden\")\n      (outcome (status unresolved)"),
+        "a private nested package's member must not enter scope through `import Lib::**`, got:\n{output}"
+    );
+}
+
+/// A recursive import spanning documents brings the nested library members into the workspace
+/// scope, the same as a same-document one.
+#[test]
+fn recursive_import_resolves_across_documents() {
+    let published = publication_for(&[
+        (
+            "memory://lib.sysml",
+            "package Lib { package Nested { part def CelestialBody; } }",
+        ),
+        (
+            "memory://model.sysml",
+            "package Model { import Lib::**; part def Orbit { ref primary : CelestialBody; } }",
+        ),
+    ]);
+    let mut output = String::new();
+    published.debug().write_semantic_sexpr(&mut output).unwrap();
+    assert!(
+        output.contains("(authored-target \"CelestialBody\")\n      (outcome (status resolved) (target (node (document \"memory://lib.sysml\") (qualified-name \"Lib::Nested::CelestialBody\"))))"),
+        "expected the cross-document recursive import to resolve `CelestialBody`, got:\n{output}"
+    );
+}
+
+/// A genuinely filtered recursive import (`import P::** [ ... ]`) is still parsed but not
+/// semantically supported -- issue #102 keeps that boundary.
+#[test]
+fn filtered_recursive_import_remains_unsupported() {
+    let output = build_diagnostics_sexpr(
+        "package Lib {\n\
+         \tmetadata def Safety;\n\
+         \tpart def Belt { @Safety; }\n\
+         }\n\
+         package Model {\n\
+         \tprivate import Lib::** [ @Safety ];\n\
+         }\n",
+    );
+    assert!(
+        output.contains("unsupported_filtered_import"),
+        "a bracketed filter on a recursive import is still unsupported, got:\n{output}"
+    );
+}
+
 #[test]
 fn filter_metadata_test_resolves_the_metadata_reference() {
     let output = build_semantic_sexpr(

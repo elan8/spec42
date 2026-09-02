@@ -125,12 +125,6 @@ package FeatureAdvancedCoverage {
         (source "semantic")
         (range (start 28 11) (end 28 16))
       )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_filtered_import")
-        (source "semantic")
-        (range (start 28 11) (end 28 16))
-      )
     )
   )
 )
@@ -158,7 +152,7 @@ package FeatureAdvancedCoverage {
   (references
     (reference (id (source (node (document "memory://snapshot/coverage_features_advanced.md") (path (named (kind package) (name "FeatureAdvancedCoverage")) (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
       (authored-target "C")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::C")))))
     (reference (id (source (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::C::m"))) (kind featureTyping) (ordinal 0))
       (authored-target "T")
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::T")))))
@@ -236,7 +230,7 @@ package FeatureAdvancedCoverage {
 (navigation
   (query (document "memory://snapshot/coverage_features_advanced.md") (range (start 28 11) (end 28 16)) (probe (position 28 11))
     (reference (id (source (node (document "memory://snapshot/coverage_features_advanced.md") (path (named (kind package) (name "FeatureAdvancedCoverage")) (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "C")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::C")))))
     )
   )
   (query (document "memory://snapshot/coverage_features_advanced.md") (range (start 22 27) (end 22 28)) (probe (position 22 27))
