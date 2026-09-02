@@ -222,6 +222,7 @@ package DirectTypingExample {
 ~~~json
 {
   "schemaVersion": 5,
+  "modelDigest": "blake3:3872951ad8c86edc7cd8c4bd82ae4b402741c73db34eb2c971c553f78afdf005",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_direct_typing.md",

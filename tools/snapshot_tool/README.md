@@ -454,7 +454,4 @@ Example::SafeStop,SafeStop,The vehicle shall stop safely.
 
 Artifacts must be safe relative paths and valid UTF-8. Paths are sorted canonically; a changed or
 removed artifact makes `check` fail and `update` replaces the complete section. Build test plugins
-with `scripts/build-generator-plugins.sh` before running a generator fixture. Repository diagram
-snapshots omit the top-level `modelDigest`: the real product retains that dependency-complete
-identity, while dedicated generator/runtime tests cover it without making every diagram snapshot
-change whenever the publication digest contract changes.
+with `scripts/build-generator-plugins.sh` before running a generator fixture.
