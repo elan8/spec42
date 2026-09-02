@@ -641,8 +641,8 @@ semantic_diagnostic_codes! {
     MissingContext {
     /// A workspace document imports names it cannot resolve without its standard-library baseline.
     MissingLibraryContext => "missing_library_context",
-        "This document imports names that do not resolve and no library source was \
-                         admitted to the publication.";
+        "This document imports names that do not resolve and no standard-library baseline \
+                         was admitted to the publication.";
     /// A required canonical library element was not admitted to the publication.
     MissingLibraryAnchor => "missing_library_anchor",
         "The required standard-library anchor is not available in this publication.";
