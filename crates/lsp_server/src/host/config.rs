@@ -101,6 +101,8 @@ pub struct Spec42Config {
     pub default_library_paths: Vec<PathBuf>,
     /// Canonical standard-library roots, kept distinct from generic host/client libraries.
     pub standard_library_paths: Vec<PathBuf>,
+    /// Host-owned status of the standard-library baseline, distinct from the roots themselves.
+    pub standard_library_availability: sysml_query::StandardLibraryAvailability,
     /// Optional capability augmenters for additive host composition.
     pub capability_augmenters: Vec<Arc<dyn CapabilityAugmenter>>,
     /// Optional custom-method declaration providers for additive host composition.
@@ -119,6 +121,10 @@ impl std::fmt::Debug for Spec42Config {
             )
             .field("default_library_paths", &self.default_library_paths)
             .field("standard_library_paths", &self.standard_library_paths)
+            .field(
+                "standard_library_availability",
+                &self.standard_library_availability,
+            )
             .field("capability_augmenters", &self.capability_augmenters.len())
             .field(
                 "custom_method_providers",
@@ -143,6 +149,7 @@ impl Spec42Config {
         mut self,
         catalog: library_catalog::LibraryCatalog,
     ) -> Self {
+        self.standard_library_availability = catalog.stdlib.availability;
         self.project_library_catalog = Some(Arc::new(catalog));
         self
     }
@@ -172,7 +179,19 @@ impl Spec42Config {
     }
 
     pub fn with_standard_library_paths(mut self, paths: Vec<PathBuf>) -> Self {
+        if !paths.is_empty() {
+            self.standard_library_availability =
+                sysml_query::StandardLibraryAvailability::Available;
+        }
         self.standard_library_paths = paths;
+        self
+    }
+
+    pub fn with_standard_library_availability(
+        mut self,
+        availability: sysml_query::StandardLibraryAvailability,
+    ) -> Self {
+        self.standard_library_availability = availability;
         self
     }
 

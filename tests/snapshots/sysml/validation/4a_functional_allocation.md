@@ -122,7 +122,7 @@ package '4a-Functional Allocation' {
   (document "memory://snapshot/4a_functional_allocation.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 45))

@@ -177,7 +177,7 @@ package VehicleVariabilityModel {
   (document "memory://snapshot/vehicle_variability_model.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 3 16) (end 3 34))

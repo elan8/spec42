@@ -101,7 +101,7 @@ standard library package Interfaces {
   (document "memory://snapshot/interfaces.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 6 19) (end 6 42))

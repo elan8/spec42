@@ -157,7 +157,7 @@ package TimeVaryingFeaturesEnhanced {
   (document "memory://snapshot/time_varying_features_enhanced.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 19) (end 1 41))

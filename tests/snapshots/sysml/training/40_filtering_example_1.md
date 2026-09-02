@@ -49,7 +49,7 @@ package 'Filtering Example-1' {
   (document "memory://snapshot/40_filtering_example_1.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 37))

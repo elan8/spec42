@@ -134,7 +134,7 @@ package AHFNorwaySequences {
   (document "memory://snapshot/ahfsequences.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 3 16) (end 3 32))

@@ -1592,7 +1592,7 @@ package SimpleVehicleModel{
   (document "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 2 18) (end 2 32))

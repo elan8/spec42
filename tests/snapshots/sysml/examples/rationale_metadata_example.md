@@ -36,7 +36,7 @@ package RationaleMetadataExample {
   (document "memory://snapshot/rationale_metadata_example.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 43))

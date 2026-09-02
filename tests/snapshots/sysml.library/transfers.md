@@ -293,7 +293,7 @@ standard library package Transfers {
   (document "memory://snapshot/transfers.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 6 19) (end 6 33))

@@ -29,7 +29,7 @@ package 'Enumeration Definitions-1' {
   (document "memory://snapshot/06_enumeration_definitions_1.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 34))

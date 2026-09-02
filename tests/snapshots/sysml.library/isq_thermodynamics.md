@@ -1268,7 +1268,7 @@ standard library package ISQThermodynamics {
   (document "memory://snapshot/isq_thermodynamics.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 14 19) (end 14 37))

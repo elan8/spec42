@@ -4,6 +4,7 @@ use std::sync::Arc;
 use std::time::Instant;
 
 use source_identity::{ContentDigest, SourceRole};
+use sysml_contract::StandardLibraryAvailability;
 use sysml_v2_parser::{ParseError, ParsedDocument};
 
 use crate::evaluation::EvaluationPolicy;
@@ -61,6 +62,7 @@ impl SemanticModelBuildCoordinator {
         mut sources: Vec<OwnedSourceRecord>,
         schedule: BuildSchedule,
         policy: EvaluationPolicy,
+        standard_library_availability: StandardLibraryAvailability,
         library: Option<&PreparedLibrary>,
         reported: &[Box<str>],
         memo: Option<&LoweringMemo>,
@@ -168,6 +170,7 @@ impl SemanticModelBuildCoordinator {
             storage,
             sources,
             policy,
+            standard_library_availability,
             library.map(|library| &library.settled),
             reported,
         )

@@ -155,7 +155,7 @@ standard library package StateSpaceRepresentation {
   (document "memory://snapshot/state_space_representation.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 7 19) (end 7 37))

@@ -127,7 +127,7 @@ package '9-Verification-simplified' {
   (document "memory://snapshot/9_verification_simplified.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 36))

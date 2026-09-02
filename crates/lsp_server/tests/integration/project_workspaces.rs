@@ -153,7 +153,7 @@ fn sibling_manifest_projects_are_navigation_isolated() {
 }
 
 #[test]
-fn manifest_admission_selects_only_declared_bundle_and_manifestless_keeps_defaults() {
+fn manifest_usage_adds_to_mandatory_libraries_and_manifestless_keeps_defaults() {
     let temp = tempfile::tempdir().unwrap();
     let repo = temp.path().join("repo");
     let stdlib = temp.path().join("stdlib");
@@ -183,22 +183,6 @@ fn manifest_admission_selects_only_declared_bundle_and_manifestless_keeps_defaul
     open(&mut stdin, &loose_uri, loose_text);
     std::thread::sleep(std::time::Duration::from_millis(300));
 
-    let search_id = next_id();
-    send_message(
-        &mut stdin,
-        &serde_json::json!({
-            "jsonrpc":"2.0", "id":search_id, "method":"sysml/librarySearch",
-            "params":{"query":"SystemThing","projectUri":declared_uri}
-        })
-        .to_string(),
-    );
-    let search: serde_json::Value =
-        serde_json::from_str(&read_response(&mut stdout, search_id).unwrap()).unwrap();
-    assert!(
-        search["result"]["symbolTotal"].as_u64().unwrap_or_default() > 0,
-        "project-routed search did not use declared project: {search}"
-    );
-
     let systems = definition(
         &mut stdin,
         &mut stdout,
@@ -209,16 +193,16 @@ fn manifest_admission_selects_only_declared_bundle_and_manifestless_keeps_defaul
         .as_str()
         .unwrap()
         .contains("Systems.sysml"));
-    let undeclared = definition(
+    let mandatory = definition(
         &mut stdin,
         &mut stdout,
         &declared_uri,
         position_of(declared_text, "AnalysisThing"),
     );
-    assert!(
-        undeclared["result"].is_null(),
-        "undeclared Analysis leaked: {undeclared}"
-    );
+    assert!(mandatory["result"]["uri"]
+        .as_str()
+        .unwrap()
+        .contains("Analysis.sysml"));
     let default_analysis = definition(
         &mut stdin,
         &mut stdout,
@@ -226,6 +210,39 @@ fn manifest_admission_selects_only_declared_bundle_and_manifestless_keeps_defaul
         position_of(loose_text, "AnalysisThing"),
     );
     assert!(default_analysis["result"]["uri"]
+        .as_str()
+        .unwrap()
+        .contains("Analysis.sysml"));
+
+    let _ = child.kill();
+}
+
+#[test]
+fn empty_manifest_usage_retains_mandatory_standard_libraries() {
+    let temp = tempfile::tempdir().unwrap();
+    let repo = temp.path().join("repo");
+    let stdlib = temp.path().join("stdlib");
+    let project = repo.join("model");
+    std::fs::create_dir_all(&project).unwrap();
+    fake_stdlib(&stdlib);
+    write_manifest(&project, serde_json::json!([]));
+    let text = "package P { private import Analysis::*; part a : AnalysisThing; }";
+    let path = project.join("model.sysml");
+    std::fs::write(&path, text).unwrap();
+    let uri = url::Url::from_file_path(path).unwrap();
+
+    let mut child = spawn_server_with_env(&[("SPEC42_LSP_TEST_STDLIB", &stdlib)]);
+    let (mut stdin, mut stdout) = initialize(&mut child, &repo);
+    std::thread::sleep(std::time::Duration::from_millis(500));
+    open(&mut stdin, &uri, text);
+    std::thread::sleep(std::time::Duration::from_millis(300));
+    let resolved = definition(
+        &mut stdin,
+        &mut stdout,
+        &uri,
+        position_of(text, "AnalysisThing"),
+    );
+    assert!(resolved["result"]["uri"]
         .as_str()
         .unwrap()
         .contains("Analysis.sysml"));

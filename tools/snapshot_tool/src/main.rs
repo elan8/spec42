@@ -2626,6 +2626,13 @@ fn regenerate_snapshot(
         })
         .collect::<Result<Vec<_>, _>>()?;
     admitted_documents.extend_from_slice(libraries.documents(meta.libraries)?);
+    let standard_library_availability = if meta.libraries == LibrarySelection::Standard
+        || !meta.standard_library_documents.is_empty()
+    {
+        sysml_query::StandardLibraryAvailability::Available
+    } else {
+        sysml_query::StandardLibraryAvailability::Unavailable
+    };
     let source_documents = admitted_documents.clone();
     let probes = parse_editor_probes(fixture, &documents, fallback_name)?;
     let qualified_reference_probes =
@@ -2635,7 +2642,11 @@ fn regenerate_snapshot(
     // fixture-level construction choices.
     let canonical_model = services
         .publication
-        .publish(&admitted_documents, std::iter::empty::<Box<str>>())
+        .publish_with_standard_library_availability(
+            &admitted_documents,
+            standard_library_availability,
+            std::iter::empty::<Box<str>>(),
+        )
         .map_err(|error| {
             format!(
                 "{}: canonical semantic build failed: {error}",

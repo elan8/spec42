@@ -44,7 +44,7 @@ doc
   (document "memory://snapshot/metadata.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 7 16) (end 7 39))

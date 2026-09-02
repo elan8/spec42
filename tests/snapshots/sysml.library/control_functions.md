@@ -129,7 +129,7 @@ standard library package ControlFunctions {
   (document "memory://snapshot/control_functions.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 7 16) (end 7 30))

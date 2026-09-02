@@ -3,6 +3,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 
 use sysml_query::Services;
+use sysml_query::StandardLibraryAvailability;
 use tower_lsp::lsp_types::Url;
 
 use crate::session::state::ServerState;
@@ -20,6 +21,7 @@ pub(crate) struct ProjectRegistry {
     inner: Arc<RwLock<RegistryState>>,
     services: Services,
     library_catalog: Option<Arc<library_catalog::LibraryCatalog>>,
+    standard_library_availability: StandardLibraryAvailability,
 }
 
 struct RegistryState {
@@ -41,6 +43,7 @@ impl ProjectRegistry {
     pub(crate) fn new(
         services: Services,
         library_catalog: Option<Arc<library_catalog::LibraryCatalog>>,
+        standard_library_availability: StandardLibraryAvailability,
     ) -> Self {
         Self {
             inner: Arc::new(RwLock::new(RegistryState {
@@ -52,6 +55,7 @@ impl ProjectRegistry {
             })),
             services,
             library_catalog,
+            standard_library_availability,
         }
     }
 
@@ -103,7 +107,7 @@ impl ProjectRegistry {
         let mut admission_errors = BTreeMap::new();
         for (root, handle) in &created {
             if let Ok(uri) = Url::from_directory_path(root) {
-                let (project_library_paths, project_standard_library_paths, error) =
+                let (project_library_paths, project_standard_library_paths, availability, error) =
                     self.admitted_library_paths(root, &library_paths, &standard_library_paths);
                 if let Some(error) = error {
                     admission_errors.insert(ProjectRoot(root.clone()), error);
@@ -113,6 +117,7 @@ impl ProjectRegistry {
                         vec![uri],
                         project_library_paths,
                         project_standard_library_paths,
+                        availability,
                     )
                     .await;
             }
@@ -180,10 +185,15 @@ impl ProjectRegistry {
         };
         let handle = WorkspaceHandle::spawn(ServerState::new(self.services.clone()));
         let root_uri = Url::from_directory_path(&root).ok()?;
-        let (library_paths, standard_library_paths, admission_error) =
+        let (library_paths, standard_library_paths, availability, admission_error) =
             self.admitted_library_paths(&root, &library_paths, &standard_library_paths);
         let _ = handle
-            .set_startup_config(vec![root_uri], library_paths, standard_library_paths)
+            .set_startup_config(
+                vec![root_uri],
+                library_paths,
+                standard_library_paths,
+                availability,
+            )
             .await;
         // Lazily-created loose projects did not participate in the initialize-time scan. They
         // must nevertheless cross the publication lifecycle barrier before didOpen diagnostics
@@ -297,21 +307,39 @@ impl ProjectRegistry {
         root: &Path,
         fallback_library_paths: &[Url],
         fallback_standard_library_paths: &[Url],
-    ) -> (Vec<Url>, Vec<Url>, Option<String>) {
+    ) -> (
+        Vec<Url>,
+        Vec<Url>,
+        StandardLibraryAvailability,
+        Option<String>,
+    ) {
         let Some(catalog) = &self.library_catalog else {
             let manifest = root.join(sysml_query::source::PROJECT_MANIFEST_FILE);
             if manifest.is_file() {
                 let resolutions =
                     match library_catalog::resolve_project_manifest_dependencies(&manifest, &[]) {
                         Ok(resolutions) => resolutions,
-                        Err(error) => return (Vec::new(), Vec::new(), Some(error)),
+                        Err(error) => {
+                            return (
+                                Vec::new(),
+                                Vec::new(),
+                                self.standard_library_availability,
+                                Some(error),
+                            )
+                        }
                     };
                 if resolutions.is_empty() {
-                    return (Vec::new(), Vec::new(), None);
+                    return (
+                        fallback_standard_library_paths.to_vec(),
+                        fallback_standard_library_paths.to_vec(),
+                        self.standard_library_availability,
+                        None,
+                    );
                 }
                 return (
                     Vec::new(),
                     Vec::new(),
+                    self.standard_library_availability,
                     Some(format!(
                         "Project dependencies from {} were not satisfied because this LSP host supplied no library catalog: {}.",
                         manifest.display(),
@@ -323,6 +351,7 @@ impl ProjectRegistry {
             return (
                 fallback_library_paths.to_vec(),
                 fallback_standard_library_paths.to_vec(),
+                self.standard_library_availability,
                 None,
             );
         };
@@ -333,18 +362,29 @@ impl ProjectRegistry {
                     .iter()
                     .filter_map(|root| Url::from_directory_path(root).ok())
                     .collect(),
-                Vec::new(),
+                admission
+                    .standard_library_roots
+                    .iter()
+                    .filter_map(|root| Url::from_directory_path(root).ok())
+                    .collect(),
+                admission.standard_library_availability,
                 None,
             ),
             Ok(_) => (
                 fallback_library_paths.to_vec(),
                 fallback_standard_library_paths.to_vec(),
+                self.standard_library_availability,
                 None,
             ),
             Err(error) => {
                 tracing::error!(project_root = %root.display(), %error, "project dependency admission failed");
                 // A manifest dependency failure is explicit and admits no fallback libraries.
-                (Vec::new(), Vec::new(), Some(error))
+                (
+                    Vec::new(),
+                    Vec::new(),
+                    self.standard_library_availability,
+                    Some(error),
+                )
             }
         }
     }
@@ -389,7 +429,11 @@ mod tests {
         fs::write(&a_source, "package A;").unwrap();
         fs::write(&b_source, "package B;").unwrap();
 
-        let registry = ProjectRegistry::new(Services::default(), None);
+        let registry = ProjectRegistry::new(
+            Services::default(),
+            None,
+            StandardLibraryAvailability::Unavailable,
+        );
         assert_eq!(
             sysml_query::source::discover_project_roots(&[temp.path().to_path_buf()]).len(),
             2
@@ -427,7 +471,11 @@ mod tests {
         let source = root.join("Model.sysml");
         fs::write(&source, "package Saved;").unwrap();
         let uri = Url::from_file_path(&source).unwrap();
-        let registry = ProjectRegistry::new(Services::default(), None);
+        let registry = ProjectRegistry::new(
+            Services::default(),
+            None,
+            StandardLibraryAvailability::Unavailable,
+        );
         registry
             .configure(
                 vec![Url::from_directory_path(root).unwrap()],

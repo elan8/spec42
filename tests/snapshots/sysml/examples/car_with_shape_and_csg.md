@@ -100,7 +100,7 @@ package CarWithShapeAndCSG {
   (document "memory://snapshot/car_with_shape_and_csg.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 31))

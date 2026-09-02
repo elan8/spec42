@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Project manifests now constrain rather than select the standard-library baseline.** Every
+  project retains the host-admitted KerML/SysML baseline, including manifests with `usage: []`;
+  matching authored stdlib usages act as compatibility pins. A version-incompatible baseline fails
+  admission explicitly; a disabled (`--no-stdlib`) or unavailable baseline leaves the pin inert so
+  loading still proceeds. Unresolved imports then distinguish an intentionally disabled baseline
+  from one that is unavailable and explain how to recover.
+
 - **Recursive imports (`import P::**`, `import P::*::**`) bring nested-namespace members into
   scope.** The suffix parsed and lowered, but name resolution left the reference `Unsupported`, so
   it was reported as `unsupported_filtered_import` and every name that depended on it cascaded to

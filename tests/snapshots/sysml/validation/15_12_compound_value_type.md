@@ -43,7 +43,7 @@ package '15_12-Compound Value Type' {
   (document "memory://snapshot/15_12_compound_value_type.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 31))

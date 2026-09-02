@@ -50,7 +50,7 @@ package ModelingInstancesWithAtoms {
   (document "memory://snapshot/a_2_modeling_instances.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 16 16) (end 16 27))

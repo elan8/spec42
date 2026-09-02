@@ -27,7 +27,7 @@ package MassRollup_2 {
   (document "memory://snapshot/mass_rollup_2.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 37))

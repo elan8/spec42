@@ -63,7 +63,7 @@ package TimeVaryingAttribute {
   (document "memory://snapshot/time_varying_attribute.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 19) (end 1 24))

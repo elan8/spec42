@@ -86,7 +86,7 @@ fn has_document_under(snapshot: &workspace::HostWorkspaceSnapshot, root: &std::p
         document
             .uri()
             .to_file_path()
-            .is_ok_and(|path| path.starts_with(root))
+            .is_ok_and(|path| path.canonicalize().unwrap_or(path).starts_with(root))
     })
 }
 
@@ -150,10 +150,7 @@ fn bundled_project_satisfies_exact_manifest_usage() {
         } if selected_version == "2.0.0"
     ));
     assert!(
-        snapshot.documents().iter().any(|document| document
-            .uri()
-            .to_file_path()
-            .is_ok_and(|path| path.starts_with(&systems_root))),
+        has_document_under(&snapshot, &systems_root),
         "documents: {:?}, root: {}",
         snapshot
             .documents()
@@ -162,13 +159,7 @@ fn bundled_project_satisfies_exact_manifest_usage() {
             .collect::<Vec<_>>(),
         systems_root.display()
     );
-    assert!(
-        !snapshot.documents().iter().any(|document| document
-            .uri()
-            .to_file_path()
-            .is_ok_and(|path| path.starts_with(&analysis_root))),
-        "an undeclared bundled project must not enter a manifest publication"
-    );
+    assert!(has_document_under(&snapshot, &analysis_root));
 }
 
 #[test]
@@ -272,16 +263,20 @@ fn rebuilding_after_manifest_change_recomputes_dependency_admission() {
     write_project(temp.path(), SYSTEMS_RESOURCE, "2.0.0");
     let before = load_with_candidate_documents(&engine, &model, &roots).expect("first snapshot");
     assert!(has_document_under(&before, &systems_root));
-    assert!(!has_document_under(&before, &analysis_root));
+    assert!(has_document_under(&before, &analysis_root));
+    assert!(matches!(
+        &before.project_dependencies()[0],
+        ProjectDependencyResolution::Satisfied { resource, .. } if resource == SYSTEMS_RESOURCE
+    ));
 
     write_project(temp.path(), ANALYSIS_RESOURCE, "2.0.0");
     let after = load_with_candidate_documents(&engine, &model, &roots).expect("rebuilt snapshot");
-    assert!(!has_document_under(&after, &systems_root));
+    assert!(has_document_under(&after, &systems_root));
     assert!(has_document_under(&after, &analysis_root));
-    assert_ne!(
-        before.metadata().document_digests,
-        after.metadata().document_digests
-    );
+    assert!(matches!(
+        &after.project_dependencies()[0],
+        ProjectDependencyResolution::Satisfied { resource, .. } if resource == ANALYSIS_RESOURCE
+    ));
 }
 
 #[test]

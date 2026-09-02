@@ -64,7 +64,7 @@ package '13b-Safety and Security Features Element Group-2' {
   (document "memory://snapshot/13b_safety_and_security_features_element_group_2.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 31))
