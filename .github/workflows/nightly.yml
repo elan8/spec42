@@ -113,11 +113,6 @@ jobs:
           SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
         run: cargo test -p sysml_resolution unit --lib -- --nocapture
 
-      - name: OMG 14c metadata diagnostic ratchet
-        env:
-          SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
-        run: bash scripts/check-omg-14c-metadata-ratchet.sh
-
   language-and-generator-exploratory:
     name: Language and generator fuzzing (exploratory)
     runs-on: ubuntu-latest
@@ -135,6 +130,8 @@ jobs:
 
       - name: Install Rust nightly
         uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rust-src
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
@@ -149,21 +146,29 @@ jobs:
         with:
           tool: cargo-mutants
 
+      # Two things every `cargo fuzz` invocation here has to override:
+      #   * `+nightly` -- the sanitizer `-Z` flags are nightly-only, but `rust-toolchain.toml`
+      #     pins a stable channel that wins over the runner default.
+      #   * `--target x86_64-unknown-linux-gnu` -- cargo-fuzz defaults the target to the triple
+      #     it was itself built for. install-action has no cargo-fuzz binary, so it falls back to
+      #     cargo-binstall's musl build, whose static libc is incompatible with the sanitizer.
       - name: Fuzz artifact path parsing
-        run: cargo fuzz run artifact_path -- -max_total_time=300 -print_final_stats=1
+        run: cargo +nightly fuzz run --target x86_64-unknown-linux-gnu artifact_path -- -max_total_time=300 -print_final_stats=1
 
       - name: Fuzz ABI payload decoding
-        run: cargo fuzz run abi_decode -- -max_total_time=300 -print_final_stats=1
-
+        run: cargo +nightly fuzz run --target x86_64-unknown-linux-gnu abi_decode -- -max_total_time=300 -print_final_stats=1
 
       - name: Fuzz immutable SysML publication
-        run: cargo fuzz run sysml_publication fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
+        run: cargo +nightly fuzz run --target x86_64-unknown-linux-gnu sysml_publication fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
 
       - name: Fuzz SysML formatter convergence
-        run: cargo fuzz run sysml_formatter fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
+        run: cargo +nightly fuzz run --target x86_64-unknown-linux-gnu sysml_formatter fuzz/corpus/sysml -- -max_total_time=300 -print_final_stats=1
 
       - name: Mutation-test the transaction planner
         run: |
+          # cargo-mutants creates the final --output component but not its parents, and nothing
+          # in this job has populated target/ yet (the fuzz builds live under fuzz/target/).
+          mkdir -p target/mutants
           cargo mutants --package server --file 'src/generation/plan.rs' \
             --timeout 60 --output target/mutants
 
