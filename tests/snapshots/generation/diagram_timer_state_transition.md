@@ -5385,18 +5385,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "sourceDomain": "standard-library"
     },
     {
-      "uri": "memory://snapshot/sysml.library/base.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/occurrences.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/performances.md",
-      "sourceDomain": "standard-library"
-    },
-    {
       "uri": "memory://snapshot/sysml.library/states.md",
       "sourceDomain": "standard-library"
     }
@@ -6040,11 +6028,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 2,
       "kind": "qualified-name",
-      "qualifiedName": "Actions::Action"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
       "qualifiedName": "Actions::TransitionAction::accepter"
     },
     {
@@ -6055,25 +6038,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 3,
       "kind": "qualified-name",
-      "qualifiedName": "Base::Anything"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Performances::Performance"
-    },
-    {
-      "document": 6,
-      "kind": "qualified-name",
       "qualifiedName": "States::StateAction"
     },
     {
-      "document": 6,
+      "document": 3,
       "kind": "qualified-name",
       "qualifiedName": "States::stateActions"
     },
@@ -7012,7 +6980,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 3,
         "origin": 26,
         "provenance": "authored",
-        "reference": 58,
+        "reference": 54,
         "source": 0,
         "target": 26
       },
@@ -7021,7 +6989,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 7,
         "origin": 27,
         "provenance": "authored",
-        "reference": 59,
+        "reference": 55,
         "source": 0,
         "target": 27
       },
@@ -7030,7 +6998,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 1,
         "origin": 25,
         "provenance": "authored",
-        "reference": 60,
+        "reference": 56,
         "source": 0,
         "target": 25
       },
@@ -7039,7 +7007,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 2,
         "origin": 25,
         "provenance": "authored",
-        "reference": 72,
+        "reference": 68,
         "source": 25,
         "target": 26
       },
@@ -7048,7 +7016,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 9,
         "origin": 28,
         "provenance": "authored",
-        "reference": 61,
+        "reference": 57,
         "source": 0,
         "target": 28
       },
@@ -7057,7 +7025,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 5,
         "origin": 29,
         "provenance": "authored",
-        "reference": 62,
+        "reference": 58,
         "source": 0,
         "target": 29
       },
@@ -7066,7 +7034,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 27,
         "origin": 22,
         "provenance": "authored",
-        "reference": 63,
+        "reference": 59,
         "source": 0,
         "target": 22
       },
@@ -7075,7 +7043,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 28,
         "origin": 22,
         "provenance": "implied",
-        "reference": 121,
+        "reference": 117,
         "source": 29,
         "target": 27
       },
@@ -7084,7 +7052,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 26,
         "origin": 23,
         "provenance": "authored",
-        "reference": 158,
+        "reference": 154,
         "source": 22,
         "target": 23
       },
@@ -7093,7 +7061,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 28,
         "origin": 23,
         "provenance": "authored",
-        "reference": 119,
+        "reference": 115,
         "source": 29,
         "target": 27
       },
@@ -7102,7 +7070,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 26,
         "origin": 24,
         "provenance": "authored",
-        "reference": 159,
+        "reference": 155,
         "source": 22,
         "target": 24
       },
@@ -7111,7 +7079,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 32,
         "origin": 1,
         "provenance": "authored",
-        "reference": 64,
+        "reference": 60,
         "source": 0,
         "target": 1
       },
@@ -7120,7 +7088,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 33,
         "origin": 1,
         "provenance": "implied",
-        "reference": 122,
+        "reference": 118,
         "source": 29,
         "target": 28
       },
@@ -7129,7 +7097,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 31,
         "origin": 2,
         "provenance": "authored",
-        "reference": 125,
+        "reference": 121,
         "source": 1,
         "target": 2
       },
@@ -7138,7 +7106,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 33,
         "origin": 2,
         "provenance": "authored",
-        "reference": 120,
+        "reference": 116,
         "source": 29,
         "target": 28
       },
@@ -7147,7 +7115,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 31,
         "origin": 3,
         "provenance": "authored",
-        "reference": 126,
+        "reference": 122,
         "source": 1,
         "target": 3
       },
@@ -7156,7 +7124,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 12,
         "origin": 4,
         "provenance": "authored",
-        "reference": 65,
+        "reference": 61,
         "source": 0,
         "target": 4
       },
@@ -7165,7 +7133,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 13,
         "origin": 4,
         "provenance": "implied",
-        "reference": 95,
+        "reference": 91,
         "source": 26,
         "target": 29
       },
@@ -7174,7 +7142,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 11,
         "origin": 5,
         "provenance": "authored",
-        "reference": 169,
+        "reference": 165,
         "source": 4,
         "target": 5
       },
@@ -7183,7 +7151,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 13,
         "origin": 5,
         "provenance": "authored",
-        "reference": 92,
+        "reference": 88,
         "source": 26,
         "target": 29
       },
@@ -7192,7 +7160,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 11,
         "origin": 6,
         "provenance": "authored",
-        "reference": 170,
+        "reference": 166,
         "source": 4,
         "target": 6
       },
@@ -7201,7 +7169,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 22,
         "origin": 7,
         "provenance": "authored",
-        "reference": 66,
+        "reference": 62,
         "source": 0,
         "target": 7
       },
@@ -7210,7 +7178,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 23,
         "origin": 7,
         "provenance": "implied",
-        "reference": 96,
+        "reference": 92,
         "source": 26,
         "target": 26
       },
@@ -7219,7 +7187,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 21,
         "origin": 8,
         "provenance": "authored",
-        "reference": 75,
+        "reference": 71,
         "source": 7,
         "target": 8
       },
@@ -7228,7 +7196,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 23,
         "origin": 8,
         "provenance": "authored",
-        "reference": 93,
+        "reference": 89,
         "source": 26,
         "target": 26
       },
@@ -7237,7 +7205,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 21,
         "origin": 9,
         "provenance": "authored",
-        "reference": 76,
+        "reference": 72,
         "source": 7,
         "target": 9
       },
@@ -7246,7 +7214,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 17,
         "origin": 10,
         "provenance": "authored",
-        "reference": 67,
+        "reference": 63,
         "source": 0,
         "target": 10
       },
@@ -7255,7 +7223,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 18,
         "origin": 10,
         "provenance": "implied",
-        "reference": 97,
+        "reference": 93,
         "source": 26,
         "target": 26
       },
@@ -7264,7 +7232,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 16,
         "origin": 11,
         "provenance": "authored",
-        "reference": 100,
+        "reference": 96,
         "source": 10,
         "target": 11
       },
@@ -7273,7 +7241,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 18,
         "origin": 11,
         "provenance": "authored",
-        "reference": 94,
+        "reference": 90,
         "source": 26,
         "target": 26
       },
@@ -7282,7 +7250,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 16,
         "origin": 12,
         "provenance": "authored",
-        "reference": 101,
+        "reference": 97,
         "source": 10,
         "target": 12
       },
@@ -7291,7 +7259,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 37,
         "origin": 13,
         "provenance": "authored",
-        "reference": 68,
+        "reference": 64,
         "source": 0,
         "target": 13
       },
@@ -7300,7 +7268,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 38,
         "origin": 13,
         "provenance": "implied",
-        "reference": 114,
+        "reference": 110,
         "source": 27,
         "target": 29
       },
@@ -7309,7 +7277,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 36,
         "origin": 14,
         "provenance": "authored",
-        "reference": 180,
+        "reference": 176,
         "source": 13,
         "target": 14
       },
@@ -7318,7 +7286,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 38,
         "origin": 14,
         "provenance": "authored",
-        "reference": 112,
+        "reference": 108,
         "source": 27,
         "target": 29
       },
@@ -7327,7 +7295,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 36,
         "origin": 15,
         "provenance": "authored",
-        "reference": 181,
+        "reference": 177,
         "source": 13,
         "target": 15
       },
@@ -7336,7 +7304,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 42,
         "origin": 16,
         "provenance": "authored",
-        "reference": 69,
+        "reference": 65,
         "source": 0,
         "target": 16
       },
@@ -7345,7 +7313,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 43,
         "origin": 16,
         "provenance": "implied",
-        "reference": 115,
+        "reference": 111,
         "source": 27,
         "target": 26
       },
@@ -7354,7 +7322,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 41,
         "origin": 17,
         "provenance": "authored",
-        "reference": 147,
+        "reference": 143,
         "source": 16,
         "target": 17
       },
@@ -7363,7 +7331,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 43,
         "origin": 17,
         "provenance": "authored",
-        "reference": 113,
+        "reference": 109,
         "source": 27,
         "target": 26
       },
@@ -7372,7 +7340,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 41,
         "origin": 18,
         "provenance": "authored",
-        "reference": 148,
+        "reference": 144,
         "source": 16,
         "target": 18
       },
@@ -7381,7 +7349,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 47,
         "origin": 19,
         "provenance": "authored",
-        "reference": 70,
+        "reference": 66,
         "source": 0,
         "target": 19
       },
@@ -7390,7 +7358,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 48,
         "origin": 19,
         "provenance": "implied",
-        "reference": 88,
+        "reference": 84,
         "source": 28,
         "target": 26
       },
@@ -7399,7 +7367,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 46,
         "origin": 20,
         "provenance": "authored",
-        "reference": 136,
+        "reference": 132,
         "source": 19,
         "target": 20
       },
@@ -7408,7 +7376,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 48,
         "origin": 20,
         "provenance": "authored",
-        "reference": 87,
+        "reference": 83,
         "source": 28,
         "target": 26
       },
@@ -7417,7 +7385,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 46,
         "origin": 21,
         "provenance": "authored",
-        "reference": 137,
+        "reference": 133,
         "source": 19,
         "target": 21
       }
@@ -7489,7 +7457,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 47,
+        "reference": 43,
         "source": 31,
         "typing": {
           "status": "absent"
@@ -7501,7 +7469,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 46,
+        "reference": 42,
         "source": 31,
         "typing": {
           "status": "absent"
@@ -7533,7 +7501,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 4,
-        "reference": 55,
+        "reference": 51,
         "source": 11,
         "typing": {
           "status": "absent"
@@ -7545,7 +7513,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 4,
-        "reference": 54,
+        "reference": 50,
         "source": 11,
         "typing": {
           "status": "absent"
@@ -7577,7 +7545,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 7,
-        "reference": 43,
+        "reference": 39,
         "source": 21,
         "typing": {
           "status": "absent"
@@ -7589,7 +7557,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 7,
-        "reference": 42,
+        "reference": 38,
         "source": 21,
         "typing": {
           "status": "absent"
@@ -7621,7 +7589,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 10,
-        "reference": 45,
+        "reference": 41,
         "source": 16,
         "typing": {
           "status": "absent"
@@ -7633,7 +7601,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 10,
-        "reference": 44,
+        "reference": 40,
         "source": 16,
         "typing": {
           "status": "absent"
@@ -7665,7 +7633,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 13,
-        "reference": 57,
+        "reference": 53,
         "source": 36,
         "typing": {
           "status": "absent"
@@ -7677,7 +7645,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 13,
-        "reference": 56,
+        "reference": 52,
         "source": 36,
         "typing": {
           "status": "absent"
@@ -7709,7 +7677,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 16,
-        "reference": 51,
+        "reference": 47,
         "source": 41,
         "typing": {
           "status": "absent"
@@ -7721,7 +7689,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 16,
-        "reference": 50,
+        "reference": 46,
         "source": 41,
         "typing": {
           "status": "absent"
@@ -7753,7 +7721,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 19,
-        "reference": 49,
+        "reference": 45,
         "source": 46,
         "typing": {
           "status": "absent"
@@ -7765,7 +7733,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 19,
-        "reference": 48,
+        "reference": 44,
         "source": 46,
         "typing": {
           "status": "absent"
@@ -7797,7 +7765,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 22,
-        "reference": 53,
+        "reference": 49,
         "source": 26,
         "typing": {
           "status": "absent"
@@ -7809,7 +7777,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 22,
-        "reference": 52,
+        "reference": 48,
         "source": 26,
         "typing": {
           "status": "absent"
@@ -7821,7 +7789,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 41,
+        "reference": 37,
         "source": 1,
         "typing": {
           "status": "absent"
@@ -7838,26 +7806,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "typing": {
           "status": "resolved",
           "types": [
-            {
-              "label": "Anything",
-              "reference": 36
-            },
-            {
-              "label": "StateAction",
-              "reference": 39
-            },
-            {
-              "label": "Action",
-              "reference": 33
-            },
-            {
-              "label": "Occurrence",
-              "reference": 37
-            },
-            {
-              "label": "Performance",
-              "reference": 38
-            },
             {
               "label": "Idle",
               "reference": 3
@@ -7877,26 +7825,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 36
-            },
-            {
-              "label": "StateAction",
-              "reference": 39
-            },
-            {
-              "label": "Action",
-              "reference": 33
-            },
-            {
-              "label": "Occurrence",
-              "reference": 37
-            },
-            {
-              "label": "Performance",
-              "reference": 38
-            },
-            {
               "label": "Paused",
               "reference": 5
             }
@@ -7914,26 +7842,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "typing": {
           "status": "resolved",
           "types": [
-            {
-              "label": "Anything",
-              "reference": 36
-            },
-            {
-              "label": "StateAction",
-              "reference": 39
-            },
-            {
-              "label": "Action",
-              "reference": 33
-            },
-            {
-              "label": "Occurrence",
-              "reference": 37
-            },
-            {
-              "label": "Performance",
-              "reference": 38
-            },
             {
               "label": "Expired",
               "reference": 2
@@ -7953,26 +7861,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 36
-            },
-            {
-              "label": "StateAction",
-              "reference": 39
-            },
-            {
-              "label": "Action",
-              "reference": 33
-            },
-            {
-              "label": "Occurrence",
-              "reference": 37
-            },
-            {
-              "label": "Performance",
-              "reference": 38
-            },
-            {
               "label": "Running",
               "reference": 7
             }
@@ -7985,10 +7873,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 71,
+        "reference": 67,
         "source": 0,
         "target": {
-          "reference": 39,
+          "reference": 35,
           "status": "resolved"
         }
       },
@@ -7996,7 +7884,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 99,
+        "reference": 95,
         "source": 26,
         "target": {
           "reference": 3,
@@ -8007,10 +7895,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 91,
+        "reference": 87,
         "source": 26,
         "target": {
-          "reference": 40,
+          "reference": 36,
           "status": "resolved"
         }
       },
@@ -8018,7 +7906,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 98,
+        "reference": 94,
         "source": 26,
         "target": {
           "node": 0,
@@ -8029,7 +7917,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 117,
+        "reference": 113,
         "source": 27,
         "target": {
           "reference": 5,
@@ -8040,10 +7928,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 111,
+        "reference": 107,
         "source": 27,
         "target": {
-          "reference": 40,
+          "reference": 36,
           "status": "resolved"
         }
       },
@@ -8051,7 +7939,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 116,
+        "reference": 112,
         "source": 27,
         "target": {
           "node": 0,
@@ -8062,7 +7950,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "initialState",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 73,
+        "reference": 69,
         "source": 25,
         "target": {
           "node": 26,
@@ -8073,7 +7961,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 74,
+        "reference": 70,
         "source": 25,
         "target": {
           "node": 0,
@@ -8084,7 +7972,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 90,
+        "reference": 86,
         "source": 28,
         "target": {
           "reference": 2,
@@ -8095,10 +7983,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 86,
+        "reference": 82,
         "source": 28,
         "target": {
-          "reference": 40,
+          "reference": 36,
           "status": "resolved"
         }
       },
@@ -8106,7 +7994,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 89,
+        "reference": 85,
         "source": 28,
         "target": {
           "node": 0,
@@ -8117,7 +8005,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 124,
+        "reference": 120,
         "source": 29,
         "target": {
           "reference": 7,
@@ -8128,10 +8016,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 118,
+        "reference": 114,
         "source": 29,
         "target": {
-          "reference": 40,
+          "reference": 36,
           "status": "resolved"
         }
       },
@@ -8139,7 +8027,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 123,
+        "reference": 119,
         "source": 29,
         "target": {
           "node": 0,
@@ -8150,10 +8038,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 160,
+        "reference": 156,
         "source": 22,
         "target": {
-          "reference": 35,
+          "reference": 34,
           "status": "resolved"
         }
       },
@@ -8161,7 +8049,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionSource",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 161,
+        "reference": 157,
         "source": 22,
         "target": {
           "node": 29,
@@ -8172,7 +8060,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 30,
         "provenance": "authored",
-        "reference": 162,
+        "reference": 158,
         "source": 22,
         "target": {
           "node": 27,
@@ -8183,7 +8071,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 29,
         "provenance": "authored",
-        "reference": 163,
+        "reference": 159,
         "source": 22,
         "target": {
           "reference": 9,
@@ -8194,7 +8082,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 164,
+        "reference": 160,
         "source": 22,
         "target": {
           "node": 0,
@@ -8205,7 +8093,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 166,
+        "reference": 162,
         "source": 23,
         "target": {
           "node": 29,
@@ -8216,7 +8104,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 30,
         "provenance": "authored",
-        "reference": 167,
+        "reference": 163,
         "source": 23,
         "target": {
           "node": 27,
@@ -8227,10 +8115,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 165,
+        "reference": 161,
         "source": 24,
         "target": {
-          "reference": 34,
+          "reference": 33,
           "status": "resolved"
         }
       },
@@ -8238,7 +8126,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 168,
+        "reference": 164,
         "source": 24,
         "target": {
           "node": 22,
@@ -8249,10 +8137,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 127,
+        "reference": 123,
         "source": 1,
         "target": {
-          "reference": 35,
+          "reference": 34,
           "status": "resolved"
         }
       },
@@ -8260,7 +8148,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionSource",
         "navigation": 33,
         "provenance": "authored",
-        "reference": 128,
+        "reference": 124,
         "source": 1,
         "target": {
           "node": 29,
@@ -8271,7 +8159,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 35,
         "provenance": "authored",
-        "reference": 129,
+        "reference": 125,
         "source": 1,
         "target": {
           "node": 28,
@@ -8282,7 +8170,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 34,
         "provenance": "authored",
-        "reference": 130,
+        "reference": 126,
         "source": 1,
         "target": {
           "reference": 0,
@@ -8293,7 +8181,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 131,
+        "reference": 127,
         "source": 1,
         "target": {
           "node": 0,
@@ -8304,7 +8192,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 33,
         "provenance": "authored",
-        "reference": 133,
+        "reference": 129,
         "source": 2,
         "target": {
           "node": 29,
@@ -8315,7 +8203,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 35,
         "provenance": "authored",
-        "reference": 134,
+        "reference": 130,
         "source": 2,
         "target": {
           "node": 28,
@@ -8326,10 +8214,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 132,
+        "reference": 128,
         "source": 3,
         "target": {
-          "reference": 34,
+          "reference": 33,
           "status": "resolved"
         }
       },
@@ -8337,7 +8225,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 135,
+        "reference": 131,
         "source": 3,
         "target": {
           "node": 1,
@@ -8348,10 +8236,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 171,
+        "reference": 167,
         "source": 4,
         "target": {
-          "reference": 35,
+          "reference": 34,
           "status": "resolved"
         }
       },
@@ -8359,7 +8247,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionSource",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 172,
+        "reference": 168,
         "source": 4,
         "target": {
           "node": 26,
@@ -8370,7 +8258,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 15,
         "provenance": "authored",
-        "reference": 173,
+        "reference": 169,
         "source": 4,
         "target": {
           "node": 29,
@@ -8381,7 +8269,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 14,
         "provenance": "authored",
-        "reference": 174,
+        "reference": 170,
         "source": 4,
         "target": {
           "reference": 8,
@@ -8392,7 +8280,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 175,
+        "reference": 171,
         "source": 4,
         "target": {
           "node": 0,
@@ -8403,7 +8291,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 177,
+        "reference": 173,
         "source": 5,
         "target": {
           "node": 26,
@@ -8414,7 +8302,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 15,
         "provenance": "authored",
-        "reference": 178,
+        "reference": 174,
         "source": 5,
         "target": {
           "node": 29,
@@ -8425,10 +8313,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 176,
+        "reference": 172,
         "source": 6,
         "target": {
-          "reference": 34,
+          "reference": 33,
           "status": "resolved"
         }
       },
@@ -8436,7 +8324,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 179,
+        "reference": 175,
         "source": 6,
         "target": {
           "node": 4,
@@ -8447,10 +8335,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 77,
+        "reference": 73,
         "source": 7,
         "target": {
-          "reference": 35,
+          "reference": 34,
           "status": "resolved"
         }
       },
@@ -8458,7 +8346,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionSource",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 78,
+        "reference": 74,
         "source": 7,
         "target": {
           "node": 26,
@@ -8469,7 +8357,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 25,
         "provenance": "authored",
-        "reference": 79,
+        "reference": 75,
         "source": 7,
         "target": {
           "node": 26,
@@ -8480,7 +8368,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 24,
         "provenance": "authored",
-        "reference": 80,
+        "reference": 76,
         "source": 7,
         "target": {
           "reference": 1,
@@ -8491,7 +8379,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 81,
+        "reference": 77,
         "source": 7,
         "target": {
           "node": 0,
@@ -8502,7 +8390,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 83,
+        "reference": 79,
         "source": 8,
         "target": {
           "node": 26,
@@ -8513,7 +8401,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 25,
         "provenance": "authored",
-        "reference": 84,
+        "reference": 80,
         "source": 8,
         "target": {
           "node": 26,
@@ -8524,10 +8412,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 82,
+        "reference": 78,
         "source": 9,
         "target": {
-          "reference": 34,
+          "reference": 33,
           "status": "resolved"
         }
       },
@@ -8535,7 +8423,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 85,
+        "reference": 81,
         "source": 9,
         "target": {
           "node": 7,
@@ -8546,10 +8434,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 102,
+        "reference": 98,
         "source": 10,
         "target": {
-          "reference": 35,
+          "reference": 34,
           "status": "resolved"
         }
       },
@@ -8557,7 +8445,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionSource",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 103,
+        "reference": 99,
         "source": 10,
         "target": {
           "node": 26,
@@ -8568,7 +8456,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 20,
         "provenance": "authored",
-        "reference": 104,
+        "reference": 100,
         "source": 10,
         "target": {
           "node": 26,
@@ -8579,7 +8467,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 19,
         "provenance": "authored",
-        "reference": 105,
+        "reference": 101,
         "source": 10,
         "target": {
           "reference": 4,
@@ -8590,7 +8478,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 106,
+        "reference": 102,
         "source": 10,
         "target": {
           "node": 0,
@@ -8601,7 +8489,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 108,
+        "reference": 104,
         "source": 11,
         "target": {
           "node": 26,
@@ -8612,7 +8500,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 20,
         "provenance": "authored",
-        "reference": 109,
+        "reference": 105,
         "source": 11,
         "target": {
           "node": 26,
@@ -8623,10 +8511,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 107,
+        "reference": 103,
         "source": 12,
         "target": {
-          "reference": 34,
+          "reference": 33,
           "status": "resolved"
         }
       },
@@ -8634,7 +8522,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 110,
+        "reference": 106,
         "source": 12,
         "target": {
           "node": 10,
@@ -8645,10 +8533,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 182,
+        "reference": 178,
         "source": 13,
         "target": {
-          "reference": 35,
+          "reference": 34,
           "status": "resolved"
         }
       },
@@ -8656,7 +8544,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionSource",
         "navigation": 38,
         "provenance": "authored",
-        "reference": 183,
+        "reference": 179,
         "source": 13,
         "target": {
           "node": 27,
@@ -8667,7 +8555,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 40,
         "provenance": "authored",
-        "reference": 184,
+        "reference": 180,
         "source": 13,
         "target": {
           "node": 29,
@@ -8678,7 +8566,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 39,
         "provenance": "authored",
-        "reference": 185,
+        "reference": 181,
         "source": 13,
         "target": {
           "reference": 8,
@@ -8689,7 +8577,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 186,
+        "reference": 182,
         "source": 13,
         "target": {
           "node": 0,
@@ -8700,7 +8588,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 38,
         "provenance": "authored",
-        "reference": 188,
+        "reference": 184,
         "source": 14,
         "target": {
           "node": 27,
@@ -8711,7 +8599,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 40,
         "provenance": "authored",
-        "reference": 189,
+        "reference": 185,
         "source": 14,
         "target": {
           "node": 29,
@@ -8722,10 +8610,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 187,
+        "reference": 183,
         "source": 15,
         "target": {
-          "reference": 34,
+          "reference": 33,
           "status": "resolved"
         }
       },
@@ -8733,7 +8621,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 190,
+        "reference": 186,
         "source": 15,
         "target": {
           "node": 13,
@@ -8744,10 +8632,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 149,
+        "reference": 145,
         "source": 16,
         "target": {
-          "reference": 35,
+          "reference": 34,
           "status": "resolved"
         }
       },
@@ -8755,7 +8643,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionSource",
         "navigation": 43,
         "provenance": "authored",
-        "reference": 150,
+        "reference": 146,
         "source": 16,
         "target": {
           "node": 27,
@@ -8766,7 +8654,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 45,
         "provenance": "authored",
-        "reference": 151,
+        "reference": 147,
         "source": 16,
         "target": {
           "node": 26,
@@ -8777,7 +8665,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 44,
         "provenance": "authored",
-        "reference": 152,
+        "reference": 148,
         "source": 16,
         "target": {
           "reference": 6,
@@ -8788,7 +8676,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 153,
+        "reference": 149,
         "source": 16,
         "target": {
           "node": 0,
@@ -8799,7 +8687,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 43,
         "provenance": "authored",
-        "reference": 155,
+        "reference": 151,
         "source": 17,
         "target": {
           "node": 27,
@@ -8810,7 +8698,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 45,
         "provenance": "authored",
-        "reference": 156,
+        "reference": 152,
         "source": 17,
         "target": {
           "node": 26,
@@ -8821,10 +8709,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 154,
+        "reference": 150,
         "source": 18,
         "target": {
-          "reference": 34,
+          "reference": 33,
           "status": "resolved"
         }
       },
@@ -8832,7 +8720,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 157,
+        "reference": 153,
         "source": 18,
         "target": {
           "node": 16,
@@ -8843,10 +8731,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 138,
+        "reference": 134,
         "source": 19,
         "target": {
-          "reference": 35,
+          "reference": 34,
           "status": "resolved"
         }
       },
@@ -8854,7 +8742,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionSource",
         "navigation": 48,
         "provenance": "authored",
-        "reference": 139,
+        "reference": 135,
         "source": 19,
         "target": {
           "node": 28,
@@ -8865,7 +8753,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 50,
         "provenance": "authored",
-        "reference": 140,
+        "reference": 136,
         "source": 19,
         "target": {
           "node": 26,
@@ -8876,7 +8764,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 49,
         "provenance": "authored",
-        "reference": 141,
+        "reference": 137,
         "source": 19,
         "target": {
           "reference": 6,
@@ -8887,7 +8775,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 142,
+        "reference": 138,
         "source": 19,
         "target": {
           "node": 0,
@@ -8898,7 +8786,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 48,
         "provenance": "authored",
-        "reference": 144,
+        "reference": 140,
         "source": 20,
         "target": {
           "node": 28,
@@ -8909,7 +8797,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 50,
         "provenance": "authored",
-        "reference": 145,
+        "reference": 141,
         "source": 20,
         "target": {
           "node": 26,
@@ -8920,10 +8808,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 143,
+        "reference": 139,
         "source": 21,
         "target": {
-          "reference": 34,
+          "reference": 33,
           "status": "resolved"
         }
       },
@@ -8931,7 +8819,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 146,
+        "reference": 142,
         "source": 21,
         "target": {
           "node": 19,

@@ -331,3 +331,14 @@ pub struct SemanticIndexReadyNotificationDto {
     pub semantic_state_version: u64,
     pub workspace_file_count: usize,
 }
+
+/// Client notification emitted after every workspace publication rebuild, once its diagnostics
+/// have been republished. A client holding a derived product (a diagram, a projection) compares
+/// `model_digest` against the one its product carries and regenerates when they differ; this is
+/// the signal that removes the poll/retry race a save listener would otherwise need.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct PublicationChangedNotificationDto {
+    pub model_digest: String,
+    pub semantic_state_version: u64,
+}

@@ -1,8 +1,10 @@
 import { resolveNodeChrome } from "../node-notation";
+import { normalizeEdgeKind } from "../graph-normalization";
 import { prepareActivity, prepareSequence, prepareState } from "./behavior";
 import { normalizeVisualizationPayload } from "./normalize-payload";
 import { prepareGraph } from "./graph";
 import { prepareInterconnection } from "./interconnection";
+import { prepareInterconnectionFromTypedProjection } from "./interconnection-typed";
 import { prepareBrowser, prepareGeometry, prepareGrid } from "./standard-views";
 import type { PreparedEdge, PreparedNode, PreparedView, VisualizationPayload } from "./types";
 import { asArray, asRecord, asString } from "./util";
@@ -203,6 +205,17 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
       },
     };
   }
+  if (selected.kind === "interconnection-view") {
+    return prepareInterconnectionFromTypedProjection({
+      name: selected.name,
+      nodes: projection.nodes,
+      edges: projection.edges,
+      exposedRoots: projection.exposedRoots,
+      metadata: asRecord(projection.metadata),
+      references,
+      navigation,
+    });
+  }
   const nodes = projection.nodes.map((raw, index): PreparedNode => {
     const element = asRecord(raw);
     const source = navigation(element.source);
@@ -250,13 +263,15 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
   }
   const edges = projection.edges.map((raw, index): PreparedEdge => {
     const edge = asRecord(raw);
+    const origin = typeof edge.origin === "number" ? `n:${edge.origin}` : undefined;
     return {
       id: `e:${index}`,
       source: `n:${String(edge.source ?? "")}`,
       target: `n:${String(edge.target ?? "")}`,
       label: "",
-      edgeKind: String(edge.kind ?? "relationship"),
+      edgeKind: normalizeEdgeKind(String(edge.kind ?? "relationship")),
       attributes: {
+        originNodeId: origin,
         semanticReference: typeof edge.reference === "number" ? references[edge.reference] : undefined,
         provenance: edge.provenance,
         sourceNavigation: edge.navigation === null ? null : navigation(edge.navigation),

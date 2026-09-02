@@ -101,6 +101,7 @@ pub struct DiagramElement {
     pub reference: DiagramSemanticReference,
     pub kind: ElementKind,
     pub name: Option<Box<str>>,
+    /// Authored FeatureTyping for compact labels; not the effective-type closure.
     pub typing: DiagramElementTyping,
     pub owner: Option<DiagramOccurrenceIdentity>,
     pub source: SourceLocation,
@@ -169,6 +170,12 @@ fn push_key_segment(key: &mut String, token: &str) {
     key.push_str(token);
 }
 
+/// Authored FeatureTyping of a projected element, for compact node labels.
+///
+/// This is the declaration's [`crate::details::ElementDetails::typing`] family, not its
+/// effective-type closure. Implied library types inherited through subsetting `Parts::parts`,
+/// `Items::items`, and the rest of the kernel chain belong in inspectors and queries, not on
+/// every diagram node.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DiagramElementTyping {
     Absent,
@@ -1444,23 +1451,23 @@ fn diagram_element_typing(outcome: QueryOutcome<ElementDetails>) -> DiagramEleme
     match outcome.answer {
         QueryAnswer::Resolved(details) => {
             let types = details
-                .effective_typing
-                .types
+                .typing
+                .targets
                 .iter()
-                .map(|entry| entry.element.identity)
+                .map(|entry| entry.identity)
                 .collect::<Vec<_>>()
                 .into_boxed_slice();
-            match details.effective_typing.outcome {
+            match details.typing.outcome {
                 RelationshipOutcome::NotApplicable => DiagramElementTyping::Absent,
                 RelationshipOutcome::Resolved => DiagramElementTyping::Resolved(types),
                 RelationshipOutcome::Partial => DiagramElementTyping::Partial(types),
                 RelationshipOutcome::Unresolved => DiagramElementTyping::Unresolved,
                 RelationshipOutcome::Ambiguous => DiagramElementTyping::Ambiguous(
                     details
-                        .effective_typing
+                        .typing
                         .candidates
                         .iter()
-                        .map(|entry| entry.element.identity)
+                        .map(|entry| entry.identity)
                         .collect::<Vec<_>>()
                         .into_boxed_slice(),
                 ),

@@ -435,6 +435,21 @@ fn pack_library(entry: &LibraryEntry, source_dir: &Path, out_kpar: &Path) {
             process::exit(1);
         }
     };
+    // `build_kpar` publishes with no-force semantics (`kpar::read::ensure_absent_publish_target`),
+    // so a leftover archive -- or the empty stub `write_empty_stub` leaves when the feature is
+    // off -- from an earlier build in the same `OUT_DIR` makes an otherwise-clean rebuild abort
+    // with "refusing to replace existing publication target". Clear it first; the pack that
+    // follows is the authority for this slot.
+    if let Err(e) = fs::remove_file(out_kpar) {
+        if e.kind() != std::io::ErrorKind::NotFound {
+            eprintln!(
+                "workspace build: could not clear stale {} at {}: {e}",
+                entry.id,
+                out_kpar.display()
+            );
+            process::exit(1);
+        }
+    }
     build_kpar(&options, out_kpar).unwrap_or_else(|e| {
         eprintln!("workspace build: failed to pack {}: {e}", entry.id);
         process::exit(1);

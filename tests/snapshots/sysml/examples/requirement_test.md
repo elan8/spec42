@@ -41,12 +41,6 @@ package RequirementTest {
   (document "memory://snapshot/requirement_test.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unsupported_filtered_import")
-        (source "semantic")
-        (range (start 3 16) (end 3 21))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_requirement_body_element")
         (source "parser")
@@ -96,7 +90,7 @@ package RequirementTest {
   (references
     (reference (id (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
       (authored-target "q")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q")))))
     (reference (id (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfySource) (ordinal 0))
       (authored-target "r1")
       (outcome (status resolved) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::r1")))))
@@ -224,7 +218,7 @@ package RequirementTest {
 (navigation
   (query (document "memory://snapshot/requirement_test.md") (range (start 3 16) (end 3 21)) (probe (position 3 16))
     (reference (id (source (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "q")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest::q")))))
     )
   )
   (query (document "memory://snapshot/requirement_test.md") (range (start 25 13) (end 25 15)) (probe (position 25 13))

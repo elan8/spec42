@@ -783,6 +783,7 @@ pub struct DiagramElement {
     pub metaclass: Metaclass,
     pub notation_role: DiagramNotationRole,
     pub name: Option<String>,
+    /// Authored FeatureTyping for compact labels; not the effective-type closure.
     pub typing: DiagramElementTyping,
     pub owner: Option<DiagramOccurrenceIdentity>,
     pub source: SourceReference,
@@ -797,6 +798,8 @@ pub struct DiagramOccurrenceIdentity {
     pub semantic_path: Vec<DiagramSemanticReference>,
 }
 
+/// Authored FeatureTyping of a projected element. Compact node labels consume this family,
+/// not the effective-type closure that includes implied library types.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub enum DiagramElementTyping {
     Absent,

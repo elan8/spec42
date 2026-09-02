@@ -72,12 +72,7 @@ describe("general-view layout package hierarchy", () => {
     expect(result.nodes.every((n) => typeof n.x === "number" && typeof n.y === "number")).toBe(true);
   });
 
-  // O-4: a same-depth sibling set large enough to dominate a single ELK layer -- a single
-  // package/def with many members and few edges between them -- otherwise lays out as one very
-  // wide row (elk.layered.wrapping.strategy doesn't split a single edge-sparse layer). Mirrors the
-  // robot-vacuum `baseDecomposition` fixture: one "owner" node with many direct "hierarchy"
-  // children and no edges between the children themselves.
-  it("chunks a wide same-parent sibling set into a more compact layout than one flat row", async () => {
+  it("keeps a wide same-parent sibling set on one hierarchy row", async () => {
     const memberCount = 19;
     const owner = partNode("Pkg::Owner", "Owner", "Pkg::Owner");
     const members = Array.from({ length: memberCount }, (_, i) =>
@@ -100,14 +95,35 @@ describe("general-view layout package hierarchy", () => {
     expect(result.edges).toHaveLength(memberCount);
     expect(result.edges.every((e) => e.layout)).toBe(true);
 
-    const ys = result.nodes.map((n) => n.y ?? 0);
-    const height = Math.max(...ys) - Math.min(...ys);
-    // Before chunking, every sibling lands in the same ELK layer, so the diagram is only 2 rows
-    // tall regardless of member count (the owner's own row, plus one wide row for every sibling) --
-    // 250px for this exact fixture with WIDE_SIBLING_THRESHOLD disabled. Chunking spreads the
-    // members across several rows instead (446px with chunking on) -- the direct signal that the
-    // wide-row bug is actually fixed, independent of exactly how compact the resulting grid ends up
-    // for a given topology. 350 sits between the two, comfortably on the chunked side.
-    expect(height).toBeGreaterThan(350);
+    const ownerLayout = result.nodes.find((node) => node.id === owner.id)!;
+    const memberYs = members.map((member) => result.nodes.find((node) => node.id === member.id)?.y);
+    expect(new Set(memberYs).size).toBe(1);
+    expect(memberYs[0]).toBeGreaterThan(ownerLayout.y ?? 0);
+  });
+
+  it("draws connector usages as edges rather than structure nodes", async () => {
+    const prepared = {
+      title: "Structure",
+      view: "general-view",
+      nodes: [
+        { id: "n:0", label: "system", kind: "PartUsage" },
+        { id: "n:1", label: "source", kind: "PartUsage" },
+        { id: "n:2", label: "target", kind: "PartUsage" },
+        { id: "n:3", label: "ConnectionUsage", kind: "ConnectionUsage" },
+        { id: "n:4", label: "unresolved", kind: "ConnectionUsage" },
+      ],
+      edges: [
+        { id: "owns-1", source: "n:0", target: "n:1", label: "", edgeKind: "hierarchy", attributes: { originNodeId: "n:1" } },
+        { id: "owns-2", source: "n:0", target: "n:2", label: "", edgeKind: "hierarchy", attributes: { originNodeId: "n:2" } },
+        { id: "connects", source: "n:1", target: "n:2", label: "", edgeKind: "connection", attributes: { originNodeId: "n:3" } },
+        { id: "owns-unresolved", source: "n:0", target: "n:4", label: "", edgeKind: "hierarchy", attributes: { originNodeId: "n:4" } },
+      ],
+    };
+
+    const result = await layoutPrepared(prepared);
+    expect(result.nodes.map((node) => node.id)).toEqual(["n:0", "n:1", "n:2"]);
+    expect(result.edges.map((edge) => edge.id)).toEqual(["owns-1", "owns-2", "connects"]);
+    expect(result.nodes.find((node) => node.id === "n:1")?.y)
+      .toBe(result.nodes.find((node) => node.id === "n:2")?.y);
   });
 });

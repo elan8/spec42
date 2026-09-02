@@ -144,7 +144,9 @@ var Spec42HeadlessRendererBundle = (() => {
     if (type2.includes("interface-connection") || type2.includes("interface connection")) return "interface";
     if (type2.includes("interface")) return "interface";
     if (type2.includes("binding-connection") || type2.includes("binding connection")) return "bind";
+    if (type2.includes("binding-connector") || type2.includes("binding connector")) return "bind";
     if (type2.includes("connection") || type2 === "connect") return "connection";
+    if (type2.includes("connector")) return "connection";
     if (type2.includes("reference") || type2 === "ref") return "reference";
     if (type2.includes("satisfy")) return "satisfy";
     if (type2.includes("verify")) return "verify";
@@ -172,6 +174,10 @@ var Spec42HeadlessRendererBundle = (() => {
   }
   function isOverviewVisualElementType(elementType) {
     return !isPackageElementType(elementType) && !isNonDiagramSemanticElementType(elementType);
+  }
+  function isConnectorUsageElementType(elementType) {
+    const normalized = elementType.trim().toLowerCase().replace(/[^a-z0-9]+/g, "");
+    return normalized === "connectionusage" || normalized === "bindingconnectorusage" || normalized === "flowconnectionusage";
   }
 
   // diagram-renderer/src/prepare/util.ts
@@ -1018,6 +1024,153 @@ var Spec42HeadlessRendererBundle = (() => {
     };
   }
 
+  // diagram-renderer/src/prepare/interconnection-typed.ts
+  function prepareInterconnectionFromTypedProjection(input) {
+    const scene = interconnectionSceneFromTypedProjection(input);
+    return prepareInterconnectionScene(scene, { selectedViewName: input.name });
+  }
+  function interconnectionSceneFromTypedProjection(input) {
+    const rawNodes = input.nodes.map(asRecord);
+    const indexSet = (value) => new Set(
+      asArray(value).filter(
+        (index) => typeof index === "number" && rawNodes[index] !== void 0
+      )
+    );
+    const partIndexes = indexSet(input.metadata.parts);
+    const portIndexes = indexSet(input.metadata.ports);
+    if (partIndexes.size === 0) {
+      rawNodes.forEach((element, index) => {
+        if (isPartMetaclass(asString(element.metaclass))) partIndexes.add(index);
+      });
+    }
+    if (portIndexes.size === 0) {
+      rawNodes.forEach((element, index) => {
+        if (isPortMetaclass(asString(element.metaclass))) portIndexes.add(index);
+      });
+    }
+    const idFor = (index) => `n:${index}`;
+    const qualifiedName = (index) => {
+      const element = rawNodes[index];
+      const reference = typeof element.reference === "number" ? input.references[element.reference] : void 0;
+      const qualified = asString(asRecord(reference).qualifiedName);
+      if (qualified) return qualified;
+      return asString(element.name, idFor(index));
+    };
+    const typeName = (element) => {
+      const typing = asRecord(element.typing);
+      const labels = asArray(typing.types).map(asRecord).map((type2) => type2.label).filter((label) => typeof label === "string");
+      return labels.length > 0 ? labels.join(" & ") : void 0;
+    };
+    const location = (element) => {
+      const source = input.navigation(element.source);
+      const range = source.range;
+      const start2 = range.start;
+      const end = range.end;
+      return {
+        uri: source.uri ?? void 0,
+        range: typeof start2?.line === "number" && typeof start2.character === "number" && typeof end?.line === "number" && typeof end.character === "number" ? {
+          start: { line: start2.line, character: start2.character },
+          end: { line: end.line, character: end.character }
+        } : void 0
+      };
+    };
+    const sceneKind = (element) => {
+      const role = asString(element.notationRole);
+      if (role === "reference-usage") return "ref";
+      if (role === "definition") return "def";
+      return "part";
+    };
+    const nodes = [...partIndexes].sort((left, right) => left - right).map((index) => {
+      const element = rawNodes[index];
+      const owner = typeof element.owner === "number" ? element.owner : void 0;
+      const parentId = owner !== void 0 && partIndexes.has(owner) ? idFor(owner) : void 0;
+      const placed = location(element);
+      return {
+        id: idFor(index),
+        semanticId: qualifiedName(index),
+        qualifiedName: qualifiedName(index),
+        name: asString(element.name, idFor(index)),
+        kind: sceneKind(element),
+        typeName: typeName(element),
+        parentId,
+        uri: placed.uri,
+        range: placed.range
+      };
+    });
+    const ports = [...portIndexes].sort((left, right) => left - right).flatMap((index) => {
+      const element = rawNodes[index];
+      const owner = typeof element.owner === "number" ? element.owner : void 0;
+      if (owner === void 0 || !partIndexes.has(owner)) return [];
+      const placed = location(element);
+      return [
+        {
+          id: idFor(index),
+          semanticId: qualifiedName(index),
+          ownerNodeId: idFor(owner),
+          name: asString(element.name, idFor(index)),
+          typeName: typeName(element),
+          sideHint: "",
+          uri: placed.uri,
+          range: placed.range
+        }
+      ];
+    });
+    const portOwner = new Map(ports.map((port) => [port.id, port.ownerNodeId]));
+    const partIds = new Set(nodes.map((node) => node.id));
+    const endpoint = (index) => {
+      if (typeof index !== "number") return void 0;
+      const id2 = idFor(index);
+      const owner = portOwner.get(id2);
+      if (owner) return { nodeId: owner, portId: id2 };
+      if (partIds.has(id2)) return { nodeId: id2, portId: "" };
+      return void 0;
+    };
+    const edges = asArray(input.edges).map(asRecord).flatMap((edge, index) => {
+      const kind = asString(edge.kind);
+      if (!isInterconnectionEdgeKind(kind)) return [];
+      const source = endpoint(edge.source);
+      const target = endpoint(edge.target);
+      if (!source || !target) return [];
+      return [
+        {
+          id: `e:${index}`,
+          kind,
+          sourcePortId: source.portId,
+          targetPortId: target.portId,
+          sourceNodeId: source.nodeId,
+          targetNodeId: target.nodeId
+        }
+      ];
+    });
+    const rootIds = asArray(input.exposedRoots).filter((index) => typeof index === "number" && partIndexes.has(index)).map(idFor);
+    return {
+      schemaVersion: 2,
+      view: {
+        id: input.name,
+        name: input.name,
+        type: "InterconnectionView",
+        rootIds
+      },
+      nodes,
+      ports,
+      edges,
+      containers: [],
+      diagnostics: []
+    };
+  }
+  function isPartMetaclass(metaclass) {
+    const normalized = metaclass.toLowerCase();
+    return normalized === "partdefinition" || normalized === "partusage";
+  }
+  function isPortMetaclass(metaclass) {
+    const normalized = metaclass.toLowerCase();
+    return normalized === "portusage" || normalized === "portdefinition" || normalized === "conjugatedportdefinition";
+  }
+  var INTERCONNECTION_EDGE_KINDS = /* @__PURE__ */ new Set(["connection", "flow", "bind", "interface"]);
+  function isInterconnectionEdgeKind(kind) {
+    return INTERCONNECTION_EDGE_KINDS.has(normalizeEdgeKind(kind));
+  }
+
   // diagram-renderer/src/prepare/standard-views.ts
   function graphNodesForStandardView(visualization) {
     const graph = asRecord(visualization?.generalViewGraph ?? visualization?.graph);
@@ -1368,6 +1521,17 @@ var Spec42HeadlessRendererBundle = (() => {
         }
       };
     }
+    if (selected.kind === "interconnection-view") {
+      return prepareInterconnectionFromTypedProjection({
+        name: selected.name,
+        nodes: projection.nodes,
+        edges: projection.edges,
+        exposedRoots: projection.exposedRoots,
+        metadata: asRecord(projection.metadata),
+        references,
+        navigation
+      });
+    }
     const nodes = projection.nodes.map((raw, index) => {
       const element = asRecord(raw);
       const source = navigation(element.source);
@@ -1407,13 +1571,15 @@ var Spec42HeadlessRendererBundle = (() => {
     }
     const edges = projection.edges.map((raw, index) => {
       const edge = asRecord(raw);
+      const origin = typeof edge.origin === "number" ? `n:${edge.origin}` : void 0;
       return {
         id: `e:${index}`,
         source: `n:${String(edge.source ?? "")}`,
         target: `n:${String(edge.target ?? "")}`,
         label: "",
-        edgeKind: String(edge.kind ?? "relationship"),
+        edgeKind: normalizeEdgeKind(String(edge.kind ?? "relationship")),
         attributes: {
+          originNodeId: origin,
           semanticReference: typeof edge.reference === "number" ? references[edge.reference] : void 0,
           provenance: edge.provenance,
           sourceNavigation: edge.navigation === null ? null : navigation(edge.navigation)
@@ -6459,6 +6625,7 @@ var Spec42HeadlessRendererBundle = (() => {
   }
   function exportSvg(svgNode2, bounds) {
     const clone = svgNode2.cloneNode(true);
+    clone.querySelector(".viz-root")?.removeAttribute("transform");
     for (const element of Array.from(clone.querySelectorAll("[data-tooltip-title]"))) {
       const hasTitle = Array.from(element.children).some((child) => child.tagName.toLowerCase() === "title");
       if (!hasTitle) {
@@ -6915,6 +7082,8 @@ var Spec42HeadlessRendererBundle = (() => {
       path2.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-specializes)").style("stroke-dasharray", "5,3");
     } else if (edgeKind === "composition") {
       path2.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-start", "url(#general-d3-diamond)").style("marker-end", "none").style("stroke-dasharray", "6,3");
+    } else if (edgeKind === "connection") {
+      path2.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-start", "none").style("marker-end", "none");
     } else if (edgeKind === "satisfy" || edgeKind === "verify" || edgeKind === "derivation") {
       path2.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "7,4");
     } else {
@@ -7435,6 +7604,86 @@ var Spec42HeadlessRendererBundle = (() => {
       })
     };
   }
+  function hierarchyGeneralLayout(nodes, edges, parentById) {
+    const nodeOrder = new Map(nodes.map((node, index) => [node.id, index]));
+    const childrenByParent = /* @__PURE__ */ new Map();
+    for (const node of nodes) {
+      const parent = parentById.get(node.id);
+      if (!parent) continue;
+      const children2 = childrenByParent.get(parent) ?? [];
+      children2.push(node);
+      childrenByParent.set(parent, children2);
+    }
+    for (const children2 of childrenByParent.values()) {
+      children2.sort((left, right) => (nodeOrder.get(left.id) ?? 0) - (nodeOrder.get(right.id) ?? 0));
+    }
+    const rows = [];
+    const visited = /* @__PURE__ */ new Set();
+    let current = nodes.filter((node) => !parentById.has(node.id));
+    while (current.length > 0) {
+      const row = current.filter((node) => !visited.has(node.id));
+      if (row.length === 0) break;
+      rows.push(row);
+      row.forEach((node) => visited.add(node.id));
+      current = row.flatMap((node) => childrenByParent.get(node.id) ?? []);
+    }
+    const unvisited = nodes.filter((node) => !visited.has(node.id));
+    if (unvisited.length > 0) rows.push(unvisited);
+    const horizontalGap = 140;
+    const verticalGap = 180;
+    const measuredRows = rows.map((row) => row.map((node) => {
+      const compartments = collectCompartments(node);
+      return { node, compartments, ...generalNodeBox(node, compartments) };
+    }));
+    const rowWidths = measuredRows.map(
+      (row) => row.reduce((sum, item) => sum + item.width, 0) + Math.max(0, row.length - 1) * horizontalGap
+    );
+    const diagramWidth = Math.max(0, ...rowWidths);
+    const laidOutNodes = [];
+    let y2 = 0;
+    for (const [rowIndex, row] of measuredRows.entries()) {
+      let x2 = (diagramWidth - rowWidths[rowIndex]) / 2;
+      const rowHeight = Math.max(nodeHeight, ...row.map((item) => item.height));
+      for (const item of row) {
+        laidOutNodes.push({ ...item.node, compartments: item.compartments, x: x2, y: y2, width: item.width, height: item.height });
+        x2 += item.width + horizontalGap;
+      }
+      y2 += rowHeight + verticalGap;
+    }
+    const byId = new Map(laidOutNodes.map((node) => [node.id, node]));
+    const rowFor = new Map(rows.flatMap((row, depth) => row.map((node) => [node.id, depth])));
+    let sameRowLane = 0;
+    const routedEdges = edges.map((edge) => {
+      const sourceNode = byId.get(edge.source);
+      const targetNode = byId.get(edge.target);
+      if (!sourceNode || !targetNode) return { ...edge, sourceNode, targetNode };
+      const sourceX = (sourceNode.x ?? 0) + (sourceNode.width ?? nodeWidth) / 2;
+      const targetX = (targetNode.x ?? 0) + (targetNode.width ?? nodeWidth) / 2;
+      const sourceDepth = rowFor.get(edge.source) ?? 0;
+      const targetDepth = rowFor.get(edge.target) ?? 0;
+      let section;
+      if (sourceDepth === targetDepth) {
+        const laneY = Math.min(sourceNode.y ?? 0, targetNode.y ?? 0) - 28 - sameRowLane++ % 12 * 10;
+        section = {
+          startPoint: { x: sourceX, y: sourceNode.y ?? 0 },
+          bendPoints: [{ x: sourceX, y: laneY }, { x: targetX, y: laneY }],
+          endPoint: { x: targetX, y: targetNode.y ?? 0 }
+        };
+      } else {
+        const downward = (targetNode.y ?? 0) > (sourceNode.y ?? 0);
+        const startY = (sourceNode.y ?? 0) + (downward ? sourceNode.height ?? nodeHeight : 0);
+        const endY = (targetNode.y ?? 0) + (downward ? 0 : targetNode.height ?? nodeHeight);
+        const middleY = (startY + endY) / 2;
+        section = {
+          startPoint: { x: sourceX, y: startY },
+          bendPoints: [{ x: sourceX, y: middleY }, { x: targetX, y: middleY }],
+          endPoint: { x: targetX, y: endY }
+        };
+      }
+      return { ...edge, sourceNode, targetNode, layout: { sections: [section] } };
+    });
+    return { nodes: laidOutNodes, edges: routedEdges };
+  }
   async function layoutPrepared(prepared) {
     if (!prepared.nodes.length) return { nodes: [], edges: [] };
     if (prepared.view === "interconnection-view") {
@@ -7443,16 +7692,38 @@ var Spec42HeadlessRendererBundle = (() => {
     if (prepared.view === "action-flow-view" || prepared.view === "state-transition-view" || prepared.view === "sequence-view" || prepared.view === "browser-view" || prepared.view === "grid-view" || prepared.view === "geometry-view") {
       return { nodes: [], edges: [] };
     }
-    const diagramNodes = prepared.nodes.filter((node) => isOverviewVisualElementType(node.kind));
+    const representedRelationshipNodes = new Set(
+      prepared.edges.flatMap((edge) => {
+        const origin = edge.attributes?.originNodeId;
+        const kind = normalizeEdgeKind(edge.edgeKind ?? edge.label);
+        return typeof origin === "string" && origin !== edge.source && origin !== edge.target && kind !== "hierarchy" ? [origin] : [];
+      })
+    );
+    const diagramNodes = prepared.nodes.filter(
+      (node) => isOverviewVisualElementType(node.kind) && !isConnectorUsageElementType(node.kind) && !representedRelationshipNodes.has(node.id)
+    );
     const visibleIds = new Set(diagramNodes.map((node) => node.id));
     const diagramEdges = prepared.edges.filter(
       (edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target)
     );
     if (!diagramNodes.length) return { nodes: [], edges: [] };
+    const packageGroups = prepared.meta?.packageContainerGroups ?? [];
+    const useHierarchy = packageGroups.length >= 2;
+    const containmentParent = new Map(
+      diagramEdges.filter((edge) => normalizeEdgeKind(edge.edgeKind ?? edge.label) === "hierarchy").map((edge) => [edge.target, edge.source])
+    );
+    const useContainmentRows = !useHierarchy && containmentParent.size > 0;
+    if (useContainmentRows) {
+      return hierarchyGeneralLayout(diagramNodes, diagramEdges, containmentParent);
+    }
     const leafElkNode = (node) => {
       const compartments = collectCompartments(node);
       const box = generalNodeBox(node, compartments);
-      return { id: node.id, width: box.width, height: box.height };
+      return {
+        id: node.id,
+        width: box.width,
+        height: box.height
+      };
     };
     const WIDE_SIBLING_THRESHOLD = 8;
     const chunkedElkChildren = (idPrefix, elkNodes) => {
@@ -7471,8 +7742,6 @@ var Spec42HeadlessRendererBundle = (() => {
       }
       return chunks;
     };
-    const packageGroups = prepared.meta?.packageContainerGroups ?? [];
-    const useHierarchy = packageGroups.length >= 2;
     let children2;
     let flatChildrenWereChunked = false;
     if (useHierarchy) {
@@ -7797,6 +8066,8 @@ var Spec42HeadlessRendererBundle = (() => {
     const isBehaviorView = view === "action-flow-view" || view === "state-transition-view" || view === "sequence-view" || view === "browser-view" || view === "grid-view" || view === "geometry-view";
     let bounds;
     let generalRenderGeneration = 0;
+    let fitView = () => void 0;
+    let getDisclosureState = () => ({ expandedNodeIds: [], sectionStates: [] });
     if (view === "action-flow-view") {
       addActionFlowMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
       const drawStartedAt = Date.now();
@@ -7838,9 +8109,25 @@ var Spec42HeadlessRendererBundle = (() => {
         drawEdges(root2, layout.edges, isInterconnectionView, theme, layout.interconnectionLayout);
         drawInterconnectionPortOverlays(root2);
       } else {
-        const expanded = /* @__PURE__ */ new Set();
-        const sectionState = /* @__PURE__ */ new Map();
         const sectionKey = (nodeId, key) => `${nodeId}\0${key}`;
+        const expanded = new Set(options.disclosureState?.expandedNodeIds ?? []);
+        const sectionState = new Map(
+          (options.disclosureState?.sectionStates ?? []).map((state) => [
+            sectionKey(state.nodeId, state.sectionKey),
+            state.expanded
+          ])
+        );
+        getDisclosureState = () => ({
+          expandedNodeIds: [...expanded],
+          sectionStates: [...sectionState].map(([key, expandedState]) => {
+            const separator = key.indexOf("\0");
+            return {
+              nodeId: key.slice(0, separator),
+              sectionKey: key.slice(separator + 1),
+              expanded: expandedState
+            };
+          })
+        });
         const roots = new Set(Array.isArray(prepared.meta?.exposedRoots) ? prepared.meta?.exposedRoots : []);
         const ownerOf = (node) => {
           const owner = node.attributes?.owner;
@@ -7906,11 +8193,11 @@ var Spec42HeadlessRendererBundle = (() => {
           toggleNode: (nodeId) => {
             if (expanded.has(nodeId)) expanded.delete(nodeId);
             else expanded.add(nodeId);
-            void redrawGeneral({ refocusNodeControl: nodeId });
+            void redrawGeneral({ refocusNodeControl: nodeId }, true);
           },
           toggleSection: (nodeId, key, currentlyExpanded) => {
             sectionState.set(sectionKey(nodeId, key), !currentlyExpanded);
-            void redrawGeneral({ refocusSection: { nodeId, key } });
+            void redrawGeneral({ refocusSection: { nodeId, key } }, true);
           }
         };
         const generalOptions = { ...options, disclosure };
@@ -7920,7 +8207,7 @@ var Spec42HeadlessRendererBundle = (() => {
             element.focus();
           }
         };
-        const redrawGeneral = async (focus) => {
+        const redrawGeneral = async (focus, fitAfter = false) => {
           const generation = ++generalRenderGeneration;
           const visible = visibleProjection();
           const nextLayout = await layoutPrepared(visible);
@@ -7930,6 +8217,7 @@ var Spec42HeadlessRendererBundle = (() => {
           drawEdges(root2, nextLayout.edges, false, theme);
           drawNodes(root2, nextLayout.nodes, generalOptions, false, theme);
           bounds = contentBounds(nextLayout);
+          if (fitAfter) fitView();
           if (focus?.refocusNodeControl) {
             restoreFocus(`[data-node-id="${focus.refocusNodeControl}"] .general-node-toggle`);
           } else if (focus?.refocusSection) {
@@ -7955,7 +8243,7 @@ var Spec42HeadlessRendererBundle = (() => {
       if (isInterconnectionView) bounds = contentBounds(layout);
     }
     let lastFitTransform = identity2;
-    const fitView = () => {
+    fitView = () => {
       lastFitTransform = applyFit(
         svg,
         zoom,
@@ -7978,6 +8266,7 @@ var Spec42HeadlessRendererBundle = (() => {
     return {
       reset: () => fitView(),
       getFitTransform: () => lastFitTransform,
+      getDisclosureState,
       exportSvg: () => exportSvg(svg.node(), bounds),
       destroy: () => {
         destroyTooltips();

@@ -4,7 +4,9 @@ import { normalizeEdgeKind } from "./graph-normalization";
 describe("normalizeEdgeKind", () => {
   it("maps BNF connector names for interconnection view", () => {
     expect(normalizeEdgeKind("binding-connection")).toBe("bind");
+    expect(normalizeEdgeKind("binding-connector")).toBe("bind");
     expect(normalizeEdgeKind("interface-connection")).toBe("interface");
+    expect(normalizeEdgeKind("connector")).toBe("connection");
     expect(normalizeEdgeKind("flow-on-connection")).toBe("flow");
   });
 

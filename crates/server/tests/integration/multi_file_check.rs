@@ -54,6 +54,22 @@ fn multi_file_workspace_validates_with_explicit_workspace_root() {
         "expected no errors in multi-file import workspace: {:?}",
         report.documents
     );
+    // `import Domain::**` is a recursive namespace import: `CelestialBody` must resolve through it
+    // and the import must not be misreported as a filtered one (#102).
+    let codes: Vec<&str> = report
+        .documents
+        .iter()
+        .flat_map(|document| document.diagnostics.iter())
+        .map(|diagnostic| diagnostic.code.as_str())
+        .collect();
+    assert!(
+        !codes.contains(&"unsupported_filtered_import"),
+        "a plain `::**` import is a recursive namespace import: {codes:?}"
+    );
+    assert!(
+        !codes.contains(&"unresolved_type_reference"),
+        "`CelestialBody` should resolve through the recursive import: {codes:?}"
+    );
 }
 
 #[test]

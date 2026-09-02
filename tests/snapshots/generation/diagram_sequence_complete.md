@@ -395,19 +395,7 @@ package SequenceExample {
       "sourceDomain": "workspace"
     },
     {
-      "uri": "memory://snapshot/sysml.library/base.md",
-      "sourceDomain": "standard-library"
-    },
-    {
       "uri": "memory://snapshot/sysml.library/flows.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/items.md",
-      "sourceDomain": "standard-library"
-    },
-    {
-      "uri": "memory://snapshot/sysml.library/objects.md",
       "sourceDomain": "standard-library"
     },
     {
@@ -651,55 +639,30 @@ package SequenceExample {
     {
       "document": 1,
       "kind": "qualified-name",
-      "qualifiedName": "Base::Anything"
-    },
-    {
-      "document": 2,
-      "kind": "qualified-name",
       "qualifiedName": "Flows::flows"
     },
     {
-      "document": 2,
+      "document": 1,
       "kind": "qualified-name",
       "qualifiedName": "Flows::messages"
     },
     {
-      "document": 3,
-      "kind": "qualified-name",
-      "qualifiedName": "Items::Item"
-    },
-    {
-      "document": 4,
-      "kind": "qualified-name",
-      "qualifiedName": "Objects::Object"
-    },
-    {
-      "document": 5,
-      "kind": "qualified-name",
-      "qualifiedName": "Occurrences::Occurrence"
-    },
-    {
-      "document": 5,
+      "document": 2,
       "kind": "qualified-name",
       "qualifiedName": "Occurrences::occurrences"
     },
     {
-      "document": 6,
-      "kind": "qualified-name",
-      "qualifiedName": "Parts::Part"
-    },
-    {
-      "document": 6,
+      "document": 3,
       "kind": "qualified-name",
       "qualifiedName": "Parts::parts"
     },
     {
-      "document": 7,
+      "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "Transfers::flowTransfers"
     },
     {
-      "document": 7,
+      "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "Transfers::transfers"
     },
@@ -968,7 +931,7 @@ package SequenceExample {
         "navigation": 8,
         "origin": 2,
         "provenance": "authored",
-        "reference": 24,
+        "reference": 19,
         "source": 0,
         "target": 2
       },
@@ -977,7 +940,7 @@ package SequenceExample {
         "navigation": 9,
         "origin": 2,
         "provenance": "implied",
-        "reference": 47,
+        "reference": 42,
         "source": 6,
         "target": 8
       },
@@ -986,7 +949,7 @@ package SequenceExample {
         "navigation": 14,
         "origin": 1,
         "provenance": "authored",
-        "reference": 25,
+        "reference": 20,
         "source": 0,
         "target": 1
       },
@@ -995,7 +958,7 @@ package SequenceExample {
         "navigation": 15,
         "origin": 1,
         "provenance": "implied",
-        "reference": 38,
+        "reference": 33,
         "source": 2,
         "target": 3
       },
@@ -1004,7 +967,7 @@ package SequenceExample {
         "navigation": 11,
         "origin": 3,
         "provenance": "authored",
-        "reference": 26,
+        "reference": 21,
         "source": 0,
         "target": 3
       },
@@ -1013,7 +976,7 @@ package SequenceExample {
         "navigation": 12,
         "origin": 3,
         "provenance": "implied",
-        "reference": 61,
+        "reference": 56,
         "source": 8,
         "target": 5
       },
@@ -1022,7 +985,7 @@ package SequenceExample {
         "navigation": 1,
         "origin": 4,
         "provenance": "authored",
-        "reference": 27,
+        "reference": 22,
         "source": 0,
         "target": 4
       },
@@ -1031,7 +994,7 @@ package SequenceExample {
         "navigation": 4,
         "origin": 5,
         "provenance": "authored",
-        "reference": 40,
+        "reference": 35,
         "source": 4,
         "target": 5
       },
@@ -1040,7 +1003,7 @@ package SequenceExample {
         "navigation": 3,
         "origin": 6,
         "provenance": "authored",
-        "reference": 41,
+        "reference": 36,
         "source": 4,
         "target": 6
       },
@@ -1049,7 +1012,7 @@ package SequenceExample {
         "navigation": 5,
         "origin": 7,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 23,
         "source": 0,
         "target": 7
       },
@@ -1058,7 +1021,7 @@ package SequenceExample {
         "navigation": 7,
         "origin": 8,
         "provenance": "authored",
-        "reference": 57,
+        "reference": 52,
         "source": 7,
         "target": 8
       }
@@ -1113,7 +1076,7 @@ package SequenceExample {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 23,
+        "reference": 18,
         "source": 14,
         "typing": {
           "status": "absent"
@@ -1164,28 +1127,8 @@ package SequenceExample {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 12
-            },
-            {
-              "label": "Item",
-              "reference": 15
-            },
-            {
-              "label": "Part",
-              "reference": 19
-            },
-            {
-              "label": "Object",
-              "reference": 16
-            },
-            {
               "label": "Client",
               "reference": 0
-            },
-            {
-              "label": "Occurrence",
-              "reference": 17
             }
           ]
         }
@@ -1234,28 +1177,8 @@ package SequenceExample {
           "status": "resolved",
           "types": [
             {
-              "label": "Anything",
-              "reference": 12
-            },
-            {
-              "label": "Item",
-              "reference": 15
-            },
-            {
-              "label": "Part",
-              "reference": 19
-            },
-            {
-              "label": "Object",
-              "reference": 16
-            },
-            {
               "label": "Server",
               "reference": 10
-            },
-            {
-              "label": "Occurrence",
-              "reference": 17
             }
           ]
         }
@@ -1278,7 +1201,7 @@ package SequenceExample {
         "kind": "flowSource",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 32,
+        "reference": 27,
         "source": 2,
         "target": {
           "node": 6,
@@ -1289,7 +1212,7 @@ package SequenceExample {
         "kind": "flowTarget",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 33,
+        "reference": 28,
         "source": 2,
         "target": {
           "node": 8,
@@ -1300,18 +1223,7 @@ package SequenceExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 34,
-        "source": 2,
-        "target": {
-          "reference": 14,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 35,
+        "reference": 29,
         "source": 2,
         "target": {
           "reference": 13,
@@ -1322,10 +1234,10 @@ package SequenceExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 36,
+        "reference": 30,
         "source": 2,
         "target": {
-          "reference": 22,
+          "reference": 12,
           "status": "resolved"
         }
       },
@@ -1333,10 +1245,21 @@ package SequenceExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 37,
+        "reference": 31,
         "source": 2,
         "target": {
-          "reference": 21,
+          "reference": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 32,
+        "source": 2,
+        "target": {
+          "reference": 16,
           "status": "resolved"
         }
       },
@@ -1344,7 +1267,7 @@ package SequenceExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 39,
+        "reference": 34,
         "source": 2,
         "target": {
           "node": 0,
@@ -1355,7 +1278,7 @@ package SequenceExample {
         "kind": "succession",
         "navigation": 15,
         "provenance": "authored",
-        "reference": 29,
+        "reference": 24,
         "source": 1,
         "target": {
           "node": 2,
@@ -1366,7 +1289,7 @@ package SequenceExample {
         "kind": "succession",
         "navigation": 16,
         "provenance": "authored",
-        "reference": 30,
+        "reference": 25,
         "source": 1,
         "target": {
           "node": 3,
@@ -1377,7 +1300,7 @@ package SequenceExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 31,
+        "reference": 26,
         "source": 1,
         "target": {
           "node": 0,
@@ -1388,7 +1311,7 @@ package SequenceExample {
         "kind": "flowSource",
         "navigation": 12,
         "provenance": "authored",
-        "reference": 50,
+        "reference": 45,
         "source": 3,
         "target": {
           "node": 8,
@@ -1399,7 +1322,7 @@ package SequenceExample {
         "kind": "flowTarget",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 51,
+        "reference": 46,
         "source": 3,
         "target": {
           "node": 5,
@@ -1410,18 +1333,7 @@ package SequenceExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 52,
-        "source": 3,
-        "target": {
-          "reference": 14,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 53,
+        "reference": 47,
         "source": 3,
         "target": {
           "reference": 13,
@@ -1432,10 +1344,10 @@ package SequenceExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 54,
+        "reference": 48,
         "source": 3,
         "target": {
-          "reference": 22,
+          "reference": 12,
           "status": "resolved"
         }
       },
@@ -1443,10 +1355,21 @@ package SequenceExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 55,
+        "reference": 49,
         "source": 3,
         "target": {
-          "reference": 21,
+          "reference": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 50,
+        "source": 3,
+        "target": {
+          "reference": 16,
           "status": "resolved"
         }
       },
@@ -1454,7 +1377,7 @@ package SequenceExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 56,
+        "reference": 51,
         "source": 3,
         "target": {
           "node": 0,
@@ -1465,7 +1388,7 @@ package SequenceExample {
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 44,
+        "reference": 39,
         "source": 4,
         "target": {
           "reference": 0,
@@ -1476,10 +1399,10 @@ package SequenceExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 42,
+        "reference": 37,
         "source": 4,
         "target": {
-          "reference": 20,
+          "reference": 15,
           "status": "resolved"
         }
       },
@@ -1487,7 +1410,7 @@ package SequenceExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 43,
+        "reference": 38,
         "source": 4,
         "target": {
           "node": 0,
@@ -1498,10 +1421,10 @@ package SequenceExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 45,
+        "reference": 40,
         "source": 5,
         "target": {
-          "reference": 18,
+          "reference": 14,
           "status": "resolved"
         }
       },
@@ -1509,7 +1432,7 @@ package SequenceExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 46,
+        "reference": 41,
         "source": 5,
         "target": {
           "node": 4,
@@ -1520,10 +1443,10 @@ package SequenceExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 48,
+        "reference": 43,
         "source": 6,
         "target": {
-          "reference": 18,
+          "reference": 14,
           "status": "resolved"
         }
       },
@@ -1531,7 +1454,7 @@ package SequenceExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 49,
+        "reference": 44,
         "source": 6,
         "target": {
           "node": 4,
@@ -1542,7 +1465,7 @@ package SequenceExample {
         "kind": "typing",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 60,
+        "reference": 55,
         "source": 7,
         "target": {
           "reference": 10,
@@ -1553,10 +1476,10 @@ package SequenceExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 58,
+        "reference": 53,
         "source": 7,
         "target": {
-          "reference": 20,
+          "reference": 15,
           "status": "resolved"
         }
       },
@@ -1564,7 +1487,7 @@ package SequenceExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 59,
+        "reference": 54,
         "source": 7,
         "target": {
           "node": 0,
@@ -1575,10 +1498,10 @@ package SequenceExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 62,
+        "reference": 57,
         "source": 8,
         "target": {
-          "reference": 18,
+          "reference": 14,
           "status": "resolved"
         }
       },
@@ -1586,7 +1509,7 @@ package SequenceExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 63,
+        "reference": 58,
         "source": 8,
         "target": {
           "node": 7,

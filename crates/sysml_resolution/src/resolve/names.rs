@@ -445,6 +445,18 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
 ) -> Result<(NameIndex, NameIndex), ResolutionError> {
     let mut entries = Vec::new();
     let mut exported_entries = Vec::new();
+    // A recursive import (`::**`) re-exports the importable members of the target namespace's whole
+    // subtree, so it needs the owner -> nested-namespace map. Built once, and only when at least
+    // one authored import is recursive.
+    let recursive_children = import_slots
+        .iter()
+        .copied()
+        .any(|index| {
+            references
+                .get(index)
+                .is_some_and(|reference| reference.flags().recursive)
+        })
+        .then(|| public_namespace_children(declarations, memberships));
     for index in import_slots.iter().copied() {
         let reference = references
             .get(index)
@@ -459,24 +471,21 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
         let import_is_public = memberships.is_public(reference.source());
         match reference.kind() {
             ReferenceKind::NamespaceImport => {
-                for (name, candidates) in exported_names.entries_for_owner(Some(target)) {
-                    extend_import_entries(
+                // `::*` re-exports the target's own members; `::*::**` additionally re-exports the
+                // members of every namespace nested under it.
+                let owners = if reference.flags().recursive {
+                    recursive_import_owners(recursive_children.as_deref().unwrap_or(&[]), target)
+                } else {
+                    vec![target]
+                };
+                for owner in owners {
+                    extend_from_namespace(
                         &mut entries,
                         &mut exported_entries,
+                        exported_names,
+                        previous_exported_imports,
                         import_owner,
-                        name,
-                        candidates,
-                        import_is_public,
-                    );
-                }
-                for (name, candidates) in previous_exported_imports.entries_for_owner(Some(target))
-                {
-                    extend_import_entries(
-                        &mut entries,
-                        &mut exported_entries,
-                        import_owner,
-                        name,
-                        candidates,
+                        owner,
                         import_is_public,
                     );
                 }
@@ -493,6 +502,24 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                             import_owner,
                             name,
                             std::slice::from_ref(&target),
+                            import_is_public,
+                        );
+                    }
+                }
+                // `::**` also re-exports the members of the target namespace and of every namespace
+                // nested under it. The named membership itself is added above.
+                if reference.flags().recursive {
+                    for owner in recursive_import_owners(
+                        recursive_children.as_deref().unwrap_or(&[]),
+                        target,
+                    ) {
+                        extend_from_namespace(
+                            &mut entries,
+                            &mut exported_entries,
+                            exported_names,
+                            previous_exported_imports,
+                            import_owner,
+                            owner,
                             import_is_public,
                         );
                     }
@@ -562,6 +589,92 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
         NameIndex::build(entries)?,
         NameIndex::build(exported_entries)?,
     ))
+}
+
+/// Re-exports one namespace's own members and the members it already re-exports by import into
+/// the importing scope. Shared by plain `::*` and by each namespace a recursive import reaches.
+fn extend_from_namespace(
+    entries: &mut Vec<(NameKey, DeclarationId)>,
+    exported_entries: &mut Vec<(NameKey, DeclarationId)>,
+    exported_names: &NameIndex,
+    previous_exported_imports: &NameIndex,
+    import_owner: Option<DeclarationId>,
+    namespace: DeclarationId,
+    import_is_public: bool,
+) {
+    for (name, candidates) in exported_names.entries_for_owner(Some(namespace)) {
+        extend_import_entries(
+            entries,
+            exported_entries,
+            import_owner,
+            name,
+            candidates,
+            import_is_public,
+        );
+    }
+    for (name, candidates) in previous_exported_imports.entries_for_owner(Some(namespace)) {
+        extend_import_entries(
+            entries,
+            exported_entries,
+            import_owner,
+            name,
+            candidates,
+            import_is_public,
+        );
+    }
+}
+
+/// `owner index -> its child declarations that are publicly-visible namespaces`. Only a public
+/// nested namespace is importable, so a recursive import never descends through a private one.
+fn public_namespace_children(
+    declarations: &[Declaration],
+    memberships: &MembershipIndex,
+) -> Vec<Vec<DeclarationId>> {
+    let mut children = vec![Vec::new(); declarations.len()];
+    for (index, declaration) in declarations.iter().enumerate() {
+        if !DeclarationDomain::Namespace.accepts(declaration.kind) {
+            continue;
+        }
+        let Ok(child) = DeclarationId::from_index(index) else {
+            continue;
+        };
+        if !memberships.is_public(child) {
+            continue;
+        }
+        if let Some(slot) = declaration
+            .owner
+            .and_then(|owner| children.get_mut(owner.index()))
+        {
+            slot.push(child);
+        }
+    }
+    children
+}
+
+/// `target` plus every namespace nested under it, following only the public-namespace edges in
+/// `children`. Package ownership is a tree; the visited guard is defensive against malformed
+/// storage rather than expected cycles.
+fn recursive_import_owners(
+    children: &[Vec<DeclarationId>],
+    target: DeclarationId,
+) -> Vec<DeclarationId> {
+    if children.is_empty() {
+        return vec![target];
+    }
+    let mut visited = vec![false; children.len()];
+    let mut owners = Vec::new();
+    let mut stack = vec![target];
+    while let Some(current) = stack.pop() {
+        match visited.get_mut(current.index()) {
+            Some(seen) if !*seen => *seen = true,
+            _ => continue,
+        }
+        owners.push(current);
+        if let Some(next) = children.get(current.index()) {
+            stack.extend(next.iter().copied());
+        }
+    }
+    owners
 }
 
 pub(crate) fn extend_import_entries(
