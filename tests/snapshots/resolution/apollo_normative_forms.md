@@ -1,6 +1,6 @@
 # META
 ~~~ini
-description=The five Apollo 11 normative textual forms of issue #100: forms 1, 3, and 5 (keyword-less feature usage in a use-case-family body, multiplicity before typing on a nested action usage, and a def-less abstract connection usage) lower without recovery or unsupported-form diagnostics; forms 2 and 4 stay blocked on parser gaps 83 and 84
+description=The five Apollo 11 normative textual forms of issue #100: forms 1, 3, and 5 (keyword-less feature usage in a use-case-family body, multiplicity before typing on a nested action usage, and a def-less abstract connection usage) lower without recovery or unsupported-form diagnostics, and a calc-body `return <name> :> <Feature>` subsets rather than types its target; forms 2 (chained `->select`/`->collect` after `return :>`) and 4 (`do action <name> { <body> }`) stay blocked on parser gaps 83 and 84
 type=file
 ~~~
 # SOURCE
@@ -33,6 +33,20 @@ package ApolloNormativeForms {
     part def CapabilitySet {
         abstract connection capabilityToGoals[*] : CapabilityToGoalDerivation;
     }
+
+    // Form 2, non-chained part: a calc-body `return <name> :> <Feature>` (the Apollo
+    // `Analysis/CalculationsPackage.sysml` spelling) subsets the feature rather than typing it.
+    // The chained `->select { … }->collect { … }` value after `return :>` stays parser-blocked
+    // (gap 83), so this covers only the `:>` subsetting-target lowering.
+    attribute def PowerBudget {
+        attribute sourcePower;
+        attribute loadPower;
+        attribute margin;
+    }
+    calc def PowerMargin {
+        in budget : PowerBudget;
+        return powerMargin :> PowerBudget::margin = budget.sourcePower - budget.loadPower;
+    }
 }
 ~~~
 # EXPECTED DIAGNOSTICS
@@ -56,7 +70,7 @@ package ApolloNormativeForms {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:339e6303c33ca86e19f8a9360ec0a83e75ccb91dc49a4e8644dcb272c87875cb"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1b284045bbb0d19745daa1caf982255f595a306ed424397569703c9ada9c4296"))
   (declarations
     (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::Apollo11MissionDeltaVBudgetAnalysis"))) (kind analysis) (membership (kind feature) (visibility default)))
@@ -75,6 +89,15 @@ package ApolloNormativeForms {
     (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::Function::subactions"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite) (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Function")))))
     (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::MissionSystem"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::MissionSystem::launchVehicle"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "SaturnV")))))
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::loadPower"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::margin"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::sourcePower"))) (kind attribute) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin"))) (kind calc-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::budget"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PowerBudget") (direction in)))))
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::powerMargin"))) (kind parameter) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "PowerBudget::margin")))))
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (memberAccessOperand (reference "budget::sourcePower")) (memberAccessOperand (reference "budget::loadPower")))))
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::SaturnV"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::apollo11MissionSystem"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MissionSystem")))))
   )
@@ -103,6 +126,18 @@ package ApolloNormativeForms {
     (reference (id (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::MissionSystem::launchVehicle"))) (kind featureTyping) (ordinal 0))
       (authored-target "SaturnV")
       (outcome (status resolved) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::SaturnV")))))
+    (reference (id (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::budget"))) (kind featureTyping) (ordinal 0))
+      (authored-target "PowerBudget")
+      (outcome (status resolved) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget")))))
+    (reference (id (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::powerMargin"))) (kind subsetting) (ordinal 0))
+      (authored-target "PowerBudget::margin")
+      (outcome (status resolved) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::margin")))))
+    (reference (id (source (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0))
+      (authored-target "budget::sourcePower")
+      (outcome (status resolved) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::sourcePower")))))
+    (reference (id (source (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1))
+      (authored-target "budget::loadPower")
+      (outcome (status resolved) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::loadPower")))))
     (reference (id (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::apollo11MissionSystem"))) (kind featureTyping) (ordinal 0))
       (authored-target "MissionSystem")
       (outcome (status resolved) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::MissionSystem")))))
@@ -116,6 +151,10 @@ package ApolloNormativeForms {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::CompositeFunction::subfunctions"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::Function::subactions"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::CompositeFunction::subfunctions"))) (kind redefinition) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::Function::subactions"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::Function"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::Function::subactions"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::MissionSystem::launchVehicle"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::SaturnV"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::MissionSystem::launchVehicle"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::budget"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::budget"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::powerMargin"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::margin"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::powerMargin"))) (kind subsetting) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::sourcePower"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0)))
+    (relationship (kind memberAccessOperand) (source (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::loadPower"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::apollo11MissionSystem"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::MissionSystem"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::apollo11MissionSystem"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::Apollo11MissionDeltaVBudgetAnalysis::launchVehicle"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::Apollo11MissionDeltaVBudgetAnalysis"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind analysis) (name "Apollo11MissionDeltaVBudgetAnalysis")) (named (kind default-reference) (name "launchVehicle")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind analysis) (name "Apollo11MissionDeltaVBudgetAnalysis")) (named (kind default-reference) (name "launchVehicle")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -129,9 +168,16 @@ package ApolloNormativeForms {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::CompositeFunction::subfunctions"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::CompositeFunction"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::Function::subactions"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::Function"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::MissionSystem::launchVehicle"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::MissionSystem"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::loadPower"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::margin"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::sourcePower"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::budget"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::powerMargin"))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind analysis) (name "Apollo11MissionDeltaVBudgetAnalysis")) (named (kind default-reference) (name "launchVehicle")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
   )
 )
 ~~~
@@ -202,6 +248,32 @@ package ApolloNormativeForms {
       (supertype (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::SaturnV")) (scopes any))
       (subtype (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind analysis) (name "Apollo11MissionDeltaVBudgetAnalysis")) (named (kind default-reference) (name "launchVehicle")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget")))
+      (subtype (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::budget")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::loadPower")))
+      (featured-by (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget")))
+    )
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::margin")))
+      (featured-by (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget")))
+      (subtype (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::powerMargin")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::sourcePower")))
+      (featured-by (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget")))
+    )
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::budget")))
+      (featured-by (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin")))
+      (type (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget")) (source direct))
+      (supertype (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::powerMargin")))
+      (featured-by (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin")))
+      (supertype (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::margin")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0)))))
+    )
     (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::SaturnV")))
       (subtype (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::Apollo11MissionDeltaVBudgetAnalysis::launchVehicle")) (scopes any))
       (subtype (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::MissionSystem::launchVehicle")) (scopes any))
@@ -254,6 +326,26 @@ package ApolloNormativeForms {
   (query (document "memory://snapshot/apollo_normative_forms.md") (range (start 3 29) (end 3 36)) (probe (position 3 29))
     (reference (id (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::MissionSystem::launchVehicle"))) (kind featureTyping) (ordinal 0) (authored-target "SaturnV")
       (outcome (status resolved) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::SaturnV")))))
+    )
+  )
+  (query (document "memory://snapshot/apollo_normative_forms.md") (range (start 39 20) (end 39 31)) (probe (position 39 20))
+    (reference (id (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::budget"))) (kind featureTyping) (ordinal 0) (authored-target "PowerBudget")
+      (outcome (status resolved) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget")))))
+    )
+  )
+  (query (document "memory://snapshot/apollo_normative_forms.md") (range (start 40 30) (end 40 49)) (probe (position 40 30))
+    (reference (id (source (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerMargin::powerMargin"))) (kind subsetting) (ordinal 0) (authored-target "PowerBudget::margin")
+      (outcome (status resolved) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::margin")))))
+    )
+  )
+  (query (document "memory://snapshot/apollo_normative_forms.md") (range (start 40 52) (end 40 70)) (probe (position 40 52))
+    (reference (id (source (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 0) (authored-target "budget::sourcePower")
+      (outcome (status resolved) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::sourcePower")))))
+    )
+  )
+  (query (document "memory://snapshot/apollo_normative_forms.md") (range (start 40 73) (end 40 89)) (probe (position 40 73))
+    (reference (id (source (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind memberAccessOperand) (ordinal 1) (authored-target "budget::loadPower")
+      (outcome (status resolved) (target (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::PowerBudget::loadPower")))))
     )
   )
   (query (document "memory://snapshot/apollo_normative_forms.md") (range (start 5 33) (end 5 46)) (probe (position 5 33))

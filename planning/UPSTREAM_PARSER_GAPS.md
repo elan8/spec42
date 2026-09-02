@@ -79,7 +79,7 @@ rerun against the exact replacement revision when fixed.
 
 | Gap | Information unavailable to consumers | Minimum upstream acceptance evidence |
 | --- | --- | --- |
-| 83 | `return :>` / `return :>>` with a `::`-qualified subsetting target in a calc/constraint body | `elan8/sysml-v2-parser#133` fixed only the `:>>` (redefinition) spelling. `return :> ISQ::power = system.subparts->select { … }->collect { … }->sum();` (Apollo 11 `Analysis/CalculationsPackage.sysml`, `spec42#100` form 2) still recovers as `recovered_calc_body_element`: `return_decl` parses the leading `:>` target with a single-identifier `name()` that truncates `ISQ::power`. Store the `:>` target as a `qualified_reference` on `ReturnDecl` with no declaration name, exactly as `:>>` now does |
+| 83 | The *chained* `->select { … }->collect { … }` value after a calc-body `return :>` | `elan8/sysml-v2-parser#133` fixed the `:>>` redefinition target and spec42 now lowers a leading `return :>>`/`return <name> :>` target (redefinition / subsetting). What still recovers as `recovered_calc_body_element` is the chained collection-operator *value*: `return :> ISQ::power = system.subparts->select { in sys : Part; sys istype PowerProvider }->collect { in sys : PowerProvider; sys.powerGenerated }->sum();` (Apollo 11 `Analysis/CalculationsPackage.sysml` `rollupPowerGeneration`, `spec42#100` form 2). A single non-chained `->select { … }` value parses; the trigger is `->select { … }->collect { … }` chained on a `return` feature value. Accept the chained postfix form as `return_decl`'s value expression |
 | 84 | `do`/`entry`/`exit` `action <name> { <body> }` distinguishes a declared nested action from a referenced one | `elan8/sysml-v2-parser#133` made `first`/`then` parse inside these bodies (`spec42#100` form 4), but `state_behavior_action_target` still only treats `action <name>` as a *declaration* when a `: Type` or `:>>` clause follows; `do action prepareForMissionPhaseOperations { first start; … }` (Apollo 11 `Purpose/MissionPhasesPackage.sysml`) parses `prepareForMissionPhaseOperations` as an `action_reference`, so spec42 emits a spurious `unresolved_reference` and every downstream feature chain through `.<name>.` cascades. Treat a name immediately followed by `{` as a `declared_name`, as a body-carrying nested action |
 | 61 | `message` has no member variant in a calc-shaped body | Give `message` a typed member variant in the calc-shaped body grammar; prove `message m of T;` produces one node whose keyword never reaches the AST as a feature reference |
 | 76 | The shorthand `else` branch as an action-body statement | Add the `if <cond> then <a> else <b>;` alternative; prove it reaches one member with both branches, as `if <cond> then <a>;` already does |
@@ -96,13 +96,14 @@ where the arena-backed work originated; they do not authorize changing spec42 to
 upstream branch. A fix is consumed only by updating the single full revision in spec42 and
 regenerating the lockfile through the normal dependency workflow.
 
-- Gap 83. Verified at `7634eaf1`: `package P { calc def C { in system : Anything; return :> ISQ::power
-  = system.subparts->select { in sys : Part; sys istype PowerProvider }->collect { in sys :
-  PowerProvider; sys.powerGenerated }->sum(); } }` is `recovered_calc_body_element` at `3:4`, while
-  the same fixture with `return :>>` parses to a typed `ReturnDecl` (anonymous, `redefines ISQ::power`).
-  `spec42_resolution` already lowers the `:>>` redefinition target (`lower_return_decl`); the `:>`
-  subsetting target needs the same qualified-reference storage upstream before spec42 can lower it.
-  The Apollo 11 `rollupPowerGeneration` / `rollupPowerConsumption` calc defs use the `:>` spelling.
+- Gap 83. Verified at `7634eaf1`: `calc def C { in system : Anything; return :> ISQ::power =
+  system.subparts->select { in sys : Part; sys istype PowerProvider }->collect { in sys :
+  PowerProvider; sys.powerGenerated }->sum(); }` is `recovered_calc_body_element` at `3:4`. Dropping
+  the chain to a single `return :> ISQ::power = system.subparts->select { in sys : Part; sys
+  istype PowerProvider };` parses. spec42 `lower_return_decl` now lowers both the `:>` (subsetting)
+  and `:>>` (redefinition) leading targets on a `return` -- what remains is the parser accepting a
+  chained `->select { … }->collect { … }->sum()` postfix as a `return` feature value. The Apollo 11
+  `rollupPowerGeneration` / `rollupPowerConsumption` calc defs use exactly this chain.
 
 - Gap 84. Verified at `7634eaf1`: `package P { state def S { do action ops { first start; then done;
   } } }` parses with no recovery, but `ops` is an `action_reference`, so `spec42 check` reports

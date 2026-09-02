@@ -37,12 +37,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with a multiplicity written before the typing (`action subfunctions[*] : Function :>> subactions;`)
   and a `def`-less `abstract connection` usage of the same shape both parse without recovery or
   `unsupported_grammar_form`. A calc-body `return :>>` now lowers its `::`-qualified redefinition
-  target as an authored `Redefinition` reference (matching the case-family `return`), so a leading
-  `return :>> <target>` no longer silently drops the authored intent. `first`/`then` action-flow
-  statements are accepted in the new `StateDefBodyElement::FirstStmt` / `ThenAction` members.
-  Two forms remain parser-blocked and are tracked in `planning/UPSTREAM_PARSER_GAPS.md` (gaps 83,
-  84): `return :>` (subsetting) with a qualified target still recovers, and `do action <name> { … }`
-  with a body but no typing clause is still parsed as an action reference. Partially addresses #100.
+  target as an authored `Redefinition` reference and `return <name> :> <Feature>` as a `Subsetting`
+  reference against a feature rather than a failing `FeatureTyping` against a classifier -- both
+  matching the case-family `return`. So `return deltaV :> ISQ::speed = …;` (Apollo 11
+  `Analysis/CalculationsPackage.sysml`, and the official SysML v2 spec Annex A vehicle model) no
+  longer reports `unresolved_type_reference`, and a leading `return :>> <target>` no longer
+  silently drops the authored intent. `first`/`then` action-flow statements are accepted in the new
+  `StateDefBodyElement::FirstStmt` / `ThenAction` members. Two forms remain parser-blocked and are
+  tracked in `planning/UPSTREAM_PARSER_GAPS.md` (gaps 83, 84): the *chained* `return :>
+  … ->select { … }->collect { … }` value still recovers as `recovered_calc_body_element`, and `do
+  action <name> { … }` with a body but no typing clause is still parsed as an action reference.
+  Partially addresses #100.
 
 - **Bumped the pinned `sysml-v2-parser` revision `4b65812` -> `f04d51e`.** Picks up keyword-less
   `first ... then ...` succession usages in occurrence and item definition bodies (authored
