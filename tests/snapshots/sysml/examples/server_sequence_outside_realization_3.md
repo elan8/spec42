@@ -171,7 +171,7 @@ package ServerSequenceOutsideRealization_3 {
   (document "memory://snapshot/server_sequence_outside_realization_3.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 36))

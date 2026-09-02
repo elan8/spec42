@@ -46,7 +46,7 @@ package 'Allocation Usage Example' {
   (document "memory://snapshot/38_allocation_usage_example.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 17 17) (end 17 32))

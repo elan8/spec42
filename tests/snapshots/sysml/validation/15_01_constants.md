@@ -67,7 +67,7 @@ package '15_01-Constants' {
   (document "memory://snapshot/15_01_constants.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 19) (end 1 43))

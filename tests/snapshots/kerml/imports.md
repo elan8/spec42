@@ -64,7 +64,7 @@ package Imports {
         (range (start 16 3) (end 19 2))
       )
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 26 16) (end 26 20))

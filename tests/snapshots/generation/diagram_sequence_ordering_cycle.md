@@ -374,7 +374,6 @@ package SequenceCycle {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:362c59dbd1f2b301165c75aeb79b69a56b41f07758c0a4e82e2f25ee7e4a8a1d",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_ordering_cycle.md",

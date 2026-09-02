@@ -48,7 +48,7 @@ package '15_11-Variable Length Collection Types' {
   (document "memory://snapshot/15_11_variable_length_collection_types.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 31))

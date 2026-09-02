@@ -49,7 +49,7 @@ package Use {
         )
       )
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 11) (end 1 20))

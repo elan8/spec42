@@ -155,7 +155,7 @@ standard library package ModelingMetadata {
   (document "memory://snapshot/modeling_metadata.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 6 16) (end 6 30))

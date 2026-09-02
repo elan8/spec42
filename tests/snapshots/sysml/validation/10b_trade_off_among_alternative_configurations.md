@@ -109,7 +109,7 @@ package '10b-Trade-off Among Alternative Configurations' {
   (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 34))

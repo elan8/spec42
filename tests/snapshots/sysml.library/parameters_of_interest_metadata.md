@@ -51,7 +51,7 @@ standard library package ParametersOfInterestMetadata {
   (document "memory://snapshot/parameters_of_interest_metadata.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 7 17) (end 7 46))

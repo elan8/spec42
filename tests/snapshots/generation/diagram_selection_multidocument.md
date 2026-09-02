@@ -251,7 +251,6 @@ package BehaviorModel {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:94125059ed780aa5fd6a45c41ca6a1df182baba7a2b5255a2be4ab8026908d80",
   "documents": [
     {
       "uri": "memory://snapshot/structure.sysml",

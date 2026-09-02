@@ -85,7 +85,7 @@ package TimeVaryingSteps {
         (range (start 4 45) (end 4 79))
       )
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 5 19) (end 5 26))

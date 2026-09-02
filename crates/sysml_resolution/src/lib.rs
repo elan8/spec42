@@ -52,8 +52,9 @@ pub use sysml_contract::{
     DocumentId, DocumentToken, ElementKind, ElementSearch, ElementSource,
     LibrarySpecializationAnchorBranch, MembershipId, MembershipRole, OccurrenceRole,
     PublicationCompleteness, PublicationEvaluationPolicy, PublicationModelDigest,
-    PublicationObstacle, QueryAnswer, QueryOutcome, RequirementConstraintKind, StateSubactionKind,
-    SymbolId, SymbolToken, TextId, TextPosition, TextRange,
+    PublicationObstacle, QueryAnswer, QueryOutcome, RequirementConstraintKind,
+    StandardLibraryAvailability, StateSubactionKind, SymbolId, SymbolToken, TextId, TextPosition,
+    TextRange,
 };
 
 pub use sysml_source as source;
@@ -317,6 +318,7 @@ pub struct PublicationIdentity {
     source_digest: RootDigest,
     semantic_contract_version: Box<str>,
     evaluation_policy: EvaluationPolicy,
+    standard_library_availability: StandardLibraryAvailability,
     /// The admitted documents the host asked to have reported beyond its workspace, in canonical
     /// order. Part of the identity because it changes what the publication answers.
     reported_documents: Box<[Box<str>]>,
@@ -335,6 +337,10 @@ impl PublicationIdentity {
         self.evaluation_policy
     }
 
+    pub fn standard_library_availability(&self) -> StandardLibraryAvailability {
+        self.standard_library_availability
+    }
+
     /// Dependency-complete identity of every input that can change published semantic answers.
     pub fn model_digest(&self) -> PublicationModelDigest {
         PublicationModelDigest::new(
@@ -344,6 +350,7 @@ impl PublicationIdentity {
                 EvaluationPolicy::Evaluate => PublicationEvaluationPolicy::Evaluate,
                 EvaluationPolicy::Skip => PublicationEvaluationPolicy::Skip,
             },
+            self.standard_library_availability,
             self.reported_documents.iter().map(AsRef::as_ref),
         )
     }
@@ -361,6 +368,7 @@ pub struct BuildRequest {
     policy: EvaluationPolicy,
     library: Option<std::sync::Arc<LibraryStratum>>,
     reported: Vec<Box<str>>,
+    standard_library_availability: StandardLibraryAvailability,
     identity: PublicationIdentity,
     /// The memo pending sources are parsed through; absent, they are parsed cold.
     syntax: Option<std::sync::Arc<syntax::SyntaxAuthority>>,
@@ -503,10 +511,12 @@ impl BuildRequest {
             policy: EvaluationPolicy::default(),
             library: None,
             reported: Vec::new(),
+            standard_library_availability: StandardLibraryAvailability::Unavailable,
             identity: PublicationIdentity {
                 source_digest,
                 semantic_contract_version,
                 evaluation_policy: EvaluationPolicy::default(),
+                standard_library_availability: StandardLibraryAvailability::Unavailable,
                 reported_documents: Box::default(),
             },
             syntax: None,
@@ -599,6 +609,15 @@ impl BuildRequest {
         self
     }
 
+    pub fn with_standard_library_availability(
+        mut self,
+        availability: StandardLibraryAvailability,
+    ) -> Self {
+        self.standard_library_availability = availability;
+        self.identity.standard_library_availability = availability;
+        self
+    }
+
     pub fn identity(&self) -> &PublicationIdentity {
         &self.identity
     }
@@ -684,6 +703,7 @@ fn build_parts(
             sources,
             schedule,
             request.policy,
+            request.standard_library_availability,
             request.library.as_deref().map(|library| &library.prepared),
             &request.reported,
             request.lowering.as_deref(),

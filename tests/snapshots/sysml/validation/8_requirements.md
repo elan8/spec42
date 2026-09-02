@@ -217,7 +217,7 @@ package '8-Requirements' {
   (document "memory://snapshot/8_requirements.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 34))

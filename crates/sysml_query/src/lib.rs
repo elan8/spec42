@@ -17,7 +17,9 @@
 /// artefact was produced under had no value to record, and no test outside `sysml_resolution`
 /// asserted it. It is published here because the version of a contract is part of the contract,
 /// and because consumers reach the vocabulary only through this facade.
-pub use sysml_contract::{SemanticContractVersion, SEMANTIC_CONTRACT_VERSION};
+pub use sysml_contract::{
+    SemanticContractVersion, StandardLibraryAvailability, SEMANTIC_CONTRACT_VERSION,
+};
 
 pub mod library;
 pub mod publication;

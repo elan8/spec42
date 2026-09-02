@@ -41,7 +41,7 @@ package 'Binding Connectors Example-1' {
   (document "memory://snapshot/12_binding_connectors_example_1.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 33))

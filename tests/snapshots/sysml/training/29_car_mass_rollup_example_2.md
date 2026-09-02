@@ -50,7 +50,7 @@ package 'Car Mass Rollup 1' {
   (document "memory://snapshot/29_car_mass_rollup_example_2.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 31))

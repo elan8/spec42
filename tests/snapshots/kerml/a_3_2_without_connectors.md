@@ -46,7 +46,7 @@ package WithoutConnectorsExecution {
   (document "memory://snapshot/a_3_2_without_connectors.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 19 16) (end 19 24))

@@ -176,7 +176,7 @@ standard library package Views {
   (document "memory://snapshot/views.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 7 16) (end 7 27))

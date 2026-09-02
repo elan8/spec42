@@ -45,7 +45,7 @@ package PrivateImportTest {
   (document "memory://snapshot/private_import_test.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 5 17) (end 5 22))

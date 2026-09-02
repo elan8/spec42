@@ -42,7 +42,7 @@ package CalculationExample {
   (document "memory://snapshot/calculation_test.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 22))

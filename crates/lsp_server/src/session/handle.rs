@@ -263,8 +263,16 @@ impl WorkspaceHandle {
         let staged = self
             .actor
             .mutate(move |state| {
-                let (documents, reported) = crate::session::state::publication_inputs(state);
-                match state.services.publication.prepare(&documents, reported) {
+                let (documents, reported, standard_library_availability) =
+                    crate::session::state::publication_inputs(state);
+                match state
+                    .services
+                    .publication
+                    .prepare_with_standard_library_availability(
+                        &documents,
+                        standard_library_availability,
+                        reported,
+                    ) {
                     Ok(prepared) => {
                         let token = state.session.begin_build(prepared.identity().clone());
                         Ok(SemanticBuild::new(token, prepared))
@@ -352,12 +360,14 @@ impl WorkspaceHandle {
         roots: Vec<Url>,
         library_paths: Vec<Url>,
         standard_library_paths: Vec<Url>,
+        standard_library_availability: sysml_query::StandardLibraryAvailability,
     ) -> Result<(), MutatePanicked> {
         self.actor
             .mutate(move |s| {
                 s.workspace_roots = roots;
                 s.library_paths = library_paths;
                 s.standard_library_paths = standard_library_paths;
+                s.standard_library_availability = standard_library_availability;
                 s.session.reset();
             })
             .await

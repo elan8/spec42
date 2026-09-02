@@ -42,7 +42,7 @@ standard library package MeasurementRefCalculations {
   (document "memory://snapshot/measurement_ref_calculations.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 6 19) (end 6 39))

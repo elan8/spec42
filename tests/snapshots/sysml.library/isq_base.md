@@ -218,7 +218,7 @@ standard library package ISQBase {
   (document "memory://snapshot/isq_base.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 10 19) (end 10 37))

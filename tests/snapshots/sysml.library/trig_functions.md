@@ -46,7 +46,7 @@ standard library package TrigFunctions {
   (document "memory://snapshot/trig_functions.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 5 18) (end 5 36))

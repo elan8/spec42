@@ -298,7 +298,7 @@ package 'Vehicle Analysis Demo' {
   (document "memory://snapshot/vehicle_analysis_demo.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 19) (end 1 34))

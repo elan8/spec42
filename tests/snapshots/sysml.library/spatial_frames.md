@@ -209,7 +209,7 @@ standard library package SpatialFrames {
   (document "memory://snapshot/spatial_frames.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 7 19) (end 7 28))

@@ -1775,6 +1775,7 @@ mod tests {
             storage,
             crate::lower::storage::ParsedSources::default(),
             EvaluationPolicy::Evaluate,
+            sysml_contract::StandardLibraryAvailability::Unavailable,
             None,
             &[],
         )

@@ -59,7 +59,7 @@ standard library package ComplexFunctions {
   (document "memory://snapshot/complex_functions.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 7 15) (end 7 30))

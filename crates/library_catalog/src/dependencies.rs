@@ -14,6 +14,15 @@ use semver::{Version, VersionReq};
 use serde::Serialize;
 
 use crate::LibraryCatalog;
+use sysml_query::StandardLibraryAvailability;
+
+/// Provenance of one locally configured dependency candidate.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum ProjectDependencyCandidateKind {
+    StandardLibrary,
+    Project,
+}
 
 /// One installed project that may satisfy a `.project.json` usage.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -23,6 +32,15 @@ pub struct ProjectDependencyCandidate {
     pub project_name: String,
     pub version: String,
     pub package_roots: Vec<PathBuf>,
+    pub kind: ProjectDependencyCandidateKind,
+}
+
+/// How a satisfied authored usage contributes to project admission.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum ProjectDependencyKind {
+    StandardLibraryConstraint,
+    Project,
 }
 
 /// Stable, explicit result for every authored project usage.
@@ -35,6 +53,7 @@ pub enum ProjectDependencyResolution {
         project_name: String,
         selected_version: String,
         package_roots: Vec<PathBuf>,
+        kind: ProjectDependencyKind,
     },
     Unresolved {
         resource: String,
@@ -55,6 +74,16 @@ pub enum ProjectDependencyResolution {
         version_constraint: Option<String>,
         matching_versions: Vec<String>,
     },
+    StandardLibraryUnavailable {
+        resource: String,
+        version_constraint: Option<String>,
+        availability: StandardLibraryAvailability,
+    },
+    StandardLibraryVersionMismatch {
+        resource: String,
+        version_constraint: Option<String>,
+        configured_versions: Vec<String>,
+    },
 }
 
 /// Complete local library admission for one project boundary.
@@ -67,6 +96,7 @@ pub struct ProjectDependencyAdmission {
     pub library_roots: Vec<PathBuf>,
     /// The mandatory KerML/SysML library subset of [`Self::library_roots`].
     pub standard_library_roots: Vec<PathBuf>,
+    pub standard_library_availability: StandardLibraryAvailability,
     pub candidate_roots: Vec<PathBuf>,
     /// Roots selected specifically by authored project usages. This excludes mandatory roots that
     /// are admitted independently of the manifest.
@@ -92,13 +122,7 @@ pub fn manifest_usages_for_standard_library(
     let standard_candidates = catalog
         .dependency_candidates
         .iter()
-        .filter(|candidate| {
-            candidate
-                .package_roots
-                .iter()
-                .map(canonical)
-                .any(|root| standard_roots.contains(&root))
-        })
+        .filter(|candidate| candidate.kind == ProjectDependencyCandidateKind::StandardLibrary)
         .collect::<Vec<_>>();
     let identified_roots = standard_candidates
         .iter()
@@ -213,16 +237,40 @@ pub fn resolve_project_dependency_admission(
             resolutions: Vec::new(),
             library_roots: catalog.package_roots.clone(),
             standard_library_roots: catalog.stdlib.roots.clone(),
+            standard_library_availability: catalog.stdlib.availability,
             candidate_roots: Vec::new(),
             selected_candidate_roots: Vec::new(),
         });
     }
 
-    let resolutions =
-        resolve_project_manifest_dependencies(&manifest_path, &catalog.dependency_candidates)?;
+    let bytes = fs::read(&manifest_path).map_err(|error| {
+        format!(
+            "Could not read project manifest {}: {error}",
+            manifest_path.display()
+        )
+    })?;
+    let project: Project = serde_json::from_slice(&bytes).map_err(|error| {
+        format!(
+            "Invalid project manifest {}: {error}",
+            manifest_path.display()
+        )
+    })?;
+    let resolutions = resolve_project_dependencies_for_catalog(&project, catalog);
+    // An authored standard-library usage constrains the host-selected baseline; it never selects
+    // one. When that baseline is disabled (`--no-stdlib` / `no_stdlib`) or unavailable, the pin has
+    // nothing to constrain and is inert rather than a hard failure: admission proceeds so the
+    // publication can surface the disabled or unavailable state as an actionable per-import
+    // diagnostic, exactly as it does for a manifestless or `usage: []` project. A genuine identity
+    // or version incompatibility against an *available* baseline stays a hard failure.
     let failures = resolutions
         .iter()
-        .filter(|resolution| !matches!(resolution, ProjectDependencyResolution::Satisfied { .. }))
+        .filter(|resolution| {
+            !matches!(
+                resolution,
+                ProjectDependencyResolution::Satisfied { .. }
+                    | ProjectDependencyResolution::StandardLibraryUnavailable { .. }
+            )
+        })
         .collect::<Vec<_>>();
     if !failures.is_empty() {
         let states = serde_json::to_string(&failures)
@@ -245,7 +293,11 @@ pub fn resolve_project_dependency_admission(
     let mut selected_candidate_roots = resolutions
         .iter()
         .filter_map(|resolution| match resolution {
-            ProjectDependencyResolution::Satisfied { package_roots, .. } => Some(package_roots),
+            ProjectDependencyResolution::Satisfied {
+                package_roots,
+                kind: ProjectDependencyKind::Project,
+                ..
+            } => Some(package_roots),
             _ => None,
         })
         .flatten()
@@ -266,9 +318,104 @@ pub fn resolve_project_dependency_admission(
         resolutions,
         library_roots,
         standard_library_roots,
+        standard_library_availability: catalog.stdlib.availability,
         candidate_roots,
         selected_candidate_roots,
     })
+}
+
+fn resolve_project_dependencies_for_catalog(
+    project: &Project,
+    catalog: &LibraryCatalog,
+) -> Vec<ProjectDependencyResolution> {
+    let mut by_resource: BTreeMap<&str, Vec<&ProjectDependencyCandidate>> = BTreeMap::new();
+    for candidate in &catalog.dependency_candidates {
+        by_resource
+            .entry(candidate.resource.as_str())
+            .or_default()
+            .push(candidate);
+    }
+    let configured_resources = catalog
+        .standard_library
+        .projects
+        .iter()
+        .flat_map(|project| project.resources.iter().map(String::as_str))
+        .collect::<BTreeSet<_>>();
+    project
+        .usage
+        .iter()
+        .map(|usage| {
+            if configured_resources.contains(usage.resource.as_str()) {
+                return resolve_standard_library_usage(
+                    usage,
+                    by_resource.get(usage.resource.as_str()),
+                    catalog.stdlib.availability,
+                );
+            }
+            resolve_usage(usage, by_resource.get(usage.resource.as_str()))
+        })
+        .collect()
+}
+
+fn resolve_standard_library_usage(
+    usage: &ProjectUsage,
+    candidates: Option<&Vec<&ProjectDependencyCandidate>>,
+    availability: StandardLibraryAvailability,
+) -> ProjectDependencyResolution {
+    if availability != StandardLibraryAvailability::Available {
+        return ProjectDependencyResolution::StandardLibraryUnavailable {
+            resource: usage.resource.clone(),
+            version_constraint: usage.version_constraint.clone(),
+            availability,
+        };
+    }
+    let standard = candidates
+        .map(|candidates| {
+            candidates
+                .iter()
+                .copied()
+                .filter(|candidate| {
+                    candidate.kind == ProjectDependencyCandidateKind::StandardLibrary
+                })
+                .collect::<Vec<_>>()
+        })
+        .unwrap_or_default();
+    let resolution = resolve_usage(usage, Some(&standard));
+    match resolution {
+        ProjectDependencyResolution::Satisfied {
+            resource,
+            version_constraint,
+            project_name,
+            selected_version,
+            package_roots,
+            ..
+        } => ProjectDependencyResolution::Satisfied {
+            resource,
+            version_constraint,
+            project_name,
+            selected_version,
+            package_roots,
+            kind: ProjectDependencyKind::StandardLibraryConstraint,
+        },
+        ProjectDependencyResolution::VersionMismatch {
+            resource,
+            version_constraint,
+            available_versions,
+        } => ProjectDependencyResolution::StandardLibraryVersionMismatch {
+            resource,
+            version_constraint: Some(version_constraint),
+            configured_versions: available_versions,
+        },
+        ProjectDependencyResolution::Unresolved {
+            resource,
+            version_constraint,
+        } => ProjectDependencyResolution::StandardLibraryVersionMismatch {
+            resource,
+            version_constraint,
+            configured_versions: Vec::new(),
+        },
+        other => other,
+    }
 }
 
 /// Preserve catalog precedence while restricting a manifest project to its language baseline and
@@ -376,6 +523,11 @@ fn resolve_usage(
         project_name: candidate.project_name.clone(),
         selected_version: candidate.version.clone(),
         package_roots: candidate.package_roots.clone(),
+        kind: if candidate.kind == ProjectDependencyCandidateKind::StandardLibrary {
+            ProjectDependencyKind::StandardLibraryConstraint
+        } else {
+            ProjectDependencyKind::Project
+        },
     }
 }
 
@@ -420,6 +572,52 @@ mod tests {
             project_name: "library".into(),
             version: version.into(),
             package_roots: vec![PathBuf::from("library-root")],
+            kind: ProjectDependencyCandidateKind::Project,
+        }
+    }
+
+    fn catalog_with_standard_library(availability: StandardLibraryAvailability) -> LibraryCatalog {
+        let resource = "https://example.test/stdlib";
+        let standard_root = PathBuf::from("standard-root");
+        LibraryCatalog {
+            root_digest: sysml_query::source::identity::RootDigest::of_bytes(b"test"),
+            package_roots: vec![standard_root.clone(), PathBuf::from("alternate-root")],
+            stdlib: crate::StdlibComponent {
+                path: Some(standard_root.clone()),
+                roots: vec![standard_root.clone()],
+                source: Some("test".into()),
+                used_legacy_vscode_fallback: false,
+                availability,
+            },
+            kpar_libraries: Vec::new(),
+            dependency_candidates: vec![
+                ProjectDependencyCandidate {
+                    resource: resource.into(),
+                    project_name: "Configured baseline".into(),
+                    version: "1.0.0".into(),
+                    package_roots: vec![standard_root],
+                    kind: ProjectDependencyCandidateKind::StandardLibrary,
+                },
+                ProjectDependencyCandidate {
+                    resource: resource.into(),
+                    project_name: "Ordinary alternate".into(),
+                    version: "9.0.0".into(),
+                    package_roots: vec![PathBuf::from("alternate-root")],
+                    kind: ProjectDependencyCandidateKind::Project,
+                },
+            ],
+            standard_library: crate::StandardLibraryConfig {
+                projects: vec![crate::StandardLibraryProjectConfig {
+                    archive: "stdlib.kpar".into(),
+                    name: "Configured baseline".into(),
+                    version: "1.0.0".into(),
+                    resources: vec![resource.into()],
+                }],
+                ..crate::StandardLibraryConfig::default()
+            },
+            standard_library_paths: crate::standard_library_paths_from_data_dir(PathBuf::from(
+                "cache",
+            )),
         }
     }
 
@@ -476,6 +674,101 @@ mod tests {
             resolutions[0],
             ProjectDependencyResolution::Ambiguous { .. }
         ));
+    }
+
+    #[test]
+    fn standard_library_usage_constrains_only_the_configured_baseline() {
+        let catalog = catalog_with_standard_library(StandardLibraryAvailability::Available);
+        let exact = resolve_project_dependencies_for_catalog(
+            &project(vec![usage("https://example.test/stdlib", Some("1.0.0"))]),
+            &catalog,
+        );
+        assert!(matches!(
+            &exact[0],
+            ProjectDependencyResolution::Satisfied {
+                selected_version,
+                kind: ProjectDependencyKind::StandardLibraryConstraint,
+                ..
+            } if selected_version == "1.0.0"
+        ));
+
+        let mismatch = resolve_project_dependencies_for_catalog(
+            &project(vec![usage("https://example.test/stdlib", Some("9.0.0"))]),
+            &catalog,
+        );
+        assert_eq!(
+            mismatch,
+            vec![
+                ProjectDependencyResolution::StandardLibraryVersionMismatch {
+                    resource: "https://example.test/stdlib".into(),
+                    version_constraint: Some("9.0.0".into()),
+                    configured_versions: vec!["1.0.0".into()],
+                }
+            ]
+        );
+    }
+
+    #[test]
+    fn authored_standard_library_usage_cannot_enable_a_disabled_baseline() {
+        let catalog = catalog_with_standard_library(StandardLibraryAvailability::Disabled);
+        assert_eq!(
+            resolve_project_dependencies_for_catalog(
+                &project(vec![usage("https://example.test/stdlib", Some("1.0.0"))]),
+                &catalog,
+            ),
+            vec![ProjectDependencyResolution::StandardLibraryUnavailable {
+                resource: "https://example.test/stdlib".into(),
+                version_constraint: Some("1.0.0".into()),
+                availability: StandardLibraryAvailability::Disabled,
+            }]
+        );
+    }
+
+    fn project_root_with_manifest(manifest: &Project) -> tempfile::TempDir {
+        let dir = tempfile::tempdir().expect("temp project dir");
+        fs::write(
+            dir.path().join(kpar::PROJECT_FILE),
+            serde_json::to_vec_pretty(manifest).expect("serialize manifest"),
+        )
+        .expect("write manifest");
+        dir
+    }
+
+    #[test]
+    fn a_disabled_baseline_leaves_an_authored_stdlib_pin_inert_instead_of_failing_admission() {
+        let dir = project_root_with_manifest(&project(vec![usage(
+            "https://example.test/stdlib",
+            Some("1.0.0"),
+        )]));
+        let catalog = catalog_with_standard_library(StandardLibraryAvailability::Disabled);
+
+        let admission = resolve_project_dependency_admission(dir.path(), &catalog)
+            .expect("a disabled baseline must not abort admission");
+
+        assert_eq!(
+            admission.standard_library_availability,
+            StandardLibraryAvailability::Disabled
+        );
+        assert_eq!(
+            admission.resolutions,
+            vec![ProjectDependencyResolution::StandardLibraryUnavailable {
+                resource: "https://example.test/stdlib".into(),
+                version_constraint: Some("1.0.0".into()),
+                availability: StandardLibraryAvailability::Disabled,
+            }]
+        );
+        assert!(admission.selected_candidate_roots.is_empty());
+    }
+
+    #[test]
+    fn an_incompatible_pin_against_an_available_baseline_still_fails_admission() {
+        let dir = project_root_with_manifest(&project(vec![usage(
+            "https://example.test/stdlib",
+            Some("9.0.0"),
+        )]));
+        let catalog = catalog_with_standard_library(StandardLibraryAvailability::Available);
+
+        assert!(resolve_project_dependency_admission(dir.path(), &catalog).is_err());
     }
 
     #[test]

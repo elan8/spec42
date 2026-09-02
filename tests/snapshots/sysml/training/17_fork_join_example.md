@@ -53,7 +53,7 @@ package 'Fork Join Example' {
   (document "memory://snapshot/17_fork_join_example.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 31))

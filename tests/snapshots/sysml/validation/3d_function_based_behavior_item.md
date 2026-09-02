@@ -95,7 +95,7 @@ package '3d-Function-based Behavior-item' {
   (document "memory://snapshot/3d_function_based_behavior_item.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 34))

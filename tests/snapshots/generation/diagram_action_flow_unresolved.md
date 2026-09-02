@@ -134,7 +134,6 @@ package ActionNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:51b8c25fa74c06d86c69b190b72853c389ab228187f0cad081280f8f381a7451",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_action_flow_unresolved.md",

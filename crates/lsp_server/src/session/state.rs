@@ -7,6 +7,7 @@ use sysml_query::publication::{
 use sysml_query::source::SourceDocument;
 use sysml_query::syntax::ParsedSource;
 use sysml_query::Services;
+use sysml_query::StandardLibraryAvailability;
 use tower_lsp::lsp_types::Url;
 
 /// One indexed document: its admitted source and the tree the syntax service parsed for it.
@@ -63,6 +64,7 @@ pub(crate) struct ServerState {
     pub(crate) workspace_roots: Vec<Url>,
     pub(crate) library_paths: Vec<Url>,
     pub(crate) standard_library_paths: Vec<Url>,
+    pub(crate) standard_library_availability: StandardLibraryAvailability,
     /// The one set of services this host publishes through.
     pub(crate) services: Services,
     /// The publication lifecycle and the current immutable publication.
@@ -104,6 +106,7 @@ impl ServerState {
             workspace_roots: Vec::new(),
             library_paths: Vec::new(),
             standard_library_paths: Vec::new(),
+            standard_library_availability: StandardLibraryAvailability::Unavailable,
             services,
             session,
             semantic_revision: 0,
@@ -144,6 +147,7 @@ pub(crate) trait DocumentStore {
     fn services(&self) -> &Services;
     /// Configured library roots: generic libraries first, then the standard library.
     fn library_roots(&self) -> (&[Url], &[Url]);
+    fn standard_library_availability(&self) -> StandardLibraryAvailability;
     /// Documents the editor has open, whose diagnostics are reported whatever their provenance.
     fn open_in_editor(&self) -> &std::collections::BTreeSet<Url>;
 }
@@ -164,6 +168,9 @@ impl DocumentStore for ServerState {
     fn library_roots(&self) -> (&[Url], &[Url]) {
         (&self.library_paths, &self.standard_library_paths)
     }
+    fn standard_library_availability(&self) -> StandardLibraryAvailability {
+        self.standard_library_availability
+    }
     fn open_in_editor(&self) -> &std::collections::BTreeSet<Url> {
         &self.open_in_editor
     }
@@ -177,7 +184,11 @@ impl DocumentStore for ServerState {
 /// library stratum can be reused.
 pub(crate) fn publication_inputs(
     state: &impl DocumentStore,
-) -> (Vec<SourceDocument>, Vec<Box<str>>) {
+) -> (
+    Vec<SourceDocument>,
+    Vec<Box<str>>,
+    StandardLibraryAvailability,
+) {
     use sysml_query::source::SourceKind;
 
     let (library_paths, standard_library_paths) = state.library_roots();
@@ -211,7 +222,7 @@ pub(crate) fn publication_inputs(
 
     // A failed rebuild must not replace the last coherent publication. Readers may continue using
     // the older state until the coordinator can atomically produce a new one.
-    (documents, reported)
+    (documents, reported, state.standard_library_availability())
 }
 
 /// Replaces the symbol projection from the committed immutable publication.
@@ -270,11 +281,11 @@ mod tests {
 
     async fn publish(state: &mut ServerState) {
         use sysml_query::publication::{PublicationOutcome, SemanticBuild};
-        let (documents, reported) = publication_inputs(state);
+        let (documents, reported, availability) = publication_inputs(state);
         let prepared = state
             .services
             .publication
-            .prepare(&documents, reported)
+            .prepare_with_standard_library_availability(&documents, availability, reported)
             .unwrap();
         let token = state.session.begin_build(prepared.identity().clone());
         let completion = state
