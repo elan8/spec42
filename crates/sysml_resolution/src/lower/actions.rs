@@ -92,8 +92,30 @@ impl SemanticModelBuilder {
             return Ok(());
         };
         for element in elements {
-            self.lower_action_def_body_element(document, owner, element)?;
+            // A body-less `#tag` prefix (`#refinement dependency X to Y;`) is a standalone sibling
+            // that annotates the member immediately after it; buffer it and bind it to that
+            // member's declaration. Any other member flushes an unbound prefix as an explicit
+            // unsupported member first, so a stray `#tag` never leaks onto a later declaration.
+            match &element.value {
+                ActionDefBodyElement::MetadataKeywordUsage(keyword)
+                    if keyword.value.body.is_none() =>
+                {
+                    self.buffer_prefix_metadata_keyword(keyword);
+                }
+                ActionDefBodyElement::Dependency(node) => {
+                    let dependency = self.lower_dependency(document, Some(owner), node)?;
+                    self.bind_pending_prefix_metadata(document, dependency)?;
+                }
+                _ => {
+                    self.flush_pending_prefix_metadata(
+                        document,
+                        UnsupportedFamily::ActionDefinitionMember,
+                    );
+                    self.lower_action_def_body_element(document, owner, element)?;
+                }
+            }
         }
+        self.flush_pending_prefix_metadata(document, UnsupportedFamily::ActionDefinitionMember);
         Ok(())
     }
 

@@ -98,6 +98,18 @@ pub(crate) struct FeatureValueEndpoints {
     pub(crate) result: DeclarationId,
 }
 
+/// One buffered body-less `#tag` prefix metadata keyword awaiting binding to the member it
+/// precedes. Both fields are arena/source identities copied out of the parser node, so the buffer
+/// does not borrow the parsed document.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct PendingPrefixMetadata {
+    /// `OwnedFeatureTyping` -- the metadata type the tag refers to (`refinement`).
+    pub(crate) reference: QualifiedReferenceId,
+    /// The `#tag` keyword span, used both for the minted annotation's declaration and, when the
+    /// prefix never binds, for its unsupported-member diagnostic.
+    pub(crate) span: Span,
+}
+
 #[derive(Debug, Default)]
 pub(crate) struct SemanticModelBuilder {
     pub(crate) documents: Vec<AdmittedDocument>,
@@ -132,6 +144,14 @@ pub(crate) struct SemanticModelBuilder {
     /// membership construction. This preserves roles such as `variant` while reusing the ordinary
     /// element lowering for the owned member.
     pub(crate) next_membership_override: Option<(MembershipKind, Visibility, MembershipRole, Span)>,
+    /// Body-less `#tag` prefix metadata keywords (`PrefixMetadataAnnotation`, e.g. the `#refinement`
+    /// in `#refinement dependency X to Y;`) seen in a definition body but not yet bound. The parser
+    /// emits them as standalone sibling `MetadataKeywordUsage` elements with no link to the member
+    /// they prefix, so the enclosing body walker buffers them here and binds them to that member's
+    /// declaration via [`Self::bind_pending_prefix_metadata`]. Every walker that fills this drains
+    /// it before any other member and at the end of the body, so an unbound prefix stays an
+    /// explicit unsupported member rather than leaking to a later declaration.
+    pub(crate) pending_prefix_metadata: Vec<PendingPrefixMetadata>,
     /// Counts each owner's authored `end` members so every positional connector end carries the
     /// order it was written in. Keyed by owner alone: an owner's ends are lowered in source order
     /// by one walker, so the counter is the authored position.
@@ -1687,7 +1707,9 @@ impl SemanticModelBuilder {
             PackageBodyElement::OccurrenceUsage(node) => {
                 self.lower_occurrence_usage(document, owner, node)?
             }
-            PackageBodyElement::Dependency(node) => self.lower_dependency(document, owner, node)?,
+            PackageBodyElement::Dependency(node) => {
+                self.lower_dependency(document, owner, node)?;
+            }
             PackageBodyElement::AllocationDef(node) => {
                 self.lower_allocation_def(document, owner, node)?
             }
@@ -2126,6 +2148,80 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Buffers a body-less `#tag` prefix metadata keyword seen in a definition body. It binds to
+    /// the declaration of the member that immediately follows it (see
+    /// [`Self::bind_pending_prefix_metadata`]); the parser gives no parent link, so the binding is
+    /// the walker's responsibility, exactly as it is for sibling `doc`/`comment` annotations.
+    pub(crate) fn buffer_prefix_metadata_keyword(
+        &mut self,
+        node: &Node<sysml_v2_parser::ast::MetadataKeywordUsage>,
+    ) {
+        self.pending_prefix_metadata.push(PendingPrefixMetadata {
+            reference: node.value.reference,
+            span: node.span,
+        });
+    }
+
+    /// Binds every buffered body-less `#tag` prefix metadata keyword to `declaration` -- the member
+    /// they prefix -- as one `MetadataAnnotation` per keyword, the same reference `#Tag` on a usage
+    /// prefix (`lower_usage_extension_keywords`) and `@Tag` (`lower_metadata_annotation`) publish.
+    pub(crate) fn bind_pending_prefix_metadata(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+    ) -> Result<(), ConstructionError> {
+        for entry in std::mem::take(&mut self.pending_prefix_metadata) {
+            let annotation = self.push_typed_declaration(
+                document,
+                Some(declaration),
+                DeclarationKind::MetadataUsage,
+                None,
+                entry.span,
+                DeclarationFacts::none(),
+            )?;
+            self.push_membership(
+                annotation,
+                MembershipKind::Feature,
+                Visibility::Default,
+                entry.span,
+            )?;
+            self.metadata_annotations.push(MetadataAnnotationRecord {
+                annotation,
+                annotated_element: declaration,
+            });
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(entry.reference)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: annotation,
+                kind: ReferenceKind::MetadataAnnotation,
+                document,
+                local: entry.reference,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        Ok(())
+    }
+
+    /// Reports every buffered `#tag` prefix metadata keyword that never bound to a following member
+    /// as an explicit unsupported member of `family`. Called before any non-prefixable member and
+    /// at the end of a body so a dangling prefix stays visible rather than leaking onto a later
+    /// declaration.
+    pub(crate) fn flush_pending_prefix_metadata(
+        &mut self,
+        document: DocumentIdx,
+        family: UnsupportedFamily,
+    ) {
+        for entry in std::mem::take(&mut self.pending_prefix_metadata) {
+            self.push_unsupported(document, family, entry.span);
+        }
+    }
+
     /// Lowers a package-level `alias X for Y;` member into a declaration plus an authored
     /// `AliasBinding` reference for `Y`, following the Subclassification/typing lowering pattern
     /// above: `target` is already a structured `QualifiedReferenceId` (not a flattened string), so
@@ -2275,12 +2371,16 @@ impl SemanticModelBuilder {
     /// declaration's own span (matching `lower_satisfy`'s anonymous-relationship shape).
     /// Its `RelationshipBody` members (doc/comment/metadata only) are walked through the same
     /// `lower_relationship_body_elements` helper `AliasDef`/`Import` use.
+    ///
+    /// Returns the minted `DeclarationKind::Dependency` identity so a definition-body walker can
+    /// bind a preceding body-less `#tag` prefix (`#refinement dependency X to Y;`) to it via
+    /// [`Self::bind_pending_prefix_metadata`].
     pub(crate) fn lower_dependency(
         &mut self,
         document: DocumentIdx,
         owner: Option<DeclarationId>,
         node: &Node<Dependency>,
-    ) -> Result<(), ConstructionError> {
+    ) -> Result<DeclarationId, ConstructionError> {
         let name = self.intern_declaration_name(
             document,
             node.value
@@ -2351,7 +2451,7 @@ impl SemanticModelBuilder {
             Some(declaration),
             node.value.body.braced_elements().unwrap_or_default(),
         )?;
-        Ok(())
+        Ok(declaration)
     }
 
     pub(crate) fn lower_typing_relationship(

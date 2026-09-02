@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Metadata-prefixed dependencies lower in definition bodies.** `#refinement dependency X to Y;`
+  in a `requirement def`, `action def`, or `part def` body no longer reports the `#refinement`
+  prefix as an `unsupported_*_definition_member`. The dependency lowers with resolved
+  client/supplier endpoints and the `#tag` prefix (stacked prefixes included) becomes an authored
+  metadata annotation on the dependency, the same fact `#Tag` on a usage and `@Tag` already
+  publish. A prefix that does not precede a dependency stays an explicit unsupported member.
+
 - **Project manifests now constrain rather than select the standard-library baseline.** Every
   project retains the host-admitted KerML/SysML baseline, including manifests with `usage: []`;
   matching authored stdlib usages act as compatibility pins. A version-incompatible baseline fails
