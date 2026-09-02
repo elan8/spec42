@@ -142,7 +142,7 @@ package VehicleGeometryAndCoordinateFrames {
   (document "memory://snapshot/vehicle_geometry_and_coordinate_frames.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 19) (end 1 35))

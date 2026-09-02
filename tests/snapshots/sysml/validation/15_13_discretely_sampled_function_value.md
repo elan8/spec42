@@ -88,7 +88,7 @@ package '15_13-Discretely Sampled Function Value' {
   (document "memory://snapshot/15_13_discretely_sampled_function_value.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 49))

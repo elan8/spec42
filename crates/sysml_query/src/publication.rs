@@ -13,6 +13,7 @@ use sysml_resolution::publication::PublicationAuthority;
 use crate::resolved_slice::{BuildMeasurements, PublicationIdentity, PublishedModel};
 use crate::source::SourceDocument;
 use crate::syntax::SyntaxService;
+use crate::StandardLibraryAvailability;
 
 pub use sysml_resolution::publication::{
     BuildToken, PublicationBuildFailure, PublicationFailureStage, PublicationOutcome,
@@ -100,8 +101,25 @@ impl PublicationService {
         documents: &[SourceDocument],
         reported_documents: impl IntoIterator<Item = Box<str>>,
     ) -> Result<Arc<PublishedModel>, PublicationBuildFailure> {
+        self.publish_with_standard_library_availability(
+            documents,
+            StandardLibraryAvailability::Unavailable,
+            reported_documents,
+        )
+    }
+
+    pub fn publish_with_standard_library_availability(
+        &self,
+        documents: &[SourceDocument],
+        standard_library_availability: StandardLibraryAvailability,
+        reported_documents: impl IntoIterator<Item = Box<str>>,
+    ) -> Result<Arc<PublishedModel>, PublicationBuildFailure> {
         self.inner
-            .publish(documents, reported_documents)
+            .publish_with_standard_library_availability(
+                documents,
+                standard_library_availability,
+                reported_documents,
+            )
             .map(|inner| Arc::new(PublishedModel::from_resolution(inner)))
     }
 
@@ -112,8 +130,25 @@ impl PublicationService {
         documents: &[SourceDocument],
         reported_documents: impl IntoIterator<Item = Box<str>>,
     ) -> Result<(Arc<PublishedModel>, BuildMeasurements), PublicationBuildFailure> {
+        self.publish_measured_with_standard_library_availability(
+            documents,
+            StandardLibraryAvailability::Unavailable,
+            reported_documents,
+        )
+    }
+
+    pub fn publish_measured_with_standard_library_availability(
+        &self,
+        documents: &[SourceDocument],
+        standard_library_availability: StandardLibraryAvailability,
+        reported_documents: impl IntoIterator<Item = Box<str>>,
+    ) -> Result<(Arc<PublishedModel>, BuildMeasurements), PublicationBuildFailure> {
         self.inner
-            .publish_measured(documents, reported_documents)
+            .publish_measured_with_standard_library_availability(
+                documents,
+                standard_library_availability,
+                reported_documents,
+            )
             .map(|(inner, measurements)| {
                 (
                     Arc::new(PublishedModel::from_resolution(inner)),
@@ -129,8 +164,26 @@ impl PublicationService {
         documents: &[SourceDocument],
         reported_documents: impl IntoIterator<Item = Box<str>>,
     ) -> Result<(Arc<PublishedModel>, BuildMeasurements), PublicationBuildFailure> {
+        self.publish_measured_sequential_with_standard_library_availability_for_testing(
+            documents,
+            StandardLibraryAvailability::Unavailable,
+            reported_documents,
+        )
+    }
+
+    #[doc(hidden)]
+    pub fn publish_measured_sequential_with_standard_library_availability_for_testing(
+        &self,
+        documents: &[SourceDocument],
+        standard_library_availability: StandardLibraryAvailability,
+        reported_documents: impl IntoIterator<Item = Box<str>>,
+    ) -> Result<(Arc<PublishedModel>, BuildMeasurements), PublicationBuildFailure> {
         self.inner
-            .publish_measured_sequential_for_testing(documents, reported_documents)
+            .publish_measured_sequential_with_standard_library_availability_for_testing(
+                documents,
+                standard_library_availability,
+                reported_documents,
+            )
             .map(|(inner, measurements)| {
                 (
                     Arc::new(PublishedModel::from_resolution(inner)),
@@ -145,8 +198,25 @@ impl PublicationService {
         documents: &[SourceDocument],
         reported_documents: impl IntoIterator<Item = Box<str>>,
     ) -> Result<PreparedPublication, PublicationBuildFailure> {
+        self.prepare_with_standard_library_availability(
+            documents,
+            StandardLibraryAvailability::Unavailable,
+            reported_documents,
+        )
+    }
+
+    pub fn prepare_with_standard_library_availability(
+        &self,
+        documents: &[SourceDocument],
+        standard_library_availability: StandardLibraryAvailability,
+        reported_documents: impl IntoIterator<Item = Box<str>>,
+    ) -> Result<PreparedPublication, PublicationBuildFailure> {
         self.inner
-            .prepare(documents, reported_documents)
+            .prepare_with_standard_library_availability(
+                documents,
+                standard_library_availability,
+                reported_documents,
+            )
             .map(|inner| PreparedPublication { inner })
     }
 

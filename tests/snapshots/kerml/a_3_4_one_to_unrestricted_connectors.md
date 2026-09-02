@@ -71,7 +71,7 @@ package OneToUnrestrictedConnectorsExecution {
   (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 6 16) (end 6 60))

@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 use sysml_query::source::identity::{RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
+use sysml_query::StandardLibraryAvailability;
 
 use crate::library::{
     managed::{
@@ -20,8 +21,8 @@ use crate::library::{
         StandardLibraryPaths, EMBEDDED_STDLIB_ARCHIVE, EMBEDDED_STDLIB_REPO,
     },
 };
-use crate::ProjectDependencyCandidate;
 use crate::{CatalogError, CatalogResult};
+use crate::{ProjectDependencyCandidate, ProjectDependencyCandidateKind};
 
 #[derive(Debug, Clone, Default, Deserialize)]
 pub struct HostConfigFile {
@@ -58,6 +59,7 @@ pub struct StdlibComponent {
     pub roots: Vec<PathBuf>,
     pub source: Option<String>,
     pub used_legacy_vscode_fallback: bool,
+    pub availability: StandardLibraryAvailability,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -163,6 +165,7 @@ fn resolve_project_libraries(
                     project_name: archive.project.name,
                     version: archive.project.version,
                     package_roots: package_roots.clone(),
+                    kind: ProjectDependencyCandidateKind::Project,
                 },
                 package_roots,
             })
@@ -181,6 +184,7 @@ fn kpar_dependency_candidates(
                 project_name: library.config.display_name.clone(),
                 version: library.config.version.clone(),
                 package_roots: vec![library.path.clone()?],
+                kind: ProjectDependencyCandidateKind::Project,
             })
         })
         .collect()
@@ -210,6 +214,7 @@ fn stdlib_dependency_candidates(
                         project_name: project.name.clone(),
                         version: project.version.clone(),
                         package_roots: vec![root.clone()],
+                        kind: ProjectDependencyCandidateKind::StandardLibrary,
                     }),
             )
         })
@@ -232,6 +237,7 @@ fn resolve_stdlib_component(
             roots: Vec::new(),
             source: Some("disabled".to_string()),
             used_legacy_vscode_fallback: false,
+            availability: StandardLibraryAvailability::Disabled,
         });
     }
 
@@ -243,6 +249,7 @@ fn resolve_stdlib_component(
             roots: resolved.package_roots.roots,
             source: Some("flag".to_string()),
             used_legacy_vscode_fallback: false,
+            availability: StandardLibraryAvailability::Available,
         });
     }
     if let Some(value) = std::env::var_os("SPEC42_STDLIB_PATH") {
@@ -254,6 +261,7 @@ fn resolve_stdlib_component(
             roots: resolved.package_roots.roots,
             source: Some("env".to_string()),
             used_legacy_vscode_fallback: false,
+            availability: StandardLibraryAvailability::Available,
         });
     }
     if let Some(path) = request.config_stdlib_path.as_ref() {
@@ -264,6 +272,7 @@ fn resolve_stdlib_component(
             roots: resolved.package_roots.roots,
             source: Some("config".to_string()),
             used_legacy_vscode_fallback: false,
+            availability: StandardLibraryAvailability::Available,
         });
     }
 
@@ -288,6 +297,7 @@ fn resolve_stdlib_component(
                 roots: stdlib_library_roots(&managed_path, Some(&metadata)),
                 source: Some(source),
                 used_legacy_vscode_fallback: false,
+                availability: StandardLibraryAvailability::Available,
             });
         }
     }
@@ -303,6 +313,7 @@ fn resolve_stdlib_component(
             path: Some(path),
             source: Some("bundled".to_string()),
             used_legacy_vscode_fallback: false,
+            availability: StandardLibraryAvailability::Available,
         });
     }
 
@@ -312,6 +323,7 @@ fn resolve_stdlib_component(
             path: Some(path),
             source: Some("legacy-vscode".to_string()),
             used_legacy_vscode_fallback: true,
+            availability: StandardLibraryAvailability::Available,
         });
     }
 
@@ -320,6 +332,7 @@ fn resolve_stdlib_component(
         roots: Vec::new(),
         source: None,
         used_legacy_vscode_fallback: false,
+        availability: StandardLibraryAvailability::Unavailable,
     })
 }
 
@@ -632,7 +645,7 @@ mod tests {
             config_no_stdlib: false,
             extra_library_paths: Vec::new(),
         };
-        let mut catalog = resolve_library_catalog(&request).unwrap();
+        let catalog = resolve_library_catalog(&request).unwrap();
         let provided = catalog
             .dependency_candidates
             .iter()
@@ -641,14 +654,12 @@ mod tests {
             .unwrap();
         assert_eq!(provided.project_name, "Alternative-Standard-Library");
         assert_eq!(provided.version, "9.0.0");
+        assert_eq!(provided.kind, ProjectDependencyCandidateKind::Project);
         assert!(provided.package_roots.iter().all(|root| root.is_dir()));
-        catalog.stdlib.roots = provided.package_roots.clone();
         assert_eq!(
             crate::manifest_usages_for_standard_library(&catalog).unwrap(),
-            vec![ProjectUsage {
-                resource: resource.into(),
-                version_constraint: Some("9.0.0".into()),
-            }]
+            Vec::<ProjectUsage>::new(),
+            "an ordinary project cannot become the standard-library baseline by sharing a root"
         );
 
         let mut candidates = vec![ProjectDependencyCandidate {
@@ -656,6 +667,7 @@ mod tests {
             project_name: "Bundled-Default".into(),
             version: "1.0.0".into(),
             package_roots: vec![PathBuf::from("bundled")],
+            kind: ProjectDependencyCandidateKind::Project,
         }];
         candidates.push(provided.clone());
         let mut consumer = project("Consumer", "1.0.0");
@@ -708,6 +720,7 @@ mod tests {
                 roots,
                 source: Some("bundled".into()),
                 used_legacy_vscode_fallback: false,
+                availability: StandardLibraryAvailability::Available,
             },
             &StandardLibraryConfig::default(),
         );
@@ -725,6 +738,7 @@ mod tests {
             roots: vec![root.clone()],
             source: Some("flag".into()),
             used_legacy_vscode_fallback: false,
+            availability: StandardLibraryAvailability::Available,
         };
         let config = StandardLibraryConfig {
             projects: vec![crate::StandardLibraryProjectConfig {
@@ -742,6 +756,7 @@ mod tests {
                 project_name: "Custom Library".into(),
                 version: "3.0.0".into(),
                 package_roots: vec![root],
+                kind: ProjectDependencyCandidateKind::StandardLibrary,
             }]
         );
     }

@@ -70,7 +70,7 @@ package OneToOneConnectorsExecution {
   (document "memory://snapshot/a_3_3_one_to_one_connectors.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 6 18) (end 6 59))

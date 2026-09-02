@@ -264,7 +264,7 @@ macro_rules! digest_newtype {
 digest_newtype!(ContentDigest, "spec42.source_identity.content.v1");
 digest_newtype!(RootDigest, "spec42.source_identity.root.v1");
 digest_newtype!(ArtifactKey, "spec42.cache.artifact_key.v1");
-digest_newtype!(PublicationModelDigest, "spec42.publication.model.v2");
+digest_newtype!(PublicationModelDigest, "spec42.publication.model.v3");
 digest_newtype!(LibraryStratumKey, "spec42.library.stratum.v4");
 digest_newtype!(LibraryListingKey, "spec42.library.listing.v2");
 
@@ -273,6 +273,26 @@ digest_newtype!(LibraryListingKey, "spec42.library.listing.v2");
 pub enum PublicationEvaluationPolicy {
     Evaluate,
     Skip,
+}
+
+/// Host-selected KerML/SysML standard-library availability committed into a publication.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash, serde::Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum StandardLibraryAvailability {
+    Available,
+    Disabled,
+    #[default]
+    Unavailable,
+}
+
+impl StandardLibraryAvailability {
+    const fn tag(self) -> u8 {
+        match self {
+            Self::Available => 0,
+            Self::Disabled => 1,
+            Self::Unavailable => 2,
+        }
+    }
 }
 
 impl PublicationEvaluationPolicy {
@@ -291,12 +311,14 @@ impl PublicationModelDigest {
         source_digest: RootDigest,
         semantic_contract_version: &str,
         evaluation_policy: PublicationEvaluationPolicy,
+        standard_library_availability: StandardLibraryAvailability,
         reported_documents: impl IntoIterator<Item = &'a str>,
     ) -> Self {
         let mut enc = CanonicalEncoder::new(Self::DOMAIN);
         enc.field(source_digest.as_bytes());
         enc.field(semantic_contract_version.as_bytes());
         enc.field(&[evaluation_policy.tag()]);
+        enc.field(&[standard_library_availability.tag()]);
         for document in reported_documents {
             enc.field(document.as_bytes());
         }
@@ -650,6 +672,7 @@ mod tests {
             root,
             "contract",
             PublicationEvaluationPolicy::Evaluate,
+            StandardLibraryAvailability::Available,
             ["a", "b"],
         );
         assert_ne!(
@@ -658,6 +681,7 @@ mod tests {
                 RootDigest::of_bytes(b"other"),
                 "contract",
                 PublicationEvaluationPolicy::Evaluate,
+                StandardLibraryAvailability::Available,
                 ["a", "b"],
             )
         );
@@ -667,6 +691,7 @@ mod tests {
                 root,
                 "other",
                 PublicationEvaluationPolicy::Evaluate,
+                StandardLibraryAvailability::Available,
                 ["a", "b"],
             )
         );
@@ -676,6 +701,7 @@ mod tests {
                 root,
                 "contract",
                 PublicationEvaluationPolicy::Skip,
+                StandardLibraryAvailability::Available,
                 ["a", "b"],
             )
         );
@@ -685,6 +711,17 @@ mod tests {
                 root,
                 "contract",
                 PublicationEvaluationPolicy::Evaluate,
+                StandardLibraryAvailability::Disabled,
+                ["a", "b"],
+            )
+        );
+        assert_ne!(
+            base,
+            PublicationModelDigest::new(
+                root,
+                "contract",
+                PublicationEvaluationPolicy::Evaluate,
+                StandardLibraryAvailability::Available,
                 ["b", "a"],
             )
         );

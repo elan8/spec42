@@ -1839,12 +1839,15 @@ impl<D> SemanticModel<D> {
         Ok(())
     }
 
-    /// Reports a document whose imports cannot resolve because no library was admitted.
+    /// Reports a document whose imports cannot resolve when the host did not admit its required
+    /// standard-library baseline. Availability is a typed publication prerequisite, so this rule
+    /// keys on it rather than inferring host policy from source paths.
     ///
-    /// Reporting policy stated as an owner fact rather than as host configuration: what makes the
-    /// hint true is that this publication admitted no library or standard-library source, which is
-    /// a property of the model state, not of a path setting a host happens to hold. The host still
-    /// decides whether to show it.
+    /// A missing baseline is still not what a reader is missing when some other library source was
+    /// admitted: a project that draws its language context from an authored project-library usage
+    /// resolves those names even with the standard-library baseline disabled or unavailable, and an
+    /// unrelated unresolved name there must not be blamed on the baseline. So the hint is also
+    /// suppressed whenever any non-workspace source took part in this publication.
     ///
     /// `already` is where this document's diagnostics start, so the rule reads the unresolved
     /// outcomes the earlier producers settled instead of re-deciding them.
@@ -1852,8 +1855,12 @@ impl<D> SemanticModel<D> {
         &self,
         document: DocumentIdx,
         already: usize,
+        availability: sysml_contract::StandardLibraryAvailability,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
+        if availability == sysml_contract::StandardLibraryAvailability::Available {
+            return Ok(());
+        }
         if self
             .storage
             .documents
@@ -1898,9 +1905,17 @@ impl<D> SemanticModel<D> {
         };
         diagnostics.push(Diagnostic {
             payload: None,
-            message: DiagnosticCode::MissingLibraryContext.describe().into(),
+            message: match availability {
+                sysml_contract::StandardLibraryAvailability::Disabled => "Standard-library resolution is explicitly disabled, so imported language-library names cannot resolve. Remove --no-stdlib or no_stdlib, or configure a compatible KerML/SysML baseline.".into(),
+                sysml_contract::StandardLibraryAvailability::Unavailable => "No compatible KerML/SysML standard-library baseline is available, so imported language-library names cannot resolve. Install or configure a compatible standard-library baseline.".into(),
+                sysml_contract::StandardLibraryAvailability::Available => unreachable!(),
+            },
             code: DiagnosticCode::MissingLibraryContext,
-            severity: DiagnosticSeverity::Information,
+            severity: if availability == sysml_contract::StandardLibraryAvailability::Disabled {
+                DiagnosticSeverity::Information
+            } else {
+                DiagnosticSeverity::Warning
+            },
             origin: DiagnosticOrigin::Semantic,
             subject: self.symbol_id(source),
             location: DiagnosticLocation {

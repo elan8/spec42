@@ -69,7 +69,7 @@ standard library package VectorValues {
   (document "memory://snapshot/vector_values.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 7 19) (end 7 47))

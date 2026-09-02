@@ -124,7 +124,7 @@ package ProductSelection_OwnedEnds {
         (range (start 39 53) (end 39 75))
       )
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 41 17) (end 41 50))

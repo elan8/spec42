@@ -12,6 +12,7 @@ mod session;
 use std::sync::{Arc, Mutex};
 
 use source_identity::{LibrarySourceIdentity, LibraryStratumKey, SourceRole};
+use sysml_contract::StandardLibraryAvailability;
 use sysml_source::{SourceDocument, SourceKind};
 
 use crate::lower::memo::LoweringMemo;
@@ -146,8 +147,25 @@ impl PublicationAuthority {
         documents: &[SourceDocument],
         reported_documents: impl IntoIterator<Item = Box<str>>,
     ) -> Result<PublishedResolution, PublicationBuildFailure> {
-        self.prepare(documents, reported_documents)
-            .and_then(PreparedPublication::build)
+        self.publish_with_standard_library_availability(
+            documents,
+            StandardLibraryAvailability::Unavailable,
+            reported_documents,
+        )
+    }
+
+    pub fn publish_with_standard_library_availability(
+        &self,
+        documents: &[SourceDocument],
+        standard_library_availability: StandardLibraryAvailability,
+        reported_documents: impl IntoIterator<Item = Box<str>>,
+    ) -> Result<PublishedResolution, PublicationBuildFailure> {
+        self.prepare_with_standard_library_availability(
+            documents,
+            standard_library_availability,
+            reported_documents,
+        )
+        .and_then(PreparedPublication::build)
     }
 
     /// Publishes through the canonical owner and reports measurements captured at phase barriers.
@@ -156,8 +174,25 @@ impl PublicationAuthority {
         documents: &[SourceDocument],
         reported_documents: impl IntoIterator<Item = Box<str>>,
     ) -> Result<(PublishedResolution, crate::BuildMeasurements), PublicationBuildFailure> {
-        self.prepare(documents, reported_documents)
-            .and_then(PreparedPublication::build_measured)
+        self.publish_measured_with_standard_library_availability(
+            documents,
+            StandardLibraryAvailability::Unavailable,
+            reported_documents,
+        )
+    }
+
+    pub fn publish_measured_with_standard_library_availability(
+        &self,
+        documents: &[SourceDocument],
+        standard_library_availability: StandardLibraryAvailability,
+        reported_documents: impl IntoIterator<Item = Box<str>>,
+    ) -> Result<(PublishedResolution, crate::BuildMeasurements), PublicationBuildFailure> {
+        self.prepare_with_standard_library_availability(
+            documents,
+            standard_library_availability,
+            reported_documents,
+        )
+        .and_then(PreparedPublication::build_measured)
     }
 
     #[doc(hidden)]
@@ -166,8 +201,23 @@ impl PublicationAuthority {
         documents: &[SourceDocument],
         reported_documents: impl IntoIterator<Item = Box<str>>,
     ) -> Result<(PublishedResolution, crate::BuildMeasurements), PublicationBuildFailure> {
+        self.publish_measured_sequential_with_standard_library_availability_for_testing(
+            documents,
+            StandardLibraryAvailability::Unavailable,
+            reported_documents,
+        )
+    }
+
+    #[doc(hidden)]
+    pub fn publish_measured_sequential_with_standard_library_availability_for_testing(
+        &self,
+        documents: &[SourceDocument],
+        standard_library_availability: StandardLibraryAvailability,
+        reported_documents: impl IntoIterator<Item = Box<str>>,
+    ) -> Result<(PublishedResolution, crate::BuildMeasurements), PublicationBuildFailure> {
         self.prepare_with_schedule(
             documents,
+            standard_library_availability,
             reported_documents,
             ConstructionSchedule::Sequential,
         )
@@ -181,8 +231,22 @@ impl PublicationAuthority {
         documents: &[SourceDocument],
         reported_documents: impl IntoIterator<Item = Box<str>>,
     ) -> Result<PreparedPublication, PublicationBuildFailure> {
+        self.prepare_with_standard_library_availability(
+            documents,
+            StandardLibraryAvailability::Unavailable,
+            reported_documents,
+        )
+    }
+
+    pub fn prepare_with_standard_library_availability(
+        &self,
+        documents: &[SourceDocument],
+        standard_library_availability: StandardLibraryAvailability,
+        reported_documents: impl IntoIterator<Item = Box<str>>,
+    ) -> Result<PreparedPublication, PublicationBuildFailure> {
         self.prepare_with_schedule(
             documents,
+            standard_library_availability,
             reported_documents,
             ConstructionSchedule::Parallel,
         )
@@ -191,6 +255,7 @@ impl PublicationAuthority {
     fn prepare_with_schedule(
         &self,
         documents: &[SourceDocument],
+        standard_library_availability: StandardLibraryAvailability,
         reported_documents: impl IntoIterator<Item = Box<str>>,
         schedule: ConstructionSchedule,
     ) -> Result<PreparedPublication, PublicationBuildFailure> {
@@ -225,6 +290,7 @@ impl PublicationAuthority {
             PublicationBuildFailure::at(PublicationFailureStage::RequestConstruction, error)
         })?
         .reporting(reported)
+        .with_standard_library_availability(standard_library_availability)
         .with_syntax(Arc::clone(&self.syntax))
         .with_lowering(Arc::clone(&self.lowering));
         Ok(PreparedPublication { request })

@@ -533,8 +533,10 @@ impl Indexed {
         self,
         sources: ParsedSources,
         reported: &[Box<str>],
+        standard_library_availability: sysml_contract::StandardLibraryAvailability,
     ) -> Result<Complete, ResolutionError> {
-        let (diagnostics, by_document) = self.derive_diagnostics(&sources, reported)?;
+        let (diagnostics, by_document) =
+            self.derive_diagnostics(&sources, reported, standard_library_availability)?;
         // The parse product is consumed here and goes no further: this is the barrier that makes
         // "a sealed publication holds no parse tree" true by construction rather than by review.
         Ok(Complete {
@@ -576,6 +578,7 @@ pub(crate) fn build_model(
     storage: SemanticModelStorage,
     sources: ParsedSources,
     policy: EvaluationPolicy,
+    standard_library_availability: sysml_contract::StandardLibraryAvailability,
     library: Option<&SettledLibrary>,
     reported: &[Box<str>],
 ) -> Result<(ResolvedSemanticModel, ParsedSources), ResolutionError> {
@@ -583,5 +586,7 @@ pub(crate) fn build_model(
         .resolve(library)?
         .evaluate(policy)
         .index()?;
-    Ok(indexed.diagnose(sources, reported)?.into_parts())
+    Ok(indexed
+        .diagnose(sources, reported, standard_library_availability)?
+        .into_parts())
 }

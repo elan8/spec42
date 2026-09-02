@@ -135,7 +135,7 @@ standard library package StandardViewDefinitions {
   (document "memory://snapshot/standard_view_definitions.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 4 18) (end 4 26))

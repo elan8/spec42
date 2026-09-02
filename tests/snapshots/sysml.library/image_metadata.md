@@ -90,7 +90,7 @@ standard library package ImageMetadata {
   (document "memory://snapshot/image_metadata.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 8 16) (end 8 36))

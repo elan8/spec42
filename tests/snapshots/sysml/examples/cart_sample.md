@@ -76,7 +76,7 @@ package CartSample {
   (document "memory://snapshot/cart_sample.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 3 19) (end 3 46))

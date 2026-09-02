@@ -78,7 +78,7 @@ package '11b-Safety and Security Feaure Views' {
   (document "memory://snapshot/11b_safety_and_security_feature_views.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 0 15) (end 0 23))

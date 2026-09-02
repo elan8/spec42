@@ -54,7 +54,7 @@ package '17b-Sequence-Modeling' {
   (document "memory://snapshot/17b_sequence_modeling.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 31))

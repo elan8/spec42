@@ -43,7 +43,7 @@ package ExternalShapeRefExample {
   (document "memory://snapshot/external_shape_ref_example.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 36))

@@ -117,7 +117,7 @@ package EmptyExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:a63a63924747168ee6c0e3c4cf506b227bc6cabee6b48d604fe01c0ee446010f",
+  "modelDigest": "blake3:1eede18160b0b446f6e9509e90124eba61a1daef90fc28406c4123e6ae2581d3",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_empty_valid.md",

@@ -129,7 +129,7 @@ library package AHFProfileMetadata{
   (document "memory://snapshot/ahfprofile_lib.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 2 16) (end 2 31))

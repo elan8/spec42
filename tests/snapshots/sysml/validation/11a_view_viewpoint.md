@@ -69,7 +69,7 @@ package '11a-View-Viewpoint' {
   (document "memory://snapshot/11a_view_viewpoint.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 3 17) (end 3 22))

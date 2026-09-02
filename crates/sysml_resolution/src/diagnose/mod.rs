@@ -37,6 +37,7 @@ impl<D> SemanticModel<D> {
         &self,
         sources: &ParsedSources,
         reported: &[Box<str>],
+        standard_library_availability: sysml_contract::StandardLibraryAvailability,
     ) -> Result<DerivedDiagnostics, ResolutionError> {
         let mut diagnostics = Vec::new();
         let mut by_document = vec![(0u32, 0u32); self.storage.documents.len()];
@@ -163,7 +164,12 @@ impl<D> SemanticModel<D> {
             self.collect_structural_conformance(document_id, declared, &mut diagnostics)?;
             self.collect_expression_conformance(document_id, declared, &mut diagnostics)?;
             self.collect_host_conformance(document_id, declared, &mut diagnostics)?;
-            self.collect_library_context(document_id, first, &mut diagnostics)?;
+            self.collect_library_context(
+                document_id,
+                first,
+                standard_library_availability,
+                &mut diagnostics,
+            )?;
 
             // Ordering is owned here so no consumer has to sort, and so the order cannot vary with
             // which storage collection a diagnostic happened to come from. The sort is stable, so

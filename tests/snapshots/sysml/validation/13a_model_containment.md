@@ -74,7 +74,7 @@ package '13a-Model Containment' {
   (document "memory://snapshot/13a_model_containment.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 1 16) (end 1 45))

@@ -29,12 +29,6 @@ package ImportTest {
 (fixture-diagnostics
   (document "memory://snapshot/import_test.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_filtered_import")
-        (source "semantic")
-        (range (start 4 20) (end 4 33))
-      )
     )
   )
 )
@@ -63,7 +57,7 @@ package ImportTest {
       (outcome (status resolved) (target (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg2::Pkg21")))))
     (reference (id (source (node (document "memory://snapshot/import_test.md") (path (named (kind package) (name "ImportTest")) (named (kind package) (name "Pkg1")) (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0))
       (authored-target "Pkg211")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211")))))
     (reference (id (source (node (document "memory://snapshot/import_test.md") (path (named (kind package) (name "ImportTest")) (named (kind package) (name "Pkg1")) (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
       (authored-target "Pkg2::Pkg21::Pkg211::P211")
       (outcome (status resolved) (target (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211::P211")))))
@@ -113,7 +107,7 @@ package ImportTest {
   )
   (query (document "memory://snapshot/import_test.md") (range (start 4 20) (end 4 33)) (probe (position 4 20))
     (reference (id (source (node (document "memory://snapshot/import_test.md") (path (named (kind package) (name "ImportTest")) (named (kind package) (name "Pkg1")) (anonymous (kind import) (ordinal 2))))) (kind namespaceImport) (ordinal 0) (authored-target "Pkg211")
-      (outcome (status unsupported)))
+      (outcome (status resolved) (target (node (document "memory://snapshot/import_test.md") (qualified-name "ImportTest::Pkg2::Pkg21::Pkg211")))))
     )
   )
   (query (document "memory://snapshot/import_test.md") (range (start 2 20) (end 2 45)) (probe (position 2 20))

@@ -331,7 +331,7 @@ package EVSample {
   (document "memory://snapshot/evsample.md"
     (diagnostics
       (diagnostic
-        (severity information)
+        (severity warning)
         (code "missing_library_context")
         (source "semantic")
         (range (start 2 19) (end 2 24))
