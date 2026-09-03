@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Metadata annotation body references resolve.** In `@EngineeringConcern { concern = purpose; }`
+  the redefined feature on the left of `=` and the value on its right were reported as
+  `unresolved_reference` even when the `metadata def` resolved and its library was loaded. A
+  `@Name { ... }` annotation is the FeatureTyping of its implicit metadata usage in all but
+  spelling, so the annotated definition's features are now inherited members of the annotation:
+  `concern` binds to `EngineeringConcern::concern` and `purpose` resolves against its type. The
+  idiomatic typed-metadata spelling the Elan8 Method libraries rely on no longer emits spurious
+  diagnostics. Fixes #106.
+
 - **Directed flow items in a `port def` / `port` no longer trip `port_owned_usage_composite`.**
   `in item rx : Signal;` / `out item tx : Signal;` are flow-feature declarations, not composite
   subparts: a feature direction makes the usage referential (the Pilot's `isReferenceDefault`),
