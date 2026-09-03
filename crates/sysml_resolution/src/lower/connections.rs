@@ -334,6 +334,12 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                // `abstract connection <name>[mult] : Type;` -- the def-less usage prefix the
+                // Apollo 11 model uses (issue #100 form 5). `RefPrefix.isAbstract`.
+                modifiers: DeclarationModifiers {
+                    is_abstract: node.value.is_abstract,
+                    ..DeclarationModifiers::default()
+                },
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },

@@ -1097,6 +1097,8 @@ fn collect_semantic_ranges_state_def_body_element(
         | SDBE::SuccessionUsage(_)
         | SDBE::PartUsage(_)
         | SDBE::ConstraintUsage(_)
+        | SDBE::FirstStmt(_)
+        | SDBE::ThenAction(_)
         | SDBE::AssertConstraint(_) => {}
     }
 }
