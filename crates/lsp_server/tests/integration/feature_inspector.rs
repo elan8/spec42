@@ -974,6 +974,53 @@ fn lsp_feature_inspector_keeps_authored_and_implied_relationships_apart() {
     );
 }
 
+/// The compact Effective type section leads with the declared type and types reached through an
+/// authored subsetting or redefinition; a type inherited only through an implied redefinition is
+/// left out so the section does not dump the implied library closure. "Inherited features" is a
+/// separate fact family and is unaffected.
+#[test]
+fn lsp_feature_inspector_effective_type_omits_implied_only_inheritance() {
+    let mut session = TestSession::new();
+    let uri = "file:///feature_inspector_effective_provenance.sysml";
+    let content = concat!(
+        "package P {\n",
+        "  part def Wheel;\n",
+        "  part def Base { part contactPatch : Wheel; }\n",
+        "  part def ImpliedDerived :> Base { part contactPatch; }\n",
+        "  part def AuthoredDerived :> Base { part road :>> contactPatch; }\n",
+        "}\n",
+    );
+    session.initialize_default("feature_inspector_effective_provenance");
+    session.did_open(uri, content, 1);
+    session.barrier();
+
+    // Implied same-name redefinition: `contactPatch` inherits `Wheel`, but nothing here was
+    // authored toward it, so the compact Effective type section stays empty.
+    let implied = inspect(&mut session, uri, 3, 45);
+    let implied_targets = implied["result"]["containingElement"]["effectiveTyping"]["targets"]
+        .as_array()
+        .expect("effective typing targets");
+    assert!(
+        implied_targets.is_empty(),
+        "an implied-only inherited type must not appear in the compact effective type list: {implied_targets:#?}"
+    );
+
+    // Authored redefinition: `road :>> contactPatch` is something the author wrote, so the
+    // inherited `Wheel` is kept.
+    let authored = inspect(&mut session, uri, 4, 44);
+    let authored_targets = authored["result"]["containingElement"]["effectiveTyping"]["targets"]
+        .as_array()
+        .expect("effective typing targets");
+    assert_eq!(
+        authored_targets
+            .iter()
+            .filter_map(|entry| entry["name"].as_str())
+            .collect::<Vec<_>>(),
+        vec!["Wheel"],
+        "a type inherited through an authored redefinition stays in the effective type list"
+    );
+}
+
 /// Repeating a request, and asking for other elements in between, cannot change an answer.
 #[test]
 fn lsp_feature_inspector_answers_are_stable_across_repetition_and_query_order() {

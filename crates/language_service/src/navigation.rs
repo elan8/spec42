@@ -1,7 +1,7 @@
 use sysml_query::resolved_slice::{
     AuthoredUnit, EffectiveTypeOrigin, ElementDetails, ElementEvaluation, PublishedModel,
-    QueryAnswer, QueryOutcome, ReferenceAt, ReferencedDetails, RelationshipOutcome, SymbolId,
-    UnitResolution,
+    QueryAnswer, QueryOutcome, ReferenceAt, ReferencedDetails, RelationshipOutcome,
+    RelationshipProvenance, SymbolId, UnitResolution,
 };
 use sysml_query::resolved_slice::{TextPosition, TextRange};
 
@@ -262,6 +262,14 @@ fn element_hover_report(
         }
     }
     for effective in details.effective_typing.types.iter() {
+        // A `part` inherits `Item`, `Part`, `Anything`, `Occurrence`, ... through implied library
+        // subsetting of `Parts::parts` and the rest of the kernel chain. Those are semantically
+        // real, but a compact hover should not dump the whole closure; keep only types reached
+        // through an authored subsetting or redefinition. The Feature Inspector applies the same
+        // `Authored` filter; `effective_types()` still publishes the full set.
+        if effective.provenance == RelationshipProvenance::Implied {
+            continue;
+        }
         if let EffectiveTypeOrigin::Inherited(origin_symbol) = &effective.origin {
             let type_name = model
                 .qualified_name(effective.element.identity)

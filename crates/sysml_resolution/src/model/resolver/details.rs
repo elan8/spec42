@@ -456,19 +456,37 @@ impl<D> SemanticModel<D> {
         subsetting: &RelationshipFamily,
         redefinition: &RelationshipFamily,
     ) -> EffectiveTyping {
+        // Types reached through something the element authored: the direct types of each authored
+        // subsetting or redefinition target, and those targets' own authored-inherited types.
+        // Implied library types of the general (`Part` via `Parts::parts`) stay out, so
+        // `part engine :>> vehicle.powerplant` keeps the powerplant's authored type without
+        // re-labeling the kernel chain as authored. Provenance is decided here, not re-derived
+        // by each consumer.
+        let authored_inherited = self.authored_inherited_types(subsetting, redefinition);
+
         let mut types = self
             .types
             .effective_types(id)
             .iter()
             .filter_map(|(target, source)| {
+                let (origin, provenance) = match source {
+                    types::EffectiveTypeSource::Direct => (
+                        EffectiveTypeOrigin::Direct,
+                        RelationshipProvenance::Authored,
+                    ),
+                    types::EffectiveTypeSource::Inherited(from) => (
+                        EffectiveTypeOrigin::Inherited(self.symbol_id(*from)?),
+                        if authored_inherited.contains(target) {
+                            RelationshipProvenance::Authored
+                        } else {
+                            RelationshipProvenance::Implied
+                        },
+                    ),
+                };
                 Some(EffectiveTypeEntry {
                     element: self.symbol_entry(*target)?,
-                    origin: match source {
-                        types::EffectiveTypeSource::Direct => EffectiveTypeOrigin::Direct,
-                        types::EffectiveTypeSource::Inherited(from) => {
-                            EffectiveTypeOrigin::Inherited(self.symbol_id(*from)?)
-                        }
-                    },
+                    origin,
+                    provenance,
                 })
             })
             .collect::<Vec<_>>();
@@ -482,11 +500,12 @@ impl<D> SemanticModel<D> {
             .map(|element| EffectiveTypeEntry {
                 element,
                 origin: EffectiveTypeOrigin::Direct,
+                provenance: RelationshipProvenance::Authored,
             })
             .collect::<Vec<_>>();
         // An ambiguous subsetting or redefinition names candidate *features*, not candidate
-        // types. Translate each candidate through the already-published effective-type index and
-        // retain the feature that supplied that possible inherited path as provenance.
+        // types. Keep only the candidate's authored types (direct, then along its authored
+        // generals) so an ambiguous `:>>` does not promote the kernel chain.
         for feature in subsetting
             .candidates
             .iter()
@@ -495,13 +514,14 @@ impl<D> SemanticModel<D> {
             let Ok(feature_id) = self.single_declaration::<()>(feature.identity) else {
                 continue;
             };
-            for (target, _) in self.types.effective_types(feature_id) {
-                let Some(element) = self.symbol_entry(*target) else {
+            for type_id in self.authored_types_of(feature_id) {
+                let Some(element) = self.symbol_entry(type_id) else {
                     continue;
                 };
                 candidates.push(EffectiveTypeEntry {
                     element,
                     origin: EffectiveTypeOrigin::Inherited(feature.identity),
+                    provenance: RelationshipProvenance::Authored,
                 });
             }
         }
@@ -541,6 +561,59 @@ impl<D> SemanticModel<D> {
             outcome,
             types: types.into_boxed_slice(),
             candidates: candidates.into_boxed_slice(),
+        }
+    }
+
+    /// Direct types of each authored subsetting/redefinition general, plus those generals'
+    /// authored-inherited types. Implied library types of a general are not included.
+    fn authored_inherited_types(
+        &self,
+        subsetting: &RelationshipFamily,
+        redefinition: &RelationshipFamily,
+    ) -> std::collections::BTreeSet<DeclarationId> {
+        let mut collected = std::collections::BTreeSet::new();
+        let mut visiting = std::collections::BTreeSet::new();
+        for target in subsetting.targets.iter().chain(redefinition.targets.iter()) {
+            let Ok(target_id) = self.single_declaration::<()>(target.identity) else {
+                continue;
+            };
+            self.collect_authored_types_of(target_id, &mut collected, &mut visiting);
+        }
+        collected
+    }
+
+    /// Direct types of `feature` and types reached through its authored generals.
+    fn authored_types_of(
+        &self,
+        feature: DeclarationId,
+    ) -> std::collections::BTreeSet<DeclarationId> {
+        let mut collected = std::collections::BTreeSet::new();
+        let mut visiting = std::collections::BTreeSet::new();
+        self.collect_authored_types_of(feature, &mut collected, &mut visiting);
+        collected
+    }
+
+    fn collect_authored_types_of(
+        &self,
+        feature: DeclarationId,
+        collected: &mut std::collections::BTreeSet<DeclarationId>,
+        visiting: &mut std::collections::BTreeSet<DeclarationId>,
+    ) {
+        if !visiting.insert(feature) {
+            return;
+        }
+        for (type_id, source) in self.types.effective_types(feature) {
+            if *source == types::EffectiveTypeSource::Direct {
+                collected.insert(*type_id);
+            }
+        }
+        let subsetting = self.family(feature, Family::Subsetting);
+        let redefinition = self.family(feature, Family::Redefinition);
+        for target in subsetting.targets.iter().chain(redefinition.targets.iter()) {
+            let Ok(target_id) = self.single_declaration::<()>(target.identity) else {
+                continue;
+            };
+            self.collect_authored_types_of(target_id, collected, visiting);
         }
     }
 

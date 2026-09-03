@@ -1383,9 +1383,17 @@ fn write_element(
                     .unwrap_or_default()
             )?;
             match &entry.origin {
-                EffectiveTypeOrigin::Direct => write!(output, " (origin direct))")?,
-                EffectiveTypeOrigin::Inherited(_) => write!(output, " (origin inherited))")?,
+                EffectiveTypeOrigin::Direct => write!(output, " (origin direct)")?,
+                EffectiveTypeOrigin::Inherited(_) => write!(output, " (origin inherited)")?,
             }
+            write!(
+                output,
+                " (provenance {}))",
+                match entry.provenance {
+                    RelationshipProvenance::Authored => "authored",
+                    RelationshipProvenance::Implied => "implied",
+                }
+            )?;
         }
         writeln!(output, ")")?;
     }

@@ -178,7 +178,7 @@ probe unresolved_reference.md 5 25
           (membership (kind feature) (visibility public) (provenance default))
           (relationship (kind "featureTyping") (provenance authored) (authored "Known") (target resolved))
           (typing (outcome resolved) (target "Broken::Known"))
-          (effective-typing (outcome resolved) (type (qualified-name "Broken::Known") (origin direct)))
+          (effective-typing (outcome resolved) (type (qualified-name "Broken::Known") (origin direct) (provenance authored)))
           (outgoing (kind "typing") (peer "Broken::Known") (provenance authored))
         )
       )
