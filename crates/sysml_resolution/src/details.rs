@@ -49,12 +49,13 @@ pub struct EffectiveTypeEntry {
     pub origin: EffectiveTypeOrigin,
     /// Whether the element reaches this type through something it authored.
     ///
-    /// [`RelationshipProvenance::Authored`] for a direct typing and for any type inherited along an
-    /// authored subsetting or redefinition (`part engine :>> vehicle.powerplant`).
-    /// [`RelationshipProvenance::Implied`] for a type inherited only through implied library
-    /// subsetting (`Parts::parts`, `Items::items`, and the rest of the kernel chain). Compact
-    /// editor surfaces use this to avoid dumping the whole implied stdlib closure while a full
-    /// inspector still shows every effective type.
+    /// [`RelationshipProvenance::Authored`] for a direct typing and for a type inherited along an
+    /// authored subsetting or redefinition (`part engine :>> vehicle.powerplant` keeps the
+    /// powerplant's authored type). [`RelationshipProvenance::Implied`] for a type reached only
+    /// through implied library subsetting (`Parts::parts`, `Items::items`, and the rest of the
+    /// kernel chain), including implied types of an authored general. Compact editor surfaces
+    /// filter to `Authored`; `effective_types()` and the TYPES projection still list every
+    /// effective type.
     pub provenance: RelationshipProvenance,
 }
 

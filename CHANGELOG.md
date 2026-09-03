@@ -11,11 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   effectively has `Item`, `Part`, `Anything`, `Object`, `Occurrence` through implied library
   subsetting of `Parts::parts`, `Items::items`, and the rest of the kernel chain. Compact editor
   surfaces now show only the direct type and types reached through an *authored* subsetting or
-  redefinition (`part engine :>> vehicle.powerplant`); the implied closure is dropped from the
-  hover "Inherited type" lines and from the inspector's Effective type section. Effective-type
-  entries carry a `provenance` (`authored` / `implied`) so consumers filter on the published fact
-  rather than a name or `stdlib`-path heuristic; "Inherited features" and the `effective_types()`
-  query are unchanged. Fixes #96.
+  redefinition (`part engine :>> vehicle.powerplant` keeps the powerplant's authored type, not the
+  kernel types that usage inherited implied); the implied closure is dropped from the hover
+  "Inherited type" lines and from the inspector's Effective type section. Effective-type entries
+  carry a `provenance` (`authored` / `implied`) so consumers filter on the published fact rather
+  than a name or `stdlib`-path heuristic; "Inherited features" and the `effective_types()` query
+  are unchanged. Fixes #96.
 
 - **Metadata annotation body references resolve.** In `@EngineeringConcern { concern = purpose; }`
   the redefined feature on the left of `=` and the value on its right were reported as

@@ -265,7 +265,8 @@ fn element_hover_report(
         // A `part` inherits `Item`, `Part`, `Anything`, `Occurrence`, ... through implied library
         // subsetting of `Parts::parts` and the rest of the kernel chain. Those are semantically
         // real, but a compact hover should not dump the whole closure; keep only types reached
-        // through an authored subsetting or redefinition. The full set stays in the inspector.
+        // through an authored subsetting or redefinition. The Feature Inspector applies the same
+        // `Authored` filter; `effective_types()` still publishes the full set.
         if effective.provenance == RelationshipProvenance::Implied {
             continue;
         }
