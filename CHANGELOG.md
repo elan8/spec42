@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Directed flow items in a `port def` / `port` no longer trip `port_owned_usage_composite`.**
+  `in item rx : Signal;` / `out item tx : Signal;` are flow-feature declarations, not composite
+  subparts: a feature direction makes the usage referential (the Pilot's `isReferenceDefault`),
+  so `validatePortDefinitionOwnedUsagesNotComposite` (8.3.12.5) and
+  `validatePortUsageNestedUsagesNotComposite` (8.3.12.6) now skip them. Only undirected composite
+  usages (`part owned : Component;`) inside a port still report. Fixes #105.
+
 - **Metadata-prefixed dependencies lower in definition bodies.** `#refinement dependency X to Y;`
   in a `requirement def`, `action def`, or `part def` body no longer reports the `#refinement`
   prefix as an `unsupported_*_definition_member`. The dependency lowers with resolved

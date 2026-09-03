@@ -107,12 +107,6 @@ package '3d-Function-based Behavior-item' {
         (range (start 1 16) (end 1 34))
       )
       (diagnostic
-        (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 10 3) (end 10 23))
-      )
-      (diagnostic
         (severity information)
         (code "unconnected_port")
         (source "semantic")
