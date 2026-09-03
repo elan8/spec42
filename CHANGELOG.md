@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Metadata annotation body references resolve.** In `@EngineeringConcern { concern = purpose; }`
+  the redefined feature on the left of `=` and the value on its right were reported as
+  `unresolved_reference` even when the `metadata def` resolved and its library was loaded. A
+  `@Name { ... }` annotation is the FeatureTyping of its implicit metadata usage in all but
+  spelling, so the annotated definition's features are now inherited members of the annotation:
+  `concern` binds to `EngineeringConcern::concern` and `purpose` resolves against its type. The
+  idiomatic typed-metadata spelling the Elan8 Method libraries rely on no longer emits spurious
+  diagnostics. Fixes #106.
+
 - **Metadata-prefixed dependencies lower in definition bodies.** `#refinement dependency X to Y;`
   in a `requirement def`, `action def`, or `part def` body no longer reports the `#refinement`
   prefix as an `unsupported_*_definition_member`. The dependency lowers with resolved
