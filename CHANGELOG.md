@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **General View draws authored subsetting, subclassification, redefinition, and feature typing.**
+  When both ends of an authored `:>` / `:>` (specializes) / `:>>` / `:` are elements the view
+  projects, the query now composes a graph edge of that kind and the renderer draws the SysML
+  8.2.3.6 glyph (subsetting: dashed, open arrowhead — not the specialize triangle). Implied
+  library subsetting (`Parts::parts`, `Items::items`, the kernel chain) stays a relationship-only
+  fact and never sprouts a line; an unresolved, ambiguous, or out-of-view end yields no edge.
+  Fixes #98.
+
 - **Hover and the Feature Inspector no longer dump the implied stdlib type closure.** Every `part`
   effectively has `Item`, `Part`, `Anything`, `Object`, `Occurrence` through implied library
   subsetting of `Parts::parts`, `Items::items`, and the rest of the kernel chain. Compact editor

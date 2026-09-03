@@ -7068,6 +7068,8 @@ var Spec42HeadlessRendererBundle = (() => {
     }
     if (edgeKind === "specializes") {
       path2.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-specializes)").style("stroke-width", "1.7px");
+    } else if (edgeKind === "subsetting") {
+      path2.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "6,3");
     } else if (edgeKind === "typing") {
       path2.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "5,3");
     } else if (edgeKind === "hierarchy") {

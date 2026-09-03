@@ -811,6 +811,32 @@ impl PublishedResolution {
                     ));
                 }
             }
+            // SysML 8.2.3.6: the General View draws authored subclassification, subsetting,
+            // redefinition, and feature typing between two elements it projects. Implied library
+            // subsetting (`Parts::parts`, `Items::items`, the kernel chain) stays off the canvas --
+            // the typed facts remain on `relationships` for inspectors -- and an end that is
+            // unresolved, ambiguous, or outside the view yields no edge rather than a guessed line.
+            if view_entry.kind == DiagramViewKind::General {
+                for relationship in &outgoing {
+                    if relationship.provenance != RelationshipProvenance::Authored {
+                        continue;
+                    }
+                    let Some(edge_kind) = general_specialization_edge_kind(relationship.kind)
+                    else {
+                        continue;
+                    };
+                    let Some(target) = resolved_target(&relationship.target) else {
+                        continue;
+                    };
+                    edges.push(edge_from_relationships(
+                        origin as u32,
+                        &element.occurrence_id,
+                        target,
+                        DiagramEdgeKind::Relationship(edge_kind.into()),
+                        std::slice::from_ref(relationship),
+                    ));
+                }
+            }
             if let Some(initial) = outgoing
                 .iter()
                 .find(|relationship| relationship.kind == DiagramRelationshipKind::InitialState)
@@ -1555,6 +1581,20 @@ fn relationship_kind_from_name(name: &str) -> Option<DiagramRelationshipKind> {
         "dependencySupplier" => Some(DiagramRelationshipKind::DependencySupplier),
         "performParameterTarget" => Some(DiagramRelationshipKind::PerformParameterTarget),
         "flowPayloadType" => Some(DiagramRelationshipKind::FlowPayloadType),
+        _ => None,
+    }
+}
+
+/// The General View edge kind for one specialization-family relationship, or `None` for a
+/// relationship kind the view does not draw as a line (`typeFeaturing`, `referenceSubsetting`,
+/// unions, and the rest). The names match `spec42_generator_protocol::RelationshipKind` so the
+/// renderer applies the SysML 8.2.3.6 glyph for each.
+fn general_specialization_edge_kind(kind: DiagramRelationshipKind) -> Option<&'static str> {
+    match kind {
+        DiagramRelationshipKind::Specialization => Some("specializes"),
+        DiagramRelationshipKind::Subsetting => Some("subsetting"),
+        DiagramRelationshipKind::Redefinition => Some("redefinition"),
+        DiagramRelationshipKind::FeatureTyping => Some("typing"),
         _ => None,
     }
 }
