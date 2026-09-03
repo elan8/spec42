@@ -2,20 +2,20 @@
   "id": "root",
   "layoutOptions": {
     "elk.algorithm": "layered",
+    "elk.edgeRouting": "ORTHOGONAL",
+    "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
+    "elk.separateConnectedComponents": "true",
+    "elk.json.edgeCoords": "ROOT",
     "elk.hierarchyHandling": "INCLUDE_CHILDREN",
     "elk.direction": "RIGHT",
     "elk.spacing.nodeNode": "150",
     "elk.layered.spacing.nodeNodeBetweenLayers": "220",
     "elk.spacing.edgeNode": "110",
     "elk.spacing.edgeEdge": "90",
-    "elk.edgeRouting": "ORTHOGONAL",
-    "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
     "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
-    "elk.separateConnectedComponents": "true",
     "elk.padding": "[top=70,left=70,bottom=70,right=70]",
     "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-    "org.eclipse.elk.portAlignment.default": "CENTER",
-    "org.eclipse.elk.json.edgeCoords": "ROOT"
+    "org.eclipse.elk.portAlignment.default": "CENTER"
   },
   "children": [
     {
@@ -27,6 +27,14 @@
           "id": "occ_Demo.Source__port__out",
           "width": 10,
           "height": 10,
+          "labels": [
+            {
+              "id": "occ_Demo.Source__port__out__label",
+              "text": "out",
+              "width": 15,
+              "height": 10
+            }
+          ],
           "layoutOptions": {
             "org.eclipse.elk.port.side": "EAST",
             "org.eclipse.elk.port.index": "0"
@@ -36,7 +44,12 @@
       "children": [],
       "layoutOptions": {
         "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-        "org.eclipse.elk.portAlignment.default": "CENTER"
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
       }
     },
     {
@@ -48,6 +61,14 @@
           "id": "occ_Demo.Target__port__in",
           "width": 10,
           "height": 10,
+          "labels": [
+            {
+              "id": "occ_Demo.Target__port__in__label",
+              "text": "in",
+              "width": 12,
+              "height": 10
+            }
+          ],
           "layoutOptions": {
             "org.eclipse.elk.port.side": "WEST",
             "org.eclipse.elk.port.index": "0"
@@ -57,7 +78,12 @@
       "children": [],
       "layoutOptions": {
         "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-        "org.eclipse.elk.portAlignment.default": "CENTER"
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
       }
     }
   ],

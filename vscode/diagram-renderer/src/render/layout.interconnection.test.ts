@@ -81,6 +81,10 @@ describe("interconnection layout fixtures", () => {
   it("exports ELK input golden fixtures when UPDATE_ELK_FIXTURES=1", () => {
     maybeWriteElkGolden("scene-two-part-chain", loadFixture("scene-two-part-chain.json"));
     maybeWriteElkGolden("nested-ring-minimal", loadFixture("nested-ring-minimal.json"));
+    maybeWriteElkGolden("grid-system-context", {
+      view: "interconnection-view",
+      interconnectionScene: loadSceneFixture("grid-system-context-scene.json"),
+    });
     expect(true).toBe(true);
   });
 

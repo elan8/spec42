@@ -1,0 +1,1135 @@
+{
+  "id": "root",
+  "layoutOptions": {
+    "elk.algorithm": "layered",
+    "elk.edgeRouting": "ORTHOGONAL",
+    "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
+    "elk.separateConnectedComponents": "true",
+    "elk.json.edgeCoords": "ROOT",
+    "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+    "elk.direction": "RIGHT",
+    "elk.spacing.nodeNode": "150",
+    "elk.layered.spacing.nodeNodeBetweenLayers": "220",
+    "elk.spacing.edgeNode": "110",
+    "elk.spacing.edgeEdge": "90",
+    "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+    "elk.padding": "[top=70,left=70,bottom=70,right=70]",
+    "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+    "org.eclipse.elk.portAlignment.default": "CENTER"
+  },
+  "children": [
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable03",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable03__port__a",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable03__port__a__label",
+              "text": "a",
+              "width": 12,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "WEST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        },
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable03__port__b",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable03__port__b__label",
+              "text": "b",
+              "width": 12,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay__port__incoming",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay__port__incoming__label",
+              "text": "incoming",
+              "width": 40,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "WEST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        },
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay__port__outgoing",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay__port__outgoing__label",
+              "text": "outgoing",
+              "width": 40,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB__port__gridConnection",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB__port__gridConnection__label",
+              "text": "gridConnection",
+              "width": 70,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "WEST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection__port__connection",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection__port__connection__label",
+              "text": "connection",
+              "width": 50,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable01",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable01__port__a",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable01__port__a__label",
+              "text": "a",
+              "width": 12,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "WEST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        },
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable01__port__b",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable01__port__b__label",
+              "text": "b",
+              "width": 12,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA__port__gridConnection",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA__port__gridConnection__label",
+              "text": "gridConnection",
+              "width": 70,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "WEST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation",
+      "width": 704,
+      "height": 114,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation__port__hvConnection",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation__port__hvConnection__label",
+              "text": "hvConnection",
+              "width": 60,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "WEST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
+      "children": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer",
+          "width": 280,
+          "height": 140,
+          "ports": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer__port__primary",
+              "width": 10,
+              "height": 10,
+              "labels": [
+                {
+                  "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer__port__primary__label",
+                  "text": "primary",
+                  "width": 35,
+                  "height": 10
+                }
+              ],
+              "layoutOptions": {
+                "org.eclipse.elk.port.side": "EAST",
+                "org.eclipse.elk.port.index": "0"
+              }
+            },
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer__port__secondary",
+              "width": 10,
+              "height": 10,
+              "labels": [
+                {
+                  "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer__port__secondary__label",
+                  "text": "secondary",
+                  "width": 45,
+                  "height": 10
+                }
+              ],
+              "layoutOptions": {
+                "org.eclipse.elk.port.side": "EAST",
+                "org.eclipse.elk.port.index": "1"
+              }
+            }
+          ],
+          "children": [],
+          "layoutOptions": {
+            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+            "org.eclipse.elk.portAlignment.default": "CENTER",
+            "org.eclipse.elk.portLabels.placement": "INSIDE",
+            "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+            "org.eclipse.elk.spacing.labelPortVertical": "4",
+            "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+            "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+          }
+        },
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar",
+          "width": 280,
+          "height": 160,
+          "ports": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar__port__incoming",
+              "width": 10,
+              "height": 10,
+              "labels": [
+                {
+                  "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar__port__incoming__label",
+                  "text": "incoming",
+                  "width": 40,
+                  "height": 10
+                }
+              ],
+              "layoutOptions": {
+                "org.eclipse.elk.port.side": "WEST",
+                "org.eclipse.elk.port.index": "0"
+              }
+            },
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar__port__northFeederTap",
+              "width": 10,
+              "height": 10,
+              "labels": [
+                {
+                  "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar__port__northFeederTap__label",
+                  "text": "northFeederTap",
+                  "width": 70,
+                  "height": 10
+                }
+              ],
+              "layoutOptions": {
+                "org.eclipse.elk.port.side": "EAST",
+                "org.eclipse.elk.port.index": "0"
+              }
+            },
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar__port__southFeederTap",
+              "width": 10,
+              "height": 10,
+              "labels": [
+                {
+                  "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar__port__southFeederTap__label",
+                  "text": "southFeederTap",
+                  "width": 70,
+                  "height": 10
+                }
+              ],
+              "layoutOptions": {
+                "org.eclipse.elk.port.side": "EAST",
+                "org.eclipse.elk.port.index": "1"
+              }
+            },
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar__port__feederTap",
+              "width": 10,
+              "height": 10,
+              "labels": [
+                {
+                  "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar__port__feederTap__label",
+                  "text": "feederTap",
+                  "width": 45,
+                  "height": 10
+                }
+              ],
+              "layoutOptions": {
+                "org.eclipse.elk.port.side": "EAST",
+                "org.eclipse.elk.port.index": "2"
+              }
+            }
+          ],
+          "children": [],
+          "layoutOptions": {
+            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+            "org.eclipse.elk.portAlignment.default": "CENTER",
+            "org.eclipse.elk.portLabels.placement": "INSIDE",
+            "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+            "org.eclipse.elk.spacing.labelPortVertical": "4",
+            "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+            "org.eclipse.elk.nodeSize.minimum": "(280,160)"
+          }
+        }
+      ],
+      "layoutOptions": {
+        "elk.padding": "[top=48,left=24,bottom=24,right=24]",
+        "elk.direction": "RIGHT",
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(704,114)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationB",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationB__port__mvConnection",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationB__port__mvConnection__label",
+              "text": "mvConnection",
+              "width": 60,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        },
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationB__port__lvConnection",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationB__port__lvConnection__label",
+              "text": "lvConnection",
+              "width": 60,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "1"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable02",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable02__port__a",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable02__port__a__label",
+              "text": "a",
+              "width": 12,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "WEST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        },
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable02__port__b",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable02__port__b__label",
+              "text": "b",
+              "width": 12,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing",
+      "width": 704,
+      "height": 114,
+      "ports": [],
+      "children": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC",
+          "width": 280,
+          "height": 140,
+          "ports": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC__port__a",
+              "width": 10,
+              "height": 10,
+              "labels": [
+                {
+                  "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC__port__a__label",
+                  "text": "a",
+                  "width": 12,
+                  "height": 10
+                }
+              ],
+              "layoutOptions": {
+                "org.eclipse.elk.port.side": "WEST",
+                "org.eclipse.elk.port.index": "0"
+              }
+            },
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC__port__b",
+              "width": 10,
+              "height": 10,
+              "labels": [
+                {
+                  "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC__port__b__label",
+                  "text": "b",
+                  "width": 12,
+                  "height": 10
+                }
+              ],
+              "layoutOptions": {
+                "org.eclipse.elk.port.side": "EAST",
+                "org.eclipse.elk.port.index": "0"
+              }
+            }
+          ],
+          "children": [],
+          "layoutOptions": {
+            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+            "org.eclipse.elk.portAlignment.default": "CENTER",
+            "org.eclipse.elk.portLabels.placement": "INSIDE",
+            "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+            "org.eclipse.elk.spacing.labelPortVertical": "4",
+            "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+            "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+          }
+        },
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint",
+          "width": 280,
+          "height": 140,
+          "ports": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint__port__incoming",
+              "width": 10,
+              "height": 10,
+              "labels": [
+                {
+                  "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint__port__incoming__label",
+                  "text": "incoming",
+                  "width": 40,
+                  "height": 10
+                }
+              ],
+              "layoutOptions": {
+                "org.eclipse.elk.port.side": "WEST",
+                "org.eclipse.elk.port.index": "0"
+              }
+            },
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint__port__outgoing",
+              "width": 10,
+              "height": 10,
+              "labels": [
+                {
+                  "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint__port__outgoing__label",
+                  "text": "outgoing",
+                  "width": 40,
+                  "height": 10
+                }
+              ],
+              "layoutOptions": {
+                "org.eclipse.elk.port.side": "EAST",
+                "org.eclipse.elk.port.index": "0"
+              }
+            }
+          ],
+          "children": [],
+          "layoutOptions": {
+            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+            "org.eclipse.elk.portAlignment.default": "CENTER",
+            "org.eclipse.elk.portLabels.placement": "INSIDE",
+            "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+            "org.eclipse.elk.spacing.labelPortVertical": "4",
+            "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+            "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+          }
+        }
+      ],
+      "layoutOptions": {
+        "elk.padding": "[top=48,left=24,bottom=24,right=24]",
+        "elk.direction": "RIGHT",
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(704,114)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA",
+      "width": 288,
+      "height": 140,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA__port__gridConnection",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA__port__gridConnection__label",
+              "text": "gridConnection",
+              "width": 70,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "WEST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(288,140)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationA",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationA__port__mvConnection",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationA__port__mvConnection__label",
+              "text": "mvConnection",
+              "width": 60,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "WEST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        },
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationA__port__lvConnection",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationA__port__lvConnection__label",
+              "text": "lvConnection",
+              "width": 60,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay__port__incoming",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay__port__incoming__label",
+              "text": "incoming",
+              "width": 40,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "WEST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        },
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay__port__outgoing",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay__port__outgoing__label",
+              "text": "outgoing",
+              "width": 40,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationC",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationC__port__mvConnection",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationC__port__mvConnection__label",
+              "text": "mvConnection",
+              "width": 60,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "WEST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        },
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationC__port__lvConnection",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationC__port__lvConnection__label",
+              "text": "lvConnection",
+              "width": 60,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth__port__outgoing",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth__port__outgoing__label",
+              "text": "outgoing",
+              "width": 40,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        },
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth__port__source",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth__port__source__label",
+              "text": "source",
+              "width": 30,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "1"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+      }
+    },
+    {
+      "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth",
+      "width": 280,
+      "height": 140,
+      "ports": [
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth__port__outgoing",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth__port__outgoing__label",
+              "text": "outgoing",
+              "width": 40,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        },
+        {
+          "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth__port__source",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth__port__source__label",
+              "text": "source",
+              "width": 30,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "1"
+          }
+        }
+      ],
+      "children": [],
+      "layoutOptions": {
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.a:0",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationB__port__mvConnection"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC__port__a"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.lvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA.gridConnection:1",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationC__port__lvConnection"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.industrialClusterA__port__gridConnection"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.source:2",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay__port__outgoing"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth__port__source"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.lvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA.gridConnection:3",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationA__port__lvConnection"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaA__port__gridConnection"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.cable02.a:4",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth__port__outgoing"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable02__port__a"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC.b->RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.incoming:5",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.ringSegmentBtoC__port__b"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint__port__incoming"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.primary->RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection:6",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer__port__primary"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation__port__hvConnection"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.northFeederTap->RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay.incoming:7",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar__port__northFeederTap"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northFeederBay__port__incoming"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.cable01.b->RegionalGridExpansion.regionalExpansionProject.architecture.txStationA.mvConnection:8",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable01__port__b"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationA__port__mvConnection"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.cable03.b->RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection:9",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable03__port__b"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationC__port__mvConnection"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection.connection->RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.hvConnection:10",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.tennetConnection__port__connection"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation__port__hvConnection"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.southFeederTap->RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.incoming:11",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar__port__southFeederTap"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay__port__incoming"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.cable03.a:12",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth__port__outgoing"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable03__port__a"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.txStationC.mvConnection:13",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.northSouthRing.noTiePoint__port__outgoing"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationC__port__mvConnection"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth.source:14",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.southFeederBay__port__outgoing"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederSouth__port__source"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth.outgoing->RegionalGridExpansion.regionalExpansionProject.architecture.cable01.a:15",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.feederNorth__port__outgoing"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable01__port__a"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.lvConnection->RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB.gridConnection:16",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationB__port__lvConnection"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.residentialAreaB__port__gridConnection"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.cable02.b->RegionalGridExpansion.regionalExpansionProject.architecture.txStationB.mvConnection:17",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.cable02__port__b"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.txStationB__port__mvConnection"
+      ]
+    },
+    {
+      "id": "conn:RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer.secondary->RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar.incoming:18",
+      "sources": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.transformer__port__secondary"
+      ],
+      "targets": [
+        "occ_RegionalGridExpansion.regionalExpansionProject.architecture.primarySubstation.mvBusbar__port__incoming"
+      ]
+    }
+  ]
+}

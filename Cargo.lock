@@ -670,6 +670,28 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9e5e8f6c15a24b9a3ee5efec809ccd006d3b30e8b3bb63c39af737c7f87daa1d"
 
 [[package]]
+name = "elkrs"
+version = "0.1.1"
+source = "git+https://github.com/elan8/elkrs.git?rev=8309be8cf614cfe277c572b28e4f79a1703f8e32#8309be8cf614cfe277c572b28e4f79a1703f8e32"
+dependencies = [
+ "indexmap",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "elkrs_parity"
+version = "0.50.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "elkrs",
+ "serde",
+ "serde_json",
+ "server",
+]
+
+[[package]]
 name = "embedded-io"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1836,6 +1858,7 @@ version = "1.0.151"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c841b55ecdae098c80dcae9cf767f6f8a0c2cdb3416bbef72181df4d0fe73f14"
 dependencies = [
+ "indexmap",
  "itoa",
  "memchr",
  "serde",
