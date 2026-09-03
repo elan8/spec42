@@ -19,6 +19,7 @@ const implemented = new Set([
   "requirement-def", "requirement", "connection", "binding-connection", "flow", "interface",
   "interface-connection", "binary-dependency", "specializes", "typing", "hierarchy",
   "composition", "allocate", "satisfy", "verify", "bind", "dependency", "redefinition",
+  "subsetting",
   "package-with-name-inside", "general-view", "interconnection-view",
 ]);
 const partialPrefixes = ["sequence", "sq-", "control", "succession", "initial", "final", "compartment"];

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **General View draws authored subsetting, subclassification, redefinition, and feature typing.**
+  When both ends of an authored `:>` / `:>` (specializes) / `:>>` / `:` are elements the view
+  projects, the query now composes a graph edge of that kind and the renderer draws the SysML
+  8.2.3.6 glyph (subsetting: dashed, open arrowhead — not the specialize triangle). Implied
+  library subsetting (`Parts::parts`, `Items::items`, the kernel chain) stays a relationship-only
+  fact and never sprouts a line; an unresolved, ambiguous, or out-of-view end yields no edge.
+  Fixes #98.
+
 - **Metadata-prefixed dependencies lower in definition bodies.** `#refinement dependency X to Y;`
   in a `requirement def`, `action def`, or `part def` body no longer reports the `#refinement`
   prefix as an `unsupported_*_definition_member`. The dependency lowers with resolved

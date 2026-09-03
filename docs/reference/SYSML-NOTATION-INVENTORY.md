@@ -2,7 +2,7 @@
 
 Source: `Systems-Modeling/SysML-v2-Release` release `2026-04`, `bnf/SysML-graphical-bnf.html`.
 
-Productions: **513**; supported: **30**; partial: **248**; unsupported: **235**.
+Productions: **513**; supported: **31**; partial: **248**; unsupported: **234**.
 
 | Production | Clause | SVG examples | Status |
 | --- | --- | --- | --- |
@@ -442,7 +442,7 @@ Productions: **513**; supported: **30**; partial: **248**; unsupported: **235**.
 | `subject-compartment-contents` | `c8.2.3.21` | — | partial |
 | `subject-compartment-element` | `c8.2.3.21` | — | partial |
 | `subject-name` | `c8.2.3.21` | — | unsupported |
-| `subsetting` | `c8.2.3.6` | `subsetting.svg` | unsupported |
+| `subsetting` | `c8.2.3.6` | `subsetting.svg` | supported |
 | `succession-flow` | `c8.2.3.16` | `succession-flow.svg` | partial |
 | `succession-flow-label` | `c8.2.3.16` | — | partial |
 | `succession-label` | `c8.2.3.9` | — | partial |
