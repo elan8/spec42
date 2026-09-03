@@ -1836,12 +1836,7 @@ impl SemanticModelBuilder {
                 // `analysis` body). Shares the `DefaultReferenceUsage` node and lowering the
                 // calc/constraint/part/action def bodies already use for the same shape.
                 UseCaseDefBodyElement::DefaultReferenceUsage(node) => {
-                    self.lower_default_reference_usage(
-                        document,
-                        Some(owner),
-                        unsupported,
-                        node,
-                    )?;
+                    self.lower_default_reference_usage(document, Some(owner), unsupported, node)?;
                 }
                 UseCaseDefBodyElement::MetadataKeywordUsage(_)
                 | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)
