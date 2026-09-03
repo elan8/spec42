@@ -65,18 +65,6 @@ async function maybeWriteLayoutGolden(fixtureBaseName: string, payload: unknown)
   );
 }
 
-function edgeSignatures(graph: Record<string, unknown>): Array<[string, string, string]> {
-  const edges = Array.isArray(graph.edges) ? graph.edges : [];
-  return edges.map((edge) => {
-    const record = edge as { id?: string; sources?: string[]; targets?: string[] };
-    return [
-      String(record.id ?? ""),
-      String(record.sources?.[0] ?? ""),
-      String(record.targets?.[0] ?? ""),
-    ];
-  });
-}
-
 describe("interconnection layout fixtures", () => {
   it("exports ELK input golden fixtures when UPDATE_ELK_FIXTURES=1", () => {
     maybeWriteElkGolden("scene-two-part-chain", loadFixture("scene-two-part-chain.json"));
@@ -94,15 +82,22 @@ describe("interconnection layout fixtures", () => {
     expect(true).toBe(true);
   });
 
-  it("matches ELK input golden for nested ring when present", () => {
-    const fixturePath = join(fixtureDir, "nested-ring-minimal-elk-input.json");
-    if (!existsSync(fixturePath)) {
-      return;
-    }
+  it.each([
+    ["scene-two-part-chain", () => loadFixture("scene-two-part-chain.json")],
+    ["nested-ring-minimal", () => loadFixture("nested-ring-minimal.json")],
+    [
+      "grid-system-context",
+      () => ({
+        view: "interconnection-view",
+        interconnectionScene: loadSceneFixture("grid-system-context-scene.json"),
+      }),
+    ],
+  ] as const)("matches the complete %s ELK input golden", (fixtureBaseName, payload) => {
+    const fixturePath = join(fixtureDir, `${fixtureBaseName}-elk-input.json`);
+    expect(existsSync(fixturePath), `missing checked-in fixture ${fixturePath}`).toBe(true);
     const golden = JSON.parse(readFileSync(fixturePath, "utf8")) as Record<string, unknown>;
-    const prepared = prepareViewData(loadFixture("nested-ring-minimal.json"));
-    const elkInput = buildInterconnectionElkGraphInput(prepared);
-    expect(edgeSignatures(elkInput)).toEqual(edgeSignatures(golden));
+    const prepared = prepareViewData(payload());
+    expect(buildInterconnectionElkGraphInput(prepared)).toEqual(golden);
   });
 
   it("snapshots ELK input graph for canonical scene fixture", () => {

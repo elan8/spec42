@@ -18,25 +18,57 @@
   },
   "children": [
     {
-      "id": "pkg-control",
-      "layoutOptions": { "elk.direction": "DOWN", "elk.padding": "[top=36,left=20,bottom=20,right=20]" },
+      "id": "pkg:sensing",
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.padding": "[top=36,left=20,bottom=20,right=20]"
+      },
       "children": [
-        { "id": "controller", "width": 250, "height": 120 },
-        { "id": "planner", "width": 220, "height": 96 }
+        {
+          "id": "sensor",
+          "width": 200,
+          "height": 39
+        }
       ]
     },
     {
-      "id": "pkg-plant",
-      "layoutOptions": { "elk.direction": "DOWN", "elk.padding": "[top=36,left=20,bottom=20,right=20]" },
+      "id": "pkg:control",
+      "layoutOptions": {
+        "elk.direction": "DOWN",
+        "elk.padding": "[top=36,left=20,bottom=20,right=20]"
+      },
       "children": [
-        { "id": "sensor", "width": 210, "height": 88 },
-        { "id": "actuator", "width": 210, "height": 88 }
+        {
+          "id": "controller",
+          "width": 200,
+          "height": 39
+        },
+        {
+          "id": "actuator",
+          "width": 200,
+          "height": 39
+        }
       ]
     }
   ],
   "edges": [
-    { "id": "feedback", "sources": ["sensor"], "targets": ["controller"] },
-    { "id": "command", "sources": ["planner"], "targets": ["actuator"] },
-    { "id": "plans", "sources": ["controller"], "targets": ["planner"] }
+    {
+      "id": "signals",
+      "sources": [
+        "sensor"
+      ],
+      "targets": [
+        "controller"
+      ]
+    },
+    {
+      "id": "commands",
+      "sources": [
+        "controller"
+      ],
+      "targets": [
+        "actuator"
+      ]
+    }
   ]
 }

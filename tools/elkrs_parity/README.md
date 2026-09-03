@@ -1,14 +1,16 @@
 # ELK layout parity harness
 
 This development-only tool runs identical, checked-in ELK JSON graphs through Spec42's current
-ELK.js/QuickJS adapter and the pinned public `elan8/elkrs` revision. The narrow elkrs adapter restores
-Spec42's root-authored/root-coordinate edge contract when elkrs publishes an intra-container edge on
-its lowest common ancestor. It compares layout geometry, not serialized JSON, so object-key order
-and number formatting do not create false differences.
+ELK.js/QuickJS adapter and the pinned public `elan8/elkrs` revision. The native implementation is
+owned by `crates/diagram_layout`; it restores Spec42's root-authored/root-coordinate edge contract
+when elkrs publishes an intra-container edge on its lowest common ancestor. The harness compares
+layout geometry, not serialized JSON, so object-key order and number formatting do not create false
+differences.
 
 The comparison covers graph and container bounds, nodes, ports, node/port/edge labels, edge-section
-start/end points, and bend points. Paths are stable and differences are sorted, making JSON output
-suitable for review or CI artifacts.
+start/end points, and bend points. It also verifies node/port/label/edge identity completeness,
+requires routed sections for every edge, and rejects nondeterministic output across repeated runs.
+Paths are stable and differences are sorted, making JSON output suitable for review or CI artifacts.
 
 Run all fixtures:
 

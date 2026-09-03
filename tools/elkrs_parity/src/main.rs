@@ -7,8 +7,7 @@ use anyhow::{bail, Context, Result};
 use clap::{Parser, ValueEnum};
 use serde::Serialize;
 use serde_json::Value;
-
-mod elkrs_adapter;
+use sha2::{Digest, Sha256};
 
 const DEFAULT_FIXTURES: &[&str] = &[
     "vscode/diagram-renderer/test-fixtures/interconnection/scene-two-part-chain-elk-input.json",
@@ -92,6 +91,9 @@ struct EngineMeasurement {
     median_layout_us: u128,
     min_layout_us: u128,
     output_bytes: usize,
+    output_digest: Option<String>,
+    deterministic: bool,
+    contract_errors: Vec<String>,
     error: Option<String>,
 }
 
@@ -170,8 +172,8 @@ fn main() -> Result<()> {
         summary.engine_errors > 0 || (args.fail_on_difference && summary.different > 0);
     let report = Report {
         schema_version: 1,
-        elkrs_revision: "8309be8cf614cfe277c572b28e4f79a1703f8e32",
-        elk_compatibility_baseline: "ELK 0.11.0",
+        elkrs_revision: diagram_layout::ELKRS_REVISION,
+        elk_compatibility_baseline: diagram_layout::ELK_COMPATIBILITY_BASELINE,
         tolerance: args.tolerance,
         fixtures,
         summary,
@@ -205,15 +207,27 @@ fn compare_fixture(
         .with_context(|| format!("parse ELK JSON input {}", path.display()))?;
     let input_geometry = extract_geometry(&parsed);
 
-    let (elkjs_measurement, elkjs_output) = measure(iterations, || {
+    let (mut elkjs_measurement, elkjs_output) = measure(iterations, || {
         spec42::elk_layout::layout_elk_graph(&input)
             .and_then(|json| serde_json::from_str(&json).map_err(|err| err.to_string()))
     });
-    let (elkrs_measurement, elkrs_output) =
-        measure(iterations, || elkrs_adapter::layout_json(&input));
+    let (mut elkrs_measurement, elkrs_output) = measure(iterations, || {
+        diagram_layout::layout_json(&input).map_err(|error| error.to_string())
+    });
 
-    let comparison = match (elkjs_output, elkrs_output) {
-        (Some(elkjs), Some(elkrs)) => compare_geometry(
+    if let Some(output) = &elkjs_output {
+        elkjs_measurement.contract_errors = validate_layout_output(&parsed, output);
+    }
+    if let Some(output) = &elkrs_output {
+        elkrs_measurement.contract_errors = validate_layout_output(&parsed, output);
+    }
+
+    let outputs_are_valid = elkjs_measurement.error.is_none()
+        && elkrs_measurement.error.is_none()
+        && elkjs_measurement.contract_errors.is_empty()
+        && elkrs_measurement.contract_errors.is_empty();
+    let comparison = match (outputs_are_valid, elkjs_output, elkrs_output) {
+        (true, Some(elkjs), Some(elkrs)) => compare_geometry(
             &extract_geometry(&elkjs).values,
             &extract_geometry(&elkrs).values,
             tolerance,
@@ -250,11 +264,40 @@ where
 {
     let mut durations = Vec::with_capacity(iterations as usize);
     let mut last_output = None;
+    let mut output_digest = None;
     for _ in 0..iterations {
         let started = Instant::now();
         match layout() {
             Ok(output) => {
                 durations.push(started.elapsed());
+                let digest = canonical_json_digest(&output);
+                if output_digest
+                    .as_ref()
+                    .is_some_and(|expected| expected != &digest)
+                {
+                    return (
+                        EngineMeasurement {
+                            first_layout_us: durations[0].as_micros(),
+                            median_layout_us: median(&durations).as_micros(),
+                            min_layout_us: durations
+                                .iter()
+                                .min()
+                                .copied()
+                                .unwrap_or_default()
+                                .as_micros(),
+                            output_bytes: 0,
+                            output_digest: None,
+                            deterministic: false,
+                            contract_errors: Vec::new(),
+                            error: Some(format!(
+                                "layout output changed across identical runs: expected {}, got {digest}",
+                                output_digest.as_deref().unwrap_or("(missing)")
+                            )),
+                        },
+                        None,
+                    );
+                }
+                output_digest = Some(digest);
                 last_output = Some(output);
             }
             Err(error) => {
@@ -269,6 +312,9 @@ where
                             .unwrap_or_default()
                             .as_micros(),
                         output_bytes: 0,
+                        output_digest: None,
+                        deterministic: true,
+                        contract_errors: Vec::new(),
                         error: Some(error),
                     },
                     None,
@@ -291,10 +337,178 @@ where
                 .unwrap_or_default()
                 .as_micros(),
             output_bytes,
+            output_digest,
+            deterministic: true,
+            contract_errors: Vec::new(),
             error: None,
         },
         last_output,
     )
+}
+
+fn canonical_json_digest(value: &Value) -> String {
+    fn canonicalize(value: &Value) -> Value {
+        match value {
+            Value::Object(object) => {
+                let sorted = object
+                    .iter()
+                    .map(|(key, value)| (key.clone(), canonicalize(value)))
+                    .collect::<BTreeMap<_, _>>();
+                Value::Object(sorted.into_iter().collect())
+            }
+            Value::Array(items) => Value::Array(items.iter().map(canonicalize).collect()),
+            other => other.clone(),
+        }
+    }
+
+    let bytes = serde_json::to_vec(&canonicalize(value)).expect("JSON value serializes");
+    let digest = Sha256::digest(bytes);
+    digest.iter().map(|byte| format!("{byte:02x}")).collect()
+}
+
+#[derive(Debug, Default)]
+struct Topology {
+    nodes: BTreeSet<String>,
+    ports: BTreeSet<String>,
+    labels: BTreeSet<String>,
+    edges: BTreeSet<String>,
+}
+
+fn validate_layout_output(input: &Value, output: &Value) -> Vec<String> {
+    let mut expected = Topology::default();
+    collect_topology(input, true, false, &mut expected, &mut Vec::new());
+    let mut observed = Topology::default();
+    let mut errors = Vec::new();
+    collect_topology(output, true, true, &mut observed, &mut errors);
+
+    compare_identity_set("node", &expected.nodes, &observed.nodes, &mut errors);
+    compare_identity_set("port", &expected.ports, &observed.ports, &mut errors);
+    compare_identity_set("label", &expected.labels, &observed.labels, &mut errors);
+    compare_identity_set("edge", &expected.edges, &observed.edges, &mut errors);
+    errors.sort();
+    errors.dedup();
+    errors
+}
+
+fn compare_identity_set(
+    kind: &str,
+    expected: &BTreeSet<String>,
+    observed: &BTreeSet<String>,
+    errors: &mut Vec<String>,
+) {
+    for id in expected.difference(observed) {
+        errors.push(format!("missing {kind} {id}"));
+    }
+    for id in observed.difference(expected) {
+        errors.push(format!("unexpected {kind} {id}"));
+    }
+}
+
+fn collect_topology(
+    value: &Value,
+    is_root: bool,
+    require_geometry: bool,
+    topology: &mut Topology,
+    errors: &mut Vec<String>,
+) {
+    if !is_root {
+        collect_identified_rect(value, "node", require_geometry, &mut topology.nodes, errors);
+    }
+    collect_labels(value, require_geometry, topology, errors);
+    if let Some(ports) = value.get("ports").and_then(Value::as_array) {
+        for port in ports {
+            collect_identified_rect(port, "port", require_geometry, &mut topology.ports, errors);
+            collect_labels(port, require_geometry, topology, errors);
+        }
+    }
+    if let Some(edges) = value.get("edges").and_then(Value::as_array) {
+        for edge in edges {
+            let Some(id) = edge.get("id").and_then(Value::as_str) else {
+                errors.push("edge without id".to_string());
+                continue;
+            };
+            if !topology.edges.insert(id.to_string()) {
+                errors.push(format!("duplicate edge {id}"));
+            }
+            collect_labels(edge, require_geometry, topology, errors);
+            if require_geometry {
+                validate_edge_sections(edge, id, errors);
+            }
+        }
+    }
+    if let Some(children) = value.get("children").and_then(Value::as_array) {
+        for child in children {
+            collect_topology(child, false, require_geometry, topology, errors);
+        }
+    }
+}
+
+fn collect_labels(
+    value: &Value,
+    require_geometry: bool,
+    topology: &mut Topology,
+    errors: &mut Vec<String>,
+) {
+    if let Some(labels) = value.get("labels").and_then(Value::as_array) {
+        for label in labels {
+            collect_identified_rect(
+                label,
+                "label",
+                require_geometry,
+                &mut topology.labels,
+                errors,
+            );
+        }
+    }
+}
+
+fn collect_identified_rect(
+    value: &Value,
+    kind: &str,
+    require_geometry: bool,
+    identities: &mut BTreeSet<String>,
+    errors: &mut Vec<String>,
+) {
+    let Some(id) = value.get("id").and_then(Value::as_str) else {
+        errors.push(format!("{kind} without id"));
+        return;
+    };
+    if !identities.insert(id.to_string()) {
+        errors.push(format!("duplicate {kind} {id}"));
+    }
+    if require_geometry {
+        for coordinate in ["x", "y", "width", "height"] {
+            if value.get(coordinate).and_then(Value::as_f64).is_none() {
+                errors.push(format!("{kind} {id} missing numeric {coordinate}"));
+            }
+        }
+    }
+}
+
+fn validate_edge_sections(edge: &Value, id: &str, errors: &mut Vec<String>) {
+    let Some(sections) = edge.get("sections").and_then(Value::as_array) else {
+        errors.push(format!("edge {id} missing sections"));
+        return;
+    };
+    if sections.is_empty() {
+        errors.push(format!("edge {id} has no sections"));
+    }
+    for (index, section) in sections.iter().enumerate() {
+        for point_name in ["startPoint", "endPoint"] {
+            let point = section.get(point_name);
+            for coordinate in ["x", "y"] {
+                if point
+                    .and_then(|point| point.get(coordinate))
+                    .and_then(Value::as_f64)
+                    .is_none()
+                {
+                    errors.push(format!(
+                        "edge {id} section {index} missing numeric {point_name}.{coordinate}"
+                    ));
+                }
+            }
+        }
+    }
 }
 
 fn median(durations: &[Duration]) -> Duration {
@@ -650,5 +864,62 @@ mod tests {
         let comparison = compare_geometry(&left, &right, 1e-9);
         assert_eq!(comparison.status, ComparisonStatus::WithinTolerance);
         assert!(comparison.differences.is_empty());
+    }
+
+    #[test]
+    fn repeated_layouts_must_be_byte_semantically_deterministic() {
+        let mut run = 0;
+        let (measurement, output) = measure(2, || {
+            run += 1;
+            Ok(serde_json::json!({ "id": "root", "width": run }))
+        });
+        assert!(!measurement.deterministic);
+        assert!(measurement
+            .error
+            .unwrap()
+            .contains("changed across identical runs"));
+        assert!(output.is_none());
+    }
+
+    #[test]
+    fn layout_contract_rejects_missing_edge_sections() {
+        let input = serde_json::json!({
+            "id": "root",
+            "children": [
+                { "id": "a", "width": 10, "height": 10 },
+                { "id": "b", "width": 10, "height": 10 }
+            ],
+            "edges": [{ "id": "e", "sources": ["a"], "targets": ["b"] }]
+        });
+        let output = serde_json::json!({
+            "id": "root",
+            "width": 100,
+            "height": 100,
+            "children": [
+                { "id": "a", "x": 0, "y": 0, "width": 10, "height": 10 },
+                { "id": "b", "x": 20, "y": 0, "width": 10, "height": 10 }
+            ],
+            "edges": [{ "id": "e", "sources": ["a"], "targets": ["b"] }]
+        });
+        assert_eq!(
+            validate_layout_output(&input, &output),
+            vec!["edge e missing sections"]
+        );
+    }
+
+    #[test]
+    fn layout_contract_rejects_missing_node_geometry() {
+        let input = serde_json::json!({
+            "id": "root",
+            "children": [{ "id": "a", "width": 10, "height": 10 }]
+        });
+        let output = serde_json::json!({
+            "id": "root",
+            "children": [{ "id": "a", "width": 10, "height": 10 }]
+        });
+        assert_eq!(
+            validate_layout_output(&input, &output),
+            vec!["node a missing numeric x", "node a missing numeric y"]
+        );
     }
 }

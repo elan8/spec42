@@ -129,15 +129,12 @@ function transitionDisplayLabel(label: string): string {
   return trimmed;
 }
 
-export async function layoutBehaviorGraph(
+/** Exact ELK input produced by the behavior-view owner, for parity fixtures and adapters. */
+export function buildBehaviorElkGraphInput(
   prepared: PreparedView,
   options: { horizontal?: boolean; mode: "action" | "state" },
-): Promise<BehaviorLayoutResult> {
+): Record<string, unknown> {
   const horizontal = options.horizontal ?? false;
-  const positions = new Map<string, LaidOutRect>();
-  const edgeSectionsById = new Map<string, EdgeSection[]>();
-  const edgeLabelsById = new Map<string, ElkLabelBox[]>();
-
   const children = prepared.nodes.map((node) => {
     const size = nodeDimensions(node, options.mode);
     return { id: node.id, width: size.width, height: size.height };
@@ -178,7 +175,7 @@ export async function layoutBehaviorGraph(
   });
 
   const isState = options.mode === "state";
-  const graph = {
+  return {
     id: prepared.title || "behavior",
     layoutOptions: isState
       ? buildElkLayoutOptions("behavior-state", {
@@ -192,8 +189,20 @@ export async function layoutBehaviorGraph(
     children,
     edges,
   };
+}
 
-  const laidOut = await behaviorElk.layout(graph as Parameters<typeof behaviorElk.layout>[0]);
+export async function layoutBehaviorGraph(
+  prepared: PreparedView,
+  options: { horizontal?: boolean; mode: "action" | "state" },
+): Promise<BehaviorLayoutResult> {
+  const positions = new Map<string, LaidOutRect>();
+  const edgeSectionsById = new Map<string, EdgeSection[]>();
+  const edgeLabelsById = new Map<string, ElkLabelBox[]>();
+  const graph = buildBehaviorElkGraphInput(prepared, options);
+
+  const laidOut = await behaviorElk.layout(
+    graph as unknown as Parameters<typeof behaviorElk.layout>[0],
+  );
   for (const child of laidOut.children ?? []) {
     positions.set(String(child.id), {
       x: child.x ?? 0,

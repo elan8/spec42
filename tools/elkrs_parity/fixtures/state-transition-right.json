@@ -1,5 +1,5 @@
 {
-  "id": "state-transition-right",
+  "id": "state-transition",
   "layoutOptions": {
     "elk.algorithm": "layered",
     "elk.edgeRouting": "ORTHOGONAL",
@@ -17,14 +17,113 @@
     "elk.direction": "RIGHT"
   },
   "children": [
-    { "id": "initial", "width": 34, "height": 34 },
-    { "id": "idle", "width": 240, "height": 180 },
-    { "id": "active", "width": 240, "height": 180 },
-    { "id": "final", "width": 34, "height": 34 }
+    {
+      "id": "initial",
+      "width": 34,
+      "height": 34
+    },
+    {
+      "id": "idle",
+      "width": 240,
+      "height": 180
+    },
+    {
+      "id": "active",
+      "width": 240,
+      "height": 180
+    },
+    {
+      "id": "fault",
+      "width": 240,
+      "height": 180
+    },
+    {
+      "id": "final",
+      "width": 34,
+      "height": 34
+    }
   ],
   "edges": [
-    { "id": "enter", "sources": ["initial"], "targets": ["idle"] },
-    { "id": "start", "sources": ["idle"], "targets": ["active"], "labels": [{ "id": "start::label", "text": "start", "width": 46, "height": 22, "layoutOptions": { "org.eclipse.elk.edgeLabels.placement": "CENTER", "org.eclipse.elk.edgeLabels.inline": "false" } }] },
-    { "id": "stop", "sources": ["active"], "targets": ["final"] }
+    {
+      "id": "s1",
+      "sources": [
+        "initial"
+      ],
+      "targets": [
+        "idle"
+      ]
+    },
+    {
+      "id": "s2",
+      "sources": [
+        "idle"
+      ],
+      "targets": [
+        "active"
+      ],
+      "labels": [
+        {
+          "id": "s2::label",
+          "text": "start [ready] / engage",
+          "width": 140,
+          "height": 16,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.placement": "CENTER",
+            "org.eclipse.elk.edgeLabels.inline": "false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s3",
+      "sources": [
+        "active"
+      ],
+      "targets": [
+        "fault"
+      ],
+      "labels": [
+        {
+          "id": "s3::label",
+          "text": "failure",
+          "width": 50,
+          "height": 16,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.placement": "CENTER",
+            "org.eclipse.elk.edgeLabels.inline": "false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s4",
+      "sources": [
+        "active"
+      ],
+      "targets": [
+        "idle"
+      ],
+      "labels": [
+        {
+          "id": "s4::label",
+          "text": "stop",
+          "width": 38,
+          "height": 16,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.placement": "CENTER",
+            "org.eclipse.elk.edgeLabels.inline": "false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "s5",
+      "sources": [
+        "fault"
+      ],
+      "targets": [
+        "final"
+      ]
+    }
   ]
 }

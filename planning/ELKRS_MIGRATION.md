@@ -9,8 +9,10 @@ Implementation follow-ups:
 
 ## Current decision
 
-Proceed to a separately reviewed native-server integration behind an explicit rollout switch. Do
-not replace the production ELK.js/QuickJS or webview paths in the parity change.
+Proceed with the native-server integration behind an explicit rollout switch. The shared adapter is
+now owned by `crates/diagram_layout`, and `server/native-layout-shadow` compiles a comparison seam
+that returns the unchanged ELK.js result as primary plus the normalized native result. It is not yet
+wired into the headless renderer or webview, so production behavior remains unchanged.
 
 The server integration must own one neutral ELK JSON adapter and preserve the prepared-view/diagram
 product as its input boundary. The adapter must retain the root-authored, root-coordinate edge
@@ -40,14 +42,18 @@ Pinned dependency:
 Run on 2026-09-03 on Windows x86-64 in the Cargo development profile:
 
 ```sh
-cargo run -p elkrs_parity -- --iterations 1 --fail-on-difference --format json
+cargo run -p elkrs_parity -- --iterations 3 --fail-on-difference
 ```
 
-All 1,064 compared geometry scalars across eleven fixtures were exact at tolerance `1e-9` after the
-compatibility adapter. Coverage includes flat and package-hierarchical General View, two nested
+All 1,020 compared geometry scalars across eleven renderer-owned fixtures were exact at tolerance
+`1e-9` after the compatibility adapter. Both engines returned deterministic output on all three
+runs, with complete node, port, label, and edge identities and routed sections for every edge.
+Coverage includes flat and package-hierarchical General View, two nested
 Interconnection View fixtures, a 45,086-byte repository-model interconnection fixture, fixed and
 external ports, port and edge labels, cross-hierarchy routing, action flow, state transitions, and
-wide sibling chunking. Both horizontal and vertical action/state option variants are included.
+wide sibling chunking. Both horizontal and vertical action/state option variants are included. The
+General View, behavior, and interconnection golden inputs are checked against their production
+TypeScript builders, so layout-option and sizing drift fails the renderer suite.
 
 Raw elkrs exposed one consistent difference. Intra-container edges were moved from the root to their
 lowest common ancestor and their section coordinates were container-relative. The adapter restores
@@ -55,16 +61,16 @@ input edge order, moves the edges back to the root, and translates sections, ben
 points, and edge labels to root coordinates. With that normalization, no node, container, port,
 label, or edge-section differences remain in the current corpus.
 
-Selected single-run timings (debug builds; initialization is included):
+Selected median timings from the three-run development-profile pass (initialization is included):
 
 | Fixture | ELK.js/QuickJS | elkrs + adapter | Ratio |
 |---|---:|---:|---:|
-| two-part interconnection | 1,129 ms | 3.0 ms | 376x |
-| repository-model interconnection | 5,360 ms | 33.1 ms | 162x |
-| flat General View | 3,413 ms | 4.3 ms | 790x |
-| action flow | 3,406 ms | 5.3 ms | 646x |
-| state transition | 3,505 ms | 8.3 ms | 421x |
-| wide sibling graph | 10,551 ms | 44.7 ms | 236x |
+| two-part interconnection | 1,133 ms | 2.5 ms | 453x |
+| repository-model interconnection | 6,586 ms | 34.5 ms | 191x |
+| flat General View | 3,281 ms | 6.1 ms | 538x |
+| action flow | 4,083 ms | 7.2 ms | 567x |
+| state transition | 3,513 ms | 6.6 ms | 532x |
+| wide sibling graph | 5,252 ms | 30.8 ms | 171x |
 
 These numbers demonstrate migration headroom, not a release performance guarantee. The current
 standalone adapter creates a fresh QuickJS runtime for every call, as does the current server test
@@ -83,16 +89,12 @@ notices before removing or replacing ELK.js assets.
 
 ## Required before enabling native layout by default
 
-- Move the compatibility adapter from the spike tool to a small owning Rust layout crate with typed
-  errors and tests for malformed input, duplicate edge ids, and nested authored edges.
-- Add a shadow-mode server integration and compare its normalized output with ELK.js on the full
-  visual corpus. Preserve explicit ELK failure diagnostics and the current deterministic fallback
-  policy; never silently accept partial layout.
+- Wire the feature-gated server shadow seam into a real headless request path and capture comparison
+  diagnostics on the full visual corpus. Preserve explicit ELK failure diagnostics and the current
+  deterministic fallback policy; never silently accept partial layout.
 - Run release-profile cold/warm benchmarks in separate processes for startup time, layout time, peak
   working set, and incremental `spec42` binary size. The in-process spike intentionally does not
   claim engine-attributed peak memory because both engines are linked and loaded together.
-- Make the hand-authored General View and behavior fixtures renderer-generated so option drift is
-  detected at their owning TypeScript builders rather than only during review.
 - Keep golden SVG marker tests and the full visual corpus green before deleting any ELK.js server
   assets.
 - Prototype the versioned server request/response path and verify cancellation plus stale-result

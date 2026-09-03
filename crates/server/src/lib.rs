@@ -12,6 +12,8 @@ pub mod generation;
 pub mod headless_renderer;
 pub mod host_snapshot;
 pub mod kpar_libraries;
+#[cfg(feature = "native-layout-shadow")]
+pub mod layout_shadow;
 pub mod library_bundle;
 pub mod library_status_rpc;
 pub mod reports;
