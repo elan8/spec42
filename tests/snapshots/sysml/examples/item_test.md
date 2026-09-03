@@ -34,18 +34,6 @@ package ItemTest {
 (fixture-diagnostics
   (document "memory://snapshot/item_test.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 18 2) (end 18 16))
-      )
-      (diagnostic
-        (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 19 2) (end 19 17))
-      )
     )
   )
 )
