@@ -1815,48 +1815,6 @@ package SimpleVehicleModel{
       )
       (diagnostic
         (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 225 16) (end 225 48))
-      )
-      (diagnostic
-        (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 230 16) (end 230 38))
-      )
-      (diagnostic
-        (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 233 16) (end 233 57))
-      )
-      (diagnostic
-        (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 236 16) (end 236 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 274 16) (end 274 48))
-      )
-      (diagnostic
-        (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 277 16) (end 277 67))
-      )
-      (diagnostic
-        (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 278 16) (end 278 57))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 283 40) (end 283 44))
@@ -2286,12 +2244,6 @@ package SimpleVehicleModel{
         (code "unresolved_reference")
         (source "semantic")
         (range (start 556 56) (end 556 59))
-      )
-      (diagnostic
-        (severity warning)
-        (code "port_nested_usage_composite")
-        (source "semantic")
-        (range (start 561 24) (end 561 57))
       )
       (diagnostic
         (severity error)
