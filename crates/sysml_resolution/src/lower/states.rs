@@ -18,10 +18,11 @@ use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
 use sysml_v2_parser::ast::{
-    DoAction, EntryAction, ExhibitState as ParserExhibitState, ExitAction, Expression, FinalState,
-    MembershipKind as ParserMembershipKind, Node, QualifiedReferenceId, Span, StateBodyModifier,
-    StateDef, StateDefBody, StateDefBodyElement, StateUsage as ParserStateUsage, ThenStmt,
-    Transition, TransitionAccept, TransitionEffect,
+    DeclarationName, DoAction, EntryAction, ExhibitState as ParserExhibitState, ExitAction,
+    Expression, FinalState, MembershipKind as ParserMembershipKind, Node, QualifiedReferenceId,
+    Span, StateBodyModifier, StateDef, StateDefBody, StateDefBodyElement,
+    StateUsage as ParserStateUsage, SubsettingRelationship, ThenStmt, Transition, TransitionAccept,
+    TransitionEffect,
 };
 
 /// `StateDefinition::isParallel` / `StateUsage::isParallel` from the authored body modifier.
@@ -243,6 +244,18 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         node: &Node<EntryAction>,
     ) -> Result<(), ConstructionError> {
+        if let Some(declared_name) = node.value.declared_name {
+            return self.lower_state_declared_action(
+                document,
+                owner,
+                DeclarationKind::EntryActionBinding,
+                declared_name,
+                node.value.type_name,
+                node.value.redefines.as_ref(),
+                &node.value.body,
+                node.span,
+            );
+        }
         let Some(target) = node.value.action_reference else {
             if state_action_body_has_content(&node.value.body) {
                 self.push_unsupported(
@@ -284,6 +297,18 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         node: &Node<DoAction>,
     ) -> Result<(), ConstructionError> {
+        if let Some(declared_name) = node.value.declared_name {
+            return self.lower_state_declared_action(
+                document,
+                owner,
+                DeclarationKind::DoActionBinding,
+                declared_name,
+                node.value.type_name,
+                node.value.redefines.as_ref(),
+                &node.value.body,
+                node.span,
+            );
+        }
         let Some(target) = node.value.action_reference else {
             if state_action_body_has_content(&node.value.body) {
                 self.push_unsupported(
@@ -325,6 +350,18 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         node: &Node<ExitAction>,
     ) -> Result<(), ConstructionError> {
+        if let Some(declared_name) = node.value.declared_name {
+            return self.lower_state_declared_action(
+                document,
+                owner,
+                DeclarationKind::ExitActionBinding,
+                declared_name,
+                node.value.type_name,
+                node.value.redefines.as_ref(),
+                &node.value.body,
+                node.span,
+            );
+        }
         let Some(target) = node.value.action_reference else {
             if state_action_body_has_content(&node.value.body) {
                 self.push_unsupported(
@@ -356,6 +393,72 @@ impl SemanticModelBuilder {
             ReferenceKind::ExitActionBinding,
             target,
         )
+    }
+
+    /// Lowers the *declaration* form of an `entry`/`do`/`exit` action -- `do action
+    /// prepareForMissionPhaseOperations { first start; then action ...; then done; }` (Apollo 11
+    /// `Purpose/MissionPhasesPackage.sysml`; spec42#100 form 4), or `entry action entryAction :>>
+    /// 'entry';` (Systems Library `States.sysml`; spec42 Gap 43) -- as opposed to the reference
+    /// form (`do myAction;`) the callers handle above. The leading token is a `declared_name`, not
+    /// a semantic target, so this introduces a genuine new nested action rather than binding an
+    /// existing one: it is pushed as the same name-bearing `Entry`/`Do`/`ExitActionBinding`
+    /// declaration kind (so its owning membership still carries the `StateSubaction` role), and its
+    /// own body -- the SysML `ActionBody` the parser models as a nested `StateDefBody` -- recurses
+    /// through `lower_state_def_body` so its `first`/`then`/`then action` flow and any nested
+    /// action usages resolve against the action's own scope (where downstream feature chains like
+    /// `phase.prepareForMissionPhaseOperations.transferCrewToVehicle` land).
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn lower_state_declared_action(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        kind: DeclarationKind,
+        declared_name: DeclarationName,
+        type_name: Option<QualifiedReferenceId>,
+        redefines: Option<&Node<SubsettingRelationship>>,
+        body: &StateDefBody,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        let name = self.intern_declaration_name(document, Some(declared_name))?;
+        let declaration = self.push_typed_declaration(
+            document,
+            Some(owner),
+            kind,
+            name,
+            span,
+            // `ast::{Entry,Do,Exit}Action` carries no declaration facts of its own beyond the
+            // name and the specialization clauses lowered as references below.
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            declaration,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
+        if let Some(type_name) = type_name {
+            // `do action doAction : Action :>> 'do';` -- the `: Type` clause types the nested
+            // action, mirroring `lower_first_stmt`'s bare-`QualifiedReferenceId` typing branch.
+            let type_span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span: type_span,
+                import: None,
+            })?;
+        }
+        if let Some(relationship) = redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
+        self.lower_state_def_body(document, declaration, body)
     }
 
     /// Lowers a state def/usage's `then <target>;` initial-state body element (BNF `ThenStmt`,

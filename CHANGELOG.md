@@ -29,25 +29,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and its subtree stay excluded. Filtered recursive imports (`import P::** [ ... ]`) remain
   unsupported. Fixes #102.
 
-- **Bumped the pinned `sysml-v2-parser` revision `f04d51e` -> `7634eaf`.** Picks up the five Apollo
-  11 normative-form parser fixes (`elan8/sysml-v2-parser#133`, for `#132` / issue #100). Three now
-  reach typed lowering in spec42: a keyword-less feature usage with an explicit typing/redefinition/
-  value in a use-case-family body (`analysis`/`use case`/`verification` and their `def`s) lowers as
-  a `DefaultReferenceUsage` instead of `recovered_use_case_body_element`; a nested `action` usage
-  with a multiplicity written before the typing (`action subfunctions[*] : Function :>> subactions;`)
-  and a `def`-less `abstract connection` usage of the same shape both parse without recovery or
-  `unsupported_grammar_form`. A calc-body `return :>>` now lowers its `::`-qualified redefinition
-  target as an authored `Redefinition` reference and `return <name> :> <Feature>` as a `Subsetting`
-  reference against a feature rather than a failing `FeatureTyping` against a classifier -- both
-  matching the case-family `return`. So `return deltaV :> ISQ::speed = …;` (Apollo 11
-  `Analysis/CalculationsPackage.sysml`, and the official SysML v2 spec Annex A vehicle model) no
-  longer reports `unresolved_type_reference`, and a leading `return :>> <target>` no longer
-  silently drops the authored intent. `first`/`then` action-flow statements are accepted in the new
-  `StateDefBodyElement::FirstStmt` / `ThenAction` members. Two forms remain parser-blocked and are
-  tracked in `planning/UPSTREAM_PARSER_GAPS.md` (gaps 83, 84): the *chained* `return :>
-  … ->select { … }->collect { … }` value still recovers as `recovered_calc_body_element`, and `do
-  action <name> { … }` with a body but no typing clause is still parsed as an action reference.
-  Partially addresses #100.
+- **Bumped the pinned `sysml-v2-parser` revision `f04d51e` -> `a5557ea`.** Picks up all of the
+  Apollo 11 normative-form parser fixes (`elan8/sysml-v2-parser#133` + `#135`, for `#132` / `#134`
+  / issue #100). All five forms now reach typed lowering in spec42:
+  - A keyword-less feature usage with an explicit typing/redefinition/value in a use-case-family
+    body (`analysis`/`use case`/`verification` and their `def`s) lowers as a `DefaultReferenceUsage`
+    instead of `recovered_use_case_body_element`; a nested `action` usage with a multiplicity
+    written before the typing (`action subfunctions[*] : Function :>> subactions;`) and a `def`-less
+    `abstract connection` usage of the same shape both parse without recovery or
+    `unsupported_grammar_form`.
+  - A calc-body `return :>>` now lowers its `::`-qualified redefinition target as an authored
+    `Redefinition` reference and `return :> <Feature>` (named or anonymous) as a `Subsetting`
+    reference against a feature rather than a failing `FeatureTyping` against a classifier -- both
+    matching the case-family `return`. So `return deltaV :> ISQ::speed = …;` (Apollo 11
+    `Analysis/CalculationsPackage.sysml`, and the official SysML v2 spec Annex A vehicle model) no
+    longer reports `unresolved_type_reference`, and a leading `return :>> <target>` no longer
+    silently drops the authored intent. The anonymous `return :> <Feature> = <expr>->select { … }
+    ->collect { … }->sum()` value (Apollo `rollupPowerGeneration`) is retained by the parser
+    instead of recovering the whole calc body; its collection-operator value stays typed-but-
+    unevaluated.
+  - `do`/`entry`/`exit` `action <name> { <body> }` -- a body-carrying nested action declared, not
+    referenced -- now lowers as the named `{Entry,Do,Exit}ActionBinding` declaration (keeping its
+    `StateSubaction` membership role) with its `: Type` / `:>>` clause and its `first` / `then
+    action` body walked against the action's own scope. Previously the name was parsed as an
+    action reference, so `spec42 check` emitted a spurious `unresolved_reference` and every feature
+    chain through `.<name>.` cascaded (Apollo 11 `Purpose/MissionPhasesPackage.sysml` and the
+    `satisfy … by …operations.<action>` chains in `MissionSpecificationPackage.sysml`). The same
+    fix models the Gap-43 `entry action entryAction :>> 'entry';` forms in the Systems Library,
+    which were silently dropped before.
+  - `first`/`then` action-flow statements are accepted in the `StateDefBodyElement::FirstStmt` /
+    `ThenAction` members.
+
+  Fixes #100.
 
 - **Bumped the pinned `sysml-v2-parser` revision `4b65812` -> `f04d51e`.** Picks up keyword-less
   `first ... then ...` succession usages in occurrence and item definition bodies (authored

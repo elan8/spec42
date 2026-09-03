@@ -4,23 +4,28 @@ This is the active record of information the parser must preserve or distinguish
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
 The canonical parser currently pinned by the root workspace is
-`elan8/sysml-v2-parser@7634eaf195d5ea571e38ddbe2a56ee0193fd3f6e` (parser `main`, PR
-`elan8/sysml-v2-parser#133`, the five Apollo 11 normative-form fixes for
-`elan8/sysml-v2-parser#132` / `elan8/spec42#100`). Forms 1, 3, and 5 (keyword-less feature usage
-in use-case-family bodies, multiplicity before typing on nested action usages, and the `abstract`
-prefix on `def`-less connection usages) now reach typed lowering. Forms 2 and 4 are only partly
-closed — recorded as gaps 83 and 84 below. The gap list
+`elan8/sysml-v2-parser@a5557ea0c28d5aac55206b8fa55861c2db098f71` (parser `main`, PR
+`elan8/sysml-v2-parser#135` on top of `#133`, the Apollo 11 normative-form fixes for
+`elan8/sysml-v2-parser#132` / `#134` / `elan8/spec42#100`). All five forms now reach typed
+lowering: forms 1, 3, and 5 (keyword-less feature usage in use-case-family bodies, multiplicity
+before typing on nested action usages, and the `abstract` prefix on `def`-less connection usages)
+landed with `#133`; `#135` closes form 2 (`return :>` anonymous subsetting, whose chained
+`->select { … }->collect { … }->sum()` value the parser now retains instead of recovering) and
+form 4 (`do action <name> { <body> }` routes the name to `declared_name`, and spec42's
+`lower_state_{entry,do,exit}_action` now declares the nested action and walks its body). Gaps 83
+and 84 are removed. The gap list
 below was last re-exercised against `65c67de8a38269f8bcaf1bc42500bde30083ff81` (the merge commit
 for `elan8/sysml-v2-parser#129`, including the follow-up attribute-body recovery boundary fix),
 one spelling per document through `spec42 check` (a
 second error in the same document suppresses the first as `recovery_cascade_suppressed`, which
 made an earlier multi-spelling probe read as "parses"), and by re-reading the owning
 `sysml_resolution` lowering; the entries the bump closed were removed rather than annotated. The
-three upstream commits since `65c67de8` — directed `ref` declarations in port bodies, serde
-prefix-tampering hardening, and feature-chain targets on `verify` — touch areas outside this gap
-list; adopting them only added a `PortDefBodyElement::AliasDef` arm to port-definition lowering.
-New upstream work must be based on the full pinned identity, not an abbreviated revision or the
-old `sysml-v2-parser-next` dependency alias.
+upstream commits since `65c67de8` — directed `ref` declarations in port bodies, serde
+prefix-tampering hardening, feature-chain targets on `verify`, and the Apollo 11 normative-form
+fixes (`#133`, `#135`) — touch areas outside the remaining gap list; adopting them added a
+`PortDefBodyElement::AliasDef` arm to port-definition lowering and the form 2 / form 4 lowering
+above. New upstream work must be based on the full pinned identity, not an abbreviated revision or
+the old `sysml-v2-parser-next` dependency alias.
 
 The bump from `c81e0b69236d57c64df127104232b54f72646484` closes parser gaps 62, 66, 69, 74,
 79 and 82: flow payload and feature-specialization clause identity, binding body ends, directed
@@ -79,8 +84,6 @@ rerun against the exact replacement revision when fixed.
 
 | Gap | Information unavailable to consumers | Minimum upstream acceptance evidence |
 | --- | --- | --- |
-| 83 | The *chained* `->select { … }->collect { … }` value after a calc-body `return :>` | `elan8/sysml-v2-parser#133` fixed the `:>>` redefinition target and spec42 now lowers a leading `return :>>`/`return <name> :>` target (redefinition / subsetting). What still recovers as `recovered_calc_body_element` is the chained collection-operator *value*: `return :> ISQ::power = system.subparts->select { in sys : Part; sys istype PowerProvider }->collect { in sys : PowerProvider; sys.powerGenerated }->sum();` (Apollo 11 `Analysis/CalculationsPackage.sysml` `rollupPowerGeneration`, `spec42#100` form 2). A single non-chained `->select { … }` value parses; the trigger is `->select { … }->collect { … }` chained on a `return` feature value. Accept the chained postfix form as `return_decl`'s value expression |
-| 84 | `do`/`entry`/`exit` `action <name> { <body> }` distinguishes a declared nested action from a referenced one | `elan8/sysml-v2-parser#133` made `first`/`then` parse inside these bodies (`spec42#100` form 4), but `state_behavior_action_target` still only treats `action <name>` as a *declaration* when a `: Type` or `:>>` clause follows; `do action prepareForMissionPhaseOperations { first start; … }` (Apollo 11 `Purpose/MissionPhasesPackage.sysml`) parses `prepareForMissionPhaseOperations` as an `action_reference`, so spec42 emits a spurious `unresolved_reference` and every downstream feature chain through `.<name>.` cascades. Treat a name immediately followed by `{` as a `declared_name`, as a body-carrying nested action |
 | 61 | `message` has no member variant in a calc-shaped body | Give `message` a typed member variant in the calc-shaped body grammar; prove `message m of T;` produces one node whose keyword never reaches the AST as a feature reference |
 | 76 | The shorthand `else` branch as an action-body statement | Add the `if <cond> then <a> else <b>;` alternative; prove it reaches one member with both branches, as `if <cond> then <a>;` already does |
 | 77 | A transition effect-action member in a state body | Admit the effect-action spelling used by `sysml_transition_feature_membership_effect_action.md` rather than returning `recovered_state_body_element`; transitions in action bodies are already typed |
@@ -96,26 +99,20 @@ where the arena-backed work originated; they do not authorize changing spec42 to
 upstream branch. A fix is consumed only by updating the single full revision in spec42 and
 regenerating the lockfile through the normal dependency workflow.
 
-- Gap 83. Verified at `7634eaf1`: `calc def C { in system : Anything; return :> ISQ::power =
-  system.subparts->select { in sys : Part; sys istype PowerProvider }->collect { in sys :
-  PowerProvider; sys.powerGenerated }->sum(); }` is `recovered_calc_body_element` at `3:4`. Dropping
-  the chain to a single `return :> ISQ::power = system.subparts->select { in sys : Part; sys
-  istype PowerProvider };` parses. spec42 `lower_return_decl` now lowers both the `:>` (subsetting)
-  and `:>>` (redefinition) leading targets on a `return` -- what remains is the parser accepting a
-  chained `->select { … }->collect { … }->sum()` postfix as a `return` feature value. The Apollo 11
-  `rollupPowerGeneration` / `rollupPowerConsumption` calc defs use exactly this chain.
-
-- Gap 84. Verified at `7634eaf1`: `package P { state def S { do action ops { first start; then done;
-  } } }` parses with no recovery, but `ops` is an `action_reference`, so `spec42 check` reports
-  `unresolved_reference` at the `ops` token. `state_behavior_action_target`
-  (`src/parser/state.rs`) only enters its `declaration_attempt` branch when a `: Type` or `:>>`
-  clause follows the name; a name followed directly by `{` falls through to the referenced-usage
-  path. spec42's `lower_state_do_action` / `lower_state_entry_action` / `lower_state_exit_action`
-  read `action_reference` and lower a binding reference; the `first`/`then` arms are wired in
-  `lower_state_def_body` but unreachable until the parser both routes the name to `declared_name`
-  and the do/entry/exit body is walked. Apollo 11's `Purpose/MissionPhasesPackage.sysml` states
-  and the `satisfy … by …operations.<action>` feature chains in `MissionSpecificationPackage.sysml`
-  all depend on this.
+- Gaps 83 and 84 (Apollo 11 `spec42#100` forms 2 and 4) are closed by
+  `elan8/sysml-v2-parser@a5557ea` (`#135`). Form 2: `return :>` anonymous subsetting parses and
+  its chained `->select { … }->collect { … }->sum()` value is retained (`ret.value.is_some()`)
+  instead of recovering as `recovered_calc_body_element`; `lower_return_decl`'s existing
+  `is_subsetting` branch handles the target, and the collection-operator value stays a
+  typed-but-unevaluated expression (the `lower_expression` collection-operator arm is a separate
+  "typed upstream, not lowered" item, not a recovery). Form 4: `state_behavior_action_target`
+  routes a name immediately followed by `{` to `declared_name`, and
+  `lower_state_{entry,do,exit}_action` now takes a declared-action branch
+  (`lower_state_declared_action`) that pushes the named `{Entry,Do,Exit}ActionBinding`
+  declaration, lowers any `: Type` / `:>>` clause, and recurses through `lower_state_def_body`
+  so the `first` / `then action` flow resolves against the action's own scope. Apollo 11's
+  `Purpose/MissionPhasesPackage.sysml` states and the `satisfy … by …operations.<action>` feature
+  chains in `MissionSpecificationPackage.sysml` now resolve.
 
 - Gap 61. One member spelling of three remains unrepresentable in a calc-shaped body, and it is
   rejected honestly rather than shredded: `classifier C { message m of T; }` is
