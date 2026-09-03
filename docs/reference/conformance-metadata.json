@@ -15,7 +15,16 @@
     { "category": "p1-connections-flows", "codes": ["ambiguous_connection_endpoint", "unresolved_connection_segment", "connection_context_invalid", "binding_connector_incompatible", "interface_end_invalid", "incomplete_connection_like_end_pair", "invalid_binary_connection_like_end_count", "flow_direction_incompatible", "flow_item_type_incompatible", "conjugated_port_inconsistent", "port_owned_usage_composite", "port_nested_usage_composite"], "status": "supported" },
     { "category": "metadata-and-quantities", "codes": ["unresolved_type_reference", "unresolved_specializes_reference", "metadata_annotation_unresolved", "metadata_about_unresolved", "metadata_binding_missing", "metadata_binding_unknown", "metadata_annotated_element_incompatible", "metadata_keyword_unresolved", "metadata_keyword_collision", "metadata_body_feature_invalid"], "status": "supported", "notes": "Unit and metadata facts are owned by the immutable publication. Quantity library closure loads when workspace contains unit literals." }
   ],
-  "views": [],
+  "views": [
+    { "id": "General View", "renderer": "WASM generator + diagram renderer", "status": "supported", "notes": "Exposed scope as typed nodes; containment plus authored subsetting/subclassification/redefinition/typing edges (SysML 8.2.3.6)." },
+    { "id": "Interconnection View", "renderer": "WASM generator + diagram renderer", "status": "supported", "notes": "Nested parts, ports on the node boundary, connection usages as edges (SysML 8.2.3.11); unresolved connector ends stay typed incomplete reasons." },
+    { "id": "Action Flow View", "renderer": "WASM generator + diagram renderer", "status": "supported", "notes": "Action and control nodes with ordered flow edges; unsupported control-node forms are explicit reasons." },
+    { "id": "State Transition View", "renderer": "WASM generator + diagram renderer", "status": "supported", "notes": "State and control nodes; transition edges with typed trigger, guard, effect, and completeness." },
+    { "id": "Sequence View", "renderer": "WASM generator + diagram renderer", "status": "supported", "notes": "Lifeline columns and message edges from authored sends and resolved ends; authoritative ordering only." },
+    { "id": "Browser View", "renderer": "WASM generator + diagram renderer", "status": "supported", "notes": "Collapsible ownership tree rooted at exposed scope." },
+    { "id": "Grid View", "renderer": "WASM generator + diagram renderer", "status": "supported", "notes": "Typed rows, columns, and cells from exposed elements and published relationships." },
+    { "id": "Geometry View", "renderer": "WASM generator + diagram renderer", "status": "partial", "notes": "Provisional 2D primitives only for authoritative coordinates; otherwise exposed elements carry typed geometry incompleteness." }
+  ],
   "cliReporting": [
     { "feature": "check text/json", "status": "supported" },
     { "feature": "check sarif/junit", "status": "supported" },

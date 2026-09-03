@@ -25,10 +25,11 @@ Everything runs locally. Models stay in your workspace; Spec42 does not require 
 - Workspace-aware indexing for multi-file models and configured libraries.
 - **Feature Inspector** for resolved typing, inheritance, relationships, values, and keyword help.
 - Bundled SysML standard library plus searchable Elan8 domain and method libraries.
-- A local **Open Diagram** command backed by the packaged Rust WASM generator and D3/ELK renderer.
-  Its picker is filtered by the standard view usages authored in the active file. State-transition
-  projections are implemented; the other declared views currently identify their missing typed
-  query explicitly in the diagram panel.
+- A persistent **Diagram** view in the secondary side bar, backed by the packaged Rust WASM
+  generator and the bundled renderer. It lists every authored diagram view in the model, renders
+  the selected one, regenerates on its own whenever the model changes, and offers `Home` /
+  `JSON` / `SVG` / `PNG`. **Spec42: Open Diagram** focuses it. Where a view's typed projection is
+  still incomplete the panel reports the typed reason rather than guessing.
 - Built-in Copilot Language Model Tools for check, doctor, model summary, and diagnostic explanation.
 
 ## Views
@@ -57,6 +58,7 @@ For CLI checks, CI, environment diagnostics, and other AI hosts, see the [main S
 ## Learn more
 
 - [User documentation](https://elan8.github.io/spec42/)
+- [Diagram view guide](https://elan8.github.io/spec42/guide/diagram)
 - [Feature Inspector guide](https://elan8.github.io/spec42/guide/feature-inspector)
 - [Libraries](https://elan8.github.io/spec42/guide/libraries)
 - [AI assistants](https://github.com/elan8/spec42/blob/HEAD/docs/user/AI-ASSISTANTS.md)
