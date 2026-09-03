@@ -135,7 +135,7 @@ probe editor_queries.md 10 17 rename=Base
           (relationship (kind "featureTyping") (provenance authored) (authored "Other") (target resolved))
           (relationship (kind "typeFeaturing") (provenance implied) (target resolved))
           (typing (outcome resolved) (target "Types::Other"))
-          (effective-typing (outcome resolved) (type (qualified-name "Types::Other") (origin direct)))
+          (effective-typing (outcome resolved) (type (qualified-name "Types::Other") (origin direct) (provenance authored)))
           (outgoing (kind "typeFeaturing") (peer "Use::Child") (provenance implied))
           (outgoing (kind "typing") (peer "Types::Other") (provenance authored))
         )

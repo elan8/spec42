@@ -1296,6 +1296,12 @@ fn build_ancestor_closures_with_implied<R: ResolutionReferenceFact>(
 /// transparency is represented by giving an alias a traversal row to its `memberElement` while
 /// linking each specialization source directly to the ultimate non-alias target. AliasBinding is
 /// therefore a lookup bridge here, not a competing authored Type-generalization fact.
+///
+/// `MetadataAnnotation` (`@Concern { ... }`) is the FeatureTyping of the annotation's implicit
+/// MetadataUsage in all but spelling, so the annotated metadata definition's features are
+/// inherited members of the annotation. Without this, a metadata body redefinition
+/// (`concern = purpose;`) has no general Type to scope its redefined feature from and reports
+/// `unresolved_reference`.
 fn build_specialization_ancestor_closures<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
     references: &[R],
@@ -1309,6 +1315,7 @@ fn build_specialization_ancestor_closures<R: ResolutionReferenceFact>(
                 | ReferenceKind::FeatureTyping
                 | ReferenceKind::Subsetting
                 | ReferenceKind::Redefinition
+                | ReferenceKind::MetadataAnnotation
         )
     })
 }

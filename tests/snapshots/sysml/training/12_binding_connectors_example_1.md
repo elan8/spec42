@@ -66,21 +66,9 @@ package 'Binding Connectors Example-1' {
       )
       (diagnostic
         (severity warning)
-        (code "port_nested_usage_composite")
-        (source "semantic")
-        (range (start 10 4) (end 10 34))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 10 23) (end 10 33))
-      )
-      (diagnostic
-        (severity warning)
-        (code "port_nested_usage_composite")
-        (source "semantic")
-        (range (start 11 4) (end 11 33))
       )
       (diagnostic
         (severity warning)
