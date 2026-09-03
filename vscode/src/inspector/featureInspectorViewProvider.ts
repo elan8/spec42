@@ -474,8 +474,21 @@ export class FeatureInspectorViewProvider implements vscode.WebviewViewProvider 
       nodes.push(identity);
 
       resolutionSection(nodes, 'Declared type', element.typing);
-      if (element.effectiveTyping && !sameResolution(element.typing, element.effectiveTyping)) {
-        resolutionSection(nodes, 'Effective type', element.effectiveTyping);
+      // The server drops the implied stdlib closure (`Item`, `Part`, `Anything`, ...) from the
+      // effective type set, so a feature that only inherited types implicitly now resolves to an
+      // empty list. Show the section only when it adds a type the declared typing did not.
+      const effectiveTyping = element.effectiveTyping;
+      const effectiveTypingHasTargets =
+        (effectiveTyping?.targets || []).length > 0 ||
+        effectiveTyping?.status === 'unresolved' ||
+        effectiveTyping?.status === 'unsupported' ||
+        effectiveTyping?.status === 'ambiguous';
+      if (
+        effectiveTyping &&
+        effectiveTypingHasTargets &&
+        !sameResolution(element.typing, effectiveTyping)
+      ) {
+        resolutionSection(nodes, 'Effective type', effectiveTyping);
       }
       resolutionSection(nodes, 'Specializes', element.specialization);
       resolutionSection(nodes, 'Subsets', element.subsetting);

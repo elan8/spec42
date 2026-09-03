@@ -456,19 +456,45 @@ impl<D> SemanticModel<D> {
         subsetting: &RelationshipFamily,
         redefinition: &RelationshipFamily,
     ) -> EffectiveTyping {
+        // The types the element reaches through something it authored: every effective type of an
+        // authored subsetting or redefinition target (and the target itself). A type inherited
+        // only through implied library subsetting -- `Parts::parts`, `Items::items`, the kernel
+        // chain -- is absent from this set, so compact editor surfaces can drop it while a full
+        // inspector still lists it. Provenance is decided here, not re-derived by each consumer.
+        let mut authored_inherited = std::collections::BTreeSet::new();
+        for target in subsetting.targets.iter().chain(redefinition.targets.iter()) {
+            let Ok(target_id) = self.single_declaration::<()>(target.identity) else {
+                continue;
+            };
+            authored_inherited.insert(target_id);
+            for (inherited, _) in self.types.effective_types(target_id) {
+                authored_inherited.insert(*inherited);
+            }
+        }
+
         let mut types = self
             .types
             .effective_types(id)
             .iter()
             .filter_map(|(target, source)| {
+                let (origin, provenance) = match source {
+                    types::EffectiveTypeSource::Direct => (
+                        EffectiveTypeOrigin::Direct,
+                        RelationshipProvenance::Authored,
+                    ),
+                    types::EffectiveTypeSource::Inherited(from) => (
+                        EffectiveTypeOrigin::Inherited(self.symbol_id(*from)?),
+                        if authored_inherited.contains(target) {
+                            RelationshipProvenance::Authored
+                        } else {
+                            RelationshipProvenance::Implied
+                        },
+                    ),
+                };
                 Some(EffectiveTypeEntry {
                     element: self.symbol_entry(*target)?,
-                    origin: match source {
-                        types::EffectiveTypeSource::Direct => EffectiveTypeOrigin::Direct,
-                        types::EffectiveTypeSource::Inherited(from) => {
-                            EffectiveTypeOrigin::Inherited(self.symbol_id(*from)?)
-                        }
-                    },
+                    origin,
+                    provenance,
                 })
             })
             .collect::<Vec<_>>();
@@ -482,6 +508,7 @@ impl<D> SemanticModel<D> {
             .map(|element| EffectiveTypeEntry {
                 element,
                 origin: EffectiveTypeOrigin::Direct,
+                provenance: RelationshipProvenance::Authored,
             })
             .collect::<Vec<_>>();
         // An ambiguous subsetting or redefinition names candidate *features*, not candidate
@@ -502,6 +529,8 @@ impl<D> SemanticModel<D> {
                 candidates.push(EffectiveTypeEntry {
                     element,
                     origin: EffectiveTypeOrigin::Inherited(feature.identity),
+                    // The candidate path is an authored (if ambiguous) subsetting or redefinition.
+                    provenance: RelationshipProvenance::Authored,
                 });
             }
         }

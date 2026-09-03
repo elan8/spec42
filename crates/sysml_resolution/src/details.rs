@@ -47,6 +47,15 @@ impl RelationshipFamily {
 pub struct EffectiveTypeEntry {
     pub element: SymbolEntry,
     pub origin: EffectiveTypeOrigin,
+    /// Whether the element reaches this type through something it authored.
+    ///
+    /// [`RelationshipProvenance::Authored`] for a direct typing and for any type inherited along an
+    /// authored subsetting or redefinition (`part engine :>> vehicle.powerplant`).
+    /// [`RelationshipProvenance::Implied`] for a type inherited only through implied library
+    /// subsetting (`Parts::parts`, `Items::items`, and the rest of the kernel chain). Compact
+    /// editor surfaces use this to avoid dumping the whole implied stdlib closure while a full
+    /// inspector still shows every effective type.
+    pub provenance: RelationshipProvenance,
 }
 
 /// The types a feature has, directly or along its subsetting/redefinition chain.

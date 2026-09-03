@@ -556,10 +556,16 @@ pub(crate) fn feature_inspector_element(
         typing: resolution(model, &details.typing),
         effective_typing: SysmlFeatureInspectorResolutionDto {
             status: resolution_status(details.effective_typing.outcome).to_string(),
+            // Lead with the declared type and the types reached through an authored subsetting or
+            // redefinition. The implied library closure (`Item`, `Part`, `Anything`, ... via
+            // `Parts::parts` and the rest of the kernel chain) is semantically real but is not
+            // display-worthy in the compact inspector; "Inherited features" below is a different,
+            // useful fact family and is unaffected.
             targets: details
                 .effective_typing
                 .types
                 .iter()
+                .filter(|entry| entry.provenance == RelationshipProvenance::Authored)
                 .map(|entry| element_ref(model, &entry.element))
                 .collect(),
             candidates: Vec::new(),
