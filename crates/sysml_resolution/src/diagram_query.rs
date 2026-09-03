@@ -624,6 +624,20 @@ impl PublishedResolution {
                 compartments: Box::default(),
             })
             .collect::<Vec<_>>();
+        // SysML 8.2.3.11: an Interconnection View shows parts and ports as nodes and connection
+        // usages as edges. Attributes, expressions, actions, states, and the rest are not peer
+        // boxes here. Keep the connector usages (they are edge origins, filtered out of the node
+        // metadata downstream) and every container on a kept element's occurrence path.
+        if view_entry.kind == DiagramViewKind::Interconnection {
+            let kept: BTreeSet<SymbolId> = elements
+                .iter()
+                .filter(|element| {
+                    is_interconnection_node(element.kind) || is_connector_edge_element(element.kind)
+                })
+                .flat_map(|element| element.occurrence_id.semantic_path.iter().copied())
+                .collect();
+            elements.retain(|element| kept.contains(&element.semantic_id));
+        }
         let element_kinds = elements
             .iter()
             .map(|element| (element.semantic_id, element.kind))
@@ -786,19 +800,66 @@ impl PublishedResolution {
                 edges.push(edge);
                 continue;
             }
-            for (relationship_kind, edge_kind) in [
-                (
-                    DiagramRelationshipKind::ConnectorEnd,
-                    DiagramEdgeKind::Connector,
-                ),
-                (
-                    DiagramRelationshipKind::Succession,
-                    DiagramEdgeKind::Succession,
-                ),
-            ] {
+            // A `connect a to b` usage publishes its two ends as `connectorEnd` relationships; the
+            // dotted `connect a.b to c.d` form publishes them as `memberAccessOperand` on the same
+            // connection usage. Compose one Connector edge from whichever pair the usage carries so
+            // a connection is an edge, not a peer box. An end that is unresolved, ambiguous, or
+            // resolved outside the projection is a typed incomplete reason, never a guessed line.
+            {
+                // The dotted `connect a.b to c.d` ends and the typed incomplete reasons are an
+                // Interconnection View concern; other views keep the prior plain-`connectorEnd`
+                // behaviour untouched.
+                let dotted_ends = view_entry.kind == DiagramViewKind::Interconnection
+                    && is_connector_edge_element(element.kind);
+                let ends = outgoing
+                    .iter()
+                    .filter(|relationship| {
+                        relationship.kind == DiagramRelationshipKind::ConnectorEnd
+                            || (dotted_ends
+                                && relationship.kind
+                                    == DiagramRelationshipKind::MemberAccessOperand)
+                    })
+                    .copied()
+                    .collect::<Vec<_>>();
+                match ends.as_slice() {
+                    [first, second] => {
+                        match (
+                            resolved_target(&first.target),
+                            resolved_target(&second.target),
+                        ) {
+                            (Some(source), Some(target)) => {
+                                edges.push(edge_from_relationships(
+                                    origin as u32,
+                                    source,
+                                    target,
+                                    DiagramEdgeKind::Connector,
+                                    &ends,
+                                ));
+                            }
+                            _ if dotted_ends => {
+                                for end in &ends {
+                                    if resolved_target(&end.target).is_none() {
+                                        reasons
+                                            .insert(connector_end_incomplete_reason(&end.target));
+                                    }
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                    [] => {}
+                    _ if dotted_ends => {
+                        reasons.insert(DiagramIncompleteReason::RelationshipUnresolved {
+                            relationship: DiagramRelationshipKind::ConnectorEnd,
+                        });
+                    }
+                    _ => {}
+                }
+            }
+            {
                 let endpoints = outgoing
                     .iter()
-                    .filter(|relationship| relationship.kind == relationship_kind)
+                    .filter(|relationship| relationship.kind == DiagramRelationshipKind::Succession)
                     .filter_map(|relationship| resolved_target(&relationship.target))
                     .collect::<Vec<_>>();
                 if let [source, target] = endpoints.as_slice() {
@@ -806,7 +867,7 @@ impl PublishedResolution {
                         origin as u32,
                         source,
                         target,
-                        edge_kind,
+                        DiagramEdgeKind::Succession,
                         &outgoing,
                     ));
                 }
@@ -1556,6 +1617,56 @@ fn relationship_kind_from_name(name: &str) -> Option<DiagramRelationshipKind> {
         "performParameterTarget" => Some(DiagramRelationshipKind::PerformParameterTarget),
         "flowPayloadType" => Some(DiagramRelationshipKind::FlowPayloadType),
         _ => None,
+    }
+}
+
+/// Whether an element is a node the Interconnection View draws: a part, a port, or a namespace
+/// that contains one. `part-ref` is an ordinary `PartUsage` here.
+fn is_interconnection_node(kind: ElementKind) -> bool {
+    matches!(
+        kind,
+        ElementKind::PartDefinition
+            | ElementKind::PartUsage
+            | ElementKind::PortDefinition
+            | ElementKind::PortUsage
+            | ElementKind::Namespace
+            | ElementKind::Package
+            | ElementKind::LibraryPackage
+    )
+}
+
+/// Whether an element is one of the connector usages the Interconnection View draws as an edge
+/// rather than a node. Its `memberAccessOperand` references are its connector ends (the dotted
+/// `connect a.b to c.d` spelling), not expression operands.
+fn is_connector_edge_element(kind: ElementKind) -> bool {
+    matches!(
+        kind,
+        ElementKind::ConnectionUsage
+            | ElementKind::InterfaceUsage
+            | ElementKind::AllocationUsage
+            | ElementKind::FlowConnectionUsage
+            | ElementKind::BindingConnectorAsUsage
+    )
+}
+
+/// The typed reason one unresolved connector end contributes to a projection's completeness.
+fn connector_end_incomplete_reason(target: &DiagramRelationshipTarget) -> DiagramIncompleteReason {
+    match target {
+        DiagramRelationshipTarget::Ambiguous(_) => DiagramIncompleteReason::RelationshipAmbiguous {
+            relationship: DiagramRelationshipKind::ConnectorEnd,
+        },
+        DiagramRelationshipTarget::Unsupported => {
+            DiagramIncompleteReason::RelationshipUnsupported {
+                relationship: DiagramRelationshipKind::ConnectorEnd,
+            }
+        }
+        // Unresolved, or resolved to an element outside this projection: either way the diagram
+        // has no node to attach the end to.
+        DiagramRelationshipTarget::Unresolved | DiagramRelationshipTarget::Resolved(_) => {
+            DiagramIncompleteReason::RelationshipUnresolved {
+                relationship: DiagramRelationshipKind::ConnectorEnd,
+            }
+        }
     }
 }
 
