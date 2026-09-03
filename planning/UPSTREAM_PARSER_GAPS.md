@@ -4,18 +4,28 @@ This is the active record of information the parser must preserve or distinguish
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
 The canonical parser currently pinned by the root workspace is
-`elan8/sysml-v2-parser@f04d51ee79e63989684fca64e7769d700ae8f5c4` (parser `main`). The gap list
+`elan8/sysml-v2-parser@a5557ea0c28d5aac55206b8fa55861c2db098f71` (parser `main`, PR
+`elan8/sysml-v2-parser#135` on top of `#133`, the Apollo 11 normative-form fixes for
+`elan8/sysml-v2-parser#132` / `#134` / `elan8/spec42#100`). All five forms now reach typed
+lowering: forms 1, 3, and 5 (keyword-less feature usage in use-case-family bodies, multiplicity
+before typing on nested action usages, and the `abstract` prefix on `def`-less connection usages)
+landed with `#133`; `#135` closes form 2 (`return :>` anonymous subsetting, whose chained
+`->select { … }->collect { … }->sum()` value the parser now retains instead of recovering) and
+form 4 (`do action <name> { <body> }` routes the name to `declared_name`, and spec42's
+`lower_state_{entry,do,exit}_action` now declares the nested action and walks its body). Gaps 83
+and 84 are removed. The gap list
 below was last re-exercised against `65c67de8a38269f8bcaf1bc42500bde30083ff81` (the merge commit
 for `elan8/sysml-v2-parser#129`, including the follow-up attribute-body recovery boundary fix),
 one spelling per document through `spec42 check` (a
 second error in the same document suppresses the first as `recovery_cascade_suppressed`, which
 made an earlier multi-spelling probe read as "parses"), and by re-reading the owning
 `sysml_resolution` lowering; the entries the bump closed were removed rather than annotated. The
-three upstream commits since `65c67de8` — directed `ref` declarations in port bodies, serde
-prefix-tampering hardening, and feature-chain targets on `verify` — touch areas outside this gap
-list; adopting them only added a `PortDefBodyElement::AliasDef` arm to port-definition lowering.
-New upstream work must be based on the full pinned identity, not an abbreviated revision or the
-old `sysml-v2-parser-next` dependency alias.
+upstream commits since `65c67de8` — directed `ref` declarations in port bodies, serde
+prefix-tampering hardening, feature-chain targets on `verify`, and the Apollo 11 normative-form
+fixes (`#133`, `#135`) — touch areas outside the remaining gap list; adopting them added a
+`PortDefBodyElement::AliasDef` arm to port-definition lowering and the form 2 / form 4 lowering
+above. New upstream work must be based on the full pinned identity, not an abbreviated revision or
+the old `sysml-v2-parser-next` dependency alias.
 
 The bump from `c81e0b69236d57c64df127104232b54f72646484` closes parser gaps 62, 66, 69, 74,
 79 and 82: flow payload and feature-specialization clause identity, binding body ends, directed
@@ -88,6 +98,21 @@ as `#123` and is no longer the target). References below to `elan8/sysml-v2-pars
 where the arena-backed work originated; they do not authorize changing spec42 to follow a moving
 upstream branch. A fix is consumed only by updating the single full revision in spec42 and
 regenerating the lockfile through the normal dependency workflow.
+
+- Gaps 83 and 84 (Apollo 11 `spec42#100` forms 2 and 4) are closed by
+  `elan8/sysml-v2-parser@a5557ea` (`#135`). Form 2: `return :>` anonymous subsetting parses and
+  its chained `->select { … }->collect { … }->sum()` value is retained (`ret.value.is_some()`)
+  instead of recovering as `recovered_calc_body_element`; `lower_return_decl`'s existing
+  `is_subsetting` branch handles the target, and the collection-operator value stays a
+  typed-but-unevaluated expression (the `lower_expression` collection-operator arm is a separate
+  "typed upstream, not lowered" item, not a recovery). Form 4: `state_behavior_action_target`
+  routes a name immediately followed by `{` to `declared_name`, and
+  `lower_state_{entry,do,exit}_action` now takes a declared-action branch
+  (`lower_state_declared_action`) that pushes the named `{Entry,Do,Exit}ActionBinding`
+  declaration, lowers any `: Type` / `:>>` clause, and recurses through `lower_state_def_body`
+  so the `first` / `then action` flow resolves against the action's own scope. Apollo 11's
+  `Purpose/MissionPhasesPackage.sysml` states and the `satisfy … by …operations.<action>` feature
+  chains in `MissionSpecificationPackage.sysml` now resolve.
 
 - Gap 61. One member spelling of three remains unrepresentable in a calc-shaped body, and it is
   rejected honestly rather than shredded: `classifier C { message m of T; }` is

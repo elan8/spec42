@@ -1880,4 +1880,26 @@ describe("shared renderer", () => {
     expect(path?.style.markerEnd).toContain("general-d3-specializes");
     expect(path?.style.strokeDasharray).toBe("5,3");
   });
+
+  it("draws subsetting edges dashed with an open arrowhead, not the specialize marker", async () => {
+    const target = document.createElement("div");
+    Object.defineProperty(target, "clientWidth", { value: 900, configurable: true });
+    Object.defineProperty(target, "clientHeight", { value: 600, configurable: true });
+
+    await renderVisualization(target, {
+      title: "General",
+      view: "general-view",
+      nodes: [
+        { id: "a", label: "A", kind: "part" },
+        { id: "b", label: "B", kind: "part" },
+      ],
+      edges: [{ id: "e1", source: "a", target: "b", label: "subsetting", edgeKind: "subsetting" }],
+    });
+
+    const path = target.querySelector(".general-connector") as SVGPathElement | null;
+    expect(path?.style.strokeDasharray).toBe("6,3");
+    expect(path?.style.markerEnd ?? "").not.toContain("general-d3-specializes");
+    expect(path?.style.markerEnd).toContain("general-d3-arrow-open");
+    expect(path?.getAttribute("data-notation-status")).not.toBe("unsupported");
+  });
 });

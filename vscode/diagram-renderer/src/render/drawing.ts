@@ -459,6 +459,10 @@ function applyEdgeMarker(
   }
   if (edgeKind === "specializes") {
     path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-specializes)").style("stroke-width", "1.7px");
+  } else if (edgeKind === "subsetting") {
+    // SysML 8.2.3.6 subsetting: dashed line, open ("stick") arrowhead -- deliberately not the
+    // hollow-triangle specialize marker.
+    path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "6,3");
   } else if (edgeKind === "typing") {
     path.attr("stroke", strokeColorForEdge(edgeKind, theme)).style("marker-end", "url(#general-d3-arrow-open)").style("stroke-dasharray", "5,3");
   } else if (edgeKind === "hierarchy") {

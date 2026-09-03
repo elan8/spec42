@@ -15,6 +15,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   boxes. A connector whose end is unresolved, ambiguous, or outside the view records a typed
   `relationship-unresolved` / `-ambiguous` / `-unsupported` reason and draws no line. Fixes #97.
 
+- **General View draws authored subsetting, subclassification, redefinition, and feature typing.**
+  When both ends of an authored `:>` / `:>` (specializes) / `:>>` / `:` are elements the view
+  projects, the query now composes a graph edge of that kind and the renderer draws the SysML
+  8.2.3.6 glyph (subsetting: dashed, open arrowhead — not the specialize triangle). Implied
+  library subsetting (`Parts::parts`, `Items::items`, the kernel chain) stays a relationship-only
+  fact and never sprouts a line; an unresolved, ambiguous, or out-of-view end yields no edge.
+  Fixes #98.
+
+- **Hover and the Feature Inspector no longer dump the implied stdlib type closure.** Every `part`
+  effectively has `Item`, `Part`, `Anything`, `Object`, `Occurrence` through implied library
+  subsetting of `Parts::parts`, `Items::items`, and the rest of the kernel chain. Compact editor
+  surfaces now show only the direct type and types reached through an *authored* subsetting or
+  redefinition (`part engine :>> vehicle.powerplant` keeps the powerplant's authored type, not the
+  kernel types that usage inherited implied); the implied closure is dropped from the hover
+  "Inherited type" lines and from the inspector's Effective type section. Effective-type entries
+  carry a `provenance` (`authored` / `implied`) so consumers filter on the published fact rather
+  than a name or `stdlib`-path heuristic; "Inherited features" and the `effective_types()` query
+  are unchanged. Fixes #96.
+
+- **Metadata annotation body references resolve.** In `@EngineeringConcern { concern = purpose; }`
+  the redefined feature on the left of `=` and the value on its right were reported as
+  `unresolved_reference` even when the `metadata def` resolved and its library was loaded. A
+  `@Name { ... }` annotation is the FeatureTyping of its implicit metadata usage in all but
+  spelling, so the annotated definition's features are now inherited members of the annotation:
+  `concern` binds to `EngineeringConcern::concern` and `purpose` resolves against its type. The
+  idiomatic typed-metadata spelling the Elan8 Method libraries rely on no longer emits spurious
+  diagnostics. Fixes #106.
+
+- **Directed flow items in a `port def` / `port` no longer trip `port_owned_usage_composite`.**
+  `in item rx : Signal;` / `out item tx : Signal;` are flow-feature declarations, not composite
+  subparts: a feature direction makes the usage referential (the Pilot's `isReferenceDefault`),
+  so `validatePortDefinitionOwnedUsagesNotComposite` (8.3.12.5) and
+  `validatePortUsageNestedUsagesNotComposite` (8.3.12.6) now skip them. Only undirected composite
+  usages (`part owned : Component;`) inside a port still report. Fixes #105.
+
 - **Metadata-prefixed dependencies lower in definition bodies.** `#refinement dependency X to Y;`
   in a `requirement def`, `action def`, or `part def` body no longer reports the `#refinement`
   prefix as an `unsupported_*_definition_member`. The dependency lowers with resolved
@@ -36,6 +71,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and, transitively, of every publicly-visible namespace nested under it; a private nested package
   and its subtree stay excluded. Filtered recursive imports (`import P::** [ ... ]`) remain
   unsupported. Fixes #102.
+
+- **Bumped the pinned `sysml-v2-parser` revision `f04d51e` -> `a5557ea`.** Picks up all of the
+  Apollo 11 normative-form parser fixes (`elan8/sysml-v2-parser#133` + `#135`, for `#132` / `#134`
+  / issue #100). All five forms now reach typed lowering in spec42:
+  - A keyword-less feature usage with an explicit typing/redefinition/value in a use-case-family
+    body (`analysis`/`use case`/`verification` and their `def`s) lowers as a `DefaultReferenceUsage`
+    instead of `recovered_use_case_body_element`; a nested `action` usage with a multiplicity
+    written before the typing (`action subfunctions[*] : Function :>> subactions;`) and a `def`-less
+    `abstract connection` usage of the same shape both parse without recovery or
+    `unsupported_grammar_form`.
+  - A calc-body `return :>>` now lowers its `::`-qualified redefinition target as an authored
+    `Redefinition` reference and `return :> <Feature>` (named or anonymous) as a `Subsetting`
+    reference against a feature rather than a failing `FeatureTyping` against a classifier -- both
+    matching the case-family `return`. So `return deltaV :> ISQ::speed = …;` (Apollo 11
+    `Analysis/CalculationsPackage.sysml`, and the official SysML v2 spec Annex A vehicle model) no
+    longer reports `unresolved_type_reference`, and a leading `return :>> <target>` no longer
+    silently drops the authored intent. The anonymous `return :> <Feature> = <expr>->select { … }
+    ->collect { … }->sum()` value (Apollo `rollupPowerGeneration`) is retained by the parser
+    instead of recovering the whole calc body; its collection-operator value stays typed-but-
+    unevaluated.
+  - `do`/`entry`/`exit` `action <name> { <body> }` -- a body-carrying nested action declared, not
+    referenced -- now lowers as the named `{Entry,Do,Exit}ActionBinding` declaration (keeping its
+    `StateSubaction` membership role) with its `: Type` / `:>>` clause and its `first` / `then
+    action` body walked against the action's own scope. Previously the name was parsed as an
+    action reference, so `spec42 check` emitted a spurious `unresolved_reference` and every feature
+    chain through `.<name>.` cascaded (Apollo 11 `Purpose/MissionPhasesPackage.sysml` and the
+    `satisfy … by …operations.<action>` chains in `MissionSpecificationPackage.sysml`). The same
+    fix models the Gap-43 `entry action entryAction :>> 'entry';` forms in the Systems Library,
+    which were silently dropped before.
+  - `first`/`then` action-flow statements are accepted in the `StateDefBodyElement::FirstStmt` /
+    `ThenAction` members.
+
+  Fixes #100.
 
 - **Bumped the pinned `sysml-v2-parser` revision `4b65812` -> `f04d51e`.** Picks up keyword-less
   `first ... then ...` succession usages in occurrence and item definition bodies (authored

@@ -443,12 +443,6 @@ package 'Vehicle Analysis Demo' {
       )
       (diagnostic
         (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 34 9) (end 34 29))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 38 31) (end 38 42))
@@ -515,12 +509,6 @@ package 'Vehicle Analysis Demo' {
       )
       (diagnostic
         (severity warning)
-        (code "port_nested_usage_composite")
-        (source "semantic")
-        (range (start 65 13) (end 65 30))
-      )
-      (diagnostic
-        (severity warning)
         (code "redefinition_direction_mismatch")
         (source "semantic")
         (range (start 65 25) (end 65 29))
@@ -530,12 +518,6 @@ package 'Vehicle Analysis Demo' {
             (range (start 34 9) (end 34 29))
           )
         )
-      )
-      (diagnostic
-        (severity warning)
-        (code "port_nested_usage_composite")
-        (source "semantic")
-        (range (start 70 17) (end 70 34))
       )
       (diagnostic
         (severity warning)
