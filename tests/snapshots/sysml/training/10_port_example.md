@@ -38,30 +38,6 @@ package 'Port Example' {
   (document "memory://snapshot/10_port_example.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 8 2) (end 8 29))
-      )
-      (diagnostic
-        (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 9 2) (end 9 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 14 2) (end 14 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "port_owned_usage_composite")
-        (source "semantic")
-        (range (start 15 2) (end 15 29))
-      )
-      (diagnostic
         (severity information)
         (code "unconnected_port")
         (source "semantic")

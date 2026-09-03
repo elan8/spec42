@@ -300,6 +300,11 @@ impl<D> SemanticModel<D> {
     /// and `end` make it referential, an attribute or enumeration usage is always referential
     /// (`AttributeUsage` sets `isComposite = false`), and a `ReferenceUsage` is referential by
     /// its metaclass. KerML features are composite only when authored `composite`.
+    ///
+    /// A feature direction (`in` / `out` / `inout`) also makes the usage referential: the Pilot's
+    /// `isReferenceDefault` treats every directed feature as a reference (which is why a
+    /// `ParameterUsage` above is always non-composite), so `in item rx : Signal;` inside a `port
+    /// def` is a flow feature declaration, not an owned composite subpart.
     pub(crate) fn usage_is_composite(&self, declaration: DeclarationId) -> bool {
         let Some(kind) = self.kind_of(declaration) else {
             return false;
@@ -323,7 +328,10 @@ impl<D> SemanticModel<D> {
         ) {
             return false;
         }
-        !facts.modifiers.reference && !facts.modifiers.end && !self.is_end_feature(declaration)
+        !facts.modifiers.reference
+            && !facts.modifiers.end
+            && !self.is_end_feature(declaration)
+            && facts.direction.is_none()
     }
 
     /// Appends every structural feature-conformance diagnostic authored in `document`.
