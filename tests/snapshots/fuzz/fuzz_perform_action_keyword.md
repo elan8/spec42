@@ -99,6 +99,13 @@ package P {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0))))) (outcome resolved) (feature-reference "seq" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/fuzz_perform_action_keyword.md") (path (named (kind package) (name "P")) (named (kind action-def) (name "A")) (anonymous (kind for-loop) (ordinal 0)) (named (kind perform-action) (name "doStuff")) (anonymous (kind for-loop) (ordinal 0))))) (outcome resolved) (feature-reference "items" (target unresolved)))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

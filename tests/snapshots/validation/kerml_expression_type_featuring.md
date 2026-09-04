@@ -103,6 +103,12 @@ package Expressions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_expression_type_featuring.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "value")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "referent" (target (node (document "memory://snapshot/kerml_expression_type_featuring.md") (qualified-name "Expressions::Holder::referent")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -939,6 +939,21 @@ package MassConstraintExample {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassConstraint3"))) (outcome resolved) (operator "==" (feature-reference "totalMass" (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassConstraint3::totalMass")))) (unsupported (feature-reference "partMasses" (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassConstraint3::partMasses")))))))
+  (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassLimit"))) (outcome resolved) (operator "<=" (feature-reference "mass" (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassLimit::mass")))) (feature-reference "maxMass" (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::MassLimit::maxMass"))))))
+  (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind part-def) (name "Vehicle1")) (named (kind attribute) (name "m")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind part-def) (name "Vehicle2")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind part-def) (name "Vehicle3")) (named (kind assert-constraint) (name "massConstraint")) (named (kind parameter) (name "partMasses")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind part-def) (name "Vehicle3")) (named (kind assert-constraint) (name "massConstraint")) (named (kind parameter) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "m" (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle3::m")))))
+  (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind part-def) (name "Vehicle5")) (named (kind attribute) (name "m")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind part-def) (name "Vehicle5")) (named (kind assert-constraint) (name "ml")) (named (kind parameter) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "m" (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::Vehicle5::m")))))
+  (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (path (named (kind package) (name "MassConstraintExample")) (named (kind part-def) (name "Vehicle5")) (named (kind assert-constraint) (name "ml")) (named (kind parameter) (name "maxMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc"))) (outcome resolved) (operator "==" (feature-reference "totalMass" (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc::totalMass")))) (unsupported (feature-reference "partMasses" (target (node (document "memory://snapshot/mass_constraint_example.md") (qualified-name "MassConstraintExample::mc::partMasses")))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

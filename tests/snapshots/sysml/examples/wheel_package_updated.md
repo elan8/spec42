@@ -623,6 +623,12 @@ package 'Wheel Package - Updated' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/wheel_package_updated.md") (path (named (kind package) (name "Wheel Package - Updated")) (named (kind default-reference) (name "pressure")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "^" (operator "/" (feature-reference "force" (target unresolved)) (feature-reference "length" (target unresolved))) (literal (value (kind integer) (integer 2)))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

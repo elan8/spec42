@@ -143,6 +143,13 @@ package Values {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "fixed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "source" (target (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source")))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (path (named (kind package) (name "Values")) (named (kind class-def) (name "Happening")) (named (kind kerml-feature) (name "tracked")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "source" (target (node (document "memory://snapshot/kerml_feature_value_is_initial.md") (qualified-name "Values::Happening::source")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -161,6 +161,13 @@ class A {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "portions")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "spaceTimeEnclosedPoints")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

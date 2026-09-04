@@ -91,6 +91,13 @@ package Actions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/sysml_control_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "IfProcedure")) (anonymous (kind if) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/sysml_control_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "WhileProcedure")) (anonymous (kind while) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

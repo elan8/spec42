@@ -391,6 +391,16 @@ package CalculationExample {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/calculation_test.md") (path (named (kind package) (name "CalculationExample")) (named (kind calc-def) (name "MassSum")) (named (kind parameter) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "partMasses" (target (node (document "memory://snapshot/calculation_test.md") (qualified-name "CalculationExample::MassSum::partMasses"))))))
+  (declaration (id (node (document "memory://snapshot/calculation_test.md") (path (named (kind package) (name "CalculationExample")) (named (kind attribute) (name "masses1")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/calculation_test.md") (path (named (kind package) (name "CalculationExample")) (named (kind attribute) (name "masses2")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/calculation_test.md") (path (named (kind package) (name "CalculationExample")) (named (kind calc-def) (name "ms")) (named (kind parameter) (name "partMasses")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/calculation_test.md") (path (named (kind package) (name "CalculationExample")) (named (kind part) (name "vehicle")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

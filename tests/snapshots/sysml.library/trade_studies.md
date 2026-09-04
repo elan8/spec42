@@ -535,6 +535,15 @@ standard library package TradeStudies {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/trade_studies.md") (path (named (kind library-package) (name "TradeStudies")) (named (kind requirement-def) (name "MaximizeObjective")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "alternatives" (target (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective::alternatives"))))))
+  (declaration (id (node (document "memory://snapshot/trade_studies.md") (path (named (kind library-package) (name "TradeStudies")) (named (kind requirement-def) (name "MinimizeObjective")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "alternatives" (target (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective::alternatives"))))))
+  (declaration (id (node (document "memory://snapshot/trade_studies.md") (path (named (kind library-package) (name "TradeStudies")) (named (kind analysis-def) (name "TradeStudy")) (named (kind parameter) (name "selectedAlternative")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "studyAlternatives" (target (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudy::studyAlternatives"))))))
+  (declaration (id (node (document "memory://snapshot/trade_studies.md") (path (named (kind library-package) (name "TradeStudies")) (named (kind requirement-def) (name "TradeStudyObjective")) (anonymous (kind require-constraint) (ordinal 0))))) (outcome resolved) (operator "==" (unsupported (feature-reference "selectedAlternative" (target (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective::selectedAlternative"))))) (feature-reference "best" (target (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies::TradeStudyObjective::best"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -260,6 +260,15 @@ package ParameterTest {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/parameter_test.md") (path (named (kind package) (name "ParameterTest")) (named (kind attribute) (name "b")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "a" (target (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::a")))) (literal (value (kind string) (value "")))))
+  (declaration (id (node (document "memory://snapshot/parameter_test.md") (path (named (kind package) (name "ParameterTest")) (named (kind attribute) (name "c")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (literal (value (kind string) (value "test2")))))
+  (declaration (id (node (document "memory://snapshot/parameter_test.md") (path (named (kind package) (name "ParameterTest")) (named (kind attribute) (name "f")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "a" (target (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::a")))) (literal (value (kind integer) (integer 2)))))
+  (declaration (id (node (document "memory://snapshot/parameter_test.md") (path (named (kind package) (name "ParameterTest")) (named (kind attribute) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (literal (value (kind integer) (integer 1))) (feature-reference "a" (target (node (document "memory://snapshot/parameter_test.md") (qualified-name "ParameterTest::a"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -490,6 +490,12 @@ standard library package VerificationCases {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/verification_cases.md") (path (named (kind library-package) (name "VerificationCases")) (named (kind calc-def) (name "PassIf")) (named (kind parameter) (name "verdict")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

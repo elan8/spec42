@@ -1327,6 +1327,15 @@ standard library package FeatureReferencingPerformances {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/feature_referencing_performances.md") (path (named (kind library-package) (name "FeatureReferencingPerformances")) (named (kind kerml-behavior) (name "BooleanEvaluationResultToMonitorPerformance")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/feature_referencing_performances.md") (path (named (kind library-package) (name "FeatureReferencingPerformances")) (named (kind kerml-behavior) (name "BooleanEvaluationResultToMonitorPerformance")) (named (kind kerml-feature) (name "afterValues")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "isToTrue" (target (node (document "memory://snapshot/feature_referencing_performances.md") (qualified-name "FeatureReferencingPerformances::BooleanEvaluationResultToMonitorPerformance::isToTrue")))))
+  (declaration (id (node (document "memory://snapshot/feature_referencing_performances.md") (path (named (kind library-package) (name "FeatureReferencingPerformances")) (named (kind kerml-behavior) (name "BooleanEvaluationResultToMonitorPerformance")) (named (kind kerml-feature) (name "isToTrue")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/feature_referencing_performances.md") (path (named (kind library-package) (name "FeatureReferencingPerformances")) (named (kind kerml-behavior) (name "FeatureMonitorPerformance")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome resolved) (operator "not" (unsupported (feature-reference "beforeValues" (target (node (document "memory://snapshot/feature_referencing_performances.md") (qualified-name "FeatureReferencingPerformances::FeatureMonitorPerformance::beforeValues")))) (feature-reference "afterValues" (target (node (document "memory://snapshot/feature_referencing_performances.md") (qualified-name "FeatureReferencingPerformances::FeatureMonitorPerformance::afterValues")))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

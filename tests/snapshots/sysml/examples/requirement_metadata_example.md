@@ -413,6 +413,19 @@ package RequirementMetadataExample {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind metadata-def) (name "goal")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "goals" (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals"))))))
+  (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "vehicleMassRequirement")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "StatusKind::tbd" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "vehicleMassRequirement")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "Bob"))))
+  (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "vehicleMassRequirement")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 3)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "Mary"))))
+  (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "vehicleMassRequirement")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "high" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "vehicleMassRequirement")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "medium" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "vehicleMassRequirement")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "low" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "vehicleMassRequirement")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind attribute) (ordinal 3)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "medium" (target unresolved)))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

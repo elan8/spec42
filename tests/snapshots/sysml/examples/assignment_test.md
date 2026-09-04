@@ -356,6 +356,17 @@ package AssignmentTest {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind attribute) (name "count")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind action) (name "decr")) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (operator "-" (feature-reference "count" (target (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counter::count")))) (literal (value (kind integer) (integer 1)))))
+  (declaration (id (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind action) (name "incr")) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (operator "+" (feature-reference "count" (target (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counter::count")))) (literal (value (kind integer) (integer 1)))))
+  (declaration (id (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (outcome resolved) (feature-reference "c" (target (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment::c")))))
+  (declaration (id (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 1))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

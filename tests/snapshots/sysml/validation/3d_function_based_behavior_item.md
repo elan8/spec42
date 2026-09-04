@@ -516,6 +516,14 @@ package '3d-Function-based Behavior-item' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/3d_function_based_behavior_item.md") (path (named (kind package) (name "3d-Function-based Behavior-item")) (named (kind package) (name "Usages")) (named (kind part) (name "context")) (named (kind part) (name "pump")) (named (kind perform-action) (name "pumpFuel")) (anonymous (kind perform-parameter-binding) (ordinal 0))))) (outcome resolved) (feature-reference "fuelInPort::fuel" (target (node (document "memory://snapshot/3d_function_based_behavior_item.md") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::fuel")))))
+  (declaration (id (node (document "memory://snapshot/3d_function_based_behavior_item.md") (path (named (kind package) (name "3d-Function-based Behavior-item")) (named (kind package) (name "Usages")) (named (kind part) (name "context")) (named (kind part) (name "pump")) (named (kind perform-action) (name "pumpFuel")) (anonymous (kind perform-parameter-binding) (ordinal 1))))) (outcome resolved) (feature-reference "fuelOutPort::fuel" (target (node (document "memory://snapshot/3d_function_based_behavior_item.md") (qualified-name "3d-Function-based Behavior-item::Definitions::FuelPort::fuel")))))
+  (declaration (id (node (document "memory://snapshot/3d_function_based_behavior_item.md") (path (named (kind package) (name "3d-Function-based Behavior-item")) (named (kind package) (name "Usages")) (named (kind part) (name "context")) (named (kind part) (name "vehicle")) (named (kind part) (name "fuelTank")) (named (kind attribute) (name "fuelLevel")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

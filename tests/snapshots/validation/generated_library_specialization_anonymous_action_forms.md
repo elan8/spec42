@@ -286,6 +286,14 @@ package GeneratedAnonymousActionForms {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/generated_library_specialization_anonymous_action_forms.md") (path (named (kind package) (name "GeneratedAnonymousActionForms")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (feature-reference "target" (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::assignmentActions::target")))))
+  (declaration (id (node (document "memory://snapshot/generated_library_specialization_anonymous_action_forms.md") (path (named (kind package) (name "GeneratedAnonymousActionForms")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0))))) (outcome resolved) (feature-reference "components" (target (node (document "memory://snapshot/generated_library_specialization_anonymous_action_forms.md") (qualified-name "GeneratedAnonymousActionForms::Act::components")))))
+  (declaration (id (node (document "memory://snapshot/generated_library_specialization_anonymous_action_forms.md") (path (named (kind package) (name "GeneratedAnonymousActionForms")) (named (kind action-def) (name "Act")) (anonymous (kind while) (ordinal 0))))) (outcome resolved) (feature-reference "target" (target (node (document "memory://snapshot/generated_library_specialization_anonymous_action_forms.md") (qualified-name "GeneratedAnonymousActionForms::Act::target")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -145,6 +145,12 @@ package MassedThings {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/massed_things.md") (path (named (kind package) (name "MassedThings")) (named (kind class-def) (name "MassedThing")) (named (kind default-reference) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

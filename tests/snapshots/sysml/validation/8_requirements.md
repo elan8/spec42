@@ -1184,6 +1184,22 @@ package '8-Requirements' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/8_requirements.md") (path (named (kind package) (name "8-Requirements")) (named (kind package) (name "Vehicle Requirements")) (named (kind requirement-def) (name "MassLimitationRequirement")) (anonymous (kind require-constraint) (ordinal 0))))) (outcome resolved) (operator "<=" (feature-reference "massActual" (target (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement::massActual")))) (feature-reference "massReqd" (target (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement::massReqd"))))))
+  (declaration (id (node (document "memory://snapshot/8_requirements.md") (path (named (kind package) (name "8-Requirements")) (named (kind package) (name "Vehicle Requirements")) (named (kind requirement) (name "vehicleMass1")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/8_requirements.md") (path (named (kind package) (name "8-Requirements")) (named (kind package) (name "Vehicle Requirements")) (named (kind requirement) (name "vehicleMass1")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1::fuelConstraint"))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/8_requirements.md") (path (named (kind package) (name "8-Requirements")) (named (kind package) (name "Vehicle Requirements")) (named (kind requirement) (name "vehicleMass2")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/8_requirements.md") (path (named (kind package) (name "8-Requirements")) (named (kind package) (name "Vehicle Requirements")) (named (kind requirement) (name "vehicleMass2")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass2::fuelConstraint"))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/8_requirements.md") (path (named (kind package) (name "8-Requirements")) (named (kind package) (name "Vehicle Usages")) (named (kind part) (name "vehicle1_c1")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/8_requirements.md") (path (named (kind package) (name "8-Requirements")) (named (kind package) (name "Vehicle Usages")) (named (kind part) (name "vehicle1_c2")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/8_requirements.md") (path (named (kind package) (name "8-Requirements")) (named (kind part) (name "vehicle1_c1 Specification Context")) (named (kind requirement) (name "engine-v1 Specification")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/8_requirements.md") (path (named (kind package) (name "8-Requirements")) (named (kind part) (name "vehicle1_c1 Specification Context")) (named (kind requirement) (name "engine-v1 Specification")) (anonymous (kind require-constraint) (ordinal 1)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

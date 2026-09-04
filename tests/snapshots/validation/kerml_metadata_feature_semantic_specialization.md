@@ -230,6 +230,12 @@ package Model {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-metaclass) (name "Command")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "baseFeatures" (target (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::baseFeatures"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

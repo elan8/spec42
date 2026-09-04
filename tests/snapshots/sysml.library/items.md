@@ -1049,6 +1049,17 @@ standard library package Items {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "boundingShapes")) (anonymous (kind item) (ordinal 0)) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "boundingShapes")) (anonymous (kind item) (ordinal 1)) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "envelopingShapes")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "envelopingShapes")) (anonymous (kind assert-constraint) (ordinal 1))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind item) (name "envelopingShapes")) (anonymous (kind assert-constraint) (ordinal 2))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind attribute) (name "isSolid")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "voids" (target (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::voids"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

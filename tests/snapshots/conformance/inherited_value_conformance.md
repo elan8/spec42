@@ -210,6 +210,14 @@ package Inheritance {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/inherited_value_conformance.md") (path (named (kind package) (name "Inheritance")) (named (kind part-def) (name "Explicit")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1200))))
+  (declaration (id (node (document "memory://snapshot/inherited_value_conformance.md") (path (named (kind package) (name "Inheritance")) (named (kind part-def) (name "Implicit")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1200))))
+  (declaration (id (node (document "memory://snapshot/inherited_value_conformance.md") (path (named (kind package) (name "Inheritance")) (named (kind part-def) (name "StringWhereTheMemberIsEnumerated")) (named (kind attribute) (name "status")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "approved"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

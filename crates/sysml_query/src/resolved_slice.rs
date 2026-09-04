@@ -24,27 +24,28 @@ pub use sysml_resolution::{
     EffectiveTypeOrigin, EffectiveTyping, ElementDerivedDocumentationCollection, ElementDetails,
     ElementDetailsAt, ElementEvaluation, ElementInspection, ElementInspectionAt, ElementKind,
     ElementModifier, ElementRelationship, ElementSearch, ElementSource, EvaluatedScalar,
-    EvaluationFailure, EvaluationState, ExpectedMeasurement, FeatureDerivedRelationshipCollection,
-    FeatureDirection, InheritedFeature, LibrarySpecializationAnchorBranch, MembershipFacts,
-    MembershipId, MembershipKind, MembershipRelationship, MembershipRole, MultiplicityBound,
-    MultiplicityFacts, NamespaceDerivedElementCollection, NamespaceImportDerivedElement,
-    NavigationTarget, OccurrenceRole, PortionKind, PublicationCompleteness, PublicationIdentity,
+    EvaluationFailure, EvaluationState, ExpectedMeasurement, ExpressionNode, ExpressionNodeKind,
+    ExpressionOperator, ExpressionOutcome, FeatureDerivedRelationshipCollection, FeatureDirection,
+    InheritedFeature, LibrarySpecializationAnchorBranch, MembershipFacts, MembershipId,
+    MembershipKind, MembershipRelationship, MembershipRole, MultiplicityBound, MultiplicityFacts,
+    NamespaceDerivedElementCollection, NamespaceImportDerivedElement, NavigationTarget,
+    OccurrenceRole, PortionKind, PublicationCompleteness, PublicationIdentity,
     PublicationModelDigest, PublicationObstacle, PublishedDiagnostics, PublishedElement,
-    QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryAnswer,
-    QueryOutcome, RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite,
-    ReferenceAt, ReferencedDetails, RelatedLocation, RelationshipFamily, RelationshipOutcome,
-    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
-    RequirementDerivedFactCollection, RequirementDerivedFactKind, RequirementDerivedFactOutcome,
-    RequirementDerivedFactPrerequisite, RequirementUsageTyping, RequirementVerification,
-    ResolvedUnit, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
-    SpecializationCheckKind, SpecializationCheckOutcome, SpecializationCheckPrerequisite,
-    SpecializationScope, StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId,
-    SymbolToken, TextId, TextPosition, TextRange, TypeDerivedElementCollection,
-    TypeDerivedFactCollection, TypeDerivedFactKind, TypeDerivedFactOutcome,
-    TypeDerivedFactPrerequisite, TypeDerivedFactValue, TypeDerivedRelationshipCollection,
-    TypeFeaturingCheckKind, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
-    TypeReference, UnitResolution, ValueKind, VerificationOutcome, VerificationRequirement,
-    Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
+    PublishedExpression, QualifiedElementReference, QualifiedReferenceOutcome,
+    QualifiedReferenceTarget, QueryAnswer, QueryOutcome, RedefinitionCheckKind,
+    RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt, ReferencedDetails,
+    RelatedLocation, RelationshipFamily, RelationshipOutcome, RelationshipProvenance,
+    RelationshipTarget, RenameOutcome, RequirementConstraintKind, RequirementDerivedFactCollection,
+    RequirementDerivedFactKind, RequirementDerivedFactOutcome, RequirementDerivedFactPrerequisite,
+    RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
+    SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationCheckKind,
+    SpecializationCheckOutcome, SpecializationCheckPrerequisite, SpecializationScope,
+    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId, SymbolToken, TextId,
+    TextPosition, TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection,
+    TypeDerivedFactKind, TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
+    TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
+    TypeFeaturingCheckPrerequisite, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
+    VerificationRequirement, Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
 };
 
 pub use sysml_resolution::source::RootDigest;
@@ -174,6 +175,10 @@ impl PublishedModel {
 
     pub fn evaluation(&self) -> EvaluationQueries<'_> {
         EvaluationQueries { model: &self.inner }
+    }
+
+    pub fn structure(&self) -> StructureQueries<'_> {
+        StructureQueries { model: &self.inner }
     }
 
     pub fn diagnostics(&self) -> DiagnosticQueries<'_> {
@@ -351,6 +356,24 @@ impl EvaluationQueries<'_> {
     /// What this publication settled for one element's authored expression.
     pub fn evaluate(&self, symbol: SymbolId) -> QueryOutcome<ElementEvaluation> {
         self.model.evaluate(symbol)
+    }
+}
+
+/// Resolved structure of language constructs a consumer interprets rather than validates: the
+/// expression trees of feature / constraint / calc bodies, with inheritance applied and every
+/// feature reference resolved.
+///
+/// The facade adapts; it classifies nothing and resolves nothing -- every node was settled by
+/// `sysml_resolution` at the publication barrier.
+pub struct StructureQueries<'a> {
+    model: &'a sysml_resolution::PublishedResolution,
+}
+
+impl StructureQueries<'_> {
+    /// The resolved expression tree of one element's authored constraint / calc / value
+    /// expression.
+    pub fn expression(&self, symbol: SymbolId) -> QueryOutcome<PublishedExpression> {
+        self.model.resolved_expression(symbol)
     }
 }
 
@@ -838,6 +861,10 @@ impl DebugQueries<'_> {
 
     pub fn write_types_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.debug().write_types_sexpr(output)
+    }
+
+    pub fn write_expressions_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.debug().write_expressions_sexpr(output)
     }
 
     pub fn write_editor_queries_sexpr(

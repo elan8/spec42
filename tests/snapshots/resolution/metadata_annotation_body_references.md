@@ -301,6 +301,15 @@ package MetadataAnnotationBody {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/metadata_annotation_body_references.md") (path (named (kind package) (name "MetadataAnnotationBody")) (named (kind part-def) (name "Annotated")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "purpose" (target (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody::ConcernKind::purpose")))))
+  (declaration (id (node (document "memory://snapshot/metadata_annotation_body_references.md") (path (named (kind package) (name "MetadataAnnotationBody")) (named (kind part-def) (name "BadAnnotated")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "purpose" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/metadata_annotation_body_references.md") (path (named (kind package) (name "MetadataAnnotationBody")) (named (kind part-def) (name "NestedAnnotated")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "structure" (target (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody::ConcernKind::structure")))))
+  (declaration (id (node (document "memory://snapshot/metadata_annotation_body_references.md") (path (named (kind package) (name "MetadataAnnotationBody")) (named (kind part-def) (name "NestedAnnotated")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "purpose" (target (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody::ConcernKind::purpose")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

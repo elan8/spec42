@@ -25,6 +25,8 @@ use crate::index::expressions::ExpressionInputs;
 use crate::index::expressions::SettledFilter;
 use crate::index::identity::IdentityIndex;
 use crate::index::qualified::QualifiedNameIndex;
+use crate::index::resolved_expressions::ResolvedExpressionIndex;
+use crate::index::resolved_expressions::ResolvedExpressionInputs;
 use crate::index::reverse_references::ReverseReferenceIndex;
 use crate::index::types::TypeIndex;
 use crate::lower::storage::ParsedSources;
@@ -497,6 +499,11 @@ impl Evaluated {
             },
             self.filter_conditions,
         )?;
+        let resolved_expressions = ResolvedExpressionIndex::build(&ResolvedExpressionInputs {
+            storage: &self.storage,
+            sources: &self.sources,
+            resolution: &self.resolution,
+        })?;
         let indexed = Indexed {
             storage: self.storage,
             direct_names: self.direct_names,
@@ -513,6 +520,7 @@ impl Evaluated {
             resolution: self.resolution,
             evaluation: self.evaluation,
             expressions,
+            resolved_expressions,
             diagnostics: NotYetDiagnosed,
             metadata: PublicationMetadata {
                 phase: PublicationPhase::Resolved,
@@ -557,6 +565,7 @@ impl Indexed {
                 resolution: self.resolution,
                 evaluation: self.evaluation,
                 expressions: self.expressions,
+                resolved_expressions: self.resolved_expressions,
                 diagnostics: SettledDiagnostics {
                     diagnostics,
                     by_document,

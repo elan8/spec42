@@ -457,6 +457,19 @@ package Values {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "isReady")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "miscounted")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean false))))
+  (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "notReady")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "yes"))))
+  (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "spelled")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "approved"))))
+  (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "status")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "Status::approved" (target (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status::approved")))))
+  (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "untyped")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "anything"))))
+  (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "wheels")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
+  (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (path (named (kind package) (name "Values")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "widened")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -1855,6 +1855,20 @@ standard library package Transfers {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-behavior) (name "AcceptPerformance")) (named (kind kerml-feature) (name "receiver")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "this" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-interaction) (name "FlowTransfer")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-interaction) (name "FlowTransfer")) (anonymous (kind kerml-invariant) (ordinal 1))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-interaction) (name "FlowTransfer")) (named (kind kerml-feature) (name "isMove")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-interaction) (name "FlowTransfer")) (named (kind kerml-feature) (name "isPush")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-behavior) (name "SendPerformance")) (named (kind kerml-feature) (name "sender")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "this" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-behavior) (name "SendPerformance")) (named (kind kerml-feature) (name "sentTransfer")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "SendPerformance::payload" (target (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::SendPerformance::payload")))))
+  (declaration (id (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-interaction) (name "Transfer")) (named (kind default-reference) (name "instantNum")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-interaction) (name "Transfer")) (named (kind kerml-feature) (name "payloadNum")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "payload" (target (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::Transfer::payload"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

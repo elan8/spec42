@@ -584,6 +584,15 @@ package VehicleIndividuals {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/vehicle_individuals.md") (path (named (kind package) (name "VehicleIndividuals")) (named (kind package) (name "IndividualDefinitions")) (named (kind part-def) (name "Vehicle1")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 1800))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/vehicle_individuals.md") (path (named (kind package) (name "VehicleIndividuals")) (named (kind package) (name "IndividualDefinitions")) (named (kind part-def) (name "Vehicle2")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 1700))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/vehicle_individuals.md") (path (named (kind package) (name "VehicleIndividuals")) (named (kind package) (name "IndividualSnapshots")) (named (kind part) (name "vehicle1")) (named (kind occurrence) (name "vehicle1_t0")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "t0" (target (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualSnapshots::t0")))))
+  (declaration (id (node (document "memory://snapshot/vehicle_individuals.md") (path (named (kind package) (name "VehicleIndividuals")) (named (kind package) (name "IndividualSnapshots")) (named (kind part) (name "vehicle1")) (named (kind occurrence) (name "vehicle1_t0_t1")) (anonymous (kind occurrence) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "t1" (target (node (document "memory://snapshot/vehicle_individuals.md") (qualified-name "VehicleIndividuals::IndividualSnapshots::t1")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

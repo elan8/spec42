@@ -154,6 +154,12 @@ package '15_08-Range Restriction' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/15_08_range_restriction.md") (path (named (kind package) (name "15_08-Range Restriction")) (named (kind attribute-def) (name "LightBeamTiltAngleValue")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome resolved) (operator "and" (operator ">=" (feature-reference "angle" (target (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle")))) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 50))) (unit "°")))) (operator "<=" (feature-reference "angle" (target (node (document "memory://snapshot/15_08_range_restriction.md") (qualified-name "15_08-Range Restriction::LightBeamTiltAngleValue::angle")))) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 80))) (unit "°"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -184,6 +184,12 @@ package Resolution {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/owned_expression_and_satisfy_paths.md") (qualified-name "Resolution::WithinLimit"))) (outcome resolved) (operator "<=" (feature-reference "value" (target (node (document "memory://snapshot/owned_expression_and_satisfy_paths.md") (qualified-name "Resolution::WithinLimit::value")))) (feature-reference "limit" (target (node (document "memory://snapshot/owned_expression_and_satisfy_paths.md") (qualified-name "Resolution::WithinLimit::limit"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

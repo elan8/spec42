@@ -580,6 +580,12 @@ package '7a1-Variant Configuration - General Concept-a' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (path (named (kind package) (name "7a1-Variant Configuration - General Concept-a")) (named (kind part) (name "anyVehicleConfig")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome resolved) (operator "==" (operator "!=" (feature-reference "subsystemA" (target (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA")))) (operator "or" (feature-reference "subsystemA::subsystem2" (target (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemA::subsystem2")))) (feature-reference "subsystemB" (target (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB")))))) (feature-reference "subsystemB::subsystem3" (target (node (document "memory://snapshot/7a1_variant_configuration_general_concept_a.md") (qualified-name "7a1-Variant Configuration - General Concept-a::anyVehicleConfig::subsystemB::subsystem3"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

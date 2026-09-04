@@ -1022,6 +1022,12 @@ standard library package DataFunctions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/data_functions.md") (path (named (kind library-package) (name "DataFunctions")) (named (kind kerml-function) (name "===")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

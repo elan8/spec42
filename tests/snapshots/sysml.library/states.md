@@ -730,6 +730,12 @@ standard library package States {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/states.md") (path (named (kind library-package) (name "States")) (named (kind state-def) (name "StateAction")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome resolved) (operator "implies" (unsupported (feature-reference "exclusiveStates" (target (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction::exclusiveStates"))))) (operator "==" (unsupported (feature-reference "stateSequencing" (target (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction::stateSequencing"))))) (operator "-" (unsupported (feature-reference "exclusiveStates" (target (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction::exclusiveStates"))))) (literal (value (kind integer) (integer 1)))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

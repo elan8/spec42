@@ -247,6 +247,13 @@ package Connectors {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A"))) (outcome resolved) (feature-reference "abstract" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind kerml-binding) (ordinal 1))))) (outcome resolved) (operator "and" (feature-reference "end" (target unresolved)) (feature-reference "end" (target unresolved))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

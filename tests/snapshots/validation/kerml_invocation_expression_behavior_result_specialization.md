@@ -211,6 +211,15 @@ package Model {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_behavior_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "computed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported))
+  (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_behavior_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "featureComputed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported))
+  (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_behavior_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "featurePerformed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported))
+  (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_behavior_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "performed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

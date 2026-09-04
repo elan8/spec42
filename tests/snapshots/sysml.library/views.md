@@ -764,6 +764,12 @@ standard library package Views {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/views.md") (path (named (kind library-package) (name "Views")) (named (kind view-def) (name "View")) (named (kind satisfy) (name "viewpointConformance")) (anonymous (kind require-constraint) (ordinal 0)) (named (kind default-reference) (name "ref")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

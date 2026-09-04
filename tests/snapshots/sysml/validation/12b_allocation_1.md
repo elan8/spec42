@@ -373,6 +373,12 @@ package '12b-Allocation-1' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/12b_allocation_1.md") (path (named (kind package) (name "12b-Allocation-1")) (named (kind package) (name "RequirementModel")) (named (kind requirement) (name "torqueGeneration")) (anonymous (kind require-constraint) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

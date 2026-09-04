@@ -288,6 +288,12 @@ standard library package VectorValues {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (named (kind kerml-datatype) (name "ThreeVectorValue")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 3))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

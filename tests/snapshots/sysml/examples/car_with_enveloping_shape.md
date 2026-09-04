@@ -168,6 +168,14 @@ package CarWithEnvelopingShape {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/car_with_enveloping_shape.md") (path (named (kind package) (name "CarWithEnvelopingShape")) (named (kind part-def) (name "Car")) (named (kind item) (name "boundingBox")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 4800))) (unit "mm"))))
+  (declaration (id (node (document "memory://snapshot/car_with_enveloping_shape.md") (path (named (kind package) (name "CarWithEnvelopingShape")) (named (kind part-def) (name "Car")) (named (kind item) (name "boundingBox")) (anonymous (kind default-reference) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 1840))) (unit "mm"))))
+  (declaration (id (node (document "memory://snapshot/car_with_enveloping_shape.md") (path (named (kind package) (name "CarWithEnvelopingShape")) (named (kind part-def) (name "Car")) (named (kind item) (name "boundingBox")) (anonymous (kind default-reference) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 1350))) (unit "mm"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

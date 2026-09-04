@@ -129,6 +129,13 @@ package P {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/fuzz_named_argument.md") (path (named (kind package) (name "P")) (named (kind attribute) (name "b")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "a" (target unresolved)) (literal (value (kind string) (value "")))))
+  (declaration (id (node (document "memory://snapshot/fuzz_named_argument.md") (path (named (kind package) (name "P")) (named (kind attribute) (name "f")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (literal (value (kind integer) (integer 1))) (feature-reference "a" (target unresolved))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

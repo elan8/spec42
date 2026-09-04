@@ -485,6 +485,13 @@ standard library package Interfaces {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce"))) (outcome resolved) (unsupported (feature-reference "seq" (target (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::seq")))) (feature-reference "position" (target (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::excludingOnce::position"))))))
+  (declaration (id (node (document "memory://snapshot/interfaces.md") (path (named (kind library-package) (name "Interfaces")) (named (kind calc-def) (name "excludingOnce")) (named (kind attribute) (name "position")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

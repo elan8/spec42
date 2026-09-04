@@ -302,6 +302,14 @@ package 'Derivation Constraints' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics"))) (outcome resolved) (operator "and" (operator "==" (operator "*" (feature-reference "force" (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics::force")))) (feature-reference "deltaT" (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics::deltaT"))))) (operator "*" (feature-reference "mass" (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics::mass")))) (operator "-" (feature-reference "finalSpeed" (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics::finalSpeed")))) (feature-reference "initialSpeed" (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics::initialSpeed"))))))) (operator ">" (feature-reference "mass" (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics::mass")))) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 0))) (unit "kg"))))))
+  (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle1")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle2")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

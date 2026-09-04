@@ -511,6 +511,15 @@ package ApolloNormativeForms {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind analysis) (name "Apollo11MissionDeltaVBudgetAnalysis")) (named (kind default-reference) (name "launchVehicle")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind part-def) (name "MissionPhasePlan")) (named (kind default-reference) (name "chainProbe")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "PowerMargin")) (named (kind parameter) (name "powerMargin")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "RollupPowerGeneration")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -858,6 +858,13 @@ impl ResolvedSemanticModel {
     pub(crate) fn write_types_sexpr(&self, output: &mut dyn std::fmt::Write) -> std::fmt::Result {
         writer::write_types_only(self, output)
     }
+
+    pub(crate) fn write_expressions_sexpr(
+        &self,
+        output: &mut dyn std::fmt::Write,
+    ) -> std::fmt::Result {
+        writer::write_expressions_only(self, output)
+    }
 }
 
 impl<D> SemanticModel<D> {
