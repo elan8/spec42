@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **A named interface/connection usage's connector-endpoint feature chain resolves the sibling
+  feature it names, not the interface definition's own same-named `end`.** `interface
+  lesConnection : LESInterface connect commandServiceModule.commandModule.lesInterfacePort to
+  launchEscapeSystem.cmInterfacePort;` (Apollo 11 `Technical/SystemPackage.sysml` and
+  `TechnicalComponentsPackage.sysml`) left `launchEscapeSystem.cmInterfacePort` and three other
+  endpoint chains `unresolved_reference`, cascading into four further `unconnected_port`
+  diagnostics on the ports those connectors should have counted as connected. `LESInterface`
+  names its own abstract `end launchEscapeSystem : ...;` to match the part it is meant to
+  connect -- an ordinary interface-authoring idiom -- and that inherited end was shadowing the
+  sibling `part launchEscapeSystem` the endpoint actually names, because the dotted connector-end
+  resolver started its root-segment lookup at the named usage's own scope instead of its owning
+  namespace. Fixed to start there instead, matching the equivalent, already-correct rule for a
+  single-segment (non-dotted) connector end (KerML 8.2.3.5.2). Fixes #130.
+
 - **Interconnection View publishes each port's authored direction and typing conjugation, and
   the renderer no longer guesses a side from a name.** `DiagramElement` gains `direction` (`in` /
   `out` / `inout`, resolved the same way the Feature Inspector already reads it) and `conjugated`
