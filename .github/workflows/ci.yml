@@ -166,6 +166,47 @@ jobs:
         if: steps.lock.outputs.changed == 'true'
         run: cargo audit
 
+  npm-audit:
+    name: npm dependency audit
+    runs-on: ubuntu-latest
+    # Same rationale as `audit` above: an npm advisory is a property of time, not of a diff. The
+    # unconditional run over the shipped packages is nightly
+    # (`.github/workflows/nightly.yml`); here it runs only when a push or PR actually touches an
+    # npm lockfile -- the case a PR author introduced and can act on.
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect lockfile changes
+        id: lock
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base='${{ github.event.pull_request.base.sha }}'
+            head='${{ github.event.pull_request.head.sha }}'
+          else
+            base='${{ github.event.before }}'
+            head='${{ github.sha }}'
+          fi
+          if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ] \
+            || ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif git diff --name-only "$base" "$head" | grep -qE '(^|/)package-lock\.json$'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Node.js
+        if: steps.lock.outputs.changed == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: npm audit (production dependencies)
+        if: steps.lock.outputs.changed == 'true'
+        run: bash scripts/npm-audit.sh
+
   rust-surfaces:
     name: Rust agent CLI surfaces
     runs-on: ubuntu-latest
@@ -264,9 +305,6 @@ jobs:
       - name: npm ci (diagram renderer)
         run: cd vscode/diagram-renderer && npm ci
 
-      - name: npm audit (diagram renderer)
-        run: cd vscode/diagram-renderer && npm audit --omit=dev
-
       - name: npm typecheck (diagram renderer)
         run: cd vscode/diagram-renderer && npm run typecheck
 
@@ -284,9 +322,6 @@ jobs:
           cd vscode
           npm run build:headless-renderer
           git diff --exit-code ../crates/server/assets/diagram-renderer/headless-renderer.js
-
-      - name: npm audit (vscode)
-        run: cd vscode && npm audit --omit=dev
 
       - name: Typecheck extension
         run: cd vscode && npm run typecheck

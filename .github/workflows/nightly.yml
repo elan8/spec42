@@ -25,6 +25,23 @@ jobs:
       - name: cargo audit
         run: cargo audit
 
+  npm-audit:
+    name: npm dependency audit (shipped packages)
+    runs-on: ubuntu-latest
+    # The advisory gate for the npm side: a new advisory against a shipped dependency fails here
+    # rather than blocking an unrelated PR. CI's `npm-audit` job still runs on any npm lockfile
+    # change.
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: npm audit (production dependencies)
+        run: bash scripts/npm-audit.sh
+
   sysml-release-validation:
     name: SysML release validation (informational)
     runs-on: ubuntu-latest

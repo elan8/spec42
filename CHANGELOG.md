@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`npm audit` no longer gates unrelated PRs.** An npm advisory published against an existing
+  dependency was turning any open PR red, exactly the case the `cargo audit` split already
+  avoids. The `npm audit --omit=dev` steps move out of the per-PR `frontend-unit` job into a
+  dedicated `npm-audit` job that runs only when a push or PR touches an npm `package-lock.json`
+  (mirroring the `audit` job's lockfile detection), plus an unconditional nightly run over the
+  shipped packages. A shared `scripts/npm-audit.sh` retries a transient registry-endpoint error
+  a few times so a network blip is not reported as a finding. Fixes #124.
+
 - **`structure().expression(symbol)` publishes the resolved shape of an authored expression.**
   `EvaluationState` is terminal: a constraint or `calc` body with a free variable folds to
   `NonConstant` and there was no way to ask what it is *made of*. The new query returns a
