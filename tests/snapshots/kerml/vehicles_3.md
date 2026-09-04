@@ -420,6 +420,16 @@ package Vehicles_3 {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "e")) (named (kind kerml-feature) (name "m")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 100))))
+  (declaration (id (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "t")) (named (kind kerml-feature) (name "m")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 50))))
+  (declaration (id (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "v")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "e" (target (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::e")))))
+  (declaration (id (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "v")) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "t" (target (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3::t")))))
+  (declaration (id (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (named (kind kerml-feature) (name "v")) (named (kind kerml-feature) (name "m")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1000))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

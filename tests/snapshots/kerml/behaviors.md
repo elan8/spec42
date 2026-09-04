@@ -248,6 +248,14 @@ package Behaviors {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind kerml-behavior) (name "A")) (named (kind kerml-step) (name "b")) (named (kind kerml-feature) (name "x1")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "A::x" (target (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A::x")))))
+  (declaration (id (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind kerml-behavior) (name "A")) (named (kind kerml-feature) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/behaviors.md") (path (named (kind package) (name "Behaviors")) (named (kind class-def) (name "C")) (named (kind kerml-feature) (name "z")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -1509,6 +1509,17 @@ standard library package QuantityCalculations {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "isUnit")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "isZero")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "product")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "one" (target (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::product::one"))))))
+  (declaration (id (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "product")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "collection" (target (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::product::collection")))) (feature-reference "one" (target (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::product::one"))))))
+  (declaration (id (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "sum")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "zero" (target (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::sum::zero"))))))
+  (declaration (id (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (named (kind calc-def) (name "sum")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "collection" (target (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::sum::collection")))) (feature-reference "zero" (target (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations::sum::zero"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

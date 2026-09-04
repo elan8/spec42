@@ -220,6 +220,12 @@ package 'Variation Usages' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/36_variation_usages.md") (path (named (kind package) (name "Variation Usages")) (named (kind part) (name "vehicleFamily")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome resolved) (operator "xor" (operator "and" (operator "==" (feature-reference "engine" (target (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::engine")))) (feature-reference "engine::4cylEngine" (target unresolved))) (operator "==" (feature-reference "transmission" (target (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::transmission")))) (feature-reference "transmission::manualTransmission" (target unresolved)))) (operator "and" (operator "==" (feature-reference "engine" (target (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::engine")))) (feature-reference "engine::6cylEngine" (target unresolved))) (operator "==" (feature-reference "transmission" (target (node (document "memory://snapshot/36_variation_usages.md") (qualified-name "Variation Usages::vehicleFamily::transmission")))) (feature-reference "transmission::automaticTransmission" (target unresolved))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

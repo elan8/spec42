@@ -231,6 +231,15 @@ package BehaviorCoverage {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::E"))) (outcome resolved) (operator "+" (literal (value (kind integer) (integer 1))) (feature-reference "x" (target (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::E::x"))))))
+  (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::I"))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::P"))) (outcome resolved) (feature-reference "x" (target (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::P::x")))))
+  (declaration (id (node (document "memory://snapshot/coverage_behaviors.md") (qualified-name "BehaviorCoverage::b"))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

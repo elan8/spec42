@@ -519,6 +519,13 @@ package GeneratedActionNodes {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/generated_library_specialization_action_nodes.md") (path (named (kind package) (name "GeneratedActionNodes")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0))))) (outcome resolved) (feature-reference "target" (target (node (document "memory://snapshot/generated_library_specialization_action_nodes.md") (qualified-name "GeneratedActionNodes::Act::target")))))
+  (declaration (id (node (document "memory://snapshot/generated_library_specialization_action_nodes.md") (path (named (kind package) (name "GeneratedActionNodes")) (named (kind action-def) (name "Act")) (anonymous (kind while) (ordinal 0))))) (outcome resolved) (feature-reference "target" (target (node (document "memory://snapshot/generated_library_specialization_action_nodes.md") (qualified-name "GeneratedActionNodes::Act::target")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

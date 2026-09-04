@@ -72,6 +72,12 @@ package Expansion {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/expansion.md") (path (named (kind package) (name "Expansion")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "x" (target (node (document "memory://snapshot/expansion.md") (qualified-name "Expansion::x"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

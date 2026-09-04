@@ -243,6 +243,13 @@ package 'Control Structures Example' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (path (named (kind package) (name "Control Structures Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind loop) (ordinal 0)) (anonymous (kind if) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (path (named (kind package) (name "Control Structures Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind loop) (ordinal 0)) (anonymous (kind if) (ordinal 0)) (named (kind action) (name "addCharge")) (named (kind parameter) (name "charge")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

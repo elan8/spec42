@@ -554,6 +554,14 @@ package CartSample {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/cart_sample.md") (path (named (kind package) (name "CartSample")) (named (kind part) (name "context")) (named (kind part) (name "cart")) (named (kind action) (name "cartBehavior")) (anonymous (kind calc) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/cart_sample.md") (path (named (kind package) (name "CartSample")) (named (kind part) (name "context")) (named (kind part) (name "cart")) (named (kind action) (name "cartBehavior")) (anonymous (kind calc) (ordinal 1))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/cart_sample.md") (path (named (kind package) (name "CartSample")) (named (kind part) (name "context")) (named (kind part) (name "pusher")) (named (kind action) (name "pusherBehavior")) (anonymous (kind calc) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "pusherForce" (target (node (document "memory://snapshot/cart_sample.md") (qualified-name "CartSample::context::pusher::pusherForce"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

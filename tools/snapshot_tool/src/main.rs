@@ -2733,6 +2733,14 @@ fn regenerate_snapshot(
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     let fixture = replace_or_insert_section(&fixture, "TYPES", &canonical.types)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
+    // A fixture that authors no constraint / calc / value expression carries no EXPRESSIONS
+    // section, so the fixtures that have nothing to show are not all rewritten.
+    let fixture = if canonical.has_expressions() {
+        replace_or_insert_section(&fixture, "EXPRESSIONS", &canonical.expressions)
+            .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?
+    } else {
+        replace_section(&fixture, "EXPRESSIONS", &canonical.expressions).unwrap_or(fixture)
+    };
     let fixture = replace_or_insert_section(&fixture, "NAVIGATION", &canonical.navigation)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     let fixture = if probes.queries.is_empty() {
@@ -6782,12 +6790,22 @@ fn diagram_kind_id(kind: generator_api::DiagramViewKind) -> &'static str {
 struct OwnedSections {
     smg: String,
     types: String,
+    expressions: String,
     diagnostics: String,
     navigation: String,
     editor_queries: String,
     hover_reports: String,
     hover_markdown: String,
     qualified_references: String,
+}
+
+impl OwnedSections {
+    /// Whether the resolved-expression projection has any content. An empty `(expressions\n)`
+    /// section is omitted so the fixtures that author no constraint / calc / value expression are
+    /// not all rewritten.
+    fn has_expressions(&self) -> bool {
+        self.expressions.contains("(declaration")
+    }
 }
 
 fn render_owned_sections(
@@ -6807,6 +6825,11 @@ fn render_owned_sections(
         .debug()
         .write_types_sexpr(&mut types)
         .map_err(|error| format!("type rendering failed: {error}"))?;
+    let mut expressions = String::new();
+    model
+        .debug()
+        .write_expressions_sexpr(&mut expressions)
+        .map_err(|error| format!("expression rendering failed: {error}"))?;
     let mut navigation = String::new();
     model
         .debug()
@@ -6829,6 +6852,7 @@ fn render_owned_sections(
     Ok(OwnedSections {
         smg,
         types,
+        expressions,
         diagnostics,
         navigation,
         editor_queries,
@@ -6930,6 +6954,7 @@ fn ensure_balanced(name: &str, text: &str) -> Result<(), String> {
 fn ensure_sections_balanced(sections: &OwnedSections) -> Result<(), String> {
     ensure_balanced("SMG", &sections.smg)?;
     ensure_balanced("TYPES", &sections.types)?;
+    ensure_balanced("EXPRESSIONS", &sections.expressions)?;
     ensure_balanced("DIAGNOSTICS", &sections.diagnostics)?;
     ensure_balanced("NAVIGATION", &sections.navigation)?;
     ensure_balanced("EDITOR RESULTS", &sections.editor_queries).and_then(|()| {
@@ -7618,6 +7643,7 @@ const SECTION_ORDER: &[&str] = &[
     "DIAGNOSTICS",
     "SMG",
     "TYPES",
+    "EXPRESSIONS",
     "NAVIGATION",
     "EDITOR RESULTS",
     "HOVER RESULTS",

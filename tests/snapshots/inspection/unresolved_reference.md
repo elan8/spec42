@@ -95,6 +95,12 @@ probe unresolved_reference.md 5 25
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "+" (feature-reference "undefinedName" (target unresolved)) (literal (value (kind integer) (integer 1)))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -1664,6 +1664,24 @@ standard library package Objects {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Body")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 3))))
+  (declaration (id (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Curve")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Object")) (named (kind kerml-step) (name "ownedPerformances")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "that" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Point")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "StructuredSpaceObject")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "StructuredSpaceObject")) (named (kind kerml-feature) (name "edges")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "StructuredSpaceObject")) (named (kind kerml-feature) (name "edges")) (anonymous (kind kerml-invariant) (ordinal 1))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "StructuredSpaceObject")) (named (kind kerml-feature) (name "faces")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "StructuredSpaceObject")) (named (kind kerml-feature) (name "faces")) (anonymous (kind kerml-invariant) (ordinal 1))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "StructuredSpaceObject")) (named (kind kerml-feature) (name "structuredSpaceObjectCells")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Surface")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Surface")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (named (kind kerml-structure) (name "Surface")) (named (kind kerml-feature) (name "genus")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

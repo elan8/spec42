@@ -215,6 +215,13 @@ package '14a-Language Extensions' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_X")) (named (kind metadata) (name "Classified")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "ClassificationLevel::conf" (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf")))))
+  (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "ClassificationLevel::conf" (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

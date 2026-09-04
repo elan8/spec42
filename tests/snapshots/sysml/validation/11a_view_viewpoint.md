@@ -354,6 +354,14 @@ package '11a-View-Viewpoint' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (path (named (kind package) (name "11a-View-Viewpoint")) (named (kind package) (name "SystemModel")) (named (kind part) (name "vehicle")) (named (kind part) (name "frontAxleAssembly")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 150))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (path (named (kind package) (name "11a-View-Viewpoint")) (named (kind package) (name "SystemModel")) (named (kind part) (name "vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "SI::kg"))))
+  (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (path (named (kind package) (name "11a-View-Viewpoint")) (named (kind package) (name "SystemModel")) (named (kind part) (name "vehicle")) (named (kind part) (name "rearAxleAssembly")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 250))) (unit "kg"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -208,6 +208,13 @@ package RationaleMetadataExample {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (path (named (kind package) (name "RationaleMetadataExample")) (named (kind metadata) (name "engineSelectionRationale")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "This rationale for selecting the engine4cyl refers to the engineTradeOffAnalysis."))))
+  (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (path (named (kind package) (name "RationaleMetadataExample")) (named (kind metadata) (name "engineSelectionRationale")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "engineTradeOffAnalysis" (target (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample::engineTradeOffAnalysis")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -240,6 +240,12 @@ package JohnIndividualExample {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (named (kind item-def) (name "UnitedStates")) (named (kind ref) (name "presidentOfUS")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome resolved) (operator ">=" (feature-reference "age" (target (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Person::age")))) (literal (value (kind integer) (integer 35)))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

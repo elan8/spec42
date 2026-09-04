@@ -235,6 +235,13 @@ package 'Individuals and Time Slices' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/28_individuals_and_time_slices.md") (path (named (kind package) (name "Individuals and Time Slices")) (anonymous (kind occurrence) (ordinal 0)) (named (kind occurrence) (name "aliceDriving")) (anonymous (kind occurrence) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 2000))))
+  (declaration (id (node (document "memory://snapshot/28_individuals_and_time_slices.md") (path (named (kind package) (name "Individuals and Time Slices")) (anonymous (kind occurrence) (ordinal 0)) (named (kind occurrence) (name "aliceDriving")) (anonymous (kind occurrence) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 1500))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

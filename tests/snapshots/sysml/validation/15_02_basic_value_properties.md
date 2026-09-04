@@ -199,6 +199,14 @@ package '15_02-Basic Value Properties' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (named (kind part) (name "frenchTire")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "Michelin"))))
+  (declaration (id (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (named (kind part) (name "frenchTire")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 18))))
+  (declaration (id (node (document "memory://snapshot/15_02_basic_value_properties.md") (path (named (kind package) (name "15_02-Basic Value Properties")) (named (kind part) (name "frenchTire")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 245))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

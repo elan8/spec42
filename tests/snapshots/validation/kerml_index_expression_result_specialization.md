@@ -160,6 +160,12 @@ package Model {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_index_expression_result_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "indexed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "values" (target (node (document "memory://snapshot/kerml_index_expression_result_specialization.md") (qualified-name "Model::values")))) (feature-reference "index" (target (node (document "memory://snapshot/kerml_index_expression_result_specialization.md") (qualified-name "Model::index"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

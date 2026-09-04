@@ -1043,6 +1043,24 @@ standard library package CollectionFunctions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/collection_functions.md") (path (named (kind library-package) (name "CollectionFunctions")) (named (kind kerml-function) (name "#")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/collection_functions.md") (path (named (kind library-package) (name "CollectionFunctions")) (named (kind kerml-function) (name "==")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/collection_functions.md") (path (named (kind library-package) (name "CollectionFunctions")) (named (kind kerml-function) (name "array#")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/collection_functions.md") (qualified-name "CollectionFunctions::array#::index"))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/collection_functions.md") (path (named (kind library-package) (name "CollectionFunctions")) (named (kind kerml-function) (name "array#")) (named (kind kerml-feature) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/collection_functions.md") (path (named (kind library-package) (name "CollectionFunctions")) (named (kind kerml-function) (name "contains")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/collection_functions.md") (path (named (kind library-package) (name "CollectionFunctions")) (named (kind kerml-function) (name "containsAll")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/collection_functions.md") (path (named (kind library-package) (name "CollectionFunctions")) (named (kind kerml-function) (name "head")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/collection_functions.md") (path (named (kind library-package) (name "CollectionFunctions")) (named (kind kerml-function) (name "isEmpty")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/collection_functions.md") (path (named (kind library-package) (name "CollectionFunctions")) (named (kind kerml-function) (name "last")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/collection_functions.md") (path (named (kind library-package) (name "CollectionFunctions")) (named (kind kerml-function) (name "notEmpty")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/collection_functions.md") (path (named (kind library-package) (name "CollectionFunctions")) (named (kind kerml-function) (name "size")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/collection_functions.md") (path (named (kind library-package) (name "CollectionFunctions")) (named (kind kerml-function) (name "tail")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

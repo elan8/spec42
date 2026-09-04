@@ -947,6 +947,12 @@ standard library package VectorCalculations {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/vector_calculations.md") (path (named (kind library-package) (name "VectorCalculations")) (named (kind calc-def) (name "[")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

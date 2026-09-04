@@ -412,6 +412,17 @@ package Units {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/unit_resolution.md") (path (named (kind package) (name "Units")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "composite")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 3))) (unit "m/s^2"))))
+  (declaration (id (node (document "memory://snapshot/unit_resolution.md") (path (named (kind package) (name "Units")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 1750))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/unit_resolution.md") (path (named (kind package) (name "Units")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "plain")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 2.5))))
+  (declaration (id (node (document "memory://snapshot/unit_resolution.md") (path (named (kind package) (name "Units")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "qualified")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 3))) (unit "SI::gram"))))
+  (declaration (id (node (document "memory://snapshot/unit_resolution.md") (path (named (kind package) (name "Units")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "unknownSymbol")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 12))) (unit "zz"))))
+  (declaration (id (node (document "memory://snapshot/unit_resolution.md") (path (named (kind package) (name "Units")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "wrongDimension")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 12))) (unit "s"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

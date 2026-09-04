@@ -160,6 +160,16 @@ package KeywordAsName {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::condition"))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::elseValue"))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::IfThenElse::thenValue"))) (outcome resolved) (literal (value (kind integer) (integer 42))))
+  (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior::guardCondition"))) (outcome resolved) (literal (value (kind boolean) (boolean false))))
+  (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::TestBehavior::whileTest"))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

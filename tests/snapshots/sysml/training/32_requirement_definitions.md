@@ -286,6 +286,14 @@ package 'Requirement Definitions' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/32_requirement_definitions.md") (path (named (kind package) (name "Requirement Definitions")) (named (kind requirement-def) (name "MassLimitationRequirement")) (anonymous (kind require-constraint) (ordinal 0))))) (outcome resolved) (operator "<=" (feature-reference "massActual" (target (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::MassLimitationRequirement::massActual")))) (feature-reference "massReqd" (target (node (document "memory://snapshot/32_requirement_definitions.md") (qualified-name "Requirement Definitions::MassLimitationRequirement::massReqd"))))))
+  (declaration (id (node (document "memory://snapshot/32_requirement_definitions.md") (path (named (kind package) (name "Requirement Definitions")) (named (kind requirement-def) (name "VehicleMassLimitationRequirement")) (anonymous (kind assume-constraint) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/32_requirement_definitions.md") (path (named (kind package) (name "Requirement Definitions")) (named (kind requirement-def) (name "VehicleMassLimitationRequirement")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

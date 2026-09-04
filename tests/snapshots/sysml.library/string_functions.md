@@ -526,6 +526,12 @@ standard library package StringFunctions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/string_functions.md") (path (named (kind library-package) (name "StringFunctions")) (named (kind kerml-function) (name "ToString")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "x" (target (node (document "memory://snapshot/string_functions.md") (qualified-name "StringFunctions::ToString::x")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

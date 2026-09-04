@@ -274,6 +274,14 @@ package '15_12-Compound Value Type' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (path (named (kind package) (name "15_12-Compound Value Type")) (named (kind attribute) (name "frenchTireInfo")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "Michelin"))))
+  (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (path (named (kind package) (name "15_12-Compound Value Type")) (named (kind attribute) (name "frenchTireInfo")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind real) (real 18))) (unit "in"))))
+  (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (path (named (kind package) (name "15_12-Compound Value Type")) (named (kind attribute) (name "frenchTireInfo")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 245))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

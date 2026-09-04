@@ -21,6 +21,7 @@ mod diagnostics;
 mod diagram_query;
 mod evaluate;
 mod evaluation;
+mod expression;
 mod feature_query;
 mod index;
 mod inspection;
@@ -92,6 +93,9 @@ pub use diagram_query::{
 pub use evaluation::{
     AnalysisEvaluation, AuthoredUnit, ElementEvaluation, EvaluatedScalar, EvaluationFailure,
     EvaluationPolicy, EvaluationState, ExpectedMeasurement, ResolvedUnit, UnitResolution,
+};
+pub use expression::{
+    ExpressionNode, ExpressionNodeKind, ExpressionOperator, ExpressionOutcome, PublishedExpression,
 };
 pub use feature_query::FeatureDerivedRelationshipCollection;
 pub use inspection::{
@@ -819,6 +823,15 @@ impl PublishedResolution {
         self.model.evaluate(symbol)
     }
 
+    /// The resolved structure of one element's authored constraint / calc / value expression.
+    ///
+    /// Every feature reference is paired with the specific inherited or redefined feature it
+    /// names; a shape outside the published slice is reported, never dropped. This retains
+    /// structure resolution already builds -- it performs no new analysis.
+    pub fn resolved_expression(&self, symbol: SymbolId) -> QueryOutcome<PublishedExpression> {
+        self.model.resolved_expression(symbol)
+    }
+
     /// Everything this publication knows about one element.
     pub fn inspect(&self, symbol: SymbolId) -> QueryOutcome<ElementInspection> {
         self.model.inspect(symbol)
@@ -1286,6 +1299,10 @@ impl DebugQueries<'_> {
 
     pub fn write_types_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.write_types_sexpr(output)
+    }
+
+    pub fn write_expressions_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.write_expressions_sexpr(output)
     }
 }
 

@@ -102,6 +102,12 @@ package Actions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_usage_loop_variable.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind for-loop) (ordinal 0))))) (outcome resolved) (feature-reference "components" (target (node (document "memory://snapshot/sysml_for_loop_action_usage_loop_variable.md") (qualified-name "Actions::Act::components")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

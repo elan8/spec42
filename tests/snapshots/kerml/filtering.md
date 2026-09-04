@@ -337,6 +337,14 @@ package Filtering {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "DesignModel")) (named (kind kerml-structure) (name "System")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "DesignModel")) (named (kind kerml-structure) (name "System")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "John Smith"))))
+  (declaration (id (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "DesignModel")) (named (kind kerml-structure) (name "System")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

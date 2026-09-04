@@ -2729,6 +2729,19 @@ standard library package Actions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0))))) (outcome resolved) (operator "<=" (feature-reference "index" (target (node (document "memory://snapshot/actions.md") (qualified-name "Actions::ForLoopAction::index")))) (unsupported (feature-reference "seq" (target (node (document "memory://snapshot/actions.md") (qualified-name "Actions::ForLoopAction::seq")))))))
+  (declaration (id (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0)) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "seq" (target (node (document "memory://snapshot/actions.md") (qualified-name "Actions::ForLoopAction::seq")))) (feature-reference "index" (target (node (document "memory://snapshot/actions.md") (qualified-name "Actions::ForLoopAction::index"))))))
+  (declaration (id (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "ForLoopAction")) (anonymous (kind while) (ordinal 0)) (anonymous (kind assign) (ordinal 1))))) (outcome resolved) (operator "+" (feature-reference "index" (target (node (document "memory://snapshot/actions.md") (qualified-name "Actions::ForLoopAction::index")))) (literal (value (kind integer) (integer 1)))))
+  (declaration (id (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "TerminateAction")) (named (kind action) (name "terminateOccurrence")) (named (kind parameter) (name "occ")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "terminatedOccurrence" (target (node (document "memory://snapshot/actions.md") (qualified-name "Actions::TerminateAction::terminatedOccurrence")))))
+  (declaration (id (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "WhileLoopAction")) (named (kind parameter) (name "untilTest")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean false))))
+  (declaration (id (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "WhileLoopAction")) (named (kind parameter) (name "whileTest")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action) (name "assignmentActions")) (named (kind parameter) (name "target")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "that" (target unresolved))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

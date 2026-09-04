@@ -200,6 +200,13 @@ probe element_details.md 22 15
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/element_details.md") (qualified-name "Details::fails"))) (outcome resolved) (literal (value (kind boolean) (boolean false))))
+  (declaration (id (node (document "memory://snapshot/element_details.md") (qualified-name "Details::holds"))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

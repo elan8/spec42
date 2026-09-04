@@ -471,6 +471,12 @@ package ExtendedOccurrences {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (path (named (kind package) (name "ExtendedOccurrences")) (named (kind class-def) (name "ExtendedOccurrence")) (named (kind kerml-expression) (name "while")) (named (kind parameter) (name "result")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

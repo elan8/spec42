@@ -119,6 +119,12 @@ package Demo {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/inherited_attribute_value_type_mismatch.md") (path (named (kind package) (name "Demo")) (named (kind requirement) (name "need")) (named (kind attribute) (name "status")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "approved"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

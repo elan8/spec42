@@ -734,6 +734,15 @@ standard library package ControlPerformances {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/control_performances.md") (path (named (kind library-package) (name "ControlPerformances")) (named (kind kerml-behavior) (name "IfElsePerformance")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/control_performances.md") (path (named (kind library-package) (name "ControlPerformances")) (named (kind kerml-behavior) (name "IfThenElsePerformance")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/control_performances.md") (path (named (kind library-package) (name "ControlPerformances")) (named (kind kerml-behavior) (name "IfThenPerformance")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/control_performances.md") (path (named (kind library-package) (name "ControlPerformances")) (named (kind kerml-behavior) (name "LoopPerformance")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

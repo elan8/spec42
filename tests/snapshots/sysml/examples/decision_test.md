@@ -219,6 +219,17 @@ action def DecisionTest {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 0))))) (outcome resolved) (operator "==" (feature-reference "x" (target (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::x")))) (literal (value (kind integer) (integer 1)))))
+  (declaration (id (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 1))))) (outcome resolved) (operator ">" (feature-reference "x" (target (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::x")))) (literal (value (kind integer) (integer 1)))))
+  (declaration (id (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 2))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 3))))) (outcome resolved) (literal (value (kind boolean) (boolean false))))
+  (declaration (id (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (anonymous (kind if) (ordinal 4))))) (outcome resolved) (operator ">" (feature-reference "x" (target (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::x")))) (literal (value (kind integer) (integer 0)))))
+  (declaration (id (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (named (kind attribute) (name "x")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

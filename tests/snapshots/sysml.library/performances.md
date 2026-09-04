@@ -1565,6 +1565,18 @@ standard library package Performances {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-behavior) (name "Performance")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-behavior) (name "Performance")) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "thisPerformance" (target (node (document "memory://snapshot/performances.md") (qualified-name "Performances::Performance::thisPerformance")))))
+  (declaration (id (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-behavior) (name "Performance")) (named (kind kerml-step) (name "subperformances")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-behavior) (name "Performance")) (named (kind kerml-step) (name "subperformances")) (anonymous (kind kerml-feature) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-behavior) (name "Performance")) (named (kind kerml-feature) (name "thisPerformance")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "self" (target (node (document "memory://snapshot/performances.md") (qualified-name "Performances::Performance::self")))))
+  (declaration (id (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-expression) (name "falseEvaluations")) (named (kind kerml-feature) (name "falseValue")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean false))))
+  (declaration (id (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-expression) (name "trueEvaluations")) (named (kind kerml-feature) (name "trueValue")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -593,6 +593,14 @@ package Features {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "vin")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "identifier" (target (node (document "memory://snapshot/features.md") (qualified-name "Features::RegisteredAsset::identifier")))))
+  (declaration (id (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "w")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/features.md") (path (named (kind package) (name "Features")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "x")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "vin" (target (node (document "memory://snapshot/features.md") (qualified-name "Features::Vehicle::vin")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

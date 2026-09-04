@@ -743,6 +743,15 @@ package VehicleUsages {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind default-reference) (name "T1")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind default-reference) (name "T2")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind part) (name "vehicle_C1")) (named (kind part) (name "frontAxleAssembly")) (named (kind part) (name "frontWheel")) (anonymous (kind part) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "T1" (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::T1")))))
+  (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind part) (name "vehicle_C1")) (named (kind part) (name "rearAxleAssembly")) (named (kind part) (name "rearWheel")) (anonymous (kind part) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "T2" (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::T2")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

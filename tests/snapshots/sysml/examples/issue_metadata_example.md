@@ -208,6 +208,12 @@ package IssueMetadataExample {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (path (named (kind package) (name "IssueMetadataExample")) (named (kind metadata) (name "InterfaceCompatibilityIssue")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "+" (operator "+" (operator "+" (literal (value (kind string) (value "This issue is about the interface compatability between the engine and transmission."))) (literal (value (kind string) (value "The interface def includes an end defined by a ClutchPort.")))) (literal (value (kind string) (value "However, the interface usage connects the transmission port that is defined by ~DrivePwrPort.")))) (literal (value (kind string) (value "This should have surfaced a compatibility issue, since the interface is not really compatible with its definition")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

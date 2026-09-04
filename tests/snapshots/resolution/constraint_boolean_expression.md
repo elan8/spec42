@@ -115,6 +115,18 @@ package Constraints {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Counted"))) (outcome resolved) (operator "+" (literal (value (kind integer) (integer 2))) (literal (value (kind integer) (integer 3)))))
+  (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Named"))) (outcome resolved) (literal (value (kind string) (value "approved"))))
+  (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Ordered"))) (outcome resolved) (operator "<" (literal (value (kind integer) (integer 2))) (literal (value (kind integer) (integer 3)))))
+  (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Unresolved"))) (outcome resolved) (operator "<" (feature-reference "missing" (target unresolved)) (literal (value (kind integer) (integer 3)))))
+  (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Unsupported"))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (path (named (kind package) (name "Constraints")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
+  (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::withinLimit"))) (outcome resolved) (feature-reference "limit" (target (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Vehicle::limit")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

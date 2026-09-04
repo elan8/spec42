@@ -472,6 +472,16 @@ package '15.10-Primitive Data Types' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (path (named (kind package) (name "15.10-Primitive Data Types")) (named (kind enum-def) (name "SeverityEnum")) (named (kind enum-literal) (name "danger")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "ConditionColor::red" (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::ConditionColor::red")))))
+  (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (path (named (kind package) (name "15.10-Primitive Data Types")) (named (kind enum-def) (name "SeverityEnum")) (named (kind enum-literal) (name "normal")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "ConditionColor::green" (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::ConditionColor::green")))))
+  (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (path (named (kind package) (name "15.10-Primitive Data Types")) (named (kind enum-def) (name "SeverityEnum")) (named (kind enum-literal) (name "warning")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "ConditionColor::yellow" (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::ConditionColor::yellow")))))
+  (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (path (named (kind package) (name "15.10-Primitive Data Types")) (named (kind attribute-def) (name "UnsignedReal")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome resolved) (operator ">=" (feature-reference "x" (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::UnsignedReal::x")))) (literal (value (kind real) (real 0)))))
+  (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (path (named (kind package) (name "15.10-Primitive Data Types")) (named (kind attribute) (name "aperatureDiameter")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "DiameterChoice::small" (target (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types::DiameterChoice::small")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

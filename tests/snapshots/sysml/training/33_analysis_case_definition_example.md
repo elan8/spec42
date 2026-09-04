@@ -569,6 +569,16 @@ package 'Analysis Case Definition Example' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (path (named (kind package) (name "Analysis Case Definition Example")) (named (kind analysis-def) (name "FuelEconomyAnalysis")) (named (kind requirement) (name "fuelEconomyAnalysisObjective")) (anonymous (kind assume-constraint) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (path (named (kind package) (name "Analysis Case Definition Example")) (named (kind analysis-def) (name "FuelEconomyAnalysis")) (named (kind requirement) (name "fuelEconomyAnalysisObjective")) (anonymous (kind require-constraint) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (path (named (kind package) (name "Analysis Case Definition Example")) (named (kind analysis-def) (name "FuelEconomyAnalysis")) (named (kind parameter) (name "fuelEconomyResult")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (path (named (kind package) (name "Analysis Case Definition Example")) (named (kind analysis-def) (name "FuelEconomyAnalysis")) (named (kind action) (name "solveForFuelConsumption")) (named (kind parameter) (name "power")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/33_analysis_case_definition_example.md") (path (named (kind package) (name "Analysis Case Definition Example")) (named (kind analysis-def) (name "FuelEconomyAnalysis")) (named (kind action) (name "solveForPower")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

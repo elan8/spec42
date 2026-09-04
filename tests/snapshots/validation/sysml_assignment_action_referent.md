@@ -60,6 +60,12 @@ package Actions { action def Procedure { attribute target; assign target := 1; }
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/sysml_assignment_action_referent.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Procedure")) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

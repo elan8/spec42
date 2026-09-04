@@ -342,6 +342,12 @@ package '15_11-Variable Length Collection Types' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/15_11_variable_length_collection_types.md") (path (named (kind package) (name "15_11-Variable Length Collection Types")) (named (kind attribute-def) (name "Array<Real>[4]")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 4))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

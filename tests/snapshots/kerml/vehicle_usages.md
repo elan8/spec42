@@ -793,6 +793,15 @@ package VehicleUsages {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind kerml-feature) (name "T1")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 10))))
+  (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind kerml-feature) (name "T2")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 20))))
+  (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind kerml-feature) (name "vehicle_C1")) (named (kind kerml-feature) (name "frontAxleAssembly")) (named (kind kerml-feature) (name "frontWheel")) (named (kind kerml-feature) (name "lugbolt")) (named (kind kerml-feature) (name "tighteningTorque")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "T1" (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::T1")))))
+  (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind kerml-feature) (name "vehicle_C1")) (named (kind kerml-feature) (name "rearAxleAssembly")) (named (kind kerml-feature) (name "rearWheel")) (named (kind kerml-feature) (name "lugbolt")) (named (kind kerml-feature) (name "tighteningTorque")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "T2" (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::T2")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

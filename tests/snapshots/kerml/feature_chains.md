@@ -294,6 +294,12 @@ package FeatureChains {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

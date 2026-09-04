@@ -275,6 +275,14 @@ package 'Constraints Example-1' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::MassConstraint"))) (outcome resolved) (operator "<=" (unsupported (feature-reference "partMasses" (target (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::MassConstraint::partMasses"))))) (feature-reference "massLimit" (target (node (document "memory://snapshot/31_constraints_example_1.md") (qualified-name "Constraints Example-1::MassConstraint::massLimit"))))))
+  (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (path (named (kind package) (name "Constraints Example-1")) (named (kind part-def) (name "Vehicle")) (named (kind constraint) (name "massConstraint")) (named (kind parameter) (name "massLimit")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 2500))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/31_constraints_example_1.md") (path (named (kind package) (name "Constraints Example-1")) (named (kind part-def) (name "Vehicle")) (named (kind constraint) (name "massConstraint")) (named (kind parameter) (name "partMasses")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

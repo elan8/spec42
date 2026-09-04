@@ -339,6 +339,14 @@ standard library package RequirementDerivation {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (path (named (kind library-package) (name "RequirementDerivation")) (named (kind metadata-def) (name "DerivationMetadata")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "derivations" (target unresolved))))
+  (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (path (named (kind library-package) (name "RequirementDerivation")) (named (kind metadata-def) (name "DerivedRequirementMetadata")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "derivedRequirements" (target unresolved))))
+  (declaration (id (node (document "memory://snapshot/requirement_derivation.md") (path (named (kind library-package) (name "RequirementDerivation")) (named (kind metadata-def) (name "OriginalRequirementMetadata")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "originalRequirements" (target unresolved))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

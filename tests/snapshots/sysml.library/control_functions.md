@@ -1222,6 +1222,17 @@ standard library package ControlFunctions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::."))) (outcome resolved) (feature-reference "chain" (target (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::.::chain")))))
+  (declaration (id (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "allTrue")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "collection" (target (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::allTrue::collection"))))))
+  (declaration (id (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "anyTrue")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "collection" (target (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::anyTrue::collection"))))))
+  (declaration (id (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "maximize")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (unsupported (feature-reference "collection" (target (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::maximize::collection"))))) (feature-reference "max" (target unresolved))))
+  (declaration (id (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "minimize")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (unsupported (feature-reference "collection" (target (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::minimize::collection"))))) (feature-reference "min" (target unresolved))))
+  (declaration (id (node (document "memory://snapshot/control_functions.md") (path (named (kind library-package) (name "ControlFunctions")) (named (kind kerml-function) (name "selectOne")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (unsupported (feature-reference "collection" (target (node (document "memory://snapshot/control_functions.md") (qualified-name "ControlFunctions::selectOne::collection"))))) (literal (value (kind integer) (integer 1)))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
