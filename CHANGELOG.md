@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`structure().expression(symbol)` publishes the resolved shape of an authored expression.**
+  `EvaluationState` is terminal: a constraint or `calc` body with a free variable folds to
+  `NonConstant` and there was no way to ask what it is *made of*. The new query returns a
+  `PublishedExpression` — a flat arena of `ExpressionNode`s (literals, feature references each
+  paired with the specific inherited or redefined feature they name, and the arithmetic /
+  comparison / boolean / prefix operators) with a `root` index, for a consumer that has to
+  interpret a model (assemble equations, emit interface stubs, drive an external solver) rather
+  than fold it. It adds no analysis: resolution already builds and resolves these trees to fold
+  constants, and the classifier that gates constant folding also gates this. A shape outside the
+  published slice (an invocation, a `select` / `collect` body, a constructor, an index expression,
+  a meta cast, a type check) is an `Unsupported` node that still lists its resolved subtree rather
+  than being dropped, mirroring `EvaluationState::Unsupported`. First slice of #84 (the metadata
+  annotation-body and connection-topology queries are follow-ups).
+
 - **Interconnection View projects connector edges and scopes its node list.** A `connect a to b`
   usage now composes one `connection` edge between the projected port or part occurrences,
   including the dotted `connect a.b to c.d` spelling whose ends are published as member-access

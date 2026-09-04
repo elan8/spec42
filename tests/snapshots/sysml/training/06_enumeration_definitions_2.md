@@ -363,6 +363,17 @@ package 'Enumeration Definitions-2' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (path (named (kind package) (name "Enumeration Definitions-2")) (named (kind enum-def) (name "ClassificationKind")) (named (kind enum-literal) (name "confidential")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "conf"))))
+  (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (path (named (kind package) (name "Enumeration Definitions-2")) (named (kind enum-def) (name "ClassificationKind")) (named (kind enum-literal) (name "confidential")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "TrafficLightColor::yellow" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (path (named (kind package) (name "Enumeration Definitions-2")) (named (kind enum-def) (name "ClassificationKind")) (named (kind enum-literal) (name "secret")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "secr"))))
+  (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (path (named (kind package) (name "Enumeration Definitions-2")) (named (kind enum-def) (name "ClassificationKind")) (named (kind enum-literal) (name "secret")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "TrafficLightColor::red" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (path (named (kind package) (name "Enumeration Definitions-2")) (named (kind enum-def) (name "ClassificationKind")) (named (kind enum-literal) (name "unclassified")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "uncl"))))
+  (declaration (id (node (document "memory://snapshot/06_enumeration_definitions_2.md") (path (named (kind package) (name "Enumeration Definitions-2")) (named (kind enum-def) (name "ClassificationKind")) (named (kind enum-literal) (name "unclassified")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "TrafficLightColor::green" (target unresolved)))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

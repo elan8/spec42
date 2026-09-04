@@ -537,6 +537,12 @@ library package AHFCoreLib {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/ahfcore_lib.md") (path (named (kind library-package) (name "AHFCoreLib")) (named (kind extended-usage) (name "ArrowheadCore")) (named (kind extended-usage) (name "authorization")) (named (kind attribute) (name "protocol")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "HTTP"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

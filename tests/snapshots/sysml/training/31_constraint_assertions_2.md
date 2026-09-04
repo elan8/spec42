@@ -275,6 +275,12 @@ package 'Constraint Assertions-2' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint"))) (outcome resolved) (operator "<=" (unsupported (feature-reference "partMasses" (target (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint::partMasses"))))) (feature-reference "massLimit" (target (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2::massConstraint::massLimit"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

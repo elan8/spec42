@@ -168,6 +168,12 @@ package FuncSpec {
 (types
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I"))) (outcome resolved) (operator "not" (feature-reference "x" (target unresolved))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

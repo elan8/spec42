@@ -435,6 +435,16 @@ package 'Verification Case Definition Example' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/34_verification_case_definition_example.md") (path (named (kind package) (name "Verification Case Definition Example")) (named (kind verification-def) (name "VehicleMassTest")) (named (kind action) (name "evaluateData")) (named (kind parameter) (name "massProcessed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/34_verification_case_definition_example.md") (path (named (kind package) (name "Verification Case Definition Example")) (named (kind verification-def) (name "VehicleMassTest")) (named (kind action) (name "evaluateData")) (named (kind parameter) (name "verdict")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (unsupported (feature-reference "testVehicle" (target (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::testVehicle")))) (feature-reference "massProcessed" (target (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::VehicleMassTest::evaluateData::massProcessed")))))))
+  (declaration (id (node (document "memory://snapshot/34_verification_case_definition_example.md") (path (named (kind package) (name "Verification Case Definition Example")) (named (kind verification-def) (name "VehicleMassTest")) (named (kind action) (name "processData")) (named (kind parameter) (name "massMeasured")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/34_verification_case_definition_example.md") (path (named (kind package) (name "Verification Case Definition Example")) (named (kind verification-def) (name "VehicleMassTest")) (named (kind parameter) (name "verdict")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/34_verification_case_definition_example.md") (path (named (kind package) (name "Verification Case Definition Example")) (named (kind requirement) (name "vehicleMassRequirement")) (anonymous (kind require-constraint) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

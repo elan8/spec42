@@ -70,6 +70,12 @@ package ion {
 (types
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/fuzz_unclosed_short_name.md") (path (named (kind package) (name "ion")) (named (kind class-def) (name "A"))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

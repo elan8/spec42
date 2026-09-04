@@ -177,6 +177,12 @@ package Expressions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "invoked")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "a" (target (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Holder::a")))) (feature-reference "b" (target (node (document "memory://snapshot/kerml_invocation_expression_owned_features.md") (qualified-name "Expressions::Holder::b"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

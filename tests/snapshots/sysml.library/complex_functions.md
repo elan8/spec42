@@ -1065,6 +1065,16 @@ standard library package ComplexFunctions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/complex_functions.md") (path (named (kind library-package) (name "ComplexFunctions")) (named (kind kerml-feature) (name "i")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (literal (value (kind real) (real 0))) (literal (value (kind real) (real 1)))))
+  (declaration (id (node (document "memory://snapshot/complex_functions.md") (path (named (kind library-package) (name "ComplexFunctions")) (named (kind kerml-function) (name "isUnit")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/complex_functions.md") (path (named (kind library-package) (name "ComplexFunctions")) (named (kind kerml-function) (name "isZero")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/complex_functions.md") (path (named (kind library-package) (name "ComplexFunctions")) (named (kind kerml-function) (name "product")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "collection" (target (node (document "memory://snapshot/complex_functions.md") (qualified-name "ComplexFunctions::product::collection")))) (unsupported (literal (value (kind real) (real 1))) (literal (value (kind real) (real 0))))))
+  (declaration (id (node (document "memory://snapshot/complex_functions.md") (path (named (kind library-package) (name "ComplexFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "collection" (target (node (document "memory://snapshot/complex_functions.md") (qualified-name "ComplexFunctions::sum::collection")))) (unsupported (literal (value (kind real) (real 0))) (literal (value (kind real) (real 0))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

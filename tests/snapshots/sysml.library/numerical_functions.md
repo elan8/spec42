@@ -1079,6 +1079,15 @@ standard library package NumericalFunctions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "product1")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "one" (target (node (document "memory://snapshot/numerical_functions.md") (qualified-name "NumericalFunctions::product1::one"))))))
+  (declaration (id (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "product1")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "sum0")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "zero" (target (node (document "memory://snapshot/numerical_functions.md") (qualified-name "NumericalFunctions::sum0::zero"))))))
+  (declaration (id (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (named (kind kerml-function) (name "sum0")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

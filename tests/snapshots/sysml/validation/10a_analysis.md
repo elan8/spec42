@@ -470,6 +470,13 @@ package '10a-Analysis' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/10a_analysis.md") (path (named (kind package) (name "10a-Analysis")) (named (kind package) (name "VehicleDesignModel")) (named (kind part) (name "vehicle")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

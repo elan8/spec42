@@ -165,6 +165,15 @@ package DefaultValueTest {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "V")) (named (kind attribute) (name "m")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 10))))
+  (declaration (id (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "V")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 20))))
+  (declaration (id (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part-def) (name "W")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "n" (target (node (document "memory://snapshot/default_value_test.md") (qualified-name "DefaultValueTest::V::n")))))
+  (declaration (id (node (document "memory://snapshot/default_value_test.md") (path (named (kind package) (name "DefaultValueTest")) (named (kind part) (name "v1")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 20))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

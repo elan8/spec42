@@ -839,6 +839,12 @@ standard library package Requirements {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/requirements.md") (path (named (kind library-package) (name "Requirements")) (named (kind constraint-def) (name "RequirementConstraintCheck")) (named (kind parameter) (name "result")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

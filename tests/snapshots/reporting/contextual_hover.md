@@ -249,6 +249,12 @@ probe model.sysml 11 16 hover
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind item) (name "maintenanceReviewRecord")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "DomainTypes::RecordAvailabilityState::availableControlled" (target (node (document "memory://snapshot/domain.sysml") (qualified-name "DomainTypes::RecordAvailabilityState::availableControlled")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

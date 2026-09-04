@@ -292,6 +292,12 @@ package 'Conditional Succession Example-2' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_2.md") (path (named (kind package) (name "Conditional Succession Example-2")) (named (kind action) (name "takePicture")) (anonymous (kind if) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -940,6 +940,12 @@ package ServerSequenceRealization_2 {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/server_sequence_realization_2.md") (path (named (kind package) (name "ServerSequenceRealization_2")) (named (kind package) (name "Configuration")) (named (kind part) (name "server_2")) (named (kind state) (name "serverBehavior")) (named (kind transition) (name "delivering")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

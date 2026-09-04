@@ -159,6 +159,15 @@ package FeatureSubDeclCoverage {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (path (named (kind package) (name "FeatureSubDeclCoverage")) (named (kind kerml-feature) (name "c")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 42))))
+  (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (path (named (kind package) (name "FeatureSubDeclCoverage")) (named (kind kerml-feature) (name "d")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 99))))
+  (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (path (named (kind package) (name "FeatureSubDeclCoverage")) (named (kind kerml-feature) (name "e")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (path (named (kind package) (name "FeatureSubDeclCoverage")) (named (kind kerml-feature) (name "f")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

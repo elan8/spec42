@@ -161,6 +161,12 @@ package MultiplicityTest {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/multiplicity_test.md") (path (named (kind package) (name "MultiplicityTest")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 5))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

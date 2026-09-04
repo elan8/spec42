@@ -208,6 +208,13 @@ package '3c-Function-based Behavior-structure mod-3' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_3.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-3")) (anonymous (kind action) (ordinal 0)) (anonymous (kind assign) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_3.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-3")) (anonymous (kind action) (ordinal 0)) (anonymous (kind assign) (ordinal 1))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

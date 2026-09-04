@@ -1291,6 +1291,16 @@ standard library package RealFunctions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "arg")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 0))))
+  (declaration (id (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "im")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 0))))
+  (declaration (id (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "product")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "collection" (target (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::product::collection")))) (literal (value (kind real) (real 1)))))
+  (declaration (id (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "re")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "x" (target (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::re::x")))))
+  (declaration (id (node (document "memory://snapshot/real_functions.md") (path (named (kind library-package) (name "RealFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "collection" (target (node (document "memory://snapshot/real_functions.md") (qualified-name "RealFunctions::sum::collection")))) (literal (value (kind real) (real 0)))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

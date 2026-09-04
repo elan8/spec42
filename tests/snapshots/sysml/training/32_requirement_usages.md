@@ -218,6 +218,15 @@ package 'Requirement Usages' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "emptyVehicleMassLimit")) (anonymous (kind assume-constraint) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "emptyVehicleMassLimit")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 1500))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "fullVehicleMassLimit")) (anonymous (kind assume-constraint) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/32_requirement_usages.md") (path (named (kind package) (name "Requirement Usages")) (named (kind requirement) (name "fullVehicleMassLimit")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

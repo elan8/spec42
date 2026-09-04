@@ -319,6 +319,14 @@ package 'User Keyword Example' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "battery old")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 0.01))))
+  (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "device shutoff")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "LevelEnum::high" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "power low")) (anonymous (kind constraint) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

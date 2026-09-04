@@ -274,6 +274,17 @@ package 'Individuals and Snapshots Example' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (path (named (kind package) (name "Individuals and Snapshots Example")) (named (kind part-def) (name "Vehicle_1")) (named (kind part) (name "vehicle_1_t0")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 2000))))
+  (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (path (named (kind package) (name "Individuals and Snapshots Example")) (named (kind part-def) (name "Vehicle_1")) (named (kind part) (name "vehicle_1_t0")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (path (named (kind package) (name "Individuals and Snapshots Example")) (named (kind part-def) (name "Vehicle_1")) (named (kind part) (name "vehicle_1_t0")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind default-reference) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 0))))
+  (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (path (named (kind package) (name "Individuals and Snapshots Example")) (named (kind part-def) (name "Vehicle_1")) (named (kind part) (name "vehicle_1_t1")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 1500))))
+  (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (path (named (kind package) (name "Individuals and Snapshots Example")) (named (kind part-def) (name "Vehicle_1")) (named (kind part) (name "vehicle_1_t1")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/28_individuals_and_snapshots_example.md") (path (named (kind package) (name "Individuals and Snapshots Example")) (named (kind part-def) (name "Vehicle_1")) (named (kind part) (name "vehicle_1_t1")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind default-reference) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 0.5))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

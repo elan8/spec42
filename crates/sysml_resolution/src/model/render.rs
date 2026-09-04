@@ -74,6 +74,86 @@ pub(crate) fn write_types_only(
     write_types(model, output)
 }
 
+pub(crate) fn write_expressions_only(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    write_expressions(model, output)
+}
+
+/// Renders the resolved expression tree of every declaration that authored a constraint / calc /
+/// value expression, in canonical declaration order. A declaration with no such expression
+/// contributes nothing, so this section stays proportional to the expressions a fixture authors.
+pub(crate) fn write_expressions(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    use crate::index::resolved_expressions::{RawExpressionNode, RawExpressionNodeKind};
+
+    fn write_node(
+        model: &ResolvedSemanticModel,
+        nodes: &[RawExpressionNode],
+        index: u32,
+        output: &mut dyn fmt::Write,
+    ) -> fmt::Result {
+        let Some(node) = nodes.get(index as usize) else {
+            return output.write_str("(invalid-node)");
+        };
+        match &node.kind {
+            RawExpressionNodeKind::Literal(value) => {
+                output.write_str("(literal ")?;
+                write_evaluated_scalar(value, output)?;
+                output.write_char(')')
+            }
+            RawExpressionNodeKind::FeatureReference { target, authored } => {
+                write!(output, "(feature-reference {authored:?}")?;
+                match target {
+                    Some(declaration) => {
+                        output.write_str(" (target ")?;
+                        write_node_identity(model, *declaration, output)?;
+                        output.write_char(')')?;
+                    }
+                    None => output.write_str(" (target unresolved)")?,
+                }
+                output.write_char(')')
+            }
+            RawExpressionNodeKind::Operator { operator, operands } => {
+                write!(output, "(operator {:?}", operator.as_str())?;
+                for operand in operands.iter() {
+                    output.write_char(' ')?;
+                    write_node(model, nodes, *operand, output)?;
+                }
+                output.write_char(')')
+            }
+            RawExpressionNodeKind::Unsupported { children } => {
+                output.write_str("(unsupported")?;
+                for child in children.iter() {
+                    output.write_char(' ')?;
+                    write_node(model, nodes, *child, output)?;
+                }
+                output.write_char(')')
+            }
+        }
+    }
+
+    writeln!(output, "(expressions")?;
+    for index in canonical_declaration_indices(model) {
+        let declaration = DeclarationId(index as u32);
+        let Some(row) = model.resolved_expressions.row(declaration) else {
+            continue;
+        };
+        write!(output, "  (declaration (id ")?;
+        write_node_identity(model, declaration, output)?;
+        write!(output, ") (outcome {})", row.outcome.as_str())?;
+        if let Some(root) = row.root {
+            output.write_char(' ')?;
+            write_node(model, &row.nodes, root, output)?;
+        }
+        writeln!(output, ")")?;
+    }
+    writeln!(output, ")")
+}
+
 /// Renders the settled specialization closure of each projected declaration.
 ///
 /// A declaration with no transitive supertype and no cycle contributes nothing, so this section

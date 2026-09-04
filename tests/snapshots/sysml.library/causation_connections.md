@@ -383,6 +383,14 @@ standard library package CausationConnections {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/causation_connections.md") (path (named (kind library-package) (name "CausationConnections")) (named (kind connection-def) (name "Multicausation")) (named (kind succession) (name "causalOrdering")) (named (kind attribute) (name "nCauses")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "causes" (target (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::causes"))))))
+  (declaration (id (node (document "memory://snapshot/causation_connections.md") (path (named (kind library-package) (name "CausationConnections")) (named (kind connection-def) (name "Multicausation")) (named (kind succession) (name "causalOrdering")) (named (kind attribute) (name "nEffects")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "effects" (target (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::effects"))))))
+  (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::disjointCauseEffect"))) (outcome resolved) (unsupported (unsupported (feature-reference "causes" (target (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::causes")))) (feature-reference "effects" (target (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::effects")))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

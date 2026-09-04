@@ -865,6 +865,20 @@ standard library package SampledFunctions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/sampled_functions.md") (path (named (kind library-package) (name "SampledFunctions")) (named (kind calc-def) (name "Domain")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/sampled_functions.md") (path (named (kind library-package) (name "SampledFunctions")) (named (kind calc-def) (name "Range")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/sampled_functions.md") (path (named (kind library-package) (name "SampledFunctions")) (named (kind calc-def) (name "Sample")) (named (kind parameter) (name "sampling")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (unsupported (feature-reference "domainValues" (target (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::Sample::domainValues")))))))
+  (declaration (id (node (document "memory://snapshot/sampled_functions.md") (path (named (kind library-package) (name "SampledFunctions")) (named (kind attribute-def) (name "SampledFunction")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/sampled_functions.md") (path (named (kind library-package) (name "SampledFunctions")) (named (kind calc-def) (name "interpolateLinear")) (named (kind calc-def) (name "Linear")) (named (kind attribute) (name "f")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/sampled_functions.md") (path (named (kind library-package) (name "SampledFunctions")) (named (kind calc-def) (name "interpolateLinear")) (named (kind calc-def) (name "Linear")) (named (kind parameter) (name "result")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/sampled_functions.md") (path (named (kind library-package) (name "SampledFunctions")) (named (kind calc-def) (name "interpolateLinear")) (named (kind attribute) (name "domainValues")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "fn" (target (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions::interpolateLinear::fn"))))))
+  (declaration (id (node (document "memory://snapshot/sampled_functions.md") (path (named (kind library-package) (name "SampledFunctions")) (named (kind calc-def) (name "interpolateLinear")) (named (kind attribute) (name "index")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/sampled_functions.md") (path (named (kind library-package) (name "SampledFunctions")) (named (kind calc-def) (name "interpolateLinear")) (named (kind parameter) (name "result")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

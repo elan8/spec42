@@ -209,6 +209,15 @@ package Values {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_feature_value_overriding.md") (path (named (kind package) (name "Values")) (named (kind kerml-classifier) (name "Base")) (named (kind kerml-feature) (name "defaulted")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_value_overriding.md") (path (named (kind package) (name "Values")) (named (kind kerml-classifier) (name "Base")) (named (kind kerml-feature) (name "fixed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_value_overriding.md") (path (named (kind package) (name "Values")) (named (kind kerml-classifier) (name "Conforming")) (named (kind kerml-feature) (name "defaulted")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_value_overriding.md") (path (named (kind package) (name "Values")) (named (kind kerml-classifier) (name "Invalid")) (named (kind kerml-feature) (name "fixed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

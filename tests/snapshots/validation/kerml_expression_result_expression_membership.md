@@ -70,6 +70,13 @@ package Expressions {
 (types
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_expression_result_expression_membership.md") (qualified-name "Expressions::One"))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_expression_result_expression_membership.md") (qualified-name "Expressions::Two"))) (outcome resolved) (operator "and" (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2)))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

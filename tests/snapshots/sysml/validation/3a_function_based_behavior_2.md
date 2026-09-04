@@ -636,6 +636,12 @@ package '3a-Function-based Behavior-2' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_2.md") (path (named (kind package) (name "3a-Function-based Behavior-2")) (named (kind package) (name "Usages")) (named (kind action) (name "provide power")) (named (kind action) (name "generate torque")) (named (kind parameter) (name "fuelCmd")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "provide power::fuelCmd" (target (node (document "memory://snapshot/3a_function_based_behavior_2.md") (qualified-name "3a-Function-based Behavior-2::Usages::provide power::fuelCmd")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

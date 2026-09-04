@@ -331,6 +331,16 @@ package Assignments {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind attribute) (name "count")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "flag")) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "increment")) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind action) (name "mistype")) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "one"))))
+  (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (path (named (kind package) (name "Assignments")) (named (kind part-def) (name "Counter")) (named (kind attribute) (name "ready")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean false))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

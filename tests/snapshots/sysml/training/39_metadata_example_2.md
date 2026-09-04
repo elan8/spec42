@@ -193,6 +193,13 @@ package 'Metadata Example-2' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (path (named (kind package) (name "Metadata Example-2")) (named (kind action) (name "computeDynamics")) (named (kind metadata) (name "ToolExecution")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "ModelCenter"))))
+  (declaration (id (node (document "memory://snapshot/39_metadata_example_2.md") (path (named (kind package) (name "Metadata Example-2")) (named (kind action) (name "computeDynamics")) (named (kind metadata) (name "ToolExecution")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "aserv://localhost/Vehicle/Equation1"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

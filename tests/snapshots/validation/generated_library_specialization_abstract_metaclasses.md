@@ -80,6 +80,12 @@ package GeneratedAbstractSpecializationMetaclasses {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/generated_library_specialization_abstract_metaclasses.md") (qualified-name "GeneratedAbstractSpecializationMetaclasses::LiteralValues"))) (outcome resolved) (operator "and" (literal (value (kind integer) (integer 1))) (literal (value (kind boolean) (boolean true))) (literal (value (kind string) (value "text")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

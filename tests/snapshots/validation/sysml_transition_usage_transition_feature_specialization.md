@@ -309,6 +309,12 @@ package Model {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/sysml_transition_usage_transition_feature_specialization.md") (path (named (kind package) (name "Model")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "start")) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

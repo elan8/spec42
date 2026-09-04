@@ -758,6 +758,18 @@ standard library package TransitionPerformances {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (named (kind kerml-behavior) (name "NonStateTransitionPerformance")) (named (kind kerml-feature) (name "isTriggerAfter")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (named (kind kerml-behavior) (name "NonStateTransitionPerformance")) (named (kind kerml-feature) (name "taNum")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::TPCGuardConstraint"))) (outcome resolved) (operator "and" (feature-reference "end" (target unresolved)) (feature-reference "bool" (target unresolved)) (feature-reference "constrainedGuard" (target unresolved))))
+  (declaration (id (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (named (kind kerml-association-structure) (name "TPCGuardConstraint")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome resolved) (unsupported (unsupported)))
+  (declaration (id (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (named (kind kerml-behavior) (name "TransitionPerformance")) (named (kind kerml-feature) (name "accNum")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (named (kind kerml-behavior) (name "TransitionPerformance")) (named (kind kerml-step) (name "accept")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "trigger" (target (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::trigger")))))
+  (declaration (id (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (named (kind kerml-behavior) (name "TransitionPerformance")) (named (kind kerml-feature) (name "triggerTarget")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "this" (target unresolved)))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

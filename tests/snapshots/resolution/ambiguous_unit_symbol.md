@@ -152,6 +152,12 @@ package Ambiguity {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/ambiguous_unit_symbol.md") (path (named (kind package) (name "Ambiguity")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 1750))) (unit "kg"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

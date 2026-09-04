@@ -290,6 +290,12 @@ package 'Transition Actions' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (path (named (kind package) (name "Transition Actions")) (named (kind state) (name "vehicleStates")) (anonymous (kind transition) (ordinal 1)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

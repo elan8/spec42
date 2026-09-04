@@ -447,6 +447,14 @@ standard library package ISQ {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceUnit")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "thermodynamicTemperaturePF" (target (node (document "memory://snapshot/isq.md") (qualified-name "ISQ::TemperatureDifferenceUnit::thermodynamicTemperaturePF")))))
+  (declaration (id (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceUnit")) (named (kind attribute) (name "thermodynamicTemperaturePF")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/isq.md") (path (named (kind library-package) (name "ISQ")) (named (kind attribute-def) (name "TemperatureDifferenceUnit")) (named (kind attribute) (name "thermodynamicTemperaturePF")) (anonymous (kind default-reference) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

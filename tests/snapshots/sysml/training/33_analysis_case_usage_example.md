@@ -369,6 +369,17 @@ package 'Analysis Case Usage Example' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/33_analysis_case_usage_example.md") (path (named (kind package) (name "Analysis Case Usage Example")) (named (kind part) (name "vehicleFuelEconomyAnalysisContext")) (named (kind analysis) (name "cityAnalysis")) (named (kind parameter) (name "scenario")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "cityScenario" (target (node (document "memory://snapshot/33_analysis_case_usage_example.md") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::cityScenario")))))
+  (declaration (id (node (document "memory://snapshot/33_analysis_case_usage_example.md") (path (named (kind package) (name "Analysis Case Usage Example")) (named (kind part) (name "vehicleFuelEconomyAnalysisContext")) (named (kind attribute) (name "cityScenario")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/33_analysis_case_usage_example.md") (path (named (kind package) (name "Analysis Case Usage Example")) (named (kind part) (name "vehicleFuelEconomyAnalysisContext")) (named (kind analysis) (name "highwayAnalysis")) (named (kind parameter) (name "scenario")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "highwayScenario" (target (node (document "memory://snapshot/33_analysis_case_usage_example.md") (qualified-name "Analysis Case Usage Example::vehicleFuelEconomyAnalysisContext::highwayScenario")))))
+  (declaration (id (node (document "memory://snapshot/33_analysis_case_usage_example.md") (path (named (kind package) (name "Analysis Case Usage Example")) (named (kind part) (name "vehicleFuelEconomyAnalysisContext")) (named (kind attribute) (name "highwayScenario")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/33_analysis_case_usage_example.md") (path (named (kind package) (name "Analysis Case Usage Example")) (named (kind part) (name "vehicleFuelEconomyAnalysisContext")) (named (kind part) (name "vehicle_c1")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/33_analysis_case_usage_example.md") (path (named (kind package) (name "Analysis Case Usage Example")) (named (kind part) (name "vehicleFuelEconomyAnalysisContext")) (named (kind part) (name "vehicle_c1")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

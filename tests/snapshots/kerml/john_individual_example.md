@@ -515,6 +515,12 @@ package JohnIndividualExample {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (named (kind class-def) (name "UnitedStates")) (named (kind kerml-feature) (name "presidentOfUS")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

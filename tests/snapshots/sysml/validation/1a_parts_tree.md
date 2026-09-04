@@ -514,6 +514,13 @@ package '1a-Parts Tree' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (path (named (kind package) (name "1a-Parts Tree")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle1")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 1750))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/1a_parts_tree.md") (path (named (kind package) (name "1a-Parts Tree")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle1_c1")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 2000))) (unit "kg"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

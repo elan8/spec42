@@ -139,6 +139,12 @@ package IfActionSpecialization {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/generated_conditional_if_action_specialization.md") (path (named (kind package) (name "IfActionSpecialization")) (named (kind action-def) (name "Decision")) (anonymous (kind if) (ordinal 0))))) (outcome resolved) (feature-reference "condition" (target (node (document "memory://snapshot/generated_conditional_if_action_specialization.md") (qualified-name "IfActionSpecialization::Decision::condition")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

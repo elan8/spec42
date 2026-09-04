@@ -441,6 +441,14 @@ package ActionTest {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a1")) (anonymous (kind if) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a2")) (named (kind action) (name "snd")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "s" (target (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::a2::s")))))
+  (declaration (id (node (document "memory://snapshot/action_test.md") (path (named (kind package) (name "ActionTest")) (named (kind action) (name "a")) (named (kind action) (name "b")) (named (kind parameter) (name "y")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "x" (target (node (document "memory://snapshot/action_test.md") (qualified-name "ActionTest::A::x")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -459,6 +459,15 @@ package 'Flashlight Example' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/flashlight_example.md") (path (named (kind package) (name "Flashlight Example")) (named (kind part) (name "context")) (named (kind part) (name "flashlight")) (anonymous (kind perform-action) (ordinal 0)) (anonymous (kind perform-parameter-binding) (ordinal 0))))) (outcome resolved) (feature-reference "onOffCmdPort::onOffCmd" (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmdPort::onOffCmd")))))
+  (declaration (id (node (document "memory://snapshot/flashlight_example.md") (path (named (kind package) (name "Flashlight Example")) (named (kind part) (name "context")) (named (kind part) (name "flashlight")) (anonymous (kind perform-action) (ordinal 0)) (anonymous (kind perform-parameter-binding) (ordinal 1))))) (outcome resolved) (feature-reference "lightPort::light" (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort::light")))))
+  (declaration (id (node (document "memory://snapshot/flashlight_example.md") (path (named (kind package) (name "Flashlight Example")) (named (kind part) (name "context")) (named (kind part) (name "reflectingSource")) (anonymous (kind perform-action) (ordinal 0)) (anonymous (kind perform-parameter-binding) (ordinal 0))))) (outcome resolved) (feature-reference "lightPort::light" (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::LightPort::light")))))
+  (declaration (id (node (document "memory://snapshot/flashlight_example.md") (path (named (kind package) (name "Flashlight Example")) (named (kind part) (name "context")) (named (kind part) (name "user")) (anonymous (kind perform-action) (ordinal 0)) (anonymous (kind perform-parameter-binding) (ordinal 0))))) (outcome resolved) (feature-reference "onOffCmdPort::onOffCmd" (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmdPort::onOffCmd")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -358,6 +358,12 @@ part def Vehicle {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (path (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 100))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

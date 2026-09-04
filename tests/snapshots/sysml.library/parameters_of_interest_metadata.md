@@ -226,6 +226,13 @@ standard library package ParametersOfInterestMetadata {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (path (named (kind library-package) (name "ParametersOfInterestMetadata")) (named (kind metadata-def) (name "MeasureOfEffectiveness")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "measuresOfEffectiveness" (target (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::measuresOfEffectiveness"))))))
+  (declaration (id (node (document "memory://snapshot/parameters_of_interest_metadata.md") (path (named (kind library-package) (name "ParametersOfInterestMetadata")) (named (kind metadata-def) (name "MeasureOfPerformance")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "measuresOfPerformance" (target (node (document "memory://snapshot/parameters_of_interest_metadata.md") (qualified-name "ParametersOfInterestMetadata::measuresOfPerformance"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

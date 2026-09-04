@@ -318,6 +318,12 @@ package VehicleTanks {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (named (kind class-def) (name "Vehicle")) (named (kind kerml-feature) (name "fuelCapacity")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

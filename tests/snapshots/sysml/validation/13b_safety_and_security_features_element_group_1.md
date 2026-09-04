@@ -446,6 +446,15 @@ package '13b-Safety and Security Features Element Group-1' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_1.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-1")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "bodyAssy")) (named (kind part) (name "bumper")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_1.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-1")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "driverAirBag")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean false))))
+  (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_1.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-1")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "interior")) (named (kind part) (name "seatBelt")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+  (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_1.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-1")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicle")) (named (kind part) (name "wheelAssy")) (named (kind part) (name "antilockBrakes")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean false))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

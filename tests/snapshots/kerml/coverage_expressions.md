@@ -281,6 +281,22 @@ package ExpressionCoverage {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "all_v")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "arr")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "coll")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "items" (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))))))
+  (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "cond")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "h")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "items" (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items")))) (literal (value (kind integer) (integer 0)))))
+  (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "meta_access")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "r")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 3.14))))
+  (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "s")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "hello"))))
+  (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "sel")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "items" (target (node (document "memory://snapshot/coverage_expressions.md") (qualified-name "ExpressionCoverage::items"))))))
+  (declaration (id (node (document "memory://snapshot/coverage_expressions.md") (path (named (kind package) (name "ExpressionCoverage")) (named (kind kerml-feature) (name "seq")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2))) (literal (value (kind integer) (integer 3)))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

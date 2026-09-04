@@ -137,6 +137,12 @@ package Invocations {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_behavior_binding_connector.md") (path (named (kind package) (name "Invocations")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "copied")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "source" (target (node (document "memory://snapshot/kerml_invocation_expression_behavior_binding_connector.md") (qualified-name "Invocations::Holder::source"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

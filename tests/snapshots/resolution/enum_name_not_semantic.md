@@ -121,6 +121,12 @@ package Demo {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (path (named (kind package) (name "Demo")) (named (kind part) (name "host")) (named (kind attribute) (name "value")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "approved"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

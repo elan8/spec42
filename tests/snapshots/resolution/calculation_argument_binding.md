@@ -312,6 +312,14 @@ package Calculations {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind calc-def) (name "Sum")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "+" (feature-reference "left" (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::left")))) (feature-reference "right" (target (node (document "memory://snapshot/calculation_argument_binding.md") (qualified-name "Calculations::Sum::right"))))))
+  (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "complete")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2)))))
+  (declaration (id (node (document "memory://snapshot/calculation_argument_binding.md") (path (named (kind package) (name "Calculations")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "partial")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (literal (value (kind integer) (integer 1)))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

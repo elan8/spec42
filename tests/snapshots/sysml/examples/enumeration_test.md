@@ -328,6 +328,15 @@ package EnumerationTest {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/enumeration_test.md") (path (named (kind package) (name "EnumerationTest")) (named (kind enum-def) (name "ColorKind")) (named (kind enum-literal) (name "blue")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/enumeration_test.md") (path (named (kind package) (name "EnumerationTest")) (named (kind enum-def) (name "ColorKind")) (named (kind enum-literal) (name "green")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
+  (declaration (id (node (document "memory://snapshot/enumeration_test.md") (path (named (kind package) (name "EnumerationTest")) (named (kind enum-def) (name "ColorKind")) (named (kind enum-literal) (name "red")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
+  (declaration (id (node (document "memory://snapshot/enumeration_test.md") (path (named (kind package) (name "EnumerationTest")) (named (kind attribute) (name "color2")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "color1" (target unresolved)))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
