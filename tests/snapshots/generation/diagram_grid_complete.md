@@ -346,6 +346,8 @@ package GridExample {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartDefinition",
         "name": "TableRoot",
         "notationRole": "definition",
@@ -358,6 +360,8 @@ package GridExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "first",
         "notationRole": "usage",
@@ -370,6 +374,8 @@ package GridExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "second",
         "notationRole": "usage",

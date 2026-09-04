@@ -88,6 +88,8 @@ export interface PreparedPort {
   id?: string;
   name: string;
   direction?: string;
+  /** Whether the port's authored typing conjugates the definition it names (`port p : ~PD;`). */
+  conjugated?: boolean;
   semanticId?: string;
   multiplicity?: string;
   portType?: string;

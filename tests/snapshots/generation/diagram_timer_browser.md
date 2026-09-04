@@ -12952,6 +12952,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "timerInstance",
         "notationRole": "usage",
@@ -12970,6 +12972,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -12982,6 +12986,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -12994,6 +13000,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -13006,6 +13014,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -13018,6 +13028,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -13051,6 +13063,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "pcb",
         "notationRole": "usage",
@@ -13069,6 +13083,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -13081,6 +13097,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -13093,6 +13111,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -13105,6 +13125,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -13127,6 +13149,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "buzzerDriver",
         "notationRole": "usage",
@@ -13155,6 +13179,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "buzzerPwrOut",
         "notationRole": "usage",
@@ -13173,6 +13199,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
         "notationRole": "usage",
@@ -13185,6 +13213,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -13197,6 +13227,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -13209,6 +13241,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "voltage",
         "notationRole": "usage",
@@ -13221,6 +13255,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -13233,6 +13269,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -13245,6 +13283,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
@@ -13280,6 +13320,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": true,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "pwrIn",
         "notationRole": "usage",
@@ -13298,6 +13340,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
         "notationRole": "usage",
@@ -13310,6 +13354,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -13322,6 +13368,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -13334,6 +13382,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "voltage",
         "notationRole": "usage",
@@ -13346,6 +13396,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -13358,6 +13410,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -13370,6 +13424,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
@@ -13388,6 +13444,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -13400,6 +13458,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -13412,6 +13472,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -13432,6 +13494,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": true,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "ctrlIn",
         "notationRole": "usage",
@@ -13450,6 +13514,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "buzzerOn",
         "notationRole": "reference-usage",
@@ -13496,6 +13562,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "mcu",
         "notationRole": "usage",
@@ -13522,6 +13590,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "displayOut",
         "notationRole": "usage",
@@ -13540,6 +13610,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "displayValue",
         "notationRole": "reference-usage",
@@ -13575,6 +13647,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": true,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -13593,6 +13667,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
         "notationRole": "usage",
@@ -13605,6 +13681,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -13617,6 +13695,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -13629,6 +13709,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "voltage",
         "notationRole": "usage",
@@ -13641,6 +13723,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -13653,6 +13737,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -13665,6 +13751,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
@@ -13683,6 +13771,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -13695,6 +13785,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -13707,6 +13799,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -13731,6 +13825,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": true,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "buttonIn",
         "notationRole": "usage",
@@ -13749,6 +13845,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "stopPressed",
         "notationRole": "reference-usage",
@@ -13767,6 +13865,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "resetPressed",
         "notationRole": "reference-usage",
@@ -13785,6 +13885,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "startPressed",
         "notationRole": "reference-usage",
@@ -13803,6 +13905,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "decrementPressed",
         "notationRole": "reference-usage",
@@ -13821,6 +13925,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "incrementPressed",
         "notationRole": "reference-usage",
@@ -13847,6 +13953,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "lcdDrive",
         "notationRole": "usage",
@@ -13865,6 +13973,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "comSegDrive",
         "notationRole": "reference-usage",
@@ -13891,6 +14001,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "buzzerOut",
         "notationRole": "usage",
@@ -13909,6 +14021,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "buzzerOn",
         "notationRole": "reference-usage",
@@ -13938,6 +14052,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "StateUsage",
         "name": "timerMode",
         "notationRole": "usage",
@@ -13964,6 +14080,8 @@ package TimerBrowser {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "TransitionUsage",
         "name": "to_expired",
         "notationRole": "usage",
@@ -13976,6 +14094,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -13988,6 +14108,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14008,6 +14130,8 @@ package TimerBrowser {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "TransitionUsage",
         "name": "to_running",
         "notationRole": "usage",
@@ -14020,6 +14144,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14032,6 +14158,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14052,6 +14180,8 @@ package TimerBrowser {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "TransitionUsage",
         "name": "decrement_idle",
         "notationRole": "usage",
@@ -14064,6 +14194,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14076,6 +14208,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14096,6 +14230,8 @@ package TimerBrowser {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "TransitionUsage",
         "name": "increment_idle",
         "notationRole": "usage",
@@ -14108,6 +14244,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14120,6 +14258,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14140,6 +14280,8 @@ package TimerBrowser {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "TransitionUsage",
         "name": "to_running_resume",
         "notationRole": "usage",
@@ -14152,6 +14294,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14164,6 +14308,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14184,6 +14330,8 @@ package TimerBrowser {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_paused",
         "notationRole": "usage",
@@ -14196,6 +14344,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14208,6 +14358,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14228,6 +14380,8 @@ package TimerBrowser {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "TransitionUsage",
         "name": "to_idle_from_expired",
         "notationRole": "usage",
@@ -14240,6 +14394,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14252,6 +14408,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14272,6 +14430,8 @@ package TimerBrowser {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "TransitionUsage",
         "name": "to_paused",
         "notationRole": "usage",
@@ -14284,6 +14444,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14296,6 +14458,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14308,6 +14472,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14320,6 +14486,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "StateUsage",
         "name": "idle",
         "notationRole": "usage",
@@ -14338,6 +14506,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "StateUsage",
         "name": "paused",
         "notationRole": "usage",
@@ -14356,6 +14526,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "StateUsage",
         "name": "expired",
         "notationRole": "usage",
@@ -14374,6 +14546,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "StateUsage",
         "name": "running",
         "notationRole": "usage",
@@ -14392,6 +14566,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "clockFrequency",
         "notationRole": "usage",
@@ -14410,6 +14586,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "ramSize",
         "notationRole": "usage",
@@ -14428,6 +14606,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "flashSize",
         "notationRole": "usage",
@@ -14455,6 +14635,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "buttons",
         "notationRole": "usage",
@@ -14490,6 +14672,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": true,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -14508,6 +14692,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
         "notationRole": "usage",
@@ -14520,6 +14706,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -14532,6 +14720,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -14544,6 +14734,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "voltage",
         "notationRole": "usage",
@@ -14556,6 +14748,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -14568,6 +14762,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -14580,6 +14776,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
@@ -14598,6 +14796,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -14610,6 +14810,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -14622,6 +14824,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -14646,6 +14850,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "output",
         "notationRole": "usage",
@@ -14664,6 +14870,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "stopPressed",
         "notationRole": "reference-usage",
@@ -14682,6 +14890,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "resetPressed",
         "notationRole": "reference-usage",
@@ -14700,6 +14910,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "startPressed",
         "notationRole": "reference-usage",
@@ -14718,6 +14930,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "decrementPressed",
         "notationRole": "reference-usage",
@@ -14736,6 +14950,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "incrementPressed",
         "notationRole": "reference-usage",
@@ -14771,6 +14987,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "display",
         "notationRole": "usage",
@@ -14797,6 +15015,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": true,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "cmd",
         "notationRole": "usage",
@@ -14815,6 +15035,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "displayValue",
         "notationRole": "reference-usage",
@@ -14850,6 +15072,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": true,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -14868,6 +15092,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
         "notationRole": "usage",
@@ -14880,6 +15106,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -14892,6 +15120,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -14904,6 +15134,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "voltage",
         "notationRole": "usage",
@@ -14916,6 +15148,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -14928,6 +15162,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -14940,6 +15176,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
@@ -14958,6 +15196,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -14970,6 +15210,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -14982,6 +15224,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -15002,6 +15246,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": true,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "lcdIn",
         "notationRole": "usage",
@@ -15020,6 +15266,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "comSegDrive",
         "notationRole": "reference-usage",
@@ -15038,6 +15286,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "format",
         "notationRole": "usage",
@@ -15071,6 +15321,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "buzzer",
         "notationRole": "usage",
@@ -15106,6 +15358,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": true,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "pwr",
         "notationRole": "usage",
@@ -15124,6 +15378,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
         "notationRole": "usage",
@@ -15136,6 +15392,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -15148,6 +15406,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -15160,6 +15420,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "voltage",
         "notationRole": "usage",
@@ -15172,6 +15434,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -15184,6 +15448,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -15196,6 +15462,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
@@ -15214,6 +15482,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -15226,6 +15496,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -15238,6 +15510,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -15250,6 +15524,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "duration",
         "notationRole": "usage",
@@ -15285,6 +15561,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "battery",
         "notationRole": "usage",
@@ -15313,6 +15591,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "powerOut",
         "notationRole": "usage",
@@ -15331,6 +15611,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "maxCurrent",
         "notationRole": "usage",
@@ -15343,6 +15625,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -15355,6 +15639,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -15367,6 +15653,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "voltage",
         "notationRole": "usage",
@@ -15379,6 +15667,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -15391,6 +15681,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -15403,6 +15695,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ReferenceUsage",
         "name": "power",
         "notationRole": "reference-usage",
@@ -15421,6 +15715,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "nominalVoltage",
         "notationRole": "usage",
@@ -15439,6 +15735,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "runtimeEstimate",
         "notationRole": "usage",
@@ -15457,6 +15755,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "capacity",
         "notationRole": "usage",
@@ -15484,6 +15784,8 @@ package TimerBrowser {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "housing",
         "notationRole": "usage",
@@ -15502,6 +15804,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "frontCover",
         "notationRole": "usage",
@@ -15520,6 +15824,8 @@ package TimerBrowser {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "backCover",
         "notationRole": "usage",

@@ -484,6 +484,8 @@ package ActionFlowExample {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ActionDefinition",
         "name": "Process",
         "notationRole": "definition",
@@ -496,6 +498,8 @@ package ActionFlowExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -508,6 +512,8 @@ package ActionFlowExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ActionUsage",
         "name": "execute",
         "notationRole": "usage",
@@ -520,6 +526,8 @@ package ActionFlowExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ActionUsage",
         "name": "prepare",
         "notationRole": "usage",

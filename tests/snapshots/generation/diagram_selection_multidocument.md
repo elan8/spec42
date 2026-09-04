@@ -384,6 +384,8 @@ package BehaviorModel {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartDefinition",
         "name": "SelectedRoot",
         "notationRole": "definition",
@@ -396,6 +398,8 @@ package BehaviorModel {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "included",
         "notationRole": "usage",

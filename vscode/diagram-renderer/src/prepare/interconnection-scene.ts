@@ -22,6 +22,7 @@ function mapPortDetail(port: InterconnectionScenePortDto) {
     id: port.id,
     name: port.name,
     direction: port.direction,
+    conjugated: port.conjugated,
     semanticId: port.semanticId,
     multiplicity: port.multiplicity ?? "[1]",
     portType: port.typeName,

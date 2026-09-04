@@ -749,6 +749,8 @@ package StateExample {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "StateDefinition",
         "name": "Machine",
         "notationRole": "definition",
@@ -769,6 +771,8 @@ package StateExample {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "TransitionUsage",
         "name": "finish",
         "notationRole": "usage",
@@ -781,6 +785,8 @@ package StateExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -793,6 +799,8 @@ package StateExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AcceptActionUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -805,6 +813,8 @@ package StateExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FinalState",
         "name": "done",
         "notationRole": "usage",
@@ -817,6 +827,8 @@ package StateExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -829,6 +841,8 @@ package StateExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "StateUsage",
         "name": "idle",
         "notationRole": "usage",

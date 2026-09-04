@@ -204,6 +204,8 @@ package GeometryExample {
     "nodes": [
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartDefinition",
         "name": "Shape",
         "notationRole": "definition",
