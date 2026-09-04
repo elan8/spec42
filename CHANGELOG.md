@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **A qualified reference to a standard-library symbol resolves inside a value expression, not
+  only a typing clause or an import.** `attribute conversionFactor = RationalFunctions::rat(1,
+  100);` (Apollo 11 `CoSMA/CoSMAQuantitiesAndUnitsPackage.sysml`) named `RationalFunctions` in
+  neither a typing clause nor an import, so the library-closure scan that decides which admitted
+  packages a workspace build actually needs never found it, the package was never admitted, and
+  the reference was `unresolved_reference` for a function that is, in fact, part of the model. The
+  closure scan now walks a value expression's invocation callees, feature references, and member
+  accesses the same way it already walks typing clauses. Resolution itself needed no change: a
+  fully-qualified reference to an admitted symbol always resolved correctly once the symbol was
+  actually in the model. Fixes #129.
+
 - **`npm audit` no longer gates unrelated PRs.** An npm advisory published against an existing
   dependency was turning any open PR red, exactly the case the `cargo audit` split already
   avoids. The `npm audit --omit=dev` steps move out of the per-PR `frontend-unit` job into a
