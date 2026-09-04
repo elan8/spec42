@@ -432,6 +432,8 @@ package DirectTypingExample {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "root",
         "notationRole": "usage",
@@ -450,6 +452,8 @@ package DirectTypingExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "typedChild",
         "notationRole": "usage",
@@ -468,6 +472,8 @@ package DirectTypingExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "untypedChild",
         "notationRole": "usage",

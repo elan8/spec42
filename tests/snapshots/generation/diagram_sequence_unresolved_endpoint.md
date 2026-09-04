@@ -635,6 +635,8 @@ package SequenceUnresolved {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceDefinition",
         "name": "Interaction",
         "notationRole": "definition",
@@ -647,6 +649,8 @@ package SequenceUnresolved {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "delivery",
         "notationRole": "usage",
@@ -667,6 +671,8 @@ package SequenceUnresolved {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "sender",
         "notationRole": "usage",
@@ -679,6 +685,8 @@ package SequenceUnresolved {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "sent",
         "notationRole": "usage",
@@ -699,6 +707,8 @@ package SequenceUnresolved {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "receiver",
         "notationRole": "usage",
@@ -711,6 +721,8 @@ package SequenceUnresolved {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "received",
         "notationRole": "usage",

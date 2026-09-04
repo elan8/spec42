@@ -827,6 +827,8 @@ package InterconnectionExample {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartDefinition",
         "name": "Assembly",
         "notationRole": "definition",
@@ -839,6 +841,8 @@ package InterconnectionExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -851,6 +855,8 @@ package InterconnectionExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -871,6 +877,8 @@ package InterconnectionExample {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "nested",
         "notationRole": "usage",
@@ -883,6 +891,8 @@ package InterconnectionExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "tap",
         "notationRole": "usage",
@@ -895,6 +905,8 @@ package InterconnectionExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "input",
         "notationRole": "usage",
@@ -907,6 +919,8 @@ package InterconnectionExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "output",
         "notationRole": "usage",

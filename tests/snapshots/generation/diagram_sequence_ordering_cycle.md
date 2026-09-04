@@ -1133,6 +1133,8 @@ package SequenceCycle {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceDefinition",
         "name": "Interaction",
         "notationRole": "definition",
@@ -1145,6 +1147,8 @@ package SequenceCycle {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -1157,6 +1161,8 @@ package SequenceCycle {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -1169,6 +1175,8 @@ package SequenceCycle {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "first",
         "notationRole": "usage",
@@ -1181,6 +1189,8 @@ package SequenceCycle {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "second",
         "notationRole": "usage",
@@ -1202,6 +1212,8 @@ package SequenceCycle {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "left",
         "notationRole": "usage",
@@ -1214,6 +1226,8 @@ package SequenceCycle {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "send",
         "notationRole": "usage",
@@ -1226,6 +1240,8 @@ package SequenceCycle {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "receive",
         "notationRole": "usage",
@@ -1247,6 +1263,8 @@ package SequenceCycle {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "right",
         "notationRole": "usage",
@@ -1259,6 +1277,8 @@ package SequenceCycle {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "send",
         "notationRole": "usage",
@@ -1271,6 +1291,8 @@ package SequenceCycle {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "receive",
         "notationRole": "usage",

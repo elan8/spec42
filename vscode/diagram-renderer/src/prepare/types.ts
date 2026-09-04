@@ -53,6 +53,8 @@ export interface InterconnectionScenePortDto {
   name: string;
   typeName?: string;
   direction?: string;
+  /** Whether the port's authored typing conjugates the definition it names (`port p : ~PD;`). */
+  conjugated?: boolean;
   multiplicity?: string;
   sideHint: string;
   uri?: string;

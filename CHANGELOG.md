@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Interconnection View publishes each port's authored direction and typing conjugation, and
+  the renderer no longer guesses a side from a name.** `DiagramElement` gains `direction` (`in` /
+  `out` / `inout`, resolved the same way the Feature Inspector already reads it) and `conjugated`
+  (whether the port's typing conjugates the definition it names, `port p : ~PD;`) -- settled
+  facts, not derived from any element's name. `None` / `false` for every non-port element and for
+  a port that authors neither. The renderer's `sideForPort` used to fall back through name and
+  owner-label regexes (`sensor`/`camera`/`in`/`out` word lists) once no structural signal was
+  available; that fallback is deleted, and an authored direction now decides before connector
+  topology is even consulted. A port with no authored direction and no connector-usage skew lands
+  by a stable hash of its identity, not a guess. Fixes #126.
+
 - **Interconnection View projects connector edges and scopes its node list.** A `connect a to b`
   usage now composes one `connection` edge between the projected port or part occurrences,
   including the dotted `connect a.b to c.d` spelling whose ends are published as member-access
