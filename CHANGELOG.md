@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Interconnection View projects connector edges and scopes its node list.** A `connect a to b`
+  usage now composes one `connection` edge between the projected port or part occurrences,
+  including the dotted `connect a.b to c.d` spelling whose ends are published as member-access
+  chains. The node list is scoped to parts and ports (SysML 8.2.3.11) -- attributes, expressions,
+  actions, and states are no longer peer boxes, and connection usages are edge origins rather than
+  boxes. A connector whose end is unresolved, ambiguous, or outside the view records a typed
+  `relationship-unresolved` / `-ambiguous` / `-unsupported` reason and draws no line. Fixes #97.
+
 - **General View draws authored subsetting, subclassification, redefinition, and feature typing.**
   When both ends of an authored `:>` / `:>` (specializes) / `:>>` / `:` are elements the view
   projects, the query now composes a graph edge of that kind and the renderer draws the SysML
