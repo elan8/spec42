@@ -25,8 +25,7 @@ export default defineConfig({
         items: [
           { text: "Getting Started", link: "/guide/getting-started" },
           { text: "Examples", link: "/guide/examples" },
-          { text: "Model Explorer", link: "/guide/model-explorer" },
-          { text: "Diagram Visualizer", link: "/guide/visualizer" },
+          { text: "Diagram View", link: "/guide/diagram" },
           { text: "Feature Inspector", link: "/guide/feature-inspector" },
           { text: "Library & Dependencies", link: "/guide/libraries" },
         ],
