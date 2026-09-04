@@ -862,6 +862,8 @@ package GeneralSubsetting {
     "nodes": [
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "bareModule",
         "notationRole": "usage",
@@ -889,6 +891,8 @@ package GeneralSubsetting {
             "provenance": "inherited"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartDefinition",
         "name": "RacingChassis",
         "notationRole": "definition",
@@ -901,6 +905,8 @@ package GeneralSubsetting {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "frontWheel",
         "notationRole": "usage",
@@ -913,6 +919,8 @@ package GeneralSubsetting {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "spareWheel",
         "notationRole": "usage",
@@ -925,6 +933,8 @@ package GeneralSubsetting {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartDefinition",
         "name": "Wheel",
         "notationRole": "definition",
@@ -946,6 +956,8 @@ package GeneralSubsetting {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartDefinition",
         "name": "Chassis",
         "notationRole": "definition",
@@ -958,6 +970,8 @@ package GeneralSubsetting {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "frontWheel",
         "notationRole": "usage",
@@ -976,6 +990,8 @@ package GeneralSubsetting {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "spareWheel",
         "notationRole": "usage",
@@ -988,6 +1004,8 @@ package GeneralSubsetting {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartDefinition",
         "name": "RoadWheel",
         "notationRole": "definition",

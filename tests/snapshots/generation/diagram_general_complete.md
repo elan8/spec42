@@ -275,6 +275,8 @@ package GeneralExample {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartDefinition",
         "name": "System",
         "notationRole": "definition",
@@ -287,6 +289,8 @@ package GeneralExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "child",
         "notationRole": "usage",

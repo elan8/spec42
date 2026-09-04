@@ -897,6 +897,7 @@ var Spec42HeadlessRendererBundle = (() => {
       id: port.id,
       name: port.name,
       direction: port.direction,
+      conjugated: port.conjugated,
       semanticId: port.semanticId,
       multiplicity: port.multiplicity ?? "[1]",
       portType: port.typeName,
@@ -1109,6 +1110,11 @@ var Spec42HeadlessRendererBundle = (() => {
           ownerNodeId: idFor(owner),
           name: asString(element.name, idFor(index)),
           typeName: typeName(element),
+          // Authored, resolved facts (never derived from `name` or `typeName`): the query
+          // reports `direction: null` / `conjugated: false` rather than omitting them, so an
+          // absent authored direction is a fact this adapter forwards, not a gap it fills in.
+          direction: typeof element.direction === "string" ? element.direction : void 0,
+          conjugated: element.conjugated === true,
           sideHint: "",
           uri: placed.uri,
           range: placed.range
@@ -7417,6 +7423,13 @@ var Spec42HeadlessRendererBundle = (() => {
       );
       return canonicalMatch?.name ?? null;
     };
+    const stableSide = (key) => {
+      let hash = 0;
+      for (let index = 0; index < key.length; index += 1) {
+        hash = hash * 31 + key.charCodeAt(index) | 0;
+      }
+      return (hash & 1) === 0 ? "WEST" : "EAST";
+    };
     const sideForPort = (port, node) => {
       const sideHint = String(port.attributes?.sideHint || "").toLowerCase();
       if (sideHint === "west") return "WEST";
@@ -7430,22 +7443,7 @@ var Spec42HeadlessRendererBundle = (() => {
       const usage = usageForPort(node, port);
       if (usage.targetCount > usage.sourceCount) return "WEST";
       if (usage.sourceCount > usage.targetCount) return "EAST";
-      const lower2 = port.name.toLowerCase();
-      const portType = String(port.portType || port.attributes?.portType || "").toLowerCase();
-      if (lower2.endsWith("in") || lower2.includes("input") || lower2.startsWith("in")) return "WEST";
-      if (lower2.endsWith("out") || lower2.startsWith("out")) return "EAST";
-      if (portType.startsWith("~") && /(powerport|telemetryport|sensordataport|gimbalcommandport|cameracontrolport)/.test(portType)) {
-        return "WEST";
-      }
-      if (!portType.startsWith("~") && /(powerport|telemetryport|sensordataport)/.test(portType)) {
-        return "EAST";
-      }
-      const nodeText = `${node.label} ${String(node.attributes?.qualifiedName || "")}`.toLowerCase();
-      const prefersLeft = /(sensor|imu|barometer|gnss|receiver|battery|input|telemetryin|videoin|c2in|rcin|sensorin)/.test(nodeText) || /(cmd$|control$|input|telemetryin|videoin|sensorin|mainpower)/.test(lower2);
-      const prefersRight = /(camera|gimbal|propulsion|motor|radio|communication|distribution|controller|payload|actuator)/.test(nodeText) || /(videoout|telemetryout|regulated|pwr|cmd|ctrl)/.test(lower2);
-      if (prefersLeft && !prefersRight) return "WEST";
-      if (prefersRight && !prefersLeft) return "EAST";
-      return "EAST";
+      return stableSide(port.id || port.semanticId || `${node.id}::${port.name}`);
     };
     const rootHeaderHeight = 28;
     const containerTopInset = rootHeaderHeight + 20;

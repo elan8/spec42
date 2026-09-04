@@ -464,6 +464,8 @@ package ConnectorIncomplete {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartDefinition",
         "name": "Assembly",
         "notationRole": "definition",
@@ -476,6 +478,8 @@ package ConnectorIncomplete {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "ConnectionUsage",
         "name": null,
         "notationRole": "usage",
@@ -488,6 +492,8 @@ package ConnectorIncomplete {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "input",
         "notationRole": "usage",

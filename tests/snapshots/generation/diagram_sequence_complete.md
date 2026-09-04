@@ -1061,6 +1061,8 @@ package SequenceExample {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceDefinition",
         "name": "Interaction",
         "notationRole": "definition",
@@ -1073,6 +1075,8 @@ package SequenceExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -1085,6 +1089,8 @@ package SequenceExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "call",
         "notationRole": "usage",
@@ -1097,6 +1103,8 @@ package SequenceExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "result",
         "notationRole": "usage",
@@ -1118,6 +1126,8 @@ package SequenceExample {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "client",
         "notationRole": "usage",
@@ -1136,6 +1146,8 @@ package SequenceExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "reply",
         "notationRole": "usage",
@@ -1148,6 +1160,8 @@ package SequenceExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "request",
         "notationRole": "usage",
@@ -1168,6 +1182,8 @@ package SequenceExample {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "server",
         "notationRole": "usage",
@@ -1186,6 +1202,8 @@ package SequenceExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "serve",
         "notationRole": "usage",

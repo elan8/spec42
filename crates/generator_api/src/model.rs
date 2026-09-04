@@ -779,6 +779,12 @@ impl GeneratorModelView {
                         members: compartment.members.iter().map(|member| self.diagram_occurrence(member)).collect::<Result<Vec<_>, _>>()?,
                     })
                 }).collect::<Result<Vec<_>, ModelQueryError>>()?,
+                direction: element.direction.map(|direction| match direction {
+                    sysml_query::resolved_slice::FeatureDirection::In => "in",
+                    sysml_query::resolved_slice::FeatureDirection::Out => "out",
+                    sysml_query::resolved_slice::FeatureDirection::InOut => "inout",
+                }.to_owned()),
+                conjugated: element.conjugated,
             }))
             .collect::<Result<Vec<_>, ModelQueryError>>()?;
         let relationships = projection

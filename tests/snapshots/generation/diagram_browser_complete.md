@@ -337,6 +337,8 @@ package BrowserExample {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartDefinition",
         "name": "Root",
         "notationRole": "definition",
@@ -357,6 +359,8 @@ package BrowserExample {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "branch",
         "notationRole": "usage",
@@ -369,6 +373,8 @@ package BrowserExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "leaf",
         "notationRole": "usage",

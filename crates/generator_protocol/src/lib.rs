@@ -788,6 +788,13 @@ pub struct DiagramElement {
     pub owner: Option<DiagramOccurrenceIdentity>,
     pub source: SourceReference,
     pub compartments: Vec<DiagramCompartment>,
+    /// A port's authored direction (`"in"` / `"out"` / `"inout"`). `None` for a port with no
+    /// authored direction and for every non-port element; a generator or renderer must not derive
+    /// a side or a direction from this element's name or its owner's when it is `None`.
+    pub direction: Option<String>,
+    /// Whether a port's authored typing conjugates the definition it names (`port p : ~PD;`).
+    /// `false` for a port with no conjugated typing and for every non-port element.
+    pub conjugated: bool,
 }
 
 /// Contextual identity of one projected occurrence. The semantic references remain canonical
@@ -1231,7 +1238,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x8809_7278_aeea_4c32,
+            SCHEMA_FINGERPRINT, 0x4d17_44a4_bb18_d9be,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1239,7 +1246,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x4ffc_d7a3_08b9_6277,
+            COMPATIBILITY_TOKEN, 0xfe7b_3c60_64f1_8e26,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

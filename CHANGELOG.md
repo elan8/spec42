@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   fully-qualified reference to an admitted symbol always resolved correctly once the symbol was
   actually in the model. Fixes #129.
 
+- **Interconnection View publishes each port's authored direction and typing conjugation, and
+  the renderer no longer guesses a side from a name.** `DiagramElement` gains `direction` (`in` /
+  `out` / `inout`, resolved the same way the Feature Inspector already reads it) and `conjugated`
+  (whether the port's typing conjugates the definition it names, `port p : ~PD;`) -- settled
+  facts, not derived from any element's name. `None` / `false` for every non-port element and for
+  a port that authors neither. The renderer's `sideForPort` used to fall back through name and
+  owner-label regexes (`sensor`/`camera`/`in`/`out` word lists) once no structural signal was
+  available; that fallback is deleted, and an authored direction now decides before connector
+  topology is even consulted. A port with no authored direction and no connector-usage skew lands
+  by a stable hash of its identity, not a guess. Fixes #126.
+
 - **`npm audit` no longer gates unrelated PRs.** An npm advisory published against an existing
   dependency was turning any open PR red, exactly the case the `cargo audit` split already
   avoids. The `npm audit --omit=dev` steps move out of the per-PR `frontend-unit` job into a

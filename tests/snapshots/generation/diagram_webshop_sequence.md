@@ -14504,6 +14504,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceDefinition",
         "name": "CheckoutFlow",
         "notationRole": "definition",
@@ -14516,6 +14518,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14528,6 +14532,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14540,6 +14546,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14552,6 +14560,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14564,6 +14574,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14576,6 +14588,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14588,6 +14602,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14600,6 +14616,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
@@ -14612,6 +14630,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "reserveStock",
         "notationRole": "usage",
@@ -14624,6 +14644,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "stockReserved",
         "notationRole": "usage",
@@ -14636,6 +14658,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "submitCheckout",
         "notationRole": "usage",
@@ -14648,6 +14672,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "checkoutOutcome",
         "notationRole": "usage",
@@ -14660,6 +14686,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "forwardCheckout",
         "notationRole": "usage",
@@ -14672,6 +14700,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "paymentApproved",
         "notationRole": "usage",
@@ -14684,6 +14714,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "authorizePayment",
         "notationRole": "usage",
@@ -14696,6 +14728,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "checkoutAccepted",
         "notationRole": "usage",
@@ -14708,6 +14742,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "publishOrderCreated",
         "notationRole": "usage",
@@ -14750,6 +14786,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "apiGateway",
         "notationRole": "usage",
@@ -14768,6 +14806,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "forwardSent",
         "notationRole": "usage",
@@ -14780,6 +14820,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "submitReceived",
         "notationRole": "usage",
@@ -14792,6 +14834,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "outcomeReceived",
         "notationRole": "usage",
@@ -14804,6 +14848,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "outcomeForwarded",
         "notationRole": "usage",
@@ -14816,6 +14862,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "catalogApiOut",
         "notationRole": "usage",
@@ -14828,6 +14876,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "checkoutApiOut",
         "notationRole": "usage",
@@ -14840,6 +14890,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "publicCatalogIn",
         "notationRole": "usage",
@@ -14852,6 +14904,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "publicCheckoutIn",
         "notationRole": "usage",
@@ -14864,6 +14918,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -14876,6 +14932,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -14888,6 +14946,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -14900,6 +14960,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "serviceName",
         "notationRole": "usage",
@@ -14918,6 +14980,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "moduleName",
         "notationRole": "usage",
@@ -14961,6 +15025,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "storefront",
         "notationRole": "usage",
@@ -14979,6 +15045,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "submitSent",
         "notationRole": "usage",
@@ -14991,6 +15059,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "outcomeReceived",
         "notationRole": "usage",
@@ -15003,6 +15073,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "catalogApiOut",
         "notationRole": "usage",
@@ -15015,6 +15087,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "checkoutApiOut",
         "notationRole": "usage",
@@ -15027,6 +15101,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -15039,6 +15115,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -15051,6 +15129,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -15063,6 +15143,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "moduleName",
         "notationRole": "usage",
@@ -15115,6 +15197,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "checkoutService",
         "notationRole": "usage",
@@ -15133,6 +15217,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "outcomeSent",
         "notationRole": "usage",
@@ -15145,6 +15231,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "reserveSent",
         "notationRole": "usage",
@@ -15157,6 +15245,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "authorizeSent",
         "notationRole": "usage",
@@ -15169,6 +15259,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "forwardReceived",
         "notationRole": "usage",
@@ -15181,6 +15273,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "reserveReturned",
         "notationRole": "usage",
@@ -15193,6 +15287,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "orderCreatedSent",
         "notationRole": "usage",
@@ -15205,6 +15301,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "authorizeReturned",
         "notationRole": "usage",
@@ -15217,6 +15315,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "serviceName",
         "notationRole": "usage",
@@ -15235,6 +15335,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "moduleName",
         "notationRole": "usage",
@@ -15253,6 +15355,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "ordersDbOut",
         "notationRole": "usage",
@@ -15265,6 +15369,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "orderEventsOut",
         "notationRole": "usage",
@@ -15277,6 +15383,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "paymentsApiOut",
         "notationRole": "usage",
@@ -15289,6 +15397,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "inventoryApiOut",
         "notationRole": "usage",
@@ -15301,6 +15411,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "apiIn",
         "notationRole": "usage",
@@ -15313,6 +15425,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -15325,6 +15439,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -15337,6 +15453,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -15376,6 +15494,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "paymentsService",
         "notationRole": "usage",
@@ -15394,6 +15514,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "authorizeAnswered",
         "notationRole": "usage",
@@ -15406,6 +15528,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "authorizeReceived",
         "notationRole": "usage",
@@ -15418,6 +15542,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "serviceName",
         "notationRole": "usage",
@@ -15436,6 +15562,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "moduleName",
         "notationRole": "usage",
@@ -15454,6 +15582,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "providerOut",
         "notationRole": "usage",
@@ -15466,6 +15596,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "paymentsDbOut",
         "notationRole": "usage",
@@ -15478,6 +15610,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "apiIn",
         "notationRole": "usage",
@@ -15490,6 +15624,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -15502,6 +15638,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -15514,6 +15652,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -15554,6 +15694,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "inventoryService",
         "notationRole": "usage",
@@ -15572,6 +15714,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "reserveAnswered",
         "notationRole": "usage",
@@ -15584,6 +15728,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "reserveReceived",
         "notationRole": "usage",
@@ -15596,6 +15742,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "serviceName",
         "notationRole": "usage",
@@ -15614,6 +15762,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "moduleName",
         "notationRole": "usage",
@@ -15632,6 +15782,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "orderEventsIn",
         "notationRole": "usage",
@@ -15644,6 +15796,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "inventoryDbOut",
         "notationRole": "usage",
@@ -15656,6 +15810,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "reservationEventsOut",
         "notationRole": "usage",
@@ -15668,6 +15824,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "apiIn",
         "notationRole": "usage",
@@ -15680,6 +15838,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -15692,6 +15852,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -15704,6 +15866,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -15744,6 +15908,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "ordersEventsTopic",
         "notationRole": "usage",
@@ -15762,6 +15928,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "orderCreatedReceived",
         "notationRole": "usage",
@@ -15774,6 +15942,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "partitions",
         "notationRole": "usage",
@@ -15792,6 +15962,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "channelName",
         "notationRole": "usage",
@@ -15810,6 +15982,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "retention",
         "notationRole": "usage",
@@ -15828,6 +16002,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "topicEgress",
         "notationRole": "usage",
@@ -15840,6 +16016,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PortUsage",
         "name": "topicIngress",
         "notationRole": "usage",
@@ -15852,6 +16030,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -15864,6 +16044,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -15876,6 +16058,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -15888,6 +16072,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -15900,6 +16086,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -15912,6 +16100,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
@@ -15924,6 +16114,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
@@ -15936,6 +16128,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -15948,6 +16142,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",

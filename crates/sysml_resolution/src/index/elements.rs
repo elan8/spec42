@@ -736,6 +736,27 @@ impl<D> SemanticModel<D> {
         })
     }
 
+    /// A port's authored direction and typing conjugation, keyed by [`SymbolId`] for a consumer
+    /// (the diagram projection) that only carries occurrence identities, not [`DeclarationId`]s.
+    ///
+    /// `direction` mirrors [`Self::inspection`]'s own field; `conjugated` is
+    /// [`Self::port_is_conjugated`], settled the same way the "ports mirror direction" diagnostic
+    /// reads it -- from the conjugation flag on the port's authored `FeatureTyping`, never from
+    /// the spelling of a name. `None` when the symbol is not a known declaration.
+    pub(crate) fn port_direction_and_conjugation(
+        &self,
+        symbol: SymbolId,
+    ) -> Option<(Option<FeatureDirection>, bool)> {
+        let id = self.declaration_of(symbol)?;
+        let facts = self.storage.declaration_facts(id)?;
+        let direction = facts.direction.map(|direction| match direction {
+            ParameterDirection::In => FeatureDirection::In,
+            ParameterDirection::Out => FeatureDirection::Out,
+            ParameterDirection::InOut => FeatureDirection::InOut,
+        });
+        Some((direction, self.port_is_conjugated(id)))
+    }
+
     pub(crate) fn inspect(&self, symbol: SymbolId) -> QueryOutcome<ElementInspection> {
         let Some(id) = self.declaration_of(symbol) else {
             return self.query_outcome(QueryAnswer::Unresolved);

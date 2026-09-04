@@ -151,6 +151,17 @@ export function buildInterconnectionElkBuild(prepared: InterconnectionPreparedVi
     return canonicalMatch?.name ?? null;
   };
 
+  // A stable per-port tie-breaker for a port with no resolved side (see below): a hash of an
+  // opaque identifier, not a read of anything a person authored, so it carries no claim about
+  // what the port *is* -- only that the same port lands on the same side across renders.
+  const stableSide = (key: string): "WEST" | "EAST" => {
+    let hash = 0;
+    for (let index = 0; index < key.length; index += 1) {
+      hash = (hash * 31 + key.charCodeAt(index)) | 0;
+    }
+    return (hash & 1) === 0 ? "WEST" : "EAST";
+  };
+
   const sideForPort = (port: PreparedPort, node: PreparedNode): "WEST" | "EAST" => {
     const sideHint = String(port.attributes?.sideHint || "").toLowerCase();
     if (sideHint === "west") return "WEST";
@@ -158,30 +169,17 @@ export function buildInterconnectionElkBuild(prepared: InterconnectionPreparedVi
     const explicit = String(port.portSide || port.attributes?.portSide || "").toLowerCase();
     if (explicit === "left" || explicit === "west") return "WEST";
     if (explicit === "right" || explicit === "east") return "EAST";
+    // The port's own authored direction (`in` / `out` / `inout`), resolved and published by the
+    // query -- never derived from this or any port's name. An `inout` port, or one with no
+    // authored direction, falls through to the structural and then the stable-tie-break signal
+    // below rather than being guessed from a word in its name or its owner's. See #126.
     const direction = String(port.direction || "").toLowerCase();
     if (direction === "in") return "WEST";
     if (direction === "out") return "EAST";
     const usage = usageForPort(node, port);
     if (usage.targetCount > usage.sourceCount) return "WEST";
     if (usage.sourceCount > usage.targetCount) return "EAST";
-    const lower = port.name.toLowerCase();
-    const portType = String(port.portType || port.attributes?.portType || "").toLowerCase();
-    if (lower.endsWith("in") || lower.includes("input") || lower.startsWith("in")) return "WEST";
-    if (lower.endsWith("out") || lower.startsWith("out")) return "EAST";
-    if (portType.startsWith("~") && /(powerport|telemetryport|sensordataport|gimbalcommandport|cameracontrolport)/.test(portType)) {
-      return "WEST";
-    }
-    if (!portType.startsWith("~") && /(powerport|telemetryport|sensordataport)/.test(portType)) {
-      return "EAST";
-    }
-    const nodeText = `${node.label} ${String(node.attributes?.qualifiedName || "")}`.toLowerCase();
-    const prefersLeft = /(sensor|imu|barometer|gnss|receiver|battery|input|telemetryin|videoin|c2in|rcin|sensorin)/.test(nodeText)
-      || /(cmd$|control$|input|telemetryin|videoin|sensorin|mainpower)/.test(lower);
-    const prefersRight = /(camera|gimbal|propulsion|motor|radio|communication|distribution|controller|payload|actuator)/.test(nodeText)
-      || /(videoout|telemetryout|regulated|pwr|cmd|ctrl)/.test(lower);
-    if (prefersLeft && !prefersRight) return "WEST";
-    if (prefersRight && !prefersLeft) return "EAST";
-    return "EAST";
+    return stableSide(port.id || port.semanticId || `${node.id}::${port.name}`);
   };
 
   const rootHeaderHeight = 28;

@@ -1,9 +1,10 @@
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::{
-    ElementDetails, ElementKind, ElementSearch, ElementSource, PublishedResolution, QueryAnswer,
-    QueryOutcome, RelationshipOutcome, RelationshipProvenance, RelationshipTarget, SourceLocation,
-    SymbolEntry, SymbolId, ViewSelectionObstacle, ViewSelectionOutcome,
+    ElementDetails, ElementKind, ElementSearch, ElementSource, FeatureDirection,
+    PublishedResolution, QueryAnswer, QueryOutcome, RelationshipOutcome, RelationshipProvenance,
+    RelationshipTarget, SourceLocation, SymbolEntry, SymbolId, ViewSelectionObstacle,
+    ViewSelectionOutcome,
 };
 
 pub use sysml_contract::{
@@ -106,6 +107,13 @@ pub struct DiagramElement {
     pub owner: Option<DiagramOccurrenceIdentity>,
     pub source: SourceLocation,
     pub compartments: Box<[DiagramCompartment]>,
+    /// A port's authored direction (`in` / `out` / `inout`). `None` for a port with no authored
+    /// direction and for every non-port element; a renderer must not derive a side from this
+    /// element's name or its owner's when it is `None`.
+    pub direction: Option<FeatureDirection>,
+    /// Whether a port's authored typing conjugates the definition it names (`port p : ~PD;`).
+    /// `false` for a port with no conjugated typing and for every non-port element.
+    pub conjugated: bool,
 }
 
 /// A stable, contextual identity for one occurrence in a diagram projection.
@@ -606,22 +614,36 @@ impl PublishedResolution {
             .filter_map(|(occurrence_id, (identity, owner))| {
                 all.get(identity).map(|entry| (occurrence_id, owner, entry))
             })
-            .map(|(occurrence_id, owner, entry)| DiagramElement {
-                occurrence_id: occurrence_id.clone(),
-                semantic_id: entry.identity,
-                reference: semantic_reference(
-                    entry,
-                    self.qualified_name(entry.identity).unwrap_or_default(),
-                    entry.owner.and_then(|owner| self.qualified_name(owner)),
-                    self.document_identity(entry.location.document)
-                        .unwrap_or_default(),
-                ),
-                kind: entry.kind,
-                name: entry.name.clone(),
-                typing: diagram_element_typing(self.element_details(entry.identity)),
-                owner: owner.clone(),
-                source: entry.location,
-                compartments: Box::default(),
+            .map(|(occurrence_id, owner, entry)| {
+                // Direction and conjugation are settled facts about a port's own declaration, not
+                // derived from its name or its owner's: `None` / `false` for every other kind, and
+                // for a port whose declaration carries no such fact, rather than a guess.
+                let (direction, conjugated) = if is_port_kind(entry.kind) {
+                    self.model
+                        .port_direction_and_conjugation(entry.identity)
+                        .unwrap_or_default()
+                } else {
+                    (None, false)
+                };
+                DiagramElement {
+                    occurrence_id: occurrence_id.clone(),
+                    semantic_id: entry.identity,
+                    reference: semantic_reference(
+                        entry,
+                        self.qualified_name(entry.identity).unwrap_or_default(),
+                        entry.owner.and_then(|owner| self.qualified_name(owner)),
+                        self.document_identity(entry.location.document)
+                            .unwrap_or_default(),
+                    ),
+                    kind: entry.kind,
+                    name: entry.name.clone(),
+                    typing: diagram_element_typing(self.element_details(entry.identity)),
+                    owner: owner.clone(),
+                    source: entry.location,
+                    compartments: Box::default(),
+                    direction,
+                    conjugated,
+                }
             })
             .collect::<Vec<_>>();
         // SysML 8.2.3.11: an Interconnection View shows parts and ports as nodes and connection
@@ -1644,6 +1666,12 @@ fn relationship_kind_from_name(name: &str) -> Option<DiagramRelationshipKind> {
         "flowPayloadType" => Some(DiagramRelationshipKind::FlowPayloadType),
         _ => None,
     }
+}
+
+/// Whether an element is a port -- the only kind [`DiagramElement::direction`] and
+/// [`DiagramElement::conjugated`] carry a fact for.
+fn is_port_kind(kind: ElementKind) -> bool {
+    matches!(kind, ElementKind::PortDefinition | ElementKind::PortUsage)
 }
 
 /// Whether an element is a node the Interconnection View draws: a part, a port, or a namespace

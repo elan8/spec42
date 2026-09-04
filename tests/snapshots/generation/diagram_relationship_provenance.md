@@ -499,6 +499,8 @@ package ProvenanceExample {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartDefinition",
         "name": "Child",
         "notationRole": "definition",
@@ -511,6 +513,8 @@ package ProvenanceExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "mass",
         "notationRole": "usage",
@@ -523,6 +527,8 @@ package ProvenanceExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Expression",
         "name": null,
         "notationRole": "unsupported",
@@ -535,6 +541,8 @@ package ProvenanceExample {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",

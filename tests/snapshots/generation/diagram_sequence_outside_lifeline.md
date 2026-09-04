@@ -548,6 +548,8 @@ package SequenceOutside {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceDefinition",
         "name": "Interaction",
         "notationRole": "definition",
@@ -560,6 +562,8 @@ package SequenceOutside {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "FlowUsage",
         "name": "delivery",
         "notationRole": "usage",
@@ -580,6 +584,8 @@ package SequenceOutside {
             "provenance": "direct"
           }
         ],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "PartUsage",
         "name": "sender",
         "notationRole": "usage",
@@ -592,6 +598,8 @@ package SequenceOutside {
       },
       {
         "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "OccurrenceUsage",
         "name": "sent",
         "notationRole": "usage",
