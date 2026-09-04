@@ -11,7 +11,7 @@ It is useful if you want lightweight editing, diagnostics, and navigation backed
 - Automatic download of the matching `spec42` release binary when Zed cannot find one locally
 - Forwarding Zed `lsp.spec42` settings to the server
 
-Snippets, custom queries, Model Explorer, and Model Visualizer features from the VS Code extension are intentionally out of scope for this first pass.
+Snippets, custom queries, the diagram views, and the Feature Inspector from the VS Code extension are intentionally out of scope for this first pass.
 
 ## Best fit
 
@@ -21,7 +21,7 @@ Use the Zed extension when you want:
 - LSP-backed diagnostics and navigation
 - automatic server-binary discovery or download
 
-Use the VS Code extension when you want the fuller `spec42` experience, including snippets, Model Explorer, Model Visualizer, and richer command integration.
+Use the VS Code extension when you want the fuller `spec42` experience, including snippets, the diagram views, the Feature Inspector, and richer command integration.
 
 ## Develop locally
 

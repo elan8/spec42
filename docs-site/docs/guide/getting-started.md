@@ -48,37 +48,35 @@ spec42 init my-model
 
 ## Exploring your model
 
-After opening a SysML workspace, the **Spec42** sidebar gives you four main tools:
+After opening a SysML workspace, the **Spec42** sidebar gives you three tools:
 
-- **Model Explorer** for browsing packages and elements.
 - **Examples** for opening bundled sample workspaces.
 - **Help** for quick reference links and the quick-reference panel.
 - **Library** for searching the bundled standard/domain libraries and any custom libraries you add.
 
-The **Model Explorer** can switch between a semantic model view and a by-file view. Use it to reveal source locations, copy qualified names, and open package-level visualizations.
+## Opening the Diagram view
 
-## Opening the visualizer
+The **Diagram** view lives in the **secondary side bar** (right side of VS Code).
 
-The diagram visualizer lives in the **secondary sidebar** (right side of VS Code).
+- Run **Spec42: Open Diagram** from the Command Palette, or
+- Open **View → Secondary Side Bar** and select **Diagram**.
 
-- Open it via **View → Secondary Side Bar**, or
-- Use the **Help** section in the Spec42 sidebar and click **Open diagram visualizer**.
-
-Once open, select a view from the dropdown in the toolbar to render your model as a diagram.
+Once open, pick an authored view from the toolbar dropdown to render your model as a diagram. It
+regenerates on its own as the model changes. See the [Diagram view guide](./diagram) for the
+toolbar and export options.
 
 ## Inspecting elements
 
-The **Feature Inspector** also lives in the secondary sidebar alongside the visualizer.
+The **Feature Inspector** also lives in the secondary side bar alongside the Diagram view.
 
 - Place the cursor on a SysML/KerML keyword, element, reference, value, or unit.
 - The inspector follows the current selection and shows resolved semantics, relationships, source location, and language help.
-- Clicking a node in the visualizer pins the inspector to that element until you resume following the cursor.
+- Clicking a node in the Diagram view pins the inspector to that element until you resume following the cursor.
 
 ## Next steps
 
 - [Browse the examples](./examples) to see what Spec42 can do.
-- [Learn the Model Explorer](./model-explorer) for navigating larger workspaces.
-- [Learn the visualizer](./visualizer) to get the most out of the diagrams.
+- [Learn the Diagram view](./diagram) for rendering authored views.
 - [Learn the Feature Inspector](./feature-inspector) for resolved semantic details.
 - [Manage libraries and dependencies](./libraries) for standard, domain, custom, and Sysand-backed content.
 - [Learn the SysML language patterns](./language-basics) for definitions, usages, packages, structure, behavior, and validation.

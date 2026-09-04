@@ -53,7 +53,7 @@ package DoorBehavior {
 }
 ```
 
-The [Diagram Visualizer](./visualizer) can render supported state-transition views. Treat its diagram as a presentation of the resolved model, not a second place to define lifecycle semantics.
+The [Diagram view](./diagram) can render state-transition views. Treat its diagram as a presentation of the resolved model, not a second place to define lifecycle semantics.
 
 ## Capture and satisfy a requirement
 

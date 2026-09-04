@@ -19,7 +19,7 @@ features:
     details: Live diagnostics, navigation, completion, and formatting for SysML v2 and KerML — across multi-file models and bundled libraries.
   - icon: ◈
     title: See what the model means
-    details: Model Explorer, diagram views, and Feature Inspector turn textual SysML into structure, wiring, behavior, and resolved semantics.
+    details: Diagram views and the Feature Inspector turn textual SysML into structure, wiring, behavior, and resolved semantics.
   - icon: ✓
     title: Same checks everywhere
     details: One analysis engine for VS Code, CLI, GitHub Actions, and assistant tools — so editor feedback and automation stay aligned.
