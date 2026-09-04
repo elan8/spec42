@@ -261,6 +261,12 @@ package Machines {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/state_machine_shape.md") (path (named (kind package) (name "Machines")) (named (kind state-def) (name "GuardIsNotBoolean")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -261,6 +261,16 @@ package RiskMetadataExample {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "high" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "medium" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "medium" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 0.3))))
+  (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 0.7))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

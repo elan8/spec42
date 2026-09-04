@@ -310,6 +310,19 @@ package '15_03-Value Expression' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire::hasLegalProfileDepth"))) (outcome resolved) (operator ">=" (feature-reference "profileDepth" (target (node (document "memory://snapshot/15_03_value_expression.md") (qualified-name "15_03-Value Expression::Tire::profileDepth")))) (literal (value (kind quantity) (magnitude (value (kind real) (real 3.5))) (unit "mm")))))
+  (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (path (named (kind package) (name "15_03-Value Expression")) (named (kind part-def) (name "Tire")) (named (kind attribute) (name "height")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 45))) (unit "mm"))))
+  (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (path (named (kind package) (name "15_03-Value Expression")) (named (kind part-def) (name "Tire")) (named (kind attribute) (name "profileDepth")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind real) (real 6))) (unit "mm"))))
+  (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (path (named (kind package) (name "15_03-Value Expression")) (named (kind part-def) (name "Vehicle_1")) (named (kind attribute) (name "length")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind real) (real 4.82))) (unit "m"))))
+  (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (path (named (kind package) (name "15_03-Value Expression")) (named (kind part-def) (name "Vehicle_1")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 1200))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (path (named (kind package) (name "15_03-Value Expression")) (named (kind part-def) (name "Wheel")) (named (kind attribute) (name "hubDiameter")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 18))) (unit "in"))))
+  (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (path (named (kind package) (name "15_03-Value Expression")) (named (kind part-def) (name "Wheel")) (named (kind attribute) (name "outerDiameter")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/15_03_value_expression.md") (path (named (kind package) (name "15_03-Value Expression")) (named (kind part-def) (name "Wheel")) (named (kind attribute) (name "width")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 245))) (unit "mm"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

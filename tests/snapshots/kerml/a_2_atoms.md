@@ -104,6 +104,12 @@ package Atoms {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (path (named (kind package) (name "Atoms")) (named (kind kerml-metaclass) (name "AtomMetadata")) (named (kind default-reference) (name "baseType")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "Atom" (target (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms::Atom"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -331,6 +331,16 @@ library package 'Semantic Metadata Example' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (path (named (kind library-package) (name "Semantic Metadata Example")) (named (kind metadata-def) (name "causation")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "causations" (target unresolved))))
+  (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (path (named (kind library-package) (name "Semantic Metadata Example")) (named (kind metadata-def) (name "cause")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "causes" (target unresolved))))
+  (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (path (named (kind library-package) (name "Semantic Metadata Example")) (named (kind metadata-def) (name "failure")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "failures" (target unresolved))))
+  (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (path (named (kind library-package) (name "Semantic Metadata Example")) (named (kind metadata-def) (name "scenario")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "scenarios" (target unresolved))))
+  (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (path (named (kind library-package) (name "Semantic Metadata Example")) (named (kind metadata-def) (name "situation")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "situations" (target unresolved))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

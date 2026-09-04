@@ -848,6 +848,20 @@ package ConstraintTest {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::MassAnalysis"))) (outcome resolved) (operator "and" (feature-reference "attribute" (target unresolved)) (feature-reference "attribute" (target unresolved)) (operator "==" (feature-reference "totalMass" (target (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::MassAnalysis::totalMass")))) (unsupported (feature-reference "componentMasses" (target (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::MassAnalysis::componentMasses"))))))))
+  (declaration (id (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::MassAnalysis2"))) (outcome resolved) (operator "==" (feature-reference "totalMass" (target (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::MassAnalysis2::totalMass")))) (unsupported (feature-reference "componentMasses" (target (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::MassAnalysis2::componentMasses")))))))
+  (declaration (id (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::massAnalysis3"))) (outcome resolved) (operator "==" (feature-reference "totalMass" (target (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::massAnalysis3::totalMass")))) (unsupported (feature-reference "componentMasses" (target (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::massAnalysis3::componentMasses")))))))
+  (declaration (id (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::massLimitation"))) (outcome resolved) (operator "<" (feature-reference "mass" (target (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::massLimitation::mass")))) (feature-reference "massLimit" (target (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::massLimitation::massLimit"))))))
+  (declaration (id (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind part) (name "vehicle1b")) (named (kind assert-constraint) (name "massAnalysis")) (named (kind default-reference) (name "attribute")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "mass" (target (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::Component::mass")))))
+  (declaration (id (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind part) (name "vehicle1b")) (named (kind assert-constraint) (name "massAnalysis")) (named (kind default-reference) (name "attribute") (occurrence 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind part) (name "vehicle2b")) (named (kind assert-constraint) (name "massAnalysis2")) (named (kind parameter) (name "componentMasses")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind part) (name "vehicle2b")) (named (kind assert-constraint) (name "massAnalysis2")) (named (kind parameter) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "mass" (target (node (document "memory://snapshot/constraint_test.md") (qualified-name "ConstraintTest::Component::mass")))))
+  (declaration (id (node (document "memory://snapshot/constraint_test.md") (path (named (kind package) (name "ConstraintTest")) (named (kind part) (name "vehicle4")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

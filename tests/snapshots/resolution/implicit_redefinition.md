@@ -99,6 +99,12 @@ package P {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1200))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

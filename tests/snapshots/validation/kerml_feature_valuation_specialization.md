@@ -156,6 +156,15 @@ package Model {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "defaulted")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "source" (target (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (qualified-name "Model::source")))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "directed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "source" (target (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (qualified-name "Model::source")))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "inferred")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "source" (target (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (qualified-name "Model::source")))))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "typed")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "source" (target (node (document "memory://snapshot/kerml_feature_valuation_specialization.md") (qualified-name "Model::source")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

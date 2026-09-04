@@ -316,6 +316,13 @@ package RefPrefixFacts {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::CalcHost::abstractCalc"))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/parser_ref_prefix_facts.md") (qualified-name "RefPrefixFacts::CalcHost::baseCalc"))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

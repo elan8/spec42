@@ -857,6 +857,13 @@ package ProductSelection_OwnedEnds {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (path (named (kind package) (name "ProductSelection_OwnedEnds")) (named (kind class-def) (name "OnlineCustomer")) (named (kind kerml-connector) (name "ps1")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "info1" (target (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer::info1")))))
+  (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (path (named (kind package) (name "ProductSelection_OwnedEnds")) (named (kind class-def) (name "OnlineCustomer")) (named (kind kerml-connector) (name "ps2")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "info1" (target (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer::info1")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

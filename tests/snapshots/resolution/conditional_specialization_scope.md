@@ -96,6 +96,12 @@ package Demo {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/conditional_specialization_scope.md") (qualified-name "Demo::Bounded::range"))) (outcome resolved) (operator "==" (feature-reference "that" (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things::that")))) (feature-reference "that" (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things::that"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

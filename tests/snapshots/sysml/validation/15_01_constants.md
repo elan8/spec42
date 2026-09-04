@@ -277,6 +277,18 @@ package '15_01-Constants' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Fundamental Physical Constants")) (named (kind attribute) (name "electron to proton mass ratio")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind real) (real 0.000544617021487))) (unit "one"))))
+  (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Fundamental Physical Constants")) (named (kind attribute) (name "fine structure constant")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind real) (real 0.0072973525693))) (unit "one"))))
+  (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Fundamental Physical Constants")) (named (kind attribute) (name "speed of light in vacuum")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Global Context")) (named (kind attribute) (name "nominal earth gravitational acceleration")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind real) (real 9.80665))) (unit "m/s²"))))
+  (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Mathematical Constants")) (named (kind attribute) (name "e")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome resolved) (operator "==" (unsupported (operator "*" (feature-reference "e" (target (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Mathematical Constants::e")))) (literal (value (kind real) (real 100000000000000000000))))) (literal (value (kind real) (real 271828182845904520000)))))
+  (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Mathematical Constants")) (named (kind attribute) (name "pi")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome resolved) (operator "==" (unsupported (operator "*" (feature-reference "pi" (target (node (document "memory://snapshot/15_01_constants.md") (qualified-name "15_01-Constants::Mathematical Constants::pi")))) (literal (value (kind real) (real 100000000000000000000))))) (literal (value (kind real) (real 314159265358979330000)))))
+  (declaration (id (node (document "memory://snapshot/15_01_constants.md") (path (named (kind package) (name "15_01-Constants")) (named (kind package) (name "Model X Context")) (named (kind attribute) (name "amplifier gain")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind real) (real 3.5))) (unit "one"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

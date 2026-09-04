@@ -133,6 +133,14 @@ package AssignTest {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (path (named (kind package) (name "AssignTest")) (named (kind action-def) (name "A")) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "seq" (target unresolved)) (feature-reference "i" (target unresolved))))
+  (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (path (named (kind package) (name "AssignTest")) (named (kind action-def) (name "A")) (anonymous (kind assign) (ordinal 1))))) (outcome resolved) (unsupported (feature-reference "data" (target unresolved)) (feature-reference "idx" (target unresolved))))
+  (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (path (named (kind package) (name "AssignTest")) (named (kind action-def) (name "A")) (anonymous (kind assign) (ordinal 2))))) (outcome resolved) (unsupported (feature-reference "items" (target unresolved)) (literal (value (kind integer) (integer 0)))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

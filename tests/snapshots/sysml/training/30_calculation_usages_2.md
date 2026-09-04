@@ -283,6 +283,12 @@ package 'Calculation Usages-2' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/30_calculation_usages_2.md") (path (named (kind package) (name "Calculation Usages-2")) (named (kind part-def) (name "VehicleDynamics")) (named (kind calc) (name "updateState")) (named (kind attribute) (name "totalPower")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

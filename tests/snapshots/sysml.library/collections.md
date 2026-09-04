@@ -564,6 +564,14 @@ standard library package Collections {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (named (kind kerml-feature) (name "flattenedSize")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (named (kind kerml-datatype) (name "Array")) (named (kind kerml-feature) (name "rank")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "dimensions" (target (node (document "memory://snapshot/collections.md") (qualified-name "Collections::Array::dimensions"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

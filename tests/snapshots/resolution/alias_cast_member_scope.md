@@ -158,6 +158,12 @@ package Demo {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::castScope"))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -340,6 +340,13 @@ package 'Time Constraints' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 1))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

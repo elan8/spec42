@@ -350,6 +350,13 @@ package 'Verification Case Usage Example' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (path (named (kind package) (name "Verification Case Usage Example")) (named (kind part) (name "massVerificationSystem")) (named (kind part) (name "scale")) (anonymous (kind perform-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "measurement" (target (node (document "memory://snapshot/34_verification_case_usage_example.md") (path (named (kind package) (name "Verification Case Usage Example")) (named (kind part) (name "massVerificationSystem")) (named (kind part) (name "scale")) (anonymous (kind perform-action) (ordinal 0)) (named (kind default-reference) (name "measurement")))))))
+  (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (path (named (kind package) (name "Verification Case Usage Example")) (named (kind part) (name "massVerificationSystem")) (named (kind part) (name "scale")) (anonymous (kind perform-action) (ordinal 0)) (named (kind default-reference) (name "measurement")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

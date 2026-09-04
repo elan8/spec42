@@ -377,6 +377,12 @@ standard library package RiskMetadata {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/risk_metadata.md") (path (named (kind library-package) (name "RiskMetadata")) (named (kind attribute-def) (name "Level")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome resolved) (operator "and" (operator ">=" (feature-reference "that" (target unresolved)) (literal (value (kind real) (real 0)))) (operator "<=" (feature-reference "that" (target unresolved)) (literal (value (kind real) (real 1))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

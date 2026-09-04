@@ -186,6 +186,8 @@ pub(crate) struct SemanticModel<D> {
     pub(crate) evaluation: Box<[EvaluationFact]>,
     /// Settled unit, measurement and filter facts over the expressions this publication admitted.
     pub(crate) expressions: expression::ExpressionIndex,
+    /// The resolved structure of every authored constraint / calc / value expression.
+    pub(crate) resolved_expressions: crate::index::resolved_expressions::ResolvedExpressionIndex,
     /// Settled at the publication barrier alongside the indexes, so reading them is a lookup and
     /// a broken storage invariant fails the build instead of a later query.
     pub(crate) diagnostics: D,

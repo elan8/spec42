@@ -313,6 +313,14 @@ package 'Decision Example' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind if) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind if) (ordinal 1))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (named (kind action) (name "addCharge")) (named (kind parameter) (name "charge")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

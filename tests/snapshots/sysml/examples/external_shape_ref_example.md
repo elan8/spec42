@@ -305,6 +305,16 @@ package ExternalShapeRefExample {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (anonymous (kind item) (ordinal 0)) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "highLoD"))))
+  (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (anonymous (kind item) (ordinal 0)) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "file:/detailed-geometry/LEMS-250W_BatteryHousing_Example.step"))))
+  (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (named (kind item) (name "envelopingBoxBatteryUnit")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 140))) (unit "mm"))))
+  (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (named (kind item) (name "envelopingBoxBatteryUnit")) (anonymous (kind default-reference) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 148))) (unit "mm"))))
+  (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (named (kind item) (name "envelopingBoxBatteryUnit")) (anonymous (kind default-reference) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 90))) (unit "mm"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

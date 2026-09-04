@@ -74,6 +74,12 @@ package Actions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/sysml_while_loop_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind while) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -1428,6 +1428,21 @@ standard library package SpatialItems {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind calc-def) (name "CurrentDisplacementOf")) (named (kind parameter) (name "clock")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind calc-def) (name "CurrentPositionOf")) (named (kind parameter) (name "clock")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind calc-def) (name "DisplacementOf")) (named (kind parameter) (name "clock")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind calc-def) (name "PositionOf")) (named (kind parameter) (name "clock")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind item-def) (name "SpatialItem")) (named (kind item) (name "componentItems")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind item-def) (name "SpatialItem")) (named (kind item) (name "componentItems")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "nullTransformation" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind item-def) (name "SpatialItem")) (named (kind item) (name "componentItems")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind item-def) (name "SpatialItem")) (named (kind attribute) (name "coordinateFrame")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "universalCartesianSpatial3dCoordinateFrame" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (named (kind item-def) (name "SpatialItem")) (named (kind attribute) (name "cunionNum")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::originPointConstraint"))) (outcome resolved) (unsupported (unsupported (feature-reference "originPoint" (target (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems::SpatialItem::originPoint")))) (feature-reference "that" (target unresolved)))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

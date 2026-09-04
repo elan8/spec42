@@ -265,6 +265,14 @@ package MassRollup {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "compositeThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "filteredMassThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/mass_rollup.md") (path (named (kind package) (name "MassRollup")) (named (kind part) (name "simpleThing")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "mass" (target (node (document "memory://snapshot/mass_rollup.md") (qualified-name "MassRollup::MassedThing::mass")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

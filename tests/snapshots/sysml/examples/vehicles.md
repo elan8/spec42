@@ -336,6 +336,14 @@ package VehicleMasses {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/vehicles.md") (path (named (kind package) (name "VehicleMasses")) (named (kind part) (name "c")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 1000))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/vehicles.md") (path (named (kind package) (name "VehicleMasses")) (named (kind part) (name "c")) (anonymous (kind part) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 100))) (unit "kg"))))
+  (declaration (id (node (document "memory://snapshot/vehicles.md") (path (named (kind package) (name "VehicleMasses")) (named (kind part) (name "c")) (anonymous (kind part) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 50))) (unit "kg"))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

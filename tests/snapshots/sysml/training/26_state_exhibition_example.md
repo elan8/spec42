@@ -135,6 +135,13 @@ package 'State Exhibition Example' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/26_state_exhibition_example.md") (path (named (kind package) (name "State Exhibition Example")) (named (kind part) (name "vehicle")) (anonymous (kind state) (ordinal 0)) (named (kind parameter) (name "controller")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "vehicleController" (target (node (document "memory://snapshot/26_state_exhibition_example.md") (qualified-name "State Exhibition Example::vehicle::vehicleController")))))
+  (declaration (id (node (document "memory://snapshot/26_state_exhibition_example.md") (path (named (kind package) (name "State Exhibition Example")) (named (kind part) (name "vehicle")) (anonymous (kind state) (ordinal 0)) (named (kind parameter) (name "operatingVehicle")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "vehicle" (target (node (document "memory://snapshot/26_state_exhibition_example.md") (qualified-name "State Exhibition Example::vehicle")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

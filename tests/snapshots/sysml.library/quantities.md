@@ -698,6 +698,14 @@ standard library package Quantities {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/quantities.md") (path (named (kind library-package) (name "Quantities")) (named (kind attribute-def) (name "TensorQuantityValue")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::boundMatch"))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::orderSum"))) (outcome resolved) (operator "==" (operator "+" (feature-reference "contravariantOrder" (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::contravariantOrder")))) (feature-reference "covariantOrder" (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::covariantOrder"))))) (feature-reference "order" (target (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities::TensorQuantityValue::order"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

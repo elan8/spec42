@@ -511,6 +511,17 @@ standard library package TrigFunctions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::UnitBoundedReal::unitBound"))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "cot")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "/" (unsupported (feature-reference "theta" (target (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::cot::theta"))))) (unsupported (feature-reference "theta" (target (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::cot::theta")))))))
+  (declaration (id (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "deg")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "/" (operator "*" (feature-reference "theta_rad" (target (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::deg::theta_rad")))) (literal (value (kind integer) (integer 180)))) (feature-reference "pi" (target (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::pi"))))))
+  (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::piPrecision"))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "rad")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "/" (operator "*" (feature-reference "theta_deg" (target (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::rad::theta_deg")))) (feature-reference "pi" (target (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::pi"))))) (literal (value (kind integer) (integer 180)))))
+  (declaration (id (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (named (kind kerml-function) (name "tan")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "/" (unsupported (feature-reference "theta" (target (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::tan::theta"))))) (unsupported (feature-reference "theta" (target (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions::tan::theta")))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

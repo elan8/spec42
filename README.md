@@ -8,7 +8,7 @@ Spec42 is open, local-first tooling for [SysML v2](https://www.omg.org/sysml/sys
 [![Install from Marketplace](https://img.shields.io/badge/Install-VS%20Code%20Marketplace-007ACC?logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42)
 [![Download Releases](https://img.shields.io/badge/Download-GitHub%20Releases-24292F?logo=github)](https://github.com/elan8/spec42/releases)
 
-![Spec42 SysML v2 editor and visualizer](vscode/media/screenshot.png)
+![Spec42 SysML v2 editor with the diagram view and Feature Inspector](vscode/media/screenshot.png)
 
 ## Why Spec42
 
@@ -31,7 +31,7 @@ It stays local-first: the language server, standard library, and Elan8 domain/me
 
 | Surface | Role |
 | --- | --- |
-| **VS Code** | Primary modeling environment: edit, explore, visualize, inspect. |
+| **VS Code** | Primary modeling environment: edit, navigate, diagram, inspect. |
 | **CLI** | Doctor, check, validation-only model summary, generation, and assistant-oriented commands. |
 | **GitHub Action** | Repeatable model validation with optional SARIF upload. |
 | **LM Tools** | Validation and model context for AI-assisted workflows. |
@@ -78,7 +78,7 @@ CLI and CI users can download platform archives from [GitHub Releases](https://g
 
 ## Documentation
 
-- [User documentation](https://elan8.github.io/spec42/) — getting started, explorer, visualizer, inspector, libraries
+- [User documentation](https://elan8.github.io/spec42/) — getting started, diagram view, Feature Inspector, libraries
 - [VS Code extension](vscode/README.md)
 - [GitHub Action](docs/user/GITHUB-ACTION.md)
 - [AI assistants](docs/user/AI-ASSISTANTS.md)

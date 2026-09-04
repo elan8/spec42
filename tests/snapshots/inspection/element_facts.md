@@ -193,6 +193,14 @@ probe element_facts.md 24 32
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "count")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "+" (literal (value (kind integer) (integer 2))) (literal (value (kind integer) (integer 3)))))
+  (declaration (id (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "derivedCount")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "count" (target (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::count")))))
+  (declaration (id (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (named (kind attribute) (name "limit")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 10))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

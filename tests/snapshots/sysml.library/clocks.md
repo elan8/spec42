@@ -700,6 +700,18 @@ standard library package Clocks {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::Clock::timeFlowConstraint"))) (outcome resolved) (unsupported (feature-reference "snapshots" (target unresolved))))
+  (declaration (id (node (document "memory://snapshot/clocks.md") (path (named (kind library-package) (name "Clocks")) (named (kind kerml-function) (name "DurationOf")) (named (kind kerml-feature) (name "clock")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "localClock" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/clocks.md") (path (named (kind library-package) (name "Clocks")) (named (kind kerml-function) (name "DurationOf")) (named (kind parameter) (name "duration")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/clocks.md") (path (named (kind library-package) (name "Clocks")) (named (kind kerml-function) (name "TimeOf")) (named (kind kerml-feature) (name "clock")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "localClock" (target unresolved)))
+  (declaration (id (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::TimeOf::startTimeConstraint"))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::TimeOf::timeContinuityConstraint"))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks::TimeOf::timeOrderingConstraint"))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

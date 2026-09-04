@@ -367,6 +367,14 @@ package Vehicles_1 {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/vehicles_1.md") (path (named (kind package) (name "Vehicles_1")) (named (kind kerml-feature) (name "v")) (named (kind kerml-feature) (name "engine")) (named (kind kerml-feature) (name "m")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 100))))
+  (declaration (id (node (document "memory://snapshot/vehicles_1.md") (path (named (kind package) (name "Vehicles_1")) (named (kind kerml-feature) (name "v")) (named (kind kerml-feature) (name "m")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1000))))
+  (declaration (id (node (document "memory://snapshot/vehicles_1.md") (path (named (kind package) (name "Vehicles_1")) (named (kind kerml-feature) (name "v")) (named (kind kerml-feature) (name "transmission")) (named (kind kerml-feature) (name "m")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 50))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

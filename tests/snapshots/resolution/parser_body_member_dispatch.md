@@ -326,6 +326,13 @@ package BodyMemberDispatch {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/parser_body_member_dispatch.md") (qualified-name "BodyMemberDispatch::CReq::nestedRequire"))) (outcome resolved) (operator ">" (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 0)))))
+  (declaration (id (node (document "memory://snapshot/parser_body_member_dispatch.md") (qualified-name "BodyMemberDispatch::R::nestedCalc"))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

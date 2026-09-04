@@ -15,6 +15,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   shipped packages. A shared `scripts/npm-audit.sh` retries a transient registry-endpoint error
   a few times so a network blip is not reported as a finding. Fixes #124.
 
+- **`structure().expression(symbol)` publishes the resolved shape of an authored expression.**
+  `EvaluationState` is terminal: a constraint or `calc` body with a free variable folds to
+  `NonConstant` and there was no way to ask what it is *made of*. The new query returns a
+  `PublishedExpression` — a flat arena of `ExpressionNode`s (literals, feature references each
+  paired with the specific inherited or redefined feature they name, and the arithmetic /
+  comparison / boolean / prefix operators) with a `root` index, for a consumer that has to
+  interpret a model (assemble equations, emit interface stubs, drive an external solver) rather
+  than fold it. It adds no analysis: resolution already builds and resolves these trees to fold
+  constants, and the classifier that gates constant folding also gates this. A shape outside the
+  published slice (an invocation, a `select` / `collect` body, a constructor, an index expression,
+  a meta cast, a type check) is an `Unsupported` node that still lists its resolved subtree rather
+  than being dropped, mirroring `EvaluationState::Unsupported`. First slice of #84 (the metadata
+  annotation-body and connection-topology queries are follow-ups).
+
+- **Interconnection View projects connector edges and scopes its node list.** A `connect a to b`
+  usage now composes one `connection` edge between the projected port or part occurrences,
+  including the dotted `connect a.b to c.d` spelling whose ends are published as member-access
+  chains. The node list is scoped to parts and ports (SysML 8.2.3.11) -- attributes, expressions,
+  actions, and states are no longer peer boxes, and connection usages are edge origins rather than
+  boxes. A connector whose end is unresolved, ambiguous, or outside the view records a typed
+  `relationship-unresolved` / `-ambiguous` / `-unsupported` reason and draws no line. Fixes #97.
+
 - **General View draws authored subsetting, subclassification, redefinition, and feature typing.**
   When both ends of an authored `:>` / `:>` (specializes) / `:>>` / `:` are elements the view
   projects, the query now composes a graph edge of that kind and the renderer draws the SysML
@@ -505,12 +527,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   usage families are reported as unsupported members rather than dropped.
 
 
-- **Diagrams now cross the generator boundary.** The repository-owned Rust WASM diagram plugin
-  emits a versioned JSON render product from the immutable model query API, and the VS Code webview
-  renders it with the relocated D3/ELK package. All eight view kinds are selectable from the start:
-  state transitions use their typed projection, while views awaiting owner-defined queries report
-  explicit incomplete products instead of reconstructing semantic graphs. The obsolete Rust
-  `diagram` crate is removed and `generator-plugins` is the home for production WASM plugins.
+- **The diagram and model-navigation surfaces are rebuilt on the immutable publication.** The
+  legacy in-process semantic graph (`sysml_model`) and its `sysml/model` graph query are retired,
+  and the built-in **Model Explorer** view is removed with them -- model navigation is served by
+  the Feature Inspector, document symbols, and hierarchy queries over typed facts. Diagram viewing
+  is now a repository-owned Rust WASM plugin that emits a versioned JSON render product from the
+  model query API, drawn by the bundled `diagram-renderer` (see the persistent VS Code **Diagram**
+  view below). The General, Interconnection, Action Flow, State Transition, Sequence, Browser, and
+  Grid view kinds consume typed projections; Geometry stays partial. The obsolete Rust `diagram`
+  crate is removed and `generator-plugins` is the home for production WASM plugins.
 
 - **Every diagnostic Spec42 reports is settled by the immutable publication.** `sysml_resolution`
   now owns the conformance families the graph engine ran -- namespace identity, connection,

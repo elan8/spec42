@@ -1124,6 +1124,13 @@ standard library package IntegerFunctions {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (named (kind kerml-function) (name "product")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "collection" (target (node (document "memory://snapshot/integer_functions.md") (qualified-name "IntegerFunctions::product::collection")))) (literal (value (kind integer) (integer 1)))))
+  (declaration (id (node (document "memory://snapshot/integer_functions.md") (path (named (kind library-package) (name "IntegerFunctions")) (named (kind kerml-function) (name "sum")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "collection" (target (node (document "memory://snapshot/integer_functions.md") (qualified-name "IntegerFunctions::sum::collection")))) (literal (value (kind integer) (integer 0)))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

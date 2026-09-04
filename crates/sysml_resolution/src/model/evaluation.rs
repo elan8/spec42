@@ -55,7 +55,7 @@ pub(crate) fn evaluation_state(
 }
 
 /// The scalar projection of a computed outcome, or `None` for a non-value outcome.
-fn evaluated_scalar(outcome: &EvaluatedValue) -> Option<EvaluatedScalar> {
+pub(crate) fn evaluated_scalar(outcome: &EvaluatedValue) -> Option<EvaluatedScalar> {
     match outcome {
         EvaluatedValue::Boolean(value) => Some(EvaluatedScalar::Boolean(*value)),
         EvaluatedValue::Integer(value) => Some(EvaluatedScalar::Integer(*value)),

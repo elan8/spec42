@@ -283,6 +283,12 @@ package Classes {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes::A"))) (outcome resolved) (feature-reference "protected" (target unresolved)))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

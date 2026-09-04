@@ -228,6 +228,13 @@ package '15_04-Logical Expressions' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/15_04_logical_expressions.md") (path (named (kind package) (name "15_04-Logical Expressions")) (named (kind part-def) (name "Vehicle")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/15_04_logical_expressions.md") (path (named (kind package) (name "15_04-Logical Expressions")) (named (kind part-def) (name "Vehicle")) (anonymous (kind assert-constraint) (ordinal 1))))) (outcome resolved) (operator "xor" (operator "and" (unsupported (feature-reference "engine" (target (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Vehicle::engine"))))) (unsupported (feature-reference "transmission" (target (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Vehicle::transmission")))))) (operator "and" (unsupported (feature-reference "engine" (target (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Vehicle::engine"))))) (unsupported (feature-reference "transmission" (target (node (document "memory://snapshot/15_04_logical_expressions.md") (qualified-name "15_04-Logical Expressions::Vehicle::transmission"))))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

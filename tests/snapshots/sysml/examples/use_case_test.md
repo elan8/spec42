@@ -266,6 +266,12 @@ package UseCaseTest {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::uc3"))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

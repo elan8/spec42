@@ -642,6 +642,16 @@ package 'Trade Study Analysis Example' {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/33_trade_study_analysis_example.md") (path (named (kind package) (name "Trade Study Analysis Example")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind calc) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/33_trade_study_analysis_example.md") (path (named (kind package) (name "Trade Study Analysis Example")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind calc) (ordinal 0)) (named (kind calc) (name "costRollup")) (named (kind parameter) (name "engine")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "anEngine" (target (node (document "memory://snapshot/33_trade_study_analysis_example.md") (path (named (kind package) (name "Trade Study Analysis Example")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind calc) (ordinal 0)) (named (kind part) (name "anEngine")))))))
+  (declaration (id (node (document "memory://snapshot/33_trade_study_analysis_example.md") (path (named (kind package) (name "Trade Study Analysis Example")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind calc) (ordinal 0)) (named (kind calc) (name "efficiencyRollup")) (named (kind parameter) (name "engine")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "anEngine" (target (node (document "memory://snapshot/33_trade_study_analysis_example.md") (path (named (kind package) (name "Trade Study Analysis Example")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind calc) (ordinal 0)) (named (kind part) (name "anEngine")))))))
+  (declaration (id (node (document "memory://snapshot/33_trade_study_analysis_example.md") (path (named (kind package) (name "Trade Study Analysis Example")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind calc) (ordinal 0)) (named (kind calc) (name "massRollup")) (named (kind parameter) (name "engine")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "anEngine" (target (node (document "memory://snapshot/33_trade_study_analysis_example.md") (path (named (kind package) (name "Trade Study Analysis Example")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind calc) (ordinal 0)) (named (kind part) (name "anEngine")))))))
+  (declaration (id (node (document "memory://snapshot/33_trade_study_analysis_example.md") (path (named (kind package) (name "Trade Study Analysis Example")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind calc) (ordinal 0)) (named (kind calc) (name "powerRollup")) (named (kind parameter) (name "engine")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "anEngine" (target (node (document "memory://snapshot/33_trade_study_analysis_example.md") (path (named (kind package) (name "Trade Study Analysis Example")) (named (kind analysis) (name "engineTradeStudy")) (anonymous (kind calc) (ordinal 0)) (named (kind part) (name "anEngine")))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

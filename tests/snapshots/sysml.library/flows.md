@@ -1025,6 +1025,13 @@ standard library package Flows {
     )
 )
 ~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/flows.md") (path (named (kind library-package) (name "Flows")) (named (kind flow-def) (name "Message")) (named (kind attribute) (name "seBeforeNum")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/flows.md") (path (named (kind library-package) (name "Flows")) (named (kind flow-def) (name "Message")) (named (kind attribute) (name "teAfterNum")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
