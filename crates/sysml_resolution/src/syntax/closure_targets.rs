@@ -8,9 +8,9 @@
 use std::collections::HashSet;
 
 use sysml_v2_parser::ast::{
-    AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, Import, ItemUsage,
-    LibraryPackage, MetadataBody, MetadataBodyElement, MetadataDef, MetadataUsage, Package,
-    PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
+    AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, Expression, Import,
+    ItemUsage, LibraryPackage, MetadataBody, MetadataBodyElement, MetadataDef, MetadataUsage,
+    Package, PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
     PartUsageBody, PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody,
     PortDefBodyElement, PortUsage, QualifiedIdentification, RefDecl, RootElement,
 };
@@ -336,6 +336,9 @@ pub(crate) fn walk_attribute_def_type_refs(
     out: &mut RefSink,
 ) {
     push_optional_typing_reference(document, attribute_def.typing.as_deref(), out);
+    if let Some(value) = attribute_def.value.as_deref() {
+        walk_expression_reference_targets(document, &value.expression, out);
+    }
     walk_attribute_body_type_refs(document, &attribute_def.body, out);
 }
 
@@ -363,6 +366,9 @@ pub(crate) fn walk_attribute_usage_type_refs(
         subsetting_target(document, attribute_usage.crosses.as_deref()),
         out,
     );
+    if let Some(value) = attribute_usage.value.as_deref() {
+        walk_expression_reference_targets(document, &value.expression, out);
+    }
     walk_attribute_body_type_refs(document, &attribute_usage.body, out);
 }
 
@@ -730,6 +736,74 @@ pub struct PackageTargets {
     pub type_reference_targets: Vec<String>,
 }
 
+/// A value expression's qualified references: an invocation callee, a bare feature reference, or
+/// a member access -- so a library reachable only through a value expression still seeds the
+/// closure. `attribute conversionFactor = RationalFunctions::rat(1, 100);` names
+/// `RationalFunctions` in no typing clause and no import; without this walk its package is never
+/// admitted and the reference is `unresolved_reference` for a document that is, in fact, part of
+/// the model (spec42#129).
+///
+/// Not exhaustive of every [`Expression`] shape -- `_ => {}` covers the rest. A shape this walk
+/// does not descend into (`Index`/`Bracket` operands, `Select`/collection-operator bodies, ...)
+/// only costs a closure seed the reference's own import, if authored, still supplies; it is a
+/// discovery heuristic; resolution's own correctness never depends on it.
+pub(super) fn walk_expression_reference_targets(
+    document: &ParsedRoot,
+    expression: &Node<Expression>,
+    out: &mut RefSink,
+) {
+    match &expression.value {
+        Expression::FeatureRef(reference) => {
+            push_optional_type_reference(
+                reference_text(document, Some(*reference)).as_deref(),
+                out,
+            );
+        }
+        Expression::MemberAccess { base, member, .. } => {
+            walk_expression_reference_targets(document, base, out);
+            push_optional_type_reference(reference_text(document, Some(*member)).as_deref(), out);
+        }
+        Expression::Invocation { callee, args } => {
+            walk_expression_reference_targets(document, callee, out);
+            for argument in args {
+                walk_expression_reference_targets(document, &argument.value, out);
+            }
+        }
+        Expression::BinaryOp { left, right, .. } => {
+            walk_expression_reference_targets(document, left, out);
+            walk_expression_reference_targets(document, right, out);
+        }
+        Expression::UnaryOp { operand, .. } => {
+            walk_expression_reference_targets(document, operand, out);
+        }
+        Expression::Classification { metaclass } => {
+            push_optional_type_reference(
+                reference_text(document, Some(*metaclass)).as_deref(),
+                out,
+            );
+        }
+        Expression::MetaCast { base, metaclass } => {
+            walk_expression_reference_targets(document, base, out);
+            push_optional_type_reference(
+                reference_text(document, Some(*metaclass)).as_deref(),
+                out,
+            );
+        }
+        Expression::TypeCheck {
+            operand, type_name, ..
+        } => {
+            if let Some(operand) = operand {
+                walk_expression_reference_targets(document, operand, out);
+            }
+            push_optional_type_reference(
+                reference_text(document, Some(*type_name)).as_deref(),
+                out,
+            );
+        }
+        _ => {}
+    }
+}
+
 fn push_type_reference(target: &str, out: &mut RefSink) {
     let target = target.trim();
     if target.is_empty() || target.starts_with("checks meta ") {
@@ -761,6 +835,64 @@ mod tests {
                 .closure_facts()
                 .type_reference_targets,
             vec!["Domain::Wheel".to_string()]
+        );
+    }
+
+    /// spec42#129: `RationalFunctions::rat(1, 100)` names `RationalFunctions` in a value
+    /// expression, not a typing clause and not an import. Before this walk, a document reachable
+    /// only this way was never admitted and the reference was `unresolved_reference` for a
+    /// package that is, in fact, part of the model.
+    #[test]
+    fn an_invocation_callee_in_an_attribute_value_seeds_its_package() {
+        assert_eq!(
+            SyntaxAuthority::new()
+                .parse_text("package App { attribute x = RationalFunctions::rat(1, 100); }")
+                .closure_facts()
+                .type_reference_targets,
+            vec!["RationalFunctions::rat".to_string()]
+        );
+    }
+
+    /// The sibling case for a value expression that is a bare qualified reference, not an
+    /// invocation: `attribute x = Domain::defaultMass;`.
+    #[test]
+    fn a_bare_feature_reference_in_an_attribute_value_seeds_its_package() {
+        assert_eq!(
+            SyntaxAuthority::new()
+                .parse_text("package App { attribute x = Domain::defaultMass; }")
+                .closure_facts()
+                .type_reference_targets,
+            vec!["Domain::defaultMass".to_string()]
+        );
+    }
+
+    /// An `attribute def`'s own default value is walked the same way as a usage's.
+    #[test]
+    fn an_attribute_def_value_seeds_its_package() {
+        assert_eq!(
+            SyntaxAuthority::new()
+                .parse_text("package App { attribute def X = RationalFunctions::rat(1, 100); }")
+                .closure_facts()
+                .type_reference_targets,
+            vec!["RationalFunctions::rat".to_string()]
+        );
+    }
+
+    /// A qualified reference nested inside an invocation's arguments also seeds its package, not
+    /// only the callee itself.
+    #[test]
+    fn an_invocation_argument_seeds_its_package() {
+        assert_eq!(
+            SyntaxAuthority::new()
+                .parse_text(
+                    "package App { attribute x = RationalFunctions::rat(Domain::numer, 100); }"
+                )
+                .closure_facts()
+                .type_reference_targets,
+            vec![
+                "RationalFunctions::rat".to_string(),
+                "Domain::numer".to_string()
+            ]
         );
     }
 
