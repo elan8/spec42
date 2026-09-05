@@ -20,6 +20,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   were dropped rather than migrated. The extension's **Help** view now links to a
   `spec42.diagram.open`-backed "Open Diagram view" item and a `spec42Library.focus`-backed
   "Browse or add a library" item instead of only external links. Fixes #122.
+
+- **A named interface/connection usage's connector-endpoint feature chain resolves the sibling
+  feature it names, not the interface definition's own same-named `end`.** `interface
+  lesConnection : LESInterface connect commandServiceModule.commandModule.lesInterfacePort to
+  launchEscapeSystem.cmInterfacePort;` (Apollo 11 `Technical/SystemPackage.sysml` and
+  `TechnicalComponentsPackage.sysml`) left `launchEscapeSystem.cmInterfacePort` and three other
+  endpoint chains `unresolved_reference`, cascading into four further `unconnected_port`
+  diagnostics on the ports those connectors should have counted as connected. `LESInterface`
+  names its own abstract `end launchEscapeSystem : ...;` to match the part it is meant to
+  connect -- an ordinary interface-authoring idiom -- and that inherited end was shadowing the
+  sibling `part launchEscapeSystem` the endpoint actually names, because the dotted connector-end
+  resolver started its root-segment lookup at the named usage's own scope instead of its owning
+  namespace. Fixed to start there instead, matching the equivalent, already-correct rule for a
+  single-segment (non-dotted) connector end (KerML 8.2.3.5.2). Fixes #130.
+
+- **An item usage's `:>` subsetting clause trailing its own brace body attaches to that usage,
+  not a new member.** `item concern1 : Concern { doc /* ... */ } :> concerns;` (Apollo 11
+  `Purpose/StakeholderPackage.sysml`, 40 occurrences) previously split into two declarations --
+  `concern1` and a synthetic anonymous `attribute` member for the trailing `:> concerns` -- so
+  `spec42 check` reported a spurious `incompatible_subset_redefine_kind` warning (an
+  `Attribute`-family feature "subsetting" an `Item`-family one). Fixed upstream in the parser
+  (`elan8/sysml-v2-parser#137`), generalizing the existing `:>>`-trailing-a-body support
+  (`exhibit_state`) to `:>` and to item usage. Bumped the pinned parser revision. Fixes #128.
+
 - **A qualified reference to a standard-library symbol resolves inside a value expression, not
   only a typing clause or an import.** `attribute conversionFactor = RationalFunctions::rat(1,
   100);` (Apollo 11 `CoSMA/CoSMAQuantitiesAndUnitsPackage.sysml`) named `RationalFunctions` in
