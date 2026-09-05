@@ -44,8 +44,8 @@ spec42 explain-diagnostic --code unresolved_type_reference --path model
 
 Common next checks are to correct a type or package path, include the defining file in the workspace, or configure the library that owns an external type. The editor can also offer a relevant quick fix when one is available.
 
-## Use the maintained GitHub Action
+## Running in CI
 
-For GitHub Actions, use the repository's [Spec42 GitHub Action](https://github.com/elan8/spec42/blob/main/docs/user/GITHUB-ACTION.md). It installs the release-matched CLI, can run `spec42 doctor`, and forwards the check path, workspace root, report format, warning policy, baseline, and library configuration. It can also upload SARIF to GitHub Code Scanning.
+For GitHub Actions, use the [Spec42 GitHub Action](GITHUB-ACTION.md) — it installs the release-matched CLI, forwards the check path, workspace root, report format, warning policy, baseline, and library configuration, and can upload SARIF to GitHub Code Scanning.
 
 Keep one validation command authoritative for both local and CI use. A directory-level check is usually the right command for a multi-file model because it catches broken cross-file imports and relationships that an isolated file cannot resolve.

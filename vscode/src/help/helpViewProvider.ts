@@ -29,6 +29,16 @@ export class HelpViewProvider implements vscode.TreeDataProvider<HelpItem> {
         { command: "spec42.examples.openRecommended", title: "Open Recommended Example" }
       ),
       new HelpItem(
+        "Open Diagram view",
+        "type-hierarchy-sub",
+        { command: "spec42.diagram.open", title: "Open Diagram" }
+      ),
+      new HelpItem(
+        "Browse or add a library",
+        "folder-library",
+        { command: "spec42Library.focus", title: "Show Library View" }
+      ),
+      new HelpItem(
         "SysML v2 quick reference",
         "book",
         { command: "spec42.help.openReference", title: "SysML v2 Quick Reference" }
@@ -36,19 +46,19 @@ export class HelpViewProvider implements vscode.TreeDataProvider<HelpItem> {
       new HelpItem(
         "Spec42 documentation",
         "link-external",
-        { command: "vscode.open", title: "Open Docs", arguments: [vscode.Uri.parse("https://elan8.github.io/spec42/")] },
+        { command: "vscode.open", title: "Open Docs", arguments: [vscode.Uri.parse("https://github.com/elan8/spec42/blob/HEAD/docs/README.md")] },
         "link"
       ),
       new HelpItem(
         "What's included",
         "link-external",
-        { command: "vscode.open", title: "Open What's Included", arguments: [vscode.Uri.parse("https://elan8.github.io/spec42/reference/whats-included")] },
+        { command: "vscode.open", title: "Open What's Included", arguments: [vscode.Uri.parse("https://github.com/elan8/spec42/blob/HEAD/docs/reference/WHATS-INCLUDED.md")] },
         "link"
       ),
       new HelpItem(
         "Domain & method libraries",
         "link-external",
-        { command: "vscode.open", title: "Open Domain Libraries", arguments: [vscode.Uri.parse("https://elan8.github.io/spec42/reference/domain-libraries")] },
+        { command: "vscode.open", title: "Open Domain & Method Libraries", arguments: [vscode.Uri.parse("https://github.com/elan8/spec42/blob/HEAD/docs/user/LIBRARIES.md")] },
         "link"
       ),
       new HelpItem(

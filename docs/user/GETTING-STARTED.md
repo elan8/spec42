@@ -62,7 +62,7 @@ The **Diagram** view lives in the **secondary side bar** (right side of VS Code)
 - Open **View → Secondary Side Bar** and select **Diagram**.
 
 Once open, pick an authored view from the toolbar dropdown to render your model as a diagram. It
-regenerates on its own as the model changes. See the [Diagram view guide](./diagram) for the
+regenerates on its own as the model changes. See the [Diagram view guide](DIAGRAM-VIEW.md) for the
 toolbar and export options.
 
 ## Inspecting elements
@@ -75,10 +75,9 @@ The **Feature Inspector** also lives in the secondary side bar alongside the Dia
 
 ## Next steps
 
-- [Browse the examples](./examples) to see what Spec42 can do.
-- [Learn the Diagram view](./diagram) for rendering authored views.
-- [Learn the Feature Inspector](./feature-inspector) for resolved semantic details.
-- [Manage libraries and dependencies](./libraries) for standard, domain, custom, and Sysand-backed content.
-- [Learn the SysML language patterns](./language-basics) for definitions, usages, packages, structure, behavior, and validation.
-- [What's included](../reference/whats-included) for Spec42 and bundled library versions.
-- [SysML v2 Quick Reference](../reference/sysml-quick-reference) for language syntax.
+- [Browse the examples](EXAMPLES.md) to see what Spec42 can do.
+- [Learn the Diagram view](DIAGRAM-VIEW.md) for rendering authored views.
+- [Learn the Feature Inspector](FEATURE-INSPECTOR.md) for resolved semantic details.
+- [Manage libraries and dependencies](LIBRARIES.md) for standard, domain, custom, and Sysand-backed content.
+- Learn SysML v2 language patterns from the [OMG SysML v2 specification](https://www.omg.org/spec/SysML/2.0/) or the in-editor **SysML v2 Quick Reference** (Spec42 sidebar → Help).
+- [What's included](../reference/WHATS-INCLUDED.md) for Spec42 and bundled library versions.

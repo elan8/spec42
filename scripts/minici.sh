@@ -78,6 +78,7 @@ node scripts/sync-kpar-libraries-config.mjs --check
 node scripts/sync-workspace-version.mjs --check
 node scripts/generate-conformance-matrix.mjs --check
 node scripts/sync-generator-abi.mjs --check
+node scripts/sync-docs-meta.mjs --check
 
 abi_manifest="$(mktemp "${TMPDIR:-/tmp}/spec42-generator-abi.XXXXXX")"
 trap 'rm -f "$abi_manifest"' EXIT
