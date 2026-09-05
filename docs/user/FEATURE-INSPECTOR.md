@@ -6,7 +6,7 @@ The **Feature Inspector** is a secondary-sidebar panel that shows resolved seman
 
 - Place the cursor on a keyword, declaration, reference, value, or unit.
 - The inspector follows the current editor selection automatically.
-- If you click a node in the [Diagram view](./diagram), the inspector pins to that element until you choose **Resume following cursor**.
+- If you click a node in the [Diagram view](DIAGRAM-VIEW.md), the inspector pins to that element until you choose **Resume following cursor**.
 
 ## What it shows
 
@@ -34,6 +34,6 @@ Use the Feature Inspector when:
 
 For large models, a good flow is:
 
-1. Open a graphical view in the [Diagram view](./diagram).
+1. Open a graphical view in the [Diagram view](DIAGRAM-VIEW.md).
 2. Click elements in the diagram and inspect their resolved semantics in the Feature Inspector.
 3. Use the source location in the inspector to jump to the declaration in the editor.

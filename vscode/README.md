@@ -51,19 +51,19 @@ Everything runs locally. Models stay in your workspace; Spec42 does not require 
 2. Open a `.sysml` or `.kerml` file — or pick the starred **timer** example from the Spec42 sidebar.
 3. Use navigation, diagnostics, **Feature Inspector**, and **Open Diagram** as you explore.
 
-Full walkthrough: **[Getting Started](https://elan8.github.io/spec42/guide/getting-started)**.
+Full walkthrough: **[Getting Started](https://github.com/elan8/spec42/blob/HEAD/docs/user/GETTING-STARTED.md)**.
 
 For CLI checks, CI, environment diagnostics, and other AI hosts, see the [main Spec42 README](https://github.com/elan8/spec42#readme) and the docs linked below. Editor and automation share the same analysis engine.
 
 ## Learn more
 
-- [User documentation](https://elan8.github.io/spec42/)
-- [Diagram view guide](https://elan8.github.io/spec42/guide/diagram)
-- [Feature Inspector guide](https://elan8.github.io/spec42/guide/feature-inspector)
-- [Libraries](https://elan8.github.io/spec42/guide/libraries)
+- [User documentation](https://github.com/elan8/spec42/blob/HEAD/docs/README.md)
+- [Diagram view guide](https://github.com/elan8/spec42/blob/HEAD/docs/user/DIAGRAM-VIEW.md)
+- [Feature Inspector guide](https://github.com/elan8/spec42/blob/HEAD/docs/user/FEATURE-INSPECTOR.md)
+- [Libraries](https://github.com/elan8/spec42/blob/HEAD/docs/user/LIBRARIES.md)
 - [AI assistants](https://github.com/elan8/spec42/blob/HEAD/docs/user/AI-ASSISTANTS.md)
 - [Troubleshooting](https://github.com/elan8/spec42/blob/HEAD/docs/user/TROUBLESHOOTING.md)
 - [Source and releases](https://github.com/elan8/spec42)
 - [Issues](https://github.com/elan8/spec42/issues)
 
-Settings, advanced configuration, and contributor notes live in the docs site and repository development guide rather than this Marketplace overview.
+Settings, advanced configuration, and contributor notes live in `docs/` and the repository development guide rather than this Marketplace overview.

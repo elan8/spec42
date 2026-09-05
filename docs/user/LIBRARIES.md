@@ -1,6 +1,6 @@
 # Library & Dependencies
 
-Spec42 bundles the SysML v2 standard library plus Elan8 domain and method libraries. For exact release pins, see [What's included](/reference/whats-included).
+Spec42 bundles the SysML v2 standard library plus Elan8 domain and method libraries. For exact release pins, see [What's included](../reference/WHATS-INCLUDED.md).
 
 ## Standard Library
 
@@ -20,13 +20,13 @@ You can:
 
 Elan8 domain libraries extend the standard library with reusable vocabulary for domain and technical modeling (for example robotics, software, electronics, and communication). They are bundled and available automatically.
 
-See the [Domain libraries](/reference/domain-libraries) reference for the bundled version and the KPAR package/file tree.
+See the [Domain libraries](../reference/DOMAIN-LIBRARIES.md) reference for the bundled version and the KPAR package/file tree.
 
 ## Method Libraries
 
 Elan8 Method libraries provide SysML packages for requirements metadata, concerns, and viewpoints. They are bundled separately from domain vocabulary.
 
-See the [Method libraries](/reference/method-libraries) reference for the KPAR package tree and version.
+See the [Method libraries](../reference/METHOD-LIBRARIES.md) reference for the KPAR package tree and version.
 
 ## Custom Libraries
 

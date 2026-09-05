@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Retired the VitePress documentation site (`docs-site/`, deployed to
+  `elan8.github.io/spec42`) in favor of GitHub-native docs.** The hosted site duplicated content
+  that already lived (or now lives) in `README.md` and `docs/`, and its second copy of the
+  SysML quick reference had drifted from the one built into the extension
+  (`Spec42: SysML v2 Quick Reference`). Getting Started, Diagram view, Feature Inspector,
+  Libraries, Examples, and Validation guides moved to `docs/user/`; What's Included and the
+  domain/method library trees are still generated from product configuration, now by
+  `scripts/sync-docs-meta.mjs` writing `docs/reference/WHATS-INCLUDED.md`,
+  `docs/reference/DOMAIN-LIBRARIES.md`, and `docs/reference/METHOD-LIBRARIES.md` (checked in
+  `scripts/minici.sh`). The generic SysML-v2-tutorial pages that duplicated the OMG specification
+  were dropped rather than migrated. The extension's **Help** view now links to a
+  `spec42.diagram.open`-backed "Open Diagram view" item and a `spec42Library.focus`-backed
+  "Browse or add a library" item instead of only external links. Fixes #122.
+
 - **A named interface/connection usage's connector-endpoint feature chain resolves the sibling
   feature it names, not the interface definition's own same-named `end`.** `interface
   lesConnection : LESInterface connect commandServiceModule.commandModule.lesInterfacePort to

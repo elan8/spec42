@@ -64,7 +64,7 @@ It stays local-first: the language server, standard library, and Elan8 domain/me
 
 1. Install **[SysML v2 Editor](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42)** from the VS Code Marketplace.
 2. Open a `.sysml` / `.kerml` file, or try the bundled **timer** example from the Spec42 sidebar.
-3. Follow the full walkthrough in **[Getting Started](https://elan8.github.io/spec42/guide/getting-started)**.
+3. Follow the full walkthrough in **[Getting Started](docs/user/GETTING-STARTED.md)**.
 
 To start a clean multi-file workspace from the CLI, run:
 
@@ -78,12 +78,12 @@ CLI and CI users can download platform archives from [GitHub Releases](https://g
 
 ## Documentation
 
-- [User documentation](https://elan8.github.io/spec42/) — getting started, diagram view, Feature Inspector, libraries
+- [User documentation](docs/README.md) — getting started, diagram view, Feature Inspector, libraries
 - [VS Code extension](vscode/README.md)
 - [GitHub Action](docs/user/GITHUB-ACTION.md)
 - [AI assistants](docs/user/AI-ASSISTANTS.md)
 - [Troubleshooting](docs/user/TROUBLESHOOTING.md)
-- [What's included](https://elan8.github.io/spec42/reference/whats-included)
+- [What's included](docs/reference/WHATS-INCLUDED.md)
 - [Conformance matrix](docs/reference/CONFORMANCE-MATRIX.md)
 - [Contributor development guide](DEVELOPMENT.md)
 
