@@ -2169,15 +2169,36 @@ pub(crate) fn resolve_member_access_reference<R: ResolutionReferenceFact>(
         // lowering side today.
         return Ok(ResolutionStatus::Unsupported);
     }
-    let _source = declarations
+    let source = declarations
         .get(reference.source().index())
         .ok_or(ResolutionError::InvalidStorage)?;
     scratch.candidates.clear();
     scratch.next_candidates.clear();
+    // `interface lesConnection : LESInterface connect commandServiceModule.commandModule.
+    // lesInterfacePort to launchEscapeSystem.cmInterfacePort;`: a dotted `ConnectorEnd` endpoint
+    // is authored directly against the named interface/connection usage (`reference.source()` is
+    // `lesConnection` itself, not the enclosing part), the same shape `push_reference` gives a
+    // single-segment `connect a to b;` end. KerML 8.2.3.5.2 resolves a connector end's target in
+    // the owningNamespace of its Connector, never the Connector's own scope -- mirroring
+    // `resolve_reference`'s identically-motivated `ConnectorEnd` special case (which handles an
+    // end *declaration*'s own `references` target; this handles the usage-level endpoint itself).
+    // Without this, `LESInterface`'s own `end launchEscapeSystem : ...;` -- inherited through
+    // `lesConnection`'s typing, and named to match the part it is meant to connect, an ordinary
+    // interface-authoring idiom -- shadows the sibling part `launchEscapeSystem` the endpoint
+    // actually names, and the chain's root segment resolves to the wrong declaration.
+    let lexical_scope = if reference.kind() == ReferenceKind::ConnectorEnd
+        && matches!(
+            source.kind,
+            DeclarationKind::InterfaceUsage | DeclarationKind::ConnectionUsage
+        ) {
+        source.owner
+    } else {
+        Some(reference.source())
+    };
     lookup_lexical_into(
         declarations,
         &indexes,
-        Some(reference.source()),
+        lexical_scope,
         segments[0],
         // A member-access chain is never a Redefinition reference.
         LookupTarget {
