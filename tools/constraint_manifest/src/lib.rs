@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 // Schema 17 preserves typed provenance for official corrections to erroneous library-anchor
 // spellings in the pinned normative constraints.
 // The committed manifest is refreshed only at the coordinated publication barrier.
-pub const SCHEMA_VERSION: u32 = 18;
+pub const SCHEMA_VERSION: u32 = 19;
 
 /// Closed identity of every specification the manifest admits.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -91,6 +91,11 @@ pub enum LibraryAnchorCorrectionIssue {
     Kerml11_207,
     Kerml11_205,
     Sysml21_348,
+    /// SYSML21-301 "Viewpoint specialization constraints are incorrect": clause 8.3.26.8/8.3.26.9
+    /// name `Views::Viewpoint` / `Views::viewpoints`, but the 8.4.22 semantics, the 2026-04
+    /// `Views.sysml` library, and the official pilot implementation all use `Views::ViewpointCheck`
+    /// / `Views::viewpointChecks`.
+    Sysml21_301,
 }
 
 impl ConstraintManifest {
@@ -158,7 +163,11 @@ impl ConstraintManifest {
             let source_matches = entry
                 .conditional_specializes_from_library
                 .as_ref()
-                .is_some_and(|contract| contract.anchor == correction.source_anchor);
+                .is_some_and(|contract| contract.anchor == correction.source_anchor)
+                || entry
+                    .specializes_from_library
+                    .as_ref()
+                    .is_some_and(|contract| contract.anchor == correction.source_anchor);
             let exact_correction = matches!(
                 (
                     correction.rule_id.as_str(),
@@ -181,6 +190,16 @@ impl ConstraintManifest {
                     "Connections::BinaryConnections",
                     "Connections::BinaryConnection",
                     LibraryAnchorCorrectionIssue::Sysml21_348,
+                ) | (
+                    "sysml-2.0:8.3.26.8:checkViewpointDefinitionSpecialization",
+                    "Views::Viewpoint",
+                    "Views::ViewpointCheck",
+                    LibraryAnchorCorrectionIssue::Sysml21_301,
+                ) | (
+                    "sysml-2.0:8.3.26.9:checkViewpointUsageSpecialization",
+                    "Views::viewpoints",
+                    "Views::viewpointChecks",
+                    LibraryAnchorCorrectionIssue::Sysml21_301,
                 )
             );
             if !source_matches || !exact_correction {
@@ -194,6 +213,8 @@ impl ConstraintManifest {
             "kerml-1.0:8.3.4.6.3:checkStepEnclosedPerformanceSpecialization",
             "kerml-1.0:8.3.4.6.3:checkStepSubperformanceSpecialization",
             "sysml-2.0:8.3.13.3:checkConnectionDefinitionBinarySpecialization",
+            "sysml-2.0:8.3.26.8:checkViewpointDefinitionSpecialization",
+            "sysml-2.0:8.3.26.9:checkViewpointUsageSpecialization",
         ] {
             if self.find_rule(rule_id).is_some() && !corrected_rules.contains(rule_id) {
                 return Err(format!(
@@ -2232,7 +2253,7 @@ rule_id = "testml-1.0:Core::Element:deriveOwner"
             .join("../..")
             .join("specifications/constraint_manifest.toml");
         let mut manifest = ConstraintManifest::load_toml(&manifest_path).unwrap();
-        assert_eq!(manifest.library_anchor_corrections.len(), 3);
+        assert_eq!(manifest.library_anchor_corrections.len(), 5);
         assert_eq!(
             manifest.library_anchor_corrections[0].issue,
             LibraryAnchorCorrectionIssue::Kerml11_207
@@ -2244,6 +2265,23 @@ rule_id = "testml-1.0:Core::Element:deriveOwner"
         assert_eq!(
             manifest.library_anchor_corrections[2].issue,
             LibraryAnchorCorrectionIssue::Sysml21_348
+        );
+        assert_eq!(
+            manifest.library_anchor_corrections[3].issue,
+            LibraryAnchorCorrectionIssue::Sysml21_301
+        );
+        assert_eq!(
+            manifest.library_anchor_corrections[4].issue,
+            LibraryAnchorCorrectionIssue::Sysml21_301
+        );
+        // The two SYSML21-301 corrections fix a plain `specializes_from_library` contract, not the
+        // `conditional_*` shape the first three use.
+        assert_eq!(
+            manifest.executable_library_anchor(
+                "sysml-2.0:8.3.26.9:checkViewpointUsageSpecialization",
+                "Views::viewpoints",
+            ),
+            "Views::viewpointChecks"
         );
 
         let removed = manifest.library_anchor_corrections.pop().unwrap();

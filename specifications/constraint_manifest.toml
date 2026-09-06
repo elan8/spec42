@@ -1,4 +1,4 @@
-schema_version = 18
+schema_version = 19
 
 [[library_anchor_corrections]]
 rule_id = "kerml-1.0:8.3.4.6.3:checkStepEnclosedPerformanceSpecialization"
@@ -17,6 +17,18 @@ rule_id = "sysml-2.0:8.3.13.3:checkConnectionDefinitionBinarySpecialization"
 source_anchor = "Connections::BinaryConnections"
 corrected_anchor = "Connections::BinaryConnection"
 issue = "sysml21_348"
+
+[[library_anchor_corrections]]
+rule_id = "sysml-2.0:8.3.26.8:checkViewpointDefinitionSpecialization"
+source_anchor = "Views::Viewpoint"
+corrected_anchor = "Views::ViewpointCheck"
+issue = "sysml21_301"
+
+[[library_anchor_corrections]]
+rule_id = "sysml-2.0:8.3.26.9:checkViewpointUsageSpecialization"
+source_anchor = "Views::viewpoints"
+corrected_anchor = "Views::viewpointChecks"
+issue = "sysml21_301"
 
 [[specifications]]
 name = "KerML"

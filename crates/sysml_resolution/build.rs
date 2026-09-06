@@ -293,9 +293,11 @@ fn main() {
         .flat_map(|specification| &specification.constraints)
     {
         if let Some(contract) = &entry.specializes_from_library {
+            let anchor =
+                manifest.executable_library_anchor(&entry.rule_id, contract.anchor.as_str());
             specializations.push(format!(
                 "    LibrarySpecializationRule {{ rule_id: {:?}, metaclass: {:?}, anchor: {:?} }},",
-                entry.rule_id, entry.metaclass, contract.anchor
+                entry.rule_id, entry.metaclass, anchor
             ));
         }
         if let Some(contract) = &entry.conditional_specializes_from_library {
