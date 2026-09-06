@@ -456,6 +456,49 @@ fn use_case_definition_member_nested_action_usage_lowers_to_a_declaration() {
 }
 
 #[test]
+fn use_case_body_first_then_flow_lowers_through_the_shared_action_machinery() {
+    // A case body is a SysML `ActionBody`, so `first <node>;` / `then <target>;` /
+    // `then done;` / `then use case <name> { … }` are ordinary members. Since parser
+    // `elan8/sysml-v2-parser#138` they parse into the shared `FirstStmt` / `ThenAction`
+    // nodes and lower through the same `lower_first_stmt` / `lower_then_action` the action
+    // and state-action bodies use -- no `unsupported_use_case_definition_member`.
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \taction def Scenario;\n\
+         \tuse case run {\n\
+         \t\tsubject robot;\n\
+         \t\tfirst start;\n\
+         \t\tthen action mission : Scenario;\n\
+         \t\tthen done;\n\
+         \t\tthen use case followUp { }\n\
+         \t}\n\
+         }\n",
+    );
+    assert!(
+        !output.contains("unsupported_use_case_definition_member"),
+        "the flow members must be modelled, not reported as unsupported:\n{output}"
+    );
+    assert!(
+        output.contains("(kind succession)")
+            && output.contains("(succession (reference \"start\"))"),
+        "`first start;` should lower to a succession referencing `start`:\n{output}"
+    );
+    assert!(
+        output.contains("(kind then-continuation)")
+            && output.contains("(thenTarget (reference \"done\"))"),
+        "`then done;` should lower to a then-continuation referencing `done`:\n{output}"
+    );
+    assert!(
+        output.contains("(qualified-name \"Demo::run::mission\"))) (kind action)"),
+        "`then action mission : Scenario;` should lower to an owned action:\n{output}"
+    );
+    assert!(
+        output.contains("(qualified-name \"Demo::run::followUp\"))) (kind use-case)"),
+        "`then use case followUp` should lower to a nested use case usage:\n{output}"
+    );
+}
+
+#[test]
 fn item_def_lowers_to_a_declaration() {
     let output = build_semantic_sexpr(
         "package Demo {\n\
