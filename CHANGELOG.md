@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.51.0] - 2026-09-06
+
+- **The bundled standard library is never diagnosed as a workspace document.** Opening any
+  project in the VS Code extension produced ~150 diagnostics against the server-bundled SysML v2
+  standard library itself. Two causes: the debounced workspace sweep did not exclude the
+  `standard_library_paths` root (only the KPAR/domain `library_paths` root), and -- the real
+  bug -- `ProjectRegistry::admitted_library_paths` built its library-root URLs as
+  `file:///C:/...` while every indexed document URI is normalised to a lower-case drive letter
+  (`file:///c:/...`), so the lexical "is this path under a library root" check never matched and
+  every bundled-stdlib file was treated as an authored workspace file. The sweep now excludes
+  both library-root sets, and manifest-admitted library roots are routed through the same URI
+  normalisation as document URIs. Fixes #136.
+
+- **`first` / `then` / `then done` succession members in a use-case, `analysis`, or
+  `verification` body lower.** A `CaseBodyItem` is an `ActionBodyItem`, so these bodies may carry
+  the same action-flow successions as an action body. The parser bump below makes them parse into
+  the shared `FirstStmt` / `ThenAction` nodes; `lower_case_family_def_body` now lowers them
+  through the same `lower_first_stmt` / `lower_then_action` used by action definitions and
+  `entry` / `do` / `exit` state bodies, and lowers `then use case <name> { ... }` through
+  `lower_use_case_usage`. Previously each one was reported as
+  `unsupported_use_case_definition_member` (8 occurrences in the robot-vacuum showcase). Fixes #138.
+
+- **The viewpoint specialization constraints anchor to the names the 2026-04 standard library
+  actually publishes.** `checkViewpointDefinitionSpecialization` and
+  `checkViewpointUsageSpecialization` referenced `Views::Viewpoint` / `Views::viewpoints`, but
+  the library renamed those to `Views::ViewpointCheck` / `Views::viewpointChecks` (OMG erratum
+  SYSML21-301), so a model with an authored viewpoint reported `missing_library_anchor`. Added
+  the two `[[library_anchor_corrections]]` entries (`sysml21_301`, constraint-manifest schema
+  19), and the `build.rs` code path that emits `specializes_from_library` constraints now routes
+  its anchor through `executable_library_anchor`. Fixes #139.
+
+- **`verify requirement <feature-chain>;` gets a targeted diagnostic.** This form is invalid
+  SysML v2 -- the `requirement` keyword after `verify` needs a full
+  `ConstraintUsageDeclaration`, not a bare reference -- but the parser recovered it generically
+  as `recovered_requirement_body_element`. The pinned parser revision
+  (`0a76cb6` -> `9f00caf`, `elan8/sysml-v2-parser#139`) now emits
+  `verify_requirement_expects_declaration` with the fix suggestion `verify <chain>;`; the
+  change is diagnostic-only, with no AST shape effect. Fixes #140.
+
+- **The Library view's version badges line up.** Each section header laid the version pill and a
+  variable number of action buttons in a single `margin-left: auto` flex trail, so every
+  section's badge stopped at a different x. The header is now a two-column grid (title |
+  version) so every badge ends at the same right edge, and the per-section action buttons moved
+  to their own right-aligned row below the header. Fixes #144.
+
 - **Retired the VitePress documentation site (`docs-site/`, deployed to
   `elan8.github.io/spec42`) in favor of GitHub-native docs.** The hosted site duplicated content
   that already lived (or now lives) in `README.md` and `docs/`, and its second copy of the
