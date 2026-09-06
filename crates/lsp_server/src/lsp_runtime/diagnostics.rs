@@ -155,23 +155,19 @@ pub(crate) async fn publish_workspace_diagnostics(
             .filter(|uri| snap.index.contains_key(*uri))
             .cloned()
             .collect()
-    } else if diagnose_library_paths_enabled(runtime_config) {
-        // `spec42.development.diagnoseLibraryPaths` opt-in: include library paths anyway,
-        // trading the performance guardrail below for full coverage while developing or
-        // debugging a library through a local override.
-        snap.index.keys().cloned().collect()
     } else {
         // Excludes library paths deliberately — this pass is O(project files) and runs on a
         // debounce after every edit; including the bundled standard library and any configured
         // KPAR libraries here would make every keystroke revalidate the whole library corpus.
         // See DEVELOPMENT.md's performance checks. `publish_document_diagnostics` still
         // diagnoses individual library files when they're actually opened/edited (no exclusion
-        // there — see its comment), so this only affects the *background* cross-file sweep.
-        snap.index
-            .keys()
-            .filter(|uri| !util::uri_under_any_library(uri, &snap.library_paths))
-            .cloned()
-            .collect()
+        // there — see its comment), so this only affects the *background* cross-file sweep. The
+        // `spec42.development.diagnoseLibraryPaths` opt-in trades that guardrail for full
+        // coverage while developing a library through a local override.
+        crate::session::state::workspace_sweep_targets(
+            &*snap,
+            diagnose_library_paths_enabled(runtime_config),
+        )
     };
 
     let doc_count = docs.len();
