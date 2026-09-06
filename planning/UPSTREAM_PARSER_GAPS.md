@@ -4,16 +4,22 @@ This is the active record of information the parser must preserve or distinguish
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
 The canonical parser currently pinned by the root workspace is
-`elan8/sysml-v2-parser@a5557ea0c28d5aac55206b8fa55861c2db098f71` (parser `main`, PR
-`elan8/sysml-v2-parser#135` on top of `#133`, the Apollo 11 normative-form fixes for
-`elan8/sysml-v2-parser#132` / `#134` / `elan8/spec42#100`). All five forms now reach typed
-lowering: forms 1, 3, and 5 (keyword-less feature usage in use-case-family bodies, multiplicity
-before typing on nested action usages, and the `abstract` prefix on `def`-less connection usages)
-landed with `#133`; `#135` closes form 2 (`return :>` anonymous subsetting, whose chained
-`->select { … }->collect { … }->sum()` value the parser now retains instead of recovering) and
-form 4 (`do action <name> { <body> }` routes the name to `declared_name`, and spec42's
-`lower_state_{entry,do,exit}_action` now declares the nested action and walks its body). Gaps 83
-and 84 are removed. The gap list
+`elan8/sysml-v2-parser@0a76cb67d2895ce66c59bd3de36e3b4c262e129d` (parser `main`,
+`PARSE_AST_VERSION` 256), which adds `elan8/sysml-v2-parser#138` (`elan8/spec42#138`): a use-case /
+`analysis` / `verification` body is a SysML `ActionBody`, so `first`/`then`/`then done` now parse
+into the shared `FirstStmt` / `ThenAction` nodes (removing the bespoke `FirstSuccession` /
+`ThenDone`), and spec42's `lower_case_family_def_body` lowers them through the same
+`lower_first_stmt` / `lower_then_action` the action-def and `entry`/`do`/`exit` state bodies use,
+plus `then use case <name> { … }` through `lower_use_case_usage`. This is on top of
+`a5557ea` (the Apollo 11 normative-form fixes for `elan8/sysml-v2-parser#132` / `#134` /
+`elan8/spec42#100`) and `378e41b` (`#128`/`#137` item-usage trailing `:>`). The five Apollo forms
+all reach typed lowering: forms 1, 3, and 5 (keyword-less feature usage in use-case-family bodies,
+multiplicity before typing on nested action usages, and the `abstract` prefix on `def`-less
+connection usages) landed with `#133`; `#135` closes form 2 (`return :>` anonymous subsetting,
+whose chained `->select { … }->collect { … }->sum()` value the parser now retains instead of
+recovering) and form 4 (`do action <name> { <body> }` routes the name to `declared_name`, and
+spec42's `lower_state_{entry,do,exit}_action` now declares the nested action and walks its body).
+Gaps 83 and 84 are removed. The gap list
 below was last re-exercised against `65c67de8a38269f8bcaf1bc42500bde30083ff81` (the merge commit
 for `elan8/sysml-v2-parser#129`, including the follow-up attribute-body recovery boundary fix),
 one spelling per document through `spec42 check` (a
