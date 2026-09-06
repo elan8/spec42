@@ -1812,8 +1812,19 @@ impl SemanticModelBuilder {
                 UseCaseDefBodyElement::ForLoop(node) => {
                     self.lower_for_loop(document, owner, unsupported, node.span, &node.value)?;
                 }
+                // A case body is a SysML `ActionBody`, so `first <node>;` / `then <target>;`
+                // (including `then done;`) are the shared action-flow members. `then use case
+                // <name> { ... }` stays use-case-specific -- it declares a nested use case usage
+                // as the successor. All three lower through the same machinery the action-def and
+                // `entry`/`do`/`exit` state action bodies already use.
+                UseCaseDefBodyElement::FirstStmt(node) => {
+                    self.lower_first_stmt(document, owner, unsupported, node)?;
+                }
                 UseCaseDefBodyElement::ThenAction(node) => {
                     self.lower_then_action(document, owner, unsupported, node)?;
+                }
+                UseCaseDefBodyElement::ThenUseCaseUsage(node) => {
+                    self.lower_use_case_usage(document, Some(owner), &node.value.use_case)?;
                 }
                 UseCaseDefBodyElement::FlowUsage(node) => {
                     self.lower_flow_usage(document, owner, node)?;
@@ -1840,9 +1851,6 @@ impl SemanticModelBuilder {
                 }
                 UseCaseDefBodyElement::MetadataKeywordUsage(_)
                 | UseCaseDefBodyElement::ActorRedefinitionAssignment(_)
-                | UseCaseDefBodyElement::FirstSuccession(_)
-                | UseCaseDefBodyElement::ThenUseCaseUsage(_)
-                | UseCaseDefBodyElement::ThenDone(_)
                 | UseCaseDefBodyElement::RefRedefinition(_) => {
                     self.push_unsupported(document, unsupported, element.span)
                 }
