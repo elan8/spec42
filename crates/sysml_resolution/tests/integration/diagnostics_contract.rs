@@ -207,6 +207,48 @@ fn filter_with_unresolvable_metadata_target_stays_unresolved() {
 /// in `lib.rs` for the full assertion); it no longer falls through to the generic
 /// unsupported-member diagnostic this test originally locked in per commit `f4ae83f7`.
 #[test]
+fn verify_requirement_bare_reference_surfaces_the_targeted_parser_diagnostic() {
+    // Parser `elan8/sysml-v2-parser#139` (elan8/spec42#140): `verify requirement <feature-chain>;`
+    // is invalid (the `requirement` keyword needs a declaration), and the parser now recovers it
+    // as `verify_requirement_expects_declaration` with a `verify <chain>;` fix. spec42 passes the
+    // parser's code and message through verbatim -- this locks that it does not regress to the
+    // generic `recovered_requirement_body_element`.
+    let request = sysml_resolution::BuildRequest::new(
+        vec![sysml_resolution::SourceInput::new(
+            "memory://test/verify.sysml",
+            "package Demo {\n\
+             \trequirement def R;\n\
+             \tpart def Sys { requirement recoverFromStall : R; }\n\
+             \tpart rss : Sys;\n\
+             \tverification verifyMission {\n\
+             \t\tsubject task : Sys;\n\
+             \t\tobjective { verify requirement rss.recoverFromStall; }\n\
+             \t}\n\
+             }\n"
+            .to_string(),
+            sysml_resolution::SourceKind::Workspace,
+        )],
+        sysml_resolution::ConstructionSchedule::Sequential,
+        "test-contract-v1",
+    )
+    .unwrap();
+    let published = sysml_resolution::build(request).unwrap();
+    let mut output = String::new();
+    published
+        .debug()
+        .write_diagnostics_sexpr(&mut output)
+        .unwrap();
+    assert!(
+        output.contains("verify_requirement_expects_declaration"),
+        "expected the targeted parser diagnostic, got:\n{output}"
+    );
+    assert!(
+        !output.contains("recovered_requirement_body_element"),
+        "the targeted diagnostic replaces the generic recovery, got:\n{output}"
+    );
+}
+
+#[test]
 fn first_then_succession_inside_an_action_def_no_longer_surfaces_as_unsupported() {
     let request = sysml_resolution::BuildRequest::new(
         vec![sysml_resolution::SourceInput::new(
