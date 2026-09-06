@@ -348,24 +348,30 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       background: var(--vscode-editor-background);
     }
     .section-head {
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
-      gap: 6px;
+      column-gap: 8px;
     }
     .title {
       font-weight: 600;
-      flex: 1;
       min-width: 0;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .section-trail {
+    /* The version badge sits in its own right-aligned grid column so every
+       section's badge ends at the same edge regardless of badge width. */
+    .section-version {
       display: flex;
-      align-items: center;
+      justify-content: flex-end;
+    }
+    .section-actions {
+      display: flex;
       gap: 4px;
-      margin-left: auto;
-      flex-shrink: 0;
+      margin-top: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
     .pill {
       font-size: 11px;
@@ -374,6 +380,7 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       border: 1px solid transparent;
       white-space: nowrap;
       text-align: right;
+      font-variant-numeric: tabular-nums;
     }
     .pill.ok { color: var(--vscode-testing-iconPassed); border-color: currentColor; }
     .pill.warning { color: var(--vscode-editorWarning-foreground); border-color: currentColor; }
@@ -448,10 +455,16 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       return installed || pinned;
     }
 
-    function sectionTrail(...children) {
-      const trail = el('div', 'section-trail');
-      children.filter(Boolean).forEach(child => trail.appendChild(child));
-      return trail;
+    function sectionVersion(pill) {
+      const cell = el('div', 'section-version');
+      if (pill) cell.appendChild(pill);
+      return cell;
+    }
+
+    function sectionActions(...children) {
+      const row = el('div', 'section-actions');
+      children.filter(Boolean).forEach(child => row.appendChild(child));
+      return row;
     }
 
     function renderDashboard(status) {
@@ -461,7 +474,7 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       const stdHead = el('div', 'section-head');
       stdHead.title = 'Release ' + (status?.stdlib?.pinnedVersion || 'unknown') + ' / ' + countText(status?.stdlib?.packageCount, status?.stdlib?.symbolCount) + ' / server-bundled';
       stdHead.appendChild(el('div', 'title', 'Standard Library'));
-      stdHead.appendChild(sectionTrail(el('span', 'pill ok', status?.stdlib?.pinnedVersion || 'bundled')));
+      stdHead.appendChild(sectionVersion(el('span', 'pill ok', status?.stdlib?.pinnedVersion || 'bundled')));
       std.appendChild(stdHead);
       nodes.push(std);
 
@@ -484,8 +497,9 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
           library.resolvedPath || ''
         ].filter(Boolean).join(' / ');
         head.appendChild(el('div', 'title', library.displayName || library.id || 'Library'));
-        const trailButtons = [
-          el('span', 'pill ' + pillClass, versionLabel(library)),
+        head.appendChild(sectionVersion(el('span', 'pill ' + pillClass, versionLabel(library))));
+        section.appendChild(head);
+        const actionButtons = [
           button(
             disabled ? 'Enable library' : 'Disable library',
             disabled ? 'check' : 'circle-slash',
@@ -494,17 +508,16 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
           )
         ];
         if (library.sourceKind === 'override' || library.sourceKind === 'custom') {
-          trailButtons.push(
+          actionButtons.push(
             button('Remove local/custom library path', 'trash', 'removeLocalLibraryPath', { id: library.id })
           );
         } else {
-          trailButtons.push(
+          actionButtons.push(
             button('Use a local library path for development', 'folder-opened', 'setLocalLibraryPath', { id: library.id })
           );
         }
-        trailButtons.push(button('Library details', 'info', 'showKparLibraryInfo', { id: library.id }));
-        head.appendChild(sectionTrail(...trailButtons));
-        section.appendChild(head);
+        actionButtons.push(button('Library details', 'info', 'showKparLibraryInfo', { id: library.id }));
+        section.appendChild(sectionActions(...actionButtons));
         nodes.push(section);
       });
 
@@ -514,10 +527,8 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
       const missing = Array.isArray(custom.missingPaths) ? custom.missingPaths : [];
       customHead.title = countText(custom.packageCount, custom.symbolCount) + (missing.length ? ' / ' + String(missing.length) + ' missing' : '');
       customHead.appendChild(el('div', 'title', 'Custom Libraries'));
-      customHead.appendChild(sectionTrail(
-        el('span', 'pill ' + (missing.length ? 'warning' : 'info'), String((custom.configuredPaths || []).length) + ' path(s)'),
-        button('Add a KPAR library (directory or .kpar file)', 'add', 'setLocalLibraryPath', {}),
-        button('Manage custom library paths', 'settings-gear', 'manageCustomLibraries')
+      customHead.appendChild(sectionVersion(
+        el('span', 'pill ' + (missing.length ? 'warning' : 'info'), String((custom.configuredPaths || []).length) + ' path(s)')
       ));
       customSection.appendChild(customHead);
       if (missing.length) {
@@ -525,6 +536,10 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
         missing.forEach(path => list.appendChild(el('li', '', path)));
         customSection.appendChild(list);
       }
+      customSection.appendChild(sectionActions(
+        button('Add a KPAR library (directory or .kpar file)', 'add', 'setLocalLibraryPath', {}),
+        button('Manage custom library paths', 'settings-gear', 'manageCustomLibraries')
+      ));
       nodes.push(customSection);
 
       const sysand = status?.sysand || {};
@@ -542,20 +557,21 @@ export class LibraryWebviewViewProvider implements vscode.WebviewViewProvider {
           sysand.lockPresent ? 'lockfile present' : ''
         ].filter(Boolean).join(' / ');
         sysandHead.appendChild(el('div', 'title', 'Sysand Dependencies'));
-        sysandHead.appendChild(sectionTrail(el('span', 'pill ' + sysandClass, sysandLabel)));
+        sysandHead.appendChild(sectionVersion(el('span', 'pill ' + sysandClass, sysandLabel)));
         sysandSection.appendChild(sysandHead);
         if (Array.isArray(sysand.warnings) && sysand.warnings.length) {
           const list = el('ul', 'warning-list');
           sysand.warnings.forEach(warning => list.appendChild(el('li', '', warning)));
           sysandSection.appendChild(list);
         }
-        const sysandActions = el('div', 'actions');
-        sysandActions.appendChild(button('Refresh dependency roots and restart language server', 'sync', 'refreshSysandDependencies'));
+        const sysandActionButtons = [
+          button('Refresh dependency roots and restart language server', 'sync', 'refreshSysandDependencies')
+        ];
         if (!sysand.installed && sysand.manifestPresent) {
-          sysandActions.appendChild(button('Copy Sysand install command', 'copy', 'copySysandInstall'));
-          sysandActions.appendChild(button('Open Sysand documentation', 'link-external', 'openSysandDocs'));
+          sysandActionButtons.push(button('Copy Sysand install command', 'copy', 'copySysandInstall'));
+          sysandActionButtons.push(button('Open Sysand documentation', 'link-external', 'openSysandDocs'));
         }
-        sysandSection.appendChild(sysandActions);
+        sysandSection.appendChild(sectionActions(...sysandActionButtons));
         nodes.push(sysandSection);
       }
 
