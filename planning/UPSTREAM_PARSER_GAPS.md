@@ -4,8 +4,12 @@ This is the active record of information the parser must preserve or distinguish
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
 The canonical parser currently pinned by the root workspace is
-`elan8/sysml-v2-parser@0a76cb67d2895ce66c59bd3de36e3b4c262e129d` (parser `main`,
-`PARSE_AST_VERSION` 256), which adds `elan8/sysml-v2-parser#138` (`elan8/spec42#138`): a use-case /
+`elan8/sysml-v2-parser@9f00caf353581a3c0ccc13676c5d8829f90708b3` (parser `main`,
+`PARSE_AST_VERSION` 256). It adds `elan8/sysml-v2-parser#139` (`elan8/spec42#140`): a targeted
+`verify_requirement_expects_declaration` recovery for the invalid `verify requirement
+<feature-chain>;` form (was the generic `recovered_requirement_body_element`) -- a
+diagnostic-only change with no AST shape effect, so spec42 passes the code through unchanged. And
+`elan8/sysml-v2-parser#138` (`elan8/spec42#138`): a use-case /
 `analysis` / `verification` body is a SysML `ActionBody`, so `first`/`then`/`then done` now parse
 into the shared `FirstStmt` / `ThenAction` nodes (removing the bespoke `FirstSuccession` /
 `ThenDone`), and spec42's `lower_case_family_def_body` lowers them through the same
