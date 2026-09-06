@@ -34,6 +34,7 @@ jobs:
         with:
           toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           components: clippy
+          targets: wasm32-unknown-unknown
 
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
@@ -101,6 +102,11 @@ jobs:
             .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
             .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
           key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
+
+      # Rust integration and lib tests execute the real diagram guest; build the
+      # repository generator plugins first, matching scripts/minici.sh.
+      - name: Build repository generator plugins
+        run: SPEC42_PACKAGE_REPOSITORY_GENERATORS=0 scripts/build-repository-generator-plugins.sh
 
       - name: Rust tests
         run: |
