@@ -953,10 +953,34 @@ impl SemanticModelBuilder {
     /// The flattened path remains the canonical sequence of authored feature names. Each cast is
     /// also an ordinary typed `TypeCheckTarget` reference and the member-access fact records the
     /// exact segment boundary at which that resolved type becomes the scope for later hops.
+    ///
+    /// The resulting reference is tagged `ReferenceKind::MemberAccessOperand`. Callers whose
+    /// operand carries a distinct authored role that the resolver already walks hop-by-hop
+    /// (currently `AllocateSource` / `AllocateTarget`, both in `resolve`'s `member_access_slots`)
+    /// use [`Self::push_member_access_expression_with_kind`] to keep that role.
     pub(crate) fn push_member_access_expression(
         &mut self,
         source: DeclarationId,
         document: DocumentIdx,
+        node: &Node<Expression>,
+    ) -> Result<Option<AuthoredReferenceId>, ConstructionError> {
+        self.push_member_access_expression_with_kind(
+            source,
+            document,
+            ReferenceKind::MemberAccessOperand,
+            node,
+        )
+    }
+
+    /// [`Self::push_member_access_expression`] tagging the flattened chain with `kind` rather than
+    /// the default `ReferenceKind::MemberAccessOperand`. `kind` must be one the resolver routes
+    /// through `resolve_member_access_reference` (`member_access_slots`): a dotted operand tagged
+    /// with a kind that only the lexical pass handles would silently never resolve.
+    pub(crate) fn push_member_access_expression_with_kind(
+        &mut self,
+        source: DeclarationId,
+        document: DocumentIdx,
+        kind: ReferenceKind,
         node: &Node<Expression>,
     ) -> Result<Option<AuthoredReferenceId>, ConstructionError> {
         fn collect(
@@ -1024,7 +1048,8 @@ impl SemanticModelBuilder {
                 target: target_reference,
             });
         }
-        let reference = self.push_member_access_reference(source, document, &chain, node.span)?;
+        let reference =
+            self.push_member_access_reference_with_kind(source, document, kind, &chain, node.span)?;
         self.references[reference.index()].member_access_narrowings = narrowings.into_boxed_slice();
         Ok(Some(reference))
     }

@@ -615,8 +615,22 @@ impl SemanticModelBuilder {
                 })?;
             }
             Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
+                // A dotted `allocate` end keeps its `AllocateSource` / `AllocateTarget` role --
+                // the resolver walks both hop-by-hop (`member_access_slots`), and the endpoint
+                // completeness check reads them by kind. Every other operand role (`satisfy`,
+                // `bind`, flows, …) is only recognised by the lexical pass, which does not walk a
+                // dotted chain, so those stay `MemberAccessOperand`.
+                let member_access_kind = match kind {
+                    ReferenceKind::AllocateSource | ReferenceKind::AllocateTarget => kind,
+                    _ => ReferenceKind::MemberAccessOperand,
+                };
                 if self
-                    .push_member_access_expression(owner, document, node)?
+                    .push_member_access_expression_with_kind(
+                        owner,
+                        document,
+                        member_access_kind,
+                        node,
+                    )?
                     .is_none()
                 {
                     self.push_unsupported(document, family, node.span);
