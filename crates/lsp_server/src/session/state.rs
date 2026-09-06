@@ -225,6 +225,32 @@ pub(crate) fn publication_inputs(
     (documents, reported, state.standard_library_availability())
 }
 
+/// The documents the debounced workspace-wide diagnostics sweep republishes.
+///
+/// The sweep is O(project files) and runs on a debounce after every edit, so library files are
+/// excluded unless `diagnose_library_paths` (the `spec42.development.diagnoseLibraryPaths`
+/// opt-in) asks for full coverage. Both root sets have to be checked: `library_paths` holds only
+/// the configured KPAR / domain libraries, while the bundled standard library lives in
+/// `standard_library_paths`. Checking `library_paths` alone let every bundled-stdlib file the
+/// startup closure parsed into the index fall through and get re-diagnosed on every keystroke.
+/// Mirrors the library classification in [`publication_inputs`].
+pub(crate) fn workspace_sweep_targets(
+    state: &impl DocumentStore,
+    diagnose_library_paths: bool,
+) -> Vec<Url> {
+    let (library_paths, standard_library_paths) = state.library_roots();
+    state
+        .index()
+        .keys()
+        .filter(|uri| {
+            diagnose_library_paths
+                || (!crate::common::util::uri_under_any_library(uri, library_paths)
+                    && !crate::common::util::uri_under_any_library(uri, standard_library_paths))
+        })
+        .cloned()
+        .collect()
+}
+
 /// Replaces the symbol projection from the committed immutable publication.
 pub(crate) fn refresh_symbol_table_from_publication(state: &mut ServerState) {
     let model = Arc::clone(state.session.current());
@@ -262,6 +288,42 @@ mod tests {
     fn server_state_is_clone() {
         fn assert_clone<T: Clone>() {}
         assert_clone::<ServerState>();
+    }
+
+    #[test]
+    fn workspace_sweep_excludes_both_library_root_sets() {
+        // `file:///libs/lib.sysml` sits under `standard_library_paths` (via `state_with`);
+        // add a generic KPAR library file under `library_paths` too.
+        let mut state = state_with("package Lib {}", "package W {}");
+        state
+            .library_paths
+            .push(Url::parse("file:///kpar/domain/").expect("kpar root"));
+        state.index.insert(
+            Url::parse("file:///kpar/domain/domain.sysml").expect("kpar uri"),
+            IndexEntry::for_test(
+                &Url::parse("file:///kpar/domain/domain.sysml").expect("kpar uri"),
+                "package Domain {}",
+            ),
+        );
+
+        // Default sweep: only the workspace document, neither library file.
+        let targets = workspace_sweep_targets(&state, false);
+        assert_eq!(
+            targets,
+            vec![Url::parse("file:///model.sysml").expect("workspace uri")],
+        );
+
+        // `diagnoseLibraryPaths` opt-in: every indexed document, libraries included.
+        let mut all = workspace_sweep_targets(&state, true);
+        all.sort();
+        assert_eq!(
+            all,
+            vec![
+                Url::parse("file:///kpar/domain/domain.sysml").expect("kpar uri"),
+                Url::parse("file:///libs/lib.sysml").expect("library uri"),
+                Url::parse("file:///model.sysml").expect("workspace uri"),
+            ],
+        );
     }
 
     fn state_with(library: &str, workspace: &str) -> ServerState {
