@@ -222,7 +222,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-generator-protocol"
-version = "0.50.0"
+version = "0.51.0"
 dependencies = [
  "postcard-schema",
  "serde",
@@ -230,7 +230,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-generator-sdk"
-version = "0.50.0"
+version = "0.51.0"
 dependencies = [
  "postcard",
  "serde",
