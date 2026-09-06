@@ -360,12 +360,12 @@ impl ProjectRegistry {
                 admission
                     .library_roots
                     .iter()
-                    .filter_map(|root| Url::from_directory_path(root).ok())
+                    .filter_map(|root| library_root_url(root))
                     .collect(),
                 admission
                     .standard_library_roots
                     .iter()
-                    .filter_map(|root| Url::from_directory_path(root).ok())
+                    .filter_map(|root| library_root_url(root))
                     .collect(),
                 admission.standard_library_availability,
                 None,
@@ -392,6 +392,19 @@ impl ProjectRegistry {
 
 fn canonicalize_or_self(path: &Path) -> PathBuf {
     std::fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf())
+}
+
+/// A manifest-admitted library root as a URL normalised the same way indexed document URIs are.
+///
+/// `Url::from_directory_path` alone keeps the platform's raw drive-letter casing (`file:///C:/…`),
+/// while scanned document URIs are lowercased by `normalize_file_uri` (`file:///c:/…`). Without
+/// this the two disagree and `uri_under_any` — the library/workspace classifier used by the
+/// diagnostics sweep and `publication_inputs` — never matches, so every admitted-project stdlib
+/// file is treated as a workspace document and diagnosed.
+fn library_root_url(path: &Path) -> Option<Url> {
+    Url::from_directory_path(path)
+        .ok()
+        .map(|uri| crate::common::util::normalize_file_uri(&uri))
 }
 
 fn boundary_root_for_uri(uri: &Url, workspace_roots: &[Url]) -> Option<PathBuf> {
@@ -511,6 +524,30 @@ mod tests {
         assert_eq!(
             snapshot.index.get(&uri).unwrap().content(),
             "package Unsaved;"
+        );
+    }
+
+    /// A manifest-admitted library root must classify its own files as library files. Before the
+    /// fix, `library_root_url` was a bare `Url::from_directory_path` whose drive-letter casing
+    /// (`file:///C:/…`) disagreed with the lowercased casing of scanned document URIs
+    /// (`file:///c:/…` from `normalize_file_uri`), so `uri_under_any` never matched and every
+    /// stdlib file under an admitted project was diagnosed as a workspace document.
+    #[test]
+    fn library_root_url_matches_normalized_document_uris_under_it() {
+        let temp = tempfile::tempdir().unwrap();
+        let lib_dir = temp.path().join("Kernel_Semantic_Library-1.0.0");
+        fs::create_dir(&lib_dir).unwrap();
+        let lib_file = lib_dir.join("Links.kerml");
+        fs::write(&lib_file, "package Links;").unwrap();
+
+        let root_url = library_root_url(&lib_dir).expect("library root url");
+        let file_url = crate::common::util::normalize_file_uri(
+            &Url::from_file_path(&lib_file).expect("file url"),
+        );
+
+        assert!(
+            sysml_query::source::uri_under_any(&file_url, std::slice::from_ref(&root_url)),
+            "normalized document URI {file_url} must be recognised under library root {root_url}",
         );
     }
 }
