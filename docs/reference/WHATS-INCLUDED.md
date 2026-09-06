@@ -8,7 +8,7 @@ This page is generated from Spec42 product configuration so the docs stay aligne
 
 | | |
 | --- | --- |
-| Extension version | `0.50.0` |
+| Extension version | `0.51.0` |
 | Marketplace | [SysML v2 Editor (Spec42)](https://marketplace.visualstudio.com/items?itemName=Elan8.spec42) |
 | Source | [elan8/spec42](https://github.com/elan8/spec42) |
 
