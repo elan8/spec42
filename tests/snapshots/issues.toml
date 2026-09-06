@@ -163,10 +163,10 @@ owner = "omg-specification"
 summary = "Pinned KerML XMI body for checkInvocationExpressionDefaultValueBindingConnector is exactly TBD (SHA-256 036265965ea6cd2b1d3d5c8d44f9e719188af11d63d0b6ef158a5d77dfb26e30); OMG must publish an evaluable normative predicate."
 
 [[issue]]
-id = "library-gap-viewpoint-specialization-anchors"
+id = "library-gap-join-node-specialization-anchor"
 kind = "library_gap"
 owner = "spec42-libraries"
-summary = "The canonical standard library does not publish the Views::Viewpoint, Views::viewpoints, or Actions::Action::join anchors required by these generated specialization rules."
+summary = "The canonical standard library does not publish the Actions::Action::join anchor required by checkJoinNodeSpecialization (clause 8.3.17.11). The two viewpoint anchors this issue also covered are corrected to Views::ViewpointCheck / Views::viewpointChecks via SYSML21-301 (specifications/constraint_manifest.toml)."
 
 [[issue]]
 id = "library-gap-flow-end-specialization-anchors"
