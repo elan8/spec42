@@ -330,6 +330,31 @@ fn satisfy_with_an_unresolvable_satisfying_element_stays_explicitly_unresolved()
 }
 
 #[test]
+fn allocate_statement_with_a_feature_chain_end_keeps_its_allocate_role_and_no_endpoint_warning() {
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \taction def Inner { action step1; }\n\
+         \tpart def Widget;\n\
+         \tpart sys {\n\
+         \t\tpart w : Widget;\n\
+         \t\tperform action inner : Inner;\n\
+         \t\tallocate inner.step1 to w;\n\
+         \t}\n\
+         }\n",
+    );
+    assert!(
+        output.contains("(kind allocateSource)")
+            && output.contains("(authored-target \"inner::step1\")\n      (outcome (status resolved)"),
+        "expected the dotted allocate source to keep its allocateSource role and resolve, got:\n{output}"
+    );
+    assert!(
+        !output.contains("invalid_allocation_endpoints"),
+        "a feature-chain allocate end is not a missing end -- no endpoint-completeness warning \
+         should fire, got:\n{output}"
+    );
+}
+
+#[test]
 fn allocate_statement_with_an_unresolvable_target_stays_explicitly_unresolved() {
     let output = build_semantic_sexpr(
         "package Demo {\n\
