@@ -167,18 +167,37 @@ fn attach_cascade_related_information(
     output
 }
 
+/// Collapse a recovery cascade to the single diagnostic an author should fix first, while
+/// keeping every *distinct* structural parse error.
+///
+/// Cascade-family codes (`recovered_*`, `missing_semicolon`, `missing_body_or_semicolon`) that
+/// trail one syntax error are folded into one primary. But two genuinely separate mistakes --
+/// an `unexpected_keyword_in_scope` in one scope and an `unrecognized_declaration_in_scope` in a
+/// sibling scope -- are independent problems; the reader must see both, not fix one and have the
+/// next surface only then. When any independent structural error is present, the folded cascade
+/// rep is dropped as downstream noise.
 fn collapse_cascade_parse_diagnostics(
     diagnostics: Vec<SemanticDiagnostic>,
 ) -> Vec<SemanticDiagnostic> {
     let mut primary_parse: Option<SemanticDiagnostic> = None;
+    let mut independent_parse: Vec<SemanticDiagnostic> = Vec::new();
     let mut other = Vec::new();
 
     for diagnostic in diagnostics {
         if is_parse_error(&diagnostic) {
-            if primary_parse.as_ref().is_none_or(|existing| {
-                diagnostic_priority(&diagnostic) < diagnostic_priority(existing)
-            }) {
-                primary_parse = Some(diagnostic);
+            // Only genuine recovery-cascade parse errors (`recovered_*`, `missing_semicolon`,
+            // `missing_body_or_semicolon`) collapse into a single primary. A distinct structural
+            // parse error -- `unexpected_keyword_in_scope`, `unrecognized_declaration_in_scope`,
+            // an invalid identifier -- is its own problem: folding every one of them into the
+            // first hides real errors from the reader until the earlier line is edited away.
+            if is_cascade_code(&diagnostic) {
+                if primary_parse.as_ref().is_none_or(|existing| {
+                    diagnostic_priority(&diagnostic) < diagnostic_priority(existing)
+                }) {
+                    primary_parse = Some(diagnostic);
+                }
+            } else {
+                independent_parse.push(diagnostic);
             }
             continue;
         }
@@ -207,11 +226,18 @@ fn collapse_cascade_parse_diagnostics(
     }
 
     let mut output = Vec::new();
-    if let Some(primary) = primary_parse {
-        output.push(primary);
+    if independent_parse.is_empty() {
+        // No distinct structural error: the collapsed cascade rep is the one thing to fix.
+        if let Some(primary) = primary_parse {
+            output.push(primary);
+        }
+    } else {
+        // Distinct structural errors are present; any recovery cascade is downstream of them,
+        // so drop the collapsed rep and show every independent parse error in source order.
+        output.append(&mut independent_parse);
     }
-    other.sort_by_key(|d| (d.range.start.line, d.range.start.character));
     output.extend(other);
+    output.sort_by_key(|d| (d.range.start.line, d.range.start.character));
     output
 }
 
@@ -222,6 +248,7 @@ fn diagnostic_priority(diagnostic: &SemanticDiagnostic) -> u8 {
     match diagnostic.code.as_str() {
         "illegal_top_level_definition" => 0,
         "unexpected_keyword_in_scope"
+        | "unrecognized_declaration_in_scope"
         | "invalid_requirement_short_name_syntax"
         | "bare_feature_declaration_in_part_def" => 1,
         "unexpected_closing_brace" | "missing_closing_brace" => 2,
@@ -325,6 +352,58 @@ mod tests {
         );
         assert_eq!(out.len(), 1);
         assert_eq!(out[0].code, "invalid_requirement_short_name_syntax");
+    }
+
+    fn structural_parse_error(line: u32, code: &str) -> SemanticDiagnostic {
+        SemanticDiagnostic {
+            uri: uri(),
+            range: range(line),
+            severity: DiagnosticSeverity::Error,
+            source: PARSER_SOURCE.to_string(),
+            code: code.to_string(),
+            message: code.to_string(),
+            unresolved_reference_target: None,
+            related_information: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn distinct_structural_parse_errors_all_survive() {
+        // Regression: an `unexpected_keyword_in_scope` in a nested action body used to hide an
+        // `unrecognized_declaration_in_scope` on a later sibling line -- the reader fixed one
+        // error only for the "next" one to appear. Both are independent problems.
+        let out = postprocess_document_diagnostics(
+            vec![
+                structural_parse_error(3, "unexpected_keyword_in_scope"),
+                structural_parse_error(6, "unrecognized_declaration_in_scope"),
+            ],
+            PostprocessPolicy {
+                suppress_semantic_after_parse_error: true,
+            },
+        );
+        let codes: Vec<_> = out.iter().map(|d| d.code.clone()).collect();
+        assert_eq!(
+            codes,
+            vec![
+                "unexpected_keyword_in_scope".to_string(),
+                "unrecognized_declaration_in_scope".to_string(),
+            ],
+        );
+    }
+
+    #[test]
+    fn recovery_cascade_still_collapses_without_a_structural_error() {
+        let out = postprocess_document_diagnostics(
+            vec![
+                sample_parse_error(5),
+                sample_parse_error(6),
+                sample_parse_error(7),
+            ],
+            PostprocessPolicy {
+                suppress_semantic_after_parse_error: false,
+            },
+        );
+        assert_eq!(out.len(), 1, "a pure recovery cascade collapses to one");
     }
 
     #[test]
