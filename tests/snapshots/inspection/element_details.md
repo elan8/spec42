@@ -207,6 +207,12 @@ probe element_details.md 22 15
   (declaration (id (node (document "memory://snapshot/element_details.md") (qualified-name "Details::holds"))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/element_details.md") (qualified-name "Details::Vehicle"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/element_details.md") (qualified-name "Details::Safety")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

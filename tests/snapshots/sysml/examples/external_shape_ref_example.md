@@ -315,6 +315,12 @@ package ExternalShapeRefExample {
   (declaration (id (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (named (kind item) (name "envelopingBoxBatteryUnit")) (anonymous (kind default-reference) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 90))) (unit "mm"))))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/external_shape_ref_example.md") (path (named (kind package) (name "ExternalShapeRefExample")) (named (kind part) (name "myBatteryUnit")) (anonymous (kind item) (ordinal 0))))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::ExternalShapeRef")))) (value (redefines (resolved (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::purpose")))) (outcome resolved) (literal (value (kind string) (value "highLoD")))) (value (redefines (resolved (node (document "memory://snapshot/external_shape_ref_example.md") (qualified-name "ExternalShapeRefExample::ExternalShapeRef::shapeIri")))) (outcome resolved) (literal (value (kind string) (value "file:/detailed-geometry/LEMS-250W_BatteryHousing_Example.step")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

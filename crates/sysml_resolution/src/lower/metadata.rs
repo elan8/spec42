@@ -2,6 +2,7 @@
 
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
+use crate::lower::facts::MetadataAnnotationForm;
 use crate::lower::facts::MetadataAnnotationRecord;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
@@ -67,9 +68,9 @@ impl SemanticModelBuilder {
     /// bare `QualifiedReferenceId`, so its `FeatureTyping` reference is pushed directly rather
     /// than through `lower_typing_relationship`. `MetadataUsage`'s body is a plain
     /// `AttributeBody` (see `lower_metadata_def`), so owned members are lowered through
-    /// `lower_attribute_body`. The `about` clause (annotation targets) is deliberately not
-    /// lowered here -- it belongs to the separate annotation-application fact family, out of
-    /// scope for this slice.
+    /// `lower_attribute_body`. A `metadata` usage also applies its type as a metadata annotation:
+    /// with no `about` clause it annotates its owning namespace, and with one it annotates each
+    /// listed target (the `about` references, resolved through `DeclarationDomain::Any`).
     pub(crate) fn lower_metadata_usage(
         &mut self,
         document: DocumentIdx,
@@ -112,7 +113,43 @@ impl SemanticModelBuilder {
                 import: None,
             })?;
         }
+        self.metadata_annotations.push(MetadataAnnotationRecord {
+            annotation: declaration,
+            annotated_element: owner.unwrap_or(declaration),
+            form: MetadataAnnotationForm::Usage,
+        });
+        self.lower_metadata_about_references(document, declaration, &node.value.about_targets)?;
         self.lower_metadata_body(document, declaration, &node.value.body)
+    }
+
+    /// Pushes one [`ReferenceKind::MetadataAnnotationAbout`] reference per authored `about`
+    /// target, sourced at the annotation declaration. An `about` target is any element, so these
+    /// resolve through the `DeclarationDomain::Any` lexical lookup (like a connector end), never
+    /// the metadata-def type domain the annotation's own typing reference uses.
+    fn lower_metadata_about_references(
+        &mut self,
+        document: DocumentIdx,
+        annotation: DeclarationId,
+        about_targets: &[sysml_v2_parser::ast::QualifiedReferenceId],
+    ) -> Result<(), ConstructionError> {
+        for target in about_targets {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(*target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: annotation,
+                kind: ReferenceKind::MetadataAnnotationAbout,
+                document,
+                local: *target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        Ok(())
     }
 
     /// Lowers a `MetadataBody` (`';' | '{' MetadataBodyElement* '}'`), the body shared by
@@ -255,6 +292,7 @@ impl SemanticModelBuilder {
         self.metadata_annotations.push(MetadataAnnotationRecord {
             annotation,
             annotated_element: owner,
+            form: MetadataAnnotationForm::AnnotatingMember,
         });
         let span = self.documents[document.index()]
             .parsed
@@ -271,6 +309,7 @@ impl SemanticModelBuilder {
             span,
             import: None,
         })?;
+        self.lower_metadata_about_references(document, annotation, &node.value.about_targets)?;
         self.lower_metadata_body(document, annotation, &node.value.body)?;
         Ok(())
     }

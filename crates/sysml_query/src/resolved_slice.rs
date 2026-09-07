@@ -27,25 +27,27 @@ pub use sysml_resolution::{
     EvaluationFailure, EvaluationState, ExpectedMeasurement, ExpressionNode, ExpressionNodeKind,
     ExpressionOperator, ExpressionOutcome, FeatureDerivedRelationshipCollection, FeatureDirection,
     InheritedFeature, LibrarySpecializationAnchorBranch, MembershipFacts, MembershipId,
-    MembershipKind, MembershipRelationship, MembershipRole, MultiplicityBound, MultiplicityFacts,
+    MembershipKind, MembershipRelationship, MembershipRole, MetadataAnnotationForm,
+    MetadataAnnotationValue, MultiplicityBound, MultiplicityFacts,
     NamespaceDerivedElementCollection, NamespaceImportDerivedElement, NavigationTarget,
     OccurrenceRole, PortionKind, PublicationCompleteness, PublicationIdentity,
     PublicationModelDigest, PublicationObstacle, PublishedDiagnostics, PublishedElement,
-    PublishedExpression, QualifiedElementReference, QualifiedReferenceOutcome,
-    QualifiedReferenceTarget, QueryAnswer, QueryOutcome, RedefinitionCheckKind,
-    RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt, ReferencedDetails,
-    RelatedLocation, RelationshipFamily, RelationshipOutcome, RelationshipProvenance,
-    RelationshipTarget, RenameOutcome, RequirementConstraintKind, RequirementDerivedFactCollection,
-    RequirementDerivedFactKind, RequirementDerivedFactOutcome, RequirementDerivedFactPrerequisite,
-    RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
-    SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationCheckKind,
-    SpecializationCheckOutcome, SpecializationCheckPrerequisite, SpecializationScope,
-    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId, SymbolToken, TextId,
-    TextPosition, TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection,
-    TypeDerivedFactKind, TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
-    TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
-    TypeFeaturingCheckPrerequisite, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
-    VerificationRequirement, Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
+    PublishedExpression, PublishedMetadataAnnotation, QualifiedElementReference,
+    QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryAnswer, QueryOutcome,
+    RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt,
+    ReferencedDetails, RelatedLocation, RelationshipFamily, RelationshipOutcome,
+    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
+    RequirementDerivedFactCollection, RequirementDerivedFactKind, RequirementDerivedFactOutcome,
+    RequirementDerivedFactPrerequisite, RequirementUsageTyping, RequirementVerification,
+    ResolvedUnit, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
+    SpecializationCheckKind, SpecializationCheckOutcome, SpecializationCheckPrerequisite,
+    SpecializationScope, StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId,
+    SymbolToken, TextId, TextPosition, TextRange, TypeDerivedElementCollection,
+    TypeDerivedFactCollection, TypeDerivedFactKind, TypeDerivedFactOutcome,
+    TypeDerivedFactPrerequisite, TypeDerivedFactValue, TypeDerivedRelationshipCollection,
+    TypeFeaturingCheckKind, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
+    TypeReference, UnitResolution, ValueKind, VerificationOutcome, VerificationRequirement,
+    Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
 };
 
 pub use sysml_resolution::source::RootDigest;
@@ -809,6 +811,16 @@ impl InspectionQueries<'_> {
         self.model.binding_connectors()
     }
 
+    /// Every metadata annotation bound to one element: its authored form, the annotating
+    /// definition, its `about` targets, and the resolved values its body redefines
+    /// (`@Risk { probability = 0.3; }`).
+    pub fn metadata_annotations(
+        &self,
+        symbol: SymbolId,
+    ) -> QueryOutcome<Box<[PublishedMetadataAnnotation]>> {
+        self.model.metadata_annotations(symbol)
+    }
+
     /// The applicability outcome for one closed binding-connector validation rule.
     pub fn binding_connector_validation(
         &self,
@@ -865,6 +877,10 @@ impl DebugQueries<'_> {
 
     pub fn write_expressions_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.debug().write_expressions_sexpr(output)
+    }
+
+    pub fn write_metadata_annotations_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.debug().write_metadata_annotations_sexpr(output)
     }
 
     pub fn write_editor_queries_sexpr(

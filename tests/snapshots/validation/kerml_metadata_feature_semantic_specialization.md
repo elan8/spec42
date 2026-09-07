@@ -236,6 +236,13 @@ package Model {
   (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-metaclass) (name "Command")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "baseFeatures" (target (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::baseFeatures"))))))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::AnnotatedClassifier"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Command")))))
+  (annotation (element (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::annotated"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Command")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

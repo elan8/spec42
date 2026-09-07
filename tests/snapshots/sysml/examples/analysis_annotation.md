@@ -292,6 +292,12 @@ package AnalysisAnnotation {
   (declaration (id (node (document "memory://snapshot/analysis_annotation.md") (path (named (kind package) (name "AnalysisAnnotation")) (named (kind action-def) (name "ComputeDynamics")) (named (kind metadata) (name "ToolExecution")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "aserv://localhost/Vehicle/Equation1"))))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/analysis_annotation.md") (qualified-name "AnalysisAnnotation::ComputeDynamics"))) (form usage) (value (redefines unresolved) (outcome resolved) (literal (value (kind string) (value "ModelCenter")))) (value (redefines unresolved) (outcome resolved) (literal (value (kind string) (value "aserv://localhost/Vehicle/Equation1")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -451,6 +451,12 @@ package ConnectionTest {
     )
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::AB::a"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/connection_test.md") (qualified-name "ConnectionTest::M")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

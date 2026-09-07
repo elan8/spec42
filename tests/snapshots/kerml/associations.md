@@ -210,6 +210,12 @@ package Associations {
     )
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/associations.md") (qualified-name "Associations::XY::x"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/associations.md") (qualified-name "Associations::M")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

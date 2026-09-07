@@ -1778,6 +1778,17 @@ package '14c-Language-Extensions' {
   (declaration (id (node (document "memory://snapshot/14c_language_extensions.md") (path (named (kind package) (name "14c-Language-Extensions")) (named (kind package) (name "FMEAUserModel")) (named (kind requirement) (name "req3")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "Status::Approved" (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAMetadata::Status::Approved")))))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::Glucose FMEA Item::battery cannot be charged"))) (form prefix-keyword) (definition (resolved (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAMetadata::FailureModeMetadata")))))
+  (annotation (element (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::Glucose FMEA Item::battery depleted"))) (form prefix-keyword) (definition (resolved (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAMetadata::CauseMetadata")))))
+  (annotation (element (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::Glucose FMEA Item::glucose level undetected"))) (form prefix-keyword) (definition (resolved (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAMetadata::EffectMetadata")))))
+  (annotation (element (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::Glucose FMEA Item::therapy delay"))) (form prefix-keyword) (definition (resolved (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAMetadata::EffectMetadata")))))
+  (annotation (element (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::Glucose Meter in Use"))) (form prefix-keyword) (definition (resolved (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAMetadata::FMEAItemMetadata")))))
+  (annotation (element (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAUserModel::req3"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAMetadata::StatusHolder")))) (value (redefines (resolved (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAMetadata::StatusHolder::status")))) (outcome resolved) (feature-reference "Status::Approved" (target (node (document "memory://snapshot/14c_language_extensions.md") (qualified-name "14c-Language-Extensions::FMEAMetadata::Status::Approved"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

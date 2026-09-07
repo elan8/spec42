@@ -514,6 +514,16 @@ package CauseAndEffectExample {
   (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1)) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 0.1))))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind bare-connect) (ordinal 1))))) (form annotating-member) (definition unresolved) (value (redefines unresolved) (outcome resolved) (literal (value (kind boolean) (boolean true)))) (value (redefines unresolved) (outcome resolved) (literal (value (kind real) (real 0.1)))))
+  (annotation (element (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::causeA"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::causeB"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::effectC"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample::effectD"))) (form prefix-keyword) (definition unresolved))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -137,6 +137,14 @@ package MetadataPrefixedDependency {
     )
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/metadata_prefixed_dependency.md") (path (named (kind package) (name "MetadataPrefixedDependency")) (named (kind action-def) (name "ActB")) (anonymous (kind dependency) (ordinal 0))))) (form prefix-keyword) (definition (resolved (node (document "memory://snapshot/metadata_prefixed_dependency.md") (qualified-name "MetadataPrefixedDependency::refinement")))))
+  (annotation (element (node (document "memory://snapshot/metadata_prefixed_dependency.md") (path (named (kind package) (name "MetadataPrefixedDependency")) (named (kind part-def) (name "PartB")) (anonymous (kind dependency) (ordinal 0))))) (form prefix-keyword) (definition (resolved (node (document "memory://snapshot/metadata_prefixed_dependency.md") (qualified-name "MetadataPrefixedDependency::refinement")))))
+  (annotation (element (node (document "memory://snapshot/metadata_prefixed_dependency.md") (path (named (kind package) (name "MetadataPrefixedDependency")) (named (kind requirement-def) (name "ReqB")) (anonymous (kind dependency) (ordinal 0))))) (form prefix-keyword) (definition (resolved (node (document "memory://snapshot/metadata_prefixed_dependency.md") (qualified-name "MetadataPrefixedDependency::refinement")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

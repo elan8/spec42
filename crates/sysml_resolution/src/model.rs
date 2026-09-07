@@ -1062,13 +1062,21 @@ pub(crate) enum ReferenceKind {
     /// annotation relationship never collapses into ordinary typing/specialization in query
     /// output. Sourced directly at the declaration `MetadataAnnotation` decorates (no anonymous
     /// nested-declaration scope shift is needed -- unlike `Succession`/`Transition`, the
-    /// annotation is not itself a feature, just a fact about its owner). The `about` clause
-    /// (explicit annotation targets other than the owner) and the annotation body's nested
-    /// feature-value overrides (`isMandatory = true;`) are deliberately out of scope for this
-    /// slice: `about` needs its own multi-target fact shape, and the body's overrides need
-    /// value-assignment machinery this repository has not built yet (see `lower_attribute_body`
-    /// scope notes) -- only the annotation-target reference itself is resolved here.
+    /// annotation is not itself a feature, just a fact about its owner). The annotation body's
+    /// nested feature-value overrides (`isMandatory = true;`) are lowered separately as anonymous
+    /// redefining `AttributeUsage` members of the annotation; the `about` clause is
+    /// `MetadataAnnotationAbout`.
     MetadataAnnotation,
+    /// One authored `about` target of an `@Name ... about X, Y;` metadata annotation or a
+    /// `metadata m about X;` usage (`ast::MetadataAnnotation::about_targets` /
+    /// `ast::MetadataUsage::about_targets`). Unlike the annotation's own `MetadataAnnotation`
+    /// typing target, an `about` target is an arbitrary element, so it resolves through the
+    /// `DeclarationDomain::Any` lexical lookup shared with `AliasBinding` / `ConnectorEnd` /
+    /// `Succession` rather than the metadata-def `DeclarationDomain::Type` pass. One reference per
+    /// listed target, sourced at the annotation declaration, kept as its own `ReferenceKind` so
+    /// the `about` relationship never collapses into typing or ordinary reference resolution in
+    /// query output.
+    MetadataAnnotationAbout,
     /// The metadata-def operand of an `@Name` metadata-classification test (`Expression::
     /// Classification`'s `metaclass`) found while walking a package-level `filter <expr>;`
     /// statement's condition (BNF `ElementFilterMember`, `ast::FilterMember`, distinct from the

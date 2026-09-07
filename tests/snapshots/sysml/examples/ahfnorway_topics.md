@@ -1617,6 +1617,24 @@ package AHFNorway {
   (declaration (id (node (document "memory://snapshot/ahfnorway_topics.md") (path (named (kind package) (name "AHFNorway")) (named (kind extended-definition) (name "APISService")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "pull"))))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::APISConsumer"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::APISConsumer::apisp"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::APISConsumer::serviceDiscovery"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::APISProducer"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::APISProducer::apisc"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::APISProducer::serviceDiscovery"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::APISProducer::tellu"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer::apisp"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::AHFNorway_LocalCloudDD::TellUConsumer::serviceDiscovery"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::APIS_DD::APIS_HTTP"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfnorway_topics.md") (qualified-name "AHFNorway::APIS_DD::APIS_MQTT"))) (form prefix-keyword) (definition unresolved))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -572,6 +572,12 @@ package GeneratedUsages {
     )
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages"))) (form usage))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

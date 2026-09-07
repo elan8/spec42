@@ -44,6 +44,38 @@ package Metadata {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_metadata_feature_metaclass.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "ambiguous_reference")
+        (source "semantic")
+        (range (start 5 26) (end 5 31))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_metadata_feature_metaclass.md")
+            (range (start 1 4) (end 1 21))
+          )
+          (related
+            (uri "memory://snapshot/kerml_metadata_feature_metaclass.md")
+            (range (start 8 4) (end 8 31))
+          )
+        )
+      )
+      (diagnostic
+        (severity error)
+        (code "ambiguous_reference")
+        (source "semantic")
+        (range (start 8 25) (end 8 30))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_metadata_feature_metaclass.md")
+            (range (start 1 4) (end 1 21))
+          )
+          (related
+            (uri "memory://snapshot/kerml_metadata_feature_metaclass.md")
+            (range (start 8 4) (end 8 31))
+          )
+        )
+      )
     )
   )
 )
@@ -55,11 +87,17 @@ package Metadata {
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (qualified-name "Metadata"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind kerml-metaclass) (name "Marker"))))) (kind kerml-metaclass) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Marker"))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Marker"))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotationAbout (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind kerml-classifier) (name "Thing"))))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Thing"))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Thing"))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotationAbout (reference "Thing")))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Marker"))))) (kind metadataAnnotationAbout) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind kerml-classifier) (name "Thing")))) (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Thing")))))))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Thing"))))) (kind metadataAnnotationAbout) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind kerml-classifier) (name "Thing")))) (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Thing")))))))
   )
   (relationships
   )
@@ -75,5 +113,15 @@ package Metadata {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (range (start 5 26) (end 5 31)) (probe (position 5 26))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Marker"))))) (kind metadataAnnotationAbout) (ordinal 0) (authored-target "Thing")
+      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind kerml-classifier) (name "Thing")))) (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Thing")))))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (range (start 8 25) (end 8 30)) (probe (position 8 25))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Thing"))))) (kind metadataAnnotationAbout) (ordinal 0) (authored-target "Thing")
+      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind kerml-classifier) (name "Thing")))) (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Thing")))))))
+    )
+  )
 )
 ~~~

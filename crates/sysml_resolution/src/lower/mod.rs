@@ -28,6 +28,7 @@ use crate::lower::facts::FilterPredicate;
 use crate::lower::facts::LineIndex;
 use crate::lower::facts::MemberAccessNarrowing;
 use crate::lower::facts::MembershipRecord;
+use crate::lower::facts::MetadataAnnotationForm;
 use crate::lower::facts::MetadataAnnotationRecord;
 use crate::lower::facts::OperatorExpressionKind;
 use crate::lower::facts::OperatorExpressionRecord;
@@ -2153,6 +2154,7 @@ impl SemanticModelBuilder {
             self.metadata_annotations.push(MetadataAnnotationRecord {
                 annotation,
                 annotated_element: declaration,
+                form: MetadataAnnotationForm::PrefixKeyword,
             });
             let span = self.documents[document.index()]
                 .parsed
@@ -2213,6 +2215,7 @@ impl SemanticModelBuilder {
             self.metadata_annotations.push(MetadataAnnotationRecord {
                 annotation,
                 annotated_element: declaration,
+                form: MetadataAnnotationForm::PrefixKeyword,
             });
             let span = self.documents[document.index()]
                 .parsed

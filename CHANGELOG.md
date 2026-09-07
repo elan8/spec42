@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`inspection().metadata_annotations(symbol)` publishes each metadata annotation bound to an
+  element.** `ElementDetails::metadata` only answered "which metadata definitions annotate this
+  element", collapsing every authored annotation into a deduplicated set of definition
+  identities -- enough to detect a tag, not to act on one. The new query returns, per authored
+  annotation, its form (`#Tag` prefix vs `@Tag` / `metadata Tag` annotating member vs `metadata
+  m : Tag;` usage), the resolved annotating definition, the resolved `about` targets, and the
+  resolved values its body redefines (`@Risk { probability = 0.3; }`) -- a body value that is
+  itself an expression is the same `PublishedExpression` tree `structure().expression()`
+  publishes. It adds no analysis: the annotation-to-definition reference, the body's redefining
+  `AttributeUsage` members, and their value expressions were all lowered and resolved already.
+  The `about` clause (`@Tag ... about X, Y;` / `metadata m : Tag about X;`) is now lowered and
+  resolved through a new `MetadataAnnotationAbout` reference (`DeclarationDomain::Any` lexical
+  lookup), so its targets also resolve for hover and go-to-definition. Second slice of #84 (the
+  connection-topology query is the remaining follow-up).
+
 ## [0.51.0] - 2026-09-06
 
 - **The bundled standard library is never diagnosed as a workspace document.** Opening any

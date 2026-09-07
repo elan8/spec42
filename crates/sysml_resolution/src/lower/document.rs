@@ -426,6 +426,7 @@ impl SemanticModelBuilder {
             self.metadata_annotations.push(MetadataAnnotationRecord {
                 annotation: relocation.declaration(record.annotation)?,
                 annotated_element: relocation.declaration(record.annotated_element)?,
+                form: record.form,
             });
         }
 
