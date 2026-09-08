@@ -320,9 +320,15 @@ pub(crate) fn write_connections(
                 .get(reference_id.index())
                 .map(|reference| model.authored_path(reference.path))
                 .unwrap_or_default();
-            output.write_str("(feature-chain ")?;
+            output.write_str("(feature-chain (root ")?;
+            match model.connector_end_root_candidates(reference_id).as_slice() {
+                [one] => write_node_identity(model, *one, output)?,
+                [] => output.write_str("unresolved")?,
+                _ => output.write_str("ambiguous")?,
+            }
+            output.write_str(") (terminal ")?;
             write_settled_reference_target(model, reference_id, output)?;
-            write!(output, " {authored:?})")
+            write!(output, ") {authored:?})")
         } else {
             output.write_str("(feature ")?;
             write_settled_reference_target(model, reference_id, output)?;

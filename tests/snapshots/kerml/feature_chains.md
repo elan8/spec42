@@ -303,7 +303,7 @@ package FeatureChains {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-feature) (name "b")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind connection) (end bare (feature-chain (resolved (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F::a"))) "f::a")) (end bare (feature-chain (resolved (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g"))) "a::g")))
+  (connector (id (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-feature) (name "b")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind connection) (end bare (feature-chain (root (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B::f"))) (terminal (resolved (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F::a")))) "f::a")) (end bare (feature-chain (root (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::B::a"))) (terminal (resolved (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g")))) "a::g")))
 )
 ~~~
 # NAVIGATION

@@ -471,7 +471,7 @@ package 'Flashlight Example' {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::userToFlashlight"))) (kind interface) (end bare (feature-chain (resolved (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::user::onOffCmdPort"))) "user::onOffCmdPort")) (end bare (feature-chain (resolved (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::flashlight::onOffCmdPort"))) "flashlight::onOffCmdPort")))
+  (connector (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::userToFlashlight"))) (kind interface) (end bare (feature-chain (root (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::user"))) (terminal (resolved (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::user::onOffCmdPort")))) "user::onOffCmdPort")) (end bare (feature-chain (root (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::flashlight"))) (terminal (resolved (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::flashlight::onOffCmdPort")))) "flashlight::onOffCmdPort")))
 )
 ~~~
 # NAVIGATION

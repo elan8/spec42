@@ -3204,7 +3204,20 @@ fn connection_graph_publishes_connectors_with_resolved_ends() {
 
     let dotted = &graph.connectors[1];
     match &dotted.ends[0].endpoint {
-        ConnectorEndpoint::FeatureChain { terminal, authored } => {
+        ConnectorEndpoint::FeatureChain {
+            root,
+            terminal,
+            authored,
+        } => {
+            // `pumpA.outlet` — the component instance and the port are both resolved.
+            let RelationshipTarget::Resolved(root) = root else {
+                panic!("expected a resolved feature-chain root, got {root:?}");
+            };
+            assert_eq!(
+                published.qualified_name(*root),
+                Some("P::system::pumpA"),
+                "the feature-chain root is the specific part usage"
+            );
             assert!(matches!(terminal, RelationshipTarget::Resolved(_)));
             assert_eq!(authored.as_ref(), "pumpA::outlet");
         }
@@ -3216,11 +3229,9 @@ fn connection_graph_publishes_connectors_with_resolved_ends() {
         .iter()
         .flat_map(|connector| connector.ends.iter())
         .find_map(|end| match &end.endpoint {
-            ConnectorEndpoint::FeatureChain { terminal, authored }
-                if authored.as_ref() == "missing::port" =>
-            {
-                Some(terminal.clone())
-            }
+            ConnectorEndpoint::FeatureChain {
+                terminal, authored, ..
+            } if authored.as_ref() == "missing::port" => Some(terminal.clone()),
             _ => None,
         })
         .expect("the unresolved dotted end");

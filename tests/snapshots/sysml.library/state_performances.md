@@ -1405,7 +1405,7 @@ standard library package StatePerformances {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::linkTriggerDuring"))) (kind connection) (type unresolved) (end bare (feature-chain unresolved "trigger::endShot")) (end bare (feature (resolved (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource"))))))
+  (connector (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::linkTriggerDuring"))) (kind connection) (type unresolved) (end bare (feature-chain (root (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::trigger"))) (terminal unresolved) "trigger::endShot")) (end bare (feature (resolved (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource"))))))
 )
 ~~~
 # NAVIGATION

@@ -1071,7 +1071,7 @@ package AHFNorwaySequences {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::APIS_transfer_interface"))) (kind interface) (type unresolved) (end bare (feature-chain unresolved "AHFNorway_LocalCloudDD::TellUConsumer::apisp::APIS_HTTP")) (end bare (feature-chain unresolved "AHFNorway_LocalCloudDD::APISProducer::tellu::APIS_HTTP")) (end bare (feature-chain unresolved "AHFNorway_LocalCloudDD::APISProducer::apisc::APIS_MQTT")) (end bare (feature-chain unresolved "AHFNorway_LocalCloudDD::APISConsumer::apisp::APIS_MQTT")) (end bare (feature-chain unresolved "AHFNorway_LocalCloudDD::MQTTServer::getTopic")) (end bare (feature-chain unresolved "AHFNorway_LocalCloudDD::MQTTServer::giveTopic")))
+  (connector (id (node (document "memory://snapshot/ahfsequences.md") (qualified-name "AHFNorwaySequences::AHFN_LocalCloudDD_Seqs::APIS_transfer_interface"))) (kind interface) (type unresolved) (end bare (feature-chain (root unresolved) (terminal unresolved) "AHFNorway_LocalCloudDD::TellUConsumer::apisp::APIS_HTTP")) (end bare (feature-chain (root unresolved) (terminal unresolved) "AHFNorway_LocalCloudDD::APISProducer::tellu::APIS_HTTP")) (end bare (feature-chain (root unresolved) (terminal unresolved) "AHFNorway_LocalCloudDD::APISProducer::apisc::APIS_MQTT")) (end bare (feature-chain (root unresolved) (terminal unresolved) "AHFNorway_LocalCloudDD::APISConsumer::apisp::APIS_MQTT")) (end bare (feature-chain (root unresolved) (terminal unresolved) "AHFNorway_LocalCloudDD::MQTTServer::getTopic")) (end bare (feature-chain (root unresolved) (terminal unresolved) "AHFNorway_LocalCloudDD::MQTTServer::giveTopic")))
 )
 ~~~
 # NAVIGATION

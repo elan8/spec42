@@ -36,9 +36,14 @@ impl ConnectorKind {
 pub enum ConnectorEndpoint {
     /// A single-segment end (`connect a to b`): the feature the end names.
     Feature(RelationshipTarget),
-    /// A dotted end (`connect a.b.port to ...`): the resolved terminal feature, plus the path
-    /// as authored. Intermediate hops are not resolved to identities.
+    /// A dotted end (`connect a.b.port to ...`).
+    ///
+    /// `root` is the first segment resolved (the owning part usage — `a`), `terminal` the last
+    /// (the port — `port`), and `authored` the whole path as written. For the common
+    /// `component.port` form both ends are settled identities; any interior segment of a longer
+    /// chain is left to the authored text.
     FeatureChain {
+        root: RelationshipTarget,
         terminal: RelationshipTarget,
         authored: Box<str>,
     },

@@ -161,7 +161,7 @@ package ArgumentResolutionBug {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/argument_resolution.md") (path (named (kind package) (name "ArgumentResolutionBug")) (named (kind class-def) (name "C")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind connection) (end (name (node (document "memory://snapshot/argument_resolution.md") (path (named (kind package) (name "ArgumentResolutionBug")) (named (kind class-def) (name "C")) (anonymous (kind kerml-connector) (ordinal 0)) (named (kind kerml-feature) (name "a"))))) (feature-chain unresolved "a::x")) (end bare (feature (resolved (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug::C::b"))))))
+  (connector (id (node (document "memory://snapshot/argument_resolution.md") (path (named (kind package) (name "ArgumentResolutionBug")) (named (kind class-def) (name "C")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind connection) (end (name (node (document "memory://snapshot/argument_resolution.md") (path (named (kind package) (name "ArgumentResolutionBug")) (named (kind class-def) (name "C")) (anonymous (kind kerml-connector) (ordinal 0)) (named (kind kerml-feature) (name "a"))))) (feature-chain (root (node (document "memory://snapshot/argument_resolution.md") (path (named (kind package) (name "ArgumentResolutionBug")) (named (kind class-def) (name "C")) (anonymous (kind kerml-connector) (ordinal 0)) (named (kind kerml-feature) (name "a"))))) (terminal unresolved) "a::x")) (end bare (feature (resolved (node (document "memory://snapshot/argument_resolution.md") (qualified-name "ArgumentResolutionBug::C::b"))))))
 )
 ~~~
 # NAVIGATION
