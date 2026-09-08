@@ -122,7 +122,11 @@ cargo run -p server --bin spec42 -- --no-stdlib generate \
 cargo test -p server --test integration diagram_generator_smoke
 
 step "Standard-library publication ratchet"
+# Curated-corpus admission (a small workspace resolves against tests/snapshots/sysml.library/).
 cargo snapshot check --fixture standard_library_admission.md
+# Shipped-artifact ratchet (issue #135): the pinned KPAR bundle unpacks completely and
+# publishes with zero diagnostics. SPEC42_STDLIB_KPAR_DIR is already required above.
+cargo test -p server --test integration stdlib_bundle_ratchet
 
 step "Semantic snapshot corpus"
 cargo snapshot check

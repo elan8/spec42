@@ -17,3 +17,4 @@ mod kpar_domain_libraries_embed_smoke;
 mod kpar_stdlib_embed_smoke;
 mod multi_file_check;
 mod robot_vacuum_check;
+mod stdlib_bundle_ratchet;
