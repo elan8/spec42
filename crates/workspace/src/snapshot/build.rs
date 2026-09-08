@@ -178,6 +178,10 @@ pub(crate) fn build_workspace_snapshot(
     context.check_continue(HostPipelinePhase::LoadingDocuments)?;
 
     let target_files = discover_target_files(&request.targets)?;
+    let reported_documents = target_files
+        .iter()
+        .map(|path| path_to_file_url(path).map(|uri| Box::<str>::from(uri.as_str())))
+        .collect::<WorkspaceResult<Vec<_>>>()?;
 
     let library_paths = admission.library_roots;
     let library_urls = library_paths
@@ -190,7 +194,11 @@ pub(crate) fn build_workspace_snapshot(
     let published_model = engine
         .services()
         .publication
-        .publish_with_standard_library_availability(&documents, standard_library_availability, [])
+        .publish_with_standard_library_availability(
+            &documents,
+            standard_library_availability,
+            reported_documents,
+        )
         .map_err(|error| WorkspaceError::internal_invariant_failure(error.to_string()))?;
 
     context.check_continue(HostPipelinePhase::CollectingValidation)?;

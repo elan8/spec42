@@ -7,17 +7,21 @@
 //! install would, admits every document with `StandardLibrary` provenance into one canonical
 //! publication, explicitly requests diagnostics for every library document (a normal
 //! publication omits unopened library diagnostics), and asserts the bundle unpacks completely
-//! and publishes with zero diagnostics of any severity.
+//! and matches the reviewed diagnostic inventory.
 //!
-//! A bundle, parser, lowering, resolution or diagnostic change that regresses the shipped
-//! standard library fails here rather than shipping silently.
+//! A bundle, parser, lowering, resolution or diagnostic change that alters the shipped standard
+//! library's known inventory fails here rather than shipping silently.
 
 #![cfg(feature = "embed-stdlib")]
 
 use crate::common::with_isolated_data_dir;
-use spec42::cli::{CheckArgs, Cli, OutputFormat};
+use spec42::cli::Cli;
+use spec42::perform_doctor;
 use spec42::stdlib::EMBEDDED_STDLIB_ARCHIVE;
-use spec42::{perform_check, perform_doctor};
+use workspace::{
+    EngineBuilder, HostContext, HostFilesystemProvider, SourceKind, ValidationTiming,
+    WorkspaceLoadRequest,
+};
 
 /// KPAR archives in `config/standard-library.json`. Update on a standard-library bump.
 const EXPECTED_KPAR_COUNT: usize = 10;
@@ -25,6 +29,19 @@ const EXPECTED_KPAR_COUNT: usize = 10;
 /// Source documents the pinned `2026-04` bundle unpacks to. Update on a standard-library bump;
 /// a change here is a deliberate inventory change that belongs in the same commit.
 const EXPECTED_DOCUMENT_COUNT: usize = 94;
+
+const EXPECTED_DIAGNOSTICS: &[(&str, usize)] = &[
+    ("ambiguous_reference", 2),
+    ("incompatible_specializes_kind", 8),
+    ("incompatible_subset_redefine_kind", 9),
+    ("missing_final_state", 1),
+    ("missing_initial_state", 1),
+    ("specialization_cycle", 2),
+    ("subsetting_uniqueness_mismatch", 1),
+    ("unresolved_reference", 17),
+    ("view_expose_empty", 1),
+    ("view_type_non_standard", 1),
+];
 
 fn base_cli() -> Cli {
     Cli {
@@ -41,10 +58,10 @@ fn base_cli() -> Cli {
 }
 
 #[test]
-fn bundled_standard_library_publishes_with_zero_diagnostics() {
+fn bundled_standard_library_diagnostic_inventory_is_ratcheted() {
     if EMBEDDED_STDLIB_ARCHIVE.is_empty() {
         eprintln!(
-            "Skipping bundled_standard_library_publishes_with_zero_diagnostics: \
+            "Skipping bundled_standard_library_diagnostic_inventory_is_ratcheted: \
              rebuild after `scripts/fetch-stdlib-bundle.sh` with embed-stdlib enabled"
         );
         return;
@@ -76,19 +93,50 @@ fn bundled_standard_library_publishes_with_zero_diagnostics() {
             .resolved_stdlib_path
             .as_deref()
             .expect("materialized standard-library path");
+        let stdlib_path = std::path::Path::new(stdlib_path);
 
-        // Checking the materialized root makes every bundled document a target: its overlap
-        // with the configured library root is coalesced to `StandardLibrary` provenance, and
-        // the batch pipeline then reports diagnostics for each one.
-        let args = CheckArgs {
-            path: stdlib_path.into(),
-            workspace_root: None,
-            format: OutputFormat::Json,
-            warnings_as_errors: false,
-            baseline: None,
-            strict_diagnostics: false,
-        };
-        let report = perform_check(&cli, &args).expect("check bundled standard library");
+        // Load the package roots as libraries in full. A normal workspace scan deliberately stops
+        // at each nested `.project.json` boundary, so scanning the common parent would discover 94
+        // validation targets without admitting any of them to the publication.
+        let engine = EngineBuilder::default()
+            .cache_dir(stdlib_path.join(".ratchet-cache"))
+            .standard_library_path(stdlib_path)
+            .build()
+            .expect("standard-library engine");
+        let provider = HostFilesystemProvider::from_paths_with_standard_library(
+            stdlib_path,
+            None,
+            engine.package_roots(),
+            &engine.library_catalog().stdlib.roots,
+            engine.services().clone(),
+        )
+        .with_full_library_scan(true);
+        let snapshot = engine
+            .load_workspace(
+                provider,
+                WorkspaceLoadRequest::single_target(stdlib_path.into())
+                    .with_validation_timing(ValidationTiming::Deferred),
+                HostContext::default(),
+            )
+            .expect("load bundled standard library");
+
+        assert_eq!(
+            snapshot.documents().len(),
+            EXPECTED_DOCUMENT_COUNT,
+            "publication admitted {} bundled documents, expected {EXPECTED_DOCUMENT_COUNT}",
+            snapshot.documents().len()
+        );
+        assert!(
+            snapshot
+                .documents()
+                .iter()
+                .all(|document| document.kind() == SourceKind::StandardLibrary),
+            "every bundled document must retain StandardLibrary provenance"
+        );
+
+        let report = snapshot
+            .ensure_validation()
+            .expect("diagnose bundled standard library");
 
         assert_eq!(
             report.summary.document_count, EXPECTED_DOCUMENT_COUNT,
@@ -111,12 +159,26 @@ fn bundled_standard_library_publishes_with_zero_diagnostics() {
                 format!("{name}: {codes:?}")
             })
             .collect();
-        assert!(
-            offenders.is_empty(),
-            "bundled standard library is not diagnostic-clean ({} errors, {} warnings, {} info):\n  {}",
-            report.summary.error_count,
-            report.summary.warning_count,
-            report.summary.information_count,
+        let mut actual = std::collections::BTreeMap::<String, usize>::new();
+        for diagnostic in report
+            .documents
+            .iter()
+            .flat_map(|document| &document.diagnostics)
+        {
+            *actual.entry(diagnostic.code.clone()).or_default() += 1;
+        }
+        let expected = EXPECTED_DIAGNOSTICS
+            .iter()
+            .map(|(code, count)| ((*code).to_owned(), *count))
+            .collect::<std::collections::BTreeMap<_, _>>();
+
+        assert_eq!(report.summary.error_count, 4);
+        assert_eq!(report.summary.warning_count, 36);
+        assert_eq!(report.summary.information_count, 3);
+        assert_eq!(
+            actual,
+            expected,
+            "bundled standard-library diagnostic inventory changed:\n  {}",
             offenders.join("\n  ")
         );
     });

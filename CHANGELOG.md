@@ -15,9 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   New `crates/server` integration test `stdlib_bundle_ratchet` materializes the embedded
   bundle, admits every document with `StandardLibrary` provenance into one canonical
   publication, requests diagnostics for every library document, and asserts the bundle unpacks
-  to its full inventory (10 KPARs, 94 documents for `2026-04`) and publishes with zero
-  diagnostics of any severity. Wired into `scripts/minici.sh` alongside the curated snapshot
-  check.
+  to its full inventory (10 KPARs, 94 documents for `2026-04`) and matches the reviewed
+  diagnostic inventory (currently 43 diagnostics). Wired into `scripts/minici.sh` alongside the
+  curated snapshot check.
 
 ## [0.51.0] - 2026-09-06
 
