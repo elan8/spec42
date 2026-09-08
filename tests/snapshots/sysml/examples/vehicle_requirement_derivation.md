@@ -373,6 +373,12 @@ package VehicleRequirementDerivation {
   (declaration (id (node (document "memory://snapshot/vehicle_requirement_derivation.md") (path (named (kind package) (name "VehicleRequirementDerivation")) (named (kind requirement-def) (name "MassRequirement")) (anonymous (kind require-constraint) (ordinal 0))))) (outcome resolved) (operator "<=" (feature-reference "mass" (target (node (document "memory://snapshot/vehicle_requirement_derivation.md") (qualified-name "VehicleRequirementDerivation::MassRequirement::mass")))) (feature-reference "massLimit" (target (node (document "memory://snapshot/vehicle_requirement_derivation.md") (qualified-name "VehicleRequirementDerivation::MassRequirement::massLimit"))))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/vehicle_requirement_derivation.md") (path (named (kind package) (name "VehicleRequirementDerivation")) (anonymous (kind connection-def) (ordinal 0))))) (kind connection) (end (name (node (document "memory://snapshot/vehicle_requirement_derivation.md") (path (named (kind package) (name "VehicleRequirementDerivation")) (anonymous (kind connection-def) (ordinal 0)) (anonymous (kind connection) (ordinal 0))))) (feature (resolved (node (document "memory://snapshot/vehicle_requirement_derivation.md") (qualified-name "VehicleRequirementDerivation::vehicleMassRequirement"))))) (end (name (node (document "memory://snapshot/vehicle_requirement_derivation.md") (path (named (kind package) (name "VehicleRequirementDerivation")) (anonymous (kind connection-def) (ordinal 0)) (anonymous (kind connection) (ordinal 1))))) (feature (resolved (node (document "memory://snapshot/vehicle_requirement_derivation.md") (qualified-name "VehicleRequirementDerivation::chassisMassRequirement"))))) (end (name (node (document "memory://snapshot/vehicle_requirement_derivation.md") (path (named (kind package) (name "VehicleRequirementDerivation")) (anonymous (kind connection-def) (ordinal 0)) (anonymous (kind connection) (ordinal 2))))) (feature (resolved (node (document "memory://snapshot/vehicle_requirement_derivation.md") (qualified-name "VehicleRequirementDerivation::engineMassRequirement"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

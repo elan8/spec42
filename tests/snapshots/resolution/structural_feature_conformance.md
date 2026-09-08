@@ -621,6 +621,15 @@ package Structural {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::AbstractIncomplete"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Complete"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Incomplete"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Ternary"))) (kind connection))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

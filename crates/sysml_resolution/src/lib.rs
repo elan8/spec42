@@ -14,6 +14,7 @@ use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestE
 
 mod action_query;
 mod check;
+mod connection_query;
 mod definition_usage_query;
 mod details;
 mod diagnose;
@@ -68,6 +69,10 @@ pub use action_query::{
     ActionArgumentId, ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
     ActionDerivedFactPrerequisite, ActionInputParameterId, ActionOwnedMembershipId,
     ActionOwnedMembershipKind, ActionOwnedMembershipMember,
+};
+pub use connection_query::{
+    ConnectorEndpoint, ConnectorKind, PublishedConnectionGraph, PublishedConnector,
+    PublishedConnectorEnd,
 };
 pub use definition_usage_query::{
     DefinitionUsageDerivedKind, DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite,
@@ -1131,6 +1136,12 @@ impl PublishedResolution {
         self.model.metadata_annotation_details(symbol)
     }
 
+    /// The `connect` / `interface` topology reachable from one element: every connector it owns
+    /// (directly or transitively), each with its `:` type and resolved ends.
+    pub fn connections(&self, root: SymbolId) -> QueryOutcome<PublishedConnectionGraph> {
+        self.model.connection_graph(root)
+    }
+
     /// The explicit applicability outcome for a closed named binding-connector validation.
     pub fn binding_connector_validation(
         &self,
@@ -1320,6 +1331,10 @@ impl DebugQueries<'_> {
 
     pub fn write_metadata_annotations_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.write_metadata_annotations_sexpr(output)
+    }
+
+    pub fn write_connections_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.write_connections_sexpr(output)
     }
 }
 

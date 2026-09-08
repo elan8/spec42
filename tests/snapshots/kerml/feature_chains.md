@@ -300,6 +300,12 @@ package FeatureChains {
   (declaration (id (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-classifier) (name "A")) (named (kind kerml-feature) (name "g")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/feature_chains.md") (path (named (kind package) (name "FeatureChains")) (named (kind kerml-feature) (name "b")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind connection) (end bare (feature-chain (resolved (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::F::a"))) "f::a")) (end bare (feature-chain (resolved (node (document "memory://snapshot/feature_chains.md") (qualified-name "FeatureChains::A::g"))) "a::g")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

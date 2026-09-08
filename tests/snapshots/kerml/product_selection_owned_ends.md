@@ -864,6 +864,13 @@ package ProductSelection_OwnedEnds {
   (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (path (named (kind package) (name "ProductSelection_OwnedEnds")) (named (kind class-def) (name "OnlineCustomer")) (named (kind kerml-connector) (name "ps2")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "info1" (target (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer::info1")))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer::ps1"))) (kind connection) (type (resolved (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::ProductSelection")))) (end bare (feature (resolved (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer::myCart"))))) (end bare (feature (resolved (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer::products"))))))
+  (connector (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer::ps2"))) (kind connection) (type (resolved (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::ProductSelection")))) (end bare (feature (resolved (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer::myCart"))))) (end bare (feature (resolved (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds::OnlineCustomer::products"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -339,6 +339,12 @@ package Q {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/feature_path_test.md") (path (named (kind package) (name "Q")) (named (kind part-def) (name "C")) (named (kind part) (name "b")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connection) (end bare (feature-chain (resolved (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::F::a"))) "f::a")) (end bare (feature-chain (resolved (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A::g"))) "a::g")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

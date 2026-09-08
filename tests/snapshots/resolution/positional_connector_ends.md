@@ -152,6 +152,14 @@ package Ends {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Coupling"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Feed"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Reversed"))) (kind connection))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`inspection().connections(root)` publishes the `connect` / `interface` topology reachable
+  from an element.** Sibling of `binding_connectors()`: a `PublishedConnectionGraph` of every
+  connector `root` owns (directly or transitively), each with its `:` type and its resolved
+  ends. A bare end (`connect a to b`) is a single resolved feature; a dotted end
+  (`connect a.b.port to ...`) carries the resolved *terminal* feature plus the path as authored
+  (the intermediate hops are a later refinement -- the resolver keeps no per-hop state); a
+  named end (`connect x references a.b`) carries its own identity and multiplicity. It adds no
+  analysis -- every end is an authored reference resolution already settled. Third and final
+  slice of #84.
+
 - **`inspection().metadata_annotations(symbol)` publishes each metadata annotation bound to an
   element.** `ElementDetails::metadata` only answered "which metadata definitions annotate this
   element", collapsing every authored annotation into a deduplicated set of definition
@@ -19,8 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `AttributeUsage` members, and their value expressions were all lowered and resolved already.
   The `about` clause (`@Tag ... about X, Y;` / `metadata m : Tag about X;`) is now lowered and
   resolved through a new `MetadataAnnotationAbout` reference (`DeclarationDomain::Any` lexical
-  lookup), so its targets also resolve for hover and go-to-definition. Second slice of #84 (the
-  connection-topology query is the remaining follow-up).
+  lookup), so its targets also resolve for hover and go-to-definition. Second slice of #84.
 
 - **A workspace package named like a standard-library anchor package can be namespace-imported
   again.** `import Requirements::*` (or `Parts`, `Views`, `Actions`, `Items`, ... -- any of the

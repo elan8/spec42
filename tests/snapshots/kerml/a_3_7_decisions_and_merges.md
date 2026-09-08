@@ -1099,6 +1099,13 @@ package DecisionsAndMergesExecution {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/a_3_7_decisions_and_merges.md") (qualified-name "DecisionsAndMergesModelToBeExecuted::Manufacture::bindIOHBL"))) (kind connection) (type unresolved) (end bare (feature (resolved (node (document "memory://snapshot/a_3_7_decisions_and_merges.md") (qualified-name "DecisionsAndMergesModelToBeExecuted::Manufacture::inspectOutgoingHBLinks"))))) (end bare (feature-chain unresolved "inspect::outgoingHBLink")))
+  (connector (id (node (document "memory://snapshot/a_3_7_decisions_and_merges.md") (qualified-name "DecisionsAndMergesModelToBeExecuted::Manufacture::bindmSIHBL"))) (kind connection) (type unresolved) (end bare (feature (resolved (node (document "memory://snapshot/a_3_7_decisions_and_merges.md") (qualified-name "DecisionsAndMergesModelToBeExecuted::Manufacture::mShipIncomingHBLinks"))))) (end bare (feature-chain unresolved "mShip::incomingHBLink")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -2757,6 +2757,13 @@ fn regenerate_snapshot(
         )
         .unwrap_or(fixture)
     };
+    // Same policy for the connect / interface topology.
+    let fixture = if canonical.has_connections() {
+        replace_or_insert_section(&fixture, "CONNECTIONS", &canonical.connections)
+            .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?
+    } else {
+        replace_section(&fixture, "CONNECTIONS", &canonical.connections).unwrap_or(fixture)
+    };
     let fixture = replace_or_insert_section(&fixture, "NAVIGATION", &canonical.navigation)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     let fixture = if probes.queries.is_empty() {
@@ -6808,6 +6815,7 @@ struct OwnedSections {
     types: String,
     expressions: String,
     metadata_annotations: String,
+    connections: String,
     diagnostics: String,
     navigation: String,
     editor_queries: String,
@@ -6828,6 +6836,12 @@ impl OwnedSections {
     /// [`Self::has_expressions`].
     fn has_metadata_annotations(&self) -> bool {
         self.metadata_annotations.contains("(annotation ")
+    }
+
+    /// Whether the connection-topology projection has any content. Same omission policy as
+    /// [`Self::has_expressions`].
+    fn has_connections(&self) -> bool {
+        self.connections.contains("(connector ")
     }
 }
 
@@ -6858,6 +6872,11 @@ fn render_owned_sections(
         .debug()
         .write_metadata_annotations_sexpr(&mut metadata_annotations)
         .map_err(|error| format!("metadata-annotation rendering failed: {error}"))?;
+    let mut connections = String::new();
+    model
+        .debug()
+        .write_connections_sexpr(&mut connections)
+        .map_err(|error| format!("connection rendering failed: {error}"))?;
     let mut navigation = String::new();
     model
         .debug()
@@ -6882,6 +6901,7 @@ fn render_owned_sections(
         types,
         expressions,
         metadata_annotations,
+        connections,
         diagnostics,
         navigation,
         editor_queries,
@@ -6985,6 +7005,7 @@ fn ensure_sections_balanced(sections: &OwnedSections) -> Result<(), String> {
     ensure_balanced("TYPES", &sections.types)?;
     ensure_balanced("EXPRESSIONS", &sections.expressions)?;
     ensure_balanced("METADATA ANNOTATIONS", &sections.metadata_annotations)?;
+    ensure_balanced("CONNECTIONS", &sections.connections)?;
     ensure_balanced("DIAGNOSTICS", &sections.diagnostics)?;
     ensure_balanced("NAVIGATION", &sections.navigation)?;
     ensure_balanced("EDITOR RESULTS", &sections.editor_queries).and_then(|()| {
@@ -7678,6 +7699,7 @@ const SECTION_ORDER: &[&str] = &[
     "TYPES",
     "EXPRESSIONS",
     "METADATA ANNOTATIONS",
+    "CONNECTIONS",
     "NAVIGATION",
     "EDITOR RESULTS",
     "HOVER RESULTS",

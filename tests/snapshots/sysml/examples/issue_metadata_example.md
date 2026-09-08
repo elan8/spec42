@@ -224,6 +224,13 @@ package IssueMetadataExample {
   (annotation (element (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::engineToTransmissionInterface"))) (form usage) (definition unresolved) (about (resolved (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::engineToTransmissionInterface")))) (value (redefines unresolved) (outcome resolved) (operator "+" (operator "+" (operator "+" (literal (value (kind string) (value "This issue is about the interface compatability between the engine and transmission."))) (literal (value (kind string) (value "The interface def includes an end defined by a ClutchPort.")))) (literal (value (kind string) (value "However, the interface usage connects the transmission port that is defined by ~DrivePwrPort.")))) (literal (value (kind string) (value "This should have surfaced a compatibility issue, since the interface is not really compatible with its definition"))))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::engineToTransmissionInterface"))) (kind interface) (type (resolved (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface")))) (end bare (feature-chain (resolved (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::engine::drivePwrPort"))) "engine::drivePwrPort")) (end bare (feature-chain (resolved (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::transmission::clutchPort"))) "transmission::clutchPort")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -278,6 +278,15 @@ package ConnectorEndCollision {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/connector_end_name_collides_with_interface_definition_end.md") (qualified-name "ConnectorEndCollision::LESInterface"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/connector_end_name_collides_with_interface_definition_end.md") (qualified-name "ConnectorEndCollision::NonCollidingInterface"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/connector_end_name_collides_with_interface_definition_end.md") (qualified-name "ConnectorEndCollision::NonCollidingSpacecraft::nonCollidingConnection"))) (kind interface) (type (resolved (node (document "memory://snapshot/connector_end_name_collides_with_interface_definition_end.md") (qualified-name "ConnectorEndCollision::NonCollidingInterface")))) (end bare (feature-chain (resolved (node (document "memory://snapshot/connector_end_name_collides_with_interface_definition_end.md") (qualified-name "ConnectorEndCollision::CommandModule::lesInterfacePort"))) "commandModule::lesInterfacePort")) (end bare (feature-chain (resolved (node (document "memory://snapshot/connector_end_name_collides_with_interface_definition_end.md") (qualified-name "ConnectorEndCollision::LaunchEscapeSystem::cmInterfacePort"))) "launchEscapeSystem::cmInterfacePort")))
+  (connector (id (node (document "memory://snapshot/connector_end_name_collides_with_interface_definition_end.md") (qualified-name "ConnectorEndCollision::Spacecraft::lesConnection"))) (kind interface) (type (resolved (node (document "memory://snapshot/connector_end_name_collides_with_interface_definition_end.md") (qualified-name "ConnectorEndCollision::LESInterface")))) (end bare (feature-chain (resolved (node (document "memory://snapshot/connector_end_name_collides_with_interface_definition_end.md") (qualified-name "ConnectorEndCollision::CommandModule::lesInterfacePort"))) "commandModule::lesInterfacePort")) (end bare (feature-chain (resolved (node (document "memory://snapshot/connector_end_name_collides_with_interface_definition_end.md") (qualified-name "ConnectorEndCollision::LaunchEscapeSystem::cmInterfacePort"))) "launchEscapeSystem::cmInterfacePort")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -752,6 +752,16 @@ package VehicleUsages {
   (declaration (id (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind part) (name "vehicle_C1")) (named (kind part) (name "rearAxleAssembly")) (named (kind part) (name "rearWheel")) (anonymous (kind part) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "T2" (target (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::T2")))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind part) (name "vehicle_C2")) (anonymous (kind part) (ordinal 0)) (named (kind interface) (name "leftFrontMount"))))) (kind interface) (type unresolved) (end bare (feature-chain unresolved "frontAxle::leftMountingPoint")) (end bare (feature-chain unresolved "leftFrontWheel::hub")))
+  (connector (id (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind part) (name "vehicle_C2")) (anonymous (kind part) (ordinal 0)) (named (kind interface) (name "rightFrontMount"))))) (kind interface) (type unresolved) (end bare (feature-chain unresolved "frontAxle::rightMountingPoint")) (end bare (feature-chain unresolved "rightFrontWheel::hub")))
+  (connector (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::leftRearMount"))) (kind interface) (type unresolved) (end bare (feature-chain unresolved "rearAxle::leftMountingPoint")) (end bare (feature-chain unresolved "leftRearWheel::hub")))
+  (connector (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C2::rearAxleAssembly::rightRearMount"))) (kind interface) (type unresolved) (end bare (feature-chain unresolved "rearAxle::rightMountingPoint")) (end bare (feature-chain unresolved "rightRearWheel::hub")))
+  (connector (id (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C3::driveShaft"))) (kind interface) (end bare (feature-chain (resolved (node (document "memory://snapshot/vehicle_usages.md") (qualified-name "VehicleUsages::vehicle_C3::transmission::drive"))) "transmission::drive")) (end bare (feature-chain (resolved (node (document "memory://snapshot/vehicle_usages.md") (path (named (kind package) (name "VehicleUsages")) (named (kind part) (name "vehicle_C3")) (anonymous (kind part) (ordinal 0)) (anonymous (kind part) (ordinal 0)) (named (kind port) (name "drive"))))) "rearAxleAssembly::rearAxle::drive")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

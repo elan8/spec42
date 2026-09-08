@@ -72,6 +72,12 @@ package M { part def System { part a; part b; connect a to b; } }
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/expression_relationship_publication.md") (path (named (kind package) (name "M")) (named (kind part-def) (name "System")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connection) (end bare (feature (resolved (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System::a"))))) (end bare (feature (resolved (node (document "memory://snapshot/expression_relationship_publication.md") (qualified-name "M::System::b"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

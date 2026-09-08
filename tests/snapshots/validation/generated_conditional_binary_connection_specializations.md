@@ -118,6 +118,12 @@ package BinaryConnectionSpecializations {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/generated_conditional_binary_connection_specializations.md") (qualified-name "BinaryConnectionSpecializations::Link"))) (kind connection))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

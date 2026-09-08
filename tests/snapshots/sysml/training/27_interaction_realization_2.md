@@ -691,6 +691,12 @@ package 'Interaction Realization-2' {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::driverToVehicleInterface"))) (kind interface) (end bare (feature-chain (resolved (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::driver_b::setSpeedPort"))) "driver_b::setSpeedPort")) (end bare (feature-chain (resolved (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2::vehicle_b::setSpeedPort"))) "vehicle_b::setSpeedPort")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

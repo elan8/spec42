@@ -1401,6 +1401,15 @@ package ServerSequenceRealization_3 {
   (declaration (id (node (document "memory://snapshot/server_sequence_realization_3.md") (path (named (kind package) (name "ServerSequenceRealization_3")) (named (kind package) (name "Configuration")) (named (kind part) (name "server_3")) (named (kind perform-action) (name "serverBehavior")) (named (kind action) (name "subscribing")) (named (kind attribute) (name "topic")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::publication_interface"))) (kind interface) (type (resolved (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::PublicationInterface")))) (end bare (feature-chain (resolved (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::producer_3::publicationPort"))) "producer_3::publicationPort")) (end bare (feature-chain (resolved (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::publicationPort"))) "server_3::publicationPort")))
+  (connector (id (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::subscription_interface"))) (kind interface) (type (resolved (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::SubscriptionInterface")))) (end bare (feature-chain (resolved (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::consumer_3::subscriptionPort"))) "consumer_3::subscriptionPort")) (end bare (feature-chain (resolved (node (document "memory://snapshot/server_sequence_realization_3.md") (qualified-name "ServerSequenceRealization_3::Configuration::server_3::subscriptionPort"))) "server_3::subscriptionPort")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

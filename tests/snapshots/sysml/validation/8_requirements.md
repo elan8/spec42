@@ -1200,6 +1200,13 @@ package '8-Requirements' {
   (declaration (id (node (document "memory://snapshot/8_requirements.md") (path (named (kind package) (name "8-Requirements")) (named (kind part) (name "vehicle1_c1 Specification Context")) (named (kind requirement) (name "engine-v1 Specification")) (anonymous (kind require-constraint) (ordinal 1)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::Vehicle Definitions::EngineToTransmissionInterface"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::Vehicle Usages::vehicle1_c1::engineToTransmission"))) (kind interface) (type (resolved (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::Vehicle Definitions::EngineToTransmissionInterface")))) (end bare (feature-chain (resolved (node (document "memory://snapshot/8_requirements.md") (path (named (kind package) (name "8-Requirements")) (named (kind package) (name "Vehicle Usages")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "engine_v1")) (anonymous (kind port) (ordinal 0))))) "engine_v1::drivePwrPort")) (end bare (feature-chain (resolved (node (document "memory://snapshot/8_requirements.md") (path (named (kind package) (name "8-Requirements")) (named (kind package) (name "Vehicle Usages")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "transmission")) (anonymous (kind port) (ordinal 0))))) "transmission::clutchPort")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

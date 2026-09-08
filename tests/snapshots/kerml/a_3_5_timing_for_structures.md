@@ -1850,6 +1850,13 @@ package TimingForStructuresExecution3 {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/a_3_5_timing_for_structures.md") (qualified-name "TimingForStructuresModelToBeExecuted2::Bicycle::b_during_ap"))) (kind connection) (type unresolved) (end bare (feature unresolved)) (end bare (feature (resolved (node (document "memory://snapshot/a_3_5_timing_for_structures.md") (qualified-name "TimingForStructuresModelToBeExecuted2::Bicycle::allParts"))))))
+  (connector (id (node (document "memory://snapshot/a_3_5_timing_for_structures.md") (qualified-name "TimingForStructuresModelToBeExecuted3::Bicycle::be_while_pe"))) (kind connection) (type unresolved) (end bare (feature unresolved)) (end bare (feature-chain unresolved "endShot::allParts::endShot")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -108,6 +108,12 @@ package Ends {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/kerml_end_feature_direction.md") (qualified-name "Ends::DirectedEnd"))) (kind connection))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

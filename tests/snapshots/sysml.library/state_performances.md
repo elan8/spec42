@@ -1402,6 +1402,12 @@ standard library package StatePerformances {
   (declaration (id (node (document "memory://snapshot/state_performances.md") (path (named (kind library-package) (name "StatePerformances")) (named (kind kerml-behavior) (name "StateTransitionPerformance")) (named (kind kerml-feature) (name "transitionLinkTarget")) (anonymous (kind kerml-invariant) (ordinal 0))))) (outcome unsupported))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::linkTriggerDuring"))) (kind connection) (type unresolved) (end bare (feature-chain unresolved "trigger::endShot")) (end bare (feature (resolved (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

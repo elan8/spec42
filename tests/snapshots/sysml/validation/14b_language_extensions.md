@@ -293,6 +293,13 @@ package '14b-Language-Extensions' {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/14b_language_extensions.md") (path (named (kind package) (name "14b-Language-Extensions")) (named (kind package) (name "UserModel")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle1")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connection) (end bare (feature-chain (resolved (node (document "memory://snapshot/14b_language_extensions.md") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::vehicleControlUnit::busIF"))) "vehicleControlUnit::busIF")) (end bare (feature-chain (resolved (node (document "memory://snapshot/14b_language_extensions.md") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::canBus::vehicleControlIF"))) "canBus::vehicleControlIF")))
+  (connector (id (node (document "memory://snapshot/14b_language_extensions.md") (path (named (kind package) (name "14b-Language-Extensions")) (named (kind package) (name "UserModel")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle1")) (anonymous (kind bare-connect) (ordinal 1))))) (kind connection) (end bare (feature-chain (resolved (node (document "memory://snapshot/14b_language_extensions.md") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::engine::engineControlUnit::busIF"))) "engine::engineControlUnit::busIF")) (end bare (feature-chain (resolved (node (document "memory://snapshot/14b_language_extensions.md") (qualified-name "14b-Language-Extensions::UserModel::Usages::vehicle1::canBus::engineControlIF"))) "canBus::engineControlIF")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

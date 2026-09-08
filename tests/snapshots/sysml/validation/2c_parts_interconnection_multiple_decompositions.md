@@ -669,6 +669,14 @@ package '2c-Parts Interconnection-Multiple Decompositions' {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/2c_parts_interconnection_multiple_decompositions.md") (path (named (kind package) (name "2c-Parts Interconnection-Multiple Decompositions")) (named (kind part) (name "a11")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connection) (end bare (feature-chain (resolved (node (document "memory://snapshot/2c_parts_interconnection_multiple_decompositions.md") (path (named (kind package) (name "2c-Parts Interconnection-Multiple Decompositions")) (named (kind part) (name "a11")) (named (kind part) (name "b11")) (anonymous (kind port) (ordinal 0))))) "b11::pe")) (end bare (feature-chain (resolved (node (document "memory://snapshot/2c_parts_interconnection_multiple_decompositions.md") (path (named (kind package) (name "2c-Parts Interconnection-Multiple Decompositions")) (named (kind part) (name "a11")) (named (kind part) (name "b12")) (anonymous (kind port) (ordinal 0))))) "b12::pf")))
+  (connector (id (node (document "memory://snapshot/2c_parts_interconnection_multiple_decompositions.md") (path (named (kind package) (name "2c-Parts Interconnection-Multiple Decompositions")) (named (kind part) (name "a11")) (named (kind part) (name "b11")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connection) (end bare (feature-chain (resolved (node (document "memory://snapshot/2c_parts_interconnection_multiple_decompositions.md") (qualified-name "2c-Parts Interconnection-Multiple Decompositions::C1::pa"))) "c1::pa")) (end bare (feature-chain (resolved (node (document "memory://snapshot/2c_parts_interconnection_multiple_decompositions.md") (qualified-name "2c-Parts Interconnection-Multiple Decompositions::C2::pc"))) "c2::pc")))
+  (connector (id (node (document "memory://snapshot/2c_parts_interconnection_multiple_decompositions.md") (path (named (kind package) (name "2c-Parts Interconnection-Multiple Decompositions")) (named (kind part) (name "a12")) (named (kind part) (name "b21")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connection) (end bare (feature-chain (resolved (node (document "memory://snapshot/2c_parts_interconnection_multiple_decompositions.md") (qualified-name "2c-Parts Interconnection-Multiple Decompositions::C1::pb"))) "c1::pb")) (end bare (feature-chain (resolved (node (document "memory://snapshot/2c_parts_interconnection_multiple_decompositions.md") (qualified-name "2c-Parts Interconnection-Multiple Decompositions::C3::pd"))) "c3::pd")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

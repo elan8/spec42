@@ -578,6 +578,13 @@ package GeneratedUsages {
   (annotation (element (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages"))) (form usage))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::ConnectionUsage"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::InterfaceUsage"))) (kind interface))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

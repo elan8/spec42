@@ -468,6 +468,12 @@ package 'Flashlight Example' {
   (declaration (id (node (document "memory://snapshot/flashlight_example.md") (path (named (kind package) (name "Flashlight Example")) (named (kind part) (name "context")) (named (kind part) (name "user")) (anonymous (kind perform-action) (ordinal 0)) (anonymous (kind perform-parameter-binding) (ordinal 0))))) (outcome resolved) (feature-reference "onOffCmdPort::onOffCmd" (target (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::OnOffCmdPort::onOffCmd")))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::userToFlashlight"))) (kind interface) (end bare (feature-chain (resolved (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::user::onOffCmdPort"))) "user::onOffCmdPort")) (end bare (feature-chain (resolved (node (document "memory://snapshot/flashlight_example.md") (qualified-name "Flashlight Example::context::flashlight::onOffCmdPort"))) "flashlight::onOffCmdPort")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

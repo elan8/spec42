@@ -380,6 +380,13 @@ package GeneratedSpecializationLoweringGaps {
   (annotation (element (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Thing"))) (form usage) (definition (resolved (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker")))) (about (resolved (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Thing")))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::ConnectionUsage"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::InterfaceUsage"))) (kind interface))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

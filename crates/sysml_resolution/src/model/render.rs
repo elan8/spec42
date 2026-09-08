@@ -165,29 +165,36 @@ pub(crate) fn write_metadata_annotations_only(
 
 /// Renders every authored metadata annotation, grouped under the element it binds to, in
 /// canonical declaration order. A fixture that authors none contributes nothing.
+/// Renders one authored reference's settled target as `(resolved <node>)` / `ambiguous` /
+/// `unsupported` / `unresolved`. Shared by the `METADATA ANNOTATIONS` and `CONNECTIONS`
+/// sections.
+pub(crate) fn write_settled_reference_target(
+    model: &ResolvedSemanticModel,
+    reference_id: AuthoredReferenceId,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    match model.resolution.outcome(reference_id) {
+        Some(ResolutionStatus::Resolved(target)) => {
+            output.write_str("(resolved ")?;
+            write_node_identity(model, target, output)?;
+            output.write_char(')')
+        }
+        Some(ResolutionStatus::Ambiguous(_)) => output.write_str("ambiguous"),
+        Some(ResolutionStatus::Unsupported) => output.write_str("unsupported"),
+        _ => output.write_str("unresolved"),
+    }
+}
+
 pub(crate) fn write_metadata_annotations(
     model: &ResolvedSemanticModel,
     output: &mut dyn fmt::Write,
 ) -> fmt::Result {
     fn write_target(
         model: &ResolvedSemanticModel,
-        reference_id: crate::model::AuthoredReferenceId,
+        reference_id: AuthoredReferenceId,
         output: &mut dyn fmt::Write,
     ) -> fmt::Result {
-        match model.resolution.outcome(reference_id) {
-            Some(crate::resolve::results::ResolutionStatus::Resolved(target)) => {
-                output.write_str("(resolved ")?;
-                write_node_identity(model, target, output)?;
-                output.write_char(')')
-            }
-            Some(crate::resolve::results::ResolutionStatus::Ambiguous(_)) => {
-                output.write_str("ambiguous")
-            }
-            Some(crate::resolve::results::ResolutionStatus::Unsupported) => {
-                output.write_str("unsupported")
-            }
-            _ => output.write_str("unresolved"),
-        }
+        write_settled_reference_target(model, reference_id, output)
     }
 
     fn write_body(
@@ -276,6 +283,149 @@ fn metadata_annotation_form_name(
         crate::lower::facts::MetadataAnnotationForm::AnnotatingMember => "annotating-member",
         crate::lower::facts::MetadataAnnotationForm::Usage => "usage",
     }
+}
+
+pub(crate) fn write_connections_only(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    write_connections(model, output)
+}
+
+/// Renders every workspace `connect` / `interface` connector with its type and resolved ends,
+/// in canonical declaration order. Not root-scoped -- the section is the whole workspace's
+/// topology. A fixture that authors no connector contributes nothing.
+pub(crate) fn write_connections(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    use crate::model::query::connector_kind;
+
+    fn write_end_reference(
+        model: &ResolvedSemanticModel,
+        reference_id: AuthoredReferenceId,
+        output: &mut dyn fmt::Write,
+    ) -> fmt::Result {
+        let dotted = model
+            .storage
+            .references
+            .get(reference_id.index())
+            .is_some_and(|reference| {
+                reference.kind == ReferenceKind::MemberAccessOperand || reference.flags.dotted
+            });
+        if dotted {
+            let authored = model
+                .storage
+                .references
+                .get(reference_id.index())
+                .map(|reference| model.authored_path(reference.path))
+                .unwrap_or_default();
+            output.write_str("(feature-chain ")?;
+            write_settled_reference_target(model, reference_id, output)?;
+            write!(output, " {authored:?})")
+        } else {
+            output.write_str("(feature ")?;
+            write_settled_reference_target(model, reference_id, output)?;
+            output.write_char(')')
+        }
+    }
+
+    fn is_end_reference(model: &ResolvedSemanticModel, reference_id: AuthoredReferenceId) -> bool {
+        model
+            .storage
+            .references
+            .get(reference_id.index())
+            .is_some_and(|reference| {
+                matches!(
+                    reference.kind,
+                    ReferenceKind::ConnectorEnd | ReferenceKind::MemberAccessOperand
+                )
+            })
+    }
+
+    writeln!(output, "(connections")?;
+    for index in canonical_declaration_indices(model) {
+        let connector = DeclarationId(index as u32);
+        let Some(declaration) = model.storage.declaration(connector) else {
+            continue;
+        };
+        let Some(kind) = connector_kind(declaration.kind) else {
+            continue;
+        };
+        if model
+            .storage
+            .declaration_facts(connector)
+            .and_then(|facts| facts.positional_end)
+            .is_some()
+        {
+            continue;
+        }
+        write!(output, "  (connector (id ")?;
+        write_node_identity(model, connector, output)?;
+        write!(output, ") (kind {})", kind.as_str())?;
+        if let Some(typing) = model.outgoing_reference_ids(connector).iter().find(|id| {
+            model
+                .storage
+                .references
+                .get(id.index())
+                .is_some_and(|reference| reference.kind == ReferenceKind::FeatureTyping)
+        }) {
+            output.write_str(" (type ")?;
+            write_settled_reference_target(model, *typing, output)?;
+            output.write_char(')')?;
+        }
+        // Named ends: nested end children by positional ordinal.
+        let mut named: Vec<(u32, DeclarationId)> = model
+            .child_declarations(connector)
+            .iter()
+            .filter_map(|child| {
+                let ordinal = model
+                    .storage
+                    .declaration_facts(*child)
+                    .and_then(|facts| facts.positional_end)?;
+                Some((ordinal, *child))
+            })
+            .collect();
+        named.sort_by_key(|(ordinal, _)| *ordinal);
+        for (_, child) in named {
+            let Some(reference_id) = model
+                .outgoing_reference_ids(child)
+                .iter()
+                .copied()
+                .find(|id| is_end_reference(model, *id))
+            else {
+                continue;
+            };
+            output.write_str(" (end (name ")?;
+            write_node_identity(model, child, output)?;
+            output.write_char(')')?;
+            if let Some(multiplicity) = model
+                .storage
+                .declaration_facts(child)
+                .and_then(|facts| facts.multiplicity.as_ref())
+            {
+                output.write_str(" (multiplicity (lower ")?;
+                write_multiplicity_bound(multiplicity.lower, output)?;
+                output.write_str(") (upper ")?;
+                write_multiplicity_bound(multiplicity.upper, output)?;
+                output.write_str("))")?;
+            }
+            output.write_char(' ')?;
+            write_end_reference(model, reference_id, output)?;
+            output.write_char(')')?;
+        }
+        // Bare ends: end references sourced directly at the connector.
+        for reference_id in model.outgoing_reference_ids(connector) {
+            if !is_end_reference(model, *reference_id) {
+                continue;
+            }
+            output.write_str(" (end bare ")?;
+            write_end_reference(model, *reference_id, output)?;
+            output.write_char(')')?;
+        }
+        writeln!(output, ")")?;
+    }
+    writeln!(output, ")")
 }
 
 /// Renders the settled specialization closure of each projected declaration.

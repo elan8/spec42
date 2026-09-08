@@ -333,6 +333,13 @@ package BodyMemberDispatch {
   (declaration (id (node (document "memory://snapshot/parser_body_member_dispatch.md") (qualified-name "BodyMemberDispatch::R::nestedCalc"))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/parser_body_member_dispatch.md") (qualified-name "BodyMemberDispatch::CD"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/parser_body_member_dispatch.md") (qualified-name "BodyMemberDispatch::OD::occConn"))) (kind connection) (type (resolved (node (document "memory://snapshot/parser_body_member_dispatch.md") (qualified-name "BodyMemberDispatch::CD")))) (end bare (feature (resolved (node (document "memory://snapshot/parser_body_member_dispatch.md") (qualified-name "BodyMemberDispatch::OD::refInOccurrence"))))) (end bare (feature (resolved (node (document "memory://snapshot/parser_body_member_dispatch.md") (qualified-name "BodyMemberDispatch::OD::refInOccurrence"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

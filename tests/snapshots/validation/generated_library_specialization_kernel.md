@@ -323,6 +323,12 @@ package GeneratedKernel {
   (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Expression"))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector"))) (kind connection))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

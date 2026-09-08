@@ -176,6 +176,13 @@ package 'Interface Example' {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/11_interface_example.md") (qualified-name "Interface Example::FuelInterface"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/11_interface_example.md") (path (named (kind package) (name "Interface Example")) (named (kind part) (name "vehicle")) (anonymous (kind interface) (ordinal 0))))) (kind interface) (type (resolved (node (document "memory://snapshot/11_interface_example.md") (qualified-name "Interface Example::FuelInterface")))) (end bare (feature-chain unresolved "tankAssy::fuelTankPort")) (end bare (feature-chain unresolved "eng::engineFuelPort")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

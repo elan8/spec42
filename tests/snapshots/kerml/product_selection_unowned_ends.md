@@ -449,6 +449,13 @@ package ProductSelection_UnownedEnds {
   (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (path (named (kind package) (name "ProductSelection_UnownedEnds")) (named (kind class-def) (name "OnlineCustomer")) (named (kind kerml-connector) (name "ps2")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "info1" (target (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer::info1")))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer::ps1"))) (kind connection) (type (resolved (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ProductSelection")))) (end bare (feature (resolved (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer::myCart"))))) (end bare (feature (resolved (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer::products"))))))
+  (connector (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer::ps2"))) (kind connection) (type (resolved (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::ProductSelection")))) (end bare (feature (resolved (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer::myCart"))))) (end bare (feature (resolved (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer::products"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -3164,6 +3164,81 @@ classifier C {
     assert_eq!(values[0].provenance, RelationshipProvenance::Authored);
 }
 
+/// `connections(root)` publishes every `connect` / `interface` connector reachable from an
+/// element, with its type and resolved ends -- bare, dotted, named, and unresolved.
+#[test]
+fn connection_graph_publishes_connectors_with_resolved_ends() {
+    let published = publication_for(&[(
+        "memory://connections.sysml",
+        "package P {\n\
+         \tport def Pt;\n\
+         \tpart def Pump { port inlet : Pt; port outlet : Pt; }\n\
+         \tinterface def If { end a : Pt; end b : Pt; }\n\
+         \tpart system {\n\
+         \t\tpart pumpA : Pump;\n\
+         \t\tpart pumpB : Pump;\n\
+         \t\tconnect pumpA to pumpB;\n\
+         \t\tconnect pumpA.outlet to pumpB.inlet;\n\
+         \t\tinterface link : If connect pumpA.outlet to pumpB.inlet;\n\
+         \t\tconnect pumpA.outlet to missing.port;\n\
+         \t}\n\
+         }",
+    )]);
+    let system = identity_of(&published, "memory://connections.sysml", "P::system");
+    let graph = settled(published.connections(system));
+    assert_eq!(graph.root, system);
+    // Three `connect`s + one `interface` usage; the `interface def` is not under `system`.
+    assert_eq!(graph.connectors.len(), 4, "{:?}", graph.connectors);
+
+    let bare = &graph.connectors[0];
+    assert_eq!(bare.kind, ConnectorKind::Connection);
+    assert_eq!(bare.ends.len(), 2);
+    assert!(matches!(
+        bare.ends[0].endpoint,
+        ConnectorEndpoint::Feature(RelationshipTarget::Resolved(_))
+    ));
+    assert!(bare.ends[0].declaration.is_none());
+    assert_eq!(bare.ends[0].multiplicity, MultiplicityFacts::Absent);
+
+    let dotted = &graph.connectors[1];
+    match &dotted.ends[0].endpoint {
+        ConnectorEndpoint::FeatureChain { terminal, authored } => {
+            assert!(matches!(terminal, RelationshipTarget::Resolved(_)));
+            assert_eq!(authored.as_ref(), "pumpA::outlet");
+        }
+        other => panic!("expected a feature chain, got {other:?}"),
+    }
+
+    let unresolved_end = graph
+        .connectors
+        .iter()
+        .flat_map(|connector| connector.ends.iter())
+        .find_map(|end| match &end.endpoint {
+            ConnectorEndpoint::FeatureChain { terminal, authored } if authored.as_ref()
+                == "missing::port" =>
+            {
+                Some(terminal.clone())
+            }
+            _ => None,
+        })
+        .expect("the unresolved dotted end");
+    assert_eq!(unresolved_end, RelationshipTarget::Unresolved);
+
+    let interface = graph
+        .connectors
+        .iter()
+        .find(|connector| connector.kind == ConnectorKind::Interface)
+        .expect("the interface usage");
+    assert!(matches!(
+        interface.declared_type,
+        RelationshipTarget::Resolved(_)
+    ));
+
+    // A leaf with no connectors under it yields an empty graph.
+    let pump = identity_of(&published, "memory://connections.sysml", "P::Pump");
+    assert!(settled(published.connections(pump)).connectors.is_empty());
+}
+
 #[test]
 fn binding_connector_checks_are_manifest_scoped_and_preserve_first_missing_prerequisite() {
     let published = publication_for(&[(

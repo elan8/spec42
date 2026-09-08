@@ -150,6 +150,13 @@ package Connectors {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/kerml_connector_related_features.md") (qualified-name "Connectors::Holder::lone"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/kerml_connector_related_features.md") (qualified-name "Connectors::Holder::pair"))) (kind connection))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
