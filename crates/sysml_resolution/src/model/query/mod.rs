@@ -2496,6 +2496,57 @@ impl<D> SemanticModel<D> {
             }
             return self.resolved_outcome(outcome);
         }
+        if matches!(
+            kind,
+            SpecializationCheckKind::UsageVariationDefinition
+                | SpecializationCheckKind::UsageVariationUsage
+        ) {
+            let owner_is_usage = kind == SpecializationCheckKind::UsageVariationUsage;
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for (index, declaration) in self.storage.declarations.iter().enumerate() {
+                if !is_usage_declaration(declaration.kind) {
+                    continue;
+                }
+                let Ok(usage) = DeclarationId::from_index(index) else {
+                    return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+                };
+                if self.effective_membership_role(usage) != Some(crate::MembershipRole::Variant) {
+                    continue;
+                }
+                let Some(owner) = declaration.owner else {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                };
+                let Some(owner_declaration) = self.storage.declaration(owner) else {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                };
+                if is_usage_declaration(owner_declaration.kind) != owner_is_usage
+                    || !self
+                        .storage
+                        .declaration_facts(owner)
+                        .is_some_and(|facts| facts.modifiers.variation)
+                {
+                    continue;
+                }
+                match self.conformance(usage, owner, SpecializationScope::AnySpecialization) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => {
+                        outcome = if self.specialization_hierarchy_is_unsettled(usage) {
+                            SpecializationCheckOutcome::Unresolved
+                        } else {
+                            SpecializationCheckOutcome::Violated
+                        };
+                        break;
+                    }
+                    Conformance::Indeterminate(_) => {
+                        outcome = SpecializationCheckOutcome::Unresolved;
+                        break;
+                    }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
         let prerequisite = match kind {
             SpecializationCheckKind::FeatureCrossing => unreachable!("handled above"),
             SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
@@ -2551,9 +2602,7 @@ impl<D> SemanticModel<D> {
                 SpecializationCheckPrerequisite::UseCaseOwnerAndLibraryAnchor
             }
             SpecializationCheckKind::UsageVariationDefinition
-            | SpecializationCheckKind::UsageVariationUsage => {
-                SpecializationCheckPrerequisite::UsageVariationOwner
-            }
+            | SpecializationCheckKind::UsageVariationUsage => unreachable!("handled above"),
             SpecializationCheckKind::OccurrenceDefinitionMultiplicity => {
                 SpecializationCheckPrerequisite::IndividualMultiplicityAndLibraryAnchor
             }
@@ -3492,6 +3541,35 @@ impl<D> SemanticModel<D> {
             return Conformance::Conforms;
         }
         Conformance::DoesNotConform
+    }
+
+    /// Whether an unresolved authored specialization edge could still change a negative
+    /// conformance answer for `specific`.
+    ///
+    /// The specialization closure intentionally contains only settled single-target edges. Exact
+    /// checks that turn a failed reachability probe into a violation use this companion query so
+    /// an unresolved, ambiguous, unsupported, or non-converged edge on the reachable hierarchy is
+    /// not mistaken for proof of non-conformance.
+    fn specialization_hierarchy_is_unsettled(&self, specific: DeclarationId) -> bool {
+        std::iter::once(specific)
+            .chain(
+                self.types
+                    .specialization()
+                    .scoped_ancestors(specific)
+                    .map(|(ancestor, _)| ancestor),
+            )
+            .any(|declaration| {
+                self.outgoing_reference_ids(declaration)
+                    .iter()
+                    .any(|reference_id| {
+                        let reference = &self.storage.references[reference_id.index()];
+                        types::edge_scopes(reference.kind).is_some()
+                            && !matches!(
+                                self.resolution.outcome(*reference_id),
+                                Some(ResolutionStatus::Resolved(_))
+                            )
+                    })
+            })
     }
 
     /// Whether `specific`'s instances are all `general`'s, following only entailments that are
