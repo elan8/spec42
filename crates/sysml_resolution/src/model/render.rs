@@ -234,12 +234,10 @@ pub(crate) fn write_metadata_annotations(
     writeln!(output, "(metadata-annotations")?;
     for index in canonical_declaration_indices(model) {
         let element = DeclarationId(index as u32);
-        for record in model
-            .storage
-            .metadata_annotations
-            .iter()
-            .filter(|record| model.metadata_annotation_binds_to(record, element))
-        {
+        for record in model.storage.metadata_annotations.iter().filter(|record| {
+            let about = model.metadata_annotation_about_references(record.annotation);
+            model.metadata_annotation_binds_to(record, &about, element)
+        }) {
             write!(output, "  (annotation (element ")?;
             write_node_identity(model, element, output)?;
             write!(

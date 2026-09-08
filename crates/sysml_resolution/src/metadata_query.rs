@@ -43,15 +43,21 @@ impl MetadataAnnotationForm {
 /// One authored metadata annotation bound to an element, resolved and settled.
 #[derive(Debug, Clone, PartialEq)]
 pub struct PublishedMetadataAnnotation {
-    /// The element the annotation applies to (the owner of the annotating feature, or an
-    /// explicit `about` target — an annotation with `about X, Y` yields one
-    /// `PublishedMetadataAnnotation` per bound element).
+    /// The element the annotation applies to: the owner of the annotating feature, or — when an
+    /// `about` clause is present and resolves — each listed target (`about X, Y` yields one
+    /// `PublishedMetadataAnnotation` per bound element). An `about` clause where nothing resolves
+    /// falls back to the owner, so the annotation is never dropped from the set.
     pub annotated_element: SymbolId,
     /// The annotating feature's own identity — usually anonymous, named for `@t : Tag;` /
     /// `metadata t : Tag;`. Distinct authored annotations stay distinct even when identical.
     pub annotation: SymbolId,
     pub form: MetadataAnnotationForm,
-    /// The annotating metadata definition (`Tag` in `@Tag`).
+    /// The annotating metadata definition (`Tag` in `@Tag` / `#Tag` / `metadata m : Tag;`).
+    ///
+    /// [`RelationshipTarget::Unsupported`] for the keyword-only `metadata Tag about X;` spelling
+    /// (no `:` / `typed by`): the parser records `Tag` as the usage's name, not a typing
+    /// reference, so no definition is bound upstream. The `@Tag` and `#Tag` forms always carry
+    /// one.
     pub definition: RelationshipTarget,
     /// The authored `about` targets in order, empty for the `#`-prefix form and for an
     /// annotation with no `about` clause.

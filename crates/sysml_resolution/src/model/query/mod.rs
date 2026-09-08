@@ -2981,11 +2981,11 @@ impl<D> SemanticModel<D> {
             .metadata_annotations
             .iter()
             .filter_map(|record| {
-                if !self.metadata_annotation_binds_to(record, declaration) {
+                let about_references = self.metadata_annotation_about_references(record.annotation);
+                if !self.metadata_annotation_binds_to(record, &about_references, declaration) {
                     return None;
                 }
                 let annotation = self.symbol_id(record.annotation)?;
-                let about_references = self.metadata_annotation_about_references(record.annotation);
                 let definition_kind = Self::metadata_annotation_definition_kind(record.form);
                 let definition = self
                     .outgoing_reference_ids(record.annotation)
@@ -3097,23 +3097,27 @@ impl<D> SemanticModel<D> {
         }
     }
 
-    /// Whether one lowered annotation record binds to `element`: to its owner with no `about`
-    /// clause, or to each resolved `about` target when it has one.
+    /// Whether one lowered annotation record binds to `element`, given its already-collected
+    /// `about` references: to its owner with no `about` clause, or to each resolved `about`
+    /// target when it has one. An `about` clause where nothing resolved still binds to the
+    /// owner, so an annotation is never silently dropped from the published set.
     pub(crate) fn metadata_annotation_binds_to(
         &self,
         record: &MetadataAnnotationRecord,
+        about: &[AuthoredReferenceId],
         element: DeclarationId,
     ) -> bool {
-        let about = self.metadata_annotation_about_references(record.annotation);
-        if about.is_empty() {
-            return record.annotated_element == element;
+        let mut any_resolved = false;
+        for reference_id in about {
+            if let Some(ResolutionStatus::Resolved(target)) = self.resolution.outcome(*reference_id)
+            {
+                any_resolved = true;
+                if target == element {
+                    return true;
+                }
+            }
         }
-        about.iter().any(|reference_id| {
-            matches!(
-                self.resolution.outcome(*reference_id),
-                Some(ResolutionStatus::Resolved(target)) if target == element
-            )
-        })
+        !any_resolved && record.annotated_element == element
     }
 
     /// The synthesized expression declaration holding one feature's authored `= value`, if any.

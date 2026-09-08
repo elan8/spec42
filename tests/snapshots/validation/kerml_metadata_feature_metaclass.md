@@ -110,6 +110,13 @@ package Metadata {
 (types
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (qualified-name "Metadata"))) (form usage) (about ambiguous))
+  (annotation (element (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (qualified-name "Metadata"))) (form usage) (about ambiguous))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

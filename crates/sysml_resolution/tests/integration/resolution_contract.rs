@@ -4440,6 +4440,7 @@ fn metadata_annotations_publish_form_about_and_body_values() {
              \t}\n\
              \t#Risk part spare : Component;\n\
              \tmetadata shared : Risk about pump, missing;\n\
+             \tmetadata orphan : Risk about nowhere;\n\
              }",
         )],
         ConstructionSchedule::Sequential,
@@ -4484,6 +4485,16 @@ fn metadata_annotations_publish_form_about_and_body_values() {
     );
     assert!(spare_annotations[0].body.is_empty());
     assert!(spare_annotations[0].about.is_empty());
+
+    // `metadata orphan : Risk about nowhere;` — the `about` clause resolves to nothing, so the
+    // annotation falls back to its owner rather than vanishing from the published set.
+    let package = identity_of(&published, "memory://annotations.sysml", "P");
+    let package_annotations = settled(published.metadata_annotations(package));
+    let orphan = package_annotations
+        .iter()
+        .find(|annotation| matches!(annotation.about.as_ref(), [RelationshipTarget::Unresolved]))
+        .expect("the orphan annotation is still published under its owner");
+    assert_eq!(orphan.form, MetadataAnnotationForm::Usage);
 }
 
 /// Both directions are published, so an inspector never has to scan the model to find what
