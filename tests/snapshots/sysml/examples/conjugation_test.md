@@ -350,7 +350,7 @@ package ConjugationTest {
   (connector (id (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::A"))) (kind connection))
   (connector (id (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::B1::a"))) (kind connection) (type (resolved (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::A")))))
   (connector (id (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::B1::i"))) (kind interface) (type (resolved (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::I")))))
-  (connector (id (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::I"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::I"))) (kind interface) (end (name (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::I::p1"))) unconnected) (end (name (node (document "memory://snapshot/conjugation_test.md") (qualified-name "ConjugationTest::I::p2"))) unconnected))
 )
 ~~~
 # NAVIGATION

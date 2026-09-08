@@ -155,9 +155,9 @@ package Ends {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Coupling"))) (kind interface))
-  (connector (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Feed"))) (kind connection))
-  (connector (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Reversed"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Coupling"))) (kind interface) (end (name (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Coupling::left"))) unconnected) (end (name (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Coupling::right"))) unconnected))
+  (connector (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Feed"))) (kind connection) (end (name (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Feed::supply"))) unconnected) (end (name (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Feed::reservoir"))) unconnected))
+  (connector (id (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Reversed"))) (kind connection) (end (name (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Reversed::reservoir"))) unconnected) (end (name (node (document "memory://snapshot/positional_connector_ends.md") (qualified-name "Ends::Reversed::supply"))) unconnected))
 )
 ~~~
 # NAVIGATION

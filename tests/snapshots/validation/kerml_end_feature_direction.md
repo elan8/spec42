@@ -111,7 +111,7 @@ package Ends {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/kerml_end_feature_direction.md") (qualified-name "Ends::DirectedEnd"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/kerml_end_feature_direction.md") (qualified-name "Ends::DirectedEnd"))) (kind connection) (end (name (node (document "memory://snapshot/kerml_end_feature_direction.md") (qualified-name "Ends::DirectedEnd::plain"))) unconnected) (end (name (node (document "memory://snapshot/kerml_end_feature_direction.md") (qualified-name "Ends::DirectedEnd::directed"))) unconnected))
 )
 ~~~
 # NAVIGATION

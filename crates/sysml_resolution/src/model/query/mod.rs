@@ -3235,52 +3235,71 @@ impl<D> SemanticModel<D> {
         })
     }
 
-    /// The ends of one connector, in positional / authored order: the named end children
-    /// (`end x ::> a.b;` / `connect x references a.b`) first by `positional_end` ordinal, then
-    /// the bare ends (`connect a to b`) in reference order.
+    /// The ends of one connector, in authored order.
+    ///
+    /// Connected ends (a bare `ConnectorEnd` / `MemberAccessOperand` on the connector, or one on
+    /// a named end child) are ordered by their reference's authored position, so a connector that
+    /// mixes bare and named ends keeps authored order. A named end child that carries no such
+    /// reference is a declared-but-unwired participant slot (`connection def` body) and follows,
+    /// in declaration order.
     fn connector_ends(&self, connector: DeclarationId) -> Box<[PublishedConnectorEnd]> {
-        let mut named: Vec<(u32, PublishedConnectorEnd)> = self
-            .child_declarations(connector)
-            .iter()
-            .filter_map(|child| {
-                let ordinal = self
-                    .storage
-                    .declaration_facts(*child)
-                    .and_then(|facts| facts.positional_end)?;
-                let reference_id = self.connector_end_reference(*child)?;
-                Some((
-                    ordinal,
+        let mut connected: Vec<(usize, PublishedConnectorEnd)> = Vec::new();
+        for reference_id in self.outgoing_reference_ids(connector) {
+            if self.is_connector_end_reference(*reference_id) {
+                connected.push((
+                    reference_id.index(),
+                    PublishedConnectorEnd {
+                        declaration: None,
+                        multiplicity: MultiplicityFacts::Absent,
+                        endpoint: self.connector_endpoint(*reference_id),
+                    },
+                ));
+            }
+        }
+        let mut unconnected: Vec<PublishedConnectorEnd> = Vec::new();
+        for child in self.child_declarations(connector) {
+            if self
+                .storage
+                .declaration_facts(*child)
+                .and_then(|facts| facts.positional_end)
+                .is_none()
+            {
+                continue;
+            }
+            match self.connector_end_reference(*child) {
+                Some(reference_id) => connected.push((
+                    reference_id.index(),
                     PublishedConnectorEnd {
                         declaration: self.symbol_id(*child),
                         multiplicity: self.multiplicity(*child),
                         endpoint: self.connector_endpoint(reference_id),
                     },
-                ))
-            })
-            .collect();
-        named.sort_by_key(|(ordinal, _)| *ordinal);
+                )),
+                None => unconnected.push(PublishedConnectorEnd {
+                    declaration: self.symbol_id(*child),
+                    multiplicity: self.multiplicity(*child),
+                    endpoint: ConnectorEndpoint::Unconnected,
+                }),
+            }
+        }
+        connected.sort_by_key(|(position, _)| *position);
+        connected
+            .into_iter()
+            .map(|(_, end)| end)
+            .chain(unconnected)
+            .collect()
+    }
 
-        let bare = self
-            .outgoing_reference_ids(connector)
-            .iter()
-            .filter(|reference_id| {
-                self.storage
-                    .references
-                    .get(reference_id.index())
-                    .is_some_and(|reference| {
-                        matches!(
-                            reference.kind,
-                            ReferenceKind::ConnectorEnd | ReferenceKind::MemberAccessOperand
-                        )
-                    })
+    fn is_connector_end_reference(&self, reference_id: AuthoredReferenceId) -> bool {
+        self.storage
+            .references
+            .get(reference_id.index())
+            .is_some_and(|reference| {
+                matches!(
+                    reference.kind,
+                    ReferenceKind::ConnectorEnd | ReferenceKind::MemberAccessOperand
+                )
             })
-            .map(|reference_id| PublishedConnectorEnd {
-                declaration: None,
-                multiplicity: MultiplicityFacts::Absent,
-                endpoint: self.connector_endpoint(*reference_id),
-            });
-
-        named.into_iter().map(|(_, end)| end).chain(bare).collect()
     }
 
     /// The one `ConnectorEnd` / `MemberAccessOperand` reference a named end child carries.
@@ -3288,17 +3307,7 @@ impl<D> SemanticModel<D> {
         self.outgoing_reference_ids(end)
             .iter()
             .copied()
-            .find(|reference_id| {
-                self.storage
-                    .references
-                    .get(reference_id.index())
-                    .is_some_and(|reference| {
-                        matches!(
-                            reference.kind,
-                            ReferenceKind::ConnectorEnd | ReferenceKind::MemberAccessOperand
-                        )
-                    })
-            })
+            .find(|reference_id| self.is_connector_end_reference(*reference_id))
     }
 
     fn connector_endpoint(&self, reference_id: AuthoredReferenceId) -> ConnectorEndpoint {

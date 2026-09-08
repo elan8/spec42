@@ -42,14 +42,18 @@ pub enum ConnectorEndpoint {
         terminal: RelationshipTarget,
         authored: Box<str>,
     },
+    /// An end declared but not wired to a target — a `connection def` / `interface def` body's
+    /// participant slot (`end from : PowerPort;` with no `::>` / inline `connect`). Its type and
+    /// multiplicity are on [`PublishedConnectorEnd::declaration`].
+    Unconnected,
 }
 
 /// One end of a connector.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PublishedConnectorEnd {
-    /// The end's own feature, for a named end (`connect x references a.b`, `end x ::> a.b;`);
-    /// `None` for a bare positional end (`connect a to b`). Read its name and modifiers from
-    /// this identity.
+    /// The end's own feature, for a named end (`connect x references a.b`, `end x ::> a.b;`, or a
+    /// `connection def` participant slot); `None` for a bare positional end (`connect a to b`).
+    /// Read its name and modifiers from this identity.
     pub declaration: Option<SymbolId>,
     /// The end's authored multiplicity; [`MultiplicityFacts::Absent`] for a bare end.
     pub multiplicity: MultiplicityFacts,
@@ -63,9 +67,14 @@ pub struct PublishedConnector {
     /// Distinct authored connectors stay distinct even with identical endpoints.
     pub identity: SymbolId,
     pub kind: ConnectorKind,
-    /// The connector's `:` type; [`RelationshipTarget::Unsupported`] when none was authored.
+    /// The connector's `:` declared type (a `connect` / `interface` usage's typing).
+    /// [`RelationshipTarget::Unsupported`] when none was authored — including for a `connection
+    /// def` / `interface def`, whose `:>` supertype is read through the type queries
+    /// (`types().direct_types(..)`) rather than reported here.
     pub declared_type: RelationshipTarget,
-    /// The ends in authored / positional order.
+    /// The ends in authored order. An end whose path is a shape the resolver does not model
+    /// (`connect a to f()`) produces no resolvable reference and is omitted — the resolver
+    /// reports it as an `unsupported` diagnostic instead.
     pub ends: Box<[PublishedConnectorEnd]>,
     pub location: SourceLocation,
 }

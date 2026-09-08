@@ -391,7 +391,7 @@ standard library package Connections {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/connections.md") (qualified-name "Connections::BinaryConnection"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/connections.md") (qualified-name "Connections::BinaryConnection"))) (kind connection) (end (name (node (document "memory://snapshot/connections.md") (qualified-name "Connections::BinaryConnection::source"))) unconnected) (end (name (node (document "memory://snapshot/connections.md") (qualified-name "Connections::BinaryConnection::target"))) unconnected))
   (connector (id (node (document "memory://snapshot/connections.md") (qualified-name "Connections::Connection"))) (kind connection))
   (connector (id (node (document "memory://snapshot/connections.md") (qualified-name "Connections::binaryConnections"))) (kind connection))
   (connector (id (node (document "memory://snapshot/connections.md") (qualified-name "Connections::connections"))) (kind connection))

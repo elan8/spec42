@@ -3173,12 +3173,14 @@ fn connection_graph_publishes_connectors_with_resolved_ends() {
         "package P {\n\
          \tport def Pt;\n\
          \tpart def Pump { port inlet : Pt; port outlet : Pt; }\n\
-         \tinterface def If { end a : Pt; end b : Pt; }\n\
+         \tinterface def If :> BaseIf { end a : Pt; end b : Pt; }\n\
+         \tinterface def BaseIf;\n\
          \tpart system {\n\
          \t\tpart pumpA : Pump;\n\
          \t\tpart pumpB : Pump;\n\
          \t\tconnect pumpA to pumpB;\n\
          \t\tconnect pumpA.outlet to pumpB.inlet;\n\
+         \t\tconnect pumpA to keyed references pumpB.inlet;\n\
          \t\tinterface link : If connect pumpA.outlet to pumpB.inlet;\n\
          \t\tconnect pumpA.outlet to missing.port;\n\
          \t}\n\
@@ -3187,8 +3189,8 @@ fn connection_graph_publishes_connectors_with_resolved_ends() {
     let system = identity_of(&published, "memory://connections.sysml", "P::system");
     let graph = settled(published.connections(system));
     assert_eq!(graph.root, system);
-    // Three `connect`s + one `interface` usage; the `interface def` is not under `system`.
-    assert_eq!(graph.connectors.len(), 4, "{:?}", graph.connectors);
+    // Four `connect`s + one `interface` usage; the `interface def`s are not under `system`.
+    assert_eq!(graph.connectors.len(), 5, "{:?}", graph.connectors);
 
     let bare = &graph.connectors[0];
     assert_eq!(bare.kind, ConnectorKind::Connection);
@@ -3214,8 +3216,8 @@ fn connection_graph_publishes_connectors_with_resolved_ends() {
         .iter()
         .flat_map(|connector| connector.ends.iter())
         .find_map(|end| match &end.endpoint {
-            ConnectorEndpoint::FeatureChain { terminal, authored } if authored.as_ref()
-                == "missing::port" =>
+            ConnectorEndpoint::FeatureChain { terminal, authored }
+                if authored.as_ref() == "missing::port" =>
             {
                 Some(terminal.clone())
             }
@@ -3233,6 +3235,36 @@ fn connection_graph_publishes_connectors_with_resolved_ends() {
         interface.declared_type,
         RelationshipTarget::Resolved(_)
     ));
+
+    // A mixed `connect a to b references c.d`: bare end then named end, in authored order.
+    let mixed = graph
+        .connectors
+        .iter()
+        .find(|connector| {
+            connector.ends.len() == 2
+                && connector.ends[0].declaration.is_none()
+                && connector.ends[1].declaration.is_some()
+        })
+        .expect("the mixed bare+named connector");
+    assert!(matches!(
+        mixed.ends[0].endpoint,
+        ConnectorEndpoint::Feature(RelationshipTarget::Resolved(_))
+    ));
+    assert!(matches!(
+        mixed.ends[1].endpoint,
+        ConnectorEndpoint::FeatureChain { .. }
+    ));
+
+    // `connections(If)` — a `connection`/`interface def` publishes its declared-but-unwired
+    // ends as `Unconnected` carrying their own identities.
+    let if_def = identity_of(&published, "memory://connections.sysml", "P::If");
+    let if_graph = settled(published.connections(if_def));
+    let if_connector = &if_graph.connectors[0];
+    assert_eq!(if_connector.ends.len(), 2);
+    assert!(if_connector
+        .ends
+        .iter()
+        .all(|end| end.endpoint == ConnectorEndpoint::Unconnected && end.declaration.is_some()));
 
     // A leaf with no connectors under it yields an empty graph.
     let pump = identity_of(&published, "memory://connections.sysml", "P::Pump");

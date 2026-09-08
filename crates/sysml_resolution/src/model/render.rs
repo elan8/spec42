@@ -374,28 +374,12 @@ pub(crate) fn write_connections(
             write_settled_reference_target(model, *typing, output)?;
             output.write_char(')')?;
         }
-        // Named ends: nested end children by positional ordinal.
-        let mut named: Vec<(u32, DeclarationId)> = model
-            .child_declarations(connector)
-            .iter()
-            .filter_map(|child| {
-                let ordinal = model
-                    .storage
-                    .declaration_facts(*child)
-                    .and_then(|facts| facts.positional_end)?;
-                Some((ordinal, *child))
-            })
-            .collect();
-        named.sort_by_key(|(ordinal, _)| *ordinal);
-        for (_, child) in named {
-            let Some(reference_id) = model
-                .outgoing_reference_ids(child)
-                .iter()
-                .copied()
-                .find(|id| is_end_reference(model, *id))
-            else {
-                continue;
-            };
+
+        fn write_named_end_head(
+            model: &ResolvedSemanticModel,
+            child: DeclarationId,
+            output: &mut dyn fmt::Write,
+        ) -> fmt::Result {
             output.write_str(" (end (name ")?;
             write_node_identity(model, child, output)?;
             output.write_char(')')?;
@@ -410,18 +394,57 @@ pub(crate) fn write_connections(
                 write_multiplicity_bound(multiplicity.upper, output)?;
                 output.write_str("))")?;
             }
-            output.write_char(' ')?;
-            write_end_reference(model, reference_id, output)?;
-            output.write_char(')')?;
+            Ok(())
         }
-        // Bare ends: end references sourced directly at the connector.
+
+        // Connected ends (bare on the connector, or on a named child), in authored reference order.
+        let mut connected: Vec<(usize, Option<DeclarationId>, AuthoredReferenceId)> = Vec::new();
         for reference_id in model.outgoing_reference_ids(connector) {
-            if !is_end_reference(model, *reference_id) {
+            if is_end_reference(model, *reference_id) {
+                connected.push((reference_id.index(), None, *reference_id));
+            }
+        }
+        let mut unconnected: Vec<DeclarationId> = Vec::new();
+        for child in model.child_declarations(connector) {
+            if model
+                .storage
+                .declaration_facts(*child)
+                .and_then(|facts| facts.positional_end)
+                .is_none()
+            {
                 continue;
             }
-            output.write_str(" (end bare ")?;
-            write_end_reference(model, *reference_id, output)?;
-            output.write_char(')')?;
+            match model
+                .outgoing_reference_ids(*child)
+                .iter()
+                .copied()
+                .find(|id| is_end_reference(model, *id))
+            {
+                Some(reference_id) => {
+                    connected.push((reference_id.index(), Some(*child), reference_id))
+                }
+                None => unconnected.push(*child),
+            }
+        }
+        connected.sort_by_key(|(position, _, _)| *position);
+        for (_, child, reference_id) in connected {
+            match child {
+                Some(child) => {
+                    write_named_end_head(model, child, output)?;
+                    output.write_char(' ')?;
+                    write_end_reference(model, reference_id, output)?;
+                    output.write_char(')')?;
+                }
+                None => {
+                    output.write_str(" (end bare ")?;
+                    write_end_reference(model, reference_id, output)?;
+                    output.write_char(')')?;
+                }
+            }
+        }
+        for child in unconnected {
+            write_named_end_head(model, child, output)?;
+            output.write_str(" unconnected)")?;
         }
         writeln!(output, ")")?;
     }

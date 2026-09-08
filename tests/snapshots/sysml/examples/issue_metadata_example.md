@@ -227,7 +227,7 @@ package IssueMetadataExample {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface"))) (kind interface) (end (name (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface::p1"))) unconnected) (end (name (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface::p2"))) unconnected))
   (connector (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::engineToTransmissionInterface"))) (kind interface) (type (resolved (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::EngineToTransmissionInterface")))) (end bare (feature-chain (resolved (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::engine::drivePwrPort"))) "engine::drivePwrPort")) (end bare (feature-chain (resolved (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample::transmission::clutchPort"))) "transmission::clutchPort")))
 )
 ~~~
