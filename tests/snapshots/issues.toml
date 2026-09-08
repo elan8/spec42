@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-specialization-usage-variation-owner"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Usage owningVariationDefinition and owningVariationUsage are not canonical specialization endpoint facts."
-
-[[issue]]
 id = "lowering-gap-specialization-individual-multiplicity-library-anchor"
 kind = "lowering_gap"
 owner = "spec42-semantic"

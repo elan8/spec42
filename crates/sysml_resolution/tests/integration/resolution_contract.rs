@@ -3345,7 +3345,7 @@ fn redefinition_check_outcomes_have_cold_warm_and_schedule_parity() {
 }
 
 #[test]
-fn specialization_checks_do_not_launder_authored_or_implied_edges_into_success() {
+fn specialization_checks_have_cold_warm_and_schedule_parity() {
     let sources = [(
         "memory://specialization-check-rule-family.sysml",
         "package Model { classifier Parent { feature shared; } classifier Child :> Parent { feature shared; } }",
@@ -3353,22 +3353,12 @@ fn specialization_checks_do_not_launder_authored_or_implied_edges_into_success()
     let sequential = detail_publication(&sources, ConstructionSchedule::Sequential);
     let parallel = detail_publication(&sources, ConstructionSchedule::Parallel);
     let warm = detail_publication(&sources, ConstructionSchedule::Sequential);
-    let expected = [(
+    let rules = [
+        SpecializationCheckKind::UsageVariationDefinition,
         SpecializationCheckKind::UsageVariationUsage,
-        SpecializationCheckPrerequisite::UsageVariationOwner,
-    )];
+    ];
     let query = |published: &PublishedResolution| {
-        expected.map(|(rule, prerequisite)| {
-            assert_eq!(
-                published.specialization_check(rule),
-                QueryOutcome::new(
-                    published.completeness(),
-                    QueryAnswer::Resolved(SpecializationCheckOutcome::Unsupported { prerequisite }),
-                ),
-                "{rule:?} must not treat the model's authored/implied specialization facts as proof of its richer predicate"
-            );
-            settled(published.specialization_check(rule))
-        })
+        rules.map(|rule| settled(published.specialization_check(rule)))
     };
     assert_eq!(query(&sequential), query(&parallel));
     assert_eq!(query(&sequential), query(&warm));

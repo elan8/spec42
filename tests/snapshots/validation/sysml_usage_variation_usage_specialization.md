@@ -1,15 +1,21 @@
 # META
 ~~~ini
-description=SysML checkUsageVariationUsageSpecialization desired semantics
+description=SysML 8.3.6.4 checkUsageVariationUsageSpecialization accepts a variant Usage that specializes its owning variation Usage
 source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=sysml-2.0:8.3.6.4:checkUsageVariationUsageSpecialization
-blocked_by=lowering-gap-specialization-usage-variation-owner
 ~~~
 # SOURCE
 ~~~sysml
-package Model { part def Parent; part def Child :> Parent; }
+package Model {
+    part def Base;
+    part def Holder {
+        variation part choice : Base {
+            variant choice;
+        }
+    }
+}
 ~~~
 # EXPECTED SEMANTICS
 ~~~sexpr
@@ -27,19 +33,26 @@ package Model { part def Parent; part def Child :> Parent; }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c95e186c4d5d174f762d78504d09cf7e5fdf47c156aec8d3704fffbb12c9beb4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9e45c126a983020798c5433af4f34d3f761411649cfae096ee6f5c500a8031eb"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Child"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Parent")))))
-    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Parent"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder::choice"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base") (variation true)))))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (path (named (kind package) (name "Model")) (named (kind part-def) (name "Holder")) (named (kind part) (name "choice")) (anonymous (kind ref) (ordinal 0))))) (kind ref) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (subsetting (reference "choice")))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Child"))) (kind specialization) (ordinal 0))
-      (authored-target "Parent")
-      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Parent")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder::choice"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Base")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (path (named (kind package) (name "Model")) (named (kind part-def) (name "Holder")) (named (kind part) (name "choice")) (anonymous (kind ref) (ordinal 0))))) (kind subsetting) (ordinal 0))
+      (authored-target "choice")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder::choice")))))
   )
   (relationships
-    (relationship (kind specialization) (source (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Child"))) (target (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Parent"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Child"))) (kind specialization) (ordinal 0)))
+    (relationship (kind typing) (variation true) (source (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder::choice"))) (target (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder::choice"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (path (named (kind package) (name "Model")) (named (kind part-def) (name "Holder")) (named (kind part) (name "choice")) (anonymous (kind ref) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder::choice"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (path (named (kind package) (name "Model")) (named (kind part-def) (name "Holder")) (named (kind part) (name "choice")) (anonymous (kind ref) (ordinal 0))))) (kind subsetting) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder::choice"))) (target (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder"))) (provenance implied))
   )
   (evaluation
   )
@@ -48,20 +61,34 @@ package Model { part def Parent; part def Child :> Parent; }
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Child")))
-      (supertype (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Parent")) (scopes any subclassification))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Base")))
+      (subtype (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder::choice")) (scopes any))
     )
-    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Parent")))
-      (subtype (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Child")) (scopes any subclassification))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder::choice")))
+      (featured-by (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder")))
+      (type (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Base")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Base")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Base")) (scopes any))
+      (subtype (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (path (named (kind package) (name "Model")) (named (kind part-def) (name "Holder")) (named (kind part) (name "choice")) (anonymous (kind ref) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (path (named (kind package) (name "Model")) (named (kind part-def) (name "Holder")) (named (kind part) (name "choice")) (anonymous (kind ref) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Base")) (source inherited) (from (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder::choice"))))
+      (supertype (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Base")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder::choice")) (scopes any feature))
     )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (range (start 0 51) (end 0 57)) (probe (position 0 51))
-    (reference (id (source (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Child"))) (kind specialization) (ordinal 0) (authored-target "Parent")
-      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Parent")))))
+  (query (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (range (start 3 32) (end 3 36)) (probe (position 3 32))
+    (reference (id (source (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder::choice"))) (kind featureTyping) (ordinal 0) (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Base")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (range (start 4 20) (end 4 26)) (probe (position 4 20))
+    (reference (id (source (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (path (named (kind package) (name "Model")) (named (kind part-def) (name "Holder")) (named (kind part) (name "choice")) (anonymous (kind ref) (ordinal 0))))) (kind subsetting) (ordinal 0) (authored-target "choice")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_usage_variation_usage_specialization.md") (qualified-name "Model::Holder::choice")))))
     )
   )
 )

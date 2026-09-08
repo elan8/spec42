@@ -1,9 +1,9 @@
-//! Reporting policy over one document's settled diagnostics: dedup, shadowing, cascade collapse.
+//! Reporting policy over one document's settled diagnostics: deduplication and shadowing.
 //!
 //! Everything here is a decision about *what a reader is shown*, taken over values the publication
-//! already settled. It removes exact duplicates, suppresses semantic answers a parse error already
-//! explains, links the cascade sites to the primary parse error, and collapses a recovery cascade
-//! down to the one diagnostic an author should fix first.
+//! already settled. It removes exact duplicates and suppresses semantic answers a parse error
+//! already explains. Parser recovery and cascade grouping remain parser-owned facts: this layer
+//! preserves the parser's published diagnostics instead of reclassifying them from code strings.
 //!
 //! It decides nothing semantic: no diagnostic's code, severity, range or message is changed, no
 //! message is read as an input, and nothing suppressed here is replaced by an invented fact. A host
@@ -11,9 +11,7 @@
 
 use std::collections::BTreeSet;
 
-use crate::types::{
-    DiagnosticRelatedInfo, DiagnosticSeverity, SemanticDiagnostic, PARSER_SOURCE, SEMANTIC_SOURCE,
-};
+use crate::types::{DiagnosticSeverity, SemanticDiagnostic, PARSER_SOURCE, SEMANTIC_SOURCE};
 
 /// Which parts of the collapse policy a host asked for.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -34,8 +32,7 @@ pub fn postprocess_document_diagnostics(
     if policy.suppress_semantic_after_parse_error {
         diagnostics = suppress_semantic_shadowed_by_parse_errors(diagnostics);
     }
-    diagnostics = attach_cascade_related_information(diagnostics);
-    collapse_cascade_parse_diagnostics(diagnostics)
+    diagnostics
 }
 
 /// Whether a document's report is mostly recovery cascade rather than distinct problems.
@@ -105,136 +102,6 @@ fn is_shadowable_semantic_code(diagnostic: &SemanticDiagnostic) -> bool {
     )
 }
 
-fn attach_cascade_related_information(
-    diagnostics: Vec<SemanticDiagnostic>,
-) -> Vec<SemanticDiagnostic> {
-    let primary_index = diagnostics
-        .iter()
-        .enumerate()
-        .filter(|(_, d)| is_parse_error(d))
-        .min_by_key(|(_, d)| {
-            (
-                diagnostic_priority(d),
-                d.range.start.line,
-                d.range.start.character,
-            )
-        })
-        .map(|(idx, _)| idx);
-
-    let Some(primary_index) = primary_index else {
-        return diagnostics;
-    };
-
-    let mut output = diagnostics;
-    let primary_uri = output[primary_index].uri.clone();
-    let primary_range = output[primary_index].range;
-    let primary_message = output[primary_index].message.clone();
-    let mut related = Vec::new();
-
-    for (idx, diagnostic) in output.iter().enumerate() {
-        if idx == primary_index {
-            continue;
-        }
-        if !is_cascade_code(diagnostic) {
-            continue;
-        }
-        related.push(DiagnosticRelatedInfo {
-            uri: diagnostic.uri.clone(),
-            range: diagnostic.range,
-            message: format!(
-                "{} [{}]: {}",
-                diagnostic.code,
-                severity_debug(diagnostic.severity),
-                diagnostic.message
-            ),
-        });
-    }
-
-    if related.is_empty() {
-        return output;
-    }
-
-    related.insert(
-        0,
-        DiagnosticRelatedInfo {
-            uri: primary_uri,
-            range: primary_range,
-            message: format!("Primary issue: {primary_message}"),
-        },
-    );
-
-    output[primary_index].related_information = related;
-    output
-}
-
-fn collapse_cascade_parse_diagnostics(
-    diagnostics: Vec<SemanticDiagnostic>,
-) -> Vec<SemanticDiagnostic> {
-    let mut primary_parse: Option<SemanticDiagnostic> = None;
-    let mut other = Vec::new();
-
-    for diagnostic in diagnostics {
-        if is_parse_error(&diagnostic) {
-            if primary_parse.as_ref().is_none_or(|existing| {
-                diagnostic_priority(&diagnostic) < diagnostic_priority(existing)
-            }) {
-                primary_parse = Some(diagnostic);
-            }
-            continue;
-        }
-        if is_cascade_code(&diagnostic) {
-            continue;
-        }
-        if diagnostic.source == SEMANTIC_SOURCE
-            && matches!(
-                diagnostic.severity,
-                DiagnosticSeverity::Warning | DiagnosticSeverity::Error
-            )
-            && !is_shadowable_semantic_code(&diagnostic)
-        {
-            other.push(diagnostic);
-            continue;
-        }
-        if diagnostic.source == PARSER_SOURCE && diagnostic.code == "recovery_cascade_suppressed" {
-            if let Some(ref mut primary) = primary_parse {
-                primary.related_information = diagnostic.related_information.clone();
-            }
-            continue;
-        }
-        if diagnostic_priority(&diagnostic) >= 4 {
-            other.push(diagnostic);
-        }
-    }
-
-    let mut output = Vec::new();
-    if let Some(primary) = primary_parse {
-        output.push(primary);
-    }
-    other.sort_by_key(|d| (d.range.start.line, d.range.start.character));
-    output.extend(other);
-    output
-}
-
-/// Which parse diagnostic an author should be shown first when several describe one failure.
-///
-/// A presentation order over stable codes the parser owns; it changes no diagnostic's meaning.
-fn diagnostic_priority(diagnostic: &SemanticDiagnostic) -> u8 {
-    match diagnostic.code.as_str() {
-        "illegal_top_level_definition" => 0,
-        "unexpected_keyword_in_scope"
-        | "invalid_requirement_short_name_syntax"
-        | "bare_feature_declaration_in_part_def" => 1,
-        "unexpected_closing_brace" | "missing_closing_brace" => 2,
-        "missing_member_name" => 3,
-        "recovered_root_body" => 4,
-        code if code.starts_with(RECOVERY_CODE_PREFIX) => 6,
-        "missing_body_or_semicolon" | "missing_semicolon" => 7,
-        "recovery_cascade_suppressed" => 8,
-        _ if diagnostic.source == PARSER_SOURCE => 5,
-        _ => 10,
-    }
-}
-
 /// The prefix the parser gives every recovery-produced code.
 const RECOVERY_CODE_PREFIX: &str = "recovered_";
 
@@ -247,14 +114,6 @@ fn is_cascade_code(diagnostic: &SemanticDiagnostic) -> bool {
 
 fn is_parse_error(diagnostic: &SemanticDiagnostic) -> bool {
     diagnostic.source == PARSER_SOURCE && diagnostic.severity == DiagnosticSeverity::Error
-}
-
-fn severity_debug(severity: DiagnosticSeverity) -> &'static str {
-    match severity {
-        DiagnosticSeverity::Error => "ERROR",
-        DiagnosticSeverity::Warning => "WARNING",
-        DiagnosticSeverity::Information => "INFORMATION",
-    }
 }
 
 #[cfg(test)]
@@ -308,23 +167,18 @@ mod tests {
     }
 
     #[test]
-    fn collapse_keeps_highest_priority_parse_error() {
-        let mut higher_priority = sample_parse_error(1);
-        higher_priority.code = "invalid_requirement_short_name_syntax".to_string();
-        higher_priority.message = "bad requirement id".to_string();
+    fn parser_diagnostics_survive_without_consumer_reclassification() {
+        let mut structural = sample_parse_error(1);
+        structural.code = "unexpected_keyword_in_scope".to_string();
+        structural.message = "unexpected return".to_string();
+        let recovery = sample_parse_error(5);
 
         let out = postprocess_document_diagnostics(
-            vec![
-                sample_parse_error(5),
-                sample_parse_error(6),
-                higher_priority,
-            ],
-            PostprocessPolicy {
-                suppress_semantic_after_parse_error: false,
-            },
+            vec![structural.clone(), recovery.clone()],
+            PostprocessPolicy::default(),
         );
-        assert_eq!(out.len(), 1);
-        assert_eq!(out[0].code, "invalid_requirement_short_name_syntax");
+
+        assert_eq!(out, vec![structural, recovery]);
     }
 
     #[test]
