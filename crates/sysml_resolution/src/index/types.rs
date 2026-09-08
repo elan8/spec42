@@ -73,7 +73,10 @@ pub(crate) fn edge_scopes(kind: ReferenceKind) -> Option<u8> {
         ReferenceKind::Subclassification => {
             Some(ScopeBits::AnySpecialization.bit() | ScopeBits::Subclassification.bit())
         }
-        ReferenceKind::Subsetting | ReferenceKind::Redefinition => {
+        ReferenceKind::Subsetting
+        | ReferenceKind::Redefinition
+        | ReferenceKind::References
+        | ReferenceKind::Crosses => {
             Some(ScopeBits::AnySpecialization.bit() | ScopeBits::FeatureSpecialization.bit())
         }
         ReferenceKind::FeatureTyping => Some(ScopeBits::AnySpecialization.bit()),

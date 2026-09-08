@@ -33,8 +33,7 @@ const EXPECTED_DOCUMENT_COUNT: usize = 94;
 const EXPECTED_DIAGNOSTICS: &[(&str, usize)] = &[
     ("ambiguous_reference", 2),
     ("specialization_cycle", 2),
-    ("subsetting_uniqueness_mismatch", 1),
-    ("unresolved_reference", 17),
+    ("unresolved_reference", 9),
 ];
 
 fn base_cli() -> Cli {
@@ -168,7 +167,7 @@ fn bundled_standard_library_diagnostic_inventory_is_ratcheted() {
             .collect::<std::collections::BTreeMap<_, _>>();
 
         assert_eq!(report.summary.error_count, 4);
-        assert_eq!(report.summary.warning_count, 18);
+        assert_eq!(report.summary.warning_count, 9);
         assert_eq!(report.summary.information_count, 0);
         assert_eq!(
             actual,
