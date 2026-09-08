@@ -2324,6 +2324,11 @@ fn a_view_typed_by_a_non_standard_library_definition_is_reported() {
         "a standard view definition is not reported: {:?}",
         publish("GeneralView")
     );
+    assert!(
+        !publish("View").contains(&"view_type_non_standard".to_string()),
+        "the normative abstract base View is not reported: {:?}",
+        publish("View")
+    );
 }
 
 /// A workspace's own `view def` is the author's to define, whatever it is called.

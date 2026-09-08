@@ -28,6 +28,12 @@ package Exposing {
     view exposesAWildcard {
         expose Exposing::*;
     }
+
+    rendering nestedRendering {
+        view columnView {
+            ref rendering;
+        }
+    }
 }
 ~~~
 # DIAGNOSTICS
@@ -54,7 +60,7 @@ package Exposing {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:76e89459202e3f2cd1ca8b740b1a99b19783f8f117e46dba49ef7cbaf422dfdb"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c229dcf350e8bec302a2b42ecf290d1e88f3163306c2d9d32de7dbded8a942e3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::Concerns"))) (kind viewpoint-def) (membership (kind owning) (visibility default)))
@@ -70,6 +76,9 @@ package Exposing {
     (declaration (id (node (document "memory://snapshot/view_expose.md") (path (named (kind package) (name "Exposing")) (named (kind view) (name "exposesAWildcard")) (anonymous (kind expose) (ordinal 0))))) (kind expose) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (viewExpose (reference "Exposing")))))
     (declaration (id (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::exposesSomethingThatDoesNotResolve"))) (kind view) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_expose.md") (path (named (kind package) (name "Exposing")) (named (kind view) (name "exposesSomethingThatDoesNotResolve")) (anonymous (kind expose) (ordinal 0))))) (kind expose) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (viewExpose (reference "missingElement")))))
+    (declaration (id (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::nestedRendering"))) (kind rendering) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::nestedRendering::columnView"))) (kind view) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::nestedRendering::columnView::rendering"))) (kind ref) (membership (kind feature) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::concerns"))) (kind featureTyping) (ordinal 0))
@@ -101,6 +110,8 @@ package Exposing {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/view_expose.md") (path (named (kind package) (name "Exposing")) (named (kind view) (name "declaresABodyButExposesNothing")) (anonymous (kind satisfy) (ordinal 0))))) (target (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::declaresABodyButExposesNothing"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/view_expose.md") (path (named (kind package) (name "Exposing")) (named (kind view) (name "exposesAWildcard")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::exposesAWildcard"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/view_expose.md") (path (named (kind package) (name "Exposing")) (named (kind view) (name "exposesSomethingThatDoesNotResolve")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::exposesSomethingThatDoesNotResolve"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::nestedRendering::columnView"))) (target (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::nestedRendering"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::nestedRendering::columnView::rendering"))) (target (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::nestedRendering::columnView"))) (provenance implied))
   )
   (evaluation
   )
@@ -136,6 +147,12 @@ package Exposing {
     )
     (declaration (id (node (document "memory://snapshot/view_expose.md") (path (named (kind package) (name "Exposing")) (named (kind view) (name "exposesSomethingThatDoesNotResolve")) (anonymous (kind expose) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::exposesSomethingThatDoesNotResolve")))
+    )
+    (declaration (id (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::nestedRendering::columnView")))
+      (featured-by (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::nestedRendering")))
+    )
+    (declaration (id (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::nestedRendering::columnView::rendering")))
+      (featured-by (node (document "memory://snapshot/view_expose.md") (qualified-name "Exposing::nestedRendering::columnView")))
     )
 )
 ~~~

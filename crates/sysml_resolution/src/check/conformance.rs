@@ -243,28 +243,27 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
 pub(crate) fn parent(family: Family) -> Option<Family> {
     use Family as F;
     Some(match family {
-        F::Occurrence
-        | F::Attribute
-        | F::Port
-        | F::Metadata
-        | F::View
-        | F::Viewpoint
-        | F::Rendering
-        | F::Constraint
-        | F::Calc => return None,
+        F::Occurrence | F::Attribute => return None,
         F::Item => F::Occurrence,
         F::Part => F::Item,
         F::Action => F::Occurrence,
         F::State => F::Action,
-        F::Case => F::Action,
+        F::Calc => F::Action,
+        F::Case => F::Calc,
         F::UseCase => F::Case,
         F::AnalysisCase => F::Case,
         F::VerificationCase => F::Case,
-        F::Connection => F::Occurrence,
+        F::Port => F::Occurrence,
+        F::Connection => F::Part,
         F::Interface => F::Connection,
-        F::Flow => F::Connection,
+        F::Flow => F::Action,
         F::Allocation => F::Connection,
+        F::View => F::Part,
+        F::Viewpoint => F::Requirement,
+        F::Rendering => F::Part,
+        F::Metadata => F::Item,
         F::Enumeration => F::Attribute,
+        F::Constraint => F::Occurrence,
         F::Requirement => F::Constraint,
         F::Concern => F::Requirement,
     })

@@ -52,6 +52,10 @@ package Behavior {
         state closing;
         transition first opening then closing;
     }
+
+    abstract state def AbstractStateTemplate {
+        state abstractSubstate;
+    }
 }
 ~~~
 # DIAGNOSTICS
@@ -130,9 +134,11 @@ package Behavior {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:39aaa8d2f87b6729b3a6a98cdefab1758af92ed95dcb18833372ed5ac2be218b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:baedd0dabfeb31a21aa8744f02deedcf4e062bd6e80c446b4a57015406b0f9cc"))
   (declarations
     (declaration (id (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::AbstractStateTemplate"))) (kind state-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
+    (declaration (id (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::AbstractStateTemplate::abstractSubstate"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::AcceptsAnIncompatiblePayload"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/behavior_conformance.md") (path (named (kind package) (name "Behavior")) (named (kind action-def) (name "AcceptsAnIncompatiblePayload")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (acceptPayloadType (reference "Step")))))
     (declaration (id (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::ConformingMachine"))) (kind state-def) (membership (kind owning) (visibility default)))
@@ -270,6 +276,7 @@ package Behavior {
     (relationship (kind transitionTarget) (source (node (document "memory://snapshot/behavior_conformance.md") (path (named (kind package) (name "Behavior")) (named (kind state-def) (name "TransitionLeavesAState")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::Structure"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/behavior_conformance.md") (path (named (kind package) (name "Behavior")) (named (kind state-def) (name "TransitionLeavesAState")) (anonymous (kind transition) (ordinal 0))))) (kind transitionTarget) (ordinal 0)))
     (relationship (kind succession) (source (node (document "memory://snapshot/behavior_conformance.md") (path (named (kind package) (name "Behavior")) (named (kind state-def) (name "TransitionLeavesAState")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::TransitionLeavesAState::armed"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/behavior_conformance.md") (path (named (kind package) (name "Behavior")) (named (kind state-def) (name "TransitionLeavesAState")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
     (relationship (kind succession) (source (node (document "memory://snapshot/behavior_conformance.md") (path (named (kind package) (name "Behavior")) (named (kind state-def) (name "TransitionLeavesAState")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::Structure"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/behavior_conformance.md") (path (named (kind package) (name "Behavior")) (named (kind state-def) (name "TransitionLeavesAState")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::AbstractStateTemplate::abstractSubstate"))) (target (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::AbstractStateTemplate"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/behavior_conformance.md") (path (named (kind package) (name "Behavior")) (named (kind action-def) (name "AcceptsAnIncompatiblePayload")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::AcceptsAnIncompatiblePayload"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/behavior_conformance.md") (path (named (kind package) (name "Behavior")) (named (kind state-def) (name "ConformingMachine")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::ConformingMachine"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/behavior_conformance.md") (path (named (kind package) (name "Behavior")) (named (kind state-def) (name "ConformingMachine")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::ConformingMachine"))) (provenance implied))
@@ -298,6 +305,9 @@ package Behavior {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::AbstractStateTemplate::abstractSubstate")))
+      (featured-by (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::AbstractStateTemplate")))
+    )
     (declaration (id (node (document "memory://snapshot/behavior_conformance.md") (path (named (kind package) (name "Behavior")) (named (kind action-def) (name "AcceptsAnIncompatiblePayload")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::AcceptsAnIncompatiblePayload")))
     )

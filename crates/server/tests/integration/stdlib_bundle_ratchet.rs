@@ -32,15 +32,9 @@ const EXPECTED_DOCUMENT_COUNT: usize = 94;
 
 const EXPECTED_DIAGNOSTICS: &[(&str, usize)] = &[
     ("ambiguous_reference", 2),
-    ("incompatible_specializes_kind", 8),
-    ("incompatible_subset_redefine_kind", 9),
-    ("missing_final_state", 1),
-    ("missing_initial_state", 1),
     ("specialization_cycle", 2),
     ("subsetting_uniqueness_mismatch", 1),
     ("unresolved_reference", 17),
-    ("view_expose_empty", 1),
-    ("view_type_non_standard", 1),
 ];
 
 fn base_cli() -> Cli {
@@ -148,15 +142,16 @@ fn bundled_standard_library_diagnostic_inventory_is_ratcheted() {
         let offenders: Vec<String> = report
             .documents
             .iter()
-            .filter(|document| !document.diagnostics.is_empty())
-            .map(|document| {
+            .flat_map(|document| {
                 let name = document.uri.rsplit('/').next().unwrap_or(&document.uri);
-                let codes: Vec<&str> = document
-                    .diagnostics
-                    .iter()
-                    .map(|diagnostic| diagnostic.code.as_str())
-                    .collect();
-                format!("{name}: {codes:?}")
+                document.diagnostics.iter().map(move |diagnostic| {
+                    format!(
+                        "{name}:{} {}: {}",
+                        diagnostic.range.start.line + 1,
+                        diagnostic.code,
+                        diagnostic.message
+                    )
+                })
             })
             .collect();
         let mut actual = std::collections::BTreeMap::<String, usize>::new();
@@ -173,8 +168,8 @@ fn bundled_standard_library_diagnostic_inventory_is_ratcheted() {
             .collect::<std::collections::BTreeMap<_, _>>();
 
         assert_eq!(report.summary.error_count, 4);
-        assert_eq!(report.summary.warning_count, 36);
-        assert_eq!(report.summary.information_count, 3);
+        assert_eq!(report.summary.warning_count, 18);
+        assert_eq!(report.summary.information_count, 0);
         assert_eq!(
             actual,
             expected,

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **The standard-library ratchet no longer reports 21 Spec42 false positives (#135).** SysML
+  definition-family compatibility now follows the normative general-family hierarchy (for
+  example, connections are parts, flows and calculations are actions, and views are parts),
+  eliminating 17 invalid specialization/subsetting warnings. State-definition lowering now
+  preserves its authored `abstract`/`variation` prefix so abstract state templates are not
+  diagnosed as incomplete machines. The standard-view check accepts the normative base `View`
+  definition, and the empty-view authoring hint no longer treats a view nested in a rendering as
+  a top-level view that renders nothing. The artifact ratchet consequently moves from 43 to 22
+  diagnostics; its two `SI.sysml` ambiguities remain upstream library issues.
+
 - **The shipped standard-library bundle has an artifact-level ratchet again (#135).** The
   "Standard-library publication ratchet" Mini CI step only exercised the curated corpus under
   `tests/snapshots/sysml.library/`, not the pinned KPAR archives the binary embeds -- so a

@@ -68,6 +68,10 @@ pub(crate) const RELATED_OTHER_END: &str = "Other end declared here.";
 /// `view def` is never in this list and is never reported: the rule is about reaching for a library
 /// view definition the specification does not define.
 pub(crate) const STANDARD_VIEW_DEFINITIONS: &[&str] = &[
+    // The abstract base definition from the normative Systems Library is the type of the
+    // `views` base feature. It is not a graphical notation from Table 34, but typing a view by it
+    // is necessarily valid and must not be reported as a non-standard user view definition.
+    "View",
     "ActionFlowView",
     "BrowserView",
     "GeneralView",
@@ -1196,6 +1200,13 @@ impl<D> SemanticModel<D> {
             if self.kind_of(id) != Some(DeclarationKind::StateDefinition) {
                 continue;
             }
+            if self
+                .storage
+                .declaration_facts(id)
+                .is_some_and(|facts| facts.modifiers.is_abstract)
+            {
+                continue;
+            }
             let states = self
                 .child_declarations(id)
                 .iter()
@@ -1450,7 +1461,14 @@ impl<D> SemanticModel<D> {
                     // A view with members that exposes nothing renders nothing. Reported as
                     // information: it is legal, and a view under construction passes through it.
                     let members = self.child_declarations(id);
-                    if !members.is_empty()
+                    let owner_is_rendering = self
+                        .storage
+                        .declaration(id)
+                        .and_then(|declaration| declaration.owner)
+                        .and_then(|owner| self.kind_of(owner))
+                        == Some(DeclarationKind::RenderingUsage);
+                    if !owner_is_rendering
+                        && !members.is_empty()
                         && !members
                             .iter()
                             .any(|child| self.kind_of(*child) == Some(DeclarationKind::Expose))
