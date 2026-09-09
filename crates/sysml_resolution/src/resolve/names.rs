@@ -379,6 +379,10 @@ pub(crate) fn build_direct_name_index(
     declaration_facts: Option<&[DeclarationFacts]>,
     effective_names: Option<&[EffectiveNameFacts]>,
     public_only: Option<&MembershipIndex>,
+    // Standard-library root declarations a workspace root of the same name shadows: kept in storage
+    // for role-filtered library-anchor resolution, but excluded here so a bare `import <Name>::*`
+    // over the workspace package does not resolve to both and report ambiguous. Sorted ascending.
+    excluded: &[DeclarationId],
 ) -> Result<NameIndex, ResolutionError> {
     let mut entries = Vec::new();
     entries
@@ -388,6 +392,9 @@ pub(crate) fn build_direct_name_index(
         let declaration_id =
             DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
         if public_only.is_some_and(|memberships| !memberships.is_public(declaration_id)) {
+            continue;
+        }
+        if excluded.binary_search(&declaration_id).is_ok() {
             continue;
         }
         if let Some(name) = declaration.name {

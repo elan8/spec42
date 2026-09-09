@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **A workspace package named like a standard-library anchor package can be namespace-imported
+  again.** `import Requirements::*` (or `Parts`, `Views`, `Actions`, `Items`, ... -- any of the
+  resolver's ~20 library anchor packages) over a workspace package of that name reported
+  `ambiguous_import_target`, and every reference that depended on the import then failed to
+  resolve. The library closure already declines to admit a library package a workspace package
+  shadows -- except anchor packages, which stay admitted so the generated library-specialization
+  rules can resolve `Requirements::RequirementCheck` and the like. Anchor resolution filters by
+  `SourceRole::StandardLibrary` and never consults the bare-name index, so the admitted anchor
+  root's bare name was pure downside. `build_direct_name_index` now excludes a standard-library
+  root a workspace root of the same name shadows; the shadowed root stays in storage for
+  role-filtered anchor resolution. Non-anchor library names (`ScalarValues`, ...) and qualified
+  member references were already unaffected. Fixes #159.
+
 ## [0.51.0] - 2026-09-06
 
 - **The bundled standard library is never diagnosed as a workspace document.** Opening any
