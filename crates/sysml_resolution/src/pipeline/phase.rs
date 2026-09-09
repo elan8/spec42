@@ -134,6 +134,7 @@ impl Lowered {
                 &storage,
                 &library_anchors,
             )?;
+        let shadowed_library_roots = crate::resolve::library_seed::shadowed_library_roots(&storage);
         let (direct_names, effective_imports, memberships, resolution) = resolve_dense(
             &storage.declarations,
             Some(&storage.declaration_facts),
@@ -143,6 +144,7 @@ impl Lowered {
             crate::resolve::ResolutionStartingState {
                 provisional_relationships: &provisional_library_specializations,
                 settled_outcomes: seed,
+                shadowed_library_roots: &shadowed_library_roots,
             },
         )?;
         let authored_relationships = storage

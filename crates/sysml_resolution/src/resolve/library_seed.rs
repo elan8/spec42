@@ -1,8 +1,61 @@
 //! Phase 3: admitting and seeding a settled library stratum.
 
 use crate::lower::storage::SemanticModelStorage;
+use crate::model::DeclarationId;
 use crate::resolve::results::ResolutionStatus;
 use source_identity::SourceRole;
+
+/// Standard-library root declarations that a workspace root of the same name shadows.
+///
+/// The library closure never admits a library package a workspace package shadows -- *except* the
+/// resolver's anchor packages (`Requirements`, `Parts`, `Views`, ...), which stay admitted so the
+/// generated library-specialization rules can still resolve `Requirements::RequirementCheck` and the
+/// like (`library::closure`). Anchor resolution filters by `SourceRole::StandardLibrary` and never
+/// consults the bare-name index, so the admitted anchor root's bare name is pure downside: an
+/// explicit `import Requirements::*` over a workspace `Requirements` sees both roots and is reported
+/// `ambiguous_import_target`. Excluding these from the name index makes an anchor name behave like
+/// every other shadowed library package name.
+///
+/// The result is sorted ascending for `binary_search` in `build_direct_name_index`.
+pub(crate) fn shadowed_library_roots(storage: &SemanticModelStorage) -> Vec<DeclarationId> {
+    let mut workspace_root_names: Vec<&str> = storage
+        .declarations
+        .iter()
+        .filter(|declaration| declaration.owner.is_none())
+        .filter(|declaration| {
+            storage
+                .document(declaration.document)
+                .is_some_and(|document| document.role == SourceRole::Workspace)
+        })
+        .filter_map(|declaration| declaration.name.and_then(|name| storage.symbol(name)))
+        .collect();
+    workspace_root_names.sort_unstable();
+    workspace_root_names.dedup();
+    if workspace_root_names.is_empty() {
+        return Vec::new();
+    }
+
+    let mut shadowed: Vec<DeclarationId> = storage
+        .declarations
+        .iter()
+        .enumerate()
+        .filter(|(_, declaration)| declaration.owner.is_none())
+        .filter(|(_, declaration)| {
+            storage
+                .document(declaration.document)
+                .is_some_and(|document| document.role == SourceRole::StandardLibrary)
+        })
+        .filter(|(_, declaration)| {
+            declaration
+                .name
+                .and_then(|name| storage.symbol(name))
+                .is_some_and(|name| workspace_root_names.binary_search(&name).is_ok())
+        })
+        .filter_map(|(index, _)| DeclarationId::from_index(index).ok())
+        .collect();
+    shadowed.sort_unstable();
+    shadowed
+}
 
 /// What a settled library build hands to the publications that follow it.
 ///
