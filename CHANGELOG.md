@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **The shipped standard-library bundle has an artifact-level ratchet again (#135).** The
+  "Standard-library publication ratchet" Mini CI step only exercised the curated corpus under
+  `tests/snapshots/sysml.library/`, not the pinned KPAR archives the binary embeds -- so a
+  bundle, parser, lowering, resolution or diagnostic change could regress the real standard
+  library silently (the retired `planning/STDLIB_SELF_CHECK.md` contract had no replacement).
+  New `crates/server` integration test `stdlib_bundle_ratchet` materializes the embedded
+  bundle, admits every document with `StandardLibrary` provenance into one canonical
+  publication, requests diagnostics for every library document, and asserts the bundle unpacks
+  to its full inventory (10 KPARs, 94 documents for `2026-04`) and matches the reviewed
+  diagnostic inventory (currently 43 diagnostics). Wired into `scripts/minici.sh` alongside the
+  curated snapshot check.
+
 - **`inspection().connections(root)` publishes the `connect` / `interface` topology reachable
   from an element.** Sibling of `binding_connectors()`: a `PublishedConnectionGraph` of every
   connector `root` owns (directly or transitively), each with its `:` type and its resolved

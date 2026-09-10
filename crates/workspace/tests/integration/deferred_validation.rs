@@ -1,6 +1,8 @@
 use crate::comparison_fixtures::{memory_document, test_engine};
 use tempfile::tempdir;
-use workspace::{HostContext, InMemoryProvider, ValidationTiming, WorkspaceLoadRequest};
+use workspace::{
+    HostContext, InMemoryProvider, SourceKind, ValidationTiming, WorkspaceLoadRequest,
+};
 
 const MODEL: &str = r#"
 package Demo {
@@ -69,5 +71,37 @@ fn deferred_validation_matches_eager_after_ensure() {
             .expect("eager validation")
             .summary
             .warning_count
+    );
+}
+
+#[test]
+fn explicitly_targeted_library_document_reports_diagnostics() {
+    let cache = tempdir().expect("tempdir");
+    let engine = test_engine(&cache);
+    let model_path = cache.path().join("Library.sysml");
+    let source = "package Library { part usage : MissingDefinition; }";
+    std::fs::write(&model_path, source).expect("write library model");
+    let uri = workspace::path_to_file_url(&model_path).expect("library URL");
+    let document = engine.source().admit_url(uri, source, SourceKind::Library);
+
+    let snapshot = engine
+        .load_workspace(
+            InMemoryProvider::new(vec![document]),
+            WorkspaceLoadRequest::single_target(model_path)
+                .with_validation_timing(ValidationTiming::Deferred),
+            HostContext::default(),
+        )
+        .expect("deferred library snapshot");
+
+    assert_eq!(snapshot.documents()[0].kind(), SourceKind::Library);
+    let report = snapshot.ensure_validation().expect("library validation");
+    assert_eq!(report.documents.len(), 1);
+    assert!(
+        report.documents[0]
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == "unresolved_type_reference"),
+        "an explicitly targeted library document must be part of the publication's diagnostic set: {:#?}",
+        report.documents[0].diagnostics
     );
 }
