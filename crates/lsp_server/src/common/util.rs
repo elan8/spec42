@@ -215,7 +215,7 @@ pub(crate) fn library_full_scan_enabled() -> bool {
 #[cfg(test)]
 mod tests {
     use super::{
-        apply_incremental_change, normalize_file_uri, parse_diagnose_library_paths_from_value,
+        apply_incremental_change, parse_diagnose_library_paths_from_value,
         untyped_part_usage_diagnostics,
     };
     use tower_lsp::lsp_types::{Position, Range};
@@ -223,6 +223,7 @@ mod tests {
     #[cfg(unix)]
     #[test]
     fn file_uri_admission_collapses_filesystem_aliases() {
+        use super::normalize_file_uri;
         use std::os::unix::fs::symlink;
 
         let temp = tempfile::tempdir().expect("tempdir");

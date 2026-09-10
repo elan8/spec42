@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.52.0] - 2026-09-10
+
 - **The standard-library ratchet no longer reports 21 Spec42 false positives (#135).** SysML
   definition-family compatibility now follows the normative general-family hierarchy (for
   example, connections are parts, flows and calculations are actions, and views are parts),
