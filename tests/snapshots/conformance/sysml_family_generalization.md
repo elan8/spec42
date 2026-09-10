@@ -252,6 +252,13 @@ package Families {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/sysml_family_generalization.md") (qualified-name "Families::ConnectionBase"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/sysml_family_generalization.md") (qualified-name "Families::InterfaceBase"))) (kind interface))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
