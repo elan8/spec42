@@ -9,30 +9,31 @@ pub use sysml_resolution::{
     ActionDerivedFactOutcome, ActionDerivedFactPrerequisite, AffectedDocument, AnalysisEvaluation,
     AnnotationForm, AuthoredUnit, AuthoredValue, BindingConnector, BindingConnectorCheckKind,
     BindingConnectorValidationOutcome, BindingConnectorValidationPrerequisite, BuildMeasurements,
-    Conformance, ConformanceObstacle, ConnectedElement, DefinitionUsageDerivedKind,
-    DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivedElementOwner,
-    Diagnostic, DiagnosticCategory, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin,
-    DiagnosticSeverity, DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance,
-    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence,
-    DiagramIncompleteReason, DiagramOccurrenceIdentity, DiagramRelationship,
-    DiagramRelationshipEndpoint, DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene,
-    DiagramSemanticReference, DiagramSequenceEndpoint, DiagramSequenceMessage,
-    DiagramSequenceOrder, DiagramSequenceScene, DiagramStateTransition,
-    DiagramStateTransitionScene, DiagramStateVertex, DiagramStateVertexKind,
-    DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind, DiagramViewProjection,
-    DocumentId, DocumentToken, Documentation, EffectiveType, EffectiveTypeEntry,
-    EffectiveTypeOrigin, EffectiveTyping, ElementDerivedDocumentationCollection, ElementDetails,
-    ElementDetailsAt, ElementEvaluation, ElementInspection, ElementInspectionAt, ElementKind,
-    ElementModifier, ElementRelationship, ElementSearch, ElementSource, EvaluatedScalar,
-    EvaluationFailure, EvaluationState, ExpectedMeasurement, ExpressionNode, ExpressionNodeKind,
-    ExpressionOperator, ExpressionOutcome, FeatureDerivedRelationshipCollection, FeatureDirection,
-    InheritedFeature, LibrarySpecializationAnchorBranch, MembershipFacts, MembershipId,
-    MembershipKind, MembershipRelationship, MembershipRole, MetadataAnnotationForm,
-    MetadataAnnotationValue, MultiplicityBound, MultiplicityFacts,
-    NamespaceDerivedElementCollection, NamespaceImportDerivedElement, NavigationTarget,
-    OccurrenceRole, PortionKind, PublicationCompleteness, PublicationIdentity,
-    PublicationModelDigest, PublicationObstacle, PublishedDiagnostics, PublishedElement,
-    PublishedExpression, PublishedMetadataAnnotation, QualifiedElementReference,
+    Conformance, ConformanceObstacle, ConnectedElement, ConnectorEndpoint, ConnectorKind,
+    DefinitionUsageDerivedKind, DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite,
+    DerivedElementOwner, Diagnostic, DiagnosticCategory, DiagnosticCode, DiagnosticLocation,
+    DiagnosticOrigin, DiagnosticSeverity, DiagramCompartment, DiagramCompartmentKind,
+    DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind, DiagramElement,
+    DiagramElementTyping, DiagramEndpointOccurrence, DiagramIncompleteReason,
+    DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
+    DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
+    DiagramSequenceEndpoint, DiagramSequenceMessage, DiagramSequenceOrder, DiagramSequenceScene,
+    DiagramStateTransition, DiagramStateTransitionScene, DiagramStateVertex,
+    DiagramStateVertexKind, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
+    DiagramViewProjection, DocumentId, DocumentToken, Documentation, EffectiveType,
+    EffectiveTypeEntry, EffectiveTypeOrigin, EffectiveTyping,
+    ElementDerivedDocumentationCollection, ElementDetails, ElementDetailsAt, ElementEvaluation,
+    ElementInspection, ElementInspectionAt, ElementKind, ElementModifier, ElementRelationship,
+    ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure, EvaluationState,
+    ExpectedMeasurement, ExpressionNode, ExpressionNodeKind, ExpressionOperator, ExpressionOutcome,
+    FeatureDerivedRelationshipCollection, FeatureDirection, InheritedFeature,
+    LibrarySpecializationAnchorBranch, MembershipFacts, MembershipId, MembershipKind,
+    MembershipRelationship, MembershipRole, MetadataAnnotationForm, MetadataAnnotationValue,
+    MultiplicityBound, MultiplicityFacts, NamespaceDerivedElementCollection,
+    NamespaceImportDerivedElement, NavigationTarget, OccurrenceRole, PortionKind,
+    PublicationCompleteness, PublicationIdentity, PublicationModelDigest, PublicationObstacle,
+    PublishedConnectionGraph, PublishedConnector, PublishedConnectorEnd, PublishedDiagnostics,
+    PublishedElement, PublishedExpression, PublishedMetadataAnnotation, QualifiedElementReference,
     QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryAnswer, QueryOutcome,
     RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt,
     ReferencedDetails, RelatedLocation, RelationshipFamily, RelationshipOutcome,
@@ -821,6 +822,13 @@ impl InspectionQueries<'_> {
         self.model.metadata_annotations(symbol)
     }
 
+    /// The `connect` / `interface` topology reachable from one element: every connector it owns
+    /// (directly or transitively), each with its `:` type and resolved ends. Sibling of
+    /// [`Self::binding_connectors`].
+    pub fn connections(&self, root: SymbolId) -> QueryOutcome<PublishedConnectionGraph> {
+        self.model.connections(root)
+    }
+
     /// The applicability outcome for one closed binding-connector validation rule.
     pub fn binding_connector_validation(
         &self,
@@ -881,6 +889,10 @@ impl DebugQueries<'_> {
 
     pub fn write_metadata_annotations_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.debug().write_metadata_annotations_sexpr(output)
+    }
+
+    pub fn write_connections_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.debug().write_connections_sexpr(output)
     }
 
     pub fn write_editor_queries_sexpr(

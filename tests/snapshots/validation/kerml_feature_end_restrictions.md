@@ -136,6 +136,12 @@ package Ends {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions"))) (kind connection) (end (name (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::plain"))) unconnected) (end (name (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::derivedEnd"))) unconnected) (end (name (node (document "memory://snapshot/kerml_feature_end_restrictions.md") (qualified-name "Ends::Restrictions::abstractEnd"))) unconnected))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

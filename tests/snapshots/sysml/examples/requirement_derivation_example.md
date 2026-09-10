@@ -297,6 +297,13 @@ package RequirementDerivationExample {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1_Derivation"))) (kind connection) (end (name (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1_Derivation::r1"))) unconnected) (end (name (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1_Derivation::r1_1"))) unconnected) (end (name (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1_Derivation::r1_2"))) unconnected))
+  (connector (id (node (document "memory://snapshot/requirement_derivation_example.md") (path (named (kind package) (name "RequirementDerivationExample")) (named (kind part) (name "satisfactionContext")) (anonymous (kind connection) (ordinal 0))))) (kind connection) (type (resolved (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::Req1_Derivation")))) (end (name (node (document "memory://snapshot/requirement_derivation_example.md") (path (named (kind package) (name "RequirementDerivationExample")) (named (kind part) (name "satisfactionContext")) (anonymous (kind connection) (ordinal 0)) (named (kind connection) (name "r1"))))) (feature (resolved (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::satisfactionContext::req1"))))) (end (name (node (document "memory://snapshot/requirement_derivation_example.md") (path (named (kind package) (name "RequirementDerivationExample")) (named (kind part) (name "satisfactionContext")) (anonymous (kind connection) (ordinal 0)) (named (kind connection) (name "r1_1"))))) (feature (resolved (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::satisfactionContext::req1_1"))))) (end (name (node (document "memory://snapshot/requirement_derivation_example.md") (path (named (kind package) (name "RequirementDerivationExample")) (named (kind part) (name "satisfactionContext")) (anonymous (kind connection) (ordinal 0)) (named (kind connection) (name "r1_2"))))) (feature (resolved (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample::satisfactionContext::req1_1"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

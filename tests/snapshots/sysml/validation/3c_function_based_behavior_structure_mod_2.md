@@ -282,6 +282,13 @@ package '3c-Function-based Behavior-structure mod-2' {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerHitch"))) (kind connection) (end (name (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerHitch::hitch"))) unconnected) (end (name (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerHitch::coupler"))) unconnected))
+  (connector (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::trailerHitch"))) (kind connection) (type (resolved (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2::TrailerHitch")))) (end bare (feature-chain (root (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::vehicle"))) (terminal (resolved (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::vehicle::vehicleFrame::hitch")))) "vehicle::vehicleFrame::hitch")) (end bare (feature-chain (root (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::trailer"))) (terminal (resolved (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_2.md") (qualified-name "3c-Function-based Behavior-structure mod-2::vehicle-trailer system::trailer::trailerFrame::coupler")))) "trailer::trailerFrame::coupler")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

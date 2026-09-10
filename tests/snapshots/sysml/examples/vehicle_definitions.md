@@ -328,6 +328,12 @@ package VehicleDefinitions {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::Mounting"))) (kind interface) (end (name (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::Mounting::axleMount"))) unconnected) (end (name (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions::Mounting::hub"))) unconnected))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

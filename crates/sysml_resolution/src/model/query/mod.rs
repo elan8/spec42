@@ -5,6 +5,11 @@ mod visible;
 pub use visible::VisibleMemberRef;
 pub use visible::VisibleMembers;
 
+use crate::connection_query::ConnectorEndpoint;
+use crate::connection_query::ConnectorKind;
+use crate::connection_query::PublishedConnectionGraph;
+use crate::connection_query::PublishedConnector;
+use crate::connection_query::PublishedConnectorEnd;
 use crate::diagnose::valid_identifier;
 use crate::index::bindings as binding;
 use crate::index::documents::leaf_ranges_containing;
@@ -114,6 +119,7 @@ use crate::ElementRelationship;
 use crate::ExpressionOutcome;
 use crate::FeatureDerivedRelationshipCollection;
 use crate::LibrarySpecializationAnchorBranch;
+use crate::MultiplicityFacts;
 use crate::NavigationTarget;
 use crate::OccurrenceRole;
 use crate::PublicationCompleteness;
@@ -878,6 +884,13 @@ impl ResolvedSemanticModel {
         output: &mut dyn std::fmt::Write,
     ) -> std::fmt::Result {
         writer::write_metadata_annotations_only(self, output)
+    }
+
+    pub(crate) fn write_connections_sexpr(
+        &self,
+        output: &mut dyn std::fmt::Write,
+    ) -> std::fmt::Result {
+        writer::write_connections_only(self, output)
     }
 }
 
@@ -3150,6 +3163,263 @@ impl<D> SemanticModel<D> {
         }
     }
 
+    /// The `connect` / `interface` topology reachable from one element: every connector it owns
+    /// (directly or transitively), each with its `:` type and resolved ends.
+    ///
+    /// Sibling of [`Self::binding_connectors`]. This projects authored connector-end references
+    /// resolution already settled -- no new analysis. A dotted end (`a.b.port`) carries the
+    /// resolved terminal feature plus the path as authored; the intermediate hops are not
+    /// resolved to identities.
+    pub(crate) fn connection_graph(
+        &self,
+        root: SymbolId,
+    ) -> QueryOutcome<PublishedConnectionGraph> {
+        let root_declaration = match self.single_declaration(root) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let mut connectors = self
+            .storage
+            .declarations
+            .iter()
+            .enumerate()
+            .filter_map(|(index, declaration)| {
+                let kind = connector_kind(declaration.kind)?;
+                let id = DeclarationId::from_index(index).ok()?;
+                // A named connector end reuses `DeclarationKind::ConnectionUsage`; it is not
+                // itself a connector.
+                if self
+                    .storage
+                    .declaration_facts(id)
+                    .and_then(|facts| facts.positional_end)
+                    .is_some()
+                {
+                    return None;
+                }
+                let document = self.storage.document(declaration.document)?;
+                if document.role != SourceRole::Workspace {
+                    return None;
+                }
+                if !self.is_descendant_or_self(root_declaration, id) {
+                    return None;
+                }
+                Some(PublishedConnector {
+                    identity: self.symbol_id(id)?,
+                    kind,
+                    declared_type: self
+                        .outgoing_reference_ids(id)
+                        .iter()
+                        .find(|reference_id| {
+                            self.storage
+                                .references
+                                .get(reference_id.index())
+                                .is_some_and(|reference| {
+                                    reference.kind == ReferenceKind::FeatureTyping
+                                })
+                        })
+                        .map(|reference_id| self.settled_relationship_target(*reference_id))
+                        .unwrap_or(RelationshipTarget::Unsupported),
+                    ends: self.connector_ends(id),
+                    location: self.source_location(id)?,
+                })
+            })
+            .collect::<Vec<_>>();
+        connectors.sort_by(|left, right| {
+            self.document_order(left.location.document, right.location.document)
+                .then_with(|| left.location.range.cmp(&right.location.range))
+                .then_with(|| left.identity.cmp(&right.identity))
+        });
+        self.resolved_outcome(PublishedConnectionGraph {
+            root,
+            connectors: connectors.into_boxed_slice(),
+        })
+    }
+
+    /// The ends of one connector, in authored order.
+    ///
+    /// Connected ends (a bare `ConnectorEnd` / `MemberAccessOperand` on the connector, or one on
+    /// a named end child) are ordered by their reference's authored position, so a connector that
+    /// mixes bare and named ends keeps authored order. A named end child that carries no such
+    /// reference is a declared-but-unwired participant slot (`connection def` body) and follows,
+    /// in declaration order.
+    fn connector_ends(&self, connector: DeclarationId) -> Box<[PublishedConnectorEnd]> {
+        let mut connected: Vec<(usize, PublishedConnectorEnd)> = Vec::new();
+        for reference_id in self.outgoing_reference_ids(connector) {
+            if self.is_connector_end_reference(*reference_id) {
+                connected.push((
+                    reference_id.index(),
+                    PublishedConnectorEnd {
+                        declaration: None,
+                        multiplicity: MultiplicityFacts::Absent,
+                        endpoint: self.connector_endpoint(*reference_id),
+                    },
+                ));
+            }
+        }
+        let mut unconnected: Vec<PublishedConnectorEnd> = Vec::new();
+        for child in self.child_declarations(connector) {
+            if self
+                .storage
+                .declaration_facts(*child)
+                .and_then(|facts| facts.positional_end)
+                .is_none()
+            {
+                continue;
+            }
+            match self.connector_end_reference(*child) {
+                Some(reference_id) => connected.push((
+                    reference_id.index(),
+                    PublishedConnectorEnd {
+                        declaration: self.symbol_id(*child),
+                        multiplicity: self.multiplicity(*child),
+                        endpoint: self.connector_endpoint(reference_id),
+                    },
+                )),
+                None => unconnected.push(PublishedConnectorEnd {
+                    declaration: self.symbol_id(*child),
+                    multiplicity: self.multiplicity(*child),
+                    endpoint: ConnectorEndpoint::Unconnected,
+                }),
+            }
+        }
+        connected.sort_by_key(|(position, _)| *position);
+        connected
+            .into_iter()
+            .map(|(_, end)| end)
+            .chain(unconnected)
+            .collect()
+    }
+
+    fn is_connector_end_reference(&self, reference_id: AuthoredReferenceId) -> bool {
+        self.storage
+            .references
+            .get(reference_id.index())
+            .is_some_and(|reference| {
+                matches!(
+                    reference.kind,
+                    ReferenceKind::ConnectorEnd | ReferenceKind::MemberAccessOperand
+                )
+            })
+    }
+
+    /// The one `ConnectorEnd` / `MemberAccessOperand` reference a named end child carries.
+    fn connector_end_reference(&self, end: DeclarationId) -> Option<AuthoredReferenceId> {
+        self.outgoing_reference_ids(end)
+            .iter()
+            .copied()
+            .find(|reference_id| self.is_connector_end_reference(*reference_id))
+    }
+
+    fn connector_endpoint(&self, reference_id: AuthoredReferenceId) -> ConnectorEndpoint {
+        let Some(reference) = self.storage.references.get(reference_id.index()) else {
+            return ConnectorEndpoint::Feature(RelationshipTarget::Unsupported);
+        };
+        let dotted = reference.kind == ReferenceKind::MemberAccessOperand || reference.flags.dotted;
+        let terminal = self.settled_relationship_target(reference_id);
+        if !dotted {
+            return ConnectorEndpoint::Feature(terminal);
+        }
+        ConnectorEndpoint::FeatureChain {
+            root: self.connector_end_root(reference_id),
+            terminal,
+            authored: self.authored_path(reference.path).into(),
+        }
+    }
+
+    /// The resolved first segment of a dotted connector end (`component` in `component.port`).
+    fn connector_end_root(&self, reference_id: AuthoredReferenceId) -> RelationshipTarget {
+        match self.connector_end_root_candidates(reference_id).as_slice() {
+            [one] => self
+                .symbol_id(*one)
+                .map(RelationshipTarget::Resolved)
+                .unwrap_or(RelationshipTarget::Unresolved),
+            [] => RelationshipTarget::Unresolved,
+            many => RelationshipTarget::Ambiguous(
+                many.iter()
+                    .filter_map(|candidate| self.symbol_id(*candidate))
+                    .collect(),
+            ),
+        }
+    }
+
+    /// The candidate declarations the first segment of a dotted connector end resolves to,
+    /// looked up in the same lexical scope the resolver uses for the end's own reference (the
+    /// connector's owning namespace for a `connect` / `interface` usage end, KerML 8.2.3.5.2).
+    pub(crate) fn connector_end_root_candidates(
+        &self,
+        reference_id: AuthoredReferenceId,
+    ) -> Vec<DeclarationId> {
+        let Some(reference) = self.storage.references.get(reference_id.index()) else {
+            return Vec::new();
+        };
+        let Some((segments, false)) = self.storage.paths.get(reference.path) else {
+            return Vec::new();
+        };
+        let Some(&first) = segments.first() else {
+            return Vec::new();
+        };
+        let scope = match self.storage.declaration(reference.source) {
+            Some(source)
+                if reference.kind == ReferenceKind::ConnectorEnd
+                    && matches!(
+                        source.kind,
+                        DeclarationKind::InterfaceUsage | DeclarationKind::ConnectionUsage
+                    ) =>
+            {
+                source.owner
+            }
+            _ => Some(reference.source),
+        };
+        let mut candidates = Vec::new();
+        let mut work = ResolutionWork::default();
+        if lookup_lexical_into(
+            &self.storage.declarations,
+            &ResolutionIndexes {
+                direct_names: &self.direct_names,
+                exported_names: &self.direct_names,
+                effective_imports: Some(&self.effective_imports),
+                exported_imports: Some(&self.effective_imports),
+                inherited_names: Some(&self.resolution.inherited_names),
+            },
+            scope,
+            first,
+            LookupTarget {
+                domain: DeclarationDomain::Any,
+                excluded: None,
+                first_scope: FirstScopePolicy::OwnedThenInherited,
+            },
+            &mut candidates,
+            &mut work,
+        )
+        .is_err()
+        {
+            return Vec::new();
+        }
+        candidates.sort_unstable();
+        candidates.dedup();
+        candidates
+    }
+
+    /// Whether `node` is `ancestor`, or is owned by it directly or transitively.
+    fn is_descendant_or_self(&self, ancestor: DeclarationId, node: DeclarationId) -> bool {
+        let mut cursor = Some(node);
+        let mut guard = self.storage.declarations.len();
+        while let Some(current) = cursor {
+            if current == ancestor {
+                return true;
+            }
+            guard = match guard.checked_sub(1) {
+                Some(remaining) => remaining,
+                None => return false,
+            };
+            cursor = self
+                .storage
+                .declaration(current)
+                .and_then(|declaration| declaration.owner);
+        }
+        false
+    }
+
     /// The explicit applicability state of one closed binding-connector validation rule.
     ///
     /// The rule reads the binding index, but its FeatureReferenceExpression target/result inputs
@@ -3777,4 +4047,20 @@ pub(crate) fn internal_scope(scope: SpecializationScope) -> types::ScopeBits {
 
 pub(crate) fn range_contains(range: TextRange, position: TextPosition) -> bool {
     range.start <= position && position <= range.end
+}
+
+/// The connector family of a declaration kind, or `None` when it is not a `connect` / `interface`
+/// connector. Binding, flow, allocate and succession are deliberately excluded: `bind` has
+/// [`crate::PublishedResolution::binding_connectors`], and the others are distinct families.
+pub(crate) fn connector_kind(kind: DeclarationKind) -> Option<ConnectorKind> {
+    match kind {
+        DeclarationKind::ConnectionUsage
+        | DeclarationKind::ConnectionDefinition
+        | DeclarationKind::BareConnect
+        | DeclarationKind::KermlConnector => Some(ConnectorKind::Connection),
+        DeclarationKind::InterfaceUsage | DeclarationKind::InterfaceDefinition => {
+            Some(ConnectorKind::Interface)
+        }
+        _ => None,
+    }
 }

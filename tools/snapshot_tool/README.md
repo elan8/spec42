@@ -25,10 +25,12 @@ observed through those sections. This keeps formatting-only movement from obscur
 
 The canonical top-level section order is `META`, `SOURCE`, authored `EXPECTED DIAGNOSTICS` and
 `EXPECTED SEMANTICS`, `DIAGNOSTICS`, `SMG`, `TYPES`, `EXPRESSIONS`, `METADATA ANNOTATIONS`,
-`NAVIGATION`, with optional editor-query sections, `HOVER MARKDOWN`, and `GENERATED` last.
+`CONNECTIONS`, `NAVIGATION`, with optional editor-query sections, `HOVER MARKDOWN`, and
+`GENERATED` last.
 `EXPRESSIONS` is the resolved constraint / calc / value expression trees; `METADATA ANNOTATIONS`
 is every authored metadata annotation with its form, resolved definition, `about` targets, and
-body values. Both are omitted from fixtures that author none.
+body values; `CONNECTIONS` is every workspace `connect` / `interface` connector with its type
+and resolved ends. All three are omitted from fixtures that author none.
 `SOURCE` is authored; generated sections are rewritten to this order with one final newline.
 Semantic and reporting-result sections use canonical `sexpr` fences. `HOVER MARKDOWN` is the
 dedicated renderer projection and contains one labelled `markdown` fence per requested probe.

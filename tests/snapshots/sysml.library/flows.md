@@ -1032,6 +1032,13 @@ standard library package Flows {
   (declaration (id (node (document "memory://snapshot/flows.md") (path (named (kind library-package) (name "Flows")) (named (kind flow-def) (name "Message")) (named (kind attribute) (name "teAfterNum")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/flows.md") (path (named (kind library-package) (name "Flows")) (named (kind flow-def) (name "Message")) (anonymous (kind connection) (ordinal 0))))) (kind connection) (type unresolved) (end bare (feature (resolved (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Message::sourceEvent"))))) (end bare (feature unresolved)))
+  (connector (id (node (document "memory://snapshot/flows.md") (path (named (kind library-package) (name "Flows")) (named (kind flow-def) (name "Message")) (anonymous (kind connection) (ordinal 1))))) (kind connection) (type unresolved) (end bare (feature (resolved (node (document "memory://snapshot/flows.md") (qualified-name "Flows::Message::targetEvent"))))) (end bare (feature unresolved)))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

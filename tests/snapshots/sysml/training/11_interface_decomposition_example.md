@@ -193,6 +193,12 @@ package 'Interface Decomposition Example' {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::WaterDelivery"))) (kind interface) (end bare (feature-chain (root (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::WaterDelivery::suppliedBy"))) (terminal (resolved (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::WaterDelivery::suppliedBy::hot")))) "suppliedBy::hot")) (end bare (feature-chain (root (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::WaterDelivery::deliveredTo"))) (terminal (resolved (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::WaterDelivery::deliveredTo::hot")))) "deliveredTo::hot")) (end bare (feature-chain (root (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::WaterDelivery::suppliedBy"))) (terminal (resolved (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::WaterDelivery::suppliedBy::cold")))) "suppliedBy::cold")) (end bare (feature-chain (root (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::WaterDelivery::deliveredTo"))) (terminal (resolved (node (document "memory://snapshot/11_interface_decomposition_example.md") (qualified-name "Interface Decomposition Example::WaterDelivery::deliveredTo::cold")))) "deliveredTo::cold")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

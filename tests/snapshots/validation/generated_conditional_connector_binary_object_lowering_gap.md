@@ -178,6 +178,12 @@ package ConnectorBinaryObjectSpecialization {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (kind connection) (type (resolved (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::LinkObject")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

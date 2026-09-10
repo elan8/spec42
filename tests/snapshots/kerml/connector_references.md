@@ -149,6 +149,13 @@ class A {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/connector_references.md") (path (named (kind class-def) (name "A")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind connection) (type unresolved) (end (name (node (document "memory://snapshot/connector_references.md") (path (named (kind class-def) (name "A")) (anonymous (kind kerml-connector) (ordinal 0)) (named (kind kerml-feature) (name "self"))))) (multiplicity (lower 1) (upper 1)) (feature (resolved (node (document "memory://snapshot/connector_references.md") (qualified-name "A::self"))))) (end (name (node (document "memory://snapshot/connector_references.md") (path (named (kind class-def) (name "A")) (anonymous (kind kerml-connector) (ordinal 0)) (named (kind kerml-feature) (name "this"))))) (multiplicity (lower 1) (upper 1)) (feature (resolved (node (document "memory://snapshot/connector_references.md") (qualified-name "A::this"))))))
+  (connector (id (node (document "memory://snapshot/connector_references.md") (path (named (kind class-def) (name "A")) (anonymous (kind kerml-connector) (ordinal 1))))) (kind connection) (type unresolved) (end (name (node (document "memory://snapshot/connector_references.md") (path (named (kind class-def) (name "A")) (anonymous (kind kerml-connector) (ordinal 1)) (named (kind kerml-feature) (name "smallerOccurrence"))))) (multiplicity (lower 0) (upper unbounded)) (feature unresolved)) (end (name (node (document "memory://snapshot/connector_references.md") (path (named (kind class-def) (name "A")) (anonymous (kind kerml-connector) (ordinal 1)) (named (kind kerml-feature) (name "largerOccurrence"))))) (multiplicity (lower 1) (upper 1)) (feature unresolved)))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

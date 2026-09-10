@@ -492,6 +492,15 @@ standard library package Interfaces {
   (declaration (id (node (document "memory://snapshot/interfaces.md") (path (named (kind library-package) (name "Interfaces")) (named (kind calc-def) (name "excludingOnce")) (named (kind attribute) (name "position")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::BinaryInterface"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::Interface"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::binaryInterfaces"))) (kind interface))
+  (connector (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces::interfaces"))) (kind interface))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

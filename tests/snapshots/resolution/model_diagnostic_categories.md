@@ -191,6 +191,12 @@ package Demo {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/model_diagnostic_categories.md") (path (named (kind package) (name "Demo")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connection) (end bare (feature (resolved (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::controller"))))) (end bare (feature (resolved (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::sensor"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

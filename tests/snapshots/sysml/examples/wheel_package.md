@@ -670,6 +670,14 @@ package 'Wheel Package' {
   (declaration (id (node (document "memory://snapshot/wheel_package.md") (path (named (kind package) (name "Wheel Package")) (named (kind default-reference) (name "pressure")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "^" (operator "/" (feature-reference "force" (target unresolved)) (feature-reference "length" (target unresolved))) (literal (value (kind integer) (integer 2)))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::BandMount"))) (kind connection) (end (name (node (document "memory://snapshot/wheel_package.md") (path (named (kind package) (name "Wheel Package")) (named (kind connection-def) (name "BandMount")) (anonymous (kind connection) (ordinal 0))))) (multiplicity (lower 1) (upper 1)) unconnected) (end (name (node (document "memory://snapshot/wheel_package.md") (path (named (kind package) (name "Wheel Package")) (named (kind connection-def) (name "BandMount")) (anonymous (kind connection) (ordinal 1))))) (multiplicity (lower 1) (upper 1)) unconnected))
+  (connector (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::PressureSeat"))) (kind connection) (end (name (node (document "memory://snapshot/wheel_package.md") (path (named (kind package) (name "Wheel Package")) (named (kind connection-def) (name "PressureSeat")) (anonymous (kind connection) (ordinal 0))))) (multiplicity (lower 1) (upper 1)) unconnected) (end (name (node (document "memory://snapshot/wheel_package.md") (path (named (kind package) (name "Wheel Package")) (named (kind connection-def) (name "PressureSeat")) (anonymous (kind connection) (ordinal 1))))) (multiplicity (lower 1) (upper 1)) unconnected))
+  (connector (id (node (document "memory://snapshot/wheel_package.md") (path (named (kind package) (name "Wheel Package")) (named (kind part-def) (name "WheelAssembly")) (anonymous (kind connection) (ordinal 0))))) (kind connection) (type (resolved (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::PressureSeat")))) (end bare (feature-chain (root (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::WheelAssembly::t"))) (terminal (resolved (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::WheelAssembly::t::bead")))) "t::bead")) (end bare (feature-chain (root (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::WheelAssembly::w"))) (terminal (resolved (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package::WheelAssembly::w::rim")))) "w::rim")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

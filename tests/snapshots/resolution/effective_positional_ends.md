@@ -169,6 +169,16 @@ package Ends {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/effective_positional_ends.md") (qualified-name "Ends::Feed"))) (kind connection) (end (name (node (document "memory://snapshot/effective_positional_ends.md") (qualified-name "Ends::Feed::supply"))) unconnected) (end (name (node (document "memory://snapshot/effective_positional_ends.md") (qualified-name "Ends::Feed::reservoir"))) unconnected))
+  (connector (id (node (document "memory://snapshot/effective_positional_ends.md") (qualified-name "Ends::Grandchild"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/effective_positional_ends.md") (qualified-name "Ends::InheritedPair"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/effective_positional_ends.md") (qualified-name "Ends::Lone"))) (kind connection) (end (name (node (document "memory://snapshot/effective_positional_ends.md") (qualified-name "Ends::Lone::only"))) unconnected))
+  (connector (id (node (document "memory://snapshot/effective_positional_ends.md") (qualified-name "Ends::PartialOverride"))) (kind connection) (end (name (node (document "memory://snapshot/effective_positional_ends.md") (qualified-name "Ends::PartialOverride::supply"))) unconnected))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

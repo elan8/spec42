@@ -193,6 +193,13 @@ package ProductSelection_N_ary_SysML {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::ProductSelection1"))) (kind connection))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

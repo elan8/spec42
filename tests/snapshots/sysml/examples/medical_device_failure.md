@@ -161,6 +161,13 @@ package MedicalDeviceFailure {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0))))) (kind connection))
+  (connector (id (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connection) (end bare (feature (resolved (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::deviceFails"))))) (end bare (feature-chain (root (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::patient"))) (terminal (resolved (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure::medicalDevice::patient::therapyDelayed")))) "patient::therapyDelayed")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

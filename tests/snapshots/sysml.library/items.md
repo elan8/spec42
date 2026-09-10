@@ -1060,6 +1060,12 @@ standard library package Items {
   (declaration (id (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (named (kind item-def) (name "Item")) (named (kind attribute) (name "isSolid")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "voids" (target (node (document "memory://snapshot/items.md") (qualified-name "Items::Item::voids"))))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/items.md") (qualified-name "Items::Touches"))) (kind connection))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

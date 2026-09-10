@@ -97,6 +97,12 @@ package Connections {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections::Link"))) (kind connection) (end (name (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections::Link::source"))) unconnected) (end (name (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections::Link::target"))) unconnected))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
