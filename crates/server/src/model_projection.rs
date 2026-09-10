@@ -1,10 +1,10 @@
-//! JSON serialisation of the typed [`PublishedModelProjection`] for `spec42 model-summary
+//! JSON serialisation of the typed `PublishedModelProjection` for `spec42 model-summary
 //! --format json`.
 //!
-//! The projection itself is an in-process value owned by `sysml_query`: elements are
-//! [`SymbolId`]s, text bodies are [`TextId`] handles. This module is the boundary layer that
-//! materialises a [`SymbolToken`] for every identity and the interned text for every handle, so a
-//! headless consumer (CI, a script, an agent) gets one settled document. It adds nothing to the
+//! The projection itself is an in-process value owned by `sysml_query`: elements are `SymbolId`s,
+//! text bodies are `TextId` handles. This module is the boundary layer that materialises a
+//! `SymbolToken` for every identity and the interned text for every handle, so a headless
+//! consumer (CI, a script, an agent) gets one settled document. It adds nothing to the
 //! projection -- every field here has a typed producer on the publication.
 
 use serde::Serialize;
