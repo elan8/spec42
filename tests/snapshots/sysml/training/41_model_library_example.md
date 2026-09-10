@@ -304,6 +304,13 @@ library package 'Model Library Example' {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation"))) (kind connection) (end (name (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation::cause"))) (multiplicity (lower unbounded) (upper unbounded)) unconnected) (end (name (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation::effect"))) (multiplicity (lower unbounded) (upper unbounded)) unconnected))
+  (connector (id (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::causations"))) (kind connection) (type (resolved (node (document "memory://snapshot/41_model_library_example.md") (qualified-name "Model Library Example::Causation")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

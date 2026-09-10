@@ -520,6 +520,13 @@ package ApolloNormativeForms {
   (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (path (named (kind package) (name "ApolloNormativeForms")) (named (kind calc-def) (name "RollupPowerGeneration")) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::CapabilitySet::capabilityToGoals"))) (kind connection) (type (resolved (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::CapabilityToGoalDerivation")))))
+  (connector (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::CapabilityToGoalDerivation"))) (kind connection))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

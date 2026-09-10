@@ -2741,6 +2741,29 @@ fn regenerate_snapshot(
     } else {
         replace_section(&fixture, "EXPRESSIONS", &canonical.expressions).unwrap_or(fixture)
     };
+    // Same policy for metadata annotations: only fixtures that author one carry the section.
+    let fixture = if canonical.has_metadata_annotations() {
+        replace_or_insert_section(
+            &fixture,
+            "METADATA ANNOTATIONS",
+            &canonical.metadata_annotations,
+        )
+        .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?
+    } else {
+        replace_section(
+            &fixture,
+            "METADATA ANNOTATIONS",
+            &canonical.metadata_annotations,
+        )
+        .unwrap_or(fixture)
+    };
+    // Same policy for the connect / interface topology.
+    let fixture = if canonical.has_connections() {
+        replace_or_insert_section(&fixture, "CONNECTIONS", &canonical.connections)
+            .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?
+    } else {
+        replace_section(&fixture, "CONNECTIONS", &canonical.connections).unwrap_or(fixture)
+    };
     let fixture = replace_or_insert_section(&fixture, "NAVIGATION", &canonical.navigation)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     let fixture = if probes.queries.is_empty() {
@@ -6791,6 +6814,8 @@ struct OwnedSections {
     smg: String,
     types: String,
     expressions: String,
+    metadata_annotations: String,
+    connections: String,
     diagnostics: String,
     navigation: String,
     editor_queries: String,
@@ -6805,6 +6830,18 @@ impl OwnedSections {
     /// not all rewritten.
     fn has_expressions(&self) -> bool {
         self.expressions.contains("(declaration")
+    }
+
+    /// Whether the metadata-annotation projection has any content. Same omission policy as
+    /// [`Self::has_expressions`].
+    fn has_metadata_annotations(&self) -> bool {
+        self.metadata_annotations.contains("(annotation ")
+    }
+
+    /// Whether the connection-topology projection has any content. Same omission policy as
+    /// [`Self::has_expressions`].
+    fn has_connections(&self) -> bool {
+        self.connections.contains("(connector ")
     }
 }
 
@@ -6830,6 +6867,16 @@ fn render_owned_sections(
         .debug()
         .write_expressions_sexpr(&mut expressions)
         .map_err(|error| format!("expression rendering failed: {error}"))?;
+    let mut metadata_annotations = String::new();
+    model
+        .debug()
+        .write_metadata_annotations_sexpr(&mut metadata_annotations)
+        .map_err(|error| format!("metadata-annotation rendering failed: {error}"))?;
+    let mut connections = String::new();
+    model
+        .debug()
+        .write_connections_sexpr(&mut connections)
+        .map_err(|error| format!("connection rendering failed: {error}"))?;
     let mut navigation = String::new();
     model
         .debug()
@@ -6853,6 +6900,8 @@ fn render_owned_sections(
         smg,
         types,
         expressions,
+        metadata_annotations,
+        connections,
         diagnostics,
         navigation,
         editor_queries,
@@ -6955,6 +7004,8 @@ fn ensure_sections_balanced(sections: &OwnedSections) -> Result<(), String> {
     ensure_balanced("SMG", &sections.smg)?;
     ensure_balanced("TYPES", &sections.types)?;
     ensure_balanced("EXPRESSIONS", &sections.expressions)?;
+    ensure_balanced("METADATA ANNOTATIONS", &sections.metadata_annotations)?;
+    ensure_balanced("CONNECTIONS", &sections.connections)?;
     ensure_balanced("DIAGNOSTICS", &sections.diagnostics)?;
     ensure_balanced("NAVIGATION", &sections.navigation)?;
     ensure_balanced("EDITOR RESULTS", &sections.editor_queries).and_then(|()| {
@@ -7614,7 +7665,10 @@ fn replace_or_insert_section(fixture: &str, name: &str, replacement: &str) -> Op
         return Some(updated);
     }
     let insertion = fixture.find("\n# ").unwrap_or(fixture.len());
-    let section = format!("\n# {name}\n~~~sexpr\n{replacement}\n~~~");
+    let section = format!(
+        "\n# {name}\n~~~sexpr\n{}\n~~~",
+        replacement.trim_end_matches('\n')
+    );
     let mut updated = String::with_capacity(fixture.len() + section.len());
     updated.push_str(&fixture[..insertion]);
     updated.push_str(&section);
@@ -7644,6 +7698,8 @@ const SECTION_ORDER: &[&str] = &[
     "SMG",
     "TYPES",
     "EXPRESSIONS",
+    "METADATA ANNOTATIONS",
+    "CONNECTIONS",
     "NAVIGATION",
     "EDITOR RESULTS",
     "HOVER RESULTS",

@@ -133,6 +133,13 @@ package GeneratedDefinitions {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::ConnectionDefinition"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::InterfaceDefinition"))) (kind interface))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

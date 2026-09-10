@@ -98,6 +98,12 @@ package CoverageIndividual {
 (types
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual::D7"))) (kind connection))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

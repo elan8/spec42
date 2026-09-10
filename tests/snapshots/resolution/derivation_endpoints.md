@@ -68,6 +68,12 @@ package DerivationCoverage {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/derivation_endpoints.md") (path (named (kind package) (name "DerivationCoverage")) (anonymous (kind connection-def) (ordinal 0))))) (kind connection) (end (name (node (document "memory://snapshot/derivation_endpoints.md") (path (named (kind package) (name "DerivationCoverage")) (anonymous (kind connection-def) (ordinal 0)) (anonymous (kind connection) (ordinal 0))))) (feature (resolved (node (document "memory://snapshot/derivation_endpoints.md") (qualified-name "DerivationCoverage::ParentRequirement"))))) (end (name (node (document "memory://snapshot/derivation_endpoints.md") (path (named (kind package) (name "DerivationCoverage")) (anonymous (kind connection-def) (ordinal 0)) (anonymous (kind connection) (ordinal 1))))) (feature (resolved (node (document "memory://snapshot/derivation_endpoints.md") (qualified-name "DerivationCoverage::ChildRequirement"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

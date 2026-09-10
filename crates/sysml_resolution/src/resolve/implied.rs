@@ -1990,21 +1990,28 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
     let mut implied = Vec::new();
     let mut status = SemanticMetadataProjectionStatus::Complete;
     for record in storage.metadata_annotations.iter() {
-        let metadata_type = storage
-            .references
-            .iter()
-            .enumerate()
-            .find_map(|(index, reference)| {
-                (reference.source == record.annotation
-                    && reference.kind == ReferenceKind::MetadataAnnotation)
-                    .then(|| {
-                        let id = AuthoredReferenceId::from_index(index).ok()?;
-                        match resolution.outcome(id) {
-                            Some(ResolutionStatus::Resolved(target)) => Some(target),
-                            _ => None,
-                        }
-                    })
-                    .flatten()
+        // Only `@Tag` / `#Tag` annotation *applications* carry a `MetadataAnnotation` typing
+        // reference and can project semantic metadata. A `metadata m : T;` usage record has no
+        // such reference (its type is an ordinary `FeatureTyping`); it is not a semantic-metadata
+        // candidate, so skip it rather than reporting the whole projection as unresolved.
+        let Some(annotation_reference) =
+            storage
+                .references
+                .iter()
+                .enumerate()
+                .find_map(|(index, reference)| {
+                    (reference.source == record.annotation
+                        && reference.kind == ReferenceKind::MetadataAnnotation)
+                        .then_some(index)
+                })
+        else {
+            continue;
+        };
+        let metadata_type = AuthoredReferenceId::from_index(annotation_reference)
+            .ok()
+            .and_then(|id| match resolution.outcome(id) {
+                Some(ResolutionStatus::Resolved(target)) => Some(target),
+                _ => None,
             });
         let Some(metadata_type) = metadata_type else {
             status = SemanticMetadataProjectionStatus::Unresolved;

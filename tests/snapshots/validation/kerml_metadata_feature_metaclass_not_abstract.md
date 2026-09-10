@@ -56,14 +56,22 @@ package Metadata {
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind kerml-metaclass) (name "AbstractMarker"))))) (kind kerml-metaclass) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "AbstractMarker"))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "AbstractMarker"))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotationAbout (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind kerml-metaclass) (name "Marker"))))) (kind kerml-metaclass) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Marker"))))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Marker"))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotationAbout (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "AbstractMarker"))))) (kind metadataAnnotationAbout) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Marker"))))) (kind metadataAnnotationAbout) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::Thing")))))
   )
   (relationships
+    (relationship (kind metadataAnnotationAbout) (source (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "AbstractMarker"))))) (target (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "AbstractMarker"))))) (kind metadataAnnotationAbout) (ordinal 0)))
+    (relationship (kind metadataAnnotationAbout) (source (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Marker"))))) (target (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Marker"))))) (kind metadataAnnotationAbout) (ordinal 0)))
   )
   (evaluation
   )
@@ -74,8 +82,25 @@ package Metadata {
 (types
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::Thing"))) (form usage) (about (resolved (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::Thing")))))
+  (annotation (element (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::Thing"))) (form usage) (about (resolved (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::Thing")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (range (start 9 34) (end 9 39)) (probe (position 9 34))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "AbstractMarker"))))) (kind metadataAnnotationAbout) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (range (start 6 26) (end 6 31)) (probe (position 6 26))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (path (named (kind package) (name "Metadata")) (named (kind metadata) (name "Marker"))))) (kind metadataAnnotationAbout) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::Thing")))))
+    )
+  )
 )
 ~~~

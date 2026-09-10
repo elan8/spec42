@@ -80,6 +80,11 @@ impl ResolutionReferenceFact for AuthoredReference {
 pub(crate) struct ResolutionStartingState<'a> {
     pub provisional_relationships: &'a [ImpliedRelationship],
     pub settled_outcomes: Option<&'a [ResolutionStatus]>,
+    /// Standard-library root declarations a workspace root of the same name shadows. They stay in
+    /// storage for role-filtered anchor resolution but must not be bare-name lexical candidates, or
+    /// an explicit `import <Name>::*` over the workspace package resolves to both and is reported
+    /// ambiguous. Sorted ascending. See [`build_direct_name_index`].
+    pub shadowed_library_roots: &'a [DeclarationId],
 }
 
 pub(crate) fn resolve_dense<R: ResolutionReferenceFact>(
@@ -126,6 +131,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let ResolutionStartingState {
         provisional_relationships,
         settled_outcomes: seed,
+        shadowed_library_roots,
     } = starting_state;
     let membership_records = memberships;
     let memberships = MembershipIndex::build(declarations, memberships)?;
@@ -145,12 +151,14 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         declaration_facts,
         Some(&effective_names),
         None,
+        shadowed_library_roots,
     )?;
     let mut exported_names = build_direct_name_index(
         declarations,
         declaration_facts,
         Some(&effective_names),
         Some(&memberships),
+        shadowed_library_roots,
     )?;
     let all_import_slots: Vec<usize> = references
         .iter()
@@ -311,6 +319,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     // An `Expression::Invocation`/`Constructor` callee (`InvocationCallee`) can likewise name any
     // owned feature (a calc/function) or a type (a constructor), not just a Type, so it joins this
     // same `DeclarationDomain::Any` pass.
+    // A metadata annotation's `about` target (`MetadataAnnotationAbout`) is an arbitrary element,
+    // resolved through the same `DeclarationDomain::Any` lexical lookup, so it joins here too.
     let state_binding_slots: Vec<usize> = references
         .iter()
         .enumerate()
@@ -347,6 +357,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::DependencyClient
                     | ReferenceKind::DependencySupplier
                     | ReferenceKind::PerformParameterTarget
+                    | ReferenceKind::MetadataAnnotationAbout
                     | ReferenceKind::FeatureChaining
                     | ReferenceKind::ExplicitRelationshipEndpoint
             )
@@ -926,12 +937,14 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     declaration_facts,
                     Some(&effective_names),
                     None,
+                    shadowed_library_roots,
                 )?;
                 exported_names = build_direct_name_index(
                     declarations,
                     declaration_facts,
                     Some(&effective_names),
                     Some(&memberships),
+                    shadowed_library_roots,
                 )?;
             }
         }
@@ -1549,6 +1562,7 @@ pub(crate) fn supported_import_domain(
         | ReferenceKind::DependencyClient
         | ReferenceKind::DependencySupplier
         | ReferenceKind::PerformParameterTarget
+        | ReferenceKind::MetadataAnnotationAbout
         | ReferenceKind::FlowPayloadType => None,
     }
 }

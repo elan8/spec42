@@ -1577,6 +1577,12 @@ standard library package Performances {
   (declaration (id (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-expression) (name "trueEvaluations")) (named (kind kerml-feature) (name "trueValue")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (named (kind kerml-behavior) (name "Performance")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind connection) (type unresolved) (end bare (feature (resolved (node (document "memory://snapshot/performances.md") (qualified-name "Performances::Performance::self"))))) (end bare (feature (resolved (node (document "memory://snapshot/performances.md") (qualified-name "Performances::Performance::thisPerformance"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -58,8 +58,8 @@ package Metadata {
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::ClassifierMarker"))) (kind kerml-metaclass) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::loose"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onClassifier"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ClassifierMarker")))))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onFeature"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ClassifierMarker")))))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onClassifier"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ClassifierMarker")) (metadataAnnotationAbout (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onFeature"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ClassifierMarker")) (metadataAnnotationAbout (reference "loose")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::loose"))) (kind featureTyping) (ordinal 0))
@@ -68,14 +68,22 @@ package Metadata {
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onClassifier"))) (kind featureTyping) (ordinal 0))
       (authored-target "ClassifierMarker")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::ClassifierMarker")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onClassifier"))) (kind metadataAnnotationAbout) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::Thing")))))
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onFeature"))) (kind featureTyping) (ordinal 0))
       (authored-target "ClassifierMarker")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::ClassifierMarker")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onFeature"))) (kind metadataAnnotationAbout) (ordinal 0))
+      (authored-target "loose")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::loose")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::loose"))) (target (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::loose"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onClassifier"))) (target (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::ClassifierMarker"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onClassifier"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind metadataAnnotationAbout) (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onClassifier"))) (target (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onClassifier"))) (kind metadataAnnotationAbout) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onFeature"))) (target (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::ClassifierMarker"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onFeature"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind metadataAnnotationAbout) (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onFeature"))) (target (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::loose"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onFeature"))) (kind metadataAnnotationAbout) (ordinal 0)))
   )
   (evaluation
   )
@@ -108,6 +116,13 @@ package Metadata {
     )
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::Thing"))) (form usage) (definition (resolved (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::ClassifierMarker")))) (about (resolved (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::Thing")))))
+  (annotation (element (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::loose"))) (form usage) (definition (resolved (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::ClassifierMarker")))) (about (resolved (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::loose")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
@@ -121,9 +136,19 @@ package Metadata {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::ClassifierMarker")))))
     )
   )
+  (query (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (range (start 6 51) (end 6 56)) (probe (position 6 51))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onClassifier"))) (kind metadataAnnotationAbout) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::Thing")))))
+    )
+  )
   (query (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (range (start 9 25) (end 9 41)) (probe (position 9 25))
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onFeature"))) (kind featureTyping) (ordinal 0) (authored-target "ClassifierMarker")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::ClassifierMarker")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (range (start 9 48) (end 9 53)) (probe (position 9 48))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::onFeature"))) (kind metadataAnnotationAbout) (ordinal 0) (authored-target "loose")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::loose")))))
     )
   )
 )

@@ -187,6 +187,15 @@ package MetadataPrefixedDependencyEdges {
     )
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/consumer.sysml") (path (named (kind package) (name "MetadataPrefixedDependencyEdges")) (named (kind part-def) (name "PartB")) (anonymous (kind dependency) (ordinal 0))))) (form prefix-keyword) (definition (resolved (node (document "memory://snapshot/upstream.sysml") (qualified-name "Upstream::refinement")))))
+  (annotation (element (node (document "memory://snapshot/consumer.sysml") (path (named (kind package) (name "MetadataPrefixedDependencyEdges")) (named (kind part-def) (name "PartD")) (anonymous (kind dependency) (ordinal 0))))) (form prefix-keyword) (definition (resolved (node (document "memory://snapshot/upstream.sysml") (qualified-name "Upstream::refinement")))))
+  (annotation (element (node (document "memory://snapshot/consumer.sysml") (path (named (kind package) (name "MetadataPrefixedDependencyEdges")) (named (kind requirement-def) (name "ReqB")) (anonymous (kind dependency) (ordinal 0))))) (form prefix-keyword) (definition (resolved (node (document "memory://snapshot/upstream.sysml") (qualified-name "Upstream::refinement")))))
+  (annotation (element (node (document "memory://snapshot/consumer.sysml") (path (named (kind package) (name "MetadataPrefixedDependencyEdges")) (named (kind requirement-def) (name "ReqB")) (anonymous (kind dependency) (ordinal 0))))) (form prefix-keyword) (definition (resolved (node (document "memory://snapshot/upstream.sysml") (qualified-name "Upstream::trace")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

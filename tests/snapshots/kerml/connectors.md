@@ -254,6 +254,12 @@ package Connectors {
   (declaration (id (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind kerml-binding) (ordinal 1))))) (outcome resolved) (operator "and" (feature-reference "end" (target unresolved)) (feature-reference "end" (target unresolved))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::c1"))) (kind connection) (end bare (feature (resolved (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::a"))))) (end bare (feature (resolved (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::b"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

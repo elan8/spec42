@@ -345,6 +345,12 @@ package Filtering {
   (declaration (id (node (document "memory://snapshot/filtering.md") (path (named (kind package) (name "Filtering")) (named (kind package) (name "DesignModel")) (named (kind kerml-structure) (name "System")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::DesignModel::System"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Annotations::ApprovalAnnotation")))) (value (redefines (resolved (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Annotations::ApprovalAnnotation::approved")))) (outcome resolved) (literal (value (kind boolean) (boolean true)))) (value (redefines (resolved (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Annotations::ApprovalAnnotation::approver")))) (outcome resolved) (literal (value (kind string) (value "John Smith")))) (value (redefines (resolved (node (document "memory://snapshot/filtering.md") (qualified-name "Filtering::Annotations::ApprovalAnnotation::level")))) (outcome resolved) (literal (value (kind integer) (integer 2)))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

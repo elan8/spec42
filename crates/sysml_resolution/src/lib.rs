@@ -14,6 +14,7 @@ use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestE
 
 mod action_query;
 mod check;
+mod connection_query;
 mod definition_usage_query;
 mod details;
 mod diagnose;
@@ -27,6 +28,7 @@ mod index;
 mod inspection;
 pub mod library;
 mod lower;
+mod metadata_query;
 mod model;
 mod namespace_query;
 mod pipeline;
@@ -68,6 +70,10 @@ pub use action_query::{
     ActionDerivedFactPrerequisite, ActionInputParameterId, ActionOwnedMembershipId,
     ActionOwnedMembershipKind, ActionOwnedMembershipMember,
 };
+pub use connection_query::{
+    ConnectorEndpoint, ConnectorKind, PublishedConnectionGraph, PublishedConnector,
+    PublishedConnectorEnd,
+};
 pub use definition_usage_query::{
     DefinitionUsageDerivedKind, DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite,
 };
@@ -105,6 +111,9 @@ pub use inspection::{
     MultiplicityBound, MultiplicityFacts, PortionKind, PublishedElement, ReferenceAt,
     RelationshipProvenance, RelationshipTarget, SymbolEntry, ValueKind, Visibility,
     VisibilityProvenance,
+};
+pub use metadata_query::{
+    MetadataAnnotationForm, MetadataAnnotationValue, PublishedMetadataAnnotation,
 };
 pub use model::query::VisibleMemberRef;
 pub use model::query::VisibleMembers;
@@ -1118,6 +1127,21 @@ impl PublishedResolution {
         self.model.binding_connectors()
     }
 
+    /// Every metadata annotation bound to one element: its form, the annotating definition, its
+    /// `about` targets, and the resolved values its body redefines.
+    pub fn metadata_annotations(
+        &self,
+        symbol: SymbolId,
+    ) -> QueryOutcome<Box<[PublishedMetadataAnnotation]>> {
+        self.model.metadata_annotation_details(symbol)
+    }
+
+    /// The `connect` / `interface` topology reachable from one element: every connector it owns
+    /// (directly or transitively), each with its `:` type and resolved ends.
+    pub fn connections(&self, root: SymbolId) -> QueryOutcome<PublishedConnectionGraph> {
+        self.model.connection_graph(root)
+    }
+
     /// The explicit applicability outcome for a closed named binding-connector validation.
     pub fn binding_connector_validation(
         &self,
@@ -1303,6 +1327,14 @@ impl DebugQueries<'_> {
 
     pub fn write_expressions_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.write_expressions_sexpr(output)
+    }
+
+    pub fn write_metadata_annotations_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.write_metadata_annotations_sexpr(output)
+    }
+
+    pub fn write_connections_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.write_connections_sexpr(output)
     }
 }
 

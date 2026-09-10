@@ -89,7 +89,7 @@ package GeneratedSpecializationLoweringGaps {
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::idle"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::running"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker"))) (kind kerml-metaclass) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Marker")))))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Marker")) (metadataAnnotationAbout (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Thing"))) (kind item-def) (membership (kind owning) (visibility default)))
   )
   (references
@@ -114,6 +114,9 @@ package GeneratedSpecializationLoweringGaps {
     (reference (id (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (kind featureTyping) (ordinal 0))
       (authored-target "Marker")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker")))))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (kind metadataAnnotationAbout) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Thing")))))
   )
   (relationships
     (relationship (kind sendTarget) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (path (named (kind package) (name "GeneratedSpecializationLoweringGaps")) (named (kind action-def) (name "Act")) (anonymous (kind send-action) (ordinal 0))))) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act::target"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (path (named (kind package) (name "GeneratedSpecializationLoweringGaps")) (named (kind action-def) (name "Act")) (anonymous (kind send-action) (ordinal 0))))) (kind sendTarget) (ordinal 0)))
@@ -123,6 +126,7 @@ package GeneratedSpecializationLoweringGaps {
     (relationship (kind succession) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (path (named (kind package) (name "GeneratedSpecializationLoweringGaps")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "Transition")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::idle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (path (named (kind package) (name "GeneratedSpecializationLoweringGaps")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "Transition")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
     (relationship (kind succession) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (path (named (kind package) (name "GeneratedSpecializationLoweringGaps")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "Transition")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Machine::running"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (path (named (kind package) (name "GeneratedSpecializationLoweringGaps")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "Transition")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1)))
     (relationship (kind typing) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind metadataAnnotationAbout) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (kind metadataAnnotationAbout) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Act"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (path (named (kind package) (name "GeneratedSpecializationLoweringGaps")) (named (kind action-def) (name "Act")) (anonymous (kind send-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::sendSubactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (path (named (kind package) (name "GeneratedSpecializationLoweringGaps")) (named (kind action-def) (name "Act")) (anonymous (kind send-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::sendActions"))) (provenance implied))
@@ -370,6 +374,19 @@ package GeneratedSpecializationLoweringGaps {
     )
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Thing"))) (form usage) (definition (resolved (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker")))) (about (resolved (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Thing")))))
+)
+~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::ConnectionUsage"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::InterfaceUsage"))) (kind interface))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
@@ -406,6 +423,11 @@ package GeneratedSpecializationLoweringGaps {
   (query (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (range (start 3 31) (end 3 37)) (probe (position 3 31))
     (reference (id (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (kind featureTyping) (ordinal 0) (authored-target "Marker")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Marker")))))
+    )
+  )
+  (query (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (range (start 3 44) (end 3 49)) (probe (position 3 44))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::MetadataFeature"))) (kind metadataAnnotationAbout) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_lowering_gaps.md") (qualified-name "GeneratedSpecializationLoweringGaps::Thing")))))
     )
   )
 )

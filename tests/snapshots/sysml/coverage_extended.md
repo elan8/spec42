@@ -135,6 +135,14 @@ package ExtendedExamples {
     )
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::batteryLow"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x"))))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x") (occurrence 1))))) (form prefix-keyword) (definition unresolved))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

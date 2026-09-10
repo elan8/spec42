@@ -621,6 +621,15 @@ package Structural {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::AbstractIncomplete"))) (kind connection) (end (name (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::AbstractIncomplete::only"))) unconnected))
+  (connector (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Complete"))) (kind connection) (end (name (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Complete::left"))) unconnected) (end (name (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Complete::right"))) unconnected))
+  (connector (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Incomplete"))) (kind connection) (end (name (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Incomplete::only"))) unconnected))
+  (connector (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Ternary"))) (kind connection) (end (name (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Ternary::one"))) unconnected) (end (name (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Ternary::two"))) unconnected) (end (name (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::Ternary::three"))) unconnected))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

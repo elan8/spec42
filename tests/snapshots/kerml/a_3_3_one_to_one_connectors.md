@@ -477,6 +477,12 @@ package OneToOneConnectorsExecution {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::Bicycle::fixWheel"))) (kind connection) (type (resolved (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::BikeWheelFixed")))) (end bare (feature (resolved (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::Bicycle::rollsOn"))))) (end bare (feature (resolved (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsModelToBeExecuted::Bicycle::holdsWheel"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

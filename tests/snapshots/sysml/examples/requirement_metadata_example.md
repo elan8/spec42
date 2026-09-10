@@ -426,6 +426,12 @@ package RequirementMetadataExample {
   (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "vehicleMassRequirement")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind attribute) (ordinal 3)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "medium" (target unresolved)))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (form annotating-member) (definition unresolved) (value (redefines unresolved) (outcome resolved) (feature-reference "StatusKind::tbd" (target unresolved))) (value (redefines unresolved) (outcome not-applicable) (value (redefines unresolved) (outcome resolved) (feature-reference "high" (target unresolved))) (value (redefines unresolved) (outcome resolved) (feature-reference "medium" (target unresolved))) (value (redefines unresolved) (outcome resolved) (feature-reference "low" (target unresolved))) (value (redefines unresolved) (outcome resolved) (feature-reference "medium" (target unresolved)))) (value (redefines unresolved) (outcome resolved) (literal (value (kind string) (value "Bob")))) (value (redefines unresolved) (outcome resolved) (literal (value (kind string) (value "Mary")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

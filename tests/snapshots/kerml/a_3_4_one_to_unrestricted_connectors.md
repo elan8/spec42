@@ -469,6 +469,12 @@ package OneToUnrestrictedConnectorsExecution {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrierFixed"))) (kind connection) (type (resolved (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::BikeBasketFixed")))) (end bare (feature (resolved (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::carrier"))))) (end bare (feature (resolved (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsModelToBeExecuted::Bicycle::holdsWheel"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

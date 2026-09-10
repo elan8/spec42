@@ -342,6 +342,13 @@ package '3c-Function-based Behavior-structure mod-1' {
   (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-1")) (named (kind part) (name "vehicle-trailer system")) (anonymous (kind action) (ordinal 0)) (named (kind action) (name "destroy connection of trailer to vehicle")) (named (kind parameter) (name "occ")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch"))) (kind connection) (end (name (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch::hitch"))) unconnected) (end (name (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch::coupler"))) unconnected))
+  (connector (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::trailerHitch"))) (kind connection) (type (resolved (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::TrailerHitch")))) (end bare (feature-chain (root (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::vehicle"))) (terminal (resolved (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::vehicle::vehicleFrame::hitch")))) "vehicle::vehicleFrame::hitch")) (end bare (feature-chain (root (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::trailer"))) (terminal (resolved (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::vehicle-trailer system::trailer::trailerFrame::coupler")))) "trailer::trailerFrame::coupler")))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

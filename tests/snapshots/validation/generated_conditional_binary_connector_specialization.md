@@ -146,6 +146,12 @@ package BinaryConnectorSpecialization {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/generated_conditional_binary_connector_specialization.md") (qualified-name "BinaryConnectorSpecialization::Holder::pair"))) (kind connection))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -19,6 +19,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   diagnostic inventory (currently 43 diagnostics). Wired into `scripts/minici.sh` alongside the
   curated snapshot check.
 
+- **`inspection().connections(root)` publishes the `connect` / `interface` topology reachable
+  from an element.** Sibling of `binding_connectors()`: a `PublishedConnectionGraph` of every
+  connector `root` owns (directly or transitively), each with its `:` type and its resolved
+  ends. A bare end (`connect a to b`) is a single resolved feature; a dotted end
+  (`connect a.b.port to ...`) carries the resolved *terminal* feature plus the path as authored
+  (the intermediate hops are a later refinement -- the resolver keeps no per-hop state); a
+  named end (`connect x references a.b`) carries its own identity and multiplicity. It adds no
+  analysis -- every end is an authored reference resolution already settled. Third and final
+  slice of #84.
+
+- **`inspection().metadata_annotations(symbol)` publishes each metadata annotation bound to an
+  element.** `ElementDetails::metadata` only answered "which metadata definitions annotate this
+  element", collapsing every authored annotation into a deduplicated set of definition
+  identities -- enough to detect a tag, not to act on one. The new query returns, per authored
+  annotation, its form (`#Tag` prefix vs `@Tag` / `metadata Tag` annotating member vs `metadata
+  m : Tag;` usage), the resolved annotating definition, the resolved `about` targets, and the
+  resolved values its body redefines (`@Risk { probability = 0.3; }`) -- a body value that is
+  itself an expression is the same `PublishedExpression` tree `structure().expression()`
+  publishes. It adds no analysis: the annotation-to-definition reference, the body's redefining
+  `AttributeUsage` members, and their value expressions were all lowered and resolved already.
+  The `about` clause (`@Tag ... about X, Y;` / `metadata m : Tag about X;`) is now lowered and
+  resolved through a new `MetadataAnnotationAbout` reference (`DeclarationDomain::Any` lexical
+  lookup), so its targets also resolve for hover and go-to-definition. Second slice of #84.
+
+- **A workspace package named like a standard-library anchor package can be namespace-imported
+  again.** `import Requirements::*` (or `Parts`, `Views`, `Actions`, `Items`, ... -- any of the
+  resolver's ~20 library anchor packages) over a workspace package of that name reported
+  `ambiguous_import_target`, and every reference that depended on the import then failed to
+  resolve. The library closure already declines to admit a library package a workspace package
+  shadows -- except anchor packages, which stay admitted so the generated library-specialization
+  rules can resolve `Requirements::RequirementCheck` and the like. Anchor resolution filters by
+  `SourceRole::StandardLibrary` and never consults the bare-name index, so the admitted anchor
+  root's bare name was pure downside. `build_direct_name_index` now excludes a standard-library
+  root a workspace root of the same name shadows; the shadowed root stays in storage for
+  role-filtered anchor resolution. Non-anchor library names (`ScalarValues`, ...) and qualified
+  member references were already unaffected. Fixes #159.
+
 ## [0.51.0] - 2026-09-06
 
 - **The bundled standard library is never diagnosed as a workspace document.** Opening any

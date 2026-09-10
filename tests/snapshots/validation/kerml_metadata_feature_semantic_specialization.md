@@ -1,6 +1,6 @@
 # META
 ~~~ini
-description=KerML checkMetadataFeatureSemanticSpecialization desired semantics
+description=KerML checkMetadataFeatureSemanticSpecialization desired semantics; a sibling `metadata` usage (no MetadataAnnotation reference) must not report the projection as unresolved
 source_expectation=accepted
 rule_family=check
 expectation=semantics
@@ -18,6 +18,7 @@ package Model {
   }
   feature annotated { @Command; }
   classifier AnnotatedClassifier { @Command; }
+  metadata usageNote : Command;
 }
 ~~~
 # EXPECTED SEMANTICS
@@ -49,7 +50,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5515c02c0540ae8ba289b743ccd7fc9bf83bccab791476d6b0d0b0899e4777b7") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:50a8312defa96c7173ff5624f18aa758687025bcbfff93d54f50974f5c7e27db") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::SemanticMetadata") (import (shape membership) (recursive false))))))
@@ -63,6 +64,7 @@ package Model {
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::annotated"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "annotated")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "Command")))))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::baseFeatures"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BaseClass")))))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::usageNote"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Command")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
@@ -89,6 +91,9 @@ package Model {
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::baseFeatures"))) (kind featureTyping) (ordinal 0))
       (authored-target "BaseClass")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::BaseClass")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::usageNote"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Command")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Command")))))
   )
   (relationships
     (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-classifier) (name "AnnotatedClassifier")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Command"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-classifier) (name "AnnotatedClassifier")) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0)))
@@ -98,6 +103,7 @@ package Model {
     (relationship (kind metaCastTarget) (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-metaclass) (name "Command")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/ker_ml.md") (qualified-name "KerML::Core::Feature"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-metaclass) (name "Command")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind metaCastTarget) (ordinal 0)))
     (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "annotated")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Command"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "annotated")) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::baseFeatures"))) (target (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::BaseClass"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::baseFeatures"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::usageNote"))) (target (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Command"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::usageNote"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::AnnotatedClassifier"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::AnnotatedClassifier"))) (target (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::BaseClass"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-classifier) (name "AnnotatedClassifier")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::metadataItems"))) (provenance implied))
@@ -111,6 +117,7 @@ package Model {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "annotated")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::metadataItems"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "annotated")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::annotated"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::baseFeatures"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::usageNote"))) (target (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::metadataItems"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-metaclass) (name "Command")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
@@ -155,6 +162,7 @@ package Model {
       (supertype (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::SemanticMetadata")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::usageNote")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-metaclass) (name "Command")) (anonymous (kind default-reference) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Command")))
@@ -228,12 +236,44 @@ package Model {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (subtype (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::annotated")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::usageNote")))
+      (type (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Command")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Command")) (source direct))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::MetadataItem")) (source inherited) (from (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::metadataItems"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::Metaobject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::metaobjects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (supertype (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Command")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::MetadataItem")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::metadataItems")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::Metaobject")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::SemanticMetadata")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::metaobjects")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+    )
 )
 ~~~
 # EXPRESSIONS
 ~~~sexpr
 (expressions
   (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-metaclass) (name "Command")) (anonymous (kind default-reference) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "baseFeatures" (target (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::baseFeatures"))))))
+)
+~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model"))) (form usage) (definition (resolved (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Command")))))
+  (annotation (element (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::AnnotatedClassifier"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Command")))))
+  (annotation (element (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::annotated"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Command")))))
 )
 ~~~
 # NAVIGATION
@@ -277,6 +317,11 @@ package Model {
   (query (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (range (start 3 25) (end 3 34)) (probe (position 3 25))
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::baseFeatures"))) (kind featureTyping) (ordinal 0) (authored-target "BaseClass")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::BaseClass")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (range (start 9 23) (end 9 30)) (probe (position 9 23))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::usageNote"))) (kind featureTyping) (ordinal 0) (authored-target "Command")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md") (qualified-name "Model::Command")))))
     )
   )
 )

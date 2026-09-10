@@ -327,6 +327,21 @@ package 'User Keyword Example' {
   (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "power low")) (anonymous (kind constraint) (ordinal 0))))) (outcome unsupported))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::battery old"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::device shutoff"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::power low"))) (form prefix-keyword) (definition unresolved))
+)
+~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connection) (end bare (feature (resolved (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::battery old"))))) (end bare (feature (resolved (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::power low"))))))
+  (connector (id (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (anonymous (kind bare-connect) (ordinal 1))))) (kind connection) (end bare (feature (resolved (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::power low"))))) (end bare (feature (resolved (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::device shutoff"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

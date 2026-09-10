@@ -238,6 +238,13 @@ standard library package DerivationConnections {
   (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalNotDerived"))) (outcome resolved) (unsupported (feature-reference "derivedRequirements" (target (node (document "memory://snapshot/derivation_connections.md") (path (named (kind library-package) (name "DerivationConnections")) (named (kind connection-def) (name "Derivation")) (anonymous (kind ref) (ordinal 0)))))) (feature-reference "originalRequirement" (target (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation::originalRequirement"))))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::derivations"))) (kind connection) (type (resolved (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections::Derivation")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

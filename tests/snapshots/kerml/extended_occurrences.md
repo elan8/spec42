@@ -477,6 +477,14 @@ package ExtendedOccurrences {
   (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (path (named (kind package) (name "ExtendedOccurrences")) (named (kind class-def) (name "ExtendedOccurrence")) (named (kind kerml-expression) (name "while")) (named (kind parameter) (name "result")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/extended_occurrences.md") (path (named (kind package) (name "ExtendedOccurrences")) (named (kind class-def) (name "ExtendedOccurrence")) (named (kind kerml-feature) (name "activeOccurrences")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind connection) (type unresolved) (end bare (feature unresolved)) (end bare (feature unresolved)))
+  (connector (id (node (document "memory://snapshot/extended_occurrences.md") (path (named (kind package) (name "ExtendedOccurrences")) (named (kind class-def) (name "ExtendedOccurrence")) (named (kind kerml-feature) (name "activePerformances")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind connection) (type unresolved) (end bare (feature unresolved)) (end bare (feature unresolved)))
+  (connector (id (node (document "memory://snapshot/extended_occurrences.md") (path (named (kind package) (name "ExtendedOccurrences")) (named (kind class-def) (name "ExtendedOccurrence")) (named (kind kerml-feature) (name "activeSuboccurrences")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind connection) (type unresolved) (end bare (feature unresolved)) (end bare (feature unresolved)))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

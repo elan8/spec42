@@ -543,6 +543,25 @@ library package AHFCoreLib {
   (declaration (id (node (document "memory://snapshot/ahfcore_lib.md") (path (named (kind library-package) (name "AHFCoreLib")) (named (kind extended-usage) (name "ArrowheadCore")) (named (kind extended-usage) (name "authorization")) (named (kind attribute) (name "protocol")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind string) (value "HTTP"))))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::ArrowheadCore"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::ArrowheadCore::authorization"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::ArrowheadCore::authorization::authorisation"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::ArrowheadCore::authorization_DD"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfcore_lib.md") (path (named (kind library-package) (name "AHFCoreLib")) (named (kind extended-usage) (name "ArrowheadCore")) (named (kind extended-usage) (name "authorization_DD")) (anonymous (kind extended-usage) (ordinal 0))))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfcore_lib.md") (path (named (kind library-package) (name "AHFCoreLib")) (named (kind extended-usage) (name "ArrowheadCore")) (named (kind extended-usage) (name "authorization_DD")) (anonymous (kind extended-usage) (ordinal 0)) (named (kind extended-usage) (name "authorisation_HTTP"))))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfcore_lib.md") (path (named (kind library-package) (name "AHFCoreLib")) (named (kind extended-usage) (name "ArrowheadCore")) (named (kind extended-usage) (name "authorization_DD")) (anonymous (kind extended-usage) (ordinal 0)) (named (kind extended-usage) (name "authorisation_MQTT"))))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::ArrowheadCore::orchestrationDesign"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::ArrowheadCore::service_registry"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::ArrowheadCore::service_registry::serviceDiscovery"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfcore_lib.md") (qualified-name "AHFCoreLib::ArrowheadCore::service_registry_DD"))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfcore_lib.md") (path (named (kind library-package) (name "AHFCoreLib")) (named (kind extended-usage) (name "ArrowheadCore")) (named (kind extended-usage) (name "service_registry_DD")) (anonymous (kind extended-usage) (ordinal 0))))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfcore_lib.md") (path (named (kind library-package) (name "AHFCoreLib")) (named (kind extended-usage) (name "ArrowheadCore")) (named (kind extended-usage) (name "service_registry_DD")) (anonymous (kind extended-usage) (ordinal 0)) (named (kind extended-usage) (name "serviceDiscovery_HTTP"))))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/ahfcore_lib.md") (path (named (kind library-package) (name "AHFCoreLib")) (named (kind extended-usage) (name "ArrowheadCore")) (named (kind extended-usage) (name "service_registry_DD")) (anonymous (kind extended-usage) (ordinal 0)) (named (kind extended-usage) (name "serviceDiscovery_MQTT"))))) (form prefix-keyword) (definition unresolved))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

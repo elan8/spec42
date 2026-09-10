@@ -383,6 +383,15 @@ package 'Filtering Example-1' {
   (declaration (id (node (document "memory://snapshot/40_filtering_example_1.md") (path (named (kind package) (name "Filtering Example-1")) (named (kind part) (name "vehicle")) (named (kind part) (name "wheelAssy")) (named (kind part) (name "antilockBrakes")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean false))))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/40_filtering_example_1.md") (qualified-name "Filtering Example-1::vehicle::bodyAssy::bumper"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/40_filtering_example_1.md") (qualified-name "Filtering Example-1::Safety")))) (value (redefines (resolved (node (document "memory://snapshot/40_filtering_example_1.md") (qualified-name "Filtering Example-1::Safety::isMandatory")))) (outcome resolved) (literal (value (kind boolean) (boolean true)))))
+  (annotation (element (node (document "memory://snapshot/40_filtering_example_1.md") (qualified-name "Filtering Example-1::vehicle::interior::driverAirBag"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/40_filtering_example_1.md") (qualified-name "Filtering Example-1::Safety")))) (value (redefines (resolved (node (document "memory://snapshot/40_filtering_example_1.md") (qualified-name "Filtering Example-1::Safety::isMandatory")))) (outcome resolved) (literal (value (kind boolean) (boolean false)))))
+  (annotation (element (node (document "memory://snapshot/40_filtering_example_1.md") (qualified-name "Filtering Example-1::vehicle::interior::seatBelt"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/40_filtering_example_1.md") (qualified-name "Filtering Example-1::Safety")))) (value (redefines (resolved (node (document "memory://snapshot/40_filtering_example_1.md") (qualified-name "Filtering Example-1::Safety::isMandatory")))) (outcome resolved) (literal (value (kind boolean) (boolean true)))))
+  (annotation (element (node (document "memory://snapshot/40_filtering_example_1.md") (qualified-name "Filtering Example-1::vehicle::wheelAssy::antilockBrakes"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/40_filtering_example_1.md") (qualified-name "Filtering Example-1::Safety")))) (value (redefines (resolved (node (document "memory://snapshot/40_filtering_example_1.md") (qualified-name "Filtering Example-1::Safety::isMandatory")))) (outcome resolved) (literal (value (kind boolean) (boolean false)))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

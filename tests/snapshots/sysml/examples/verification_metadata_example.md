@@ -204,6 +204,13 @@ package VerificationMetadataExample {
   (declaration (id (node (document "memory://snapshot/verification_metadata_example.md") (path (named (kind package) (name "VerificationMetadataExample")) (named (kind verification) (name "massTests")) (named (kind action) (name "weighVehicle")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "analyze" (target unresolved)))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample::massTests"))) (form annotating-member) (definition unresolved) (value (redefines unresolved) (outcome resolved) (unsupported (feature-reference "test" (target unresolved)) (feature-reference "demo" (target unresolved)))))
+  (annotation (element (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample::massTests::weighVehicle"))) (form annotating-member) (definition unresolved) (value (redefines unresolved) (outcome resolved) (feature-reference "analyze" (target unresolved))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

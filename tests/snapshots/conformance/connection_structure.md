@@ -261,6 +261,14 @@ package Structure {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming"))) (kind interface) (end (name (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::supplier"))) unconnected) (end (name (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Conforming::consumer"))) unconnected))
+  (connector (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType"))) (kind interface) (end (name (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType::supplier"))) unconnected) (end (name (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::EndWithoutAPortType::consumer"))) unconnected))
+  (connector (id (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "NotConnectable")) (anonymous (kind bare-connect) (ordinal 0))))) (kind connection) (end bare (feature (resolved (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::payload"))))) (end bare (feature (resolved (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::step"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

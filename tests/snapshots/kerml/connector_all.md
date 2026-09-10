@@ -135,6 +135,15 @@ package ConnectorAll {
 (types
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/connector_all.md") (path (named (kind package) (name "ConnectorAll")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind connection) (end bare (feature unresolved)) (end bare (feature unresolved)))
+  (connector (id (node (document "memory://snapshot/connector_all.md") (qualified-name "ConnectorAll::during"))) (kind connection) (type unresolved) (end bare (feature unresolved)) (end bare (feature unresolved)))
+  (connector (id (node (document "memory://snapshot/connector_all.md") (qualified-name "ConnectorAll::guardConstraint"))) (kind connection) (type unresolved) (end bare (feature unresolved)) (end bare (feature unresolved)))
+  (connector (id (node (document "memory://snapshot/connector_all.md") (qualified-name "ConnectorAll::x"))) (kind connection) (end bare (feature unresolved)) (end bare (feature unresolved)))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

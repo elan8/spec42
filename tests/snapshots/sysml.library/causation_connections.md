@@ -391,6 +391,15 @@ standard library package CausationConnections {
   (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::disjointCauseEffect"))) (outcome resolved) (unsupported (unsupported (feature-reference "causes" (target (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::causes")))) (feature-reference "effects" (target (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation::effects")))))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Causation"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::causations"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::multicausations"))) (kind connection) (type (resolved (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections::Multicausation")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

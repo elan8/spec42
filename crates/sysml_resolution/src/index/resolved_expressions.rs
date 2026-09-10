@@ -495,23 +495,36 @@ impl<D> SemanticModel<D> {
         let Some(element) = self.symbol_id(declaration) else {
             return self.query_outcome(QueryAnswer::Unresolved);
         };
+        match self.published_expression(declaration, element) {
+            Some(expression) => self.resolved_outcome(expression),
+            None => self.query_outcome(QueryAnswer::Unresolved),
+        }
+    }
+
+    /// Projects one declaration's settled expression row onto the published contract, or
+    /// [`ExpressionOutcome::NotApplicable`] when it authored no constraint / calc / value
+    /// expression. `None` only when a node span or identity cannot be projected (a broken
+    /// storage invariant). Shared by [`Self::resolved_expression`] and the metadata-annotation
+    /// query, which reads the value tree of each body entry.
+    pub(crate) fn published_expression(
+        &self,
+        declaration: DeclarationId,
+        element: SymbolId,
+    ) -> Option<PublishedExpression> {
         let Some(row) = self.resolved_expressions.row(declaration) else {
-            return self.resolved_outcome(PublishedExpression {
+            return Some(PublishedExpression {
                 element,
                 outcome: ExpressionOutcome::NotApplicable,
                 nodes: Box::default(),
                 root: None,
             });
         };
-        let projected: Option<Vec<ExpressionNode>> = row
+        let nodes: Vec<ExpressionNode> = row
             .nodes
             .iter()
             .map(|raw| self.project_expression_node(raw, row.document))
-            .collect();
-        let Some(nodes) = projected else {
-            return self.query_outcome(QueryAnswer::Unresolved);
-        };
-        self.resolved_outcome(PublishedExpression {
+            .collect::<Option<_>>()?;
+        Some(PublishedExpression {
             element,
             outcome: row.outcome,
             nodes: nodes.into_boxed_slice(),

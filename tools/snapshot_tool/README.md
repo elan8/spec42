@@ -24,8 +24,13 @@ source span is rendered in `SMG` only when the span itself is a named semantic f
 observed through those sections. This keeps formatting-only movement from obscuring semantic diffs.
 
 The canonical top-level section order is `META`, `SOURCE`, authored `EXPECTED DIAGNOSTICS` and
-`EXPECTED SEMANTICS`, `DIAGNOSTICS`, `SMG`, `TYPES`, `NAVIGATION`, with optional editor-query
-sections, `HOVER MARKDOWN`, and `GENERATED` last.
+`EXPECTED SEMANTICS`, `DIAGNOSTICS`, `SMG`, `TYPES`, `EXPRESSIONS`, `METADATA ANNOTATIONS`,
+`CONNECTIONS`, `NAVIGATION`, with optional editor-query sections, `HOVER MARKDOWN`, and
+`GENERATED` last.
+`EXPRESSIONS` is the resolved constraint / calc / value expression trees; `METADATA ANNOTATIONS`
+is every authored metadata annotation with its form, resolved definition, `about` targets, and
+body values; `CONNECTIONS` is every workspace `connect` / `interface` connector with its type
+and resolved ends. All three are omitted from fixtures that author none.
 `SOURCE` is authored; generated sections are rewritten to this order with one final newline.
 Semantic and reporting-result sections use canonical `sexpr` fences. `HOVER MARKDOWN` is the
 dedicated renderer projection and contains one labelled `markdown` fence per requested probe.

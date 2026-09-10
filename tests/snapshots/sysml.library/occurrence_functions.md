@@ -1192,6 +1192,14 @@ standard library package OccurrenceFunctions {
   (declaration (id (node (document "memory://snapshot/occurrence_functions.md") (path (named (kind library-package) (name "OccurrenceFunctions")) (named (kind kerml-behavior) (name "removeOldAt")) (named (kind kerml-step) (name "removeStep")) (named (kind kerml-feature) (name "seq")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "group" (target (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::removeOldAt::group")))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/occurrence_functions.md") (path (named (kind library-package) (name "OccurrenceFunctions")) (named (kind kerml-function) (name "create")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind connection) (type unresolved) (end bare (feature-chain (root (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::create::occ"))) (terminal unresolved) "occ::startShot")) (end bare (feature unresolved)))
+  (connector (id (node (document "memory://snapshot/occurrence_functions.md") (path (named (kind library-package) (name "OccurrenceFunctions")) (named (kind kerml-function) (name "destroy")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind connection) (type unresolved) (end bare (feature-chain (root (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::destroy::occ"))) (terminal unresolved) "occ::endShot")) (end bare (feature unresolved)))
+  (connector (id (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::isDuring::during"))) (kind connection) (type unresolved) (end bare (feature unresolved)) (end bare (feature (resolved (node (document "memory://snapshot/occurrence_functions.md") (qualified-name "OccurrenceFunctions::isDuring::occ"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

@@ -1869,6 +1869,17 @@ standard library package Transfers {
   (declaration (id (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (named (kind kerml-interaction) (name "Transfer")) (named (kind kerml-feature) (name "payloadNum")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "payload" (target (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::Transfer::payload"))))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::FlowTransfer::delivering"))) (kind connection) (type unresolved) (end bare (feature-chain (root (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::FlowTransfer::targetInputLink"))) (terminal unresolved) "targetInputLink::startShot")) (end bare (feature unresolved)))
+  (connector (id (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::FlowTransfer::moving"))) (kind connection) (type unresolved) (end bare (feature-chain (root (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::FlowTransfer::sourceOutputLink"))) (terminal unresolved) "sourceOutputLink::endShot")) (end bare (feature unresolved)))
+  (connector (id (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::FlowTransfer::pushing"))) (kind connection) (type unresolved) (end bare (feature-chain (root (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::FlowTransfer::sourceOutputLink"))) (terminal unresolved) "sourceOutputLink::startShot")) (end bare (feature unresolved)))
+  (connector (id (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::FlowTransfer::sending"))) (kind connection) (type unresolved) (end bare (feature unresolved)) (end bare (feature (resolved (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::FlowTransfer::sourceOutputLink"))))))
+  (connector (id (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::FlowTransfer::sourceOutputLink"))) (kind connection) (type unresolved))
+  (connector (id (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers::FlowTransfer::targetInputLink"))) (kind connection) (type unresolved))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

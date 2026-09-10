@@ -110,6 +110,12 @@ package Demo {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::link"))) (kind connection) (type (resolved (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Link")))) (end (name (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::link::source"))) (multiplicity (lower 1) (upper 1)) (feature (resolved (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::actualSource"))))) (end (name (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::link::target"))) (multiplicity (lower 1) (upper 1)) (feature (resolved (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::actualTarget"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

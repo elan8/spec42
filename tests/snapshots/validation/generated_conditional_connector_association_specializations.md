@@ -177,6 +177,12 @@ package ConnectorAssociationSpecializations {
     )
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/generated_conditional_connector_association_specializations.md") (qualified-name "ConnectorAssociationSpecializations::Holder::pair"))) (kind connection) (type (resolved (node (document "memory://snapshot/generated_conditional_connector_association_specializations.md") (qualified-name "ConnectorAssociationSpecializations::LinkObject")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

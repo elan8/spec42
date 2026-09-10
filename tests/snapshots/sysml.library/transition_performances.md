@@ -770,6 +770,13 @@ standard library package TransitionPerformances {
   (declaration (id (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (named (kind kerml-behavior) (name "TransitionPerformance")) (named (kind kerml-feature) (name "triggerTarget")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "this" (target unresolved)))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (named (kind kerml-behavior) (name "TransitionPerformance")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind connection) (end bare (feature (resolved (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLink"))))) (end bare (feature (resolved (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::trigger"))))))
+  (connector (id (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::guardConstraint"))) (kind connection) (type (resolved (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::TPCGuardConstraint")))) (end bare (feature (resolved (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLink"))))) (end bare (feature (resolved (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::guard"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

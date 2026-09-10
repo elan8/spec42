@@ -828,6 +828,12 @@ package TimeVaryingCarDriver {
   (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (path (named (kind package) (name "TimeVaryingCarDriver")) (named (kind kerml-structure) (name "Car1_")) (named (kind kerml-feature) (name "operated")) (anonymous (kind kerml-feature) (ordinal 0)) (named (kind kerml-feature) (name "isLicensed1")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
 )
 ~~~
+# CONNECTIONS
+~~~sexpr
+(connections
+  (connector (id (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car0::drive"))) (kind connection) (end bare (feature (resolved (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car0::engine"))))) (end bare (feature (resolved (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver::Car0::transmission"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
