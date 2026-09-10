@@ -54,13 +54,65 @@ fn cli_explain_diagnostic_returns_catalog_entry() {
 }
 
 #[test]
-fn cli_model_summary_is_validation_only_until_typed_projection_lands() {
+fn cli_model_summary_emits_the_typed_projection() {
     with_isolated_data_dir(|| {
         let path = kitchen_timer_path();
         let path = path.canonicalize().unwrap_or(path);
         let path_str = path.display().to_string();
 
-        let cli = run_spec42_json(&[
+        let full = run_spec42_json(&["model-summary", &path_str, "--format", "json"]);
+
+        assert_eq!(
+            full.get("summary")
+                .and_then(|s| s.get("error_count"))
+                .and_then(|v| v.as_u64()),
+            Some(0),
+            "expected no errors in KitchenTimer example"
+        );
+
+        let projection = full.get("projection").expect("projection object");
+        assert_eq!(
+            projection.get("schema_version").and_then(|v| v.as_u64()),
+            Some(1)
+        );
+        let envelope = projection.get("envelope").expect("envelope object");
+        assert_eq!(
+            envelope.get("phase").and_then(|v| v.as_str()),
+            Some("resolved")
+        );
+        assert_eq!(
+            envelope.get("complete").and_then(|v| v.as_bool()),
+            Some(true)
+        );
+        assert!(
+            envelope
+                .get("admitted")
+                .and_then(|a| a.get("standard_library"))
+                .and_then(|v| v.as_u64())
+                .is_some_and(|count| count > 0),
+            "the KitchenTimer example resolves against the bundled standard library"
+        );
+
+        let elements = projection
+            .get("elements")
+            .and_then(|v| v.as_array())
+            .expect("elements array");
+        assert!(!elements.is_empty(), "KitchenTimer has workspace elements");
+        assert!(
+            elements
+                .iter()
+                .all(|element| element.get("token").and_then(|v| v.as_str()).is_some()),
+            "every projected element carries a stable token"
+        );
+        let nodes_total = full
+            .get("truncation")
+            .and_then(|t| t.get("nodes_total"))
+            .and_then(|v| v.as_u64())
+            .expect("nodes_total");
+        assert_eq!(nodes_total, elements.len() as u64);
+
+        // `--max-nodes` bounds the element list and records the truncation.
+        let bounded = run_spec42_json(&[
             "model-summary",
             &path_str,
             "--max-nodes",
@@ -68,19 +120,28 @@ fn cli_model_summary_is_validation_only_until_typed_projection_lands() {
             "--format",
             "json",
         ]);
-
         assert_eq!(
-            cli.get("truncation")
+            bounded
+                .get("truncation")
                 .and_then(|t| t.get("nodes_returned"))
                 .and_then(|v| v.as_u64()),
-            Some(0)
+            Some(1)
         );
         assert_eq!(
-            cli.get("summary")
-                .and_then(|s| s.get("error_count"))
+            bounded
+                .get("truncation")
+                .and_then(|t| t.get("nodes_total"))
                 .and_then(|v| v.as_u64()),
-            Some(0),
-            "expected no errors in KitchenTimer example"
+            Some(nodes_total),
+            "the total is unbounded even when the returned list is truncated"
+        );
+        assert_eq!(
+            bounded
+                .get("projection")
+                .and_then(|p| p.get("elements"))
+                .and_then(|v| v.as_array())
+                .map(Vec::len),
+            Some(1)
         );
     });
 }

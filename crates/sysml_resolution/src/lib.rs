@@ -32,6 +32,7 @@ mod metadata_query;
 mod model;
 mod namespace_query;
 mod pipeline;
+mod projection;
 pub mod publication;
 mod qualified_reference;
 mod redefinition_query;
@@ -118,6 +119,10 @@ pub use metadata_query::{
 pub use model::query::VisibleMemberRef;
 pub use model::query::VisibleMembers;
 pub use namespace_query::{NamespaceDerivedElementCollection, NamespaceImportDerivedElement};
+pub use projection::{
+    AdmittedSourceCounts, ProjectedElement, ProjectionEnvelope, ProjectionPhase,
+    ProjectionTruncation, PublishedModelProjection, MODEL_PROJECTION_SCHEMA_VERSION,
+};
 pub use qualified_reference::{
     QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceTarget,
 };
@@ -1142,6 +1147,18 @@ impl PublishedResolution {
         self.model.connection_graph(root)
     }
 
+    /// A read-only, deterministic projection of this publication's workspace-authored structure:
+    /// every element with its full details and composed resolved facts, every connector, and a
+    /// publication envelope. `max_nodes` bounds the element list (and the per-element composition
+    /// work); use `usize::MAX` for the whole workspace.
+    pub fn model_projection(&self, max_nodes: usize) -> QueryOutcome<PublishedModelProjection> {
+        self.model.model_projection(
+            max_nodes,
+            *self.identity.source_digest(),
+            self.identity.model_digest(),
+        )
+    }
+
     /// The explicit applicability outcome for a closed named binding-connector validation.
     pub fn binding_connector_validation(
         &self,
@@ -1335,6 +1352,14 @@ impl DebugQueries<'_> {
 
     pub fn write_connections_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.write_connections_sexpr(output)
+    }
+
+    pub fn write_projection_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.write_projection_sexpr(
+            &self.identity.source_digest,
+            &self.identity.model_digest(),
+            output,
+        )
     }
 }
 

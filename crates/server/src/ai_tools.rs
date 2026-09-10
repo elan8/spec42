@@ -6,7 +6,9 @@ use serde::Serialize;
 
 use crate::cli::{CheckArgs, Cli, OutputFormat};
 use crate::diagnostic_catalog;
-use crate::{build_model_summary, perform_check, ModelSummaryResponse};
+use crate::{
+    build_model_summary, perform_check, perform_check_with_publication, ModelSummaryResponse,
+};
 
 #[derive(Debug, Clone)]
 pub struct ExplainDiagnosticArgs {
@@ -121,6 +123,6 @@ pub fn perform_model_summary(
         baseline: None,
         strict_diagnostics: false,
     };
-    let report = perform_check(cli, &check_args)?;
-    Ok(build_model_summary(report, args.max_nodes))
+    let (report, model) = perform_check_with_publication(cli, &check_args)?;
+    Ok(build_model_summary(report, &model, args.max_nodes))
 }

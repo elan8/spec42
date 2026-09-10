@@ -3287,6 +3287,100 @@ fn connection_graph_publishes_connectors_with_resolved_ends() {
     assert!(settled(published.connections(pump)).connectors.is_empty());
 }
 
+/// `model_projection` composes the per-element query groups into one deterministic whole-model
+/// answer: workspace-only elements in canonical order with their relationship families, resolved
+/// expression trees and metadata annotations, every connector, a publication envelope, and an
+/// explicit truncation record.
+#[test]
+fn model_projection_composes_elements_connectors_and_envelope() {
+    let published = publication_for(&[(
+        "memory://projection.sysml",
+        "package P {\n\
+         \tpart def Base;\n\
+         \tpart def Engine :> Base {\n\
+         \t\tattribute power;\n\
+         \t\tconstraint pos { power > 0 }\n\
+         \t}\n\
+         \tmetadata def Note { attribute note; }\n\
+         \tport def Pt;\n\
+         \tpart def Car {\n\
+         \t\t@Note { note = 1; }\n\
+         \t\tpart l : Engine { port p : Pt; }\n\
+         \t\tpart r : Engine { port p : Pt; }\n\
+         \t\tconnect l.p to r.p;\n\
+         \t}\n\
+         }",
+    )]);
+
+    let projection = settled(published.model_projection(usize::MAX));
+    assert_eq!(projection.schema_version, MODEL_PROJECTION_SCHEMA_VERSION);
+    assert_eq!(projection.envelope.phase, ProjectionPhase::Resolved);
+    assert!(projection.envelope.completeness.is_complete());
+    // No library admitted: every admitted document is workspace-authored.
+    assert_eq!(
+        projection.envelope.admitted,
+        AdmittedSourceCounts::default()
+    );
+
+    assert!(projection
+        .elements
+        .iter()
+        .all(|element| element.source == ElementSource::Workspace));
+    assert_eq!(
+        projection.truncation.elements_total,
+        projection.elements.len()
+    );
+    assert_eq!(
+        projection.truncation.elements_returned,
+        projection.elements.len()
+    );
+    assert!(!projection.truncation.is_truncated());
+
+    let find = |qualified: &str| {
+        let id = identity_of(&published, "memory://projection.sysml", qualified);
+        projection
+            .elements
+            .iter()
+            .find(|element| element.identity == id)
+            .unwrap_or_else(|| panic!("{qualified} not in projection"))
+    };
+
+    // The Engine part def carries its authored specialization of Base.
+    assert_eq!(
+        find("P::Engine").details.specialization.outcome,
+        RelationshipOutcome::Resolved
+    );
+    // The constraint's expression tree is resolved and carried inline.
+    let constraint = find("P::Engine::pos");
+    assert_eq!(constraint.expression.outcome, ExpressionOutcome::Resolved);
+    assert!(constraint.expression.root.is_some());
+    // A plain part def authored no expression.
+    assert_eq!(
+        find("P::Base").expression.outcome,
+        ExpressionOutcome::NotApplicable
+    );
+    // The Car part def carries the `@Note` metadata annotation.
+    assert_eq!(find("P::Car").metadata_annotations.len(), 1);
+
+    // The `connect l.p to r.p` connector is projected once, whole-workspace.
+    assert_eq!(projection.connectors.len(), 1);
+    assert_eq!(projection.connectors[0].kind, ConnectorKind::Connection);
+    assert_eq!(projection.connectors[0].ends.len(), 2);
+
+    // `max_nodes` bounds the element list and records the truncation; the envelope and
+    // connectors are unaffected by the bound.
+    let truncated = settled(published.model_projection(3));
+    assert_eq!(truncated.elements.len(), 3);
+    assert_eq!(truncated.truncation.elements_returned, 3);
+    assert_eq!(
+        truncated.truncation.elements_total,
+        projection.truncation.elements_total
+    );
+    assert!(truncated.truncation.is_truncated());
+    assert_eq!(truncated.connectors.len(), 1);
+    assert_eq!(truncated.envelope.phase, ProjectionPhase::Resolved);
+}
+
 #[test]
 fn binding_connector_checks_are_manifest_scoped_and_preserve_first_missing_prerequisite() {
     let published = publication_for(&[(

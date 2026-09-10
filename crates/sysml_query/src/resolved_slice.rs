@@ -6,54 +6,57 @@ use crate::source::Url;
 
 pub use sysml_resolution::{
     requirement_collection_from_kind, ActionDerivedFactCollection, ActionDerivedFactKind,
-    ActionDerivedFactOutcome, ActionDerivedFactPrerequisite, AffectedDocument, AnalysisEvaluation,
-    AnnotationForm, AuthoredUnit, AuthoredValue, BindingConnector, BindingConnectorCheckKind,
-    BindingConnectorValidationOutcome, BindingConnectorValidationPrerequisite, BuildMeasurements,
-    Conformance, ConformanceObstacle, ConnectedElement, ConnectorEndpoint, ConnectorKind,
-    DefinitionUsageDerivedKind, DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite,
-    DerivedElementOwner, Diagnostic, DiagnosticCategory, DiagnosticCode, DiagnosticLocation,
-    DiagnosticOrigin, DiagnosticSeverity, DiagramCompartment, DiagramCompartmentKind,
-    DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind, DiagramElement,
-    DiagramElementTyping, DiagramEndpointOccurrence, DiagramIncompleteReason,
-    DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
-    DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
-    DiagramSequenceEndpoint, DiagramSequenceMessage, DiagramSequenceOrder, DiagramSequenceScene,
-    DiagramStateTransition, DiagramStateTransitionScene, DiagramStateVertex,
-    DiagramStateVertexKind, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
-    DiagramViewProjection, DocumentId, DocumentToken, Documentation, EffectiveType,
-    EffectiveTypeEntry, EffectiveTypeOrigin, EffectiveTyping,
-    ElementDerivedDocumentationCollection, ElementDetails, ElementDetailsAt, ElementEvaluation,
-    ElementInspection, ElementInspectionAt, ElementKind, ElementModifier, ElementRelationship,
-    ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure, EvaluationState,
-    ExpectedMeasurement, ExpressionNode, ExpressionNodeKind, ExpressionOperator, ExpressionOutcome,
-    FeatureDerivedRelationshipCollection, FeatureDirection, InheritedFeature,
-    LibrarySpecializationAnchorBranch, MembershipFacts, MembershipId, MembershipKind,
-    MembershipRelationship, MembershipRole, MetadataAnnotationForm, MetadataAnnotationValue,
-    MultiplicityBound, MultiplicityFacts, NamespaceDerivedElementCollection,
-    NamespaceImportDerivedElement, NavigationTarget, OccurrenceRole, PortionKind,
-    PublicationCompleteness, PublicationIdentity, PublicationModelDigest, PublicationObstacle,
-    PublishedConnectionGraph, PublishedConnector, PublishedConnectorEnd, PublishedDiagnostics,
-    PublishedElement, PublishedExpression, PublishedMetadataAnnotation, QualifiedElementReference,
-    QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryAnswer, QueryOutcome,
-    RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt,
-    ReferencedDetails, RelatedLocation, RelationshipFamily, RelationshipOutcome,
-    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
-    RequirementDerivedFactCollection, RequirementDerivedFactKind, RequirementDerivedFactOutcome,
-    RequirementDerivedFactPrerequisite, RequirementUsageTyping, RequirementVerification,
-    ResolvedUnit, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
-    SpecializationCheckKind, SpecializationCheckOutcome, SpecializationCheckPrerequisite,
-    SpecializationScope, StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId,
-    SymbolToken, TextId, TextPosition, TextRange, TypeDerivedElementCollection,
-    TypeDerivedFactCollection, TypeDerivedFactKind, TypeDerivedFactOutcome,
-    TypeDerivedFactPrerequisite, TypeDerivedFactValue, TypeDerivedRelationshipCollection,
-    TypeFeaturingCheckKind, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
-    TypeReference, UnitResolution, ValueKind, VerificationOutcome, VerificationRequirement,
-    Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
+    ActionDerivedFactOutcome, ActionDerivedFactPrerequisite, AdmittedSourceCounts,
+    AffectedDocument, AnalysisEvaluation, AnnotationForm, AuthoredUnit, AuthoredValue,
+    BindingConnector, BindingConnectorCheckKind, BindingConnectorValidationOutcome,
+    BindingConnectorValidationPrerequisite, BuildMeasurements, Conformance, ConformanceObstacle,
+    ConnectedElement, ConnectorEndpoint, ConnectorKind, DefinitionUsageDerivedKind,
+    DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivedElementOwner,
+    Diagnostic, DiagnosticCategory, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin,
+    DiagnosticSeverity, DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance,
+    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence,
+    DiagramIncompleteReason, DiagramOccurrenceIdentity, DiagramRelationship,
+    DiagramRelationshipEndpoint, DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene,
+    DiagramSemanticReference, DiagramSequenceEndpoint, DiagramSequenceMessage,
+    DiagramSequenceOrder, DiagramSequenceScene, DiagramStateTransition,
+    DiagramStateTransitionScene, DiagramStateVertex, DiagramStateVertexKind,
+    DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind, DiagramViewProjection,
+    DocumentId, DocumentToken, Documentation, EffectiveType, EffectiveTypeEntry,
+    EffectiveTypeOrigin, EffectiveTyping, ElementDerivedDocumentationCollection, ElementDetails,
+    ElementDetailsAt, ElementEvaluation, ElementInspection, ElementInspectionAt, ElementKind,
+    ElementModifier, ElementRelationship, ElementSearch, ElementSource, EvaluatedScalar,
+    EvaluationFailure, EvaluationState, ExpectedMeasurement, ExpressionNode, ExpressionNodeKind,
+    ExpressionOperator, ExpressionOutcome, FeatureDerivedRelationshipCollection, FeatureDirection,
+    InheritedFeature, LibrarySpecializationAnchorBranch, MembershipFacts, MembershipId,
+    MembershipKind, MembershipRelationship, MembershipRole, MetadataAnnotationForm,
+    MetadataAnnotationValue, MultiplicityBound, MultiplicityFacts,
+    NamespaceDerivedElementCollection, NamespaceImportDerivedElement, NavigationTarget,
+    OccurrenceRole, PortionKind, ProjectedElement, ProjectionEnvelope, ProjectionPhase,
+    ProjectionTruncation, PublicationCompleteness, PublicationIdentity, PublicationModelDigest,
+    PublicationObstacle, PublishedConnectionGraph, PublishedConnector, PublishedConnectorEnd,
+    PublishedDiagnostics, PublishedElement, PublishedExpression, PublishedMetadataAnnotation,
+    PublishedModelProjection, QualifiedElementReference, QualifiedReferenceOutcome,
+    QualifiedReferenceTarget, QueryAnswer, QueryOutcome, RedefinitionCheckKind,
+    RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt, ReferencedDetails,
+    RelatedLocation, RelationshipFamily, RelationshipOutcome, RelationshipProvenance,
+    RelationshipTarget, RenameOutcome, RequirementConstraintKind, RequirementDerivedFactCollection,
+    RequirementDerivedFactKind, RequirementDerivedFactOutcome, RequirementDerivedFactPrerequisite,
+    RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
+    SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationCheckKind,
+    SpecializationCheckOutcome, SpecializationCheckPrerequisite, SpecializationScope,
+    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId, SymbolToken, TextId,
+    TextPosition, TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection,
+    TypeDerivedFactKind, TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
+    TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
+    TypeFeaturingCheckPrerequisite, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
+    VerificationRequirement, Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
 };
 
 pub use sysml_resolution::source::RootDigest;
 /// Provenance of an admitted source; the one enum the source authority defines.
 pub use sysml_resolution::source::SourceKind;
+/// The schema version [`PublishedModel::projection`] is recorded under.
+pub use sysml_resolution::MODEL_PROJECTION_SCHEMA_VERSION;
 
 /// Opaque published semantic state. Share it behind `Arc`; do not duplicate its owner.
 ///
@@ -182,6 +185,10 @@ impl PublishedModel {
 
     pub fn structure(&self) -> StructureQueries<'_> {
         StructureQueries { model: &self.inner }
+    }
+
+    pub fn projection(&self) -> ProjectionQueries<'_> {
+        ProjectionQueries { model: &self.inner }
     }
 
     pub fn diagnostics(&self) -> DiagnosticQueries<'_> {
@@ -377,6 +384,23 @@ impl StructureQueries<'_> {
     /// expression.
     pub fn expression(&self, symbol: SymbolId) -> QueryOutcome<PublishedExpression> {
         self.model.resolved_expression(symbol)
+    }
+}
+
+/// The whole-model projection: every workspace element with its full details and composed
+/// resolved facts, every connector, and a publication envelope, as one deterministic answer.
+///
+/// The composition of the per-element query groups, not a new derivation. Read-only: there is no
+/// element-mutation surface here, and this is not the OMG Systems Modeling API JSON.
+pub struct ProjectionQueries<'a> {
+    model: &'a sysml_resolution::PublishedResolution,
+}
+
+impl ProjectionQueries<'_> {
+    /// `max_nodes` bounds the element list and the per-element composition work; pass
+    /// `usize::MAX` for the whole workspace.
+    pub fn model(&self, max_nodes: usize) -> QueryOutcome<PublishedModelProjection> {
+        self.model.model_projection(max_nodes)
     }
 }
 
@@ -893,6 +917,10 @@ impl DebugQueries<'_> {
 
     pub fn write_connections_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
         self.model.debug().write_connections_sexpr(output)
+    }
+
+    pub fn write_projection_sexpr(&self, output: &mut dyn fmt::Write) -> fmt::Result {
+        self.model.debug().write_projection_sexpr(output)
     }
 
     pub fn write_editor_queries_sexpr(

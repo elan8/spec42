@@ -56,6 +56,23 @@ pub fn validate_paths(
     built_workspace::validate_paths(engine, hooks, request)
 }
 
+/// Validates `request.targets` and also returns the publication the report came from, for a
+/// caller that needs the resolved structure (`model-summary`'s typed projection) without a
+/// second build.
+pub fn validate_and_publish_paths(
+    engine: &Spec42Engine,
+    hooks: &[PipelineHook],
+    request: ValidationRequest,
+) -> Result<
+    (
+        HostValidationReport,
+        std::sync::Arc<sysml_query::resolved_slice::PublishedModel>,
+    ),
+    String,
+> {
+    built_workspace::validate_and_publish_paths(engine, hooks, request)
+}
+
 pub use built_workspace::{
     built_workspace_input_from_snapshot, report_from_built_workspace, BuiltWorkspaceInput,
 };

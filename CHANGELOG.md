@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`spec42 model-summary --format json` now emits a typed structural projection of the
+  publication (#157).** The command's `nodes_total: 0` placeholder is gone: it now carries a
+  read-only, deterministic, `schema_version`-stamped `projection` of the workspace's resolved
+  structure. New `sysml_query` query group `PublishedModel::projection().model(max_nodes)`
+  returns a `PublishedModelProjection` that composes the existing per-element query groups --
+  `element_details`, the `#84` resolved-expression / metadata-annotation / connection families
+  -- into one whole-model answer: every workspace-authored element in canonical order with its
+  relationship families, resolved expression tree and metadata annotations; every `connect` /
+  `interface` connector; and a publication envelope (phase, completeness, evaluation state,
+  admitted standard-library / library / external counts, source and model digests). It adds no
+  analysis and holds no new state. Admitted libraries are reported as counts, not enumerated.
+  The facade contract is an in-process `SymbolId` value; `crates/server` owns the JSON
+  materialisation (a `SymbolToken` per identity, interned text per `TextId` handle). `--max-nodes`
+  bounds the element list and the per-element composition work, with an explicit `truncation`
+  record. This is the serialisation format the read-only Python SDK (#52) will bind; it is not
+  the OMG Systems Modeling API JSON and carries no element-mutation surface.
+
 ## [0.52.0] - 2026-09-10
 
 - **The standard-library ratchet no longer reports 21 Spec42 false positives (#135).** SysML

@@ -95,17 +95,26 @@ function formatModelSummaryResult(data: unknown): string {
   const root = asRecord(data);
   const summary = asRecord(root?.summary);
   const trunc = asRecord(root?.truncation);
-  const nodes = Array.isArray(root?.nodes) ? root.nodes : [];
+  const projection = asRecord(root?.projection);
+  const envelope = asRecord(projection?.envelope);
+  const elements = Array.isArray(projection?.elements) ? projection.elements : [];
+  const connectors = Array.isArray(projection?.connectors) ? projection.connectors : [];
   const lines: string[] = [
     `Model summary: ${summary?.error_count ?? 0} error(s), ${summary?.warning_count ?? 0} warning(s).`,
-    `Nodes ${trunc?.nodes_returned ?? nodes.length}/${trunc?.nodes_total ?? "?"}, relationships ${trunc?.relationships_returned ?? 0}/${trunc?.relationships_total ?? "?"}.`,
+    `Elements ${trunc?.nodes_returned ?? elements.length}/${trunc?.nodes_total ?? "?"}, connectors ${connectors.length}.`,
   ];
-  const names = nodes
+  if (envelope) {
+    const admitted = asRecord(envelope.admitted);
+    lines.push(
+      `Publication: ${envelope.complete ? "complete" : "incomplete"}, schema v${projection?.schema_version ?? "?"}, admitted stdlib ${admitted?.standard_library ?? 0} / library ${admitted?.library ?? 0}.`,
+    );
+  }
+  const names = elements
     .slice(0, 5)
-    .map((n) => asRecord(n)?.qualified_name)
-    .filter((n): n is string => typeof n === "string");
+    .map((element) => asRecord(element)?.qualified_name)
+    .filter((name): name is string => typeof name === "string");
   if (names.length > 0) {
-    lines.push(`Sample nodes: ${names.join(", ")}`);
+    lines.push(`Sample elements: ${names.join(", ")}`);
   }
   return lines.join("\n");
 }

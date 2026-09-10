@@ -23,6 +23,7 @@ use crate::metadata_query::MetadataAnnotationValue;
 use crate::metadata_query::PublishedMetadataAnnotation;
 use crate::model::element_kind;
 use crate::model::render as writer;
+use crate::model::resolver::PublicationPhase;
 use crate::model::resolver::ResolvedSemanticModel;
 use crate::model::resolver::SemanticModel;
 use crate::model::span::document_range;
@@ -34,6 +35,13 @@ use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::namespace_query::NamespaceDerivedElementCollection;
 use crate::namespace_query::NamespaceImportDerivedElement;
+use crate::projection::AdmittedSourceCounts;
+use crate::projection::ProjectedElement;
+use crate::projection::ProjectionEnvelope;
+use crate::projection::ProjectionPhase;
+use crate::projection::ProjectionTruncation;
+use crate::projection::PublishedModelProjection;
+use crate::projection::MODEL_PROJECTION_SCHEMA_VERSION;
 use crate::redefinition_query::RedefinitionCheckKind;
 use crate::redefinition_query::RedefinitionCheckOutcome;
 use crate::redefinition_query::RedefinitionCheckPrerequisite;
@@ -116,6 +124,7 @@ use crate::Diagnostic;
 use crate::Documentation;
 use crate::ElementDerivedDocumentationCollection;
 use crate::ElementRelationship;
+use crate::ElementSource;
 use crate::ExpressionOutcome;
 use crate::FeatureDerivedRelationshipCollection;
 use crate::LibrarySpecializationAnchorBranch;
@@ -136,6 +145,8 @@ use crate::SymbolToken;
 use crate::TextPosition;
 use crate::TextRange;
 
+use source_identity::PublicationModelDigest;
+use source_identity::RootDigest;
 use source_identity::SourceRole;
 use spec42_constraint_manifest::ElementDerivedOwnerKind;
 use spec42_constraint_manifest::NamespaceImportDerivedElementKind;
@@ -891,6 +902,15 @@ impl ResolvedSemanticModel {
         output: &mut dyn std::fmt::Write,
     ) -> std::fmt::Result {
         writer::write_connections_only(self, output)
+    }
+
+    pub(crate) fn write_projection_sexpr(
+        &self,
+        source_digest: &source_identity::RootDigest,
+        model_digest: &source_identity::PublicationModelDigest,
+        output: &mut dyn std::fmt::Write,
+    ) -> std::fmt::Result {
+        writer::write_projection_only(self, source_digest, model_digest, output)
     }
 }
 
@@ -3163,6 +3183,100 @@ impl<D> SemanticModel<D> {
         }
     }
 
+    /// The whole-workspace projection: every workspace element with its full details and composed
+    /// resolved facts, every connector, and a publication envelope.
+    ///
+    /// Adds no analysis -- it composes [`Self::all_elements`], [`Self::element_details`],
+    /// [`Self::resolved_expression`], [`Self::metadata_annotation_details`] and
+    /// [`Self::all_connectors`], each of which reads facts the publication already settled. Per
+    /// element the composition is done only for the `max_nodes` that are returned, so the cost is
+    /// proportional to the bounded output.
+    pub(crate) fn model_projection(
+        &self,
+        max_nodes: usize,
+        source_digest: RootDigest,
+        model_digest: PublicationModelDigest,
+    ) -> QueryOutcome<PublishedModelProjection> {
+        let workspace_elements = match self.all_elements().answer {
+            QueryAnswer::Resolved(elements) => elements,
+            _ => return self.query_outcome(QueryAnswer::Incomplete),
+        };
+        let workspace_elements = workspace_elements
+            .iter()
+            .filter(|element| element.source == ElementSource::Workspace)
+            .collect::<Vec<_>>();
+        let elements_total = workspace_elements.len();
+
+        let mut elements = Vec::new();
+        for published in workspace_elements.into_iter().take(max_nodes) {
+            let symbol = published.entry.identity;
+            let details = match self.element_details(symbol).answer {
+                QueryAnswer::Resolved(details) => details,
+                // A workspace declaration with no settled details only happens for a publication
+                // that did not converge; the outcome completeness carries that.
+                _ => continue,
+            };
+            let expression = match self.resolved_expression(symbol).answer {
+                QueryAnswer::Resolved(expression) => expression,
+                _ => PublishedExpression {
+                    element: symbol,
+                    outcome: ExpressionOutcome::NotApplicable,
+                    nodes: Box::default(),
+                    root: None,
+                },
+            };
+            let metadata_annotations = match self.metadata_annotation_details(symbol).answer {
+                QueryAnswer::Resolved(annotations) => annotations,
+                _ => Box::default(),
+            };
+            elements.push(ProjectedElement {
+                identity: symbol,
+                source: ElementSource::Workspace,
+                details,
+                expression,
+                metadata_annotations,
+            });
+        }
+        let elements_returned = elements.len();
+
+        let envelope = ProjectionEnvelope {
+            phase: match self.metadata.phase {
+                PublicationPhase::Resolved => ProjectionPhase::Resolved,
+            },
+            completeness: self.metadata.completeness,
+            has_evaluation: self.metadata.has_evaluation,
+            source_digest,
+            model_digest,
+            admitted: self.admitted_source_counts(),
+        };
+
+        self.resolved_outcome(PublishedModelProjection {
+            schema_version: MODEL_PROJECTION_SCHEMA_VERSION,
+            envelope,
+            elements: elements.into_boxed_slice(),
+            connectors: self.all_connectors(),
+            truncation: ProjectionTruncation {
+                elements_total,
+                elements_returned,
+            },
+        })
+    }
+
+    /// How many admitted documents are non-workspace, by provenance. Mirrors the tally
+    /// `render::write_admitted_sources` renders for the SMG section.
+    fn admitted_source_counts(&self) -> AdmittedSourceCounts {
+        let mut counts = AdmittedSourceCounts::default();
+        for document in self.storage.documents.iter() {
+            match document.role {
+                SourceRole::Workspace => {}
+                SourceRole::StandardLibrary => counts.standard_library += 1,
+                SourceRole::Library => counts.library += 1,
+                SourceRole::External => counts.external += 1,
+            }
+        }
+        counts
+    }
+
     /// The `connect` / `interface` topology reachable from one element: every connector it owns
     /// (directly or transitively), each with its `:` type and resolved ends.
     ///
@@ -3178,50 +3292,34 @@ impl<D> SemanticModel<D> {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
         };
+        let connectors =
+            self.projected_connectors(|id| self.is_descendant_or_self(root_declaration, id));
+        self.resolved_outcome(PublishedConnectionGraph { root, connectors })
+    }
+
+    /// Every workspace `connect` / `interface` connector in the publication, canonically ordered.
+    ///
+    /// The whole-workspace form of [`Self::connection_graph`], for the model projection. Not
+    /// root-scoped: every connector, each with the same resolved ends `connection_graph` reports.
+    pub(crate) fn all_connectors(&self) -> Box<[PublishedConnector]> {
+        self.projected_connectors(|_| true)
+    }
+
+    /// Projects every connector declaration that `keep` admits, in canonical order.
+    fn projected_connectors(
+        &self,
+        keep: impl Fn(DeclarationId) -> bool,
+    ) -> Box<[PublishedConnector]> {
         let mut connectors = self
             .storage
             .declarations
             .iter()
             .enumerate()
             .filter_map(|(index, declaration)| {
-                let kind = connector_kind(declaration.kind)?;
+                connector_kind(declaration.kind)?;
                 let id = DeclarationId::from_index(index).ok()?;
-                // A named connector end reuses `DeclarationKind::ConnectionUsage`; it is not
-                // itself a connector.
-                if self
-                    .storage
-                    .declaration_facts(id)
-                    .and_then(|facts| facts.positional_end)
-                    .is_some()
-                {
-                    return None;
-                }
-                let document = self.storage.document(declaration.document)?;
-                if document.role != SourceRole::Workspace {
-                    return None;
-                }
-                if !self.is_descendant_or_self(root_declaration, id) {
-                    return None;
-                }
-                Some(PublishedConnector {
-                    identity: self.symbol_id(id)?,
-                    kind,
-                    declared_type: self
-                        .outgoing_reference_ids(id)
-                        .iter()
-                        .find(|reference_id| {
-                            self.storage
-                                .references
-                                .get(reference_id.index())
-                                .is_some_and(|reference| {
-                                    reference.kind == ReferenceKind::FeatureTyping
-                                })
-                        })
-                        .map(|reference_id| self.settled_relationship_target(*reference_id))
-                        .unwrap_or(RelationshipTarget::Unsupported),
-                    ends: self.connector_ends(id),
-                    location: self.source_location(id)?,
-                })
+                keep(id).then_some(())?;
+                self.project_connector(id)
             })
             .collect::<Vec<_>>();
         connectors.sort_by(|left, right| {
@@ -3229,9 +3327,44 @@ impl<D> SemanticModel<D> {
                 .then_with(|| left.location.range.cmp(&right.location.range))
                 .then_with(|| left.identity.cmp(&right.identity))
         });
-        self.resolved_outcome(PublishedConnectionGraph {
-            root,
-            connectors: connectors.into_boxed_slice(),
+        connectors.into_boxed_slice()
+    }
+
+    /// One connector's type and resolved ends, or `None` for a declaration that is not a
+    /// projectable workspace connector (wrong kind, a named end reusing
+    /// `DeclarationKind::ConnectionUsage`, or a non-workspace document).
+    fn project_connector(&self, id: DeclarationId) -> Option<PublishedConnector> {
+        let declaration = self.storage.declaration(id)?;
+        let kind = connector_kind(declaration.kind)?;
+        // A named connector end reuses `DeclarationKind::ConnectionUsage`; it is not itself a
+        // connector.
+        if self
+            .storage
+            .declaration_facts(id)
+            .and_then(|facts| facts.positional_end)
+            .is_some()
+        {
+            return None;
+        }
+        if self.storage.document(declaration.document)?.role != SourceRole::Workspace {
+            return None;
+        }
+        Some(PublishedConnector {
+            identity: self.symbol_id(id)?,
+            kind,
+            declared_type: self
+                .outgoing_reference_ids(id)
+                .iter()
+                .find(|reference_id| {
+                    self.storage
+                        .references
+                        .get(reference_id.index())
+                        .is_some_and(|reference| reference.kind == ReferenceKind::FeatureTyping)
+                })
+                .map(|reference_id| self.settled_relationship_target(*reference_id))
+                .unwrap_or(RelationshipTarget::Unsupported),
+            ends: self.connector_ends(id),
+            location: self.source_location(id)?,
         })
     }
 

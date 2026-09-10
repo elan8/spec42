@@ -14,6 +14,7 @@ pub mod host_snapshot;
 pub mod kpar_libraries;
 pub mod library_bundle;
 pub mod library_status_rpc;
+pub mod model_projection;
 pub mod reports;
 pub mod starter_workspace;
 pub mod stdlib;
@@ -33,7 +34,10 @@ use environment::{build_doctor_report, build_engine, resolve_environment};
 use reports::{apply_baseline, emit_validation_report};
 use serde::Serialize;
 use stdlib::{managed_status, remove_standard_library};
-use workspace::{validate_paths, HostValidationReport, HostValidationSummary, ValidationRequest};
+use sysml_query::resolved_slice::PublishedModel;
+use workspace::{
+    validate_and_publish_paths, HostValidationReport, HostValidationSummary, ValidationRequest,
+};
 
 /// Run validation for the given CLI environment and [`CheckArgs`] (same logic as `spec42 check`).
 ///
@@ -41,9 +45,18 @@ use workspace::{validate_paths, HostValidationReport, HostValidationSummary, Val
 /// nothing to it: a workspace that needs library roots says so through the diagnostics the
 /// publication settled, which is what the advice is derived from.
 pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<HostValidationReport, String> {
+    Ok(perform_check_with_publication(cli, args)?.0)
+}
+
+/// Like [`perform_check`], but also returns the publication the report was assembled from, for a
+/// caller that needs the resolved structure (`model-summary`'s typed projection).
+pub fn perform_check_with_publication(
+    cli: &Cli,
+    args: &CheckArgs,
+) -> Result<(HostValidationReport, Arc<PublishedModel>), String> {
     let environment = resolve_environment(cli)?;
     let engine = build_engine(cli)?;
-    validate_paths(
+    validate_and_publish_paths(
         &engine,
         &[],
         ValidationRequest {
@@ -64,36 +77,40 @@ pub fn perform_doctor(cli: &Cli) -> Result<DoctorReport, String> {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ModelSummaryTruncation {
+    /// Workspace-authored elements in the publication.
     pub nodes_total: usize,
+    /// Elements carried in `projection.elements`; less than `nodes_total` when `--max-nodes`
+    /// bounded the list.
     pub nodes_returned: usize,
-    pub relationships_total: usize,
-    pub relationships_returned: usize,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Serialize)]
 pub struct ModelSummaryResponse {
     pub workspace_root: Option<String>,
     pub summary: HostValidationSummary,
     pub truncation: ModelSummaryTruncation,
+    /// The typed, `schema_version`-stamped projection of the publication's workspace-authored
+    /// structure. Read-only; see `sysml_query`'s `projection` contract.
+    pub projection: model_projection::ModelProjectionJson,
 }
 
-/// Narrow summary while a typed model-summary projection is defined.
+/// The bounded typed model summary: the validation summary plus the read-only projection of the
+/// publication (#157). `max_nodes` bounds the projected element list.
 pub fn build_model_summary(
     report: HostValidationReport,
-    _max_nodes: usize,
+    model: &PublishedModel,
+    max_nodes: usize,
 ) -> ModelSummaryResponse {
-    // TODO(follow-up): expose a bounded typed summary from PublishedModel. Do not recreate the
-    // retired graph DTO here; until that owner exists, diagnostics are the complete supported
-    // result and semantic nodes/relationships are explicitly absent.
+    let projection = model_projection::model_projection_json(model, max_nodes);
+    let truncation = ModelSummaryTruncation {
+        nodes_total: projection.truncation.elements_total,
+        nodes_returned: projection.truncation.elements_returned,
+    };
     ModelSummaryResponse {
         workspace_root: report.workspace_root,
         summary: report.summary,
-        truncation: ModelSummaryTruncation {
-            nodes_total: 0,
-            nodes_returned: 0,
-            relationships_total: 0,
-            relationships_returned: 0,
-        },
+        truncation,
+        projection,
     }
 }
 
@@ -708,13 +725,31 @@ fn print_model_summary(summary: &ModelSummaryResponse) {
         summary.summary.warning_count,
         summary.summary.information_count
     );
+    let envelope = &summary.projection.envelope;
     println!(
-        "nodes: {}/{} (truncated)",
-        summary.truncation.nodes_returned, summary.truncation.nodes_total
+        "publication: {}{}, evaluation {}",
+        if envelope.complete {
+            "complete"
+        } else {
+            "incomplete"
+        },
+        if envelope.obstacles.is_empty() {
+            String::new()
+        } else {
+            format!(" ({})", envelope.obstacles.join(","))
+        },
+        if envelope.has_evaluation { "on" } else { "off" },
     );
     println!(
-        "relationships: {}/{}",
-        summary.truncation.relationships_returned, summary.truncation.relationships_total
+        "elements: {}/{}, connectors: {} (projection schema v{})",
+        summary.truncation.nodes_returned,
+        summary.truncation.nodes_total,
+        summary.projection.connectors.len(),
+        summary.projection.schema_version,
+    );
+    println!(
+        "admitted libraries: standard {} / library {} / external {}",
+        envelope.admitted.standard_library, envelope.admitted.library, envelope.admitted.external,
     );
 }
 

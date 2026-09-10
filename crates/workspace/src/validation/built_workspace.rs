@@ -60,6 +60,18 @@ pub(super) fn validate_paths(
     hooks: &[PipelineHook],
     request: ValidationRequest,
 ) -> Result<HostValidationReport, String> {
+    Ok(validate_and_publish_paths(engine, hooks, request)?.0)
+}
+
+/// Like [`validate_paths`], but also returns the publication the report was assembled from.
+///
+/// The batch path publishes once; a caller that needs the resolved structure (`model-summary`'s
+/// typed projection) reads it from this `PublishedModel` rather than triggering a second build.
+pub(super) fn validate_and_publish_paths(
+    engine: &Spec42Engine,
+    hooks: &[PipelineHook],
+    request: ValidationRequest,
+) -> Result<(HostValidationReport, Arc<PublishedModel>), String> {
     let workspace_root = resolve_workspace_root(&request)?;
     let target = request
         .targets
@@ -83,7 +95,9 @@ pub(super) fn validate_paths(
         .map_err(|error| error.to_string())?;
 
     let built = built_workspace_input_from_snapshot(&snapshot);
-    report_from_built_workspace(hooks, &built, request)
+    let published_model = Arc::clone(&built.published_model);
+    let report = report_from_built_workspace(hooks, &built, request)?;
+    Ok((report, published_model))
 }
 
 pub fn report_from_built_workspace(
