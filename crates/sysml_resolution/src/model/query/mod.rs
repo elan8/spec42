@@ -10,7 +10,12 @@ use crate::index::bindings as binding;
 use crate::index::documents::leaf_ranges_containing;
 use crate::index::documents::record_visited_index_entries;
 use crate::index::types;
+use crate::lower::facts::MetadataAnnotationForm as LoweredMetadataAnnotationForm;
+use crate::lower::facts::MetadataAnnotationRecord;
 use crate::lower::facts::ParameterDirection;
+use crate::metadata_query::MetadataAnnotationForm;
+use crate::metadata_query::MetadataAnnotationValue;
+use crate::metadata_query::PublishedMetadataAnnotation;
 use crate::model::element_kind;
 use crate::model::render as writer;
 use crate::model::resolver::ResolvedSemanticModel;
@@ -106,12 +111,14 @@ use crate::Diagnostic;
 use crate::Documentation;
 use crate::ElementDerivedDocumentationCollection;
 use crate::ElementRelationship;
+use crate::ExpressionOutcome;
 use crate::FeatureDerivedRelationshipCollection;
 use crate::LibrarySpecializationAnchorBranch;
 use crate::NavigationTarget;
 use crate::OccurrenceRole;
 use crate::PublicationCompleteness;
 use crate::PublishedDiagnostics;
+use crate::PublishedExpression;
 use crate::QueryAnswer;
 use crate::QueryOutcome;
 use crate::RelationshipProvenance;
@@ -864,6 +871,13 @@ impl ResolvedSemanticModel {
         output: &mut dyn std::fmt::Write,
     ) -> std::fmt::Result {
         writer::write_expressions_only(self, output)
+    }
+
+    pub(crate) fn write_metadata_annotations_sexpr(
+        &self,
+        output: &mut dyn std::fmt::Write,
+    ) -> std::fmt::Result {
+        writer::write_metadata_annotations_only(self, output)
     }
 }
 
@@ -2944,6 +2958,196 @@ impl<D> SemanticModel<D> {
                 .then_with(|| left.identity.cmp(&right.identity))
         });
         self.resolved_outcome(values.into_boxed_slice())
+    }
+
+    /// Every metadata annotation bound to one element: how it was applied, the annotating
+    /// definition, its `about` targets, and the resolved values its body redefines.
+    ///
+    /// An annotation with an `about` clause binds to each listed target rather than to its
+    /// owner, so `@Tag about X, Y;` contributes one entry to `X` and one to `Y`. This projects
+    /// facts lowering and resolution already settled -- the annotation-to-definition reference,
+    /// the `about` references, and the body's redefining `AttributeUsage` members with their
+    /// value expressions -- and performs no new analysis.
+    pub(crate) fn metadata_annotation_details(
+        &self,
+        symbol: SymbolId,
+    ) -> QueryOutcome<Box<[PublishedMetadataAnnotation]>> {
+        let declaration = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        let mut values = self
+            .storage
+            .metadata_annotations
+            .iter()
+            .filter_map(|record| {
+                let about_references = self.metadata_annotation_about_references(record.annotation);
+                if !self.metadata_annotation_binds_to(record, &about_references, declaration) {
+                    return None;
+                }
+                let annotation = self.symbol_id(record.annotation)?;
+                let definition_kind = Self::metadata_annotation_definition_kind(record.form);
+                let definition = self
+                    .outgoing_reference_ids(record.annotation)
+                    .iter()
+                    .find(|reference_id| {
+                        self.storage
+                            .references
+                            .get(reference_id.index())
+                            .is_some_and(|reference| reference.kind == definition_kind)
+                    })
+                    .map(|reference_id| self.settled_relationship_target(*reference_id))
+                    .unwrap_or(RelationshipTarget::Unsupported);
+                let about = about_references
+                    .iter()
+                    .map(|reference_id| self.settled_relationship_target(*reference_id))
+                    .collect();
+                Some(PublishedMetadataAnnotation {
+                    annotated_element: symbol,
+                    annotation,
+                    form: match record.form {
+                        LoweredMetadataAnnotationForm::PrefixKeyword => {
+                            MetadataAnnotationForm::PrefixKeyword
+                        }
+                        LoweredMetadataAnnotationForm::AnnotatingMember => {
+                            MetadataAnnotationForm::AnnotatingMember
+                        }
+                        LoweredMetadataAnnotationForm::Usage => MetadataAnnotationForm::Usage,
+                    },
+                    definition,
+                    about,
+                    body: self.metadata_annotation_body(record.annotation),
+                    location: self.source_location(record.annotation)?,
+                })
+            })
+            .collect::<Vec<_>>();
+        values.sort_by(|left, right| {
+            self.document_order(left.location.document, right.location.document)
+                .then_with(|| left.location.range.cmp(&right.location.range))
+                .then_with(|| left.annotation.cmp(&right.annotation))
+        });
+        self.resolved_outcome(values.into_boxed_slice())
+    }
+
+    /// The redefined feature values in one metadata annotation (or nested) body, in authored
+    /// order. Each anonymous `AttributeUsage` child that `lower_metadata_body_usage` minted
+    /// carries a `Redefinition` reference to the feature it redefines and, when a value was
+    /// written, an evaluation fact the resolved-expression index already settled.
+    fn metadata_annotation_body(&self, owner: DeclarationId) -> Box<[MetadataAnnotationValue]> {
+        self.child_declarations(owner)
+            .iter()
+            .filter_map(|child| {
+                let redefinition =
+                    self.outgoing_reference_ids(*child)
+                        .iter()
+                        .find(|reference_id| {
+                            self.storage
+                                .references
+                                .get(reference_id.index())
+                                .is_some_and(|reference| {
+                                    reference.kind == ReferenceKind::Redefinition
+                                })
+                        })?;
+                let element = self.symbol_id(*child)?;
+                let value_declaration = self.feature_value_expression(*child).unwrap_or(*child);
+                Some(MetadataAnnotationValue {
+                    redefined_feature: self.settled_relationship_target(*redefinition),
+                    value: self
+                        .published_expression(value_declaration, element)
+                        .unwrap_or(PublishedExpression {
+                            element,
+                            outcome: ExpressionOutcome::NotApplicable,
+                            nodes: Box::default(),
+                            root: None,
+                        }),
+                    nested: self.metadata_annotation_body(*child),
+                })
+            })
+            .collect()
+    }
+
+    /// The `MetadataAnnotationAbout` references sourced at one annotation, in authored order.
+    pub(crate) fn metadata_annotation_about_references(
+        &self,
+        annotation: DeclarationId,
+    ) -> Vec<AuthoredReferenceId> {
+        self.outgoing_reference_ids(annotation)
+            .iter()
+            .copied()
+            .filter(|reference_id| {
+                self.storage
+                    .references
+                    .get(reference_id.index())
+                    .is_some_and(|reference| {
+                        reference.kind == ReferenceKind::MetadataAnnotationAbout
+                    })
+            })
+            .collect()
+    }
+
+    /// Which reference kind carries one annotation form's annotating definition: the distinct
+    /// `MetadataAnnotation` reference for the `#`/`@` forms, the usage's own `FeatureTyping` for
+    /// `metadata m : Tag;`.
+    pub(crate) fn metadata_annotation_definition_kind(
+        form: LoweredMetadataAnnotationForm,
+    ) -> ReferenceKind {
+        match form {
+            LoweredMetadataAnnotationForm::Usage => ReferenceKind::FeatureTyping,
+            _ => ReferenceKind::MetadataAnnotation,
+        }
+    }
+
+    /// Whether one lowered annotation record binds to `element`, given its already-collected
+    /// `about` references: to its owner with no `about` clause, or to each resolved `about`
+    /// target when it has one. An `about` clause where nothing resolved still binds to the
+    /// owner, so an annotation is never silently dropped from the published set.
+    pub(crate) fn metadata_annotation_binds_to(
+        &self,
+        record: &MetadataAnnotationRecord,
+        about: &[AuthoredReferenceId],
+        element: DeclarationId,
+    ) -> bool {
+        let mut any_resolved = false;
+        for reference_id in about {
+            if let Some(ResolutionStatus::Resolved(target)) = self.resolution.outcome(*reference_id)
+            {
+                any_resolved = true;
+                if target == element {
+                    return true;
+                }
+            }
+        }
+        !any_resolved && record.annotated_element == element
+    }
+
+    /// The synthesized expression declaration holding one feature's authored `= value`, if any.
+    fn feature_value_expression(&self, feature: DeclarationId) -> Option<DeclarationId> {
+        self.storage
+            .feature_values
+            .iter()
+            .find(|record| record.declaration == feature)
+            .map(|record| record.value)
+    }
+
+    /// One authored reference's settled target, as the public [`RelationshipTarget`].
+    fn settled_relationship_target(&self, reference_id: AuthoredReferenceId) -> RelationshipTarget {
+        match self.resolution.outcome(reference_id) {
+            Some(ResolutionStatus::Resolved(target)) => match self.symbol_id(target) {
+                Some(identity) => RelationshipTarget::Resolved(identity),
+                None => RelationshipTarget::Unresolved,
+            },
+            Some(ResolutionStatus::Ambiguous(candidates)) => RelationshipTarget::Ambiguous(
+                self.resolution
+                    .ambiguous_candidates(candidates)
+                    .iter()
+                    .filter_map(|candidate| self.symbol_id(*candidate))
+                    .collect(),
+            ),
+            Some(ResolutionStatus::Unsupported) => RelationshipTarget::Unsupported,
+            Some(ResolutionStatus::Unresolved) | Some(ResolutionStatus::NonConverged) | None => {
+                RelationshipTarget::Unresolved
+            }
+        }
     }
 
     /// The explicit applicability state of one closed binding-connector validation rule.

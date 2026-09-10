@@ -334,6 +334,16 @@ package MetadataTest {
   (declaration (id (node (document "memory://snapshot/metadata_test.md") (path (named (kind package) (name "MetadataTest")) (named (kind ref) (name "z")) (named (kind metadata) (name "Classified")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "ClassificationLevel::secret" (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel::secret")))))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::x"))) (form usage) (value (redefines unresolved) (outcome resolved) (feature-reference "ClassificationLevel::conf" (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel::conf"))))))
+  (annotation (element (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::y"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified")))) (value (redefines (resolved (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified::classificationLevel")))) (outcome resolved) (feature-reference "ClassificationLevel::conf" (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel::conf"))))))
+  (annotation (element (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::y"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Security")))))
+  (annotation (element (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::z"))) (form usage) (value (redefines unresolved) (outcome resolved) (feature-reference "ClassificationLevel::secret" (target (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::ClassificationLevel::secret"))))))
+  (annotation (element (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::z2"))) (form prefix-keyword) (definition (resolved (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest::User Defined Extensions::Classified")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

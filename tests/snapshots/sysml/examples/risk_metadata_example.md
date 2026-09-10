@@ -271,6 +271,13 @@ package RiskMetadataExample {
   (declaration (id (node (document "memory://snapshot/risk_metadata_example.md") (path (named (kind package) (name "RiskMetadataExample")) (named (kind part) (name "engine4cyl")) (anonymous (kind metadata) (ordinal 1)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 0.7))))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample::engine4cyl"))) (form annotating-member) (definition unresolved) (value (redefines unresolved) (outcome resolved) (feature-reference "high" (target unresolved))) (value (redefines unresolved) (outcome resolved) (feature-reference "medium" (target unresolved))) (value (redefines unresolved) (outcome resolved) (feature-reference "medium" (target unresolved))))
+  (annotation (element (node (document "memory://snapshot/risk_metadata_example.md") (qualified-name "RiskMetadataExample::engine4cyl"))) (form annotating-member) (definition unresolved) (value (redefines unresolved) (outcome not-applicable) (value (redefines unresolved) (outcome resolved) (literal (value (kind real) (real 0.3)))) (value (redefines unresolved) (outcome resolved) (literal (value (kind real) (real 0.7))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

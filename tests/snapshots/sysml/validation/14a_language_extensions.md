@@ -222,6 +222,13 @@ package '14a-Language Extensions' {
   (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (named (kind part) (name "part_Y")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "ClassificationLevel::conf" (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf")))))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_X"))) (form usage) (value (redefines unresolved) (outcome resolved) (feature-reference "ClassificationLevel::conf" (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf"))))))
+  (annotation (element (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::part_Y"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified")))) (value (redefines (resolved (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::Classified::classificationLevel")))) (outcome resolved) (feature-reference "ClassificationLevel::conf" (target (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions::User Defined Extensions::ClassificationLevel::conf"))))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

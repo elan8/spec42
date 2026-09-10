@@ -364,15 +364,34 @@ pub(crate) struct FeatureReferenceExpressionRecord {
     pub(crate) result: DeclarationId,
 }
 
+/// Which production applied a metadata feature to its annotated element.
+///
+/// All four resolve the annotating definition through the identical
+/// [`ReferenceKind::MetadataAnnotation`](crate::model::ReferenceKind::MetadataAnnotation) lexical
+/// lookup; the distinction is retained because a consumer acting on a model-level tag needs to
+/// know how it was written (a prefix keyword carries no body or `about` clause; a `metadata`
+/// usage is also a named feature of its owner).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum MetadataAnnotationForm {
+    /// A `#Tag` usage-prefix keyword or a body-less `#tag` prefix member.
+    PrefixKeyword,
+    /// An `@Tag { ... }` / `@Tag;` / `metadata Tag { ... }` annotating body member.
+    AnnotatingMember,
+    /// A `metadata m : Tag;` named feature member (`ast::MetadataUsage`).
+    Usage,
+}
+
 /// One authored MetadataFeature instance and the Element it annotates.
 ///
-/// The annotation declaration owns its typing reference and body. This record owns the opposite
-/// endpoint, so consumers never have to infer the annotated Element from containment or from a
-/// presentation relationship whose source was rewritten for display.
+/// The annotation declaration owns its typing reference, its `about` references, and its body.
+/// This record owns the opposite endpoint, so consumers never have to infer the annotated
+/// Element from containment or from a presentation relationship whose source was rewritten for
+/// display.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct MetadataAnnotationRecord {
     pub(crate) annotation: DeclarationId,
     pub(crate) annotated_element: DeclarationId,
+    pub(crate) form: MetadataAnnotationForm,
 }
 
 /// Builds the multiplicity fact for a declaration whose parser node carries a `multiplicity` field.

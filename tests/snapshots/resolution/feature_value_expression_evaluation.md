@@ -759,6 +759,12 @@ package Values {
   (declaration (id (node (document "memory://snapshot/feature_value_expression_evaluation.md") (path (named (kind package) (name "Values")) (named (kind attribute) (name "tuple")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2))) (literal (value (kind integer) (integer 3)))))
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/feature_value_expression_evaluation.md") (qualified-name "Values::Vehicle::seatBelt"))) (form annotating-member) (definition (resolved (node (document "memory://snapshot/feature_value_expression_evaluation.md") (qualified-name "Values::Safety")))) (value (redefines (resolved (node (document "memory://snapshot/feature_value_expression_evaluation.md") (qualified-name "Values::Safety::isMandatory")))) (outcome resolved) (literal (value (kind boolean) (boolean true)))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation

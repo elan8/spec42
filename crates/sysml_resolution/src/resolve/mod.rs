@@ -319,6 +319,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     // An `Expression::Invocation`/`Constructor` callee (`InvocationCallee`) can likewise name any
     // owned feature (a calc/function) or a type (a constructor), not just a Type, so it joins this
     // same `DeclarationDomain::Any` pass.
+    // A metadata annotation's `about` target (`MetadataAnnotationAbout`) is an arbitrary element,
+    // resolved through the same `DeclarationDomain::Any` lexical lookup, so it joins here too.
     let state_binding_slots: Vec<usize> = references
         .iter()
         .enumerate()
@@ -355,6 +357,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::DependencyClient
                     | ReferenceKind::DependencySupplier
                     | ReferenceKind::PerformParameterTarget
+                    | ReferenceKind::MetadataAnnotationAbout
                     | ReferenceKind::FeatureChaining
                     | ReferenceKind::ExplicitRelationshipEndpoint
             )
@@ -1559,6 +1562,7 @@ pub(crate) fn supported_import_domain(
         | ReferenceKind::DependencyClient
         | ReferenceKind::DependencySupplier
         | ReferenceKind::PerformParameterTarget
+        | ReferenceKind::MetadataAnnotationAbout
         | ReferenceKind::FlowPayloadType => None,
     }
 }

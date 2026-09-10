@@ -88,54 +88,6 @@ pub(crate) fn write_expressions(
     model: &ResolvedSemanticModel,
     output: &mut dyn fmt::Write,
 ) -> fmt::Result {
-    use crate::index::resolved_expressions::{RawExpressionNode, RawExpressionNodeKind};
-
-    fn write_node(
-        model: &ResolvedSemanticModel,
-        nodes: &[RawExpressionNode],
-        index: u32,
-        output: &mut dyn fmt::Write,
-    ) -> fmt::Result {
-        let Some(node) = nodes.get(index as usize) else {
-            return output.write_str("(invalid-node)");
-        };
-        match &node.kind {
-            RawExpressionNodeKind::Literal(value) => {
-                output.write_str("(literal ")?;
-                write_evaluated_scalar(value, output)?;
-                output.write_char(')')
-            }
-            RawExpressionNodeKind::FeatureReference { target, authored } => {
-                write!(output, "(feature-reference {authored:?}")?;
-                match target {
-                    Some(declaration) => {
-                        output.write_str(" (target ")?;
-                        write_node_identity(model, *declaration, output)?;
-                        output.write_char(')')?;
-                    }
-                    None => output.write_str(" (target unresolved)")?,
-                }
-                output.write_char(')')
-            }
-            RawExpressionNodeKind::Operator { operator, operands } => {
-                write!(output, "(operator {:?}", operator.as_str())?;
-                for operand in operands.iter() {
-                    output.write_char(' ')?;
-                    write_node(model, nodes, *operand, output)?;
-                }
-                output.write_char(')')
-            }
-            RawExpressionNodeKind::Unsupported { children } => {
-                output.write_str("(unsupported")?;
-                for child in children.iter() {
-                    output.write_char(' ')?;
-                    write_node(model, nodes, *child, output)?;
-                }
-                output.write_char(')')
-            }
-        }
-    }
-
     writeln!(output, "(expressions")?;
     for index in canonical_declaration_indices(model) {
         let declaration = DeclarationId(index as u32);
@@ -147,11 +99,183 @@ pub(crate) fn write_expressions(
         write!(output, ") (outcome {})", row.outcome.as_str())?;
         if let Some(root) = row.root {
             output.write_char(' ')?;
-            write_node(model, &row.nodes, root, output)?;
+            write_resolved_expression_node(model, &row.nodes, root, output)?;
         }
         writeln!(output, ")")?;
     }
     writeln!(output, ")")
+}
+
+/// Renders one node of a settled resolved-expression tree. Shared by the `EXPRESSIONS` section
+/// and the metadata-annotation body values, which reuse the same tree.
+pub(crate) fn write_resolved_expression_node(
+    model: &ResolvedSemanticModel,
+    nodes: &[crate::index::resolved_expressions::RawExpressionNode],
+    index: u32,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    use crate::index::resolved_expressions::RawExpressionNodeKind;
+
+    let Some(node) = nodes.get(index as usize) else {
+        return output.write_str("(invalid-node)");
+    };
+    match &node.kind {
+        RawExpressionNodeKind::Literal(value) => {
+            output.write_str("(literal ")?;
+            write_evaluated_scalar(value, output)?;
+            output.write_char(')')
+        }
+        RawExpressionNodeKind::FeatureReference { target, authored } => {
+            write!(output, "(feature-reference {authored:?}")?;
+            match target {
+                Some(declaration) => {
+                    output.write_str(" (target ")?;
+                    write_node_identity(model, *declaration, output)?;
+                    output.write_char(')')?;
+                }
+                None => output.write_str(" (target unresolved)")?,
+            }
+            output.write_char(')')
+        }
+        RawExpressionNodeKind::Operator { operator, operands } => {
+            write!(output, "(operator {:?}", operator.as_str())?;
+            for operand in operands.iter() {
+                output.write_char(' ')?;
+                write_resolved_expression_node(model, nodes, *operand, output)?;
+            }
+            output.write_char(')')
+        }
+        RawExpressionNodeKind::Unsupported { children } => {
+            output.write_str("(unsupported")?;
+            for child in children.iter() {
+                output.write_char(' ')?;
+                write_resolved_expression_node(model, nodes, *child, output)?;
+            }
+            output.write_char(')')
+        }
+    }
+}
+
+pub(crate) fn write_metadata_annotations_only(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    write_metadata_annotations(model, output)
+}
+
+/// Renders every authored metadata annotation, grouped under the element it binds to, in
+/// canonical declaration order. A fixture that authors none contributes nothing.
+pub(crate) fn write_metadata_annotations(
+    model: &ResolvedSemanticModel,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    fn write_target(
+        model: &ResolvedSemanticModel,
+        reference_id: crate::model::AuthoredReferenceId,
+        output: &mut dyn fmt::Write,
+    ) -> fmt::Result {
+        match model.resolution.outcome(reference_id) {
+            Some(crate::resolve::results::ResolutionStatus::Resolved(target)) => {
+                output.write_str("(resolved ")?;
+                write_node_identity(model, target, output)?;
+                output.write_char(')')
+            }
+            Some(crate::resolve::results::ResolutionStatus::Ambiguous(_)) => {
+                output.write_str("ambiguous")
+            }
+            Some(crate::resolve::results::ResolutionStatus::Unsupported) => {
+                output.write_str("unsupported")
+            }
+            _ => output.write_str("unresolved"),
+        }
+    }
+
+    fn write_body(
+        model: &ResolvedSemanticModel,
+        owner: DeclarationId,
+        output: &mut dyn fmt::Write,
+    ) -> fmt::Result {
+        for child in model.child_declarations(owner) {
+            let Some(redefinition) = model.outgoing_reference_ids(*child).iter().find(|id| {
+                model
+                    .storage
+                    .references
+                    .get(id.index())
+                    .is_some_and(|reference| reference.kind == ReferenceKind::Redefinition)
+            }) else {
+                continue;
+            };
+            output.write_str(" (value (redefines ")?;
+            write_target(model, *redefinition, output)?;
+            output.write_char(')')?;
+            let value_declaration = model
+                .storage
+                .feature_values
+                .iter()
+                .find(|record| record.declaration == *child)
+                .map(|record| record.value)
+                .unwrap_or(*child);
+            match model.resolved_expressions.row(value_declaration) {
+                Some(row) => {
+                    write!(output, " (outcome {})", row.outcome.as_str())?;
+                    if let Some(root) = row.root {
+                        output.write_char(' ')?;
+                        write_resolved_expression_node(model, &row.nodes, root, output)?;
+                    }
+                }
+                None => output.write_str(" (outcome not-applicable)")?,
+            }
+            write_body(model, *child, output)?;
+            output.write_char(')')?;
+        }
+        Ok(())
+    }
+
+    writeln!(output, "(metadata-annotations")?;
+    for index in canonical_declaration_indices(model) {
+        let element = DeclarationId(index as u32);
+        for record in model.storage.metadata_annotations.iter().filter(|record| {
+            let about = model.metadata_annotation_about_references(record.annotation);
+            model.metadata_annotation_binds_to(record, &about, element)
+        }) {
+            write!(output, "  (annotation (element ")?;
+            write_node_identity(model, element, output)?;
+            write!(
+                output,
+                ") (form {})",
+                metadata_annotation_form_name(record.form)
+            )?;
+            let definition_kind =
+                ResolvedSemanticModel::metadata_annotation_definition_kind(record.form);
+            for reference_id in model.outgoing_reference_ids(record.annotation) {
+                let Some(reference) = model.storage.references.get(reference_id.index()) else {
+                    continue;
+                };
+                if reference.kind == definition_kind {
+                    output.write_str(" (definition ")?;
+                    write_target(model, *reference_id, output)?;
+                    output.write_char(')')?;
+                } else if reference.kind == ReferenceKind::MetadataAnnotationAbout {
+                    output.write_str(" (about ")?;
+                    write_target(model, *reference_id, output)?;
+                    output.write_char(')')?;
+                }
+            }
+            write_body(model, record.annotation, output)?;
+            writeln!(output, ")")?;
+        }
+    }
+    writeln!(output, ")")
+}
+
+fn metadata_annotation_form_name(
+    form: crate::lower::facts::MetadataAnnotationForm,
+) -> &'static str {
+    match form {
+        crate::lower::facts::MetadataAnnotationForm::PrefixKeyword => "prefix-keyword",
+        crate::lower::facts::MetadataAnnotationForm::AnnotatingMember => "annotating-member",
+        crate::lower::facts::MetadataAnnotationForm::Usage => "usage",
+    }
 }
 
 /// Renders the settled specialization closure of each projected declaration.
@@ -1720,6 +1844,7 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::TransitionTrigger => "transitionTrigger",
         ReferenceKind::TransitionEffect => "transitionEffect",
         ReferenceKind::MetadataAnnotation => "metadataAnnotation",
+        ReferenceKind::MetadataAnnotationAbout => "metadataAnnotationAbout",
         ReferenceKind::FilterMetadataTest => "filterMetadataTest",
         ReferenceKind::SatisfySource => "satisfySource",
         ReferenceKind::SatisfyTarget => "satisfyTarget",
@@ -1787,6 +1912,7 @@ pub(crate) fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::TransitionTrigger => Some("transitionTrigger"),
         ReferenceKind::TransitionEffect => Some("transitionEffect"),
         ReferenceKind::MetadataAnnotation => Some("metadataAnnotation"),
+        ReferenceKind::MetadataAnnotationAbout => Some("metadataAnnotationAbout"),
         ReferenceKind::FilterMetadataTest => Some("filterMetadataTest"),
         ReferenceKind::SatisfySource => Some("satisfySource"),
         ReferenceKind::SatisfyTarget => Some("satisfyTarget"),

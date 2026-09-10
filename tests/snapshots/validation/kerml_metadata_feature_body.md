@@ -63,25 +63,33 @@ package Metadata {
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Marker"))) (kind kerml-metaclass) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Marker")))))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Marker")) (metadataAnnotationAbout (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named::label"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::plain"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Marker")))))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::plain"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Marker")) (metadataAnnotationAbout (reference "Thing")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named"))) (kind featureTyping) (ordinal 0))
       (authored-target "Marker")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Marker")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named"))) (kind metadataAnnotationAbout) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Thing")))))
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named::label"))) (kind featureTyping) (ordinal 0))
       (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Thing")))))
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::plain"))) (kind featureTyping) (ordinal 0))
       (authored-target "Marker")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Marker")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::plain"))) (kind metadataAnnotationAbout) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Thing")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named"))) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Marker"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind metadataAnnotationAbout) (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named"))) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named"))) (kind metadataAnnotationAbout) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named::label"))) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named::label"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::plain"))) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Marker"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::plain"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind metadataAnnotationAbout) (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::plain"))) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::plain"))) (kind metadataAnnotationAbout) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named::label"))) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named"))) (provenance implied))
   )
   (evaluation
@@ -116,12 +124,24 @@ package Metadata {
     )
 )
 ~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Thing"))) (form usage) (definition (resolved (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Marker")))) (about (resolved (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Thing")))))
+  (annotation (element (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Thing"))) (form usage) (definition (resolved (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Marker")))) (about (resolved (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Thing")))))
+)
+~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/kerml_metadata_feature_body.md") (range (start 8 21) (end 8 27)) (probe (position 8 21))
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named"))) (kind featureTyping) (ordinal 0) (authored-target "Marker")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Marker")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_metadata_feature_body.md") (range (start 8 34) (end 8 39)) (probe (position 8 34))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::named"))) (kind metadataAnnotationAbout) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Thing")))))
     )
   )
   (query (document "memory://snapshot/kerml_metadata_feature_body.md") (range (start 9 24) (end 9 29)) (probe (position 9 24))
@@ -132,6 +152,11 @@ package Metadata {
   (query (document "memory://snapshot/kerml_metadata_feature_body.md") (range (start 5 21) (end 5 27)) (probe (position 5 21))
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::plain"))) (kind featureTyping) (ordinal 0) (authored-target "Marker")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Marker")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_metadata_feature_body.md") (range (start 5 34) (end 5 39)) (probe (position 5 34))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::plain"))) (kind metadataAnnotationAbout) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_feature_body.md") (qualified-name "Metadata::Thing")))))
     )
   )
 )

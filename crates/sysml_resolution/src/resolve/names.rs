@@ -589,6 +589,7 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::DependencyClient
             | ReferenceKind::DependencySupplier
             | ReferenceKind::PerformParameterTarget
+            | ReferenceKind::MetadataAnnotationAbout
             | ReferenceKind::FlowPayloadType => {}
         }
     }

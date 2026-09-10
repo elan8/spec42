@@ -4418,6 +4418,85 @@ fn metadata_annotations_publish_the_definition_they_bind_to() {
     assert!(vehicle.metadata.is_empty(), "{:?}", vehicle.metadata);
 }
 
+/// `metadata_annotations` publishes each authored annotation with its form, its resolved
+/// definition, its `about` targets, and the resolved values its body redefines.
+#[test]
+fn metadata_annotations_publish_form_about_and_body_values() {
+    let published = detail_publication(
+        &[(
+            "memory://annotations.sysml",
+            "package P {\n\
+             \tmetadata def Risk {\n\
+             \t\tattribute baseline;\n\
+             \t\tattribute probability;\n\
+             \t\tattribute mitigated;\n\
+             \t}\n\
+             \tpart def Component;\n\
+             \tpart pump : Component {\n\
+             \t\t@Risk {\n\
+             \t\t\tprobability = baseline + 1;\n\
+             \t\t\tmitigated;\n\
+             \t\t}\n\
+             \t}\n\
+             \t#Risk part spare : Component;\n\
+             \tmetadata shared : Risk about pump, missing;\n\
+             \tmetadata orphan : Risk about nowhere;\n\
+             }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+
+    let pump = identity_of(&published, "memory://annotations.sysml", "P::pump");
+    let annotations = settled(published.metadata_annotations(pump));
+    // The `@Risk` body annotation and the `metadata shared ... about pump` annotation.
+    assert_eq!(annotations.len(), 2, "{annotations:?}");
+
+    let body = annotations
+        .iter()
+        .find(|annotation| annotation.form == MetadataAnnotationForm::AnnotatingMember)
+        .expect("the @Risk annotation");
+    assert!(matches!(body.definition, RelationshipTarget::Resolved(_)));
+    assert!(body.about.is_empty());
+    // `probability = baseline + 1` is published as its resolved tree; `mitigated;` wrote no value.
+    let probability = &body.body[0];
+    assert_eq!(probability.value.outcome, ExpressionOutcome::Resolved);
+    assert!(matches!(
+        probability.redefined_feature,
+        RelationshipTarget::Resolved(_)
+    ));
+    assert_eq!(body.body[1].value.outcome, ExpressionOutcome::NotApplicable);
+
+    let usage = annotations
+        .iter()
+        .find(|annotation| annotation.form == MetadataAnnotationForm::Usage)
+        .expect("the metadata-usage annotation");
+    assert!(matches!(usage.definition, RelationshipTarget::Resolved(_)));
+    assert_eq!(usage.about.len(), 2);
+    assert!(matches!(usage.about[0], RelationshipTarget::Resolved(_)));
+    assert_eq!(usage.about[1], RelationshipTarget::Unresolved);
+
+    // The `#Risk` prefix form binds to `spare`, carries no body and no `about` clause.
+    let spare = identity_of(&published, "memory://annotations.sysml", "P::spare");
+    let spare_annotations = settled(published.metadata_annotations(spare));
+    assert_eq!(spare_annotations.len(), 1);
+    assert_eq!(
+        spare_annotations[0].form,
+        MetadataAnnotationForm::PrefixKeyword
+    );
+    assert!(spare_annotations[0].body.is_empty());
+    assert!(spare_annotations[0].about.is_empty());
+
+    // `metadata orphan : Risk about nowhere;` — the `about` clause resolves to nothing, so the
+    // annotation falls back to its owner rather than vanishing from the published set.
+    let package = identity_of(&published, "memory://annotations.sysml", "P");
+    let package_annotations = settled(published.metadata_annotations(package));
+    let orphan = package_annotations
+        .iter()
+        .find(|annotation| matches!(annotation.about.as_ref(), [RelationshipTarget::Unresolved]))
+        .expect("the orphan annotation is still published under its owner");
+    assert_eq!(orphan.form, MetadataAnnotationForm::Usage);
+}
+
 /// Both directions are published, so an inspector never has to scan the model to find what
 /// points at an element.
 #[test]
