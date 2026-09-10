@@ -59,18 +59,6 @@ package Views {
       )
       (diagnostic
         (severity warning)
-        (code "incompatible_type_kind")
-        (source "semantic")
-        (range (start 16 52) (end 16 61))
-        (related-information
-          (related
-            (uri "memory://snapshot/view_conformance.md")
-            (range (start 1 4) (end 1 23))
-          )
-        )
-      )
-      (diagnostic
-        (severity warning)
         (code "view_rendering_invalid_target")
         (source "semantic")
         (range (start 16 52) (end 16 61))

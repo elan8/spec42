@@ -32,18 +32,6 @@ package BooleanFilter {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "incompatible_type_kind")
-        (source "semantic")
-        (range (start 9 27) (end 9 33))
-        (related-information
-          (related
-            (uri "memory://snapshot/allocation_and_filters.md")
-            (range (start 1 4) (end 1 20))
-          )
-        )
-      )
-      (diagnostic
-        (severity warning)
         (code "invalid_import_filter")
         (source "semantic")
         (range (start 14 11) (end 14 12))

@@ -170,23 +170,26 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         .copied()
         .filter(|index| *index >= settled)
         .collect();
-    // Subclassification is resolved first because the ancestor-scoped inherited-member lookup used
-    // by FeatureTyping is built directly from settled Subclassification outcomes; splitting the two
-    // kinds avoids depending on source order between an owned specialization and an owned typing
-    // reference within the same document.
+    // Subclassification alone is resolved first because the ancestor-scoped inherited-member
+    // lookup used by all other type references is built directly from its settled outcomes.
+    // KerML's other type relationships are not ancestry edges and may themselves name inherited
+    // members, so resolving them in this early pass would incorrectly deny them inherited scope.
     let subclass_slots: Vec<usize> = references
         .iter()
         .enumerate()
         .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
-            // The four KerML type-relationship kinds join this pass rather than getting their own:
-            // each names a `Type` through the same lexical lookup a `specializes` clause uses, and
-            // none of them reads inherited scope. They stay distinct `ReferenceKind`s so the
-            // published relationship never collapses into a specialization.
+            (reference.kind() == ReferenceKind::Subclassification).then_some(index)
+        })
+        .collect();
+    let type_relationship_slots: Vec<usize> = references
+        .iter()
+        .enumerate()
+        .filter(|(index, _)| *index >= settled)
+        .filter_map(|(index, reference)| {
             matches!(
                 reference.kind(),
-                ReferenceKind::Subclassification
-                    | ReferenceKind::Conjugation
+                ReferenceKind::Conjugation
                     | ReferenceKind::Unioning
                     | ReferenceKind::Intersecting
                     | ReferenceKind::Differencing
@@ -475,6 +478,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         for index in import_slots
             .iter()
             .chain(&subclass_slots)
+            .chain(&type_relationship_slots)
             .chain(&typing_slots)
             .chain(&state_binding_slots)
             .chain(&subsetting_slots)
@@ -952,6 +956,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             for index in subsetting_slots
                 .iter()
                 .chain(&redefinition_slots)
+                .chain(&type_relationship_slots)
                 .chain(&member_access_slots)
                 .copied()
             {
@@ -968,6 +973,39 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 .ok_or(ResolutionError::InvalidStorage)?;
             inherited_names =
                 build_inherited_name_index(declarations, &direct_names, specialization_closures)?;
+            // Non-ancestry type relationships use ordinary KerML local resolution. A Feature is a
+            // Type, so operands of `unions`, `intersects`, `differences`, `disjoint from`, and
+            // conjugation may be memberships inherited by the relationship owner's scope.
+            for index in type_relationship_slots.iter().copied() {
+                work.downstream_evaluations = work
+                    .downstream_evaluations
+                    .checked_add(1)
+                    .ok_or(ResolutionError::Capacity)?;
+                let reference = &references[index];
+                if owner_chain_is_cyclic(declarations, reference.source(), &cyclic_ancestry)? {
+                    outcomes[index] = ResolutionStatus::NonConverged;
+                    continue;
+                }
+                outcomes[index] = resolve_reference(
+                    declarations,
+                    paths,
+                    reference,
+                    DeclarationDomain::Type,
+                    ResolutionIndexes {
+                        direct_names: &direct_names,
+                        exported_names: &exported_names,
+                        effective_imports: Some(&effective_imports),
+                        exported_imports: Some(&exported_imports),
+                        inherited_names: Some(&inherited_names),
+                    },
+                    ResolutionScratch {
+                        ambiguous_candidates: &mut ambiguous_candidates,
+                        candidates: &mut candidates,
+                        next_candidates: &mut next_candidates,
+                        work: &mut work,
+                    },
+                )?;
+            }
             // KerML 8.2.3.5.3 local resolution includes a Type's inherited memberships. These
             // ordinary Any-domain references have no role in settling imports, ancestry, or
             // effective typing, so resolve them exactly once against the final canonical scope.
@@ -1328,6 +1366,8 @@ fn build_specialization_ancestor_closures<R: ResolutionReferenceFact>(
                 | ReferenceKind::FeatureTyping
                 | ReferenceKind::Subsetting
                 | ReferenceKind::Redefinition
+                | ReferenceKind::References
+                | ReferenceKind::Crosses
                 | ReferenceKind::MetadataAnnotation
         )
     })
@@ -2205,6 +2245,20 @@ pub(crate) fn resolve_member_access_reference<R: ResolutionReferenceFact>(
             source.kind,
             DeclarationKind::InterfaceUsage | DeclarationKind::ConnectionUsage
         ) {
+        source.owner
+    } else if matches!(
+        reference.kind(),
+        ReferenceKind::Subsetting
+            | ReferenceKind::References
+            | ReferenceKind::Crosses
+            | ReferenceKind::Redefinition
+            | ReferenceKind::FeatureInverting
+            | ReferenceKind::FeatureChaining
+    ) {
+        // The relationship is owned by `source`; its target is resolved in that Feature's owning
+        // scope. Starting at the Feature itself lets members of its effective type shadow a
+        // sibling root, e.g. a typed redefining `vertices` can hide the sibling `that` intended
+        // by `subsets that.vertices`.
         source.owner
     } else {
         Some(reference.source())

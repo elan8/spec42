@@ -181,18 +181,6 @@ standard library package States {
         (range (start 16 16) (end 16 39))
       )
       (diagnostic
-        (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 18 1) (end 77 2))
-      )
-      (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 18 1) (end 77 2))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
@@ -392,7 +380,7 @@ standard library package States {
     (declaration (id (node (document "memory://snapshot/states.md") (path (named (kind library-package) (name "States")) (anonymous (kind import) (ordinal 7))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Actions::actions") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/states.md") (path (named (kind library-package) (name "States")) (anonymous (kind import) (ordinal 8))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SequenceFunctions::notEmpty") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/states.md") (path (named (kind library-package) (name "States")) (anonymous (kind import) (ordinal 9))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SequenceFunctions::size") (import (shape membership) (recursive false))))))
-    (declaration (id (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction"))) (kind state-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t\t * A StateAction is a kind of Action that is also a StatePerformance. It is the base type for all\n\t\t * StateDefinitions.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Action")) (specialization (reference "StatePerformance")))))
+    (declaration (id (node (document "memory://snapshot/states.md") (qualified-name "States::StateAction"))) (kind state-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (documentation (doc (text "\n\t\t * A StateAction is a kind of Action that is also a StatePerformance. It is the base type for all\n\t\t * StateDefinitions.\n\t\t "))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Action")) (specialization (reference "StatePerformance")))))
     (declaration (id (node (document "memory://snapshot/states.md") (path (named (kind library-package) (name "States")) (named (kind state-def) (name "StateAction")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (effective-identification (name unresolved) (short-name unresolved) (provenance first-redefinition)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "isTriggerDuring")))))
     (declaration (id (node (document "memory://snapshot/states.md") (path (named (kind library-package) (name "States")) (named (kind state-def) (name "StateAction")) (anonymous (kind action) (ordinal 0))))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (effective-identification (name unresolved) (short-name unresolved) (provenance first-redefinition)) (documentation (doc (text "\n\t\t\t * The subperformances of this StateAction that are Actions, other than the entry and exit Actions. \n\t\t\t * These subactions all take place in the \"middle\" of the StatePerformance, that is, after the \n\t\t\t * entry Action and before the exit Action. \n\t\t\t "))) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "middle")) (redefinition (reference "subactions")))))
     (declaration (id (node (document "memory://snapshot/states.md") (path (named (kind library-package) (name "States")) (named (kind state-def) (name "StateAction")) (anonymous (kind assert-constraint) (ordinal 0))))) (kind assert-constraint) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "exclusiveStates")) (expressionOperand (reference "stateSequencing")) (expressionOperand (reference "exclusiveStates")) (invocationCallee (reference "notEmpty")) (invocationCallee (reference "size")) (invocationCallee (reference "size")))))

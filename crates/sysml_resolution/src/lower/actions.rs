@@ -392,6 +392,8 @@ impl SemanticModelBuilder {
                     variation: node.value.is_variation,
                     individual: node.value.is_individual,
                     reference: node.value.is_reference,
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
                     // ActionUsage has no standalone `composite` token: its BNF's `ref action`
                     // branch is the non-composite alternative, so the parser's explicit
                     // reference fact is the authoritative source for the derived composite

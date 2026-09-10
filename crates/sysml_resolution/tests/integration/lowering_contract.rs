@@ -1793,6 +1793,16 @@ fn collection_modifiers_are_recorded() {
 }
 
 #[test]
+fn action_usage_collection_modifiers_are_recorded() {
+    let sexpr =
+        semantic_sexpr_for("package P { abstract action actions[0..*] ordered nonunique; }");
+    assert!(
+        sexpr.contains("(modifiers abstract composite ordered nonunique)"),
+        "expected action collection modifiers, got: {sexpr}"
+    );
+}
+
+#[test]
 fn definition_prefix_modifiers_are_recorded() {
     let abstract_def = semantic_sexpr_for("package P { abstract part def Vehicle; }");
     assert!(

@@ -154,6 +154,10 @@ package Demo {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (path (named (kind package) (name "Demo")) (anonymous (kind perform-action) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Process")) (scopes any))
+      (supertype (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::process")) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::ArchitectureView")))
       (subtype (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::architecture")) (scopes any))
     )
@@ -183,6 +187,7 @@ package Demo {
       (type (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Process")) (provenance authored))
       (effective-type (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Process")) (source direct))
       (supertype (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Process")) (scopes any))
+      (subtype (node (document "memory://snapshot/model_diagnostic_categories.md") (path (named (kind package) (name "Demo")) (anonymous (kind perform-action) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::sensor")))
       (type (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Sensor")) (provenance authored))
