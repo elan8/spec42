@@ -3,7 +3,7 @@
 //! Every other query group answers one question about one element. This one composes them into a
 //! single deterministic answer for a headless consumer -- CI, a script, an agent, the read-only
 //! Python SDK -- that needs the resolved *structure* of a workspace, not just its diagnostics.
-//! `spec42 model-summary --format json` serialises it.
+//! `spec42 model-export --format json` serialises it.
 //!
 //! It adds no analysis and holds nothing new. Each element carries the [`ElementDetails`] the
 //! `inspection().element_details()` query already publishes, plus its resolved expression tree
@@ -61,15 +61,21 @@ pub struct PublishedModelProjection {
 pub struct ProjectionTruncation {
     /// Workspace-authored elements in the publication.
     pub elements_total: usize,
-    /// Elements actually carried in [`PublishedModelProjection::elements`]; equal to
-    /// `elements_total` when nothing was truncated.
+    /// Elements actually carried in [`PublishedModelProjection::elements`].
     pub elements_returned: usize,
+    /// Elements within the `max_nodes` bound whose details did not resolve (a non-converged
+    /// publication) and were therefore omitted from [`PublishedModelProjection::elements`]
+    /// without being subject to `max_nodes`. Distinct from truncation: raising `max_nodes`
+    /// cannot recover these -- see [`ProjectionEnvelope::completeness`] for why.
+    pub elements_incomplete: usize,
 }
 
 impl ProjectionTruncation {
-    /// Whether the element list is a bounded prefix rather than the whole workspace.
+    /// Whether elements beyond `max_nodes` exist that were never attempted. `false` when every
+    /// workspace element was attempted, even if some of those were
+    /// [`Self::elements_incomplete`] -- raising `max_nodes` would not change the result.
     pub fn is_truncated(&self) -> bool {
-        self.elements_returned < self.elements_total
+        self.elements_returned + self.elements_incomplete < self.elements_total
     }
 }
 

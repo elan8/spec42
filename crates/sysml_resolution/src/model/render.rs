@@ -34,7 +34,6 @@ use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::SymbolPathId;
 use crate::model::Visibility;
-use crate::projection::ProjectionPhase;
 use crate::resolve::results::EffectiveNameOutcome;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionStatus;
@@ -337,9 +336,7 @@ pub(crate) fn write_projection(
     )?;
 
     let envelope = &projection.envelope;
-    let phase = match envelope.phase {
-        ProjectionPhase::Resolved => "resolved",
-    };
+    let phase = envelope.phase.as_str();
     let completeness = if envelope.completeness.is_complete() {
         "complete".to_owned()
     } else {
@@ -402,8 +399,10 @@ pub(crate) fn write_projection(
 
     writeln!(
         output,
-        "  (truncation (elements-total {}) (elements-returned {}))",
-        projection.truncation.elements_total, projection.truncation.elements_returned
+        "  (truncation (elements-total {}) (elements-returned {}) (elements-incomplete {}))",
+        projection.truncation.elements_total,
+        projection.truncation.elements_returned,
+        projection.truncation.elements_incomplete
     )?;
     writeln!(output, ")")
 }

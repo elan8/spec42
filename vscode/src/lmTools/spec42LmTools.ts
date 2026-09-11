@@ -3,7 +3,7 @@ import {
   buildCheckArgv,
   buildDoctorArgv,
   buildExplainDiagnosticArgv,
-  buildModelSummaryArgv,
+  buildModelExportArgv,
   Spec42CliContext,
 } from "./spec42CliArgs";
 import { resolveTargetPath, runSpec42Json } from "./spec42Cli";
@@ -13,7 +13,7 @@ type CheckInput = {
   workspace_root?: string;
 };
 
-type ModelSummaryInput = {
+type ModelExportInput = {
   path?: string;
   workspace_root?: string;
   max_nodes?: number;
@@ -91,17 +91,17 @@ function formatDoctorResult(data: unknown): string {
     .join("\n");
 }
 
-function formatModelSummaryResult(data: unknown): string {
+function formatModelExportResult(data: unknown): string {
   const root = asRecord(data);
   const summary = asRecord(root?.summary);
-  const trunc = asRecord(root?.truncation);
   const projection = asRecord(root?.projection);
+  const trunc = asRecord(projection?.truncation);
   const envelope = asRecord(projection?.envelope);
   const elements = Array.isArray(projection?.elements) ? projection.elements : [];
   const connectors = Array.isArray(projection?.connectors) ? projection.connectors : [];
   const lines: string[] = [
-    `Model summary: ${summary?.error_count ?? 0} error(s), ${summary?.warning_count ?? 0} warning(s).`,
-    `Elements ${trunc?.nodes_returned ?? elements.length}/${trunc?.nodes_total ?? "?"}, connectors ${connectors.length}.`,
+    `Model export: ${summary?.error_count ?? 0} error(s), ${summary?.warning_count ?? 0} warning(s).`,
+    `Elements ${trunc?.elements_returned ?? elements.length}/${trunc?.elements_total ?? "?"}, connectors ${connectors.length}.`,
   ];
   if (envelope) {
     const admitted = asRecord(envelope.admitted);
@@ -190,28 +190,28 @@ class Spec42DoctorLmTool implements vscode.LanguageModelTool<Record<string, neve
   }
 }
 
-class Spec42ModelSummaryLmTool implements vscode.LanguageModelTool<ModelSummaryInput> {
+class Spec42ModelExportLmTool implements vscode.LanguageModelTool<ModelExportInput> {
   constructor(private readonly ctx: Spec42CliContext) {}
 
   async prepareInvocation(
-    options: vscode.LanguageModelToolInvocationPrepareOptions<ModelSummaryInput>
+    options: vscode.LanguageModelToolInvocationPrepareOptions<ModelExportInput>
   ) {
     const target = options.input.path ?? defaultLabel(this.ctx);
-    return { invocationMessage: `Building semantic model summary for ${target}…` };
+    return { invocationMessage: `Exporting semantic model structure for ${target}…` };
   }
 
   async invoke(
-    options: vscode.LanguageModelToolInvocationOptions<ModelSummaryInput>,
+    options: vscode.LanguageModelToolInvocationOptions<ModelExportInput>,
     _token: vscode.CancellationToken
   ): Promise<vscode.LanguageModelToolResult> {
     const targetPath = resolveTargetPath(options.input.path, this.ctx.workspaceRoot);
     const maxNodes = options.input.max_nodes ?? 500;
     const data = await runSpec42Json(
       this.ctx.serverCommand,
-      buildModelSummaryArgv(this.ctx, targetPath, maxNodes, options.input.workspace_root),
+      buildModelExportArgv(this.ctx, targetPath, maxNodes, options.input.workspace_root),
       this.ctx.workspaceRoot
     );
-    return lmResult(formatModelSummaryResult(data));
+    return lmResult(formatModelExportResult(data));
   }
 }
 
@@ -270,7 +270,7 @@ export function registerSpec42LmTools(
   context.subscriptions.push(
     register("spec42_check", new Spec42CheckLmTool(cliContext)),
     register("spec42_doctor", new Spec42DoctorLmTool(cliContext)),
-    register("spec42_model_summary", new Spec42ModelSummaryLmTool(cliContext)),
+    register("spec42_model_export", new Spec42ModelExportLmTool(cliContext)),
     register("spec42_explain_diagnostic", new Spec42ExplainDiagnosticLmTool(cliContext))
   );
 }

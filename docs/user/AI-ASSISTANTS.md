@@ -8,13 +8,13 @@ Spec42 gives chatbots **structured** SysML v2 / KerML feedback through the CLI. 
 | --- | --- |
 | **LSP (VS Code extension)** | Human editing: live diagnostics, hover, completion, navigation, and typed feature inspection |
 | **VS Code Language Model Tools** (Copilot Agent, VS Code 1.99+) | Four built-in tools via the bundled `spec42` CLI — no extra config in VS Code |
-| **CLI** `spec42 check` / `doctor` / `explain-diagnostic` / `model-summary` | CI, scripts, other AI hosts (Cursor, non-VS-Code Copilot), LM Tools backend |
+| **CLI** `spec42 check` / `doctor` / `explain-diagnostic` / `model-export` | CI, scripts, other AI hosts (Cursor, non-VS-Code Copilot), LM Tools backend |
 
 The language server does **not** expose its graph directly to Copilot Chat. Run the CLI after substantive model edits.
 
 ### VS Code Copilot (Language Model Tools)
 
-With VS Code **1.99+** and the [Spec42 extension](../../vscode/README.md), Copilot Agent can use four built-in tools (`#spec42Check`, `#spec42Doctor`, `#spec42ModelSummary`, `#spec42ExplainDiagnostic`). The extension runs the bundled `spec42` binary (`check`, `doctor`, `explain-diagnostic`, `model-summary` with JSON output).
+With VS Code **1.99+** and the [Spec42 extension](../../vscode/README.md), Copilot Agent can use four built-in tools (`#spec42Check`, `#spec42Doctor`, `#spec42ModelExport`, `#spec42ExplainDiagnostic`). The extension runs the bundled `spec42` binary (`check`, `doctor`, `explain-diagnostic`, `model-export` with JSON output).
 
 Requirements:
 
@@ -32,12 +32,12 @@ Recommended order when debugging a workspace:
 1. **`spec42 doctor`** — standard library, config dirs, library paths, Sysand detection
 2. **`spec42 check`** — validation report (`summary.error_count`, per-file `diagnostics[].code`, `advice`)
 3. **`spec42 explain-diagnostic --code <code>`** — stable explanation for a diagnostic code (optional concrete instances via `--path` + `--line`)
-4. **`spec42 model-summary <path>`** — validation summary plus a read-only, `schema_version`-stamped `projection` of the workspace's resolved structure (elements with their relationship families, resolved expression trees and metadata annotations; connectors; a publication envelope). `--max-nodes` bounds the element list; the `truncation` record reports the full count.
+4. **`spec42 model-export <path>`** — validation summary plus a read-only, `schema_version`-stamped `projection` of the workspace's resolved structure (elements with their relationship families, resolved expression trees and metadata annotations; connectors; a publication envelope). Unbounded by default; `--max-nodes` bounds the element list, and `projection.truncation` always reports the full count alongside how many were returned.
 
 ```bash
 spec42 check path/to/model.sysml --format json
 spec42 explain-diagnostic --code unresolved_type_reference --format json
-spec42 model-summary path/to/model.sysml --max-nodes 500 --format json
+spec42 model-export path/to/model.sysml --max-nodes 500 --format json
 spec42 doctor --format json
 ```
 
@@ -57,7 +57,7 @@ Use `summary.error_count` to decide if the model is clean.
 2. Run **`spec42 check`** on the changed file or project directory; pass **`--workspace-root`** when validating a single file inside a multi-file project.
 3. For each distinct **`code`**, use **`spec42 explain-diagnostic`** if the fix strategy is unclear.
 4. If many `unresolved_*` diagnostics appear, run **`spec42 doctor`** before rewriting imports or types.
-5. For structure (what specializes what, which elements carry a metadata tag, connector topology), read `model-summary --format json`'s `projection`. It is the resolved publication, not a guess from source text; branch on `projection.schema_version`.
+5. For structure (what specializes what, which elements carry a metadata tag, connector topology), read `model-export --format json`'s `projection`. It is the resolved publication, not a guess from source text; branch on `projection.schema_version`.
 
 Repo-level conventions for Copilot are in [`.github/copilot-instructions.md`](../../.github/copilot-instructions.md).
 

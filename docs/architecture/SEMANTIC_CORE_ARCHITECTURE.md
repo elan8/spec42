@@ -61,7 +61,7 @@ syntax or metadata display names.
   must compare typed facts by stable identity.
 - Call hierarchy and monikers are disabled until the publication owns typed behavior/`perform`
   relationships.
-- `model-summary` emits a bounded, `schema_version`-stamped structural projection alongside the
+- `model-export` emits a bounded, `schema_version`-stamped structural projection alongside the
   validation summary: `sysml_query`'s `PublishedModel::projection` composes the per-element query
   groups into one deterministic answer, and `crates/server` materialises it to JSON at the
   boundary. Hosts read that contract; they do not reconstruct structure from display names or

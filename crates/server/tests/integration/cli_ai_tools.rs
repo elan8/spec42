@@ -1,4 +1,4 @@
-//! CLI coverage for agent surfaces (`explain-diagnostic`, `model-summary`).
+//! CLI coverage for agent surfaces (`explain-diagnostic`, `model-export`).
 
 use std::path::PathBuf;
 use std::process::Command;
@@ -54,13 +54,14 @@ fn cli_explain_diagnostic_returns_catalog_entry() {
 }
 
 #[test]
-fn cli_model_summary_emits_the_typed_projection() {
+fn cli_model_export_emits_the_typed_projection() {
     with_isolated_data_dir(|| {
         let path = kitchen_timer_path();
         let path = path.canonicalize().unwrap_or(path);
         let path_str = path.display().to_string();
 
-        let full = run_spec42_json(&["model-summary", &path_str, "--format", "json"]);
+        // No `--max-nodes`: the default is unbounded, so this is the whole workspace.
+        let full = run_spec42_json(&["model-export", &path_str, "--format", "json"]);
 
         assert_eq!(
             full.get("summary")
@@ -104,35 +105,43 @@ fn cli_model_summary_emits_the_typed_projection() {
                 .all(|element| element.get("token").and_then(|v| v.as_str()).is_some()),
             "every projected element carries a stable token"
         );
-        let nodes_total = full
-            .get("truncation")
-            .and_then(|t| t.get("nodes_total"))
+        let truncation = projection.get("truncation").expect("truncation object");
+        let elements_total = truncation
+            .get("elements_total")
             .and_then(|v| v.as_u64())
-            .expect("nodes_total");
-        assert_eq!(nodes_total, elements.len() as u64);
+            .expect("elements_total");
+        assert_eq!(elements_total, elements.len() as u64);
+        assert_eq!(
+            truncation
+                .get("elements_incomplete")
+                .and_then(|v| v.as_u64()),
+            Some(0)
+        );
 
         // `--max-nodes` bounds the element list and records the truncation.
         let bounded = run_spec42_json(&[
-            "model-summary",
+            "model-export",
             &path_str,
             "--max-nodes",
             "1",
             "--format",
             "json",
         ]);
+        let bounded_truncation = bounded
+            .get("projection")
+            .and_then(|p| p.get("truncation"))
+            .expect("truncation object");
         assert_eq!(
-            bounded
-                .get("truncation")
-                .and_then(|t| t.get("nodes_returned"))
+            bounded_truncation
+                .get("elements_returned")
                 .and_then(|v| v.as_u64()),
             Some(1)
         );
         assert_eq!(
-            bounded
-                .get("truncation")
-                .and_then(|t| t.get("nodes_total"))
+            bounded_truncation
+                .get("elements_total")
                 .and_then(|v| v.as_u64()),
-            Some(nodes_total),
+            Some(elements_total),
             "the total is unbounded even when the returned list is truncated"
         );
         assert_eq!(

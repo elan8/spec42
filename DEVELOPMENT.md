@@ -275,7 +275,7 @@ cargo test -p server --test integration kitchen_timer_check -- --include-ignored
 
 | Integration test | Surface |
 | --- | --- |
-| `cli_ai_tools` | CLI JSON output for `explain-diagnostic` / `model-summary` |
+| `cli_ai_tools` | CLI JSON output for `explain-diagnostic` / `model-export` |
 | `kitchen_timer_check` | `perform_check` smoke on bundled example |
 | `kpar_stdlib_embed_smoke` | Embedded OMG KPAR stdlib resolves `ScalarValues::Real` |
 | `multi_file_check` | Multi-file workspace import smoke |
@@ -369,7 +369,7 @@ metadata. The divan set remains the admission benchmark; none of these host timi
 
 ## AI assistants
 
-**VS Code extension (Copilot Agent):** requires `engines.vscode` **^1.99.0** for Language Model Tools. Four tools in `vscode/package.json` `contributes.languageModelTools` are registered from `vscode/src/lmTools/` and invoke the same `spec42` binary as the LSP (`check`, `doctor`, `explain-diagnostic`, `model-summary` with `--format json`).
+**VS Code extension (Copilot Agent):** requires `engines.vscode` **^1.99.0** for Language Model Tools. Four tools in `vscode/package.json` `contributes.languageModelTools` are registered from `vscode/src/lmTools/` and invoke the same `spec42` binary as the LSP (`check`, `doctor`, `explain-diagnostic`, `model-export` with `--format json`).
 
 **Other AI hosts (Copilot, Cursor, …):** use the CLI directly plus a per-host skill/instructions doc. Setup: [`docs/user/AI-ASSISTANTS.md`](docs/user/AI-ASSISTANTS.md).
 
@@ -381,7 +381,7 @@ cargo test -p server --test integration kitchen_timer_check -- --include-ignored
 cd vscode && npm run compile && npm run test:lm-cli-unit
 ```
 
-`cli_ai_tools` asserts CLI JSON output for `explain-diagnostic` / `model-summary` on the KitchenTimer fixture.
+`cli_ai_tools` asserts CLI JSON output for `explain-diagnostic` / `model-export` on the KitchenTimer fixture.
 
 ## Validation Pipeline
 

@@ -15,6 +15,7 @@ use crate::index::bindings as binding;
 use crate::index::documents::leaf_ranges_containing;
 use crate::index::documents::record_visited_index_entries;
 use crate::index::types;
+use crate::lower::facts::Declaration;
 use crate::lower::facts::MetadataAnnotationForm as LoweredMetadataAnnotationForm;
 use crate::lower::facts::MetadataAnnotationRecord;
 use crate::lower::facts::ParameterDirection;
@@ -3188,9 +3189,11 @@ impl<D> SemanticModel<D> {
     ///
     /// Adds no analysis -- it composes [`Self::all_elements`], [`Self::element_details`],
     /// [`Self::resolved_expression`], [`Self::metadata_annotation_details`] and
-    /// [`Self::all_connectors`], each of which reads facts the publication already settled. Per
-    /// element the composition is done only for the `max_nodes` that are returned, so the cost is
-    /// proportional to the bounded output.
+    /// [`Self::all_connectors`], each of which reads facts the publication already settled.
+    /// Per-element composition is bounded by `max_nodes`, but [`Self::all_elements`] itself
+    /// enumerates every admitted declaration (workspace and libraries) before that bound is
+    /// applied, so the cost is not proportional to a small `max_nodes` on a library-heavy
+    /// workspace.
     pub(crate) fn model_projection(
         &self,
         max_nodes: usize,
@@ -3208,13 +3211,19 @@ impl<D> SemanticModel<D> {
         let elements_total = workspace_elements.len();
 
         let mut elements = Vec::new();
+        let mut elements_incomplete = 0usize;
         for published in workspace_elements.into_iter().take(max_nodes) {
             let symbol = published.entry.identity;
             let details = match self.element_details(symbol).answer {
                 QueryAnswer::Resolved(details) => details,
                 // A workspace declaration with no settled details only happens for a publication
-                // that did not converge; the outcome completeness carries that.
-                _ => continue,
+                // that did not converge; the outcome completeness carries that. Tracked
+                // separately from `max_nodes` truncation so a consumer does not mistake one for
+                // the other -- see `ProjectionTruncation::is_truncated`.
+                _ => {
+                    elements_incomplete += 1;
+                    continue;
+                }
             };
             let expression = match self.resolved_expression(symbol).answer {
                 QueryAnswer::Resolved(expression) => expression,
@@ -3258,6 +3267,7 @@ impl<D> SemanticModel<D> {
             truncation: ProjectionTruncation {
                 elements_total,
                 elements_returned,
+                elements_incomplete,
             },
         })
     }
@@ -3316,10 +3326,10 @@ impl<D> SemanticModel<D> {
             .iter()
             .enumerate()
             .filter_map(|(index, declaration)| {
-                connector_kind(declaration.kind)?;
+                let kind = connector_kind(declaration.kind)?;
                 let id = DeclarationId::from_index(index).ok()?;
                 keep(id).then_some(())?;
-                self.project_connector(id)
+                self.project_connector(id, declaration, kind)
             })
             .collect::<Vec<_>>();
         connectors.sort_by(|left, right| {
@@ -3331,11 +3341,15 @@ impl<D> SemanticModel<D> {
     }
 
     /// One connector's type and resolved ends, or `None` for a declaration that is not a
-    /// projectable workspace connector (wrong kind, a named end reusing
-    /// `DeclarationKind::ConnectionUsage`, or a non-workspace document).
-    fn project_connector(&self, id: DeclarationId) -> Option<PublishedConnector> {
-        let declaration = self.storage.declaration(id)?;
-        let kind = connector_kind(declaration.kind)?;
+    /// projectable workspace connector (a named end reusing `DeclarationKind::ConnectionUsage`,
+    /// or a non-workspace document). `declaration` and `kind` are the caller's own lookup for
+    /// `id`, passed in rather than refetched.
+    fn project_connector(
+        &self,
+        id: DeclarationId,
+        declaration: &Declaration,
+        kind: ConnectorKind,
+    ) -> Option<PublishedConnector> {
         // A named connector end reuses `DeclarationKind::ConnectionUsage`; it is not itself a
         // connector.
         if self

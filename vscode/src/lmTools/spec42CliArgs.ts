@@ -32,14 +32,14 @@ export function buildDoctorArgv(ctx: Spec42CliContext): string[] {
   return appendLibraryPathArgs(["doctor", "--format", "json"], ctx.libraryPaths);
 }
 
-export function buildModelSummaryArgv(
+export function buildModelExportArgv(
   ctx: Spec42CliContext,
   targetPath: string,
   maxNodes: number,
   workspaceRoot?: string
 ): string[] {
   const args = appendLibraryPathArgs(
-    ["model-summary", targetPath, "--format", "json", "--max-nodes", String(maxNodes)],
+    ["model-export", targetPath, "--format", "json", "--max-nodes", String(maxNodes)],
     ctx.libraryPaths
   );
   const root = workspaceRoot ?? ctx.workspaceRoot;

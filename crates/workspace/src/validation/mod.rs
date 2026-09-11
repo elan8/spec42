@@ -57,7 +57,7 @@ pub fn validate_paths(
 }
 
 /// Validates `request.targets` and also returns the publication the report came from, for a
-/// caller that needs the resolved structure (`model-summary`'s typed projection) without a
+/// caller that needs the resolved structure (`model-export`'s typed projection) without a
 /// second build.
 pub fn validate_and_publish_paths(
     engine: &Spec42Engine,

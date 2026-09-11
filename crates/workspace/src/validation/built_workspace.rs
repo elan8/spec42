@@ -65,7 +65,7 @@ pub(super) fn validate_paths(
 
 /// Like [`validate_paths`], but also returns the publication the report was assembled from.
 ///
-/// The batch path publishes once; a caller that needs the resolved structure (`model-summary`'s
+/// The batch path publishes once; a caller that needs the resolved structure (`model-export`'s
 /// typed projection) reads it from this `PublishedModel` rather than triggering a second build.
 pub(super) fn validate_and_publish_paths(
     engine: &Spec42Engine,

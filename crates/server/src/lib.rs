@@ -24,10 +24,10 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 use std::sync::Arc;
 
-use ai_tools::{perform_explain_diagnostic, perform_model_summary};
+use ai_tools::{perform_explain_diagnostic, perform_model_export};
 use cli::{
     BundleArgs, CheckArgs, Cli, Command, DoctorArgs, ExplainDiagnosticArgs, InitArgs,
-    LibrariesCommand, ModelSummaryArgs, OutputFormat, StdlibCommand, SysandCommand, UnbundleArgs,
+    LibrariesCommand, ModelExportArgs, OutputFormat, StdlibCommand, SysandCommand, UnbundleArgs,
 };
 pub use environment::DoctorReport;
 use environment::{build_doctor_report, build_engine, resolve_environment};
@@ -49,7 +49,7 @@ pub fn perform_check(cli: &Cli, args: &CheckArgs) -> Result<HostValidationReport
 }
 
 /// Like [`perform_check`], but also returns the publication the report was assembled from, for a
-/// caller that needs the resolved structure (`model-summary`'s typed projection).
+/// caller that needs the resolved structure (`model-export`'s typed projection).
 pub fn perform_check_with_publication(
     cli: &Cli,
     args: &CheckArgs,
@@ -75,41 +75,27 @@ pub fn perform_doctor(cli: &Cli) -> Result<DoctorReport, String> {
     build_doctor_report("doctor", &environment)
 }
 
-#[derive(Debug, Clone, Serialize)]
-pub struct ModelSummaryTruncation {
-    /// Workspace-authored elements in the publication.
-    pub nodes_total: usize,
-    /// Elements carried in `projection.elements`; less than `nodes_total` when `--max-nodes`
-    /// bounded the list.
-    pub nodes_returned: usize,
-}
-
 #[derive(Debug, Serialize)]
-pub struct ModelSummaryResponse {
+pub struct ModelExportResponse {
     pub workspace_root: Option<String>,
     pub summary: HostValidationSummary,
-    pub truncation: ModelSummaryTruncation,
     /// The typed, `schema_version`-stamped projection of the publication's workspace-authored
-    /// structure. Read-only; see `sysml_query`'s `projection` contract.
+    /// structure, including its own `truncation` record. Read-only; see `sysml_query`'s
+    /// `projection` contract.
     pub projection: model_projection::ModelProjectionJson,
 }
 
-/// The bounded typed model summary: the validation summary plus the read-only projection of the
+/// The bounded typed model export: the validation summary plus the read-only projection of the
 /// publication (#157). `max_nodes` bounds the projected element list.
-pub fn build_model_summary(
+pub fn build_model_export(
     report: HostValidationReport,
     model: &PublishedModel,
     max_nodes: usize,
-) -> ModelSummaryResponse {
+) -> ModelExportResponse {
     let projection = model_projection::model_projection_json(model, max_nodes);
-    let truncation = ModelSummaryTruncation {
-        nodes_total: projection.truncation.elements_total,
-        nodes_returned: projection.truncation.elements_returned,
-    };
-    ModelSummaryResponse {
+    ModelExportResponse {
         workspace_root: report.workspace_root,
         summary: report.summary,
-        truncation,
         projection,
     }
 }
@@ -127,7 +113,7 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
         Some(Command::Generate(args)) => generation::run_generate(&cli, args),
         Some(Command::Doctor(args)) => run_doctor(&cli, args),
         Some(Command::ExplainDiagnostic(args)) => run_explain_diagnostic(&cli, args),
-        Some(Command::ModelSummary(args)) => run_model_summary(&cli, args),
+        Some(Command::ModelExport(args)) => run_model_export(&cli, args),
         Some(Command::Bundle(args)) => run_bundle(args),
         Some(Command::Unbundle(args)) => run_unbundle(args),
         Some(Command::Sysand { command }) => run_sysand(command),
@@ -319,10 +305,10 @@ fn run_explain_diagnostic(cli: &Cli, args: &ExplainDiagnosticArgs) -> Result<Exi
     Ok(ExitCode::SUCCESS)
 }
 
-fn run_model_summary(cli: &Cli, args: &ModelSummaryArgs) -> Result<ExitCode, String> {
-    let summary = perform_model_summary(
+fn run_model_export(cli: &Cli, args: &ModelExportArgs) -> Result<ExitCode, String> {
+    let export = perform_model_export(
         cli,
-        &ai_tools::ModelSummaryArgs {
+        &ai_tools::ModelExportArgs {
             path: args.path.clone(),
             workspace_root: args.workspace_root.clone(),
             max_nodes: args.max_nodes,
@@ -332,14 +318,14 @@ fn run_model_summary(cli: &Cli, args: &ModelSummaryArgs) -> Result<ExitCode, Str
         OutputFormat::Json => {
             println!(
                 "{}",
-                serde_json::to_string_pretty(&summary)
-                    .map_err(|err| format!("Failed to serialize model-summary as JSON: {err}"))?
+                serde_json::to_string_pretty(&export)
+                    .map_err(|err| format!("Failed to serialize model-export as JSON: {err}"))?
             );
         }
-        OutputFormat::Text => print_model_summary(&summary),
+        OutputFormat::Text => print_model_export(&export),
         other => {
             return Err(format!(
-                "model-summary supports text and json output, not {other:?}."
+                "model-export supports text and json output, not {other:?}."
             ));
         }
     }
@@ -718,14 +704,12 @@ fn print_explain_diagnostic(response: &ai_tools::ExplainDiagnosticResponse) {
     }
 }
 
-fn print_model_summary(summary: &ModelSummaryResponse) {
+fn print_model_export(export: &ModelExportResponse) {
     println!(
         "summary: {} error(s), {} warning(s), {} info",
-        summary.summary.error_count,
-        summary.summary.warning_count,
-        summary.summary.information_count
+        export.summary.error_count, export.summary.warning_count, export.summary.information_count
     );
-    let envelope = &summary.projection.envelope;
+    let envelope = &export.projection.envelope;
     println!(
         "publication: {}{}, evaluation {}",
         if envelope.complete {
@@ -740,12 +724,14 @@ fn print_model_summary(summary: &ModelSummaryResponse) {
         },
         if envelope.has_evaluation { "on" } else { "off" },
     );
+    let truncation = &export.projection.truncation;
     println!(
-        "elements: {}/{}, connectors: {} (projection schema v{})",
-        summary.truncation.nodes_returned,
-        summary.truncation.nodes_total,
-        summary.projection.connectors.len(),
-        summary.projection.schema_version,
+        "elements: {}/{}, incomplete: {}, connectors: {} (projection schema v{})",
+        truncation.elements_returned,
+        truncation.elements_total,
+        truncation.elements_incomplete,
+        export.projection.connectors.len(),
+        export.projection.schema_version,
     );
     println!(
         "admitted libraries: standard {} / library {} / external {}",

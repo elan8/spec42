@@ -32,7 +32,7 @@ It stays local-first: the language server, standard library, and Elan8 domain/me
 | Surface | Role |
 | --- | --- |
 | **VS Code** | Primary modeling environment: edit, navigate, diagram, inspect. |
-| **CLI** | Doctor, check, model summary (validation plus a typed structural projection), generation, and assistant-oriented commands. |
+| **CLI** | Doctor, check, model export (validation plus a typed structural JSON projection), generation, and assistant-oriented commands. |
 | **GitHub Action** | Repeatable model validation with optional SARIF upload. |
 | **LM Tools** | Validation and model context for AI-assisted workflows. |
 | **Zed** | Lightweight editor support with the same server family. |

@@ -1,4 +1,4 @@
-//! CLI agent surfaces for explain-diagnostic and model-summary.
+//! CLI agent surfaces for explain-diagnostic and model-export.
 
 use std::path::PathBuf;
 
@@ -7,7 +7,7 @@ use serde::Serialize;
 use crate::cli::{CheckArgs, Cli, OutputFormat};
 use crate::diagnostic_catalog;
 use crate::{
-    build_model_summary, perform_check, perform_check_with_publication, ModelSummaryResponse,
+    build_model_export, perform_check, perform_check_with_publication, ModelExportResponse,
 };
 
 #[derive(Debug, Clone)]
@@ -19,7 +19,7 @@ pub struct ExplainDiagnosticArgs {
 }
 
 #[derive(Debug, Clone)]
-pub struct ModelSummaryArgs {
+pub struct ModelExportArgs {
     pub path: PathBuf,
     pub workspace_root: Option<PathBuf>,
     pub max_nodes: usize,
@@ -111,10 +111,10 @@ pub fn perform_explain_diagnostic(
     })
 }
 
-pub fn perform_model_summary(
+pub fn perform_model_export(
     cli: &Cli,
-    args: &ModelSummaryArgs,
-) -> Result<ModelSummaryResponse, String> {
+    args: &ModelExportArgs,
+) -> Result<ModelExportResponse, String> {
     let check_args = CheckArgs {
         path: args.path.clone(),
         workspace_root: args.workspace_root.clone(),
@@ -124,5 +124,5 @@ pub fn perform_model_summary(
         strict_diagnostics: false,
     };
     let (report, model) = perform_check_with_publication(cli, &check_args)?;
-    Ok(build_model_summary(report, &model, args.max_nodes))
+    Ok(build_model_export(report, &model, args.max_nodes))
 }

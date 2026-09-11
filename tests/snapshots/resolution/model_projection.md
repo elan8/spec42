@@ -487,7 +487,7 @@ package Proj {
   (element (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::Car::right::p")) (expression not-applicable))
   (element (node (document "memory://snapshot/model_projection.md") (path (named (kind package) (name "Proj")) (named (kind part-def) (name "Car")) (anonymous (kind bare-connect) (ordinal 0)))) (expression not-applicable))
   (connector (node (document "memory://snapshot/model_projection.md") (path (named (kind package) (name "Proj")) (named (kind part-def) (name "Car")) (anonymous (kind bare-connect) (ordinal 0)))) (kind connection) (ends 2))
-  (truncation (elements-total 19) (elements-returned 19))
+  (truncation (elements-total 19) (elements-returned 19) (elements-incomplete 0))
 )
 ~~~
 # NAVIGATION

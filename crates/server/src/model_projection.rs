@@ -1,4 +1,4 @@
-//! JSON serialisation of the typed `PublishedModelProjection` for `spec42 model-summary
+//! JSON serialisation of the typed `PublishedModelProjection` for `spec42 model-export
 //! --format json`.
 //!
 //! The projection itself is an in-process value owned by `sysml_query`: elements are `SymbolId`s,
@@ -12,9 +12,9 @@ use serde_json::{json, Value};
 use sysml_query::resolved_slice::{
     ConnectedElement, ConnectorEndpoint, ElementDetails, EvaluatedScalar, ExpressionNode,
     ExpressionNodeKind, MetadataAnnotationValue, MultiplicityBound, MultiplicityFacts,
-    ProjectedElement, ProjectionEnvelope, ProjectionPhase, PublishedConnector, PublishedExpression,
-    PublishedMetadataAnnotation, PublishedModel, PublishedModelProjection, RelationshipFamily,
-    RelationshipTarget, SourceLocation, SymbolId, SymbolToken,
+    ProjectedElement, ProjectionEnvelope, PublishedConnector, PublishedExpression,
+    PublishedMetadataAnnotation, PublishedModel, RelationshipFamily, RelationshipTarget,
+    SourceLocation, SymbolId, SymbolToken,
 };
 
 /// The JSON form of one publication's whole-model projection.
@@ -50,22 +50,22 @@ pub struct AdmittedJson {
 pub struct TruncationJson {
     pub elements_total: usize,
     pub elements_returned: usize,
+    pub elements_incomplete: usize,
 }
 
 /// Serialises `model.projection().model(max_nodes)` for the given publication.
+///
+/// `model_projection` composes [`sysml_query::resolved_slice::QueryAnswer::Resolved`]-only
+/// queries (`all_elements`), so it always resolves; there is no non-`Resolved` answer for this
+/// caller to fall back on.
 pub fn model_projection_json(model: &PublishedModel, max_nodes: usize) -> ModelProjectionJson {
-    let projection: PublishedModelProjection = match model.projection().model(max_nodes).answer {
-        sysml_query::resolved_slice::QueryAnswer::Resolved(projection) => projection,
-        _ => PublishedModelProjection {
-            schema_version: sysml_query::resolved_slice::MODEL_PROJECTION_SCHEMA_VERSION,
-            envelope: fallback_envelope(model),
-            elements: Box::default(),
-            connectors: Box::default(),
-            truncation: sysml_query::resolved_slice::ProjectionTruncation {
-                elements_total: 0,
-                elements_returned: 0,
-            },
-        },
+    let sysml_query::resolved_slice::QueryAnswer::Resolved(projection) =
+        model.projection().model(max_nodes).answer
+    else {
+        unreachable!(
+            "model_projection composes only Resolved-answer queries (all_elements), so this \
+             is unreachable"
+        )
     };
 
     ModelProjectionJson {
@@ -84,26 +84,13 @@ pub fn model_projection_json(model: &PublishedModel, max_nodes: usize) -> ModelP
         truncation: TruncationJson {
             elements_total: projection.truncation.elements_total,
             elements_returned: projection.truncation.elements_returned,
+            elements_incomplete: projection.truncation.elements_incomplete,
         },
     }
 }
 
-fn fallback_envelope(model: &PublishedModel) -> ProjectionEnvelope {
-    // Only reached when the publication did not converge; the completeness carries the reason.
-    ProjectionEnvelope {
-        phase: ProjectionPhase::Resolved,
-        completeness: model.publication().completeness(),
-        has_evaluation: false,
-        source_digest: model.publication().source_digest(),
-        model_digest: model.publication().model_digest(),
-        admitted: sysml_query::resolved_slice::AdmittedSourceCounts::default(),
-    }
-}
-
 fn envelope_json(envelope: &ProjectionEnvelope) -> EnvelopeJson {
-    let phase = match envelope.phase {
-        ProjectionPhase::Resolved => "resolved",
-    };
+    let phase = envelope.phase.as_str();
     let obstacles = envelope
         .completeness
         .obstacles()

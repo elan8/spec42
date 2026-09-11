@@ -5,7 +5,7 @@ import {
   buildCheckArgv,
   buildDoctorArgv,
   buildExplainDiagnosticArgv,
-  buildModelSummaryArgv,
+  buildModelExportArgv,
 } from "../../lmTools/spec42CliArgs";
 
 describe("spec42Cli argv builder", () => {
@@ -52,9 +52,9 @@ describe("spec42Cli argv builder", () => {
     ]);
   });
 
-  it("buildModelSummaryArgv honors max nodes", () => {
-    assert.deepEqual(buildModelSummaryArgv(ctx, "models", 1), [
-      "model-summary",
+  it("buildModelExportArgv honors max nodes", () => {
+    assert.deepEqual(buildModelExportArgv(ctx, "models", 1), [
+      "model-export",
       "models",
       "--format",
       "json",

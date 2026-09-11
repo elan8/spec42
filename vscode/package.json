@@ -464,11 +464,11 @@
         }
       },
       {
-        "name": "spec42_model_summary",
-        "toolReferenceName": "spec42ModelSummary",
-        "displayName": "Spec42 model summary",
-        "modelDescription": "Validate the path and return error and warning counts plus a read-only, schema-versioned projection of the model's resolved structure: workspace elements with their relationship families, resolved expression trees and metadata annotations, connectors, and a publication envelope. Bounded by max-nodes.",
-        "userDescription": "Validation summary and structural projection for a SysML model.",
+        "name": "spec42_model_export",
+        "toolReferenceName": "spec42ModelExport",
+        "displayName": "Spec42 model export",
+        "modelDescription": "Validate the path and return error and warning counts plus a read-only, schema-versioned JSON export of the model's resolved structure: workspace elements with their relationship families, resolved expression trees and metadata annotations, connectors, and a publication envelope. Bounded by max-nodes.",
+        "userDescription": "Validation summary and structural JSON export for a SysML model.",
         "canBeReferencedInPrompt": true,
         "icon": "$(type-hierarchy)",
         "when": "resourceExtname == .sysml || resourceExtname == .kerml || workspaceFolderCount > 0",
