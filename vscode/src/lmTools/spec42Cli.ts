@@ -8,7 +8,7 @@ export {
   buildCheckArgv,
   buildDoctorArgv,
   buildExplainDiagnosticArgv,
-  buildModelSummaryArgv,
+  buildModelExportArgv,
 } from "./spec42CliArgs";
 
 export function runSpec42Json(

@@ -61,8 +61,11 @@ syntax or metadata display names.
   must compare typed facts by stable identity.
 - Call hierarchy and monikers are disabled until the publication owns typed behavior/`perform`
   relationships.
-- `model-summary` is validation-only. A bounded structural summary requires its own typed query;
-  hosts must not reconstruct one from display names or serialized output.
+- `model-export` emits a bounded, `schema_version`-stamped structural projection alongside the
+  validation summary: `sysml_query`'s `PublishedModel::projection` composes the per-element query
+  groups into one deterministic answer, and `crates/server` materialises it to JSON at the
+  boundary. Hosts read that contract; they do not reconstruct structure from display names or
+  serialized output.
 - Import and ambiguous-name quick fixes are disabled until typed queries provide candidates,
   provenance, and authored replacement/insertion ranges.
 

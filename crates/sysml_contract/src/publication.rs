@@ -18,6 +18,17 @@ pub enum PublicationObstacle {
     NonConverged,
 }
 
+impl PublicationObstacle {
+    /// A stable kebab-case name, for snapshot and JSON output.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::ParseRecovery => "parse-recovery",
+            Self::UnsupportedSyntax => "unsupported-syntax",
+            Self::NonConverged => "non-converged",
+        }
+    }
+}
+
 /// The complete set of obstacles encountered while constructing one publication.
 ///
 /// The representation is private so callers cannot manufacture unknown states. Iteration is in

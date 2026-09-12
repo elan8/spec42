@@ -2665,6 +2665,9 @@ fn regenerate_snapshot(
         &hover_workspace,
         &probes,
         &qualified_reference_probes,
+        // The projection section is opt-in and its composition is not free, so it is rendered
+        // only for the fixtures that declare a `# PROJECTION` section.
+        raw_section(fixture, "PROJECTION").is_some(),
     )?;
     ensure_sections_balanced(&canonical).map_err(|error| format!("{}: {error}", path.display()))?;
 
@@ -2764,6 +2767,10 @@ fn regenerate_snapshot(
     } else {
         replace_section(&fixture, "CONNECTIONS", &canonical.connections).unwrap_or(fixture)
     };
+    // The whole-model projection section is opt-in: a fixture carries it only if it already
+    // declares a `# PROJECTION` section. It is not corpus-wide -- the deep content is covered by
+    // the sibling sections, and this one exists for the composition, ordering and envelope.
+    let fixture = replace_section(&fixture, "PROJECTION", &canonical.projection).unwrap_or(fixture);
     let fixture = replace_or_insert_section(&fixture, "NAVIGATION", &canonical.navigation)
         .ok_or_else(|| format!("{}: missing SOURCE section", path.display()))?;
     let fixture = if probes.queries.is_empty() {
@@ -6816,6 +6823,7 @@ struct OwnedSections {
     expressions: String,
     metadata_annotations: String,
     connections: String,
+    projection: String,
     diagnostics: String,
     navigation: String,
     editor_queries: String,
@@ -6852,6 +6860,7 @@ fn render_owned_sections(
     hover_workspace: &InMemoryWorkspace,
     probes: &EditorProbes,
     qualified_reference_probes: &[QualifiedReferenceProbe],
+    render_projection: bool,
 ) -> Result<OwnedSections, String> {
     // Both strings are complete owner-defined projections. The SMG includes publication phase,
     // completeness, evaluation state, and all owned facts; diagnostics includes canonical order.
@@ -6877,6 +6886,13 @@ fn render_owned_sections(
         .debug()
         .write_connections_sexpr(&mut connections)
         .map_err(|error| format!("connection rendering failed: {error}"))?;
+    let mut projection = String::new();
+    if render_projection {
+        model
+            .debug()
+            .write_projection_sexpr(&mut projection)
+            .map_err(|error| format!("projection rendering failed: {error}"))?;
+    }
     let mut navigation = String::new();
     model
         .debug()
@@ -6902,6 +6918,7 @@ fn render_owned_sections(
         expressions,
         metadata_annotations,
         connections,
+        projection,
         diagnostics,
         navigation,
         editor_queries,
@@ -7006,6 +7023,7 @@ fn ensure_sections_balanced(sections: &OwnedSections) -> Result<(), String> {
     ensure_balanced("EXPRESSIONS", &sections.expressions)?;
     ensure_balanced("METADATA ANNOTATIONS", &sections.metadata_annotations)?;
     ensure_balanced("CONNECTIONS", &sections.connections)?;
+    ensure_balanced("PROJECTION", &sections.projection)?;
     ensure_balanced("DIAGNOSTICS", &sections.diagnostics)?;
     ensure_balanced("NAVIGATION", &sections.navigation)?;
     ensure_balanced("EDITOR RESULTS", &sections.editor_queries).and_then(|()| {
@@ -7700,6 +7718,7 @@ const SECTION_ORDER: &[&str] = &[
     "EXPRESSIONS",
     "METADATA ANNOTATIONS",
     "CONNECTIONS",
+    "PROJECTION",
     "NAVIGATION",
     "EDITOR RESULTS",
     "HOVER RESULTS",

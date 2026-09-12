@@ -36,7 +36,7 @@ pub use sysml_query::source::{
     ContentDigest, InMemoryProvider, RootDigest, SourceDocument, SourceKind, SourceProvider,
 };
 pub use validation::{
-    built_workspace_input_from_snapshot, report_from_built_workspace, validate_paths,
-    BuiltWorkspaceInput, PipelineHook, ValidationPipelineHook, ValidationRequest,
+    built_workspace_input_from_snapshot, report_from_built_workspace, validate_and_publish_paths,
+    validate_paths, BuiltWorkspaceInput, PipelineHook, ValidationPipelineHook, ValidationRequest,
 };
 pub use version::{HostArtifactMetadata, HostSchemaVersions};

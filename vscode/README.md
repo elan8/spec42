@@ -30,7 +30,7 @@ Everything runs locally. Models stay in your workspace; Spec42 does not require 
   the selected one, regenerates on its own whenever the model changes, and offers `Home` /
   `JSON` / `SVG` / `PNG`. **Spec42: Open Diagram** focuses it. Where a view's typed projection is
   still incomplete the panel reports the typed reason rather than guessing.
-- Built-in Copilot Language Model Tools for check, doctor, model summary, and diagnostic explanation.
+- Built-in Copilot Language Model Tools for check, doctor, model export, and diagnostic explanation.
 
 ## Views
 

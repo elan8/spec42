@@ -41,8 +41,9 @@ pub enum Command {
     Doctor(DoctorArgs),
     /// Explain a diagnostic code.
     ExplainDiagnostic(ExplainDiagnosticArgs),
-    /// Validation-only model summary pending a bounded typed structural query.
-    ModelSummary(ModelSummaryArgs),
+    /// Validation summary plus a read-only, schema-versioned JSON export of a publication's
+    /// resolved structure.
+    ModelExport(ModelExportArgs),
     /// Create a validated local KPAR archive from a model directory.
     Bundle(BundleArgs),
     /// Validate and atomically unpack a local KPAR archive.
@@ -183,16 +184,15 @@ pub struct ExplainDiagnosticArgs {
     pub format: OutputFormat,
 }
 
-fn default_max_nodes() -> usize {
-    500
-}
-
 #[derive(Debug, Clone, Args)]
-pub struct ModelSummaryArgs {
+pub struct ModelExportArgs {
     pub path: PathBuf,
     #[arg(long = "workspace-root")]
     pub workspace_root: Option<PathBuf>,
-    #[arg(long = "max-nodes", default_value_t = default_max_nodes())]
+    /// Bounds the returned element list; the full count is always reported in
+    /// `projection.truncation`. Defaults to unbounded -- pass an explicit bound for a large
+    /// workspace under an agent's context budget.
+    #[arg(long = "max-nodes", default_value_t = usize::MAX)]
     pub max_nodes: usize,
     #[arg(long = "format", value_enum, default_value_t = OutputFormat::Json)]
     pub format: OutputFormat,
@@ -433,10 +433,10 @@ mod tests {
     }
 
     #[test]
-    fn model_summary_command_parses() {
+    fn model_export_command_parses() {
         let cli = Cli::parse_from([
             "spec42",
-            "model-summary",
+            "model-export",
             "models",
             "--workspace-root",
             "workspace",
@@ -446,13 +446,22 @@ mod tests {
             "json",
         ]);
         match cli.command {
-            Some(Command::ModelSummary(args)) => {
+            Some(Command::ModelExport(args)) => {
                 assert_eq!(args.path, PathBuf::from("models"));
                 assert_eq!(args.workspace_root, Some(PathBuf::from("workspace")));
                 assert_eq!(args.max_nodes, 1);
                 assert_eq!(args.format, OutputFormat::Json);
             }
-            other => panic!("expected model-summary command, got {other:?}"),
+            other => panic!("expected model-export command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn model_export_max_nodes_defaults_to_unbounded() {
+        let cli = Cli::parse_from(["spec42", "model-export", "models"]);
+        match cli.command {
+            Some(Command::ModelExport(args)) => assert_eq!(args.max_nodes, usize::MAX),
+            other => panic!("expected model-export command, got {other:?}"),
         }
     }
 

@@ -39,6 +39,8 @@ use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionStatus;
 use crate::Diagnostic;
 use crate::TextRange;
+use source_identity::PublicationModelDigest;
+use source_identity::RootDigest;
 use source_identity::SourceRole;
 
 use std::fmt;
@@ -290,6 +292,119 @@ pub(crate) fn write_connections_only(
     output: &mut dyn fmt::Write,
 ) -> fmt::Result {
     write_connections(model, output)
+}
+
+pub(crate) fn write_projection_only(
+    model: &ResolvedSemanticModel,
+    source_digest: &RootDigest,
+    model_digest: &PublicationModelDigest,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    write_projection(model, source_digest, model_digest, output)
+}
+
+/// Renders the whole-model projection: the publication envelope, every workspace element (its
+/// canonical identity, its resolved-expression outcome, and its metadata-annotation count), and
+/// every connector, in the projection's canonical order.
+///
+/// Deliberately shallow: the deep content -- relationship families, expression trees, annotation
+/// bodies, connector ends -- is already covered by the `SMG`, `EXPRESSIONS`, `METADATA
+/// ANNOTATIONS` and `CONNECTIONS` sections of the same fixture. This section proves the
+/// composition itself: schema version, envelope, canonical ordering, workspace-only scoping, and
+/// truncation.
+pub(crate) fn write_projection(
+    model: &ResolvedSemanticModel,
+    source_digest: &RootDigest,
+    model_digest: &PublicationModelDigest,
+    output: &mut dyn fmt::Write,
+) -> fmt::Result {
+    let projection = match model
+        .model_projection(usize::MAX, *source_digest, *model_digest)
+        .answer
+    {
+        crate::QueryAnswer::Resolved(projection) => projection,
+        _ => {
+            writeln!(output, "(projection (status incomplete))")?;
+            return Ok(());
+        }
+    };
+
+    writeln!(
+        output,
+        "(projection (schema-version {})",
+        projection.schema_version
+    )?;
+
+    let envelope = &projection.envelope;
+    let phase = envelope.phase.as_str();
+    let completeness = if envelope.completeness.is_complete() {
+        "complete".to_owned()
+    } else {
+        envelope
+            .completeness
+            .obstacles()
+            .map(crate::PublicationObstacle::as_str)
+            .collect::<Vec<_>>()
+            .join(",")
+    };
+    write!(
+        output,
+        "  (envelope (phase {phase}) (completeness {completeness}) (has-evaluation {})",
+        envelope.has_evaluation
+    )?;
+    let admitted = envelope.admitted;
+    if admitted.standard_library > 0 || admitted.library > 0 || admitted.external > 0 {
+        write!(
+            output,
+            " (admitted (standard-library {}) (library {}) (external {}))",
+            admitted.standard_library, admitted.library, admitted.external
+        )?;
+    }
+    writeln!(output, ")")?;
+
+    for element in projection.elements.iter() {
+        let Some(id) = model.declaration_of(element.identity) else {
+            continue;
+        };
+        write!(output, "  (element ")?;
+        write_node_identity(model, id, output)?;
+        write!(
+            output,
+            " (expression {})",
+            element.expression.outcome.as_str()
+        )?;
+        if !element.metadata_annotations.is_empty() {
+            write!(
+                output,
+                " (metadata-annotations {})",
+                element.metadata_annotations.len()
+            )?;
+        }
+        writeln!(output, ")")?;
+    }
+
+    for connector in projection.connectors.iter() {
+        let Some(id) = model.declaration_of(connector.identity) else {
+            continue;
+        };
+        write!(output, "  (connector ")?;
+        write_node_identity(model, id, output)?;
+        writeln!(
+            output,
+            " (kind {}) (ends {}))",
+            connector.kind.as_str(),
+            connector.ends.len()
+        )?;
+    }
+
+    writeln!(
+        output,
+        "  (truncation (elements-total {}) (elements-returned {}) (elements-incomplete {}))",
+        projection.truncation.elements_total,
+        projection.truncation.elements_returned,
+        projection.truncation.elements_incomplete
+    )?;
+    writeln!(output, ")")
 }
 
 /// Renders every workspace `connect` / `interface` connector with its type and resolved ends,
@@ -705,11 +820,7 @@ pub(crate) fn write_metadata(
             .metadata
             .completeness
             .obstacles()
-            .map(|obstacle| match obstacle {
-                crate::PublicationObstacle::ParseRecovery => "parse-recovery",
-                crate::PublicationObstacle::UnsupportedSyntax => "unsupported-syntax",
-                crate::PublicationObstacle::NonConverged => "non-converged",
-            })
+            .map(crate::PublicationObstacle::as_str)
             .collect::<Vec<_>>()
             .join(",")
     };

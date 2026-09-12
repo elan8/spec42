@@ -30,8 +30,6 @@ These are not compatibility promises for 1.0:
   Grid view kinds consume typed projections; Geometry stays partial until authored geometry and 3D
   catch up. Where a projection is still incomplete the panel reports the typed reason rather than
   guessing. The `sysml/model` graph query is not restored.
-- `model-summary` reports validation only. Structural nodes and relationships require a bounded
-  typed query owned by the immutable publication.
 - Call hierarchy and monikers require typed behavior/`perform` relationships.
 - Add-import and qualify-ambiguous-name actions require typed candidates, provenance, and authored
   edit ranges.
