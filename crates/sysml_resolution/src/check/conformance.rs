@@ -793,17 +793,18 @@ impl<D> SemanticModel<D> {
         Some((lower, upper))
     }
 
-    /// Reports every declaration in `document` that reaches itself through specialization.
+    /// Reports every declaration in `document` whose specialization cycle is entirely closed and
+    /// does not include `Base::Anything`.
     ///
-    /// The closure already computed this while it saturated; the legacy check rediscovered it with
-    /// a depth-first search per node over the whole graph.
+    /// KerML 7.3.2.3 allows other specialization cycles as shared extent (the SelfLink ends
+    /// idiom). The closure already classified each declaration while it saturated.
     pub(crate) fn collect_specialization_cycles(
         &self,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         for id in declared.iter().copied() {
-            if !self.types.specialization().is_cyclic(id) {
+            if !self.types.specialization().is_invalid_closed_cycle(id) {
                 continue;
             }
             diagnostics.push(self.declaration_diagnostic(

@@ -155,6 +155,7 @@ package Demo {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/model_diagnostic_categories.md") (path (named (kind package) (name "Demo")) (anonymous (kind perform-action) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Process")) (source inherited) (from (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::process"))))
       (supertype (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::Process")) (scopes any))
       (supertype (node (document "memory://snapshot/model_diagnostic_categories.md") (qualified-name "Demo::process")) (scopes any feature))
     )

@@ -735,6 +735,7 @@ package '9-Verification-simplified' {
     )
     (declaration (id (node (document "memory://snapshot/9_verification_simplified.md") (path (named (kind package) (name "9-Verification-simplified")) (named (kind package) (name "Usages")) (named (kind part) (name "massVerificationSystem")) (anonymous (kind perform-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Usages::massVerificationSystem")))
+      (effective-type (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest")) (source inherited) (from (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest"))))
       (supertype (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Definitions::MassTest")) (scopes any))
       (supertype (node (document "memory://snapshot/9_verification_simplified.md") (qualified-name "9-Verification-simplified::Usages::vehicleMassTest")) (scopes any feature))
     )

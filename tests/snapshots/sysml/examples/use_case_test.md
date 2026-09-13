@@ -240,6 +240,7 @@ package UseCaseTest {
     )
     (declaration (id (node (document "memory://snapshot/use_case_test.md") (path (named (kind package) (name "UseCaseTest")) (named (kind part) (name "system")) (anonymous (kind perform-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::system")))
+      (effective-type (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::UseSystem")) (source inherited) (from (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::u"))))
       (supertype (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::UseSystem")) (scopes any))
       (supertype (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::u")) (scopes any feature))
     )

@@ -224,12 +224,6 @@ package '5-State-based Behavior-2' {
         (range (start 113 19) (end 113 35))
       )
       (diagnostic
-        (severity error)
-        (code "specialization_cycle")
-        (source "semantic")
-        (range (start 115 3) (end 117 4))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

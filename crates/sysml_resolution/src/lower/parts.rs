@@ -32,8 +32,8 @@ use sysml_v2_parser::ast::{
     ItemUsage as ParserItemUsage, MembershipKind as ParserMembershipKind, Node,
     OccurrenceBodyElement, OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage,
     OccurrenceUsageBody, OccurrenceUsagePrefix, OwnedCrossUsage, PartDef, PartDefBody,
-    PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement, RefDecl, ReturnDecl,
-    UnextendedUsagePrefix,
+    PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement, RefDecl, RefDeclKind,
+    ReturnDecl, UnextendedUsagePrefix,
 };
 
 impl SemanticModelBuilder {
@@ -668,14 +668,15 @@ impl SemanticModelBuilder {
 
     /// Lowers a `ref <name>: <Type>;` non-owning referential feature (BNF `ReferenceUsage`,
     /// `ast::RefDecl`), reused verbatim across part/attribute/action/state/connection/interface/
-    /// package bodies. Mirrors `lower_part_usage`'s ownership/typing/redefines/subsets shape (`ref`
-    /// is a `FeatureMembership` like any other usage; see `ast::connector::ref_decl`'s
-    /// `Membership::feature` construction), since `RefDecl` carries the same structured
-    /// `typing`/`redefines`/`subsets` clauses as `PartUsage`/`AttributeUsage`. Its body is the
-    /// general usage-member set (`RefBody = Body<PartUsageBodyElement>`, `UsageBody =
-    /// DefinitionBody` per SysML 8.2.2.6.2) whatever declaration owns it, so it walks through the
-    /// shared `lower_part_usage_body_element` dispatcher under
-    /// `UnsupportedFamily::ReferenceUsageMember`.
+    /// package bodies. The optional kind keyword after `ref` (`ref item`, `ref action`, …) is the
+    /// authored usage metaclass; a bare `ref` stays `ReferenceUsage`. Mirrors `lower_part_usage`'s
+    /// ownership/typing/redefines/subsets shape (`ref` is a `FeatureMembership` like any other
+    /// usage; see `ast::connector::ref_decl`'s `Membership::feature` construction), since `RefDecl`
+    /// carries the same structured `typing`/`redefines`/`subsets` clauses as
+    /// `PartUsage`/`AttributeUsage`. Its body is the general usage-member set
+    /// (`RefBody = Body<PartUsageBodyElement>`, `UsageBody = DefinitionBody` per SysML 8.2.2.6.2)
+    /// whatever declaration owns it, so it walks through the shared
+    /// `lower_part_usage_body_element` dispatcher under `UnsupportedFamily::ReferenceUsageMember`.
     pub(crate) fn lower_ref_decl(
         &mut self,
         document: DocumentIdx,
@@ -689,7 +690,7 @@ impl SemanticModelBuilder {
         let declaration = self.push_typed_declaration(
             document,
             owner,
-            DeclarationKind::ReferenceUsage,
+            ref_decl_declaration_kind(node.value.kind_keyword),
             name,
             node.span,
             DeclarationFacts {
@@ -701,8 +702,10 @@ impl SemanticModelBuilder {
                     constant: node.value.is_constant,
                     ordered: node.value.multiplicity_modifiers.is_ordered(),
                     nonunique: !node.value.multiplicity_modifiers.is_unique(),
-                    // The `ref` keyword is this declaration's own form, not a prefix modifier on
-                    // some other usage, so `reference` stays false here.
+                    // Bare `ref name` is the ReferenceUsage form itself. `ref item` / `ref action`
+                    // / … keep the authored usage metaclass and record the `ref` keyword as the
+                    // referential prefix so implied library specialization follows the kind.
+                    reference: node.value.kind_keyword.is_some(),
                     ..DeclarationModifiers::default()
                 },
                 direction: direction_fact(node.value.direction.as_ref()),
@@ -2090,5 +2093,26 @@ impl SemanticModelBuilder {
             self.lower_occurrence_body_element(document, declaration, element)?;
         }
         Ok(())
+    }
+}
+
+/// The usage metaclass authored after `ref`. A bare `ref` is `ReferenceUsage`; `ref item` /
+/// `ref action` / … keep the same kind the keyword-first productions lower, so implied library
+/// specialization and member inheritance follow the authored usage family.
+fn ref_decl_declaration_kind(kind_keyword: Option<RefDeclKind>) -> DeclarationKind {
+    match kind_keyword {
+        None => DeclarationKind::ReferenceUsage,
+        Some(RefDeclKind::Part) => DeclarationKind::PartUsage,
+        Some(RefDeclKind::Port) => DeclarationKind::PortUsage,
+        Some(RefDeclKind::Item) => DeclarationKind::ItemUsage,
+        Some(RefDeclKind::Requirement) => DeclarationKind::RequirementUsage,
+        Some(RefDeclKind::UseCase) => DeclarationKind::UseCaseUsage,
+        Some(RefDeclKind::Concern) => DeclarationKind::ConcernUsage,
+        Some(RefDeclKind::Viewpoint) => DeclarationKind::ViewpointUsage,
+        Some(RefDeclKind::Rendering) => DeclarationKind::RenderingUsage,
+        Some(RefDeclKind::View) => DeclarationKind::ViewUsage,
+        Some(RefDeclKind::Action) => DeclarationKind::ActionUsage,
+        Some(RefDeclKind::Case) => DeclarationKind::CaseUsage,
+        Some(RefDeclKind::Verification) => DeclarationKind::VerificationCaseUsage,
     }
 }
