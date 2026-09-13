@@ -157,6 +157,18 @@ pub fn parse_perf_logging_enabled_from_value(
         .unwrap_or(default_enabled)
 }
 
+/// Opt-in semantic-token AST merge traces. Maps to `spec42.semanticTokens.debug`.
+pub fn parse_semantic_tokens_debug_from_value(
+    value: Option<&serde_json::Value>,
+    default_enabled: bool,
+) -> bool {
+    value
+        .and_then(|opts| opts.get("semanticTokens"))
+        .and_then(|tokens| tokens.get("debug"))
+        .and_then(|enabled| enabled.as_bool())
+        .unwrap_or(default_enabled)
+}
+
 /// Development-only override: include library paths in the debounced workspace-wide
 /// diagnostics sweep (normally excluded — see `publish_workspace_diagnostics`'s comment
 /// and `DEVELOPMENT.md`'s performance checks). Maps to the VS Code setting
@@ -216,7 +228,7 @@ pub(crate) fn library_full_scan_enabled() -> bool {
 mod tests {
     use super::{
         apply_incremental_change, parse_diagnose_library_paths_from_value,
-        untyped_part_usage_diagnostics,
+        parse_semantic_tokens_debug_from_value, untyped_part_usage_diagnostics,
     };
     use tower_lsp::lsp_types::{Position, Range};
 
@@ -280,5 +292,20 @@ mod tests {
 
         let value = serde_json::json!({ "diagnostics": { "includeLibraryPaths": false } });
         assert!(!parse_diagnose_library_paths_from_value(Some(&value), true));
+    }
+
+    #[test]
+    fn semantic_tokens_debug_defaults_when_absent() {
+        assert!(!parse_semantic_tokens_debug_from_value(None, false));
+        assert!(parse_semantic_tokens_debug_from_value(None, true));
+    }
+
+    #[test]
+    fn semantic_tokens_debug_reads_nested_flag() {
+        let value = serde_json::json!({ "semanticTokens": { "debug": true } });
+        assert!(parse_semantic_tokens_debug_from_value(Some(&value), false));
+
+        let value = serde_json::json!({ "semanticTokens": { "debug": false } });
+        assert!(!parse_semantic_tokens_debug_from_value(Some(&value), true));
     }
 }

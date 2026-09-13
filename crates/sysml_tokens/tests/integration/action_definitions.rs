@@ -3,7 +3,7 @@ use sysml_query::syntax::ParsedSource;
 fn parse_for_editor(text: &str) -> ParsedSource {
     sysml_query::syntax::SyntaxService::new().parse_text(text)
 }
-use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full};
+use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full, TYPE_KEYWORD, TYPE_PROPERTY};
 
 fn decode_semantic_tokens(data: &[u32]) -> Vec<(u32, u32, u32, u32)> {
     let mut line: u32 = 0;
@@ -87,4 +87,65 @@ fn requirement_def_body_tokenizes_subject_and_stakeholder() {
     let decoded = decode_semantic_tokens(&tokens.data);
     assert!(token_text(content, &decoded, "vehicle"));
     assert!(token_text(content, &decoded, "auditor"));
+}
+
+fn token_type_on_line(
+    content: &str,
+    tokens: &[(u32, u32, u32, u32)],
+    line: u32,
+    ident: &str,
+) -> Option<u32> {
+    let lines: Vec<&str> = content.lines().collect();
+    tokens.iter().find_map(|(ln, start, len, ty)| {
+        if *ln != line {
+            return None;
+        }
+        let line_str = lines.get(*ln as usize)?;
+        let text: String = line_str
+            .chars()
+            .skip(*start as usize)
+            .take(*len as usize)
+            .collect();
+        if text == ident {
+            Some(*ty)
+        } else {
+            None
+        }
+    })
+}
+
+#[test]
+fn action_def_body_transition_tokenizes_members_not_whole_span() {
+    let content = r#"package P {
+  action def Mission {
+    action idle;
+    action flying;
+    transition first idle accept StartMission then flying;
+  }
+}"#;
+    let parsed = parse_for_editor(content);
+    let ranges = ast_semantic_ranges(&parsed, content);
+    let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
+    let decoded = decode_semantic_tokens(&tokens.data);
+
+    assert_eq!(
+        token_type_on_line(content, &decoded, 4, "transition"),
+        Some(TYPE_KEYWORD),
+        "transition keyword must stay a keyword, not inherit a wide Property span"
+    );
+    assert_eq!(
+        token_type_on_line(content, &decoded, 4, "idle"),
+        Some(TYPE_PROPERTY),
+        "transition source should be a property"
+    );
+    assert_eq!(
+        token_type_on_line(content, &decoded, 4, "StartMission"),
+        Some(TYPE_PROPERTY),
+        "transition accept should be a property"
+    );
+    assert_eq!(
+        token_type_on_line(content, &decoded, 4, "flying"),
+        Some(TYPE_PROPERTY),
+        "transition target should be a property"
+    );
 }

@@ -1,8 +1,10 @@
-﻿//! LSP adapter over the shared sysml_tokens crate.
+//! LSP adapter over the shared sysml_tokens crate.
 
 pub use sysml_tokens::{
     ast_semantic_ranges, legend_token_types, semantic_tokens_full as semantic_tokens_full_dto,
-    semantic_tokens_range as semantic_tokens_range_dto, SemanticTokensDto, SourceRange,
+    semantic_tokens_full_debug as semantic_tokens_full_debug_dto,
+    semantic_tokens_range as semantic_tokens_range_dto,
+    semantic_tokens_range_debug as semantic_tokens_range_debug_dto, SemanticTokensDto, SourceRange,
 };
 
 use tower_lsp::lsp_types::{
@@ -23,7 +25,15 @@ pub fn semantic_tokens_full(
     text: &str,
     ast_ranges: Option<&[(SourceRange, u32)]>,
 ) -> (SemanticTokens, Vec<String>) {
-    let (dto, logs) = semantic_tokens_full_dto(text, ast_ranges);
+    semantic_tokens_full_debug(text, ast_ranges, false)
+}
+
+pub fn semantic_tokens_full_debug(
+    text: &str,
+    ast_ranges: Option<&[(SourceRange, u32)]>,
+    debug: bool,
+) -> (SemanticTokens, Vec<String>) {
+    let (dto, logs) = semantic_tokens_full_debug_dto(text, ast_ranges, debug);
     (dto_to_lsp(dto), logs)
 }
 
@@ -35,13 +45,34 @@ pub fn semantic_tokens_range(
     end_character: u32,
     ast_ranges: Option<&[(SourceRange, u32)]>,
 ) -> (SemanticTokens, Vec<String>) {
-    let (dto, logs) = semantic_tokens_range_dto(
+    semantic_tokens_range_debug(
         text,
         start_line,
         start_character,
         end_line,
         end_character,
         ast_ranges,
+        false,
+    )
+}
+
+pub fn semantic_tokens_range_debug(
+    text: &str,
+    start_line: u32,
+    start_character: u32,
+    end_line: u32,
+    end_character: u32,
+    ast_ranges: Option<&[(SourceRange, u32)]>,
+    debug: bool,
+) -> (SemanticTokens, Vec<String>) {
+    let (dto, logs) = semantic_tokens_range_debug_dto(
+        text,
+        start_line,
+        start_character,
+        end_line,
+        end_character,
+        ast_ranges,
+        debug,
     );
     (dto_to_lsp(dto), logs)
 }

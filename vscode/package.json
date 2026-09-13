@@ -583,6 +583,11 @@
           "default": false,
           "description": "Enable structured performance and startup logging for troubleshooting. Leave this off during normal use."
         },
+        "spec42.semanticTokens.debug": {
+          "type": "boolean",
+          "default": false,
+          "description": "Log semantic-token AST ranges and merge overrides to the SysML output channel. Requires a language server restart. Leave this off during normal use."
+        },
         "spec42.workspace.maxFilesPerPattern": {
           "type": "number",
           "default": 500,

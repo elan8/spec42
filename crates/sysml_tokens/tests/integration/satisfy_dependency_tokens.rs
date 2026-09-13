@@ -203,3 +203,67 @@ fn vehicle_definitions_fixture_tokenizes_part_port_and_interface_names() {
         Some(TYPE_PROPERTY)
     );
 }
+
+#[test]
+fn requirement_def_body_satisfy_tokenizes_source_and_target() {
+    let content = r#"package Demo {
+  requirement def EnduranceReq;
+  part def Drone;
+  requirement endurance : EnduranceReq;
+  part droneInstance : Drone;
+  requirement def Spec {
+    satisfy endurance by droneInstance;
+  }
+}"#;
+    let parsed = parse_for_editor(content);
+    let ranges = ast_semantic_ranges(&parsed, content);
+    let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
+    let decoded = decode_semantic_tokens(&tokens.data);
+
+    assert_eq!(
+        token_type_on_line(content, &decoded, 6, "satisfy"),
+        Some(TYPE_KEYWORD)
+    );
+    assert_eq!(
+        token_type_on_line(content, &decoded, 6, "endurance"),
+        Some(TYPE_PROPERTY),
+        "satisfy source inside a requirement def should be a property"
+    );
+    assert_eq!(
+        token_type_on_line(content, &decoded, 6, "droneInstance"),
+        Some(TYPE_PROPERTY),
+        "satisfy target inside a requirement def should be a property"
+    );
+}
+
+#[test]
+fn action_def_body_dependency_tokenizes_clients_and_suppliers() {
+    let content = r#"package Demo {
+  part def Client;
+  part def Supplier;
+  part client : Client;
+  part supplier : Supplier;
+  action def Link {
+    dependency from client to supplier;
+  }
+}"#;
+    let parsed = parse_for_editor(content);
+    let ranges = ast_semantic_ranges(&parsed, content);
+    let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
+    let decoded = decode_semantic_tokens(&tokens.data);
+
+    assert_eq!(
+        token_type_on_line(content, &decoded, 6, "dependency"),
+        Some(TYPE_KEYWORD)
+    );
+    assert_eq!(
+        token_type_on_line(content, &decoded, 6, "client"),
+        Some(TYPE_PROPERTY),
+        "dependency client inside an action def should be a property"
+    );
+    assert_eq!(
+        token_type_on_line(content, &decoded, 6, "supplier"),
+        Some(TYPE_PROPERTY),
+        "dependency supplier inside an action def should be a property"
+    );
+}

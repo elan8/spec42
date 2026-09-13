@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Semantic tokens use parser name spans and can be traced from the editor (#35).** Definition
+  names come from `Identification` rather than a first-line text search; transition /
+  satisfy / dependency members keep source, accept, and target spans instead of painting the
+  whole statement; and `spec42.semanticTokens.debug` opts into AST-merge logging. The
+  text-search refine pass and `span_len > 2 * token` merge guard are gone: collectors emit
+  parser name spans or nothing.
+
 - **The last Spec42-owned bundled-stdlib unresolved references now resolve (#135).** `ref item` /
   `ref action` keep the authored usage metaclass so inherited members such as
   `envelopedItem.innerSpaceDimension` and `thisConnection.start` are visible; an end feature's

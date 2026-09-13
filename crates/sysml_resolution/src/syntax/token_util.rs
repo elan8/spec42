@@ -2,7 +2,7 @@
 
 use super::{SyntaxRange, SyntaxRole};
 
-use sysml_v2_parser::ast::Identification;
+use sysml_v2_parser::ast::{Identification, NamespaceName, QualifiedIdentification};
 use sysml_v2_parser::Span;
 
 /// Accept both legacy textual type names and parser 0.35 typed relationships.
@@ -109,16 +109,42 @@ fn is_ident_byte(b: Option<u8>) -> bool {
     b.is_some_and(|b| b.is_ascii_alphanumeric() || b == b'_')
 }
 
-/// Push a definition shell span (refined to the declared name during merge) plus optional specializes type.
-pub fn push_ident_definition_spans(
-    span: &Span,
+/// Push the parser's declared name span. Anonymous declarations contribute no name token.
+pub fn push_identification_definition_spans(
+    identification: &Identification,
     specializes_span: Option<&Span>,
     role: SyntaxRole,
     out: &mut Vec<(SyntaxRange, SyntaxRole)>,
 ) {
-    out.push((span_to_source_range(span), role));
+    if let Some(name) = identification.name.or(identification.short_name) {
+        out.push((span_to_source_range(name.span()), role));
+    }
     if let Some(s) = specializes_span {
         out.push((span_to_source_range(s), SyntaxRole::Type));
+    }
+}
+
+/// Push a namespace declaration name from the parser's qualified identification.
+pub fn push_qualified_identification_definition_spans(
+    document: &sysml_v2_parser::ParsedDocument,
+    identification: &QualifiedIdentification,
+    role: SyntaxRole,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    match identification.name.as_ref() {
+        Some(NamespaceName::Simple(name)) => {
+            out.push((span_to_source_range(name.span()), role));
+        }
+        Some(NamespaceName::Qualified(name)) => {
+            if let Some(view) = document.qualified_declaration_name(*name) {
+                out.push((span_to_source_range(&view.metadata.span), role));
+            }
+        }
+        None => {
+            if let Some(short) = identification.short_name {
+                out.push((span_to_source_range(short.span()), role));
+            }
+        }
     }
 }
 
