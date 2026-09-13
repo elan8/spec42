@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **SelfLink mutual subsetting is no longer reported as `specialization_cycle` (#135).** KerML
+  7.3.2.3 treats a specialization cycle as shared extent; only an entirely closed cycle that
+  does not include `Base::Anything` is an error. The kernel `thisThing subsets sameThing` /
+  `sameThing subsets thisThing` idiom escapes through redefinition and typing, so the bundled
+  standard-library ratchet drops its two remaining specialization-cycle errors.
+
 - **`spec42 model-summary` is renamed `spec42 model-export`, and now emits a typed structural
   projection of the publication (#157). BREAKING: the CLI subcommand, the VS Code Language
   Model Tool id (`spec42_model_summary` -> `spec42_model_export`), and the MCP-era `#spec42Model*`

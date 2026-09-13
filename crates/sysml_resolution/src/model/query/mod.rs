@@ -3941,11 +3941,13 @@ impl<D> SemanticModel<D> {
         if specific == general {
             return Conformance::Conforms;
         }
-        // A declaration that reaches itself has a malformed hierarchy. Its closure is still
-        // complete, so an answer could be produced -- but producing one would turn a modelling
-        // error into a published semantic fact, which is exactly what the explicit-state rule
-        // exists to prevent.
-        if self.types.specialization().is_cyclic(specific) {
+        // An entirely closed cycle that omits Anything is a modelling error. Other cycles are
+        // shared extent (KerML 7.3.2.3); answering from their complete closure is the fact.
+        if self
+            .types
+            .specialization()
+            .is_invalid_closed_cycle(specific)
+        {
             return Conformance::Indeterminate(ConformanceObstacle::CyclicSpecialization);
         }
         if self

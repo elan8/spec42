@@ -30,11 +30,8 @@ const EXPECTED_KPAR_COUNT: usize = 10;
 /// a change here is a deliberate inventory change that belongs in the same commit.
 const EXPECTED_DOCUMENT_COUNT: usize = 94;
 
-const EXPECTED_DIAGNOSTICS: &[(&str, usize)] = &[
-    ("ambiguous_reference", 2),
-    ("specialization_cycle", 2),
-    ("unresolved_reference", 9),
-];
+const EXPECTED_DIAGNOSTICS: &[(&str, usize)] =
+    &[("ambiguous_reference", 2), ("unresolved_reference", 9)];
 
 fn base_cli() -> Cli {
     Cli {
@@ -166,7 +163,7 @@ fn bundled_standard_library_diagnostic_inventory_is_ratcheted() {
             .map(|(code, count)| ((*code).to_owned(), *count))
             .collect::<std::collections::BTreeMap<_, _>>();
 
-        assert_eq!(report.summary.error_count, 4);
+        assert_eq!(report.summary.error_count, 2);
         assert_eq!(report.summary.warning_count, 9);
         assert_eq!(report.summary.information_count, 0);
         assert_eq!(

@@ -269,8 +269,8 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     DiagnosticCatalogEntry {
         code: "specialization_cycle",
         severity: "error",
-        meaning: "A specialization, subsetting, or redefinition chain contains a cycle.",
-        typical_fix: "Break the cyclic specializes/subsets/redefines chain.",
+        meaning: "A specialization, subsetting, or redefinition cycle is entirely closed and does not include Base::Anything. KerML treats other cycles as shared extent.",
+        typical_fix: "Add an escape specialization (typically of Anything) or break the closed cycle.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
