@@ -624,6 +624,77 @@ fn definition_line_offers_create_typed_usage_refactor() {
 }
 
 #[test]
+fn unwrapped_root_member_offers_wrap_in_package_refactor() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root = temp.path().canonicalize().expect("canonical root");
+    let path = root.join("wrap.sysml");
+    let content = "part def X { }";
+    fs::write(&path, content).expect("write wrap.sysml");
+    let root_uri = url::Url::from_file_path(&root).expect("workspace root uri");
+    let uri = url::Url::from_file_path(&path)
+        .expect("document uri")
+        .to_string();
+
+    let mut session = TestSession::new();
+    session.initialize_with_root("refactor_wrap_in_package", &root_uri);
+    session.did_open(&uri, content, 1);
+    session.barrier();
+
+    let response = session.request(
+        "textDocument/codeAction",
+        serde_json::json!({
+            "textDocument": { "uri": uri },
+            "range": {
+                "start": { "line": 0, "character": 0 },
+                "end": { "line": 0, "character": 14 }
+            },
+            "context": { "diagnostics": [], "only": ["refactor"] }
+        }),
+    );
+    let actions = response["result"].as_array().unwrap_or_else(|| {
+        panic!("expected code actions, got {response}");
+    });
+    let action = actions
+        .iter()
+        .find(|action| action["title"].as_str() == Some("Wrap in package"))
+        .unwrap_or_else(|| panic!("wrap in package refactor, got {actions:?}"));
+    assert_eq!(action["kind"].as_str(), Some("refactor"));
+    let edit = &action["edit"]["documentChanges"][0]["edits"][0];
+    assert_eq!(
+        edit["range"],
+        serde_json::json!({
+            "start": { "line": 0, "character": 0 },
+            "end": { "line": 0, "character": 14 }
+        })
+    );
+    let wrapped = "package Generated {\npart def X { }\n}\n";
+    assert_eq!(edit["newText"].as_str(), Some(wrapped));
+
+    session.did_change_full(&uri, wrapped, 2);
+    session.barrier();
+    let after = session.request(
+        "textDocument/codeAction",
+        serde_json::json!({
+            "textDocument": { "uri": uri },
+            "range": {
+                "start": { "line": 0, "character": 0 },
+                "end": { "line": 2, "character": 1 }
+            },
+            "context": { "diagnostics": [], "only": ["refactor"] }
+        }),
+    );
+    let remaining = after["result"]
+        .as_array()
+        .unwrap_or_else(|| panic!("expected code actions after wrap, got {after}"));
+    assert!(
+        remaining
+            .iter()
+            .all(|action| action["title"].as_str() != Some("Wrap in package")),
+        "wrap-in-package must not be offered after the edit is applied: {remaining:?}"
+    );
+}
+
+#[test]
 fn workspace_scan_publishes_diagnostics_for_unopened_file() {
     let temp = tempfile::tempdir().expect("temp dir");
     let root = temp.path().canonicalize().expect("canonical root");
