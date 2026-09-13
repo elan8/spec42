@@ -204,7 +204,9 @@ function hierarchyGeneralLayout(
 
 type GeneralElkGraphBuild = {
   graph: Record<string, unknown>;
-  flatGraph: Record<string, unknown>;
+  /** Builds the non-hierarchical retry graph. Only called on the rare QuickJS-recursion-ceiling
+   * fallback path, so building it costs nothing on every other render. */
+  buildFlatGraph: () => Record<string, unknown>;
   diagramNodes: PreparedNode[];
   diagramEdges: PreparedView["edges"];
   useHierarchy: boolean;
@@ -259,6 +261,17 @@ function generalDiagramElements(prepared: PreparedView): {
   return { diagramNodes, diagramEdges };
 }
 
+/** Which node contains which, from the "hierarchy"-kind edges in a diagram's edge list. Shared by
+ * the ELK graph builder and the non-ELK row-layout fallback so both agree on what counts as a
+ * containment edge for the same view. */
+function computeContainmentParent(diagramEdges: PreparedView["edges"]): Map<string, string> {
+  return new Map(
+    diagramEdges
+      .filter((edge) => normalizeEdgeKind(edge.edgeKind ?? edge.label) === "hierarchy")
+      .map((edge) => [edge.target, edge.source]),
+  );
+}
+
 function buildGeneralElkGraph(prepared: PreparedView): GeneralElkGraphBuild | null {
   const { diagramNodes, diagramEdges } = generalDiagramElements(prepared);
   if (!diagramNodes.length) return null;
@@ -268,11 +281,7 @@ function buildGeneralElkGraph(prepared: PreparedView): GeneralElkGraphBuild | nu
       | Array<{ id: string; name: string; memberIds: string[] }>
       | undefined) ?? [];
   const useHierarchy = packageGroups.length >= 2;
-  const containmentParent = new Map(
-    diagramEdges
-      .filter((edge) => normalizeEdgeKind(edge.edgeKind ?? edge.label) === "hierarchy")
-      .map((edge) => [edge.target, edge.source]),
-  );
+  const containmentParent = computeContainmentParent(diagramEdges);
   if (!useHierarchy && containmentParent.size > 0) return null;
 
   let children: unknown[];
@@ -326,12 +335,12 @@ function buildGeneralElkGraph(prepared: PreparedView): GeneralElkGraphBuild | nu
       children,
       edges,
     },
-    flatGraph: {
+    buildFlatGraph: () => ({
       id: "root",
       layoutOptions: buildElkLayoutOptions("general"),
       children: diagramNodes.map(generalLeafElkNode),
       edges,
-    },
+    }),
     diagramNodes,
     diagramEdges,
     useHierarchy,
@@ -367,14 +376,10 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
     // ELK. Recompute only that non-ELK plan here; every ELK input is owned by the builder above.
     const { diagramNodes, diagramEdges } = generalDiagramElements(prepared);
     if (!diagramNodes.length) return { nodes: [], edges: [] };
-    const containmentParent = new Map(
-      diagramEdges
-        .filter((edge) => normalizeEdgeKind(edge.edgeKind ?? edge.label) === "hierarchy")
-        .map((edge) => [edge.target, edge.source]),
-    );
+    const containmentParent = computeContainmentParent(diagramEdges);
     return hierarchyGeneralLayout(diagramNodes, diagramEdges, containmentParent);
   }
-  const { graph, flatGraph, diagramNodes, diagramEdges, useHierarchy } = generalBuild;
+  const { graph, buildFlatGraph, diagramNodes, diagramEdges, useHierarchy } = generalBuild;
   let laidOut: Awaited<ReturnType<typeof elk.layout>>;
   try {
     laidOut = await elk.layout(graph as unknown as Parameters<typeof elk.layout>[0]);
@@ -387,7 +392,7 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
     // Retry the exact render product without ELK hierarchy; package frames are still drawn from
     // the semantic package groups after layout.
     try {
-      laidOut = await elk.layout(flatGraph as unknown as Parameters<typeof elk.layout>[0]);
+      laidOut = await elk.layout(buildFlatGraph() as unknown as Parameters<typeof elk.layout>[0]);
     } catch {
       return fallbackGeneralLayout(diagramNodes, diagramEdges);
     }

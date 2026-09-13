@@ -57,6 +57,16 @@ pub struct Geometry {
     pub counts: GeometryCounts,
 }
 
+/// A digest that's stable across equivalent JSON regardless of formatting or object-key order,
+/// used to detect nondeterministic layout output across repeated runs.
+///
+/// This explicit re-sort is necessary, not redundant: the pinned `elkrs` dependency requests
+/// serde_json's `preserve_order` feature (`cargo tree -e features -i serde_json` shows the edge:
+/// `elkrs -> serde_json feature "preserve_order"`), and Cargo's feature unification applies that
+/// workspace-wide — so `serde_json::Value::Object` here is insertion-order-preserving, not the
+/// `BTreeMap`-backed default serde_json ships without that feature. Without this canonicalization
+/// step, two structurally-identical layout outputs that merely built their JSON objects in a
+/// different key order would hash differently and be misreported as nondeterministic.
 pub fn canonical_json_digest(value: &Value) -> String {
     fn canonicalize(value: &Value) -> Value {
         match value {
@@ -480,6 +490,19 @@ mod tests {
             0.0,
         );
         assert_eq!(comparison.status, ComparisonStatus::Exact);
+    }
+
+    #[test]
+    fn canonical_json_digest_ignores_object_key_order() {
+        let left: Value =
+            serde_json::from_str(r#"{"id":"root","children":[{"id":"a","x":1.0}]}"#).unwrap();
+        let right: Value =
+            serde_json::from_str(r#"{"children":[{"x":1.0,"id":"a"}],"id":"root"}"#).unwrap();
+        assert_eq!(canonical_json_digest(&left), canonical_json_digest(&right));
+
+        let different: Value =
+            serde_json::from_str(r#"{"id":"root","children":[{"id":"a","x":2.0}]}"#).unwrap();
+        assert_ne!(canonical_json_digest(&left), canonical_json_digest(&different));
     }
 
     #[test]

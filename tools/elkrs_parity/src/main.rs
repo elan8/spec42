@@ -553,6 +553,23 @@ fn compare_fixture(
     })
 }
 
+/// An `EngineMeasurement` for a run that stopped early (nondeterminism detected, or the engine
+/// itself errored): timing reflects whatever samples were collected before the stop, and every
+/// other field is the shared "nothing to report" shape. Only `deterministic` and `error` vary
+/// between the two callers in `measure`.
+fn error_measurement(durations: &[std::time::Duration], deterministic: bool, error: String) -> EngineMeasurement {
+    EngineMeasurement {
+        first_layout_us: durations.first().copied().unwrap_or_default().as_micros(),
+        median_layout_us: median(durations).as_micros(),
+        min_layout_us: durations.iter().min().copied().unwrap_or_default().as_micros(),
+        output_bytes: 0,
+        output_digest: None,
+        deterministic,
+        contract_errors: Vec::new(),
+        error: Some(error),
+    }
+}
+
 fn measure<F>(iterations: u32, mut layout: F) -> (EngineMeasurement, Option<Value>)
 where
     F: FnMut() -> Result<Value, String>,
@@ -570,50 +587,17 @@ where
                     .as_ref()
                     .is_some_and(|expected| expected != &digest)
                 {
-                    return (
-                        EngineMeasurement {
-                            first_layout_us: durations[0].as_micros(),
-                            median_layout_us: median(&durations).as_micros(),
-                            min_layout_us: durations
-                                .iter()
-                                .min()
-                                .copied()
-                                .unwrap_or_default()
-                                .as_micros(),
-                            output_bytes: 0,
-                            output_digest: None,
-                            deterministic: false,
-                            contract_errors: Vec::new(),
-                            error: Some(format!(
-                                "layout output changed across identical runs: expected {}, got {digest}",
-                                output_digest.as_deref().unwrap_or("(missing)")
-                            )),
-                        },
-                        None,
+                    let error = format!(
+                        "layout output changed across identical runs: expected {}, got {digest}",
+                        output_digest.as_deref().unwrap_or("(missing)")
                     );
+                    return (error_measurement(&durations, false, error), None);
                 }
                 output_digest = Some(digest);
                 last_output = Some(output);
             }
             Err(error) => {
-                return (
-                    EngineMeasurement {
-                        first_layout_us: durations.first().copied().unwrap_or_default().as_micros(),
-                        median_layout_us: median(&durations).as_micros(),
-                        min_layout_us: durations
-                            .iter()
-                            .min()
-                            .copied()
-                            .unwrap_or_default()
-                            .as_micros(),
-                        output_bytes: 0,
-                        output_digest: None,
-                        deterministic: true,
-                        contract_errors: Vec::new(),
-                        error: Some(error),
-                    },
-                    None,
-                );
+                return (error_measurement(&durations, true, error), None);
             }
         }
     }
