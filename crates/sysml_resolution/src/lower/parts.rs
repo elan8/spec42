@@ -31,7 +31,7 @@ use sysml_v2_parser::ast::{
     ExtendedUsage, FeatureValue, InOut, InOutDecl, InOutDeclKind, ItemDef,
     ItemUsage as ParserItemUsage, MembershipKind as ParserMembershipKind, Node,
     OccurrenceBodyElement, OccurrenceDef, OccurrenceUsage as ParserOccurrenceUsage,
-    OccurrenceUsageBody,     OccurrenceUsagePrefix, OwnedCrossUsage, PartDef, PartDefBody,
+    OccurrenceUsageBody, OccurrenceUsagePrefix, OwnedCrossUsage, PartDef, PartDefBody,
     PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement, RefDecl, RefDeclKind,
     ReturnDecl, UnextendedUsagePrefix,
 };
