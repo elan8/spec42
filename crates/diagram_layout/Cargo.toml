@@ -1,0 +1,12 @@
+[package]
+name = "diagram_layout"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Native ELK layout boundary for Spec42 diagram products"
+
+[dependencies]
+elkrs = { git = "https://github.com/elan8/elkrs.git", rev = "8309be8cf614cfe277c572b28e4f79a1703f8e32" }
+serde_json.workspace = true
+thiserror.workspace = true

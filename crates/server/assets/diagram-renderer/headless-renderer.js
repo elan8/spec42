@@ -5238,11 +5238,8 @@ var Spec42HeadlessRendererBundle = (() => {
     if (!trimmed || trimmed.toLowerCase() === "entry") return "";
     return trimmed;
   }
-  async function layoutBehaviorGraph(prepared, options) {
+  function buildBehaviorElkGraphInput(prepared, options) {
     const horizontal = options.horizontal ?? false;
-    const positions = /* @__PURE__ */ new Map();
-    const edgeSectionsById = /* @__PURE__ */ new Map();
-    const edgeLabelsById = /* @__PURE__ */ new Map();
     const children2 = prepared.nodes.map((node) => {
       const size = nodeDimensions(node, options.mode);
       return { id: node.id, width: size.width, height: size.height };
@@ -5281,7 +5278,7 @@ var Spec42HeadlessRendererBundle = (() => {
       };
     });
     const isState = options.mode === "state";
-    const graph = {
+    return {
       id: prepared.title || "behavior",
       layoutOptions: isState ? buildElkLayoutOptions("behavior-state", {
         "elk.direction": horizontal ? "RIGHT" : "DOWN"
@@ -5293,7 +5290,15 @@ var Spec42HeadlessRendererBundle = (() => {
       children: children2,
       edges
     };
-    const laidOut = await behaviorElk.layout(graph);
+  }
+  async function layoutBehaviorGraph(prepared, options) {
+    const positions = /* @__PURE__ */ new Map();
+    const edgeSectionsById = /* @__PURE__ */ new Map();
+    const edgeLabelsById = /* @__PURE__ */ new Map();
+    const graph = buildBehaviorElkGraphInput(prepared, options);
+    const laidOut = await behaviorElk.layout(
+      graph
+    );
     for (const child of laidOut.children ?? []) {
       positions.set(String(child.id), {
         x: child.x ?? 0,
@@ -7684,14 +7689,29 @@ var Spec42HeadlessRendererBundle = (() => {
     });
     return { nodes: laidOutNodes, edges: routedEdges };
   }
-  async function layoutPrepared(prepared) {
-    if (!prepared.nodes.length) return { nodes: [], edges: [] };
-    if (prepared.view === "interconnection-view") {
-      return layoutInterconnectionPrepared(prepared);
+  function generalLeafElkNode(node) {
+    const compartments = collectCompartments(node);
+    const box = generalNodeBox(node, compartments);
+    return { id: node.id, width: box.width, height: box.height };
+  }
+  function chunkGeneralElkChildren(idPrefix, elkNodes) {
+    const wideSiblingThreshold = 8;
+    if (elkNodes.length <= wideSiblingThreshold) return elkNodes;
+    const chunkSize = Math.max(1, Math.ceil(Math.sqrt(elkNodes.length) / 2));
+    const chunks = [];
+    for (let i = 0; i < elkNodes.length; i += chunkSize) {
+      chunks.push({
+        id: `${idPrefix}#chunk${chunks.length}`,
+        layoutOptions: {
+          "elk.direction": "DOWN",
+          "elk.padding": "[top=8,left=8,bottom=8,right=8]"
+        },
+        children: elkNodes.slice(i, i + chunkSize)
+      });
     }
-    if (prepared.view === "action-flow-view" || prepared.view === "state-transition-view" || prepared.view === "sequence-view" || prepared.view === "browser-view" || prepared.view === "grid-view" || prepared.view === "geometry-view") {
-      return { nodes: [], edges: [] };
-    }
+    return chunks;
+  }
+  function generalDiagramElements(prepared) {
     const representedRelationshipNodes = new Set(
       prepared.edges.flatMap((edge) => {
         const origin = edge.attributes?.originNodeId;
@@ -7706,42 +7726,20 @@ var Spec42HeadlessRendererBundle = (() => {
     const diagramEdges = prepared.edges.filter(
       (edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target)
     );
-    if (!diagramNodes.length) return { nodes: [], edges: [] };
-    const packageGroups = prepared.meta?.packageContainerGroups ?? [];
-    const useHierarchy = packageGroups.length >= 2;
-    const containmentParent = new Map(
+    return { diagramNodes, diagramEdges };
+  }
+  function computeContainmentParent(diagramEdges) {
+    return new Map(
       diagramEdges.filter((edge) => normalizeEdgeKind(edge.edgeKind ?? edge.label) === "hierarchy").map((edge) => [edge.target, edge.source])
     );
-    const useContainmentRows = !useHierarchy && containmentParent.size > 0;
-    if (useContainmentRows) {
-      return hierarchyGeneralLayout(diagramNodes, diagramEdges, containmentParent);
-    }
-    const leafElkNode = (node) => {
-      const compartments = collectCompartments(node);
-      const box = generalNodeBox(node, compartments);
-      return {
-        id: node.id,
-        width: box.width,
-        height: box.height
-      };
-    };
-    const WIDE_SIBLING_THRESHOLD = 8;
-    const chunkedElkChildren = (idPrefix, elkNodes) => {
-      if (elkNodes.length <= WIDE_SIBLING_THRESHOLD) return elkNodes;
-      const chunkSize = Math.max(1, Math.ceil(Math.sqrt(elkNodes.length) / 2));
-      const chunks = [];
-      for (let i = 0; i < elkNodes.length; i += chunkSize) {
-        chunks.push({
-          id: `${idPrefix}#chunk${chunks.length}`,
-          layoutOptions: {
-            "elk.direction": "DOWN",
-            "elk.padding": "[top=8,left=8,bottom=8,right=8]"
-          },
-          children: elkNodes.slice(i, i + chunkSize)
-        });
-      }
-      return chunks;
-    };
+  }
+  function buildGeneralElkGraph(prepared) {
+    const { diagramNodes, diagramEdges } = generalDiagramElements(prepared);
+    if (!diagramNodes.length) return null;
+    const packageGroups = prepared.meta?.packageContainerGroups ?? [];
+    const useHierarchy = packageGroups.length >= 2;
+    const containmentParent = computeContainmentParent(diagramEdges);
+    if (!useHierarchy && containmentParent.size > 0) return null;
     let children2;
     let flatChildrenWereChunked = false;
     if (useHierarchy) {
@@ -7752,12 +7750,12 @@ var Spec42HeadlessRendererBundle = (() => {
       const byPackage = /* @__PURE__ */ new Map();
       const orphans = [];
       for (const node of diagramNodes) {
-        const pkgId = memberToPackage.get(node.id);
-        const elkNode = leafElkNode(node);
-        if (pkgId) {
-          const list = byPackage.get(pkgId) ?? [];
-          list.push(elkNode);
-          byPackage.set(pkgId, list);
+        const packageId = memberToPackage.get(node.id);
+        const elkNode = generalLeafElkNode(node);
+        if (packageId) {
+          const members = byPackage.get(packageId) ?? [];
+          members.push(elkNode);
+          byPackage.set(packageId, members);
         } else {
           orphans.push(elkNode);
         }
@@ -7768,22 +7766,55 @@ var Spec42HeadlessRendererBundle = (() => {
           "elk.direction": "DOWN",
           "elk.padding": "[top=36,left=20,bottom=20,right=20]"
         },
-        children: chunkedElkChildren(group.id, byPackage.get(group.id) ?? [])
+        children: chunkGeneralElkChildren(group.id, byPackage.get(group.id) ?? [])
       }));
       children2 = [...containers, ...orphans];
     } else {
-      const flatChildren = diagramNodes.map(leafElkNode);
-      children2 = chunkedElkChildren("root", flatChildren);
+      const flatChildren = diagramNodes.map(generalLeafElkNode);
+      children2 = chunkGeneralElkChildren("root", flatChildren);
       flatChildrenWereChunked = children2 !== flatChildren;
     }
-    const graph = {
-      id: "root",
-      layoutOptions: buildElkLayoutOptions("general", {
-        "elk.hierarchyHandling": useHierarchy || flatChildrenWereChunked ? "INCLUDE_CHILDREN" : void 0
+    const edges = diagramEdges.map((edge) => ({
+      id: edge.id,
+      sources: [edge.source],
+      targets: [edge.target]
+    }));
+    return {
+      graph: {
+        id: "root",
+        layoutOptions: buildElkLayoutOptions("general", {
+          "elk.hierarchyHandling": useHierarchy || flatChildrenWereChunked ? "INCLUDE_CHILDREN" : void 0
+        }),
+        children: children2,
+        edges
+      },
+      buildFlatGraph: () => ({
+        id: "root",
+        layoutOptions: buildElkLayoutOptions("general"),
+        children: diagramNodes.map(generalLeafElkNode),
+        edges
       }),
-      children: children2,
-      edges: diagramEdges.map((edge) => ({ id: edge.id, sources: [edge.source], targets: [edge.target] }))
+      diagramNodes,
+      diagramEdges,
+      useHierarchy
     };
+  }
+  async function layoutPrepared(prepared) {
+    if (!prepared.nodes.length) return { nodes: [], edges: [] };
+    if (prepared.view === "interconnection-view") {
+      return layoutInterconnectionPrepared(prepared);
+    }
+    if (prepared.view === "action-flow-view" || prepared.view === "state-transition-view" || prepared.view === "sequence-view" || prepared.view === "browser-view" || prepared.view === "grid-view" || prepared.view === "geometry-view") {
+      return { nodes: [], edges: [] };
+    }
+    const generalBuild = buildGeneralElkGraph(prepared);
+    if (!generalBuild) {
+      const { diagramNodes: diagramNodes2, diagramEdges: diagramEdges2 } = generalDiagramElements(prepared);
+      if (!diagramNodes2.length) return { nodes: [], edges: [] };
+      const containmentParent = computeContainmentParent(diagramEdges2);
+      return hierarchyGeneralLayout(diagramNodes2, diagramEdges2, containmentParent);
+    }
+    const { graph, buildFlatGraph, diagramNodes, diagramEdges, useHierarchy } = generalBuild;
     let laidOut;
     try {
       laidOut = await elk.layout(graph);
@@ -7791,18 +7822,8 @@ var Spec42HeadlessRendererBundle = (() => {
       if (!useHierarchy) {
         return fallbackGeneralLayout(diagramNodes, diagramEdges);
       }
-      const flatGraph = {
-        id: "root",
-        layoutOptions: buildElkLayoutOptions("general"),
-        children: diagramNodes.map(leafElkNode),
-        edges: diagramEdges.map((edge) => ({
-          id: edge.id,
-          sources: [edge.source],
-          targets: [edge.target]
-        }))
-      };
       try {
-        laidOut = await elk.layout(flatGraph);
+        laidOut = await elk.layout(buildFlatGraph());
       } catch {
         return fallbackGeneralLayout(diagramNodes, diagramEdges);
       }

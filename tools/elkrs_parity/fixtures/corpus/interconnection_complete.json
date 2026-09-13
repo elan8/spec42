@@ -19,25 +19,60 @@
   },
   "children": [
     {
-      "id": "occ_Grid.northSouthRing",
+      "id": "n_0",
       "width": 420,
       "height": 100,
-      "ports": [],
+      "ports": [
+        {
+          "id": "n_0__port__output",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "n_0__port__output__label",
+              "text": "output",
+              "width": 30,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "WEST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        },
+        {
+          "id": "n_0__port__input",
+          "width": 10,
+          "height": 10,
+          "labels": [
+            {
+              "id": "n_0__port__input__label",
+              "text": "input",
+              "width": 25,
+              "height": 10
+            }
+          ],
+          "layoutOptions": {
+            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.index": "0"
+          }
+        }
+      ],
       "children": [
         {
-          "id": "occ_Grid.northSouthRing.ringSegmentBtoC",
+          "id": "n_3",
           "width": 280,
           "height": 140,
           "ports": [
             {
-              "id": "occ_Grid.northSouthRing.ringSegmentBtoC__port__a",
+              "id": "n_3__port__tap",
               "width": 10,
               "height": 10,
               "labels": [
                 {
-                  "id": "occ_Grid.northSouthRing.ringSegmentBtoC__port__a__label",
-                  "text": "a",
-                  "width": 12,
+                  "id": "n_3__port__tap__label",
+                  "text": "tap",
+                  "width": 15,
                   "height": 10
                 }
               ],
@@ -70,50 +105,25 @@
         "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
         "org.eclipse.elk.nodeSize.minimum": "(420,100)"
       }
-    },
-    {
-      "id": "occ_Grid.txStationB",
-      "width": 280,
-      "height": 140,
-      "ports": [
-        {
-          "id": "occ_Grid.txStationB__port__mvConnection",
-          "width": 10,
-          "height": 10,
-          "labels": [
-            {
-              "id": "occ_Grid.txStationB__port__mvConnection__label",
-              "text": "mvConnection",
-              "width": 60,
-              "height": 10
-            }
-          ],
-          "layoutOptions": {
-            "org.eclipse.elk.port.side": "EAST",
-            "org.eclipse.elk.port.index": "0"
-          }
-        }
-      ],
-      "children": [],
-      "layoutOptions": {
-        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
-        "org.eclipse.elk.portAlignment.default": "CENTER",
-        "org.eclipse.elk.portLabels.placement": "INSIDE",
-        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
-        "org.eclipse.elk.spacing.labelPortVertical": "4",
-        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
-        "org.eclipse.elk.nodeSize.minimum": "(280,140)"
-      }
     }
   ],
   "edges": [
     {
-      "id": "conn:ring-feed",
+      "id": "e:5",
       "sources": [
-        "occ_Grid.txStationB__port__mvConnection"
+        "n_0__port__input"
       ],
       "targets": [
-        "occ_Grid.northSouthRing.ringSegmentBtoC__port__a"
+        "n_0__port__output"
+      ]
+    },
+    {
+      "id": "e:7",
+      "sources": [
+        "n_0__port__output"
+      ],
+      "targets": [
+        "n_3__port__tap"
       ]
     }
   ]

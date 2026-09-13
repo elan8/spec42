@@ -1,0 +1,225 @@
+{
+  "id": "TimerStateMachine",
+  "layoutOptions": {
+    "elk.algorithm": "layered",
+    "elk.edgeRouting": "ORTHOGONAL",
+    "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
+    "elk.separateConnectedComponents": "true",
+    "elk.json.edgeCoords": "ROOT",
+    "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+    "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+    "elk.layered.spacing.nodeNodeBetweenLayers": "230",
+    "elk.spacing.nodeNode": "190",
+    "elk.spacing.edgeNode": "130",
+    "elk.spacing.edgeEdge": "110",
+    "elk.spacing.edgeLabel": "12",
+    "elk.padding": "[top=100,left=90,bottom=90,right=90]",
+    "elk.direction": "RIGHT"
+  },
+  "children": [
+    {
+      "id": "state:state-0",
+      "width": 34,
+      "height": 34
+    },
+    {
+      "id": "state:state-1",
+      "width": 240,
+      "height": 180
+    },
+    {
+      "id": "state:state-2",
+      "width": 240,
+      "height": 180
+    },
+    {
+      "id": "state:state-3",
+      "width": 240,
+      "height": 180
+    },
+    {
+      "id": "state:state-4",
+      "width": 240,
+      "height": 180
+    }
+  ],
+  "edges": [
+    {
+      "id": "transition:0",
+      "sources": [
+        "state:state-0"
+      ],
+      "targets": [
+        "state:state-1"
+      ]
+    },
+    {
+      "id": "transition:1",
+      "sources": [
+        "state:state-4"
+      ],
+      "targets": [
+        "state:state-2"
+      ],
+      "labels": [
+        {
+          "id": "transition:1::label",
+          "text": "StopPressed",
+          "width": 74,
+          "height": 16,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.placement": "CENTER",
+            "org.eclipse.elk.edgeLabels.inline": "false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "transition:2",
+      "sources": [
+        "state:state-4"
+      ],
+      "targets": [
+        "state:state-3"
+      ],
+      "labels": [
+        {
+          "id": "transition:2::label",
+          "text": "CountdownComplete",
+          "width": 110,
+          "height": 16,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.placement": "CENTER",
+            "org.eclipse.elk.edgeLabels.inline": "false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "transition:3",
+      "sources": [
+        "state:state-1"
+      ],
+      "targets": [
+        "state:state-4"
+      ],
+      "labels": [
+        {
+          "id": "transition:3::label",
+          "text": "StartPressed",
+          "width": 80,
+          "height": 16,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.placement": "CENTER",
+            "org.eclipse.elk.edgeLabels.inline": "false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "transition:4",
+      "sources": [
+        "state:state-1"
+      ],
+      "targets": [
+        "state:state-1"
+      ],
+      "labels": [
+        {
+          "id": "transition:4::label",
+          "text": "DecrementPressed",
+          "width": 104,
+          "height": 16,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.placement": "CENTER",
+            "org.eclipse.elk.edgeLabels.inline": "false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "transition:5",
+      "sources": [
+        "state:state-1"
+      ],
+      "targets": [
+        "state:state-1"
+      ],
+      "labels": [
+        {
+          "id": "transition:5::label",
+          "text": "IncrementPressed",
+          "width": 104,
+          "height": 16,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.placement": "CENTER",
+            "org.eclipse.elk.edgeLabels.inline": "false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "transition:6",
+      "sources": [
+        "state:state-2"
+      ],
+      "targets": [
+        "state:state-4"
+      ],
+      "labels": [
+        {
+          "id": "transition:6::label",
+          "text": "StartPressed",
+          "width": 80,
+          "height": 16,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.placement": "CENTER",
+            "org.eclipse.elk.edgeLabels.inline": "false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "transition:7",
+      "sources": [
+        "state:state-2"
+      ],
+      "targets": [
+        "state:state-1"
+      ],
+      "labels": [
+        {
+          "id": "transition:7::label",
+          "text": "ResetPressed",
+          "width": 80,
+          "height": 16,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.placement": "CENTER",
+            "org.eclipse.elk.edgeLabels.inline": "false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "transition:8",
+      "sources": [
+        "state:state-3"
+      ],
+      "targets": [
+        "state:state-1"
+      ],
+      "labels": [
+        {
+          "id": "transition:8::label",
+          "text": "ResetPressed",
+          "width": 80,
+          "height": 16,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.placement": "CENTER",
+            "org.eclipse.elk.edgeLabels.inline": "false"
+          }
+        }
+      ]
+    }
+  ]
+}
