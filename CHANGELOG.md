@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`crosses sameThing.self` on `SelfLink` now resolves (#135).** A cyclic type still publishes
+  its strict specialization ancestors, so the kernel end inherits `Anything::self` instead of
+  dropping its whole ancestor row.
+
 - **SelfLink mutual subsetting is no longer reported as `specialization_cycle` (#135).** KerML
   7.3.2.3 treats a specialization cycle as shared extent; only an entirely closed cycle that
   does not include `Base::Anything` is an error. The kernel `thisThing subsets sameThing` /

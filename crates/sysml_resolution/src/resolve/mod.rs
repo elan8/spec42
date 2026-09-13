@@ -1312,7 +1312,9 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
 /// A diamond (`Diamond :> Left, Right` where both specialize `Base`) naturally dedups to a single
 /// `Base` entry because each declaration's closure is a set. A specialization cycle is detected
 /// explicitly: if a declaration's own closure would come to include itself, that declaration is
-/// reported as cyclic instead of being handed an ever-growing or self-referential ancestor list.
+/// reported as cyclic. KerML 7.3.2.3 treats the cycle as shared extent, so the published row is
+/// still the strict ancestors (everything reached except `self`). Dropping the row would hide
+/// inherited members such as `Anything::self` on the kernel SelfLink ends.
 /// Because each pass only ever unions in previously-discovered ancestors, the closure array is
 /// bounded by the total declaration count and this loop is guaranteed to reach a fixed point well
 /// inside `declarations.len() + 1` passes even in the presence of a cycle; it never spins forever.
@@ -1490,7 +1492,13 @@ fn build_ancestor_closures_for<R: ResolutionReferenceFact>(
         let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
         if ancestors.contains(&id) {
             cyclic.insert(id);
-            closures.push(Box::default());
+            closures.push(
+                ancestors
+                    .into_iter()
+                    .filter(|ancestor| *ancestor != id)
+                    .collect::<Vec<_>>()
+                    .into_boxed_slice(),
+            );
         } else {
             closures.push(ancestors.into_iter().collect::<Vec<_>>().into_boxed_slice());
         }
