@@ -98,6 +98,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   private lastArtifact: RenderedArtifact | undefined;
   private generation = 0;
   private activeAbort: AbortController | undefined;
+  private activeLayoutCancellation: vscode.CancellationTokenSource | undefined;
   private webviewReady = false;
   private pendingRender: RenderMessage | undefined;
   private publicationDebounce: ReturnType<typeof setTimeout> | undefined;
@@ -140,6 +141,8 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     if (this.reconcileTimer) clearTimeout(this.reconcileTimer);
     if (this.webviewWatchdog) clearTimeout(this.webviewWatchdog);
     this.activeAbort?.abort();
+    this.activeLayoutCancellation?.cancel();
+    this.activeLayoutCancellation?.dispose();
     for (const disposable of this.disposables.splice(0)) disposable.dispose();
   }
 
@@ -289,6 +292,9 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     if (kind === "openSource") {
       void this.navigate(message);
     }
+    if (kind === "layoutRequest") {
+      void this.requestLayout(message);
+    }
   }
 
   /** A workspace model file to anchor `spec42/diagramViews` on; the catalog it returns is
@@ -321,6 +327,64 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     return parseDiagramViewCatalog(
       await this.handles.client.sendRequest("spec42/diagramViews", { modelUri: anchorUri }),
     );
+  }
+
+  /** Forwards a webview "layoutRequest" to `spec42/layout` and posts back "layoutResponse" or
+   * "layoutError". Cancellation is advisory, matching `regenerate`'s pattern: a new request
+   * cancels whichever one is in flight (the webview only ever wants its latest disclosure
+   * state laid out), but the webview is what actually decides whether a response is still
+   * current -- it tracks its own request id and re-checks the echoed identity/revision, so a
+   * response that loses this race and still arrives is simply ignored, not incorrect. */
+  private async requestLayout(message: unknown): Promise<void> {
+    const requestId = (message as { requestId?: unknown }).requestId;
+    const modelDigest = (message as { modelDigest?: unknown }).modelDigest;
+    const viewHandle = (message as { viewHandle?: unknown }).viewHandle;
+    const presentationRevision = (message as { presentationRevision?: unknown }).presentationRevision;
+    const graph = (message as { graph?: unknown }).graph;
+    if (
+      typeof requestId !== "number" ||
+      typeof modelDigest !== "string" ||
+      typeof viewHandle !== "string" ||
+      typeof presentationRevision !== "number" ||
+      graph === undefined
+    ) {
+      return;
+    }
+
+    this.activeLayoutCancellation?.cancel();
+    this.activeLayoutCancellation?.dispose();
+    const cancellation = new vscode.CancellationTokenSource();
+    this.activeLayoutCancellation = cancellation;
+
+    try {
+      const result = await this.handles.client.sendRequest(
+        "spec42/layout",
+        { modelDigest, viewHandle, presentationRevision, graph },
+        cancellation.token,
+      );
+      if (cancellation.token.isCancellationRequested) return;
+      const layout = result as {
+        modelDigest: string;
+        viewHandle: string;
+        presentationRevision: number;
+        layout: unknown;
+      };
+      void this.view?.webview.postMessage({
+        type: "layoutResponse",
+        requestId,
+        modelDigest: layout.modelDigest,
+        viewHandle: layout.viewHandle,
+        presentationRevision: layout.presentationRevision,
+        layout: layout.layout,
+      });
+    } catch (error) {
+      if (cancellation.token.isCancellationRequested) return;
+      void this.view?.webview.postMessage({
+        type: "layoutError",
+        requestId,
+        message: describeError(error),
+      });
+    }
   }
 
   private async regenerate(
