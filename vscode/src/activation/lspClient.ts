@@ -386,6 +386,9 @@ export function startLanguageClient(
       performanceLogging: {
         enabled: getConfigBoolean("performanceLogging.enabled", false),
       },
+      semanticTokens: {
+        debug: getConfigBoolean("semanticTokens.debug", false),
+      },
       diagnostics: {
         includeLibraryPaths: getConfigBoolean("development.diagnoseLibraryPaths", false),
       },
@@ -629,6 +632,7 @@ export function registerServerConfigChangeHandler(
       const performanceLoggingConfigChanged =
         event.affectsConfiguration("spec42.performanceLogging.enabled") ||
         event.affectsConfiguration("sysml-language-server.performanceLogging.enabled") ||
+        event.affectsConfiguration("spec42.semanticTokens.debug") ||
         event.affectsConfiguration("spec42.disabledLibraries") ||
         event.affectsConfiguration("spec42.kparLibraryPaths") ||
         event.affectsConfiguration("spec42.development.diagnoseLibraryPaths");

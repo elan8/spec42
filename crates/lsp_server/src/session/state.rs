@@ -49,6 +49,8 @@ pub(crate) struct RuntimeConfig {
     pub(crate) startup_trace_id: Option<String>,
     pub(crate) code_lens_enabled: bool,
     pub(crate) perf_logging_enabled: bool,
+    /// Opt-in semantic-token merge traces (`spec42.semanticTokens.debug`).
+    pub(crate) semantic_tokens_debug: bool,
     /// Development-only: include library paths in the debounced workspace-wide diagnostics
     /// sweep. See `spec42.development.diagnoseLibraryPaths` and
     /// `publish_workspace_diagnostics`'s comment.

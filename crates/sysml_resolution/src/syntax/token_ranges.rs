@@ -20,9 +20,9 @@ use sysml_v2_parser::ast::{
 use sysml_v2_parser::{ParsedDocument, QualifiedReferenceId};
 
 use super::token_util::{
-    identification_name, modeled_decl_name, push_ident_definition_spans,
-    push_usage_name_type_spans, push_word_token, qualified_identification_name, span_text,
-    span_to_source_range,
+    modeled_decl_name, push_identification_definition_spans,
+    push_qualified_identification_definition_spans, push_usage_name_type_spans, push_word_token,
+    span_text, span_to_source_range,
 };
 use super::{SyntaxRange, SyntaxRole};
 use sysml_v2_parser::ast::{Dependency, SatisfyRequirementUsage as Satisfy};
@@ -127,10 +127,12 @@ fn collect_semantic_ranges_package_body_element(
     use sysml_v2_parser::ast::PackageBodyElement as PBE;
     match &node.value {
         PBE::Package(pkg_node) => {
-            let name = qualified_identification_name(ctx.document, &pkg_node.identification);
-            if !name.is_empty() {
-                push_ident_definition_spans(&pkg_node.span, None, SyntaxRole::Namespace, out);
-            }
+            push_qualified_identification_definition_spans(
+                ctx.document,
+                &pkg_node.identification,
+                SyntaxRole::Namespace,
+                out,
+            );
             match &pkg_node.body {
                 PackageBody::Brace { elements, .. } => {
                     for n in elements {
@@ -152,8 +154,8 @@ fn collect_semantic_ranges_package_body_element(
             ));
         }
         PBE::PartDef(pd_node) => {
-            push_ident_definition_spans(
-                &pd_node.span,
+            push_identification_definition_spans(
+                &pd_node.value.identification,
                 pd_node
                     .value
                     .specializes
@@ -188,7 +190,16 @@ fn collect_semantic_ranges_package_body_element(
             }
         }
         PBE::PortDef(pd_node) => {
-            push_ident_definition_spans(&pd_node.span, None, SyntaxRole::Type, out);
+            push_identification_definition_spans(
+                &pd_node.value.identification,
+                pd_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
+                SyntaxRole::Type,
+                out,
+            );
             match &pd_node.body {
                 PortDefBody::Brace { elements, .. } => {
                     for n in elements {
@@ -199,7 +210,16 @@ fn collect_semantic_ranges_package_body_element(
             }
         }
         PBE::InterfaceDef(id_node) => {
-            push_ident_definition_spans(&id_node.span, None, SyntaxRole::Interface, out);
+            push_identification_definition_spans(
+                &id_node.value.identification,
+                id_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
+                SyntaxRole::Interface,
+                out,
+            );
             match &id_node.body {
                 InterfaceDefBody::Brace { elements, .. } => {
                     for n in elements {
@@ -220,8 +240,8 @@ fn collect_semantic_ranges_package_body_element(
             );
         }
         PBE::ActionDef(ad_node) => {
-            push_ident_definition_spans(
-                &ad_node.span,
+            push_identification_definition_spans(
+                &ad_node.value.identification,
                 ad_node
                     .value
                     .specializes
@@ -240,8 +260,8 @@ fn collect_semantic_ranges_package_body_element(
             }
         }
         PBE::RequirementDef(rd_node) => {
-            push_ident_definition_spans(
-                &rd_node.span,
+            push_identification_definition_spans(
+                &rd_node.value.identification,
                 rd_node
                     .value
                     .specializes
@@ -291,16 +311,36 @@ fn collect_semantic_ranges_package_body_element(
             }
         }
         PBE::AliasDef(ad_node) => {
-            push_ident_definition_spans(&ad_node.span, None, SyntaxRole::Namespace, out);
+            push_identification_definition_spans(
+                &ad_node.value.identification,
+                None,
+                SyntaxRole::Namespace,
+                out,
+            );
         }
         PBE::ViewDef(vd_node) => {
-            push_ident_definition_spans(&vd_node.span, None, SyntaxRole::Namespace, out);
+            push_identification_definition_spans(
+                &vd_node.value.identification,
+                None,
+                SyntaxRole::Namespace,
+                out,
+            );
         }
         PBE::ViewpointDef(vpd_node) => {
-            push_ident_definition_spans(&vpd_node.span, None, SyntaxRole::Namespace, out);
+            push_identification_definition_spans(
+                &vpd_node.value.identification,
+                None,
+                SyntaxRole::Namespace,
+                out,
+            );
         }
         PBE::RenderingDef(rd_node) => {
-            push_ident_definition_spans(&rd_node.span, None, SyntaxRole::Namespace, out);
+            push_identification_definition_spans(
+                &rd_node.value.identification,
+                None,
+                SyntaxRole::Namespace,
+                out,
+            );
         }
         PBE::ViewUsage(vu_node) => {
             push_usage_name_type_spans(
@@ -333,8 +373,8 @@ fn collect_semantic_ranges_package_body_element(
             );
         }
         PBE::ItemDef(id_node) => {
-            push_ident_definition_spans(
-                &id_node.span,
+            push_identification_definition_spans(
+                &id_node.value.identification,
                 id_node
                     .value
                     .specializes
@@ -346,8 +386,8 @@ fn collect_semantic_ranges_package_body_element(
             collect_semantic_ranges_attribute_body(ctx, &id_node.value.body, out);
         }
         PBE::IndividualDef(id_node) => {
-            push_ident_definition_spans(
-                &id_node.span,
+            push_identification_definition_spans(
+                &id_node.value.identification,
                 id_node
                     .value
                     .specializes
@@ -359,8 +399,8 @@ fn collect_semantic_ranges_package_body_element(
             collect_semantic_ranges_attribute_body(ctx, &id_node.value.body, out);
         }
         PBE::MetadataDef(md_node) => {
-            push_ident_definition_spans(
-                &md_node.span,
+            push_identification_definition_spans(
+                &md_node.value.identification,
                 md_node
                     .value
                     .specializes
@@ -372,8 +412,8 @@ fn collect_semantic_ranges_package_body_element(
             collect_semantic_ranges_attribute_body(ctx, &md_node.value.body, out);
         }
         PBE::OccurrenceDef(occ_node) => {
-            push_ident_definition_spans(
-                &occ_node.span,
+            push_identification_definition_spans(
+                &occ_node.value.identification,
                 occ_node
                     .value
                     .specializes
@@ -385,8 +425,8 @@ fn collect_semantic_ranges_package_body_element(
             collect_semantic_ranges_definition_body(ctx, &occ_node.value.body, out);
         }
         PBE::FlowDef(flow_node) => {
-            push_ident_definition_spans(
-                &flow_node.span,
+            push_identification_definition_spans(
+                &flow_node.value.identification,
                 flow_node
                     .value
                     .specializes
@@ -416,8 +456,8 @@ fn collect_semantic_ranges_package_body_element(
             collect_semantic_ranges_definition_body(ctx, &flow_node.value.body, out);
         }
         PBE::AllocationDef(alloc_node) => {
-            push_ident_definition_spans(
-                &alloc_node.span,
+            push_identification_definition_spans(
+                &alloc_node.value.identification,
                 alloc_node
                     .value
                     .specializes
@@ -429,8 +469,8 @@ fn collect_semantic_ranges_package_body_element(
             collect_semantic_ranges_definition_body(ctx, &alloc_node.value.body, out);
         }
         PBE::StateDef(sd_node) => {
-            push_ident_definition_spans(
-                &sd_node.span,
+            push_identification_definition_spans(
+                &sd_node.value.identification,
                 sd_node
                     .value
                     .specializes
@@ -449,7 +489,16 @@ fn collect_semantic_ranges_package_body_element(
             collect_semantic_ranges_state_usage(ctx, su_node, out);
         }
         PBE::ConnectionDef(conn_node) => {
-            push_ident_definition_spans(&conn_node.span, None, SyntaxRole::Interface, out);
+            push_identification_definition_spans(
+                &conn_node.value.identification,
+                conn_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
+                SyntaxRole::Interface,
+                out,
+            );
             if let ConnectionDefBody::Brace { elements, .. } = &conn_node.body {
                 for element in elements {
                     collect_semantic_ranges_connection_def_body_element(element, out);
@@ -457,8 +506,8 @@ fn collect_semantic_ranges_package_body_element(
             }
         }
         PBE::ConstraintDef(cd_node) => {
-            push_ident_definition_spans(
-                &cd_node.span,
+            push_identification_definition_spans(
+                &cd_node.value.identification,
                 cd_node
                     .value
                     .specializes
@@ -469,11 +518,20 @@ fn collect_semantic_ranges_package_body_element(
             );
         }
         PBE::CalcDef(calc_node) => {
-            push_ident_definition_spans(&calc_node.span, None, SyntaxRole::Function, out);
+            push_identification_definition_spans(
+                &calc_node.value.identification,
+                calc_node
+                    .value
+                    .specializes
+                    .as_ref()
+                    .map(|relationship| &relationship.value.span),
+                SyntaxRole::Function,
+                out,
+            );
         }
         PBE::EnumDef(enum_node) => {
-            push_ident_definition_spans(
-                &enum_node.span,
+            push_identification_definition_spans(
+                &enum_node.value.identification,
                 enum_node
                     .value
                     .specializes
@@ -482,11 +540,8 @@ fn collect_semantic_ranges_package_body_element(
                 SyntaxRole::Class,
                 out,
             );
-            // The enum's own name-vs-body narrowing (see `refine_declaration_ranges`) only
-            // stops the class color from bleeding onto the body; it doesn't give the literal
-            // members (`entry;`, `standard;`, ...) any color of their own. They read like named
-            // constants, same as `EnumerationUsage`'s own name elsewhere in this file, so give
-            // them the matching token instead of leaving them accidentally uncolored.
+            // Literal members (`entry;`, `standard;`, ...) are named constants, same as
+            // `EnumerationUsage`'s own name elsewhere in this file.
             if let EnumerationBody::Brace { elements, .. } = &enum_node.value.body {
                 use sysml_v2_parser::ast::EnumerationBodyElement as EBE;
                 for element in elements {
@@ -503,8 +558,8 @@ fn collect_semantic_ranges_package_body_element(
             }
         }
         PBE::UseCaseDef(uc_node) => {
-            push_ident_definition_spans(
-                &uc_node.span,
+            push_identification_definition_spans(
+                &uc_node.value.identification,
                 uc_node
                     .value
                     .specializes
@@ -515,8 +570,8 @@ fn collect_semantic_ranges_package_body_element(
             );
         }
         PBE::VerificationCaseDef(vc_node) => {
-            push_ident_definition_spans(
-                &vc_node.span,
+            push_identification_definition_spans(
+                &vc_node.value.identification,
                 vc_node
                     .value
                     .specializes
@@ -527,8 +582,8 @@ fn collect_semantic_ranges_package_body_element(
             );
         }
         PBE::CaseDef(case_node) => {
-            push_ident_definition_spans(
-                &case_node.span,
+            push_identification_definition_spans(
+                &case_node.value.identification,
                 case_node
                     .value
                     .specializes
@@ -539,8 +594,8 @@ fn collect_semantic_ranges_package_body_element(
             );
         }
         PBE::AnalysisCaseDef(ac_node) => {
-            push_ident_definition_spans(
-                &ac_node.span,
+            push_identification_definition_spans(
+                &ac_node.value.identification,
                 ac_node
                     .value
                     .specializes
@@ -646,10 +701,12 @@ fn collect_semantic_ranges_package_body_element(
             );
         }
         PBE::Actor(actor_node) => {
-            let name = identification_name(ctx.document, &actor_node.value.identification);
-            if !name.is_empty() {
-                push_ident_definition_spans(&actor_node.span, None, SyntaxRole::Property, out);
-            }
+            push_identification_definition_spans(
+                &actor_node.value.identification,
+                None,
+                SyntaxRole::Property,
+                out,
+            );
         }
         PBE::Satisfy(satisfy_node) => collect_semantic_ranges_satisfy(ctx, satisfy_node, out),
         PBE::Dependency(dep_node) => collect_semantic_ranges_dependency(ctx, dep_node, out),
@@ -973,7 +1030,12 @@ fn collect_semantic_ranges_metadata_body(
                 collect_semantic_ranges_attribute_body_element(ctx, element, out);
             }
             MetadataBodyElement::Alias(alias) => {
-                push_ident_definition_spans(&alias.span, None, SyntaxRole::Namespace, out);
+                push_identification_definition_spans(
+                    &alias.value.identification,
+                    None,
+                    SyntaxRole::Namespace,
+                    out,
+                );
             }
             MetadataBodyElement::Import(import) => {
                 out.push((
@@ -1043,8 +1105,16 @@ fn collect_semantic_ranges_transition(
     transition: &sysml_v2_parser::Node<Transition>,
     out: &mut Vec<(SyntaxRange, SyntaxRole)>,
 ) {
-    out.push((span_to_source_range(&transition.span), SyntaxRole::Property));
+    // Member-level spans only. The whole `transition.span` would paint the
+    // keyword, `first`/`accept`/`then`, and the body; the merge guard then
+    // has to undo that. Emit the authored name, source, accept, and target.
     let value = &transition.value;
+    if let Some(name) = value.name {
+        out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+    }
+    if let Some(source) = &value.source {
+        out.push((span_to_source_range(&source.span), SyntaxRole::Property));
+    }
     if let Some(ref accept) = value.accept {
         collect_semantic_ranges_transition_accept(accept, out);
     }
@@ -1237,8 +1307,8 @@ fn collect_semantic_ranges_part_def_body_element(
         }
         PDBE::Ref(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
         PDBE::ItemDef(id_node) => {
-            push_ident_definition_spans(
-                &id_node.span,
+            push_identification_definition_spans(
+                &id_node.value.identification,
                 id_node
                     .value
                     .specializes
@@ -1261,8 +1331,8 @@ fn collect_semantic_ranges_part_def_body_element(
             collect_semantic_ranges_attribute_body(ctx, &item_node.body, out);
         }
         PDBE::PartDef(pd_node) => {
-            push_ident_definition_spans(
-                &pd_node.span,
+            push_identification_definition_spans(
+                &pd_node.value.identification,
                 pd_node
                     .value
                     .specializes
@@ -1683,15 +1753,15 @@ fn collect_semantic_ranges_requirement_def_body_element(
         RDBE::Constraint(constraint) => {
             out.push((span_to_source_range(&constraint.span), SyntaxRole::Property));
         }
+        RDBE::Satisfy(satisfy) => collect_semantic_ranges_satisfy(ctx, satisfy, out),
+        RDBE::Dependency(dep) => collect_semantic_ranges_dependency(ctx, dep, out),
         // Member kinds this collector assigns no token of their own.
-        RDBE::Dependency(_)
-        | RDBE::RequirementDef(_)
+        RDBE::RequirementDef(_)
         | RDBE::RefDecl(_)
         | RDBE::ConcernUsage(_)
         | RDBE::CalcUsage(_)
         | RDBE::PortUsage(_)
         | RDBE::AllocationUsage(_)
-        | RDBE::Satisfy(_)
         | RDBE::ActionUsage(_)
         | RDBE::SuccessionUsage(_)
         | RDBE::Perform(_)
@@ -1758,7 +1828,7 @@ fn collect_semantic_ranges_action_def_body_element(
         | ADBE::WhileStmt(_)
         | ADBE::LoopStmt(_)
         | ADBE::IfStmt(_) => {}
-        ADBE::Transition(_) => {}
+        ADBE::Transition(transition) => collect_semantic_ranges_transition(transition, out),
         ADBE::Annotating(member) => collect_semantic_ranges_annotating(member, out),
         ADBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);
@@ -1798,9 +1868,9 @@ fn collect_semantic_ranges_action_def_body_element(
             }
         }
         ADBE::AssertConstraint(_) => {}
+        ADBE::Dependency(dep) => collect_semantic_ranges_dependency(ctx, dep, out),
         // Member kinds this collector assigns no token of their own.
-        ADBE::Dependency(_)
-        | ADBE::MetadataUsage(_)
+        ADBE::MetadataUsage(_)
         | ADBE::AttributeUsage(_)
         | ADBE::CalcUsage(_)
         | ADBE::ActionDef(_) => {}
@@ -1857,7 +1927,7 @@ fn collect_semantic_ranges_action_usage_body_element(
         | AUBE::WhileStmt(_)
         | AUBE::LoopStmt(_)
         | AUBE::IfStmt(_) => {}
-        AUBE::Transition(_) => {}
+        AUBE::Transition(transition) => collect_semantic_ranges_transition(transition, out),
         AUBE::Annotating(member) => collect_semantic_ranges_annotating(member, out),
         AUBE::MetadataKeywordUsage(mk_node) => {
             collect_semantic_ranges_metadata_keyword_usage(ctx, mk_node, out);
@@ -1897,9 +1967,9 @@ fn collect_semantic_ranges_action_usage_body_element(
             }
         }
         AUBE::AssertConstraint(_) => {}
+        AUBE::Dependency(dep) => collect_semantic_ranges_dependency(ctx, dep, out),
         // Member kinds this collector assigns no token of their own.
-        AUBE::Dependency(_)
-        | AUBE::MetadataUsage(_)
+        AUBE::MetadataUsage(_)
         | AUBE::AttributeUsage(_)
         | AUBE::CalcUsage(_)
         | AUBE::ActionDef(_)

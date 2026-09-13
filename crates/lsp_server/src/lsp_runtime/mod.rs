@@ -424,21 +424,21 @@ impl LanguageServer for Backend {
         params: SemanticTokensParams,
     ) -> Result<Option<SemanticTokensResult>> {
         let state = self.state_for_uri(&params.text_document.uri)?;
-        let perf_logging_enabled = self
+        let cfg = self
             .runtime_config
             .get()
-            .expect("initialize precedes all other LSP requests")
-            .perf_logging_enabled;
+            .expect("initialize precedes all other LSP requests");
         let Some((tokens, log_lines)) = features::semantic_tokens_full_request(
             &state,
             params.text_document.uri,
-            perf_logging_enabled,
+            cfg.perf_logging_enabled,
+            cfg.semantic_tokens_debug,
         )?
         else {
             return Ok(None);
         };
         drop(state);
-        if perf_logging_enabled {
+        if cfg.semantic_tokens_debug {
             for line in &log_lines {
                 self.client.log_message(MessageType::LOG, line).await;
             }
@@ -451,22 +451,22 @@ impl LanguageServer for Backend {
         params: SemanticTokensRangeParams,
     ) -> Result<Option<SemanticTokensRangeResult>> {
         let state = self.state_for_uri(&params.text_document.uri)?;
-        let perf_logging_enabled = self
+        let cfg = self
             .runtime_config
             .get()
-            .expect("initialize precedes all other LSP requests")
-            .perf_logging_enabled;
+            .expect("initialize precedes all other LSP requests");
         let Some((tokens, log_lines)) = features::semantic_tokens_range_request(
             &state,
             params.text_document.uri,
             params.range,
-            perf_logging_enabled,
+            cfg.perf_logging_enabled,
+            cfg.semantic_tokens_debug,
         )?
         else {
             return Ok(None);
         };
         drop(state);
-        if perf_logging_enabled {
+        if cfg.semantic_tokens_debug {
             for line in &log_lines {
                 self.client.log_message(MessageType::LOG, line).await;
             }

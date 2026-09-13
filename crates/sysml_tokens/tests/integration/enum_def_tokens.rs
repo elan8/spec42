@@ -42,11 +42,8 @@ fn token_type_for(content: &str, tokens: &[(u32, u32, u32, u32)], ident: &str) -
     })
 }
 
-/// Regression test for a real bug: a multi-line `enum def` body's literal members
-/// (`navigationSensorSuite`, `cleaningPerformance`, ...) inherited the whole enum node's
-/// `TYPE_CLASS` token, because `narrow_declaration_name_range` used to give up on multi-line
-/// spans and leave the wide, unnarrowed range in place. All of the enum's members rendered in
-/// the same color as the enum's own name, indistinguishable from a real type reference.
+/// Regression: a multi-line `enum def` body's literal members must not inherit the
+/// enum's `TYPE_CLASS` token. The collector emits the parser name span only.
 #[test]
 fn multiline_enum_def_narrows_class_token_to_name_only() {
     let content = r#"package P {

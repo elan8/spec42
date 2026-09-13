@@ -145,6 +145,25 @@ fn state_def_body_tokenizes_final_state_and_transition_target() {
         token_text(content, &decoded, "off"),
         "transition source/target"
     );
+    let transition_line = tokens_on_line(content, &decoded, 4);
+    assert_eq!(
+        transition_line
+            .iter()
+            .find(|(text, _)| text == "transition")
+            .map(|(_, ty)| *ty),
+        Some(TYPE_KEYWORD),
+        "transition keyword must stay a keyword: {:?}",
+        transition_line
+    );
+    assert_eq!(
+        transition_line
+            .iter()
+            .find(|(text, _)| text == "off_to_done")
+            .map(|(_, ty)| *ty),
+        Some(TYPE_PROPERTY),
+        "transition name should be a property: {:?}",
+        transition_line
+    );
 }
 
 #[test]

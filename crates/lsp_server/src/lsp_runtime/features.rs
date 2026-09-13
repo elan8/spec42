@@ -69,6 +69,7 @@ pub(crate) fn semantic_tokens_full_request(
     state: &ServerState,
     uri: Url,
     perf_logging_enabled: bool,
+    semantic_tokens_debug: bool,
 ) -> Result<Option<(SemanticTokens, Vec<String>)>> {
     let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
@@ -80,7 +81,7 @@ pub(crate) fn semantic_tokens_full_request(
         }
         None => return Ok(None),
     };
-    let (tokens, logs) = semantic_tokens_full(&text, ast_ranges.as_deref());
+    let (tokens, logs) = semantic_tokens_full(&text, ast_ranges.as_deref(), semantic_tokens_debug);
     let elapsed_ms = started_at.elapsed().as_millis();
     let request_count = SEMANTIC_TOKENS_FULL_REQUEST_COUNT.fetch_add(1, Ordering::Relaxed) + 1;
     if perf_logging_enabled {
@@ -103,6 +104,7 @@ pub(crate) fn semantic_tokens_range_request(
     uri: Url,
     range: Range,
     perf_logging_enabled: bool,
+    semantic_tokens_debug: bool,
 ) -> Result<Option<(SemanticTokens, Vec<String>)>> {
     let started_at = Instant::now();
     let uri_norm = util::normalize_file_uri(&uri);
@@ -121,6 +123,7 @@ pub(crate) fn semantic_tokens_range_request(
         range.end.line,
         range.end.character,
         ast_ranges.as_deref(),
+        semantic_tokens_debug,
     );
     let elapsed_ms = started_at.elapsed().as_millis();
     let request_count = SEMANTIC_TOKENS_RANGE_REQUEST_COUNT.fetch_add(1, Ordering::Relaxed) + 1;

@@ -27,6 +27,8 @@ pub(crate) async fn initialize(
         util::parse_code_lens_enabled_from_value(params.initialization_options.as_ref(), true);
     let perf_logging_enabled =
         util::parse_perf_logging_enabled_from_value(params.initialization_options.as_ref(), false);
+    let semantic_tokens_debug =
+        util::parse_semantic_tokens_debug_from_value(params.initialization_options.as_ref(), false);
     let diagnose_library_paths = util::parse_diagnose_library_paths_from_value(
         params.initialization_options.as_ref(),
         false,
@@ -47,6 +49,7 @@ pub(crate) async fn initialize(
             startup_trace_id: startup_trace_id.clone(),
             code_lens_enabled,
             perf_logging_enabled,
+            semantic_tokens_debug,
             diagnose_library_paths,
         })
         .expect("initialize called twice");

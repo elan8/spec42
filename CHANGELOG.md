@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Semantic tokens use parser name spans and can be traced from the editor (#35).** Definition
+  names come from `Identification` rather than a first-line text search; transition /
+  satisfy / dependency members keep source, accept, and target spans instead of painting the
+  whole statement; and `spec42.semanticTokens.debug` opts into AST-merge logging. The
+  text-search refine pass and `span_len > 2 * token` merge guard are gone: collectors emit
+  parser name spans or nothing.
+
 - Inherited expression queries can now return effective bodies and redefined feature targets in
   a specified type or usage context. Connector endpoints retain every resolved path segment,
   with explicit missing and ambiguous hops (#84).
