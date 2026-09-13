@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **The "Wrap in package" editor action now fires for a bare top-level member (#65).** A
+  `part def` at the root of a `.sysml` file is a root member, not an anonymous package, so the
+  previous trigger could never match. Tests now require the edit, apply it, and check that the
+  wrapped document parses and no longer offers the action.
+
 - **`spec42 model-summary` is renamed `spec42 model-export`, and now emits a typed structural
   projection of the publication (#157). BREAKING: the CLI subcommand, the VS Code Language
   Model Tool id (`spec42_model_summary` -> `spec42_model_export`), and the MCP-era `#spec42Model*`
