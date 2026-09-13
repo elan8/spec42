@@ -51,7 +51,10 @@ pub(crate) fn derive_effective_types_from_edges(
             ReferenceKind::FeatureTyping => {
                 direct_row.insert(target);
             }
-            ReferenceKind::Subsetting | ReferenceKind::Redefinition => {
+            ReferenceKind::Subsetting
+            | ReferenceKind::Redefinition
+            | ReferenceKind::References
+            | ReferenceKind::Crosses => {
                 general_row.insert(target);
             }
             _ => {}
@@ -120,7 +123,7 @@ pub(crate) fn derive_effective_types_from_edges(
 }
 
 /// Derives effective typing once from direct FeatureTyping and the transitive
-/// Subsetting/Redefinition closure.
+/// Subsetting/Redefinition/References/Crosses closure.
 ///
 /// The shared worklist derivation is also used while those relationships settle, so published and
 /// intermediate member scopes cannot disagree about effective typing.

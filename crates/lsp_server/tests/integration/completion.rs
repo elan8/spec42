@@ -19,7 +19,7 @@ fn completion_items(
         .as_array()
         .cloned()
         .or_else(|| compl_json["result"]["items"].as_array().cloned())
-        .expect("completion items")
+        .unwrap_or_else(|| panic!("completion items: {compl_json}"))
 }
 
 fn position_for(content: &str, needle: &str) -> (u32, u32) {
@@ -54,7 +54,7 @@ fn resolve_completion_item(
 fn lsp_completion() {
     let mut session = TestSession::new();
 
-    let uri = "file:///test2.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/test2.sysml";
     let content = "package P { part def X; }";
 
     session.initialize_default("test");
@@ -75,7 +75,7 @@ fn lsp_completion() {
 #[test]
 fn completion_prioritizes_def_after_part_keyword() {
     let mut session = TestSession::new();
-    let uri = "file:///keyword_modifier.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/keyword_modifier.sysml";
     let content = r#"package P {
     part 
     part def engineMount;
@@ -97,7 +97,7 @@ fn completion_prioritizes_def_after_part_keyword() {
 #[test]
 fn completion_prioritizes_part_type_definitions() {
     let mut session = TestSession::new();
-    let uri = "file:///type_context.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/type_context.sysml";
     let content = r#"package P {
     part def Laptop;
     attribute def Label;
@@ -123,7 +123,7 @@ fn completion_prioritizes_part_type_definitions() {
 #[test]
 fn completion_prioritizes_port_types_for_port_usage() {
     let mut session = TestSession::new();
-    let uri = "file:///port_context.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/port_context.sysml";
     let content = r#"package P {
     interface def CommandBus;
     part def Controller;
@@ -155,7 +155,7 @@ fn completion_prioritizes_port_types_for_port_usage() {
 #[test]
 fn completion_prioritizes_attribute_types() {
     let mut session = TestSession::new();
-    let uri = "file:///attribute_context.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/attribute_context.sysml";
     let content = r#"package P {
     item def MassUnit;
     part def Motor;
@@ -183,7 +183,7 @@ fn completion_prioritizes_attribute_types() {
 #[test]
 fn completion_prioritizes_qualified_namespace_members() {
     let mut session = TestSession::new();
-    let uri = "file:///qualified_context.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/qualified_context.sysml";
     let content = r#"package Pkg {
     part def Foo;
 }
@@ -211,7 +211,7 @@ package Main {
 #[test]
 fn completion_prioritizes_typed_members() {
     let mut session = TestSession::new();
-    let uri = "file:///member_context.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/member_context.sysml";
     let content = r#"package P {
     part def Vehicle {
         part engine;
@@ -240,7 +240,7 @@ fn completion_prioritizes_typed_members() {
 #[test]
 fn completion_in_body_prefers_constructive_snippets() {
     let mut session = TestSession::new();
-    let uri = "file:///body_context.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/body_context.sysml";
     let content = r#"package P {
     part def Vehicle {
         pa
@@ -262,7 +262,7 @@ fn completion_in_body_prefers_constructive_snippets() {
 #[test]
 fn completion_returns_snippet_metadata() {
     let mut session = TestSession::new();
-    let uri = "file:///snippet_context.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/snippet_context.sysml";
     let content = "pa";
 
     session.initialize_default("test");
@@ -284,7 +284,7 @@ fn completion_returns_snippet_metadata() {
 #[test]
 fn completion_resolve_populates_documentation() {
     let mut session = TestSession::new();
-    let uri = "file:///resolve_context.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/resolve_context.sysml";
     let content = r#"package P {
     part def Vehicle;
     part vehicle: Ve
@@ -321,7 +321,7 @@ fn completion_resolve_populates_documentation() {
 #[test]
 fn completion_keeps_homonyms_distinguishable() {
     let mut session = TestSession::new();
-    let uri = "file:///homonym_context.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/homonym_context.sysml";
     let content = r#"package A {
     part def Sensor;
 }
@@ -364,7 +364,7 @@ package Main {
 #[test]
 fn completion_prefix_matches_outrank_substring_matches() {
     let mut session = TestSession::new();
-    let uri = "file:///prefix_context.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/prefix_context.sysml";
     let content = r#"package P {
     part def RemoteMotor;
     part def Motor;
@@ -391,7 +391,7 @@ fn completion_prefix_matches_outrank_substring_matches() {
 #[test]
 fn completion_survives_incomplete_syntax() {
     let mut session = TestSession::new();
-    let uri = "file:///broken_context.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/broken_context.sysml";
     let content = r#"package P {
     part vehicle:
     pa

@@ -5,7 +5,7 @@ use super::harness::TestSession;
 #[test]
 fn lsp_new_handlers_survive_invalid_intermediate_text() {
     let mut session = TestSession::new();
-    let uri = "file:///quality-invalid.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/quality-invalid.sysml";
     session.initialize_default("quality_gates_test");
     session.did_open(uri, "package P { part def Engine; part v : Engine; }\n", 1);
     session.did_change_full(uri, "package P { part def Engine part v : ; }\n", 2);
@@ -44,7 +44,7 @@ fn lsp_new_handlers_survive_invalid_intermediate_text() {
 #[test]
 fn lsp_code_lens_is_deterministic_for_same_document_state() {
     let mut session = TestSession::new();
-    let uri = "file:///quality-deterministic.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/quality-deterministic.sysml";
     let content = "package P {\n  part def Engine;\n  part vehicle : Engine;\n}\n";
     session.initialize_default("quality_gates_test");
     session.did_open(uri, content, 1);
@@ -67,7 +67,7 @@ fn lsp_code_lens_is_deterministic_for_same_document_state() {
 #[test]
 fn lsp_code_lens_does_not_emit_inherited_attribute_lines_for_part_defs() {
     let mut session = TestSession::new();
-    let uri = "file:///quality-inherited-codelens.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/quality-inherited-codelens.sysml";
     let content = r#"
         package P {
           part def Base {
@@ -100,7 +100,7 @@ fn lsp_code_lens_does_not_emit_inherited_attribute_lines_for_part_defs() {
 #[test]
 fn lsp_code_lens_does_not_anchor_inherited_attributes_in_part_body() {
     let mut session = TestSession::new();
-    let uri = "file:///quality-inherited-codelens-body-end.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/quality-inherited-codelens-body-end.sysml";
     let content = r#"
         package P {
           part def Base {

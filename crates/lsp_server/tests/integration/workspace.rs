@@ -198,7 +198,7 @@ fn lsp_publishes_diagnostics_for_loose_file_on_did_open() {
     .expect("write ScalarValues library");
 
     let lib_path = lib_dir.canonicalize().expect("canonical lib path");
-    let loose_uri = "file:///outside-workspace/loose.sysml";
+    let loose_uri = "file:///c:/spec42-lsp-tests/outside-workspace/loose.sysml";
     let loose_text = r#"
         package P {
             private import ScalarValues::Real;

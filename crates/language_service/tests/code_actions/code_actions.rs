@@ -10,6 +10,7 @@ use language_service::{
 };
 
 use crate::support::{document, multi_doc, single_doc, workspace_from_docs};
+use sysml_query::resolved_slice::{TextPosition, TextRange};
 
 const PATH: &str = "test.sysml";
 
@@ -118,15 +119,27 @@ fn suggest_wrap_in_package_named_package() {
 #[test]
 fn suggest_wrap_in_package_unwrapped_member() {
     let source = "part def X { }";
-    // Parser may wrap a lone part def in an anonymous package; when it does, we suggest wrap.
-    if let Some(suggestion) = suggest_wrap_in_package(source, PATH) {
-        assert!(suggestion.title.contains("Wrap"));
-        assert_eq!(suggestion.edits.len(), 1);
-        let edit = &suggestion.edits[0];
-        assert_eq!(edit.path, PATH);
-        assert!(edit.replacement.contains("package Generated"));
-        assert!(edit.replacement.contains("part def X"));
-    }
+    let suggestion = suggest_wrap_in_package(source, PATH)
+        .expect("a bare top-level part def must offer wrap-in-package");
+    assert_eq!(suggestion.title, "Wrap in package");
+    assert_eq!(suggestion.edits.len(), 1);
+    let edit = &suggestion.edits[0];
+    assert_eq!(edit.path, PATH);
+    assert_eq!(
+        edit.range,
+        TextRange::new(TextPosition::new(0, 0), TextPosition::new(0, 14))
+    );
+    let wrapped = "package Generated {\npart def X { }\n}\n";
+    assert_eq!(edit.replacement, wrapped);
+    assert!(
+        suggest_wrap_in_package(wrapped, PATH).is_none(),
+        "the wrapped document must not offer wrap-in-package again"
+    );
+    with_document(wrapped, |workspace, uri| {
+        let parsed = workspace.parsed(uri).expect("wrapped document parses");
+        assert!(parsed.is_clean(), "wrapped document must parse cleanly");
+        assert_eq!(parsed.top_level_package_names(), ["Generated"]);
+    });
 }
 
 #[test]

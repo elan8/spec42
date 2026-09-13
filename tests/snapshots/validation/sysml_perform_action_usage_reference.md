@@ -116,6 +116,7 @@ package Actions {
 (types
     (declaration (id (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Bad")) (anonymous (kind perform-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Bad")))
+      (effective-type (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Component")) (source inherited) (from (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp"))))
       (supertype (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Component")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml_perform_action_usage_reference.md") (qualified-name "Actions::Library::comp")) (scopes any feature))
     )

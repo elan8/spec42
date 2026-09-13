@@ -12,8 +12,8 @@ fn lsp_rename() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri_def = "file:///rename/def.sysml";
-    let uri_use = "file:///rename/use.sysml";
+    let uri_def = "file:///c:/spec42-lsp-tests/rename/def.sysml";
+    let uri_use = "file:///c:/spec42-lsp-tests/rename/use.sysml";
     let content_def = "package P { part def Foo; }";
     let content_use = "package Q { import P::*; part f : Foo; }";
 
@@ -24,7 +24,7 @@ fn lsp_rename() {
         "method": "initialize",
         "params": {
             "processId": null,
-            "rootUri": "file:///rename",
+            "rootUri": "file:///c:/spec42-lsp-tests/rename",
             "capabilities": {},
             "clientInfo": { "name": "test", "version": "0.1.0" }
         }
@@ -171,7 +171,7 @@ fn rename_changes(
 #[test]
 fn lsp_rename_does_not_touch_same_file_homonyms() {
     let mut session = TestSession::new();
-    let uri = "file:///rename/homonyms.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/rename/homonyms.sysml";
     let content = r#"package IT {
     part def Laptop {
         port hdmi;
@@ -217,7 +217,7 @@ fn lsp_rename_does_not_touch_same_file_homonyms() {
 #[test]
 fn lsp_rename_ignores_comments_and_strings() {
     let mut session = TestSession::new();
-    let uri = "file:///rename/comments.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/rename/comments.sysml";
     let content = r#"package Demo {
     part def Engine;
     part vehicle : Engine;
@@ -255,7 +255,7 @@ fn lsp_rename_ignores_comments_and_strings() {
 #[test]
 fn lsp_prepare_rename_rejects_comments() {
     let mut session = TestSession::new();
-    let uri = "file:///rename/comment-prepare.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/rename/comment-prepare.sysml";
     let content = "package Demo {\n  part def Engine;\n  // Engine comment\n}\n";
     session.initialize_default("prepare_rename_comment_test");
     session.did_open(uri, content, 1);

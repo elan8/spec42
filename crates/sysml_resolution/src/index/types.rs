@@ -170,8 +170,13 @@ pub(crate) struct SpecializationClosure {
     /// question is a binary search rather than a scan.
     pub(crate) ancestors: Box<[(DeclarationId, u8)]>,
     /// Declarations that reach themselves through specialization. Their ancestor sets are still
-    /// published; the flag is what lets a query report the cycle rather than answer from it.
+    /// published. KerML 7.3.2.3 treats a cycle as shared extent; only an entirely closed cycle
+    /// that does not include `Base::Anything` is a modelling error (`invalid_closed_cycle`).
     pub(crate) cyclic: Box<[bool]>,
+    /// Graph-theoretic cycles that never escape their strongly connected component and do not
+    /// include `Base::Anything`. These are the only specialization cycles the diagnostic and
+    /// conformance obstacle report.
+    pub(crate) invalid_closed_cycle: Box<[bool]>,
 }
 
 impl SpecializationClosure {
@@ -218,6 +223,11 @@ impl SpecializationClosure {
             merge_scopes(row);
         }
         let closure = saturate(&direct, count)?;
+        let anything = match resolve_library_specialization_anchor(storage, "Base::Anything") {
+            LibrarySpecializationAnchor::Resolved(id) => Some(id),
+            _ => None,
+        };
+        let invalid_closed_cycle = closed_cycles_without_anything(&direct, &closure, anything)?;
 
         let mut ranges = Vec::with_capacity(count);
         let mut ancestors = Vec::new();
@@ -240,6 +250,7 @@ impl SpecializationClosure {
             ranges: ranges.into_boxed_slice(),
             ancestors: ancestors.into_boxed_slice(),
             cyclic: cyclic.into_boxed_slice(),
+            invalid_closed_cycle,
         })
     }
 
@@ -272,6 +283,15 @@ impl SpecializationClosure {
     /// Whether `declaration` reaches itself through specialization.
     pub(crate) fn is_cyclic(&self, declaration: DeclarationId) -> bool {
         self.cyclic
+            .get(declaration.index())
+            .copied()
+            .unwrap_or(false)
+    }
+
+    /// Whether `declaration` is in an entirely closed specialization cycle that does not include
+    /// `Base::Anything`. KerML 7.3.2.3 allows other cycles as shared extent.
+    pub(crate) fn is_invalid_closed_cycle(&self, declaration: DeclarationId) -> bool {
+        self.invalid_closed_cycle
             .get(declaration.index())
             .copied()
             .unwrap_or(false)
@@ -836,6 +856,52 @@ pub(crate) fn scopes_of(bits: u8) -> impl Iterator<Item = ScopeBits> {
     ScopeBits::ALL
         .into_iter()
         .filter(move |scope| bits & scope.bit() != 0)
+}
+
+/// Marks each declaration whose strongly connected component is entirely closed and does not
+/// contain `Base::Anything`.
+///
+/// KerML 7.3.2.3: specialization cycles mean shared extent; "no cycle of valid types can be
+/// entirely closed, unless it includes the type Anything."
+fn closed_cycles_without_anything(
+    direct: &[Vec<(DeclarationId, u8)>],
+    closure: &[Vec<(DeclarationId, u8)>],
+    anything: Option<DeclarationId>,
+) -> Result<Box<[bool]>, ResolutionError> {
+    let count = closure.len();
+    let mut invalid = vec![false; count];
+    for index in 0..count {
+        let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        if !closure[index].iter().any(|(ancestor, _)| *ancestor == id) {
+            continue;
+        }
+        let mut scc = vec![id];
+        for (ancestor, _) in &closure[index] {
+            if *ancestor == id {
+                continue;
+            }
+            if closure[ancestor.index()]
+                .iter()
+                .any(|(back, _)| *back == id)
+            {
+                scc.push(*ancestor);
+            }
+        }
+        scc.sort_unstable();
+        scc.dedup();
+        if anything.is_some_and(|anything| scc.binary_search(&anything).is_ok()) {
+            continue;
+        }
+        let escaped = scc.iter().any(|member| {
+            direct[member.index()]
+                .iter()
+                .any(|(target, _)| scc.binary_search(target).is_err())
+        });
+        if !escaped {
+            invalid[index] = true;
+        }
+    }
+    Ok(invalid.into_boxed_slice())
 }
 
 /// Saturates the direct edges into their transitive closure.

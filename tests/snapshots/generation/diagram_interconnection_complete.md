@@ -330,7 +330,7 @@ package InterconnectionExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:7ac26df0dea9ca81b9a6d0178d868dea488ce5ed10d2c6429962748359d33632",
+  "modelDigest": "blake3:321c853a2195f2cfa41408a2fffbafdc7b7d34189223cc8aacd6568cd5a0175e",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_complete.md",

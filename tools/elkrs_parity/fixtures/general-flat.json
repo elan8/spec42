@@ -1,0 +1,69 @@
+{
+  "id": "root",
+  "layoutOptions": {
+    "elk.algorithm": "layered",
+    "elk.edgeRouting": "ORTHOGONAL",
+    "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
+    "elk.separateConnectedComponents": "true",
+    "elk.json.edgeCoords": "ROOT",
+    "elk.direction": "DOWN",
+    "elk.spacing.nodeNode": "140",
+    "elk.layered.spacing.nodeNodeBetweenLayers": "180",
+    "elk.spacing.edgeNode": "90",
+    "elk.spacing.edgeEdge": "80",
+    "elk.aspectRatio": "1.4",
+    "elk.padding": "[top=100,left=100,bottom=100,right=100]",
+    "org.eclipse.elk.portConstraints": "FIXED_SIDE"
+  },
+  "children": [
+    {
+      "id": "system",
+      "width": 200,
+      "height": 39
+    },
+    {
+      "id": "sensor",
+      "width": 200,
+      "height": 39
+    },
+    {
+      "id": "controller",
+      "width": 200,
+      "height": 39
+    },
+    {
+      "id": "actuator",
+      "width": 200,
+      "height": 39
+    }
+  ],
+  "edges": [
+    {
+      "id": "owns-sensor",
+      "sources": [
+        "system"
+      ],
+      "targets": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "owns-controller",
+      "sources": [
+        "system"
+      ],
+      "targets": [
+        "controller"
+      ]
+    },
+    {
+      "id": "controls",
+      "sources": [
+        "controller"
+      ],
+      "targets": [
+        "actuator"
+      ]
+    }
+  ]
+}

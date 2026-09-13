@@ -127,12 +127,6 @@ standard library package Links {
         (range (start 28 28) (end 28 36))
       )
       (diagnostic
-        (severity error)
-        (code "specialization_cycle")
-        (source "semantic")
-        (range (start 38 8) (end 38 98))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -143,12 +137,6 @@ standard library package Links {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 38 83) (end 38 97))
-      )
-      (diagnostic
-        (severity error)
-        (code "specialization_cycle")
-        (source "semantic")
-        (range (start 39 8) (end 39 85))
       )
       (diagnostic
         (severity warning)
