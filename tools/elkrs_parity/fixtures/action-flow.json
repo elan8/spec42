@@ -1,0 +1,31 @@
+{
+  "id": "action-flow",
+  "layoutOptions": {
+    "elk.algorithm": "layered",
+    "elk.edgeRouting": "ORTHOGONAL",
+    "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
+    "elk.separateConnectedComponents": "true",
+    "elk.json.edgeCoords": "ROOT",
+    "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+    "elk.spacing.edgeNode": "80",
+    "elk.spacing.edgeEdge": "60",
+    "elk.spacing.edgeLabel": "12",
+    "elk.padding": "[top=80,left=80,bottom=80,right=80]",
+    "elk.direction": "RIGHT",
+    "elk.spacing.nodeNode": "90",
+    "elk.layered.spacing.nodeNodeBetweenLayers": "190"
+  },
+  "children": [
+    { "id": "start", "width": 40, "height": 40 },
+    { "id": "sense", "width": 220, "height": 68 },
+    { "id": "decide", "width": 76, "height": 76 },
+    { "id": "act", "width": 220, "height": 68 },
+    { "id": "done", "width": 40, "height": 40 }
+  ],
+  "edges": [
+    { "id": "e1", "sources": ["start"], "targets": ["sense"] },
+    { "id": "e2", "sources": ["sense"], "targets": ["decide"], "labels": [{ "id": "e2::label", "text": "sample ready", "width": 88, "height": 22, "layoutOptions": { "org.eclipse.elk.edgeLabels.placement": "CENTER", "org.eclipse.elk.edgeLabels.inline": "false" } }] },
+    { "id": "e3", "sources": ["decide"], "targets": ["act"], "labels": [{ "id": "e3::label", "text": "accepted", "width": 70, "height": 22, "layoutOptions": { "org.eclipse.elk.edgeLabels.placement": "CENTER", "org.eclipse.elk.edgeLabels.inline": "false" } }] },
+    { "id": "e4", "sources": ["act"], "targets": ["done"] }
+  ]
+}

@@ -18,3 +18,17 @@ export time.
 
 ELK.js is distributed under the Eclipse Public License 2.0.
 See https://github.com/kieler/elkjs and https://www.eclipse.org/legal/epl-2.0/.
+
+## elkrs (development-only parity harness)
+
+The `tools/elkrs_parity` development tool depends on the public `elan8/elkrs`
+repository at revision `8309be8cf614cfe277c572b28e4f79a1703f8e32`. It is not linked into the
+default Spec42 product or extension packages.
+
+`elkrs` 0.1.1 is distributed under the Apache License 2.0. The public repository records that its
+history was recovered from the crates.io package with SHA-256
+`a0aa6d17007599c4bb42b342b55148832289bc8c7e41d83f01b19af1ef363de4`; its ELK 0.11.0 oracle,
+tools, and golden corpus were subsequently rebuilt independently. Apache-2.0 is suitable for use by
+this MIT-licensed project provided its license and attribution notices accompany any distributed
+binary that incorporates it. A production integration must add the license text to packaged notices
+and verify the final artifact contents.

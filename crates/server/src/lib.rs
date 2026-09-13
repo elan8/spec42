@@ -5,7 +5,7 @@
 pub mod ai_tools;
 pub mod cli;
 pub mod diagnostic_catalog;
-#[cfg(test)]
+#[cfg(any(test, feature = "elk-layout-spike"))]
 pub mod elk_layout;
 pub mod environment;
 pub mod generation;

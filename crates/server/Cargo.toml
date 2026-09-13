@@ -16,6 +16,8 @@ path = "src/lib.rs"
 default = ["embed-stdlib", "embed-kpar-libraries"]
 embed-stdlib = ["library_catalog/embed-stdlib"]
 embed-kpar-libraries = ["library_catalog/embed-kpar-libraries"]
+# Exposes the existing standalone ELK.js adapter to the development-only parity harness.
+elk-layout-spike = []
 
 [dependencies]
 # The batch host: validation, reports, engine and snapshots.

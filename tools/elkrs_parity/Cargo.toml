@@ -1,0 +1,14 @@
+[package]
+name = "elkrs_parity"
+version.workspace = true
+edition = "2021"
+publish = false
+description = "Development-only ELK.js versus elkrs geometry parity harness"
+
+[dependencies]
+anyhow = "1"
+clap = { workspace = true }
+elkrs = { git = "https://github.com/elan8/elkrs.git", rev = "8309be8cf614cfe277c572b28e4f79a1703f8e32" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+spec42 = { package = "server", path = "../../crates/server", default-features = false, features = ["elk-layout-spike"] }
