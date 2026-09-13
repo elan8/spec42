@@ -242,6 +242,8 @@ pub(crate) struct DeclarationFacts {
     pub(crate) cross_feature_projection: Option<CrossFeatureProjection>,
     /// The canonical result Feature owned by this Expression.
     pub(crate) expression_result: Option<DeclarationId>,
+    /// This declaration is the implicit Multiplicity required by individual syntax.
+    pub(crate) is_individual_multiplicity: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

@@ -703,6 +703,7 @@ impl SemanticModelBuilder {
                 modifiers: DeclarationModifiers {
                     is_abstract,
                     variation,
+                    individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()
@@ -1259,6 +1260,7 @@ impl SemanticModelBuilder {
                 modifiers: DeclarationModifiers {
                     is_abstract,
                     variation,
+                    individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()

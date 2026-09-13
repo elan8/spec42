@@ -32,13 +32,12 @@ use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
 use crate::model::span::document_range;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
-use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;
 use crate::model::ReferenceKind;
 use crate::resolve::implied::conditional_library_specialization_anchor_branch;
 use crate::resolve::implied::conditional_library_specialization_predicate_holds;
 use crate::resolve::implied::conditional_library_specialization_rules;
-use crate::resolve::implied::library_specialization_metaclass;
+use crate::resolve::implied::library_specialization_metaclasses;
 use crate::resolve::implied::library_specialization_rules;
 use crate::resolve::implied::LibrarySpecializationAnchor;
 use crate::resolve::implied::LibrarySpecializationDiagnosticKey;
@@ -52,243 +51,9 @@ use crate::DiagnosticOrigin;
 use crate::DiagnosticSeverity;
 use crate::RelatedLocation;
 
-/// The SysML metaclass family a declaration belongs to.
-///
-/// One variant per definition/usage pair the language provides. Two declarations in the same
-/// family are the definition and usage halves of one concept (`part def` / `part`), which is what
-/// makes a family the right key for every rule below.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Family {
-    Part,
-    Attribute,
-    Enumeration,
-    Item,
-    Occurrence,
-    Action,
-    State,
-    Port,
-    Requirement,
-    Concern,
-    UseCase,
-    Case,
-    AnalysisCase,
-    VerificationCase,
-    View,
-    Viewpoint,
-    Rendering,
-    Metadata,
-    Connection,
-    Interface,
-    Flow,
-    Allocation,
-    Constraint,
-    Calc,
-}
-
-/// Which half of its family a declaration is.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Role {
-    Definition,
-    Usage,
-}
-
-/// The family and role of one declaration, or `None` when it is outside the SysML metaclass space.
-///
-/// Exhaustive by construction: a new `DeclarationKind` fails to compile until it is classified, so
-/// a kind cannot silently acquire "no conformance rule applies" by omission.
-pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
-    use DeclarationKind as K;
-    use Family as F;
-    use Role::{Definition, Usage};
-    Some(match kind {
-        K::PartDefinition => (F::Part, Definition),
-        K::PartUsage => (F::Part, Usage),
-        K::AttributeDefinition => (F::Attribute, Definition),
-        K::AttributeUsage => (F::Attribute, Usage),
-        K::EnumerationDefinition => (F::Enumeration, Definition),
-        K::EnumerationUsage => (F::Enumeration, Usage),
-        K::ItemDefinition => (F::Item, Definition),
-        K::ItemUsage => (F::Item, Usage),
-        K::OccurrenceDefinition => (F::Occurrence, Definition),
-        K::OccurrenceUsage => (F::Occurrence, Usage),
-        K::ActionDefinition => (F::Action, Definition),
-        K::ActionUsage => (F::Action, Usage),
-        K::AcceptActionUsage | K::SendActionUsage | K::TerminateActionUsage => (F::Action, Usage),
-        K::StateDefinition => (F::State, Definition),
-        K::StateUsage => (F::State, Usage),
-        K::PortDefinition => (F::Port, Definition),
-        K::PortUsage => (F::Port, Usage),
-        K::RequirementDefinition => (F::Requirement, Definition),
-        K::RequirementUsage => (F::Requirement, Usage),
-        K::ConcernDefinition => (F::Concern, Definition),
-        K::ConcernUsage => (F::Concern, Usage),
-        K::UseCaseDefinition => (F::UseCase, Definition),
-        K::UseCaseUsage => (F::UseCase, Usage),
-        K::CaseDefinition => (F::Case, Definition),
-        K::CaseUsage => (F::Case, Usage),
-        K::AnalysisCaseDefinition => (F::AnalysisCase, Definition),
-        K::AnalysisCaseUsage => (F::AnalysisCase, Usage),
-        K::VerificationCaseDefinition => (F::VerificationCase, Definition),
-        K::VerificationCaseUsage => (F::VerificationCase, Usage),
-        K::ViewDefinition => (F::View, Definition),
-        K::ViewUsage => (F::View, Usage),
-        K::ViewpointDefinition => (F::Viewpoint, Definition),
-        K::ViewpointUsage => (F::Viewpoint, Usage),
-        K::RenderingDefinition => (F::Rendering, Definition),
-        K::RenderingUsage => (F::Rendering, Usage),
-        K::MetadataDefinition => (F::Metadata, Definition),
-        K::MetadataUsage => (F::Metadata, Usage),
-        K::ConnectionDefinition => (F::Connection, Definition),
-        K::ConnectionUsage => (F::Connection, Usage),
-        K::InterfaceDefinition => (F::Interface, Definition),
-        K::InterfaceUsage => (F::Interface, Usage),
-        K::FlowDefinition => (F::Flow, Definition),
-        K::Flow => (F::Flow, Usage),
-        K::AllocationDefinition => (F::Allocation, Definition),
-        K::Allocate => (F::Allocation, Usage),
-        K::ConstraintDefinition => (F::Constraint, Definition),
-        K::ConstraintUsage => (F::Constraint, Usage),
-        K::CalcDefinition => (F::Calc, Definition),
-        K::CalcUsage => (F::Calc, Usage),
-
-        // Outside the definition/usage kind space this family of rules describes.
-        //
-        // Namespaces and their members are not typed. The KerML metaclasses are `Type`s, but the
-        // SysML family tables do not describe them, and the SysML families bottom out in them --
-        // reporting against a table that does not model KerML would flag most of the standard
-        // library. The remaining entries are usage forms whose metaclass is fixed by their
-        // syntax (`subject`, `actor`, a constraint assertion), anonymous scopes the lowering mints
-        // to give nested references somewhere to resolve, and control-flow members that carry
-        // references rather than a typing of their own.
-        K::Namespace
-        | K::Package
-        | K::LibraryPackage
-        | K::Import
-        | K::Expose
-        | K::Alias
-        | K::EnumerationLiteral
-        | K::ClassDefinition
-        | K::ExtendedDefinition
-        | K::IndividualDefinition
-        | K::Succession
-        | K::EntryActionBinding
-        | K::DoActionBinding
-        | K::ExitActionBinding
-        | K::InitialState
-        | K::FinalState
-        | K::ParameterUsage
-        | K::SubjectUsage
-        | K::PerformActionUsage
-        | K::Transition
-        | K::Satisfy
-        | K::Bind
-        | K::ReferenceUsage
-        | K::Decide
-        | K::Merge
-        | K::Fork
-        | K::Join
-        | K::ThenContinuation
-        | K::StakeholderUsage
-        | K::RequirementActor
-        | K::CaseActor
-        | K::Frame
-        | K::VerifyRequirement
-        | K::AssertConstraintUsage
-        | K::AssumeConstraintUsage
-        | K::RequireConstraintUsage
-        | K::DefaultReferenceUsage
-        | K::ExtendedUsage
-        | K::Assign
-        | K::While
-        | K::Loop
-        | K::If
-        | K::ForLoop
-        | K::ForLoopVariable
-        | K::Dependency
-        | K::BareConnect
-        | K::PerformParameterBinding
-        | K::KermlType
-        | K::KermlClassifier
-        | K::KermlStructure
-        | K::KermlAssociation
-        | K::KermlAssociationStructure
-        | K::KermlDataType
-        | K::KermlMetaclass
-        | K::KermlBehavior
-        | K::KermlFunction
-        | K::KermlPredicate
-        | K::KermlInteraction
-        | K::KermlMultiplicity
-        | K::KermlFeature
-        | K::KermlStep
-        | K::KermlExpression
-        | K::KermlBooleanExpression
-        | K::KermlConnector
-        | K::KermlBinding
-        | K::KermlInvariant
-        | K::KermlEnd => return None,
-    })
-}
-
-/// The family a family specialises in the SysML metamodel, or `None` at a root.
-///
-/// This is the metamodel's own generalization hierarchy -- SysML §7's `PartUsage :> ItemUsage :>
-/// OccurrenceUsage`, `StateUsage :> ActionUsage`, `RequirementUsage :> ConstraintUsage` and so on.
-/// It is a static property of the language, not of any admitted library, so reading it here is not
-/// a name lookup: nothing consults what `Occurrence` happens to be called or where it is declared.
-///
-/// A flat per-family allowlist could not express it. `action substates : StateAction[0..*];` types
-/// an action usage with a state definition, which is well-formed precisely because a state *is* an
-/// action; a list that did not happen to name `State` under `Action` reported it as a violation.
-pub(crate) fn parent(family: Family) -> Option<Family> {
-    use Family as F;
-    Some(match family {
-        F::Occurrence | F::Attribute => return None,
-        F::Item => F::Occurrence,
-        F::Part => F::Item,
-        F::Action => F::Occurrence,
-        F::State => F::Action,
-        F::Calc => F::Action,
-        F::Case => F::Calc,
-        F::UseCase => F::Case,
-        F::AnalysisCase => F::Case,
-        F::VerificationCase => F::Case,
-        F::Port => F::Occurrence,
-        F::Connection => F::Part,
-        F::Interface => F::Connection,
-        F::Flow => F::Action,
-        F::Allocation => F::Connection,
-        F::View => F::Part,
-        F::Viewpoint => F::Requirement,
-        F::Rendering => F::Part,
-        F::Metadata => F::Item,
-        F::Enumeration => F::Attribute,
-        F::Constraint => F::Occurrence,
-        F::Requirement => F::Constraint,
-        F::Concern => F::Requirement,
-    })
-}
-
-/// Whether `family` is an occurrence family: `Occurrence` itself or one specialising it.
-///
-/// SysML's flow payload rule is about occurrences, and the occurrence families are exactly those
-/// under `Occurrence` in the hierarchy above -- part, item, action, state, connection and the rest.
-/// Asking the hierarchy keeps the rule from naming a library type.
-pub(crate) fn descends_from_occurrence(family: Family) -> bool {
-    descends_from(family, Family::Occurrence)
-}
-
-/// Whether `descendant` is `ancestor` or specialises it, transitively.
-pub(crate) fn descends_from(descendant: Family, ancestor: Family) -> bool {
-    let mut cursor = Some(descendant);
-    while let Some(current) = cursor {
-        if current == ancestor {
-            return true;
-        }
-        cursor = parent(current);
-    }
-    false
-}
+pub(crate) use crate::model::metaclass::{
+    classify, descends_from, descends_from_occurrence, Family, Role,
+};
 
 /// Whether a reference from a `source`-family declaration may target a `target`-family one.
 ///
@@ -377,9 +142,9 @@ impl<D> SemanticModel<D> {
             let Some(declaration_record) = self.storage.declaration(declaration) else {
                 return Err(ResolutionError::InvalidStorage);
             };
-            for rule in library_specialization_rules(library_specialization_metaclass(
-                declaration_record.kind,
-            )) {
+            for rule in library_specialization_metaclasses(declaration_record.kind)
+                .flat_map(library_specialization_rules)
+            {
                 let Some(outcome) = self.resolution.library_specialization_anchor(rule.rule_id)
                 else {
                     return Err(ResolutionError::InvalidStorage);
@@ -398,9 +163,9 @@ impl<D> SemanticModel<D> {
                         crate::LibrarySpecializationAnchorBranch::Default,
                     ));
             }
-            for rule in conditional_library_specialization_rules(library_specialization_metaclass(
-                declaration_record.kind,
-            )) {
+            for rule in library_specialization_metaclasses(declaration_record.kind)
+                .flat_map(conditional_library_specialization_rules)
+            {
                 if !conditional_library_specialization_predicate_holds(
                     &self.storage,
                     declaration,
@@ -432,6 +197,27 @@ impl<D> SemanticModel<D> {
                 affected
                     .entry(LibrarySpecializationDiagnosticKey { anchor, document })
                     .or_insert((declaration, rule.rule_id, branch));
+            }
+            if self.storage.individual_multiplicity(declaration).is_some() {
+                let rule = crate::resolve::implied::specialization_check_rule(
+                    crate::specialization_query::SpecializationCheckKind::OccurrenceDefinitionMultiplicity,
+                ).ok_or(ResolutionError::InvalidStorage)?;
+                let outcome = self
+                    .resolution
+                    .library_specialization_anchor(rule.rule_id)
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                if !matches!(outcome, LibrarySpecializationAnchor::Resolved(_)) {
+                    affected
+                        .entry(LibrarySpecializationDiagnosticKey {
+                            anchor: crate::resolve::implied::INDIVIDUAL_MULTIPLICITY_ANCHOR,
+                            document,
+                        })
+                        .or_insert((
+                            declaration,
+                            rule.rule_id,
+                            crate::LibrarySpecializationAnchorBranch::Default,
+                        ));
+                }
             }
         }
 

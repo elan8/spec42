@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Individual definitions now publish their implicit multiplicity and specialization to
+  `Base::zeroOrOne`, including the `individual def` shorthand and specialized definition kinds.
+
 - **Semantic tokens use parser name spans and can be traced from the editor (#35).** Definition
   names come from `Identification` rather than a first-line text search; transition /
   satisfy / dependency members keep source, accept, and target spans instead of painting the
