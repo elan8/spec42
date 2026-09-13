@@ -1,0 +1,56 @@
+{
+  "id": "root",
+  "layoutOptions": {
+    "elk.algorithm": "layered",
+    "elk.edgeRouting": "ORTHOGONAL",
+    "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
+    "elk.separateConnectedComponents": "true",
+    "elk.json.edgeCoords": "ROOT",
+    "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+    "elk.direction": "RIGHT",
+    "elk.spacing.nodeNode": "150",
+    "elk.layered.spacing.nodeNodeBetweenLayers": "220",
+    "elk.spacing.edgeNode": "110",
+    "elk.spacing.edgeEdge": "90",
+    "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+    "elk.padding": "[top=70,left=70,bottom=70,right=70]",
+    "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+    "org.eclipse.elk.portAlignment.default": "CENTER"
+  },
+  "children": [
+    {
+      "id": "left-system",
+      "layoutOptions": { "elk.padding": "[top=50,left=30,bottom=30,right=30]", "org.eclipse.elk.portConstraints": "FIXED_ORDER" },
+      "children": [
+        {
+          "id": "producer",
+          "width": 220,
+          "height": 120,
+          "layoutOptions": { "org.eclipse.elk.portConstraints": "FIXED_POS" },
+          "ports": [
+            { "id": "producer.out", "width": 12, "height": 12, "x": 214, "y": 38, "layoutOptions": { "org.eclipse.elk.port.side": "EAST", "org.eclipse.elk.port.index": "0" }, "labels": [{ "id": "producer.out.label", "text": "telemetry", "width": 58, "height": 16 }] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "right-system",
+      "layoutOptions": { "elk.padding": "[top=50,left=30,bottom=30,right=30]", "org.eclipse.elk.portConstraints": "FIXED_ORDER" },
+      "children": [
+        {
+          "id": "consumer",
+          "width": 220,
+          "height": 120,
+          "layoutOptions": { "org.eclipse.elk.portConstraints": "FIXED_SIDE" },
+          "ports": [
+            { "id": "consumer.in", "width": 12, "height": 12, "layoutOptions": { "org.eclipse.elk.port.side": "WEST", "org.eclipse.elk.port.index": "0" }, "labels": [{ "id": "consumer.in.label", "text": "telemetry", "width": 58, "height": 16 }] },
+            { "id": "consumer.diag", "width": 12, "height": 12, "layoutOptions": { "org.eclipse.elk.port.side": "WEST", "org.eclipse.elk.port.index": "1" }, "labels": [{ "id": "consumer.diag.label", "text": "diagnostics", "width": 70, "height": 16 }] }
+          ]
+        }
+      ]
+    }
+  ],
+  "edges": [
+    { "id": "telemetry-link", "sources": ["producer.out"], "targets": ["consumer.in"], "labels": [{ "id": "telemetry-link.label", "text": "sample stream", "width": 82, "height": 18, "layoutOptions": { "org.eclipse.elk.edgeLabels.placement": "CENTER" } }] }
+  ]
+}

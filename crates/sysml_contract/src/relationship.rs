@@ -73,9 +73,9 @@ pub enum Conformance {
 /// Why a conformance question has no settled answer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ConformanceObstacle {
-    /// The specific side reaches itself through specialization. Its hierarchy is malformed, so no
-    /// answer derived from it is trustworthy -- reporting one would launder a modelling error into
-    /// a semantic fact.
+    /// The specific side is in an entirely closed specialization cycle that does not include
+    /// `Base::Anything`. KerML 7.3.2.3 treats other cycles as shared extent; only this closed
+    /// form is a modelling error whose closure must not be published as conformance.
     CyclicSpecialization,
 }
 

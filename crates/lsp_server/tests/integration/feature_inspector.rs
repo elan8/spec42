@@ -15,7 +15,7 @@ fn inspect(session: &mut TestSession, uri: &str, line: u32, character: u32) -> s
 #[test]
 fn lsp_feature_inspector_accepts_standard_and_legacy_uri_shapes() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_request_shape.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_request_shape.sysml";
     let content = "package P {\n  part def Engine;\n}\n";
     session.initialize_default("feature_inspector_request_shape");
     session.did_open(uri, content, 1);
@@ -72,7 +72,7 @@ fn lsp_feature_inspector_accepts_standard_and_legacy_uri_shapes() {
 #[test]
 fn lsp_feature_inspector_classifies_keywords_with_structured_language_help() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_keyword_help.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_keyword_help.sysml";
     let content = "package P {\n  part def Engine;\n}\n";
     session.initialize_default("feature_inspector_keyword_help");
     session.did_open(uri, content, 1);
@@ -109,7 +109,7 @@ fn lsp_feature_inspector_classifies_keywords_with_structured_language_help() {
 #[test]
 fn lsp_feature_inspector_resolves_same_file_typing() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_same_file.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_same_file.sysml";
     let content = "package P {\n  part def Engine;\n  part motor : Engine;\n}\n";
     session.initialize_default("feature_inspector_same_file");
     session.did_open(uri, content, 1);
@@ -137,7 +137,7 @@ fn lsp_feature_inspector_resolves_same_file_typing() {
 #[test]
 fn lsp_feature_inspector_typing_comes_from_typed_facts_for_non_part_constructs() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_typed_facts.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_typed_facts.sysml";
     let content = concat!(
         "package P {\n",
         "  use case def Checkout;\n",
@@ -210,9 +210,9 @@ fn lsp_feature_inspector_typing_comes_from_typed_facts_for_non_part_constructs()
 #[test]
 fn lsp_feature_inspector_resolves_cross_file_typing() {
     let mut session = TestSession::new();
-    let defs_uri = "file:///feature_inspector_defs.sysml";
+    let defs_uri = "file:///c:/spec42-lsp-tests/feature_inspector_defs.sysml";
     let defs = "package Defs {\n  requirement def EnduranceReq;\n}\n";
-    let usage_uri = "file:///feature_inspector_usage.sysml";
+    let usage_uri = "file:///c:/spec42-lsp-tests/feature_inspector_usage.sysml";
     let usage =
         "package Usage {\n  import Defs::*;\n  requirement enduranceCheck : EnduranceReq;\n}\n";
     session.initialize_default("feature_inspector_cross_file");
@@ -241,8 +241,8 @@ fn lsp_feature_inspector_resolves_cross_file_typing() {
 #[test]
 fn lsp_feature_inspector_reports_an_unqualified_name_across_same_named_packages_as_unresolved() {
     let mut session = TestSession::new();
-    let defs_uri = "file:///feature_inspector_same_package_defs.sysml";
-    let usage_uri = "file:///feature_inspector_same_package_usage.sysml";
+    let defs_uri = "file:///c:/spec42-lsp-tests/feature_inspector_same_package_defs.sysml";
+    let usage_uri = "file:///c:/spec42-lsp-tests/feature_inspector_same_package_usage.sysml";
     session.initialize_default("feature_inspector_same_package");
     session.did_open(
         defs_uri,
@@ -267,7 +267,7 @@ fn lsp_feature_inspector_reports_an_unqualified_name_across_same_named_packages_
 #[test]
 fn lsp_feature_inspector_reports_unresolved_typing() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_unresolved.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_unresolved.sysml";
     let content = "package R {\n  requirement brokenCheck : MissingReq;\n}\n";
     session.initialize_default("feature_inspector_unresolved");
     session.did_open(uri, content, 1);
@@ -285,7 +285,7 @@ fn lsp_feature_inspector_reports_unresolved_typing() {
 #[test]
 fn lsp_feature_inspector_reports_specialization_targets() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_specialization.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_specialization.sysml";
     let content = "package P {\n  part def Vehicle;\n  part def Drone :> Vehicle;\n}\n";
     session.initialize_default("feature_inspector_specialization");
     session.did_open(uri, content, 1);
@@ -308,7 +308,7 @@ fn lsp_feature_inspector_reports_specialization_targets() {
 #[test]
 fn lsp_feature_inspector_exposes_effective_semantics_and_inherited_features() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_effective_semantics.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_effective_semantics.sysml";
     let content = concat!(
         "package P {\n",
         "  item def Signal;\n",
@@ -410,7 +410,7 @@ fn lsp_feature_inspector_exposes_effective_semantics_and_inherited_features() {
 #[test]
 fn lsp_feature_inspector_exposes_subsetting_as_a_resolved_semantic_relation() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_subsetting.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_subsetting.sysml";
     let content = concat!(
         "package P {\n",
         "  part def Sensor;\n",
@@ -435,7 +435,7 @@ fn lsp_feature_inspector_exposes_subsetting_as_a_resolved_semantic_relation() {
 #[test]
 fn lsp_feature_inspector_uses_deepest_node_at_position() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_deepest.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_deepest.sysml";
     let content = "package P {\n  part def Engine {\n    port output;\n  }\n}\n";
     session.initialize_default("feature_inspector_deepest");
     session.did_open(uri, content, 1);
@@ -455,7 +455,7 @@ fn lsp_feature_inspector_uses_deepest_node_at_position() {
 #[test]
 fn lsp_feature_inspector_returns_direct_relationships_without_contains() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_relationships.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_relationships.sysml";
     let content = "package P {\n  part def Engine;\n  part motor : Engine;\n}\n";
     session.initialize_default("feature_inspector_relationships");
     session.did_open(uri, content, 1);
@@ -494,7 +494,7 @@ fn lsp_feature_inspector_returns_direct_relationships_without_contains() {
 #[test]
 fn lsp_feature_inspector_returns_null_for_whitespace_and_missing_documents() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_empty.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_empty.sysml";
     let content = "package P {\n  part def Engine;\n}\n";
     session.initialize_default("feature_inspector_empty");
     session.did_open(uri, content, 1);
@@ -505,7 +505,7 @@ fn lsp_feature_inspector_returns_null_for_whitespace_and_missing_documents() {
 
     let missing = inspect(
         &mut session,
-        "file:///feature_inspector_missing.sysml",
+        "file:///c:/spec42-lsp-tests/feature_inspector_missing.sysml",
         0,
         0,
     );
@@ -515,7 +515,7 @@ fn lsp_feature_inspector_returns_null_for_whitespace_and_missing_documents() {
 #[test]
 fn lsp_feature_inspector_surfaces_feature_and_classifier_decls_without_resolution_intent() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_classifier_inspector.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_classifier_inspector.sysml";
     let content = "package P {\n  feature myFeature : BaseFeature;\n  class VehicleClass;\n}\n";
     session.initialize_default("feature_classifier_inspector");
     session.did_open(uri, content, 1);
@@ -555,7 +555,7 @@ fn lsp_feature_inspector_surfaces_feature_and_classifier_decls_without_resolutio
 #[test]
 fn lsp_feature_inspector_distinguishes_element_reference_value_and_unit_tokens() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_selection_kinds.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_selection_kinds.sysml";
     let content = concat!(
         "package P {\n",
         "  part def RPLIDARC1;\n",
@@ -638,7 +638,7 @@ fn lsp_feature_inspector_distinguishes_element_reference_value_and_unit_tokens()
 #[test]
 fn lsp_feature_inspector_handles_other_and_unresolved_selections_without_false_help() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_other_tokens.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_other_tokens.sysml";
     let content = "package P {\n  Part def WrongCase;\n  part broken : MissingPart;\n}\n";
     session.initialize_default("feature_inspector_other_tokens");
     session.did_open(uri, content, 1);
@@ -674,7 +674,7 @@ fn lsp_feature_inspector_handles_other_and_unresolved_selections_without_false_h
 #[test]
 fn lsp_feature_inspector_acceptance_covers_assert_and_software_queue() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_acceptance.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_acceptance.sysml";
     let content =
         "package P {\n  part def SoftwareQueue {\n    assert constraint { true }\n  }\n}\n";
     session.initialize_default("feature_inspector_acceptance");
@@ -715,7 +715,7 @@ fn lsp_feature_inspector_acceptance_covers_assert_and_software_queue() {
 #[test]
 fn lsp_feature_inspector_reports_an_ambiguous_typing_without_choosing_a_candidate() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_ambiguous.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_ambiguous.sysml";
     let content = concat!(
         "package P {\n",
         "  package A { part def Shared; }\n",
@@ -752,7 +752,7 @@ fn lsp_feature_inspector_reports_an_ambiguous_typing_without_choosing_a_candidat
 #[test]
 fn lsp_feature_inspector_projects_each_published_evaluation_state() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_evaluation.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_evaluation.sysml";
     let content = concat!(
         "package P {\n",
         "  part def Empty;\n",
@@ -811,7 +811,7 @@ fn lsp_feature_inspector_projects_each_published_evaluation_state() {
 #[test]
 fn lsp_feature_inspector_reports_verdicts_apart_from_values() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_verdict.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_verdict.sysml";
     let content = concat!(
         "package P {\n",
         "  constraint holds { true }\n",
@@ -854,7 +854,7 @@ fn lsp_feature_inspector_reports_verdicts_apart_from_values() {
 #[test]
 fn lsp_feature_inspector_publishes_metadata_bindings() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_metadata.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_metadata.sysml";
     let content = concat!(
         "package P {\n",
         "  metadata def Safety;\n",
@@ -888,7 +888,7 @@ fn lsp_feature_inspector_publishes_metadata_bindings() {
 #[test]
 fn lsp_feature_inspector_reports_authored_modifiers_and_multiplicity() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_modifiers.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_modifiers.sysml";
     let content = concat!(
         "package P {\n",
         "  abstract part def Chassis {\n",
@@ -937,7 +937,7 @@ fn lsp_feature_inspector_reports_authored_modifiers_and_multiplicity() {
 #[test]
 fn lsp_feature_inspector_keeps_authored_and_implied_relationships_apart() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_provenance.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_provenance.sysml";
     let content = concat!(
         "package P {\n",
         "  part def Wheel;\n",
@@ -981,7 +981,7 @@ fn lsp_feature_inspector_keeps_authored_and_implied_relationships_apart() {
 #[test]
 fn lsp_feature_inspector_effective_type_omits_implied_only_inheritance() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_effective_provenance.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_effective_provenance.sysml";
     let content = concat!(
         "package P {\n",
         "  part def Wheel;\n",
@@ -1025,7 +1025,7 @@ fn lsp_feature_inspector_effective_type_omits_implied_only_inheritance() {
 #[test]
 fn lsp_feature_inspector_answers_are_stable_across_repetition_and_query_order() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_stability.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_stability.sysml";
     let content = concat!(
         "package P {\n",
         "  part def Wheel;\n",
@@ -1097,7 +1097,7 @@ fn lsp_feature_inspector_resolves_a_target_in_an_admitted_library() {
     assert_eq!(typing["status"].as_str(), Some("resolved"), "{typing:#?}");
     assert_eq!(
         typing["targets"][0]["uri"].as_str(),
-        Some(library_uri.as_str()),
+        Some(sysml_query::source::normalize_uri(&library_uri).as_str()),
         "{typing:#?}"
     );
 }
@@ -1107,7 +1107,7 @@ fn lsp_feature_inspector_resolves_a_target_in_an_admitted_library() {
 #[test]
 fn lsp_feature_inspector_answers_over_recovery_produced_input() {
     let mut session = TestSession::new();
-    let uri = "file:///feature_inspector_recovery.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/feature_inspector_recovery.sysml";
     let content = "package P {\n  part def Wheel;\n  part broken : ;\n}\n";
     session.initialize_default("feature_inspector_recovery");
     session.did_open(uri, content, 1);

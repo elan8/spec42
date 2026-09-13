@@ -12,11 +12,35 @@ pub fn server_binary_path() -> std::path::PathBuf {
     std::path::PathBuf::from(env!("CARGO_BIN_EXE_spec42_core_lsp_test"))
 }
 
-pub fn spawn_server() -> Child {
+/// Owns a server process until it has been terminated and reaped, including during unwinding.
+pub struct TestServer(Child);
+
+impl std::ops::Deref for TestServer {
+    type Target = Child;
+
+    fn deref(&self) -> &Child {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for TestServer {
+    fn deref_mut(&mut self) -> &mut Child {
+        &mut self.0
+    }
+}
+
+impl Drop for TestServer {
+    fn drop(&mut self) {
+        let _ = self.0.kill();
+        let _ = self.0.wait();
+    }
+}
+
+pub fn spawn_server() -> TestServer {
     spawn_server_with_env(&[])
 }
 
-pub fn spawn_server_with_env(env: &[(&str, &std::path::Path)]) -> Child {
+pub fn spawn_server_with_env(env: &[(&str, &std::path::Path)]) -> TestServer {
     let server_path = server_binary_path();
     eprintln!("spec42 integration harness launch_mode={INTEGRATION_LAUNCH_MODE}");
     let mut command = Command::new(&server_path);
@@ -26,19 +50,47 @@ pub fn spawn_server_with_env(env: &[(&str, &std::path::Path)]) -> Child {
             command.env("SPEC42_LIBRARY_FULL_SCAN", "1");
         }
     }
-    command
-        // Keep debug diagnostics enabled during integration tests.
-        .env("SPEC42_ELK_DEBUG", "1")
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::null())
-        .spawn()
-        .unwrap_or_else(|err| panic!("spawn server binary {}: {err}", server_path.display()))
+    TestServer(
+        command
+            // Keep debug diagnostics enabled during integration tests.
+            .env("SPEC42_ELK_DEBUG", "1")
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::null())
+            .spawn()
+            .unwrap_or_else(|err| panic!("spawn server binary {}: {err}", server_path.display())),
+    )
 }
 
 #[test]
 fn harness_launch_mode_uses_direct_binary() {
     assert_eq!(INTEGRATION_LAUNCH_MODE, "spec42-core-test-binary");
+}
+
+#[test]
+fn harness_closes_server_stdout_on_drop_and_panic() {
+    for panic_on_exit in [false, true] {
+        let (sender, receiver) = std::sync::mpsc::channel();
+        let result = std::panic::catch_unwind(|| {
+            let mut server = spawn_server();
+            let mut stdout = server.stdout.take().expect("stdout");
+            std::thread::spawn(move || {
+                let mut byte = [0];
+                let _ = sender.send(stdout.read(&mut byte));
+            });
+            if panic_on_exit {
+                panic!("exercise server cleanup while unwinding");
+            }
+        });
+        assert_eq!(result.is_err(), panic_on_exit);
+        assert_eq!(
+            receiver
+                .recv_timeout(std::time::Duration::from_secs(10))
+                .expect("server must close stdout on exit")
+                .expect("read server stdout"),
+            0
+        );
+    }
 }
 
 /// LSP message framing: "Content-Length: N\r\n\r\n" + body (UTF-8).
@@ -161,7 +213,7 @@ fn normalized_uri(uri: &str) -> String {
 }
 
 pub struct TestSession {
-    child: Child,
+    _child: TestServer,
     stdin: std::process::ChildStdin,
     stdout: std::process::ChildStdout,
 }
@@ -176,7 +228,7 @@ impl TestSession {
         let stdin = child.stdin.take().expect("stdin");
         let stdout = child.stdout.take().expect("stdout");
         Self {
-            child,
+            _child: child,
             stdin,
             stdout,
         }
@@ -285,11 +337,5 @@ impl TestSession {
 
     pub fn wait_for_publications(&mut self, uris: &[&str]) {
         wait_for_publications(&mut self.stdout, uris);
-    }
-}
-
-impl Drop for TestSession {
-    fn drop(&mut self) {
-        let _ = self.child.kill();
     }
 }

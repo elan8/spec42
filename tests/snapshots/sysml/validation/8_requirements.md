@@ -1158,6 +1158,7 @@ package '8-Requirements' {
     )
     (declaration (id (node (document "memory://snapshot/8_requirements.md") (path (named (kind package) (name "8-Requirements")) (named (kind part) (name "vehicle1_c1 Specification Context")) (named (kind requirement) (name "vehicle1-c1 Specification")) (anonymous (kind requirement) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::vehicle1_c1 Specification Context::vehicle1-c1 Specification")))
+      (effective-type (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")) (source inherited) (from (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1"))))
       (supertype (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::Vehicle Requirements::MassLimitationRequirement")) (scopes any))
       (supertype (node (document "memory://snapshot/8_requirements.md") (qualified-name "8-Requirements::Vehicle Requirements::vehicleMass1")) (scopes any feature))
     )

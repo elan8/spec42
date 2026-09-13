@@ -43,7 +43,7 @@ fn lsp_initialize_and_hover() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///test.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/test.sysml";
     let content = "package P { part def X; }";
 
     let init_id = next_id();
@@ -126,7 +126,7 @@ fn lsp_hover_resolves_typed_usage_and_nested_symbols() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///hover-rich.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/hover-rich.sysml";
     let content = r#"package DroneLibrary {
     package DroneParts {
         part def Airframe;
@@ -243,7 +243,7 @@ fn lsp_hover_uses_exact_symbol_under_cursor_within_typed_usage() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///hover-exact-symbol.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/hover-exact-symbol.sysml";
     let content = r#"package DroneLibrary {
     package DroneParts {
         part def Airframe;
@@ -358,7 +358,7 @@ fn lsp_hover_returns_markdown_for_untyped_requirement_subject() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///hover-requirement-subject.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/hover-requirement-subject.sysml";
     let content = r#"package DronePackage {
     part def Communication;
 
@@ -440,7 +440,7 @@ fn lsp_hover_returns_markdown_for_typed_requirement_subject() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///hover-requirement-subject-name.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/hover-requirement-subject-name.sysml";
     let content = r#"package DronePackage {
     part def SurveillanceQuadrotorDrone;
 
@@ -516,7 +516,7 @@ fn lsp_hover_resolves_port_and_attribute_type_references() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///hover-port-attribute.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/hover-port-attribute.sysml";
     let content = r#"package P {
     port def CommandPort;
     attribute def Voltage;
@@ -625,9 +625,9 @@ fn lsp_hover_resolves_public_reexported_type_reference() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri_core = "file:///workspace/core.sysml";
-    let uri_domain = "file:///workspace/domain.sysml";
-    let uri_use = "file:///workspace/use.sysml";
+    let uri_core = "file:///c:/spec42-lsp-tests/workspace/core.sysml";
+    let uri_domain = "file:///c:/spec42-lsp-tests/workspace/domain.sysml";
+    let uri_use = "file:///c:/spec42-lsp-tests/workspace/use.sysml";
     let content_core = "package Core { attribute def Name; }";
     let content_domain = "package Domain { public import Core::*; }";
     let content_use =
@@ -640,7 +640,7 @@ fn lsp_hover_resolves_public_reexported_type_reference() {
         "method": "initialize",
         "params": {
             "processId": null,
-            "rootUri": "file:///workspace",
+            "rootUri": "file:///c:/spec42-lsp-tests/workspace",
             "capabilities": {},
             "clientInfo": { "name": "lsp_integration_test", "version": "0.1.0" }
         }
@@ -705,7 +705,7 @@ fn lsp_hover_resolves_public_reexported_type_reference() {
 #[test]
 fn lsp_hover_returns_unresolved_reference_fallback() {
     let mut session = TestSession::new();
-    let uri = "file:///hover-unresolved.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/hover-unresolved.sysml";
     let content = r#"package Demo {
     part vehicle : MissingType;
 }"#;
@@ -726,8 +726,9 @@ fn lsp_hover_returns_unresolved_reference_fallback() {
 #[test]
 fn lsp_hover_resolves_unit_literal_suffix() {
     let mut session = TestSession::new();
-    let uri_units = "file:///workspace/Quantities%20and%20Units/Electrical.sysml";
-    let uri_model = "file:///workspace/model.sysml";
+    let uri_units =
+        "file:///c:/spec42-lsp-tests/workspace/Quantities%20and%20Units/Electrical.sysml";
+    let uri_model = "file:///c:/spec42-lsp-tests/workspace/model.sysml";
     let units_content =
         "attribute <kV> 'kilovolt' : ElectricPotentialDifferenceUnit { :>> unitConversion: ConversionByConvention { :>> referenceUnit = V; :>> conversionFactor = 1E+03; } }";
     let model_content = "package Demo { attribute ratedVoltage = 10 [kV]; }";

@@ -897,6 +897,7 @@ package VehicleVariabilityModel {
     )
     (declaration (id (node (document "memory://snapshot/vehicle_variability_model.md") (path (named (kind package) (name "VehicleVariabilityModel")) (named (kind package) (name "150% Model")) (named (kind package) (name "PartsTree")) (named (kind part) (name "vehicleFamily")) (anonymous (kind perform-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::PartsTree::vehicleFamily")))
+      (effective-type (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::ProvidePower")) (source inherited) (from (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily"))))
       (supertype (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::150% Model::ActionTree::providePowerFamily")) (scopes any feature))
       (supertype (node (document "memory://snapshot/vehicle_variability_model.md") (qualified-name "VehicleVariabilityModel::DesignModel::ActionDefinitions::ProvidePower")) (scopes any))
     )

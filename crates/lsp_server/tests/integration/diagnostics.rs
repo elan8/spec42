@@ -146,7 +146,7 @@ fn lsp_diagnostics_clear_after_invalid_intermediate_edit_becomes_valid() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///edit_cycle.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/edit_cycle.sysml";
     let invalid = "package P { part def A {";
     let valid = "package P { part def A { } }";
 
@@ -261,7 +261,7 @@ fn untyped_part_usage_offers_code_action_to_create_part_def_and_type_usage() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///quickfix_untyped_part.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/quickfix_untyped_part.sysml";
     let content = "package P {\n  part def Laptop {\n    part display;\n  }\n}\n";
 
     let init_id = next_id();
@@ -381,7 +381,7 @@ fn missing_library_context_offers_quick_fixes_for_stdlib_and_custom_libraries() 
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///quickfix_missing_library_context.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/quickfix_missing_library_context.sysml";
     let content = "package P {\n  import ScalarValues::Real;\n  part def Vehicle {\n    attribute mass : Real;\n  }\n}\n";
 
     let init_id = next_id();
@@ -492,7 +492,7 @@ fn requirement_line_offers_create_verification_case_refactor() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///quickfix_verification_case.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/quickfix_verification_case.sysml";
     let content = "package P {\n  requirement def BatteryRuntime {\n  }\n}\n";
 
     let init_id = next_id();
@@ -594,7 +594,7 @@ fn requirement_line_offers_create_verification_case_refactor() {
 #[test]
 fn definition_line_offers_create_typed_usage_refactor() {
     let mut session = TestSession::new();
-    let uri = "file:///refactor_create_usage.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/refactor_create_usage.sysml";
     let content = "package P {\n  part def Engine {\n  }\n}\n";
     session.initialize_default("refactor_create_usage");
     session.did_open(uri, content, 1);
@@ -907,9 +907,9 @@ fn public_import_reexport_clears_unresolved_type_diagnostic() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri_core = "file:///workspace/core.sysml";
-    let uri_domain = "file:///workspace/domain.sysml";
-    let uri_use = "file:///workspace/use.sysml";
+    let uri_core = "file:///c:/spec42-lsp-tests/workspace/core.sysml";
+    let uri_domain = "file:///c:/spec42-lsp-tests/workspace/domain.sysml";
+    let uri_use = "file:///c:/spec42-lsp-tests/workspace/use.sysml";
     let content_core = "package Core { attribute def Name; }";
     let content_domain = "package Domain { public import Core::*; }";
     let content_use =
@@ -924,7 +924,7 @@ fn public_import_reexport_clears_unresolved_type_diagnostic() {
             "method": "initialize",
             "params": {
                 "processId": null,
-                "rootUri": "file:///workspace",
+                "rootUri": "file:///c:/spec42-lsp-tests/workspace",
                 "capabilities": {},
                 "clientInfo": { "name": "test", "version": "0.1.0" }
             }
@@ -1041,9 +1041,9 @@ fn private_import_chain_keeps_unresolved_type_diagnostic() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri_core = "file:///workspace/core.sysml";
-    let uri_domain = "file:///workspace/domain.sysml";
-    let uri_use = "file:///workspace/use.sysml";
+    let uri_core = "file:///c:/spec42-lsp-tests/workspace/core.sysml";
+    let uri_domain = "file:///c:/spec42-lsp-tests/workspace/domain.sysml";
+    let uri_use = "file:///c:/spec42-lsp-tests/workspace/use.sysml";
     let content_core = "package Core { attribute def Name; }";
     let content_domain = "package Domain { private import Core::*; }";
     let content_use =
@@ -1058,7 +1058,7 @@ fn private_import_chain_keeps_unresolved_type_diagnostic() {
             "method": "initialize",
             "params": {
                 "processId": null,
-                "rootUri": "file:///workspace",
+                "rootUri": "file:///c:/spec42-lsp-tests/workspace",
                 "capabilities": {},
                 "clientInfo": { "name": "test", "version": "0.1.0" }
             }

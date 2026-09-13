@@ -998,6 +998,50 @@ fn a_cyclic_hierarchy_yields_no_conformance_answer() {
 }
 
 #[test]
+fn a_self_link_style_cycle_that_escapes_answers_conformance() {
+    let published = publication_for(&[(
+        "memory://links.kerml",
+        "package Links {
+            classifier Anything;
+            assoc SelfLink {
+                end feature thisThing : Anything subsets sameThing;
+                end feature sameThing : Anything subsets thisThing;
+            }
+        }",
+    )]);
+    let this_thing = symbol_named(
+        &published,
+        "memory://links.kerml",
+        "Links::SelfLink::thisThing",
+    );
+    let same_thing = symbol_named(
+        &published,
+        "memory://links.kerml",
+        "Links::SelfLink::sameThing",
+    );
+    let anything = symbol_named(&published, "memory://links.kerml", "Links::Anything");
+
+    assert_eq!(
+        conformance(published.conforms_to(
+            this_thing,
+            same_thing,
+            SpecializationScope::AnySpecialization
+        )),
+        Conformance::Conforms,
+        "mutual subsetting is shared extent, not a closed modelling error"
+    );
+    assert_eq!(
+        conformance(published.conforms_to(
+            this_thing,
+            anything,
+            SpecializationScope::AnySpecialization
+        )),
+        Conformance::Conforms,
+        "the escape typing remains a published conformance fact"
+    );
+}
+
+#[test]
 fn view_selection_keeps_unresolved_and_unsupported_predicates_explicit() {
     let document = "memory://views.sysml";
     let published = detail_publication(

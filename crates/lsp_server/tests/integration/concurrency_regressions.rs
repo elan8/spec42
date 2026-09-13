@@ -26,7 +26,7 @@ fn hover_request_not_blocked_by_concurrent_relink() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///concurrent_relink.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/concurrent_relink.sysml";
     let content = "package P {\n  part def Engine;\n  part motor : Engine;\n}\n";
 
     let init_id = next_id();
@@ -180,7 +180,7 @@ fn superseded_relink_result_is_dropped_and_does_not_regress_diagnostics() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///superseded_relink.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/superseded_relink.sysml";
     let broken =
         "package P {\n  part def Vehicle {\n    part engine : MissingEngineType;\n  }\n}\n";
     let fixed = "package P {\n  part def MissingEngineType;\n  part def Vehicle {\n    part engine : MissingEngineType;\n  }\n}\n";

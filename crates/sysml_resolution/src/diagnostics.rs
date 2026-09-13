@@ -399,9 +399,9 @@ semantic_diagnostic_codes! {
     /// A usage subsets or redefines a feature of an incompatible metaclass family.
     IncompatibleSubsettingKind => "incompatible_subset_redefine_kind",
         "This usage subsets or redefines a feature of an incompatible kind.";
-    /// A declaration reaches itself through specialization.
+    /// A declaration is in an entirely closed specialization cycle that omits `Base::Anything`.
     SpecializationCycle => "specialization_cycle",
-        "This declaration reaches itself through specialization.";
+        "This declaration is in an entirely closed specialization cycle that does not include Anything.";
     /// A redefining feature admits values its redefined feature's multiplicity excludes.
     RedefinitionMultiplicityWidened => "redefinition_multiplicity_widened",
         "This redefinition admits values the redefined feature's multiplicity excludes.";
