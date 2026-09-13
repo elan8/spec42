@@ -1,5 +1,6 @@
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::process::Command;
 use std::time::Instant;
 
 use anyhow::{bail, Context, Result};
@@ -50,6 +51,24 @@ enum OutputFormat {
     Json,
 }
 
+#[derive(Debug, Clone, Copy, ValueEnum, PartialEq, Eq)]
+enum ProcessMode {
+    /// All samples run in this one process (current default; fast, used for CI).
+    InProcess,
+    /// Every sample re-execs this binary as a fresh child process, so the measured time includes
+    /// process startup. Requires --release; a debug binary's startup cost swamps the signal.
+    Cold,
+    /// One child process runs every sample in a loop, amortizing startup across the batch. Also
+    /// requires --release.
+    Warm,
+}
+
+#[derive(Debug, Clone, Copy, ValueEnum)]
+enum Engine {
+    Elkjs,
+    Elkrs,
+}
+
 #[derive(Debug, Parser)]
 #[command(about = "Compare Spec42 ELK.js layout geometry with pinned elkrs")]
 struct Args {
@@ -75,6 +94,47 @@ struct Args {
     /// Write the report to a file instead of stdout.
     #[arg(long)]
     output: Option<PathBuf>,
+
+    /// How to run --iterations samples: in one process (default), or out-of-process to capture
+    /// startup cost (cold) or amortized steady-state cost (warm). Cold/warm skip the geometry
+    /// comparison above (that is the in-process default's job) and report only timing and peak
+    /// resident memory, against a single fixture.
+    #[arg(long, value_enum, default_value_t = ProcessMode::InProcess)]
+    process_mode: ProcessMode,
+
+    /// Fixture to measure in --process-mode cold|warm. Defaults to the largest checked-in corpus
+    /// fixture so the measurement reflects a realistic, not trivial, graph.
+    #[arg(long)]
+    process_mode_fixture: Option<PathBuf>,
+
+    /// Internal: run as a --process-mode child. Not for direct use.
+    #[arg(long, hide = true, value_enum)]
+    internal_child_engine: Option<Engine>,
+}
+
+/// One child-process sample: layout wall time plus this process's peak resident set size at exit,
+/// read from `/proc/self/status`'s `VmHWM` (Linux only; `None` elsewhere).
+#[derive(Debug, Serialize, serde::Deserialize)]
+struct ChildSample {
+    median_layout_us: u128,
+    min_layout_us: u128,
+    peak_rss_kb: Option<u64>,
+    error: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+struct ProcessModeMeasurement {
+    engine: &'static str,
+    process_mode: &'static str,
+    fixture: String,
+    samples: u32,
+    /// Only set for `cold`: total child wall time (startup + layout) minus the child's own
+    /// reported layout time, median across samples.
+    median_startup_us: Option<u128>,
+    median_layout_us: u128,
+    min_layout_us: u128,
+    peak_rss_kb: Option<u64>,
+    errors: Vec<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -120,11 +180,20 @@ struct EngineMeasurement {
 
 fn main() -> Result<()> {
     let args = Args::parse();
+
+    if let Some(engine) = args.internal_child_engine {
+        return run_internal_child(engine, &args.inputs, args.iterations);
+    }
+
     if !args.tolerance.is_finite() || args.tolerance < 0.0 {
         bail!("--tolerance must be a finite non-negative number");
     }
 
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");
+    if args.process_mode != ProcessMode::InProcess {
+        return run_process_mode_benchmark(&args, &root);
+    }
+
     let inputs = if args.inputs.is_empty() {
         DEFAULT_FIXTURES
             .iter()
@@ -171,6 +240,255 @@ fn main() -> Result<()> {
         std::process::exit(1);
     }
     Ok(())
+}
+
+/// Reads this process's peak resident set size (`VmHWM`, in KiB) from `/proc/self/status`. `None`
+/// on non-Linux platforms, or if the file is unreadable/unparseable.
+fn read_peak_rss_kb() -> Option<u64> {
+    let status = fs::read_to_string("/proc/self/status").ok()?;
+    let line = status.lines().find(|line| line.starts_with("VmHWM:"))?;
+    line.split_whitespace().nth(1)?.parse().ok()
+}
+
+/// `--internal-child-engine` entry point: lays out `inputs[0]` `iterations` times with a single
+/// engine in this process, then reports median/min layout time and this process's own peak RSS.
+/// Run as a fresh child (`--process-mode cold`) or a long-lived one (`--process-mode warm`) by
+/// `run_process_mode_benchmark`; never invoked directly.
+fn run_internal_child(engine: Engine, inputs: &[PathBuf], iterations: u32) -> Result<()> {
+    let Some(fixture) = inputs.first() else {
+        bail!("--internal-child-engine requires exactly one fixture path");
+    };
+    let input = fs::read_to_string(fixture).with_context(|| format!("read {}", fixture.display()))?;
+
+    let mut durations = Vec::with_capacity(iterations as usize);
+    let mut error = None;
+    for _ in 0..iterations {
+        let started = Instant::now();
+        let result = match engine {
+            Engine::Elkjs => spec42::elk_layout::layout_elk_graph(&input).map(|_| ()),
+            Engine::Elkrs => diagram_layout::layout_json(&input)
+                .map(|_| ())
+                .map_err(|error| error.to_string()),
+        };
+        match result {
+            Ok(()) => durations.push(started.elapsed()),
+            Err(message) => {
+                error = Some(message);
+                break;
+            }
+        }
+    }
+
+    let sample = ChildSample {
+        median_layout_us: median(&durations).as_micros(),
+        min_layout_us: durations.iter().min().copied().unwrap_or_default().as_micros(),
+        peak_rss_kb: read_peak_rss_kb(),
+        error,
+    };
+    println!("{}", serde_json::to_string(&sample)?);
+    Ok(())
+}
+
+/// `--process-mode cold|warm` entry point: re-execs this binary as a child for each engine, so
+/// the measured cost is representative of a real process rather than the parent's already-warmed
+/// allocator/JIT/OS-cache state. Skips the geometry comparison the in-process default mode does;
+/// this mode answers "how fast and how much memory", not "are the two engines' outputs the same".
+fn run_process_mode_benchmark(args: &Args, root: &Path) -> Result<()> {
+    if !cfg!(debug_assertions) {
+        // release build: proceed.
+    } else if std::env::var("ELKRS_PARITY_ALLOW_DEBUG").is_err() {
+        bail!(
+            "--process-mode {:?} measures process startup and memory cost; a debug binary's own \
+             overhead would swamp the signal. Rerun with `cargo run --release -p elkrs_parity`, \
+             or set ELKRS_PARITY_ALLOW_DEBUG=1 to measure a debug build anyway (for iterating on \
+             this tool itself, not for recording real numbers).",
+            args.process_mode
+        );
+    }
+
+    let fixture = args
+        .process_mode_fixture
+        .clone()
+        .unwrap_or_else(|| root.join("tools/elkrs_parity/fixtures/corpus/timer_interconnection.json"));
+    if !fixture.is_file() {
+        bail!("--process-mode-fixture {} is not a file", fixture.display());
+    }
+
+    let self_exe = std::env::current_exe().context("locate this binary's own path to re-exec it")?;
+    let mut measurements = Vec::new();
+    for engine in [Engine::Elkjs, Engine::Elkrs] {
+        let measurement = match args.process_mode {
+            ProcessMode::InProcess => unreachable!("caller only invokes this for cold/warm"),
+            ProcessMode::Cold => measure_cold(&self_exe, engine, &fixture, args.iterations)?,
+            ProcessMode::Warm => measure_warm(&self_exe, engine, &fixture, args.iterations)?,
+        };
+        measurements.push(measurement);
+    }
+
+    let rendered = match args.format {
+        OutputFormat::Json => serde_json::to_string_pretty(&measurements)?,
+        OutputFormat::Text => measurements
+            .iter()
+            .map(render_process_mode_measurement)
+            .collect::<Vec<_>>()
+            .join("\n"),
+    };
+    if let Some(output) = &args.output {
+        fs::write(output, format!("{rendered}\n"))
+            .with_context(|| format!("write report {}", output.display()))?;
+    } else {
+        println!("{rendered}");
+    }
+    if measurements.iter().any(|m| !m.errors.is_empty()) {
+        std::process::exit(1);
+    }
+    Ok(())
+}
+
+fn engine_flag(engine: Engine) -> &'static str {
+    match engine {
+        Engine::Elkjs => "elkjs",
+        Engine::Elkrs => "elkrs",
+    }
+}
+
+/// One fresh child process per sample: the parent's wall clock around each spawn is the "cold"
+/// number (full process startup, paid every time), and each child also reports its own layout
+/// time, so `median_startup_us` isolates the overhead specifically attributable to spawning a new
+/// process rather than to the layout call itself.
+fn measure_cold(
+    self_exe: &Path,
+    engine: Engine,
+    fixture: &Path,
+    iterations: u32,
+) -> Result<ProcessModeMeasurement> {
+    let mut total_durations = Vec::with_capacity(iterations as usize);
+    let mut layout_durations = Vec::with_capacity(iterations as usize);
+    let mut peak_rss_kb = None;
+    let mut errors = Vec::new();
+
+    for _ in 0..iterations {
+        let started = Instant::now();
+        let output = Command::new(self_exe)
+            .arg("--internal-child-engine")
+            .arg(engine_flag(engine))
+            .arg("--iterations")
+            .arg("1")
+            .arg(fixture)
+            .output()
+            .with_context(|| format!("spawn cold child for {}", engine_flag(engine)))?;
+        let total = started.elapsed();
+        match parse_child_output(&output) {
+            Ok(sample) => {
+                total_durations.push(total);
+                layout_durations.push(std::time::Duration::from_micros(
+                    sample.median_layout_us as u64,
+                ));
+                peak_rss_kb = peak_rss_kb.max(sample.peak_rss_kb);
+                if let Some(error) = sample.error {
+                    errors.push(error);
+                }
+            }
+            Err(error) => errors.push(error),
+        }
+    }
+
+    let median_total = median(&total_durations).as_micros();
+    let median_layout = median(&layout_durations).as_micros();
+    Ok(ProcessModeMeasurement {
+        engine: engine_flag(engine),
+        process_mode: "cold",
+        fixture: fixture.display().to_string(),
+        samples: iterations,
+        median_startup_us: Some(median_total.saturating_sub(median_layout)),
+        median_layout_us: median_layout,
+        min_layout_us: layout_durations
+            .iter()
+            .min()
+            .copied()
+            .unwrap_or_default()
+            .as_micros(),
+        peak_rss_kb,
+        errors,
+    })
+}
+
+/// One long-lived child process runs every sample internally: startup is paid once and amortized
+/// across the whole batch, and the reported peak RSS covers the child's entire steady-state run.
+fn measure_warm(
+    self_exe: &Path,
+    engine: Engine,
+    fixture: &Path,
+    iterations: u32,
+) -> Result<ProcessModeMeasurement> {
+    let output = Command::new(self_exe)
+        .arg("--internal-child-engine")
+        .arg(engine_flag(engine))
+        .arg("--iterations")
+        .arg(iterations.to_string())
+        .arg(fixture)
+        .output()
+        .with_context(|| format!("spawn warm child for {}", engine_flag(engine)))?;
+    let mut errors = Vec::new();
+    let (median_layout_us, min_layout_us, peak_rss_kb) = match parse_child_output(&output) {
+        Ok(sample) => {
+            if let Some(error) = sample.error {
+                errors.push(error);
+            }
+            (sample.median_layout_us, sample.min_layout_us, sample.peak_rss_kb)
+        }
+        Err(error) => {
+            errors.push(error);
+            (0, 0, None)
+        }
+    };
+    Ok(ProcessModeMeasurement {
+        engine: engine_flag(engine),
+        process_mode: "warm",
+        fixture: fixture.display().to_string(),
+        samples: iterations,
+        median_startup_us: None,
+        median_layout_us,
+        min_layout_us,
+        peak_rss_kb,
+        errors,
+    })
+}
+
+fn parse_child_output(output: &std::process::Output) -> std::result::Result<ChildSample, String> {
+    if !output.status.success() {
+        return Err(format!(
+            "child exited with {}: {}",
+            output.status,
+            String::from_utf8_lossy(&output.stderr)
+        ));
+    }
+    serde_json::from_slice(&output.stdout).map_err(|error| {
+        format!(
+            "parse child output: {error}; stdout was {:?}",
+            String::from_utf8_lossy(&output.stdout)
+        )
+    })
+}
+
+fn render_process_mode_measurement(measurement: &ProcessModeMeasurement) -> String {
+    let startup = measurement
+        .median_startup_us
+        .map(|us| format!("{us}us"))
+        .unwrap_or_else(|| "n/a (warm)".to_string());
+    format!(
+        "{} {} {} ({} samples): startup {startup}; layout median/min {}us/{}us; peak RSS {}",
+        measurement.process_mode,
+        measurement.engine,
+        measurement.fixture,
+        measurement.samples,
+        measurement.median_layout_us,
+        measurement.min_layout_us,
+        measurement
+            .peak_rss_kb
+            .map(|kb| format!("{kb}KiB"))
+            .unwrap_or_else(|| "n/a".to_string()),
+    )
 }
 
 fn compare_fixture(
