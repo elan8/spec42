@@ -202,29 +202,42 @@ function hierarchyGeneralLayout(
   return { nodes: laidOutNodes, edges: routedEdges };
 }
 
-export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResult> {
-  if (!prepared.nodes.length) return { nodes: [], edges: [] };
-  if (prepared.view === "interconnection-view") {
-    return layoutInterconnectionPrepared(prepared);
+type GeneralElkGraphBuild = {
+  graph: Record<string, unknown>;
+  flatGraph: Record<string, unknown>;
+  diagramNodes: PreparedNode[];
+  diagramEdges: PreparedView["edges"];
+  useHierarchy: boolean;
+};
+
+function generalLeafElkNode(node: PreparedNode): Record<string, unknown> {
+  const compartments = collectCompartments(node);
+  const box = generalNodeBox(node, compartments);
+  return { id: node.id, width: box.width, height: box.height };
+}
+
+function chunkGeneralElkChildren(idPrefix: string, elkNodes: unknown[]): unknown[] {
+  const wideSiblingThreshold = 8;
+  if (elkNodes.length <= wideSiblingThreshold) return elkNodes;
+  const chunkSize = Math.max(1, Math.ceil(Math.sqrt(elkNodes.length) / 2));
+  const chunks: unknown[] = [];
+  for (let i = 0; i < elkNodes.length; i += chunkSize) {
+    chunks.push({
+      id: `${idPrefix}#chunk${chunks.length}`,
+      layoutOptions: {
+        "elk.direction": "DOWN",
+        "elk.padding": "[top=8,left=8,bottom=8,right=8]",
+      },
+      children: elkNodes.slice(i, i + chunkSize),
+    });
   }
-  if (
-    prepared.view === "action-flow-view" ||
-    prepared.view === "state-transition-view" ||
-    prepared.view === "sequence-view" ||
-    prepared.view === "browser-view" ||
-    prepared.view === "grid-view" ||
-    prepared.view === "geometry-view"
-  ) {
-    return { nodes: [], edges: [] };
-  }
-  // Only general-view reaches here — interconnection-view returned above, and the other 6 kinds
-  // returned `{ nodes: [], edges: [] }` (laid out elsewhere; see views/behavior-common.ts and
-  // views/standard-views-render.ts).
-  // Relationship usages remain in the prepared semantic projection for compartments, navigation
-  // and traceability. Connector usages are never structural peers in a General View: when their
-  // ends resolve they are drawn as edges, and when they do not resolve there is no meaningful
-  // structural box to draw. Other relationship declarations are suppressed once represented by
-  // a composed edge.
+  return chunks;
+}
+
+function generalDiagramElements(prepared: PreparedView): {
+  diagramNodes: PreparedNode[];
+  diagramEdges: PreparedView["edges"];
+} {
   const representedRelationshipNodes = new Set(
     prepared.edges.flatMap((edge) => {
       const origin = edge.attributes?.originNodeId;
@@ -243,7 +256,12 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
   const diagramEdges = prepared.edges.filter(
     (edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target),
   );
-  if (!diagramNodes.length) return { nodes: [], edges: [] };
+  return { diagramNodes, diagramEdges };
+}
+
+function buildGeneralElkGraph(prepared: PreparedView): GeneralElkGraphBuild | null {
+  const { diagramNodes, diagramEdges } = generalDiagramElements(prepared);
+  if (!diagramNodes.length) return null;
 
   const packageGroups =
     (prepared.meta?.packageContainerGroups as
@@ -255,46 +273,8 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
       .filter((edge) => normalizeEdgeKind(edge.edgeKind ?? edge.label) === "hierarchy")
       .map((edge) => [edge.target, edge.source]),
   );
-  const useContainmentRows = !useHierarchy && containmentParent.size > 0;
-  if (useContainmentRows) {
-    return hierarchyGeneralLayout(diagramNodes, diagramEdges, containmentParent);
-  }
+  if (!useHierarchy && containmentParent.size > 0) return null;
 
-  const leafElkNode = (node: PreparedNode) => {
-    const compartments = collectCompartments(node);
-    const box = generalNodeBox(node, compartments);
-    return {
-      id: node.id,
-      width: box.width,
-      height: box.height,
-    };
-  };
-
-  // Large graphs without a containment hierarchy still need compact wrapping. Semantic
-  // containment graphs returned above and deliberately retain one horizontal row per depth.
-  // Synthetic chunk ids remain layout-only and are never drawn as package containers.
-  const WIDE_SIBLING_THRESHOLD = 8;
-  const chunkedElkChildren = (idPrefix: string, elkNodes: unknown[]): unknown[] => {
-    if (elkNodes.length <= WIDE_SIBLING_THRESHOLD) return elkNodes;
-    const chunkSize = Math.max(1, Math.ceil(Math.sqrt(elkNodes.length) / 2));
-    const chunks: unknown[] = [];
-    for (let i = 0; i < elkNodes.length; i += chunkSize) {
-      chunks.push({
-        id: `${idPrefix}#chunk${chunks.length}`,
-        layoutOptions: {
-          "elk.direction": "DOWN",
-          "elk.padding": "[top=8,left=8,bottom=8,right=8]",
-        },
-        children: elkNodes.slice(i, i + chunkSize),
-      });
-    }
-    return chunks;
-  };
-
-  // General-view: give ELK real package containment (mirroring the IBD hierarchy pattern in
-  // interconnection-elk-input.ts) so each package lays out as a compact block instead of a flat
-  // layered graph scattering package members anywhere, which otherwise produces very wide,
-  // tangled diagrams for models with more than a handful of packages.
   let children: unknown[];
   let flatChildrenWereChunked = false;
   if (useHierarchy) {
@@ -305,12 +285,12 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
     const byPackage = new Map<string, unknown[]>();
     const orphans: unknown[] = [];
     for (const node of diagramNodes) {
-      const pkgId = memberToPackage.get(node.id);
-      const elkNode = leafElkNode(node);
-      if (pkgId) {
-        const list = byPackage.get(pkgId) ?? [];
-        list.push(elkNode);
-        byPackage.set(pkgId, list);
+      const packageId = memberToPackage.get(node.id);
+      const elkNode = generalLeafElkNode(node);
+      if (packageId) {
+        const members = byPackage.get(packageId) ?? [];
+        members.push(elkNode);
+        byPackage.set(packageId, members);
       } else {
         orphans.push(elkNode);
       }
@@ -323,25 +303,78 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
           "elk.direction": "DOWN",
           "elk.padding": "[top=36,left=20,bottom=20,right=20]",
         },
-        children: chunkedElkChildren(group.id, byPackage.get(group.id) ?? []),
+        children: chunkGeneralElkChildren(group.id, byPackage.get(group.id) ?? []),
       }));
     children = [...containers, ...orphans];
   } else {
-    const flatChildren = diagramNodes.map(leafElkNode);
-    // A containment projection already has meaningful ranks: one horizontal row per ownership
-    // depth. Preserve that hierarchy even for wide sibling sets. Chunk only unrelated flat graphs.
-    children = chunkedElkChildren("root", flatChildren);
+    const flatChildren = diagramNodes.map(generalLeafElkNode);
+    children = chunkGeneralElkChildren("root", flatChildren);
     flatChildrenWereChunked = children !== flatChildren;
   }
 
-  const graph = {
-    id: "root",
-    layoutOptions: buildElkLayoutOptions("general", {
-      "elk.hierarchyHandling": useHierarchy || flatChildrenWereChunked ? "INCLUDE_CHILDREN" : undefined,
-    }),
-    children,
-    edges: diagramEdges.map((edge) => ({ id: edge.id, sources: [edge.source], targets: [edge.target] }))
+  const edges = diagramEdges.map((edge) => ({
+    id: edge.id,
+    sources: [edge.source],
+    targets: [edge.target],
+  }));
+  return {
+    graph: {
+      id: "root",
+      layoutOptions: buildElkLayoutOptions("general", {
+        "elk.hierarchyHandling": useHierarchy || flatChildrenWereChunked ? "INCLUDE_CHILDREN" : undefined,
+      }),
+      children,
+      edges,
+    },
+    flatGraph: {
+      id: "root",
+      layoutOptions: buildElkLayoutOptions("general"),
+      children: diagramNodes.map(generalLeafElkNode),
+      edges,
+    },
+    diagramNodes,
+    diagramEdges,
+    useHierarchy,
   };
+}
+
+/** Exact ELK input produced by the General View owner, for parity fixtures and adapters. */
+export function buildGeneralElkGraphInput(prepared: PreparedView): Record<string, unknown> | null {
+  return buildGeneralElkGraph(prepared)?.graph ?? null;
+}
+
+export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResult> {
+  if (!prepared.nodes.length) return { nodes: [], edges: [] };
+  if (prepared.view === "interconnection-view") {
+    return layoutInterconnectionPrepared(prepared);
+  }
+  if (
+    prepared.view === "action-flow-view" ||
+    prepared.view === "state-transition-view" ||
+    prepared.view === "sequence-view" ||
+    prepared.view === "browser-view" ||
+    prepared.view === "grid-view" ||
+    prepared.view === "geometry-view"
+  ) {
+    return { nodes: [], edges: [] };
+  }
+  // Only general-view reaches here — interconnection-view returned above, and the other 6 kinds
+  // returned `{ nodes: [], edges: [] }` (laid out elsewhere; see views/behavior-common.ts and
+  // views/standard-views-render.ts).
+  const generalBuild = buildGeneralElkGraph(prepared);
+  if (!generalBuild) {
+    // Containment-only General Views use the purpose-built deterministic row layout rather than
+    // ELK. Recompute only that non-ELK plan here; every ELK input is owned by the builder above.
+    const { diagramNodes, diagramEdges } = generalDiagramElements(prepared);
+    if (!diagramNodes.length) return { nodes: [], edges: [] };
+    const containmentParent = new Map(
+      diagramEdges
+        .filter((edge) => normalizeEdgeKind(edge.edgeKind ?? edge.label) === "hierarchy")
+        .map((edge) => [edge.target, edge.source]),
+    );
+    return hierarchyGeneralLayout(diagramNodes, diagramEdges, containmentParent);
+  }
+  const { graph, flatGraph, diagramNodes, diagramEdges, useHierarchy } = generalBuild;
   let laidOut: Awaited<ReturnType<typeof elk.layout>>;
   try {
     laidOut = await elk.layout(graph as unknown as Parameters<typeof elk.layout>[0]);
@@ -353,16 +386,6 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
     // with package containment can exceed it even though the same graph lays out in the webview.
     // Retry the exact render product without ELK hierarchy; package frames are still drawn from
     // the semantic package groups after layout.
-    const flatGraph = {
-      id: "root",
-      layoutOptions: buildElkLayoutOptions("general"),
-      children: diagramNodes.map(leafElkNode),
-      edges: diagramEdges.map((edge) => ({
-        id: edge.id,
-        sources: [edge.source],
-        targets: [edge.target],
-      })),
-    };
     try {
       laidOut = await elk.layout(flatGraph as unknown as Parameters<typeof elk.layout>[0]);
     } catch {

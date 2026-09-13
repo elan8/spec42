@@ -464,7 +464,7 @@
             }
           ],
           "layoutOptions": {
-            "org.eclipse.elk.port.side": "EAST",
+            "org.eclipse.elk.port.side": "WEST",
             "org.eclipse.elk.port.index": "0"
           }
         },
@@ -482,7 +482,7 @@
           ],
           "layoutOptions": {
             "org.eclipse.elk.port.side": "EAST",
-            "org.eclipse.elk.port.index": "1"
+            "org.eclipse.elk.port.index": "0"
           }
         }
       ],

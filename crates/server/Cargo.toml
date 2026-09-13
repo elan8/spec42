@@ -18,6 +18,9 @@ embed-stdlib = ["library_catalog/embed-stdlib"]
 embed-kpar-libraries = ["library_catalog/embed-kpar-libraries"]
 # Exposes the existing standalone ELK.js adapter to the development-only parity harness.
 elk-layout-spike = []
+# Compiles the native layout boundary and a legacy-primary comparison seam. This deliberately does
+# not change the headless renderer or webview default.
+native-layout-shadow = ["elk-layout-spike", "dep:diagram_layout", "dep:thiserror"]
 
 [dependencies]
 # The batch host: validation, reports, engine and snapshots.
@@ -35,7 +38,9 @@ tokio = { version = "1", features = ["full"] }
 serde_json = { workspace = true }
 clap = { workspace = true }
 serde = { workspace = true }
+thiserror = { workspace = true, optional = true }
 directories = "5"
+diagram_layout = { path = "../diagram_layout", optional = true }
 toml = "0.8"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 tower-lsp = "0.20"

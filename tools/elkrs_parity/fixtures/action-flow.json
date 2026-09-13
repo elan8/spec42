@@ -16,16 +16,92 @@
     "elk.layered.spacing.nodeNodeBetweenLayers": "190"
   },
   "children": [
-    { "id": "start", "width": 40, "height": 40 },
-    { "id": "sense", "width": 220, "height": 68 },
-    { "id": "decide", "width": 76, "height": 76 },
-    { "id": "act", "width": 220, "height": 68 },
-    { "id": "done", "width": 40, "height": 40 }
+    {
+      "id": "start",
+      "width": 40,
+      "height": 40
+    },
+    {
+      "id": "sense",
+      "width": 220,
+      "height": 68
+    },
+    {
+      "id": "decide",
+      "width": 76,
+      "height": 76
+    },
+    {
+      "id": "act",
+      "width": 220,
+      "height": 68
+    },
+    {
+      "id": "done",
+      "width": 40,
+      "height": 40
+    }
   ],
   "edges": [
-    { "id": "e1", "sources": ["start"], "targets": ["sense"] },
-    { "id": "e2", "sources": ["sense"], "targets": ["decide"], "labels": [{ "id": "e2::label", "text": "sample ready", "width": 88, "height": 22, "layoutOptions": { "org.eclipse.elk.edgeLabels.placement": "CENTER", "org.eclipse.elk.edgeLabels.inline": "false" } }] },
-    { "id": "e3", "sources": ["decide"], "targets": ["act"], "labels": [{ "id": "e3::label", "text": "accepted", "width": 70, "height": 22, "layoutOptions": { "org.eclipse.elk.edgeLabels.placement": "CENTER", "org.eclipse.elk.edgeLabels.inline": "false" } }] },
-    { "id": "e4", "sources": ["act"], "targets": ["done"] }
+    {
+      "id": "e1",
+      "sources": [
+        "start"
+      ],
+      "targets": [
+        "sense"
+      ]
+    },
+    {
+      "id": "e2",
+      "sources": [
+        "sense"
+      ],
+      "targets": [
+        "decide"
+      ],
+      "labels": [
+        {
+          "id": "e2::label",
+          "text": "sample ready",
+          "width": 80,
+          "height": 16,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.placement": "CENTER",
+            "org.eclipse.elk.edgeLabels.inline": "false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "e3",
+      "sources": [
+        "decide"
+      ],
+      "targets": [
+        "act"
+      ],
+      "labels": [
+        {
+          "id": "e3::label",
+          "text": "accepted",
+          "width": 56,
+          "height": 16,
+          "layoutOptions": {
+            "org.eclipse.elk.edgeLabels.placement": "CENTER",
+            "org.eclipse.elk.edgeLabels.inline": "false"
+          }
+        }
+      ]
+    },
+    {
+      "id": "e4",
+      "sources": [
+        "act"
+      ],
+      "targets": [
+        "done"
+      ]
+    }
   ]
 }

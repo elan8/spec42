@@ -16,14 +16,54 @@
     "org.eclipse.elk.portConstraints": "FIXED_SIDE"
   },
   "children": [
-    { "id": "system", "width": 240, "height": 116 },
-    { "id": "sensor", "width": 220, "height": 92 },
-    { "id": "controller", "width": 260, "height": 140 },
-    { "id": "actuator", "width": 220, "height": 92 }
+    {
+      "id": "system",
+      "width": 200,
+      "height": 39
+    },
+    {
+      "id": "sensor",
+      "width": 200,
+      "height": 39
+    },
+    {
+      "id": "controller",
+      "width": 200,
+      "height": 39
+    },
+    {
+      "id": "actuator",
+      "width": 200,
+      "height": 39
+    }
   ],
   "edges": [
-    { "id": "owns-sensor", "sources": ["system"], "targets": ["sensor"] },
-    { "id": "owns-controller", "sources": ["system"], "targets": ["controller"] },
-    { "id": "controls", "sources": ["controller"], "targets": ["actuator"] }
+    {
+      "id": "owns-sensor",
+      "sources": [
+        "system"
+      ],
+      "targets": [
+        "sensor"
+      ]
+    },
+    {
+      "id": "owns-controller",
+      "sources": [
+        "system"
+      ],
+      "targets": [
+        "controller"
+      ]
+    },
+    {
+      "id": "controls",
+      "sources": [
+        "controller"
+      ],
+      "targets": [
+        "actuator"
+      ]
+    }
   ]
 }

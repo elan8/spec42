@@ -6,6 +6,7 @@ members = [
   "crates/generator_host",
   "crates/generator_protocol",
   "crates/generator_sdk",
+  "crates/diagram_layout",
   "crates/language_service",
   "crates/library_catalog",
   "crates/lsp_server",

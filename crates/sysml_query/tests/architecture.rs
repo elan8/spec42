@@ -1179,6 +1179,7 @@ fn host_crates_keep_their_declared_dependency_sets() {
         normal_dependencies("server"),
         set(&[
             "clap",
+            "diagram_layout",
             "directories",
             "generator_api",
             "generator_host",
@@ -1192,13 +1193,15 @@ fn host_crates_keep_their_declared_dependency_sets() {
             "sysml_diagnostics",
             "sysml_query",
             "tempfile",
+            "thiserror",
             "tokio",
             "toml",
             "tower-lsp",
             "workspace",
             "zip",
         ]),
-        "server reaches validation through `workspace`; `lsp_server` is the launch-only edge"
+        "server reaches validation through `workspace`; `lsp_server` is the launch-only edge; \
+         `diagram_layout` is the optional native layout boundary behind native-layout-shadow"
     );
 }
 
