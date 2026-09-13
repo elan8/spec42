@@ -84,4 +84,38 @@ mod tests {
             ))
         ));
     }
+
+    /// `layout_elk_graph_shadow` validates the native contract before ever invoking legacy
+    /// ELK.js, so any input reaching `ShadowLayoutError::Legacy` must first pass every native
+    /// structural check (`LayoutError`'s own variants). Structural inputs that could plausibly
+    /// diverge — an invalid algorithm name, a dangling edge endpoint, a self-loop edge — were
+    /// checked by hand against both engines and found to fail (or succeed) identically; elkrs and
+    /// ELK.js validate this input class the same way, so no naturally occurring "legacy fails,
+    /// native succeeds" fixture exists in the current corpus. This test instead pins the variant
+    /// attribution and message wiring directly, so a future refactor of the `?`/`map_err` chain
+    /// in `layout_elk_graph_shadow` cannot silently swap which engine an error is blamed on.
+    #[test]
+    fn legacy_and_invalid_legacy_json_errors_are_attributed_and_formatted_distinctly() {
+        let legacy = ShadowLayoutError::Legacy("ELK layout failed: boom".to_string());
+        assert_eq!(
+            legacy.to_string(),
+            "legacy ELK.js layout failed: ELK layout failed: boom"
+        );
+        assert!(matches!(legacy, ShadowLayoutError::Legacy(_)));
+
+        let invalid_legacy_json = ShadowLayoutError::InvalidLegacyJson("EOF".to_string());
+        assert_eq!(
+            invalid_legacy_json.to_string(),
+            "legacy ELK.js returned invalid JSON: EOF"
+        );
+        assert!(matches!(
+            invalid_legacy_json,
+            ShadowLayoutError::InvalidLegacyJson(_)
+        ));
+
+        // The two variants must stay distinguishable from each other and from `Native`, since
+        // callers branch on which engine failed.
+        assert!(!matches!(legacy, ShadowLayoutError::InvalidLegacyJson(_)));
+        assert!(!matches!(legacy, ShadowLayoutError::Native(_)));
+    }
 }

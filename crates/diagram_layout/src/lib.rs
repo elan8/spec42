@@ -39,6 +39,7 @@ pub fn layout_value(input: &Value) -> Result<Value, LayoutError> {
         return Err(LayoutError::InvalidRoot);
     }
     reject_nested_input_edges(input, true)?;
+    reject_duplicate_input_edge_ids(input)?;
     let root_edge_order = input
         .get("edges")
         .and_then(Value::as_array)
@@ -68,6 +69,30 @@ fn reject_nested_input_edges(node: &Value, is_root: bool) -> Result<(), LayoutEr
     if let Some(children) = node.get("children").and_then(Value::as_array) {
         for child in children {
             reject_nested_input_edges(child, false)?;
+        }
+    }
+    Ok(())
+}
+
+/// Rejects a root graph that authors two edges with the same id before ever calling elkrs.
+///
+/// elkrs does not error on this: it silently disambiguates by renaming the second occurrence
+/// (observed appending an underscore, e.g. `"duplicate"` -> `"duplicate_"`), which would return
+/// Spec42 an edge under an id it never authored rather than failing loudly. `normalize_output`'s
+/// own duplicate-id check only catches an id collision that survives unchanged into elkrs'
+/// output, so it never fires for this case — this check is required, not redundant with it.
+fn reject_duplicate_input_edge_ids(input: &Value) -> Result<(), LayoutError> {
+    let mut seen = std::collections::BTreeSet::new();
+    for edge in input
+        .get("edges")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+    {
+        if let Some(id) = edge.get("id").and_then(Value::as_str) {
+            if !seen.insert(id) {
+                return Err(LayoutError::DuplicateEdgeId(id.to_string()));
+            }
         }
     }
     Ok(())
@@ -242,5 +267,58 @@ mod tests {
         let output = layout_value(&input).unwrap();
         assert!(output["children"][0]["x"].is_number());
         assert!(output["edges"][0]["sections"][0]["startPoint"]["x"].is_number());
+    }
+
+    /// Unlike `rejects_duplicate_output_edge_ids` (which feeds already-laid-out JSON directly to
+    /// `normalize_output`), this authors the duplicate id in the *input* and runs the full elkrs
+    /// pipeline, confirming the end-to-end contract Spec42 actually relies on: two root edges
+    /// sharing an id are always caught, however elkrs happens to echo them back.
+    #[test]
+    fn rejects_duplicate_root_authored_edge_ids_end_to_end() {
+        let input = serde_json::json!({
+            "id": "root",
+            "children": [
+                { "id": "a", "width": 10, "height": 10 },
+                { "id": "b", "width": 10, "height": 10 }
+            ],
+            "edges": [
+                { "id": "duplicate", "sources": ["a"], "targets": ["b"] },
+                { "id": "duplicate", "sources": ["b"], "targets": ["a"] }
+            ]
+        });
+        assert_eq!(
+            layout_value(&input),
+            Err(LayoutError::DuplicateEdgeId("duplicate".into()))
+        );
+    }
+
+    /// `reject_nested_input_edges` recurses unconditionally through every `children` level, but
+    /// every other test in this module only nests one level deep. This confirms the recursion has
+    /// no blind spot at greater depth (a grandchild-of-a-grandchild authoring an edge is still
+    /// rejected, not silently accepted because it is not a direct child of the root).
+    #[test]
+    fn rejects_edges_authored_arbitrarily_deep_in_the_container_hierarchy() {
+        let input = serde_json::json!({
+            "id": "root",
+            "children": [{
+                "id": "level1",
+                "children": [{
+                    "id": "level2",
+                    "children": [{
+                        "id": "level3",
+                        "children": [{
+                            "id": "level4",
+                            "edges": [{ "id": "too-deep" }]
+                        }]
+                    }]
+                }]
+            }]
+        });
+        assert_eq!(
+            layout_value(&input),
+            Err(LayoutError::NestedInputEdges {
+                node_id: Some("level4".into())
+            })
+        );
     }
 }
