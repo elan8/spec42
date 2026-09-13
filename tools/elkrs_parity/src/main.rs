@@ -258,7 +258,8 @@ fn run_internal_child(engine: Engine, inputs: &[PathBuf], iterations: u32) -> Re
     let Some(fixture) = inputs.first() else {
         bail!("--internal-child-engine requires exactly one fixture path");
     };
-    let input = fs::read_to_string(fixture).with_context(|| format!("read {}", fixture.display()))?;
+    let input =
+        fs::read_to_string(fixture).with_context(|| format!("read {}", fixture.display()))?;
 
     let mut durations = Vec::with_capacity(iterations as usize);
     let mut error = None;
@@ -281,7 +282,12 @@ fn run_internal_child(engine: Engine, inputs: &[PathBuf], iterations: u32) -> Re
 
     let sample = ChildSample {
         median_layout_us: median(&durations).as_micros(),
-        min_layout_us: durations.iter().min().copied().unwrap_or_default().as_micros(),
+        min_layout_us: durations
+            .iter()
+            .min()
+            .copied()
+            .unwrap_or_default()
+            .as_micros(),
         peak_rss_kb: read_peak_rss_kb(),
         error,
     };
@@ -306,15 +312,15 @@ fn run_process_mode_benchmark(args: &Args, root: &Path) -> Result<()> {
         );
     }
 
-    let fixture = args
-        .process_mode_fixture
-        .clone()
-        .unwrap_or_else(|| root.join("tools/elkrs_parity/fixtures/corpus/timer_interconnection.json"));
+    let fixture = args.process_mode_fixture.clone().unwrap_or_else(|| {
+        root.join("tools/elkrs_parity/fixtures/corpus/timer_interconnection.json")
+    });
     if !fixture.is_file() {
         bail!("--process-mode-fixture {} is not a file", fixture.display());
     }
 
-    let self_exe = std::env::current_exe().context("locate this binary's own path to re-exec it")?;
+    let self_exe =
+        std::env::current_exe().context("locate this binary's own path to re-exec it")?;
     let mut measurements = Vec::new();
     for engine in [Engine::Elkjs, Engine::Elkrs] {
         let measurement = match args.process_mode {
@@ -435,7 +441,11 @@ fn measure_warm(
             if let Some(error) = sample.error {
                 errors.push(error);
             }
-            (sample.median_layout_us, sample.min_layout_us, sample.peak_rss_kb)
+            (
+                sample.median_layout_us,
+                sample.min_layout_us,
+                sample.peak_rss_kb,
+            )
         }
         Err(error) => {
             errors.push(error);
@@ -557,11 +567,20 @@ fn compare_fixture(
 /// itself errored): timing reflects whatever samples were collected before the stop, and every
 /// other field is the shared "nothing to report" shape. Only `deterministic` and `error` vary
 /// between the two callers in `measure`.
-fn error_measurement(durations: &[std::time::Duration], deterministic: bool, error: String) -> EngineMeasurement {
+fn error_measurement(
+    durations: &[std::time::Duration],
+    deterministic: bool,
+    error: String,
+) -> EngineMeasurement {
     EngineMeasurement {
         first_layout_us: durations.first().copied().unwrap_or_default().as_micros(),
         median_layout_us: median(durations).as_micros(),
-        min_layout_us: durations.iter().min().copied().unwrap_or_default().as_micros(),
+        min_layout_us: durations
+            .iter()
+            .min()
+            .copied()
+            .unwrap_or_default()
+            .as_micros(),
         output_bytes: 0,
         output_digest: None,
         deterministic,

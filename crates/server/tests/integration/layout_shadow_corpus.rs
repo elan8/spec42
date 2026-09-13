@@ -123,7 +123,10 @@ fn collect_json_files(dir: &Path, out: &mut Vec<PathBuf>) {
         let path = entry.path();
         if path.is_dir() {
             collect_json_files(&path, out);
-        } else if path.extension().is_some_and(|extension| extension == "json") {
+        } else if path
+            .extension()
+            .is_some_and(|extension| extension == "json")
+        {
             out.push(path);
         }
     }
@@ -211,7 +214,9 @@ fn native_and_legacy_layout_agree_on_the_full_parity_corpus() {
                     ));
                 }
             }
-            Err(error) => mismatches.push(format!("{}: shadow layout failed: {error}", path.display())),
+            Err(error) => {
+                mismatches.push(format!("{}: shadow layout failed: {error}", path.display()))
+            }
         }
     }
 
@@ -244,7 +249,10 @@ fn compare_against_known_divergence_flags_a_new_unexpected_path() {
     let mismatch =
         compare_against_known_divergence(Path::new("fixture.json"), &actual, &["a/x", "a/y"])
             .expect("an extra diverging path must be reported, not silently absorbed");
-    assert!(mismatch.contains("new/unexpected"), "message was: {mismatch}");
+    assert!(
+        mismatch.contains("new/unexpected"),
+        "message was: {mismatch}"
+    );
     assert!(mismatch.contains("b/z"), "message was: {mismatch}");
 }
 
@@ -254,6 +262,9 @@ fn compare_against_known_divergence_flags_a_narrowed_divergence() {
     let mismatch =
         compare_against_known_divergence(Path::new("fixture.json"), &actual, &["a/x", "a/y"])
             .expect("a stale allowlist entry must be reported, not silently ignored");
-    assert!(mismatch.contains("no longer diverge"), "message was: {mismatch}");
+    assert!(
+        mismatch.contains("no longer diverge"),
+        "message was: {mismatch}"
+    );
     assert!(mismatch.contains("a/y"), "message was: {mismatch}");
 }

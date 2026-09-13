@@ -502,7 +502,10 @@ mod tests {
 
         let different: Value =
             serde_json::from_str(r#"{"id":"root","children":[{"id":"a","x":2.0}]}"#).unwrap();
-        assert_ne!(canonical_json_digest(&left), canonical_json_digest(&different));
+        assert_ne!(
+            canonical_json_digest(&left),
+            canonical_json_digest(&different)
+        );
     }
 
     #[test]
