@@ -389,7 +389,7 @@ package SequenceExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:c9bdd0f238c652cc4fa39804aef1436e1ae5172ca54c70b9b4dfea9213289581",
+  "modelDigest": "blake3:1a19574eff9fbe40180103cfd7d15438bf714a508212cf123b2dbd3661642c71",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_complete.md",

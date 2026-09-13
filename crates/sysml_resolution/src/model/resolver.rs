@@ -387,7 +387,15 @@ mod tests {
         // contains no library declarations. That makes every missing prerequisite explicit, and
         // catches a manifest/generator change that adds a rule without publication coverage.
         let anchors = library_specialization_anchors(&storage_with_one_filter());
-        assert_eq!(anchors.by_rule.len(), 150);
+        assert_eq!(anchors.by_rule.len(), 151);
+        let individual_multiplicity_rule = crate::resolve::implied::specialization_check_rule(
+            crate::specialization_query::SpecializationCheckKind::OccurrenceDefinitionMultiplicity,
+        )
+        .expect("the individual multiplicity rule is published");
+        assert!(matches!(
+            anchors.outcome(individual_multiplicity_rule.rule_id),
+            Some(LibrarySpecializationAnchor::Missing)
+        ));
         for rule in GENERATED_LIBRARY_SPECIALIZATION_RULES {
             assert!(matches!(
                 anchors.outcome(rule.rule_id),

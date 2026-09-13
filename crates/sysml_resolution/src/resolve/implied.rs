@@ -472,14 +472,20 @@ pub(crate) fn type_derived_relationship_kinds(
 /// `things::that` for `satisfy … by that`. Applying that kernel rule to every Feature is
 /// deferred: it currently adds `Anything` to effective types and fails subsetting conformance.
 /// `Flow` keeps its extra generated alias.
-fn library_specialization_metaclasses(
+pub(crate) fn library_specialization_metaclasses(
     kind: crate::model::DeclarationKind,
 ) -> impl Iterator<Item = &'static str> {
     let primary = library_rule_metaclass(kind);
     let feature = (kind == crate::model::DeclarationKind::Satisfy && primary != "Feature")
         .then_some("Feature");
     let flow = (kind == crate::model::DeclarationKind::Flow).then_some("Flow");
-    std::iter::once(primary).chain(feature).chain(flow)
+    let occurrence = (crate::model::metaclass::is_occurrence_definition(kind)
+        && primary != "OccurrenceDefinition")
+        .then_some("OccurrenceDefinition");
+    std::iter::once(primary)
+        .chain(feature)
+        .chain(flow)
+        .chain(occurrence)
 }
 
 pub(crate) fn library_specialization_rules(
@@ -523,6 +529,7 @@ pub(crate) fn library_anchor_packages() -> Vec<&'static str> {
                 .iter()
                 .map(|rule| rule.anchor),
         )
+        .chain(std::iter::once(INDIVIDUAL_MULTIPLICITY_ANCHOR))
         .filter_map(|anchor| anchor.split("::").next())
         .collect::<Vec<_>>();
     packages.sort_unstable();
@@ -2161,6 +2168,9 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
     })
 }
 
+/// SysML 8.3.9.3, checkOccurrenceDefinitionMultiplicitySpecialization.
+pub(crate) const INDIVIDUAL_MULTIPLICITY_ANCHOR: &str = "Base::zeroOrOne";
+
 pub(crate) fn library_specialization_anchors(
     storage: &SemanticModelStorage,
 ) -> LibrarySpecializationAnchorFacts {
@@ -2198,6 +2208,16 @@ pub(crate) fn library_specialization_anchors(
                 rule.anchor,
             )
         }))
+        .chain(
+            specialization_check_rule(SpecializationCheckKind::OccurrenceDefinitionMultiplicity)
+                .map(|rule| {
+                    (
+                        rule.rule_id,
+                        LibrarySpecializationAnchorBranch::Default,
+                        INDIVIDUAL_MULTIPLICITY_ANCHOR,
+                    )
+                }),
+        )
         .map(|(rule_id, branch, anchor)| {
             (
                 LibrarySpecializationAnchorKey {
@@ -2334,6 +2354,18 @@ pub(crate) fn synthesize_generated_library_specializations(
             }
         }
     }
+    if let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
+        specialization_check_rule(SpecializationCheckKind::OccurrenceDefinitionMultiplicity)
+            .and_then(|rule| anchor_facts.outcome(rule.rule_id))
+    {
+        for source in storage.individual_multiplicities() {
+            implied.push(ImpliedRelationship {
+                kind: ReferenceKind::Subsetting,
+                source,
+                target: *anchor,
+            });
+        }
+    }
     implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
     implied.dedup();
     Ok(implied.into_boxed_slice())
@@ -2452,7 +2484,8 @@ pub(crate) fn conditional_library_specialization_predicate_holds(
     };
     match rule.predicate {
         LibrarySpecializationPredicate::IsIndividual => {
-            declaration.kind == DeclarationKind::OccurrenceDefinition && facts.modifiers.individual
+            crate::model::metaclass::is_occurrence_definition(declaration.kind)
+                && facts.modifiers.individual
         }
         LibrarySpecializationPredicate::PortionKindSnapshot => {
             declaration.kind == DeclarationKind::OccurrenceUsage
@@ -2887,10 +2920,4 @@ pub(crate) fn library_rule_metaclass(kind: DeclarationKind) -> &'static str {
         DeclarationKind::CalcUsage => "CalculationUsage",
         _ => element_kind::element_kind(kind).as_str(),
     }
-}
-
-/// Compatibility spelling for specialization-only consumers. New generated-rule owners use
-/// `library_rule_metaclass`, which is the single normalization boundary for both exact families.
-pub(crate) fn library_specialization_metaclass(kind: DeclarationKind) -> &'static str {
-    library_rule_metaclass(kind)
 }
