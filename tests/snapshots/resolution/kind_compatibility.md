@@ -226,30 +226,6 @@ package Kinds {
       )
       (diagnostic
         (severity error)
-        (code "subsetting_type_incompatible")
-        (source "semantic")
-        (range (start 96 46) (end 96 52))
-        (related-information
-          (related
-            (uri "memory://snapshot/kind_compatibility.md")
-            (range (start 95 8) (end 95 33))
-          )
-        )
-      )
-      (diagnostic
-        (severity error)
-        (code "subsetting_type_incompatible")
-        (source "semantic")
-        (range (start 97 43) (end 97 49))
-        (related-information
-          (related
-            (uri "memory://snapshot/kind_compatibility.md")
-            (range (start 95 8) (end 95 33))
-          )
-        )
-      )
-      (diagnostic
-        (severity error)
         (code "specialization_cycle")
         (source "semantic")
         (range (start 101 4) (end 101 28))
@@ -713,6 +689,7 @@ package Kinds {
     (declaration (id (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Referencing::crossed")))
       (featured-by (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Referencing")))
       (type (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Weight")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Kilos")) (source inherited) (from (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Referencing::narrow"))))
       (effective-type (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Weight")) (source direct))
       (supertype (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Kilos")) (scopes any))
       (supertype (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Referencing::narrow")) (scopes any feature))
@@ -730,6 +707,7 @@ package Kinds {
     (declaration (id (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Referencing::widened")))
       (featured-by (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Referencing")))
       (type (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Weight")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Kilos")) (source inherited) (from (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Referencing::narrow"))))
       (effective-type (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Weight")) (source direct))
       (supertype (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Kilos")) (scopes any))
       (supertype (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Referencing::narrow")) (scopes any feature))

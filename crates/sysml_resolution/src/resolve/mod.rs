@@ -1762,6 +1762,17 @@ pub(crate) fn is_usage_declaration(kind: DeclarationKind) -> bool {
     )
 }
 
+/// Whether a declaration is a Connector (KerML connector or SysML connection/interface usage).
+/// End-feature `references` and `ConnectorEnd` targets resolve in this declaration's owner.
+pub(crate) fn is_connector_declaration(kind: DeclarationKind) -> bool {
+    matches!(
+        kind,
+        DeclarationKind::KermlConnector
+            | DeclarationKind::ConnectionUsage
+            | DeclarationKind::InterfaceUsage
+    )
+}
+
 /// Whether a lowered declaration is a KerML `Feature` (including every SysML usage). This is the
 /// canonical metamodel-category predicate used by both resolution synthesis and structural checks.
 pub(crate) fn is_feature_declaration(kind: DeclarationKind) -> bool {
@@ -2085,20 +2096,31 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
             };
         let lexical_scope = if let Some(owner) = qualified_redefinition_owner {
             Some(owner)
-        } else if reference.kind() == ReferenceKind::ExpressionOperand {
+        } else if matches!(
+            reference.kind(),
+            ReferenceKind::ExpressionOperand
+                | ReferenceKind::SatisfySource
+                | ReferenceKind::SatisfyTarget
+        ) {
+            // A satisfy usage is a Feature, so `by that` names the inherited featuring instance
+            // `things::that` on the usage itself. Starting at the owning Type would skip that
+            // Feature-only membership.
             Some(reference.source())
-        } else if reference.kind() == ReferenceKind::ConnectorEnd
+        } else if (reference.kind() == ReferenceKind::ConnectorEnd
+            || reference.kind() == ReferenceKind::References)
             && source.owner.is_some_and(|owner| {
                 declarations
                     .get(owner.index())
-                    .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlConnector)
+                    .is_some_and(|declaration| is_connector_declaration(declaration.kind))
             })
         {
             // KerML 8.2.3.5.2 resolves the ReferenceSubsetting of an end Feature in the
             // owningNamespace of its Connector. The end itself is the semantic relationship
             // source, but neither it nor the Connector's owned end names form the lookup scope.
             // Starting at the Connector's owner also prevents `from self references self` from
-            // resolving the target back to the newly declared end Feature.
+            // resolving the target back to the newly declared end Feature, and stops an inherited
+            // `BinaryLink::source` on `sourceOutputLink` from shadowing `Transfer::source` for
+            // `end feature transferSource references source`.
             source
                 .owner
                 .and_then(|connector| declarations.get(connector.index()))

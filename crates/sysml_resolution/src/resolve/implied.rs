@@ -465,6 +465,23 @@ pub(crate) fn type_derived_relationship_kinds(
     }
 }
 
+/// Metaclasses whose generated `specializesFromLibrary` rules apply to `kind`.
+///
+/// Exact generated rules run first. `SatisfyRequirementUsage` is a Feature, so it also receives
+/// `checkFeatureSpecialization` (`Feature` specializes `Base::things`) and inherits
+/// `things::that` for `satisfy … by that`. Applying that kernel rule to every Feature is
+/// deferred: it currently adds `Anything` to effective types and fails subsetting conformance.
+/// `Flow` keeps its extra generated alias.
+fn library_specialization_metaclasses(
+    kind: crate::model::DeclarationKind,
+) -> impl Iterator<Item = &'static str> {
+    let primary = library_rule_metaclass(kind);
+    let feature = (kind == crate::model::DeclarationKind::Satisfy && primary != "Feature")
+        .then_some("Feature");
+    let flow = (kind == crate::model::DeclarationKind::Flow).then_some("Flow");
+    std::iter::once(primary).chain(feature).chain(flow)
+}
+
 pub(crate) fn library_specialization_rules(
     metaclass: &str,
 ) -> impl Iterator<Item = &'static LibrarySpecializationRule> + '_ {
@@ -2267,9 +2284,7 @@ pub(crate) fn synthesize_generated_library_specializations(
     let mut implied = Vec::new();
     for (index, declaration) in storage.declarations.iter().enumerate() {
         let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-        for metaclass in std::iter::once(library_rule_metaclass(declaration.kind))
-            .chain((declaration.kind == DeclarationKind::Flow).then_some("Flow"))
-        {
+        for metaclass in library_specialization_metaclasses(declaration.kind) {
             for rule in library_specialization_rules(metaclass) {
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
                     anchor_facts.generated_outcome(rule.rule_id)
@@ -2340,9 +2355,7 @@ pub(crate) fn provisional_library_specializations(
     let mut implied = Vec::new();
     for (index, declaration) in storage.declarations.iter().enumerate() {
         let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-        for metaclass in std::iter::once(library_rule_metaclass(declaration.kind))
-            .chain((declaration.kind == DeclarationKind::Flow).then_some("Flow"))
-        {
+        for metaclass in library_specialization_metaclasses(declaration.kind) {
             for rule in library_specialization_rules(metaclass) {
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
                     anchor_facts.generated_outcome(rule.rule_id)

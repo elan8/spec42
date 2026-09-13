@@ -48,18 +48,6 @@ package Crossings {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_cross_feature_type.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "subsetting_type_incompatible")
-        (source "semantic")
-        (range (start 11 42) (end 11 48))
-        (related-information
-          (related
-            (uri "memory://snapshot/kerml_feature_cross_feature_type.md")
-            (range (start 5 8) (end 5 35))
-          )
-        )
-      )
     )
   )
 )
@@ -120,6 +108,7 @@ package Crossings {
     (declaration (id (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::otherType")))
       (featured-by (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link")))
       (type (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Thing")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Other")) (source inherited) (from (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::target"))))
       (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Thing")) (source direct))
       (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::target")) (scopes any feature))
       (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Other")) (scopes any))
@@ -129,6 +118,7 @@ package Crossings {
       (featured-by (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link")))
       (type (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Thing")) (source direct))
+      (effective-type (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::source"))))
       (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Link::source")) (scopes any feature))
       (supertype (node (document "memory://snapshot/kerml_feature_cross_feature_type.md") (qualified-name "Crossings::Thing")) (scopes any))
     )

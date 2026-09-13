@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **The last Spec42-owned bundled-stdlib unresolved references now resolve (#135).** `ref item` /
+  `ref action` keep the authored usage metaclass so inherited members such as
+  `envelopedItem.innerSpaceDimension` and `thisConnection.start` are visible; an end feature's
+  `references` target is resolved in the connector's owning namespace so
+  `transferSource.sourceOutput` names `Transfer::source::sourceOutput` rather than a
+  `BinaryLink` end; a satisfy usage inherits `Base::things`, so `satisfy … by that` finds
+  `things::that`; and effective typing follows `references`/`crosses` the same way it follows
+  subsetting. The artifact ratchet keeps only the two upstream SI `MagneticDipoleMomentUnit`
+  ambiguities.
+
 - **`crosses sameThing.self` on `SelfLink` now resolves (#135).** A cyclic type still publishes
   its strict specialization ancestors, so the kernel end inherits `Anything::self` instead of
   dropping its whole ancestor row.
