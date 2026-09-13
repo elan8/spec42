@@ -7,9 +7,8 @@
 //! projection or a set of `ConnectedElement` pairs.
 //!
 //! It adds no analysis: every connector end is an authored reference resolution already settled.
-//! A dotted end (`a.b.port`) carries the resolved *terminal* feature plus the path exactly as
-//! authored; the intermediate hops are not yet resolved to identities (the resolver keeps no
-//! per-hop state), so a consumer that needs them reads the authored segments.
+//! A dotted end (`a.b.port`) retains each canonical hop outcome, including unresolved and
+//! ambiguous segments, so consumers never reconstruct semantic paths from authored text.
 
 use crate::inspection::RelationshipTarget;
 use crate::{MultiplicityFacts, SourceLocation, SymbolId};
@@ -38,14 +37,13 @@ pub enum ConnectorEndpoint {
     Feature(RelationshipTarget),
     /// A dotted end (`connect a.b.port to ...`).
     ///
-    /// `root` is the first segment resolved (the owning part usage — `a`), `terminal` the last
-    /// (the port — `port`), and `authored` the whole path as written. For the common
-    /// `component.port` form both ends are settled identities; any interior segment of a longer
-    /// chain is left to the authored text.
+    /// `path` contains one outcome per authored segment in order. After a failed hop,
+    /// remaining hops are unresolved. `root` and `terminal` retain the existing endpoint view.
     FeatureChain {
         root: RelationshipTarget,
         terminal: RelationshipTarget,
         authored: Box<str>,
+        path: Box<[RelationshipTarget]>,
     },
     /// An end declared but not wired to a target — a `connection def` / `interface def` body's
     /// participant slot (`end from : PowerPort;` with no `::>` / inline `connect`). Its type and

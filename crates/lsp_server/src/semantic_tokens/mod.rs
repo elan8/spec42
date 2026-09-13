@@ -1,9 +1,8 @@
 //! LSP adapter over the shared sysml_tokens crate.
 
 pub use sysml_tokens::{
-    ast_semantic_ranges, legend_token_types, semantic_tokens_full as semantic_tokens_full_dto,
+    ast_semantic_ranges, legend_token_types,
     semantic_tokens_full_debug as semantic_tokens_full_debug_dto,
-    semantic_tokens_range as semantic_tokens_range_dto,
     semantic_tokens_range_debug as semantic_tokens_range_debug_dto, SemanticTokensDto, SourceRange,
 };
 
@@ -24,13 +23,6 @@ pub fn legend() -> SemanticTokensLegend {
 pub fn semantic_tokens_full(
     text: &str,
     ast_ranges: Option<&[(SourceRange, u32)]>,
-) -> (SemanticTokens, Vec<String>) {
-    semantic_tokens_full_debug(text, ast_ranges, false)
-}
-
-pub fn semantic_tokens_full_debug(
-    text: &str,
-    ast_ranges: Option<&[(SourceRange, u32)]>,
     debug: bool,
 ) -> (SemanticTokens, Vec<String>) {
     let (dto, logs) = semantic_tokens_full_debug_dto(text, ast_ranges, debug);
@@ -38,25 +30,6 @@ pub fn semantic_tokens_full_debug(
 }
 
 pub fn semantic_tokens_range(
-    text: &str,
-    start_line: u32,
-    start_character: u32,
-    end_line: u32,
-    end_character: u32,
-    ast_ranges: Option<&[(SourceRange, u32)]>,
-) -> (SemanticTokens, Vec<String>) {
-    semantic_tokens_range_debug(
-        text,
-        start_line,
-        start_character,
-        end_line,
-        end_character,
-        ast_ranges,
-        false,
-    )
-}
-
-pub fn semantic_tokens_range_debug(
     text: &str,
     start_line: u32,
     start_character: u32,

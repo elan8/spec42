@@ -10,9 +10,7 @@ use tower_lsp::lsp_types::*;
 use tracing::info;
 
 use crate::common::util;
-use crate::semantic_tokens::{
-    ast_semantic_ranges, semantic_tokens_full_debug, semantic_tokens_range_debug,
-};
+use crate::semantic_tokens::{ast_semantic_ranges, semantic_tokens_full, semantic_tokens_range};
 use crate::session::ServerState;
 
 use super::{hierarchy, symbols};
@@ -83,8 +81,7 @@ pub(crate) fn semantic_tokens_full_request(
         }
         None => return Ok(None),
     };
-    let (tokens, logs) =
-        semantic_tokens_full_debug(&text, ast_ranges.as_deref(), semantic_tokens_debug);
+    let (tokens, logs) = semantic_tokens_full(&text, ast_ranges.as_deref(), semantic_tokens_debug);
     let elapsed_ms = started_at.elapsed().as_millis();
     let request_count = SEMANTIC_TOKENS_FULL_REQUEST_COUNT.fetch_add(1, Ordering::Relaxed) + 1;
     if perf_logging_enabled {
@@ -119,7 +116,7 @@ pub(crate) fn semantic_tokens_range_request(
         }
         None => return Ok(None),
     };
-    let (tokens, logs) = semantic_tokens_range_debug(
+    let (tokens, logs) = semantic_tokens_range(
         &text,
         range.start.line,
         range.start.character,

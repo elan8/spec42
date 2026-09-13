@@ -14,25 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   text-search refine pass and `span_len > 2 * token` merge guard are gone: collectors emit
   parser name spans or nothing.
 
-- **The last Spec42-owned bundled-stdlib unresolved references now resolve (#135).** `ref item` /
-  `ref action` keep the authored usage metaclass so inherited members such as
-  `envelopedItem.innerSpaceDimension` and `thisConnection.start` are visible; an end feature's
-  `references` target is resolved in the connector's owning namespace so
-  `transferSource.sourceOutput` names `Transfer::source::sourceOutput` rather than a
-  `BinaryLink` end; a satisfy usage inherits `Base::things`, so `satisfy … by that` finds
-  `things::that`; and effective typing follows `references`/`crosses` the same way it follows
-  subsetting. The artifact ratchet keeps only the two upstream SI `MagneticDipoleMomentUnit`
-  ambiguities.
-
-- **`crosses sameThing.self` on `SelfLink` now resolves (#135).** A cyclic type still publishes
-  its strict specialization ancestors, so the kernel end inherits `Anything::self` instead of
-  dropping its whole ancestor row.
-
-- **SelfLink mutual subsetting is no longer reported as `specialization_cycle` (#135).** KerML
-  7.3.2.3 treats a specialization cycle as shared extent; only an entirely closed cycle that
-  does not include `Base::Anything` is an error. The kernel `thisThing subsets sameThing` /
-  `sameThing subsets thisThing` idiom escapes through redefinition and typing, so the bundled
-  standard-library ratchet drops its two remaining specialization-cycle errors.
+- Inherited expression queries can now return effective bodies and redefined feature targets in
+  a specified type or usage context. Connector endpoints retain every resolved path segment,
+  with explicit missing and ambiguous hops (#84).
 
 - **`spec42 model-summary` is renamed `spec42 model-export`, and now emits a typed structural
   projection of the publication (#157). BREAKING: the CLI subcommand, the VS Code Language

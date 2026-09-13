@@ -505,6 +505,10 @@ impl Evaluated {
             storage: &self.storage,
             sources: &self.sources,
             resolution: &self.resolution,
+            types: &types,
+            scopes: &effective_scopes,
+            direct_names: &self.direct_names,
+            effective_imports: &self.effective_imports,
         })?;
         let indexed = Indexed {
             storage: self.storage,

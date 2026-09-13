@@ -150,9 +150,12 @@ impl ParsedSource {
         closure_targets::declared_packages_from_parsed(self.inner())
     }
 
-    /// Whether the source declares exactly one anonymous, non-empty package.
-    pub fn declares_single_anonymous_package_with_members(&self) -> bool {
-        declares_single_anonymous_package_in(self.inner())
+    /// Whether the source has root members or imports and no package, library
+    /// package, or namespace wrapper. That is the shape a wrap-in-package edit
+    /// should offer; a bare `part def` is a `RootElement::Member`, not an
+    /// anonymous package.
+    pub fn has_unwrapped_root_members(&self) -> bool {
+        has_unwrapped_root_members_in(self.inner())
     }
 
     /// The token under a cursor position, with the role the grammar gives it.
@@ -524,31 +527,26 @@ pub enum SyntaxFoldingKind {
     Imports,
 }
 
-/// Whether the document declares exactly one anonymous, non-empty package.
+/// Whether the document has loose top-level members or imports and no wrapper.
 ///
 /// The shape a "wrap in package" code action needs, asked as a question about the grammar rather
 /// than answered by a second AST walk in the host.
-fn declares_single_anonymous_package_in(document: &ParsedDocument) -> bool {
-    let mut packages = document
-        .elements
-        .iter()
-        .filter_map(|node| match &node.value {
-            RootElement::Package(package) => Some(package),
-            _ => None,
-        });
-    let Some(package) = packages.next() else {
-        return false;
-    };
-    if packages.next().is_some() {
-        return false;
+fn has_unwrapped_root_members_in(document: &ParsedDocument) -> bool {
+    let mut saw_wrapper = false;
+    let mut saw_loose = false;
+    for node in &document.elements {
+        match &node.value {
+            RootElement::Package(_)
+            | RootElement::LibraryPackage(_)
+            | RootElement::Namespace(_) => {
+                saw_wrapper = true;
+            }
+            RootElement::Member(_) | RootElement::Import(_) => {
+                saw_loose = true;
+            }
+        }
     }
-    if declaration_name(document, &package.identification).is_some_and(|name| !name.is_empty()) {
-        return false;
-    }
-    matches!(
-        &package.body,
-        sysml_v2_parser::ast::PackageBody::Brace { elements, .. } if !elements.is_empty()
-    )
+    saw_loose && !saw_wrapper
 }
 
 /// Whether reformatting `source` into `candidate` provably preserves what the parser sees.
@@ -650,5 +648,26 @@ mod outline_query_tests {
         let parsed = parse("package Demo { // <comment>\n}\n@@@");
         assert!(!parsed.is_clean());
         assert!(parsed.recovered_short_names().is_empty());
+    }
+
+    #[test]
+    fn a_bare_part_def_is_an_unwrapped_root_member() {
+        let parsed = parse("part def X { }");
+        assert!(parsed.is_clean());
+        assert!(parsed.has_unwrapped_root_members());
+    }
+
+    #[test]
+    fn a_named_package_is_not_an_unwrapped_root_member() {
+        let parsed = parse("package P { part def X { } }");
+        assert!(parsed.is_clean());
+        assert!(!parsed.has_unwrapped_root_members());
+    }
+
+    #[test]
+    fn a_named_package_beside_a_loose_member_is_already_wrapped() {
+        let parsed = parse("package P { }\npart def X { }");
+        assert!(parsed.is_clean());
+        assert!(!parsed.has_unwrapped_root_members());
     }
 }
