@@ -56,3 +56,7 @@ tempfile = "3"
 tower-lsp = "0.20"
 url = "2"
 anyhow = "1"
+# Shared geometry-scalar comparison for the native-layout-shadow parity corpus test. This is a
+# deliberate dev-dependency cycle (elkrs_parity normal-depends on `server` with elk-layout-spike);
+# Cargo permits cycles broken by a dev-dependency edge.
+elkrs_parity = { path = "../../tools/elkrs_parity" }

@@ -1913,6 +1913,7 @@ dependencies = [
  "clap",
  "diagram_layout",
  "directories",
+ "elkrs_parity",
  "generator_api",
  "generator_host",
  "kpar",

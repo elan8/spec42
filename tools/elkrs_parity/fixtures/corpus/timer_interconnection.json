@@ -1,0 +1,551 @@
+{
+  "id": "root",
+  "layoutOptions": {
+    "elk.algorithm": "layered",
+    "elk.edgeRouting": "ORTHOGONAL",
+    "elk.layered.nodePlacement.strategy": "NETWORK_SIMPLEX",
+    "elk.separateConnectedComponents": "true",
+    "elk.json.edgeCoords": "ROOT",
+    "elk.hierarchyHandling": "INCLUDE_CHILDREN",
+    "elk.direction": "RIGHT",
+    "elk.spacing.nodeNode": "150",
+    "elk.layered.spacing.nodeNodeBetweenLayers": "220",
+    "elk.spacing.edgeNode": "110",
+    "elk.spacing.edgeEdge": "90",
+    "elk.layered.crossingMinimization.strategy": "LAYER_SWEEP",
+    "elk.padding": "[top=70,left=70,bottom=70,right=70]",
+    "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+    "org.eclipse.elk.portAlignment.default": "CENTER"
+  },
+  "children": [
+    {
+      "id": "n_0",
+      "width": 1040,
+      "height": 142,
+      "ports": [],
+      "children": [
+        {
+          "id": "n_6",
+          "width": 1040,
+          "height": 142,
+          "ports": [],
+          "children": [
+            {
+              "id": "n_11",
+              "width": 280,
+              "height": 140,
+              "ports": [
+                {
+                  "id": "n_11__port__ctrlIn",
+                  "width": 10,
+                  "height": 10,
+                  "labels": [
+                    {
+                      "id": "n_11__port__ctrlIn__label",
+                      "text": "ctrlIn",
+                      "width": 30,
+                      "height": 10
+                    }
+                  ],
+                  "layoutOptions": {
+                    "org.eclipse.elk.port.side": "WEST",
+                    "org.eclipse.elk.port.index": "0"
+                  }
+                },
+                {
+                  "id": "n_11__port__pwrIn",
+                  "width": 10,
+                  "height": 10,
+                  "labels": [
+                    {
+                      "id": "n_11__port__pwrIn__label",
+                      "text": "pwrIn",
+                      "width": 25,
+                      "height": 10
+                    }
+                  ],
+                  "layoutOptions": {
+                    "org.eclipse.elk.port.side": "WEST",
+                    "org.eclipse.elk.port.index": "1"
+                  }
+                },
+                {
+                  "id": "n_11__port__buzzerPwrOut",
+                  "width": 10,
+                  "height": 10,
+                  "labels": [
+                    {
+                      "id": "n_11__port__buzzerPwrOut__label",
+                      "text": "buzzerPwrOut",
+                      "width": 60,
+                      "height": 10
+                    }
+                  ],
+                  "layoutOptions": {
+                    "org.eclipse.elk.port.side": "EAST",
+                    "org.eclipse.elk.port.index": "0"
+                  }
+                }
+              ],
+              "children": [],
+              "layoutOptions": {
+                "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+                "org.eclipse.elk.portAlignment.default": "CENTER",
+                "org.eclipse.elk.portLabels.placement": "INSIDE",
+                "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+                "org.eclipse.elk.spacing.labelPortVertical": "4",
+                "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+                "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+              }
+            },
+            {
+              "id": "n_15",
+              "width": 280,
+              "height": 160,
+              "ports": [
+                {
+                  "id": "n_15__port__buttonIn",
+                  "width": 10,
+                  "height": 10,
+                  "labels": [
+                    {
+                      "id": "n_15__port__buttonIn__label",
+                      "text": "buttonIn",
+                      "width": 40,
+                      "height": 10
+                    }
+                  ],
+                  "layoutOptions": {
+                    "org.eclipse.elk.port.side": "WEST",
+                    "org.eclipse.elk.port.index": "0"
+                  }
+                },
+                {
+                  "id": "n_15__port__pwr",
+                  "width": 10,
+                  "height": 10,
+                  "labels": [
+                    {
+                      "id": "n_15__port__pwr__label",
+                      "text": "pwr",
+                      "width": 15,
+                      "height": 10
+                    }
+                  ],
+                  "layoutOptions": {
+                    "org.eclipse.elk.port.side": "WEST",
+                    "org.eclipse.elk.port.index": "1"
+                  }
+                },
+                {
+                  "id": "n_15__port__buzzerOut",
+                  "width": 10,
+                  "height": 10,
+                  "labels": [
+                    {
+                      "id": "n_15__port__buzzerOut__label",
+                      "text": "buzzerOut",
+                      "width": 45,
+                      "height": 10
+                    }
+                  ],
+                  "layoutOptions": {
+                    "org.eclipse.elk.port.side": "EAST",
+                    "org.eclipse.elk.port.index": "0"
+                  }
+                },
+                {
+                  "id": "n_15__port__displayOut",
+                  "width": 10,
+                  "height": 10,
+                  "labels": [
+                    {
+                      "id": "n_15__port__displayOut__label",
+                      "text": "displayOut",
+                      "width": 50,
+                      "height": 10
+                    }
+                  ],
+                  "layoutOptions": {
+                    "org.eclipse.elk.port.side": "EAST",
+                    "org.eclipse.elk.port.index": "1"
+                  }
+                },
+                {
+                  "id": "n_15__port__lcdDrive",
+                  "width": 10,
+                  "height": 10,
+                  "labels": [
+                    {
+                      "id": "n_15__port__lcdDrive__label",
+                      "text": "lcdDrive",
+                      "width": 40,
+                      "height": 10
+                    }
+                  ],
+                  "layoutOptions": {
+                    "org.eclipse.elk.port.side": "EAST",
+                    "org.eclipse.elk.port.index": "2"
+                  }
+                }
+              ],
+              "children": [],
+              "layoutOptions": {
+                "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+                "org.eclipse.elk.portAlignment.default": "CENTER",
+                "org.eclipse.elk.portLabels.placement": "INSIDE",
+                "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+                "org.eclipse.elk.spacing.labelPortVertical": "4",
+                "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+                "org.eclipse.elk.nodeSize.minimum": "(280,160)"
+              }
+            },
+            {
+              "id": "n_21",
+              "width": 280,
+              "height": 140,
+              "ports": [
+                {
+                  "id": "n_21__port__pwr",
+                  "width": 10,
+                  "height": 10,
+                  "labels": [
+                    {
+                      "id": "n_21__port__pwr__label",
+                      "text": "pwr",
+                      "width": 15,
+                      "height": 10
+                    }
+                  ],
+                  "layoutOptions": {
+                    "org.eclipse.elk.port.side": "WEST",
+                    "org.eclipse.elk.port.index": "0"
+                  }
+                },
+                {
+                  "id": "n_21__port__output",
+                  "width": 10,
+                  "height": 10,
+                  "labels": [
+                    {
+                      "id": "n_21__port__output__label",
+                      "text": "output",
+                      "width": 30,
+                      "height": 10
+                    }
+                  ],
+                  "layoutOptions": {
+                    "org.eclipse.elk.port.side": "EAST",
+                    "org.eclipse.elk.port.index": "0"
+                  }
+                }
+              ],
+              "children": [],
+              "layoutOptions": {
+                "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+                "org.eclipse.elk.portAlignment.default": "CENTER",
+                "org.eclipse.elk.portLabels.placement": "INSIDE",
+                "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+                "org.eclipse.elk.spacing.labelPortVertical": "4",
+                "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+                "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+              }
+            },
+            {
+              "id": "n_24",
+              "width": 280,
+              "height": 160,
+              "ports": [
+                {
+                  "id": "n_24__port__cmd",
+                  "width": 10,
+                  "height": 10,
+                  "labels": [
+                    {
+                      "id": "n_24__port__cmd__label",
+                      "text": "cmd",
+                      "width": 15,
+                      "height": 10
+                    }
+                  ],
+                  "layoutOptions": {
+                    "org.eclipse.elk.port.side": "WEST",
+                    "org.eclipse.elk.port.index": "0"
+                  }
+                },
+                {
+                  "id": "n_24__port__lcdIn",
+                  "width": 10,
+                  "height": 10,
+                  "labels": [
+                    {
+                      "id": "n_24__port__lcdIn__label",
+                      "text": "lcdIn",
+                      "width": 25,
+                      "height": 10
+                    }
+                  ],
+                  "layoutOptions": {
+                    "org.eclipse.elk.port.side": "WEST",
+                    "org.eclipse.elk.port.index": "1"
+                  }
+                },
+                {
+                  "id": "n_24__port__pwr",
+                  "width": 10,
+                  "height": 10,
+                  "labels": [
+                    {
+                      "id": "n_24__port__pwr__label",
+                      "text": "pwr",
+                      "width": 15,
+                      "height": 10
+                    }
+                  ],
+                  "layoutOptions": {
+                    "org.eclipse.elk.port.side": "WEST",
+                    "org.eclipse.elk.port.index": "2"
+                  }
+                }
+              ],
+              "children": [],
+              "layoutOptions": {
+                "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+                "org.eclipse.elk.portAlignment.default": "CENTER",
+                "org.eclipse.elk.portLabels.placement": "INSIDE",
+                "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+                "org.eclipse.elk.spacing.labelPortVertical": "4",
+                "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+                "org.eclipse.elk.nodeSize.minimum": "(280,160)"
+              }
+            }
+          ],
+          "layoutOptions": {
+            "elk.padding": "[top=48,left=24,bottom=24,right=24]",
+            "elk.direction": "RIGHT",
+            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+            "org.eclipse.elk.portAlignment.default": "CENTER",
+            "org.eclipse.elk.portLabels.placement": "INSIDE",
+            "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+            "org.eclipse.elk.spacing.labelPortVertical": "4",
+            "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+            "org.eclipse.elk.nodeSize.minimum": "(1040,142)"
+          }
+        },
+        {
+          "id": "n_28",
+          "width": 280,
+          "height": 140,
+          "ports": [
+            {
+              "id": "n_28__port__pwr",
+              "width": 10,
+              "height": 10,
+              "labels": [
+                {
+                  "id": "n_28__port__pwr__label",
+                  "text": "pwr",
+                  "width": 15,
+                  "height": 10
+                }
+              ],
+              "layoutOptions": {
+                "org.eclipse.elk.port.side": "WEST",
+                "org.eclipse.elk.port.index": "0"
+              }
+            }
+          ],
+          "children": [],
+          "layoutOptions": {
+            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+            "org.eclipse.elk.portAlignment.default": "CENTER",
+            "org.eclipse.elk.portLabels.placement": "INSIDE",
+            "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+            "org.eclipse.elk.spacing.labelPortVertical": "4",
+            "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+            "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+          }
+        },
+        {
+          "id": "n_30",
+          "width": 280,
+          "height": 140,
+          "ports": [
+            {
+              "id": "n_30__port__powerOut",
+              "width": 10,
+              "height": 10,
+              "labels": [
+                {
+                  "id": "n_30__port__powerOut__label",
+                  "text": "powerOut",
+                  "width": 40,
+                  "height": 10
+                }
+              ],
+              "layoutOptions": {
+                "org.eclipse.elk.port.side": "EAST",
+                "org.eclipse.elk.port.index": "0"
+              }
+            }
+          ],
+          "children": [],
+          "layoutOptions": {
+            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+            "org.eclipse.elk.portAlignment.default": "CENTER",
+            "org.eclipse.elk.portLabels.placement": "INSIDE",
+            "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+            "org.eclipse.elk.spacing.labelPortVertical": "4",
+            "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+            "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+          }
+        },
+        {
+          "id": "n_32",
+          "width": 704,
+          "height": 114,
+          "ports": [],
+          "children": [
+            {
+              "id": "n_33",
+              "width": 280,
+              "height": 140,
+              "ports": [],
+              "children": [],
+              "layoutOptions": {
+                "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+                "org.eclipse.elk.portAlignment.default": "CENTER",
+                "org.eclipse.elk.portLabels.placement": "INSIDE",
+                "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+                "org.eclipse.elk.spacing.labelPortVertical": "4",
+                "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+                "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+              }
+            },
+            {
+              "id": "n_34",
+              "width": 280,
+              "height": 140,
+              "ports": [],
+              "children": [],
+              "layoutOptions": {
+                "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+                "org.eclipse.elk.portAlignment.default": "CENTER",
+                "org.eclipse.elk.portLabels.placement": "INSIDE",
+                "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+                "org.eclipse.elk.spacing.labelPortVertical": "4",
+                "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+                "org.eclipse.elk.nodeSize.minimum": "(280,140)"
+              }
+            }
+          ],
+          "layoutOptions": {
+            "elk.padding": "[top=48,left=24,bottom=24,right=24]",
+            "elk.direction": "RIGHT",
+            "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+            "org.eclipse.elk.portAlignment.default": "CENTER",
+            "org.eclipse.elk.portLabels.placement": "INSIDE",
+            "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+            "org.eclipse.elk.spacing.labelPortVertical": "4",
+            "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+            "org.eclipse.elk.nodeSize.minimum": "(704,114)"
+          }
+        }
+      ],
+      "layoutOptions": {
+        "elk.padding": "[top=48,left=24,bottom=24,right=24]",
+        "elk.direction": "RIGHT",
+        "org.eclipse.elk.portConstraints": "FIXED_ORDER",
+        "org.eclipse.elk.portAlignment.default": "CENTER",
+        "org.eclipse.elk.portLabels.placement": "INSIDE",
+        "org.eclipse.elk.spacing.labelPortHorizontal": "6",
+        "org.eclipse.elk.spacing.labelPortVertical": "4",
+        "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
+        "org.eclipse.elk.nodeSize.minimum": "(1040,142)"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e:8",
+      "sources": [
+        "n_21__port__output"
+      ],
+      "targets": [
+        "n_15__port__buttonIn"
+      ]
+    },
+    {
+      "id": "e:10",
+      "sources": [
+        "n_15__port__displayOut"
+      ],
+      "targets": [
+        "n_24__port__cmd"
+      ]
+    },
+    {
+      "id": "e:12",
+      "sources": [
+        "n_15__port__lcdDrive"
+      ],
+      "targets": [
+        "n_24__port__lcdIn"
+      ]
+    },
+    {
+      "id": "e:14",
+      "sources": [
+        "n_15__port__buzzerOut"
+      ],
+      "targets": [
+        "n_11__port__ctrlIn"
+      ]
+    },
+    {
+      "id": "e:29",
+      "sources": [
+        "n_30__port__powerOut"
+      ],
+      "targets": [
+        "n_15__port__pwr"
+      ]
+    },
+    {
+      "id": "e:31",
+      "sources": [
+        "n_30__port__powerOut"
+      ],
+      "targets": [
+        "n_24__port__pwr"
+      ]
+    },
+    {
+      "id": "e:33",
+      "sources": [
+        "n_30__port__powerOut"
+      ],
+      "targets": [
+        "n_21__port__pwr"
+      ]
+    },
+    {
+      "id": "e:35",
+      "sources": [
+        "n_30__port__powerOut"
+      ],
+      "targets": [
+        "n_11__port__pwrIn"
+      ]
+    },
+    {
+      "id": "e:37",
+      "sources": [
+        "n_11__port__buzzerPwrOut"
+      ],
+      "targets": [
+        "n_28__port__pwr"
+      ]
+    }
+  ]
+}
