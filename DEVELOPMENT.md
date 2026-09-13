@@ -285,11 +285,16 @@ CI runs core and agent CLI layers as separate jobs (see `.github/workflows/ci.ym
 Focused LSP integration tests:
 
 ```bash
-cargo test -p lsp_server --test lsp_integration
+cargo test -p lsp_server --test lsp_integration -- --test-threads=1
 ```
 
 The LSP integration test modules live under `crates/lsp_server/tests/integration/`. Use
 `harness::TestSession` for new tests to avoid duplicated initialize/open/request boilerplate.
+The harness terminates and waits for every spawned server on exit, including test panics.
+Synthetic file URIs use `file:///c:/spec42-lsp-tests/`: the drive-qualified path is valid on
+Windows and remains an absolute path on Unix. For real files, use `Url::from_file_path` and
+compare returned identities with the facade's `source::normalize_uri`.
+Run one Cargo invocation at a time per target directory to avoid Windows executable locks.
 
 ### SysML v2 validation suite
 

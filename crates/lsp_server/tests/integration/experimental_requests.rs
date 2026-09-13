@@ -5,7 +5,7 @@ use super::harness::TestSession;
 #[test]
 fn lsp_remaining_feature_requests_round_trip() {
     let mut session = TestSession::new();
-    let uri = "file:///remaining-lsp.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/remaining-lsp.sysml";
     let content = "package P {\n  part def Engine;\n  part vehicle : Engine;\n}\n";
     session.initialize_default("remaining_lsp_features_test");
     session.did_open(uri, content, 1);

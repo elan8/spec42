@@ -12,8 +12,8 @@ fn lsp_cross_file_references() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri_def = "file:///refs/def.sysml";
-    let uri_use = "file:///refs/use.sysml";
+    let uri_def = "file:///c:/spec42-lsp-tests/refs/def.sysml";
+    let uri_use = "file:///c:/spec42-lsp-tests/refs/use.sysml";
     let content_def = "package P { part def Widget; }";
     let content_use = "package Q { import P::*; part w : Widget; }";
 
@@ -24,7 +24,7 @@ fn lsp_cross_file_references() {
         "method": "initialize",
         "params": {
             "processId": null,
-            "rootUri": "file:///refs",
+            "rootUri": "file:///c:/spec42-lsp-tests/refs",
             "capabilities": {},
             "clientInfo": { "name": "test", "version": "0.1.0" }
         }
@@ -100,7 +100,7 @@ fn lsp_same_file_homonym_references_are_disambiguated_by_position() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///refs/laptop.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/refs/laptop.sysml";
     let content = r#"package IT {
     part def Laptop {
         port hdmi;
@@ -117,7 +117,7 @@ fn lsp_same_file_homonym_references_are_disambiguated_by_position() {
         "method": "initialize",
         "params": {
             "processId": null,
-            "rootUri": "file:///refs",
+            "rootUri": "file:///c:/spec42-lsp-tests/refs",
             "capabilities": {},
             "clientInfo": { "name": "test", "version": "0.1.0" }
         }
@@ -188,7 +188,7 @@ fn lsp_dotted_usage_disambiguates_same_name_members() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///refs/dotted.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/refs/dotted.sysml";
     let content = r#"package IT {
     part def Laptop {
         port hdmi;
@@ -210,7 +210,7 @@ fn lsp_dotted_usage_disambiguates_same_name_members() {
         "method": "initialize",
         "params": {
             "processId": null,
-            "rootUri": "file:///refs",
+            "rootUri": "file:///c:/spec42-lsp-tests/refs",
             "capabilities": {},
             "clientInfo": { "name": "test", "version": "0.1.0" }
         }
@@ -281,8 +281,8 @@ fn lsp_same_short_name_in_library_is_not_counted_without_semantic_match() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri_workspace = "file:///refs/workspace.sysml";
-    let uri_library = "file:///stdlib/lib.sysml";
+    let uri_workspace = "file:///c:/spec42-lsp-tests/refs/workspace.sysml";
+    let uri_library = "file:///c:/spec42-lsp-tests/stdlib/lib.sysml";
     let workspace_content = r#"package W {
     part def Laptop {
         port power;
@@ -301,7 +301,7 @@ fn lsp_same_short_name_in_library_is_not_counted_without_semantic_match() {
         "method": "initialize",
         "params": {
             "processId": null,
-            "rootUri": "file:///refs",
+            "rootUri": "file:///c:/spec42-lsp-tests/refs",
             "capabilities": {},
             "clientInfo": { "name": "test", "version": "0.1.0" }
         }
@@ -366,7 +366,7 @@ fn lsp_same_short_name_in_library_is_not_counted_without_semantic_match() {
 #[test]
 fn lsp_document_highlight_uses_semantic_target() {
     let mut session = TestSession::new();
-    let uri = "file:///refs/highlight-homonyms.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/refs/highlight-homonyms.sysml";
     let content = r#"package IT {
     part def Laptop {
         port hdmi;
