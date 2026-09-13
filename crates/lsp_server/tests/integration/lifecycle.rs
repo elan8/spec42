@@ -8,7 +8,7 @@ fn lsp_repeated_open_edit_close_keeps_server_usable() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///lifecycle.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/lifecycle.sysml";
     let original = "package P {\n  part def Engine;\n}\n";
     let edited = "package P {\n  part def EngineCore;\n}\n";
 
@@ -120,7 +120,7 @@ fn lsp_incremental_utf16_edit_after_emoji_keeps_hover_working() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///lifecycle_utf16.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/lifecycle_utf16.sysml";
     let original = "package P {\n  // ok \u{1F600} here\n  part def Engine;\n}\n";
 
     let init_id = next_id();

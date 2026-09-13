@@ -37,7 +37,7 @@ fn lsp_semantic_tokens_port_definitions() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///semantic_tokens_test.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/semantic_tokens_test.sysml";
     let content = r#"port def GimbalCommandPort {
     in panAngle : Real;
     in tiltAngle : Real;
@@ -189,7 +189,7 @@ fn lsp_semantic_tokens_update_after_edit() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///semantic_tokens_edit.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/semantic_tokens_edit.sysml";
     let original = "package P {\n  part def Engine;\n}\n";
     let edited = "package P {\n  part def EngineCore;\n}\n";
 
@@ -312,7 +312,7 @@ fn lsp_semantic_tokens_investigation() {
     let mut stdin = child.stdin.take().expect("stdin");
     let mut stdout = child.stdout.take().expect("stdout");
 
-    let uri = "file:///semantic_tokens_investigation.sysml";
+    let uri = "file:///c:/spec42-lsp-tests/semantic_tokens_investigation.sysml";
     let content = r#"port def GimbalCommandPort {
     in panAngle : Real;
     in tiltAngle : Real;
