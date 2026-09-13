@@ -14,6 +14,22 @@ now owned by `crates/diagram_layout`, and `server/native-layout-shadow` compiles
 that returns the unchanged ELK.js result as primary plus the normalized native result. It is not yet
 wired into the headless renderer or webview, so production behavior remains unchanged.
 
+### Rollback switch
+
+Two mechanisms, for two different questions:
+
+- **Compile-time** (`elk-layout-spike`, `native-layout-shadow` Cargo features on `crates/server`,
+  both opt-in): whether `elkrs`/`diagram_layout` are linked into the shipped binary at all. This is
+  the #118 rollback switch. The default build (`default = ["embed-stdlib",
+  "embed-kpar-libraries"]`) never links `elkrs` — confirmed via `cargo tree -p server -i elkrs`
+  reporting "not a dependency" with no features enabled.
+- **Runtime** (a future `SPEC42_LAYOUT_ENGINE` env var, `native`/`legacy`, matching the existing
+  `SPEC42_*` convention in `crates/server/src/environment.rs`): only becomes necessary once #119's
+  `spec42/layout` request ships enabled by default — at that point a compile-time-only switch can't
+  support incident response without a new release. Not implemented yet; #118 has nothing that reads
+  it, so adding the plumbing now would be dead code. #119 should add it alongside the request
+  handler it actually gates.
+
 The server integration must own one neutral ELK JSON adapter and preserve the prepared-view/diagram
 product as its input boundary. The adapter must retain the root-authored, root-coordinate edge
 normalization proven by `tools/elkrs_parity`; calling `elkrs::layout_json` directly is not compatible
@@ -76,6 +92,45 @@ These numbers demonstrate migration headroom, not a release performance guarante
 standalone adapter creates a fresh QuickJS runtime for every call, as does the current server test
 path; production integration should benchmark both cold startup and a reused service.
 
+### #118 update: expanded corpus, release-profile process benchmarks
+
+The parity corpus grew from the 11 fixtures above to 30: `tools/elkrs_parity/fixtures/corpus/`
+adds the exact ELK graph JSON built from every checked-in repository diagram product and the
+synthetic node-chrome stress corpus (`vscode/diagram-renderer/src/render/elk-parity-corpus-fixtures.test.ts`,
+regenerate via `UPDATE_ELK_FIXTURES=1 npm test`). `crates/server/tests/integration/layout_shadow_corpus.rs`
+runs the same geometry-scalar comparison in-process as a fast CI gate.
+
+One genuine divergence surfaced: `timer_interconnection.json` has two `FIXED_ORDER`, multi-port,
+`CENTER`-aligned interconnection nodes where elkrs and ELK.js compute different port-driven node
+heights, shifting downstream edge y-coordinates by a constant ~130px. This is a real
+elkrs-vs-ELK.js algorithm difference in multi-port sizing, not a normalization bug (the
+root-relative coordinate math was hand-verified correct). Tracked in `KNOWN_DIVERGENCES` in
+`layout_shadow_corpus.rs`, not silently passed.
+
+Also found and fixed: elkrs does not error on a root graph that authors two edges with the same
+id — it silently renames the second one (e.g. `"duplicate"` -> `"duplicate_"`), which would have
+returned Spec42 an edge under an id it never authored. `crates/diagram_layout` now rejects this
+before calling elkrs (`reject_duplicate_input_edge_ids`).
+
+`tools/elkrs_parity --process-mode cold|warm` (added for #118) re-execs the binary as a child
+process per engine against a single fixture, isolating per-engine startup time and peak resident
+memory (`/proc/self/status`'s `VmHWM`) that the in-process comparison above cannot attribute
+per-engine. Release-profile numbers on `timer_interconnection.json` (18KB, the largest corpus
+fixture):
+
+| | ELK.js/QuickJS | elkrs + adapter | Ratio |
+|---|---:|---:|---:|
+| cold layout (median of 3) | 992 ms | 1.2 ms | ~830x |
+| peak resident memory | 26.6 MiB | 6.9 MiB | 3.9x less |
+
+Incremental shipped-binary size was **not** measured or ratcheted: `elkrs`/`diagram_layout` are
+only linked behind the opt-in `native-layout-shadow` feature, never in the default build, so there
+is no shipped size delta to protect yet. This is deferred to #119, when `spec42/layout` is expected
+to ship the native engine enabled by default — measure and ratchet it then, against what actually
+ships, following `crates/server/tests/integration/stdlib_bundle_ratchet.rs`'s pattern (a Rust test
+asserting an `EXPECTED_*` size constant against a pre-built release artifact, skipping gracefully
+when that artifact isn't available).
+
 ## Distribution and size constraints
 
 The server-side ELK.js worker plus API currently occupy about 1.53 MiB; the browser ELK.js bundle is
@@ -89,14 +144,19 @@ notices before removing or replacing ELK.js assets.
 
 ## Required before enabling native layout by default
 
+- ~~Run release-profile cold/warm benchmarks in separate processes for startup time, layout time,
+  and peak working set.~~ Done (#118): see the update above. Incremental `spec42` binary size is
+  intentionally not yet measured — see that section for why, and ratchet it once #119 makes native
+  layout ship-enabled.
+- ~~Expand parity fixtures beyond the initial hand-picked set to cover production-shaped inputs.~~
+  Done (#118): 30 fixtures, including the full repository diagram-product corpus.
 - Wire the feature-gated server shadow seam into a real headless request path and capture comparison
   diagnostics on the full visual corpus. Preserve explicit ELK failure diagnostics and the current
-  deterministic fallback policy; never silently accept partial layout.
-- Run release-profile cold/warm benchmarks in separate processes for startup time, layout time, peak
-  working set, and incremental `spec42` binary size. The in-process spike intentionally does not
-  claim engine-attributed peak memory because both engines are linked and loaded together.
+  deterministic fallback policy; never silently accept partial layout. **Not started** — #118's
+  shadow seam (`layout_shadow.rs`) deliberately stays off the `headless_renderer.rs` production SVG
+  path; #119 introduces a new `spec42/layout` request instead of modifying that path.
 - Keep golden SVG marker tests and the full visual corpus green before deleting any ELK.js server
-  assets.
+  assets. Still required; no ELK.js assets have been removed.
 - Prototype the versioned server request/response path and verify cancellation plus stale-result
   rejection under rapid disclosure changes. Accept it only at p95 <= 100 ms on the representative
-  packaged-extension corpus; otherwise reopen the WASM option.
+  packaged-extension corpus; otherwise reopen the WASM option. **Not started** — this is #119.
