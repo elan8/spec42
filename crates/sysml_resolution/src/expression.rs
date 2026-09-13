@@ -6,15 +6,15 @@
 //! consumer that has to *interpret* a model (assemble equations, emit interface stubs, drive an
 //! external solver) rather than fold it to a scalar.
 //!
-//! It adds no analysis. Resolution already builds and resolves these trees to fold constants; the
-//! only change is that the structure is now retained and handed back settled: every feature
+//! It adds no evaluation. Resolution retains these trees and publishes their authored structure;
+//! explicit contextual queries also bind inherited bodies before publication. Every feature
 //! reference paired with the specific inherited or redefined feature it names, every operator kept,
 //! and a shape outside the published slice reported as [`ExpressionNodeKind::Unsupported`] rather
 //! than dropped -- the same precedent [`crate::EvaluationState::Unsupported`] sets.
 //!
 //! The tree is a flat arena. A `Box`-recursive owned tree would allocate per node on every
 //! keystroke and pin the authority's node layout; instead [`PublishedExpression::nodes`] is one
-//! borrowed slice and a child is named by its `u32` index into it, the same shape the scope and
+//! owned slice and a child is named by its `u32` index into it, the same shape the scope and
 //! type indexes use.
 
 use crate::{SourceLocation, SymbolId};
@@ -32,6 +32,23 @@ pub struct PublishedExpression {
     pub nodes: Box<[ExpressionNode]>,
     /// The index of the root node in [`Self::nodes`], or `None` when there is no tree.
     pub root: Option<u32>,
+}
+
+/// An expression interpreted in a specific inheriting type or usage. Source locations and
+/// `authored_element` retain provenance; feature targets reflect the effective context.
+#[derive(Debug, Clone, PartialEq)]
+pub struct PublishedContextualExpression {
+    pub context: SymbolId,
+    pub authored_element: SymbolId,
+    pub expression: PublishedExpression,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ContextualExpressionOutcome {
+    /// A selected body, including an explicit unsupported shape when no tree can be offered.
+    Resolved(PublishedContextualExpression),
+    /// Multiple effective redefinitions or inherited bodies; no single tree is asserted.
+    Ambiguous(Box<[SymbolId]>),
 }
 
 /// Whether an element has a resolved expression tree, and why not when it does not.

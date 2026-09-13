@@ -3165,7 +3165,14 @@ impl<D> SemanticModel<D> {
 
     /// One authored reference's settled target, as the public [`RelationshipTarget`].
     fn settled_relationship_target(&self, reference_id: AuthoredReferenceId) -> RelationshipTarget {
-        match self.resolution.outcome(reference_id) {
+        self.relationship_target_from_status(self.resolution.outcome(reference_id))
+    }
+
+    fn relationship_target_from_status(
+        &self,
+        status: Option<ResolutionStatus>,
+    ) -> RelationshipTarget {
+        match status {
             Some(ResolutionStatus::Resolved(target)) => match self.symbol_id(target) {
                 Some(identity) => RelationshipTarget::Resolved(identity),
                 None => RelationshipTarget::Unresolved,
@@ -3470,81 +3477,26 @@ impl<D> SemanticModel<D> {
             root: self.connector_end_root(reference_id),
             terminal,
             authored: self.authored_path(reference.path).into(),
+            path: self
+                .resolution
+                .member_access_paths
+                .get(&reference_id)
+                .into_iter()
+                .flat_map(|path| path.iter())
+                .map(|status| self.relationship_target_from_status(Some(*status)))
+                .collect(),
         }
     }
 
     /// The resolved first segment of a dotted connector end (`component` in `component.port`).
     fn connector_end_root(&self, reference_id: AuthoredReferenceId) -> RelationshipTarget {
-        match self.connector_end_root_candidates(reference_id).as_slice() {
-            [one] => self
-                .symbol_id(*one)
-                .map(RelationshipTarget::Resolved)
-                .unwrap_or(RelationshipTarget::Unresolved),
-            [] => RelationshipTarget::Unresolved,
-            many => RelationshipTarget::Ambiguous(
-                many.iter()
-                    .filter_map(|candidate| self.symbol_id(*candidate))
-                    .collect(),
-            ),
-        }
-    }
-
-    /// The candidate declarations the first segment of a dotted connector end resolves to,
-    /// looked up in the same lexical scope the resolver uses for the end's own reference (the
-    /// connector's owning namespace for a `connect` / `interface` usage end, KerML 8.2.3.5.2).
-    pub(crate) fn connector_end_root_candidates(
-        &self,
-        reference_id: AuthoredReferenceId,
-    ) -> Vec<DeclarationId> {
-        let Some(reference) = self.storage.references.get(reference_id.index()) else {
-            return Vec::new();
-        };
-        let Some((segments, false)) = self.storage.paths.get(reference.path) else {
-            return Vec::new();
-        };
-        let Some(&first) = segments.first() else {
-            return Vec::new();
-        };
-        let scope = match self.storage.declaration(reference.source) {
-            Some(source)
-                if reference.kind == ReferenceKind::ConnectorEnd
-                    && matches!(
-                        source.kind,
-                        DeclarationKind::InterfaceUsage | DeclarationKind::ConnectionUsage
-                    ) =>
-            {
-                source.owner
-            }
-            _ => Some(reference.source),
-        };
-        let mut candidates = Vec::new();
-        let mut work = ResolutionWork::default();
-        if lookup_lexical_into(
-            &self.storage.declarations,
-            &ResolutionIndexes {
-                direct_names: &self.direct_names,
-                exported_names: &self.direct_names,
-                effective_imports: Some(&self.effective_imports),
-                exported_imports: Some(&self.effective_imports),
-                inherited_names: Some(&self.resolution.inherited_names),
-            },
-            scope,
-            first,
-            LookupTarget {
-                domain: DeclarationDomain::Any,
-                excluded: None,
-                first_scope: FirstScopePolicy::OwnedThenInherited,
-            },
-            &mut candidates,
-            &mut work,
+        self.relationship_target_from_status(
+            self.resolution
+                .member_access_paths
+                .get(&reference_id)
+                .and_then(|path| path.first())
+                .copied(),
         )
-        .is_err()
-        {
-            return Vec::new();
-        }
-        candidates.sort_unstable();
-        candidates.dedup();
-        candidates
     }
 
     /// Whether `node` is `ancestor`, or is owned by it directly or transitively.

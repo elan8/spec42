@@ -310,11 +310,12 @@ fn connector_json(model: &PublishedModel, connector: &PublishedConnector) -> Val
                         "kind": "feature",
                         "target": target_json(model, target),
                     }),
-                    ConnectorEndpoint::FeatureChain { root, terminal, authored } => json!({
+                    ConnectorEndpoint::FeatureChain { root, terminal, authored, path } => json!({
                         "kind": "feature-chain",
                         "root": target_json(model, root),
                         "terminal": target_json(model, terminal),
                         "authored": authored.as_ref(),
+                        "path": path.iter().map(|hop| target_json(model, hop)).collect::<Vec<_>>(),
                     }),
                     ConnectorEndpoint::Unconnected => json!({ "kind": "unconnected" }),
                 };

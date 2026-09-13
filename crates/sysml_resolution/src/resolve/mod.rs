@@ -12,6 +12,7 @@ use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::intern::SymbolPathArena;
+use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::ReferenceKind;
@@ -136,6 +137,10 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     let membership_records = memberships;
     let memberships = MembershipIndex::build(declarations, memberships)?;
     let mut outcomes = vec![ResolutionStatus::Unsupported; references.len()];
+    let mut member_access_paths: std::collections::BTreeMap<
+        AuthoredReferenceId,
+        Vec<ResolutionStatus>,
+    > = std::collections::BTreeMap::new();
     // A settled library's outcomes are installed before the first pass and its references are then
     // left out of every slot list below, so no pass re-evaluates them. They are still *read* --
     // by the name, import and inheritance indexes each pass rebuilds -- which is what makes the
@@ -1040,14 +1045,16 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     next_candidates: &mut next_candidates,
                     work: &mut work,
                 };
+                let mut path = Vec::new();
                 outcomes[index] = if reference.flags().dotted {
-                    resolve_member_access_reference(
+                    resolve_member_access_reference_with_path(
                         declarations,
                         paths,
                         reference,
                         &outcomes,
                         indexes,
                         scratch,
+                        Some(&mut path),
                     )?
                 } else {
                     resolve_reference(
@@ -1059,6 +1066,13 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                         scratch,
                     )?
                 };
+                if reference.flags().dotted {
+                    member_access_paths.insert(
+                        AuthoredReferenceId::from_index(index)
+                            .map_err(|_| ResolutionError::Capacity)?,
+                        path,
+                    );
+                }
             }
             // Dotted member access consumes the final effective member scope.
             for index in member_access_slots.iter().copied() {
@@ -1066,7 +1080,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     .downstream_evaluations
                     .checked_add(1)
                     .ok_or(ResolutionError::Capacity)?;
-                let outcome = resolve_member_access_reference(
+                let mut path = Vec::new();
+                let outcome = resolve_member_access_reference_with_path(
                     declarations,
                     paths,
                     &references[index],
@@ -1084,8 +1099,14 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                         next_candidates: &mut next_candidates,
                         work: &mut work,
                     },
+                    Some(&mut path),
                 )?;
                 outcomes[index] = outcome;
+                member_access_paths.insert(
+                    AuthoredReferenceId::from_index(index)
+                        .map_err(|_| ResolutionError::Capacity)?,
+                    path,
+                );
             }
         }
     }
@@ -1140,11 +1161,67 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         Box::default()
     };
 
+    for (index, reference) in references.iter().enumerate() {
+        if reference.kind() != ReferenceKind::MemberAccessOperand
+            && !(reference.kind() == ReferenceKind::ConnectorEnd && reference.flags().dotted)
+        {
+            continue;
+        }
+        let reference_id =
+            AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        // Seeded library outcomes skip the downstream solver slots. Capture their paths by
+        // replaying the same canonical traversal over the final immutable scopes; no outcome
+        // or relationship is changed. This keeps cold and seeded publications equivalent.
+        if index < settled
+            && !member_access_paths.contains_key(&reference_id)
+            && !matches!(outcomes[index], ResolutionStatus::NonConverged)
+        {
+            let mut path = Vec::new();
+            resolve_member_access_reference_with_path(
+                declarations,
+                paths,
+                reference,
+                &outcomes,
+                ResolutionIndexes {
+                    direct_names: &direct_names,
+                    exported_names: &exported_names,
+                    effective_imports: Some(&effective_imports),
+                    exported_imports: Some(&exported_imports),
+                    inherited_names: Some(&inherited_names),
+                },
+                ResolutionScratch {
+                    ambiguous_candidates: &mut ambiguous_candidates,
+                    candidates: &mut candidates,
+                    next_candidates: &mut next_candidates,
+                    work: &mut work,
+                },
+                Some(&mut path),
+            )?;
+            member_access_paths.insert(reference_id, path);
+        }
+        let path = member_access_paths
+            .entry(AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?)
+            .or_default();
+        if path.is_empty() && matches!(outcomes[index], ResolutionStatus::NonConverged) {
+            path.push(ResolutionStatus::NonConverged);
+        }
+        let count = paths
+            .get(reference.path())
+            .ok_or(ResolutionError::InvalidStorage)?
+            .0
+            .len();
+        path.resize(count, ResolutionStatus::Unresolved);
+    }
+
     Ok((
         direct_names,
         effective_imports,
         memberships,
         ResolutionResults {
+            member_access_paths: member_access_paths
+                .into_iter()
+                .map(|(reference, path)| (reference, path.into_boxed_slice()))
+                .collect(),
             outcomes: outcomes.into_boxed_slice(),
             ambiguous_candidates: ambiguous_candidates.into_boxed_slice(),
             inherited_names,
@@ -2245,11 +2322,34 @@ pub(crate) fn resolve_member_access_reference<R: ResolutionReferenceFact>(
     indexes: ResolutionIndexes<'_>,
     scratch: ResolutionScratch<'_>,
 ) -> Result<ResolutionStatus, ResolutionError> {
+    resolve_member_access_reference_with_path(
+        declarations,
+        paths,
+        reference,
+        outcomes,
+        indexes,
+        scratch,
+        None,
+    )
+}
+
+pub(crate) fn resolve_member_access_reference_with_path<R: ResolutionReferenceFact>(
+    declarations: &[Declaration],
+    paths: &SymbolPathArena,
+    reference: &R,
+    outcomes: &[ResolutionStatus],
+    indexes: ResolutionIndexes<'_>,
+    scratch: ResolutionScratch<'_>,
+    mut path: Option<&mut Vec<ResolutionStatus>>,
+) -> Result<ResolutionStatus, ResolutionError> {
     let (segments, rooted) = paths
         .get(reference.path())
         .ok_or(ResolutionError::InvalidStorage)?;
     if rooted {
         // A dotted member-access chain is never `::`-absolute; defensive, not reachable from the
+        if let Some(path) = path.as_mut() {
+            path.push(ResolutionStatus::Unsupported);
+        }
         // lowering side today.
         return Ok(ResolutionStatus::Unsupported);
     }
@@ -2307,6 +2407,12 @@ pub(crate) fn resolve_member_access_reference<R: ResolutionReferenceFact>(
         scratch.candidates,
         scratch.work,
     )?;
+    if let Some(path) = path.as_mut() {
+        path.push(status_from_candidates(
+            scratch.candidates,
+            scratch.ambiguous_candidates,
+        )?);
+    }
     for (segment_index, segment) in segments.iter().enumerate().skip(1) {
         for narrowing in reference
             .member_access_narrowings()
@@ -2350,6 +2456,12 @@ pub(crate) fn resolve_member_access_reference<R: ResolutionReferenceFact>(
         scratch.next_candidates.sort_unstable();
         scratch.next_candidates.dedup();
         std::mem::swap(scratch.candidates, scratch.next_candidates);
+        if let Some(path) = path.as_mut() {
+            path.push(status_from_candidates(
+                scratch.candidates,
+                scratch.ambiguous_candidates,
+            )?);
+        }
     }
     status_from_candidates(scratch.candidates, scratch.ambiguous_candidates)
 }

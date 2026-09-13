@@ -102,7 +102,8 @@ pub use evaluation::{
     EvaluationPolicy, EvaluationState, ExpectedMeasurement, ResolvedUnit, UnitResolution,
 };
 pub use expression::{
-    ExpressionNode, ExpressionNodeKind, ExpressionOperator, ExpressionOutcome, PublishedExpression,
+    ContextualExpressionOutcome, ExpressionNode, ExpressionNodeKind, ExpressionOperator,
+    ExpressionOutcome, PublishedContextualExpression, PublishedExpression,
 };
 pub use feature_query::FeatureDerivedRelationshipCollection;
 pub use inspection::{
@@ -844,6 +845,17 @@ impl PublishedResolution {
     /// structure resolution already builds -- it performs no new analysis.
     pub fn resolved_expression(&self, symbol: SymbolId) -> QueryOutcome<PublishedExpression> {
         self.model.resolved_expression(symbol)
+    }
+
+    /// The effective expression body and bindings in a derived type or typed usage, with
+    /// authored provenance retained. Invalid contexts are unresolved; competing bindings
+    /// return a typed ambiguity rather than an asserted tree.
+    pub fn contextual_expression(
+        &self,
+        symbol: SymbolId,
+        context: SymbolId,
+    ) -> QueryOutcome<ContextualExpressionOutcome> {
+        self.model.contextual_expression(symbol, context)
     }
 
     /// Everything this publication knows about one element.
