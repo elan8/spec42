@@ -9,6 +9,97 @@ use crate::common::*;
 #[allow(unused_imports)]
 use sysml_resolution::*;
 
+/// Supplemental parity check for the owning construction paths. Detailed body and hop
+/// semantics are pinned by the contextual_inherited_expressions and connector_complete_paths
+/// standalone snapshots.
+#[test]
+fn contextual_expressions_and_connector_paths_have_seeded_schedule_parity() {
+    const LIBRARY: &str = "package L {
+        port def Port;
+        part def Pump { port outlet : Port; }
+        part def Base {
+            attribute mass;
+            attribute limit = 100;
+            constraint budget { mass <= limit }
+            part left : Pump;
+            part right : Pump;
+            connect left.outlet to right.outlet;
+        }
+    }";
+    const WORKSPACE: &str = "package W {
+        part def Derived :> L::Base {
+            attribute :>> limit = 200;
+            connect left.outlet to right.outlet;
+        }
+        part instance : Derived;
+    }";
+    let library_input = || {
+        SourceInput::new(
+            "memory://library.sysml",
+            LIBRARY.into(),
+            SourceKind::StandardLibrary,
+        )
+    };
+    let workspace_input = || {
+        SourceInput::new(
+            "memory://workspace.sysml",
+            WORKSPACE.into(),
+            SourceKind::Workspace,
+        )
+    };
+    let library = std::sync::Arc::new(build_library_stratum(vec![library_input()]).unwrap());
+    let cold = build(
+        BuildRequest::new(
+            vec![library_input(), workspace_input()],
+            ConstructionSchedule::Sequential,
+            "parity-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let answers = |published: &PublishedResolution| {
+        let budget = identity_of(published, "memory://library.sysml", "L::Base::budget");
+        let context = identity_of(published, "memory://workspace.sysml", "W::instance");
+        let base = identity_of(published, "memory://workspace.sysml", "W::Derived");
+        (
+            settled(published.contextual_expression(budget, context)),
+            settled(published.connections(base)),
+        )
+    };
+    let expected = answers(&cold);
+    assert!(matches!(
+        &expected.0,
+        ContextualExpressionOutcome::Resolved(_)
+    ));
+    assert!(!expected.1.connectors.is_empty());
+    for schedule in [
+        ConstructionSchedule::Sequential,
+        ConstructionSchedule::Parallel,
+    ] {
+        let seeded = build(
+            BuildRequest::with_library(
+                vec![workspace_input()],
+                schedule,
+                "parity-v1",
+                std::sync::Arc::clone(&library),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        let unseeded = build(
+            BuildRequest::new(
+                vec![library_input(), workspace_input()],
+                schedule,
+                "parity-v1",
+            )
+            .unwrap(),
+        )
+        .unwrap();
+        assert_eq!(answers(&seeded), expected);
+        assert_eq!(answers(&unseeded), expected);
+    }
+}
+
 /// An enumeration literal owns the members and documentation authored in its body.
 ///
 /// `EnumeratedValue.body` is a full `PartUsageBody`, the same shape `lower_part_usage` walks,
@@ -3213,6 +3304,7 @@ fn connection_graph_publishes_connectors_with_resolved_ends() {
             root,
             terminal,
             authored,
+            ..
         } => {
             // `pumpA.outlet` — the component instance and the port are both resolved.
             let RelationshipTarget::Resolved(root) = root else {

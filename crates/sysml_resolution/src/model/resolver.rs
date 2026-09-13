@@ -1142,6 +1142,7 @@ mod tests {
 
     fn resolution_with_status(status: SolverStatus) -> ResolutionResults {
         ResolutionResults {
+            member_access_paths: Default::default(),
             outcomes: Box::new([]),
             ambiguous_candidates: Box::new([]),
             inherited_names: NameIndex::build(Vec::new()).unwrap(),

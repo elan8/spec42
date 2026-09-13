@@ -3,6 +3,7 @@
 use std::fmt;
 
 use crate::source::Url;
+pub use sysml_resolution::{ContextualExpressionOutcome, PublishedContextualExpression};
 
 pub use sysml_resolution::{
     requirement_collection_from_kind, ActionDerivedFactCollection, ActionDerivedFactKind,
@@ -380,6 +381,15 @@ pub struct StructureQueries<'a> {
 }
 
 impl StructureQueries<'_> {
+    /// An inherited expression in a specific derived type or usage. The authored tree remains
+    /// available through `expression`; this answer retains provenance and contextual targets.
+    pub fn expression_in_context(
+        &self,
+        symbol: SymbolId,
+        context: SymbolId,
+    ) -> QueryOutcome<ContextualExpressionOutcome> {
+        self.model.contextual_expression(symbol, context)
+    }
     /// The resolved expression tree of one element's authored constraint / calc / value
     /// expression.
     pub fn expression(&self, symbol: SymbolId) -> QueryOutcome<PublishedExpression> {

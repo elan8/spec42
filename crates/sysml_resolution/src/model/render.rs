@@ -105,6 +105,75 @@ pub(crate) fn write_expressions(
         }
         writeln!(output, ")")?;
     }
+    let order = canonical_declaration_indices(model);
+    for context_index in order {
+        let context = DeclarationId(context_index as u32);
+        let mut rows: Vec<_> = model
+            .resolved_expressions
+            .contextual
+            .range((context, DeclarationId(0))..=(context, DeclarationId(u32::MAX)))
+            .collect();
+        rows.sort_by(|((_, left), _), ((_, right), _)| {
+            document_identity(model, model.storage.declarations[left.index()].document)
+                .cmp(document_identity(
+                    model,
+                    model.storage.declarations[right.index()].document,
+                ))
+                .then_with(|| {
+                    declaration_path_key(model, *left).cmp(&declaration_path_key(model, *right))
+                })
+        });
+        for ((_, element), contextual) in rows {
+            let element = *element;
+            let origin = &contextual.authored;
+            let result = &contextual.result;
+            if model
+                .storage
+                .declaration(*origin)
+                .and_then(|declaration| declaration.owner)
+                == Some(context)
+                && element == *origin
+                && contextual.effective == element
+                && matches!(
+                    result,
+                    crate::index::resolved_expressions::ContextualExpressionResult::Resolved(_)
+                )
+            {
+                continue;
+            }
+            write!(output, "  (contextual (context ")?;
+            write_node_identity(model, context, output)?;
+            output.write_str(") (element ")?;
+            write_node_identity(model, element, output)?;
+            match result {
+                crate::index::resolved_expressions::ContextualExpressionResult::Resolved(row) => {
+                    output.write_str(") (effective-element ")?;
+                    write_node_identity(model, contextual.effective, output)?;
+                    output.write_str(") (authored-element ")?;
+                    write_node_identity(model, *origin, output)?;
+                    write!(output, ") (outcome {})", row.outcome.as_str())?;
+                    if let Some(root) = row.root {
+                        output.write_char(' ')?;
+                        write_resolved_expression_node(model, &row.nodes, root, output)?;
+                    }
+                }
+                crate::index::resolved_expressions::ContextualExpressionResult::Unresolved => {
+                    output.write_str(") (outcome unresolved)")?
+                }
+                crate::index::resolved_expressions::ContextualExpressionResult::Ambiguous(
+                    candidates,
+                ) => {
+                    output.write_str(") (outcome ambiguous) (candidates")?;
+                    for candidate in candidates.iter() {
+                        output.write_char(' ')?;
+                        write_node_identity(model, *candidate, output)?;
+                    }
+                    output.write_char(')')?;
+                }
+            }
+            writeln!(output, ")")?;
+        }
+    }
     writeln!(output, ")")
 }
 
@@ -127,7 +196,9 @@ pub(crate) fn write_resolved_expression_node(
             write_evaluated_scalar(value, output)?;
             output.write_char(')')
         }
-        RawExpressionNodeKind::FeatureReference { target, authored } => {
+        RawExpressionNodeKind::FeatureReference {
+            target, authored, ..
+        } => {
             write!(output, "(feature-reference {authored:?}")?;
             match target {
                 Some(declaration) => {
@@ -436,13 +507,44 @@ pub(crate) fn write_connections(
                 .map(|reference| model.authored_path(reference.path))
                 .unwrap_or_default();
             output.write_str("(feature-chain (root ")?;
-            match model.connector_end_root_candidates(reference_id).as_slice() {
-                [one] => write_node_identity(model, *one, output)?,
-                [] => output.write_str("unresolved")?,
-                _ => output.write_str("ambiguous")?,
+            match model
+                .resolution
+                .member_access_paths
+                .get(&reference_id)
+                .and_then(|path| path.first())
+            {
+                Some(ResolutionStatus::Resolved(one)) => write_node_identity(model, *one, output)?,
+                Some(ResolutionStatus::Ambiguous(_)) => output.write_str("ambiguous")?,
+                Some(ResolutionStatus::Unsupported) => output.write_str("unsupported")?,
+                Some(ResolutionStatus::NonConverged) => output.write_str("non-converged")?,
+                _ => output.write_str("unresolved")?,
             }
             output.write_str(") (terminal ")?;
             write_settled_reference_target(model, reference_id, output)?;
+            output.write_str(") (path")?;
+            if let Some(path) = model.resolution.member_access_paths.get(&reference_id) {
+                for status in path.iter() {
+                    output.write_char(' ')?;
+                    match status {
+                        ResolutionStatus::Resolved(target) => {
+                            write_node_identity(model, *target, output)?
+                        }
+                        ResolutionStatus::Ambiguous(range) => {
+                            output.write_str("(ambiguous")?;
+                            for candidate in &model.resolution.ambiguous_candidates
+                                [range.start as usize..(range.start + range.len) as usize]
+                            {
+                                output.write_char(' ')?;
+                                write_node_identity(model, *candidate, output)?;
+                            }
+                            output.write_char(')')?;
+                        }
+                        ResolutionStatus::Unsupported => output.write_str("unsupported")?,
+                        ResolutionStatus::NonConverged => output.write_str("non-converged")?,
+                        ResolutionStatus::Unresolved => output.write_str("unresolved")?,
+                    }
+                }
+            }
             write!(output, ") {authored:?})")
         } else {
             output.write_str("(feature ")?;
@@ -731,6 +833,7 @@ pub(crate) fn specialization_scope(scope: types::ScopeBits) -> &'static str {
         types::ScopeBits::AnySpecialization => "any",
         types::ScopeBits::Subclassification => "subclassification",
         types::ScopeBits::FeatureSpecialization => "feature",
+        types::ScopeBits::Redefinition => "redefinition",
     }
 }
 

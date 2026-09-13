@@ -26,10 +26,9 @@ use crate::resolve::results::ResolutionStatus;
 /// Which specialization edges a path may use, as the bitset the closure tags each edge and path
 /// with.
 ///
-/// A closed set: each variant is a published query contract, not a caller-assembled edge filter.
-/// Named for the bits rather than for the scope so it does not shadow the contract enum
-/// `sysml_contract::SpecializationScope`, which is the same closed set as the *published* query
-/// argument; this one is the index's internal encoding of it.
+/// Published query scopes plus the internal redefinition scope used for effective bodies.
+/// Named for the bits so it does not shadow `sysml_contract::SpecializationScope`; callers
+/// cannot assemble arbitrary edge filters.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum ScopeBits {
     /// Every `Specialization` subkind, as the Pilot's `Type::supertypes` does.
@@ -43,6 +42,8 @@ pub(crate) enum ScopeBits {
     /// typing walks. Following a `FeatureTyping` edge instead would cross from the feature to its
     /// type and start collecting the type's own supertypes as if they were the feature's types.
     FeatureSpecialization,
+    /// Redefinition alone: subsetting does not replace an inherited expression binding.
+    Redefinition,
 }
 
 impl ScopeBits {
@@ -58,6 +59,7 @@ impl ScopeBits {
             Self::AnySpecialization => 1 << 0,
             Self::Subclassification => 1 << 1,
             Self::FeatureSpecialization => 1 << 2,
+            Self::Redefinition => 1 << 3,
         }
     }
 }
@@ -73,10 +75,12 @@ pub(crate) fn edge_scopes(kind: ReferenceKind) -> Option<u8> {
         ReferenceKind::Subclassification => {
             Some(ScopeBits::AnySpecialization.bit() | ScopeBits::Subclassification.bit())
         }
-        ReferenceKind::Subsetting
-        | ReferenceKind::Redefinition
-        | ReferenceKind::References
-        | ReferenceKind::Crosses => {
+        ReferenceKind::Redefinition => Some(
+            ScopeBits::AnySpecialization.bit()
+                | ScopeBits::FeatureSpecialization.bit()
+                | ScopeBits::Redefinition.bit(),
+        ),
+        ReferenceKind::Subsetting | ReferenceKind::References | ReferenceKind::Crosses => {
             Some(ScopeBits::AnySpecialization.bit() | ScopeBits::FeatureSpecialization.bit())
         }
         ReferenceKind::FeatureTyping => Some(ScopeBits::AnySpecialization.bit()),

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Inherited expression queries can now return effective bodies and redefined feature targets in
+  a specified type or usage context. Connector endpoints retain every resolved path segment,
+  with explicit missing and ambiguous hops (#84).
+
 - **`spec42 model-summary` is renamed `spec42 model-export`, and now emits a typed structural
   projection of the publication (#157). BREAKING: the CLI subcommand, the VS Code Language
   Model Tool id (`spec42_model_summary` -> `spec42_model_export`), and the MCP-era `#spec42Model*`

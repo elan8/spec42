@@ -10,6 +10,41 @@ fn kitchen_timer_path() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../examples/timer/KitchenTimer.sysml")
 }
 
+#[test]
+fn cli_model_export_serializes_complete_connector_paths() {
+    with_isolated_data_dir(|| {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("paths.sysml");
+        std::fs::write(
+            &path,
+            "package P {
+            port def Port;
+            part def Pump { port outlet : Port; }
+            part def Plant { part pump : Pump; }
+            part left : Plant;
+            part right : Plant;
+            connect left.pump.outlet to right.pump.outlet;
+        }",
+        )
+        .unwrap();
+        let output = run_spec42_json(&["model-export", path.to_str().unwrap(), "--format", "json"]);
+        let connectors = output["projection"]["connectors"].as_array().unwrap();
+        assert_eq!(connectors.len(), 1);
+        for end in connectors[0]["ends"].as_array().unwrap() {
+            let endpoint = &end["endpoint"];
+            assert_eq!(endpoint["kind"], "feature-chain");
+            let hops = endpoint["path"].as_array().unwrap();
+            assert_eq!(hops.len(), 3);
+            assert_eq!(hops.first().unwrap(), &endpoint["root"]);
+            assert_eq!(hops.last().unwrap(), &endpoint["terminal"]);
+            for hop in hops {
+                assert_eq!(hop["status"], "resolved");
+                assert!(hop["token"].as_str().is_some());
+            }
+        }
+    });
+}
+
 fn spec42_bin() -> PathBuf {
     std::env::var_os("CARGO_BIN_EXE_spec42")
         .map(PathBuf::from)

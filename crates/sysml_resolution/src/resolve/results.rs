@@ -257,6 +257,9 @@ pub(crate) enum TransitionFeatureSpecializationStatus {
 #[derive(Debug)]
 pub(crate) struct ResolutionResults {
     pub(crate) outcomes: Box<[ResolutionStatus]>,
+    /// Per-hop outcomes captured by the canonical member-access resolver at publication.
+    pub(crate) member_access_paths:
+        std::collections::BTreeMap<AuthoredReferenceId, Box<[ResolutionStatus]>>,
     pub(crate) ambiguous_candidates: Box<[DeclarationId]>,
     pub(crate) inherited_names: NameIndex,
     pub(crate) effective_names: Box<[EffectiveNameFacts]>,

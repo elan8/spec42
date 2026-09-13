@@ -23,6 +23,7 @@ use crate::evaluate::fold::literal_expression_value;
 use crate::expression::{
     ExpressionNode, ExpressionNodeKind, ExpressionOperator, ExpressionOutcome, PublishedExpression,
 };
+use crate::index::types::{ScopeBits, TypeIndex};
 use crate::lower::facts::{AuthoredExpression, ExpressionGrammar, PendingEvaluationFact};
 use crate::lower::storage::{ParsedSources, SemanticModelStorage};
 use crate::model::evaluation::evaluated_scalar;
@@ -33,6 +34,7 @@ use crate::model::DeclarationId;
 use crate::model::DocumentIdx;
 use crate::model::ReferenceKind;
 use crate::model::SymbolPathId;
+use crate::resolve::names::EffectiveScopeIndex;
 use crate::resolve::results::{ResolutionError, ResolutionResults, ResolutionStatus};
 use crate::EvaluatedScalar;
 use crate::OccurrenceRole;
@@ -42,6 +44,7 @@ use crate::SourceLocation;
 use crate::SymbolId;
 use crate::TextPosition;
 use crate::TextRange;
+use crate::{ContextualExpressionOutcome, PublishedContextualExpression};
 
 /// One node of a settled tree, before its span and target are projected onto the published
 /// contract. `span`/`document` become a `SourceLocation` and `target` a `SymbolId` at query time,
@@ -58,6 +61,7 @@ pub(crate) enum RawExpressionNodeKind {
     FeatureReference {
         target: Option<DeclarationId>,
         authored: Box<str>,
+        reference: Option<AuthoredReferenceId>,
     },
     Operator {
         operator: ExpressionOperator,
@@ -92,6 +96,22 @@ impl ResolvedExpressionRow {
 #[derive(Debug)]
 pub(crate) struct ResolvedExpressionIndex {
     rows: Box<[Option<ResolvedExpressionRow>]>,
+    pub(crate) contextual:
+        std::collections::BTreeMap<(DeclarationId, DeclarationId), ContextualExpressionRow>,
+}
+
+#[derive(Debug)]
+pub(crate) struct ContextualExpressionRow {
+    pub(crate) authored: DeclarationId,
+    pub(crate) effective: DeclarationId,
+    pub(crate) result: ContextualExpressionResult,
+}
+
+#[derive(Debug)]
+pub(crate) enum ContextualExpressionResult {
+    Resolved(ResolvedExpressionRow),
+    Ambiguous(Box<[DeclarationId]>),
+    Unresolved,
 }
 
 /// The settled facts this index reads, borrowed from the phase products that own them.
@@ -99,6 +119,10 @@ pub(crate) struct ResolvedExpressionInputs<'a> {
     pub(crate) storage: &'a SemanticModelStorage,
     pub(crate) sources: &'a ParsedSources,
     pub(crate) resolution: &'a ResolutionResults,
+    pub(crate) types: &'a TypeIndex,
+    pub(crate) scopes: &'a EffectiveScopeIndex,
+    pub(crate) direct_names: &'a crate::resolve::names::NameIndex,
+    pub(crate) effective_imports: &'a crate::resolve::names::NameIndex,
 }
 
 impl ResolvedExpressionIndex {
@@ -110,25 +134,17 @@ impl ResolvedExpressionIndex {
 
         // The `ExpressionOperand` references a declaration authored, in ordinal order. Slot `n`
         // pairs with the `n`-th `FeatureReference` the walk produces for that declaration.
-        let mut operands: std::collections::BTreeMap<
-            DeclarationId,
-            Vec<(u32, AuthoredReferenceId)>,
-        > = std::collections::BTreeMap::new();
+        let mut ordered: std::collections::BTreeMap<DeclarationId, Vec<AuthoredReferenceId>> =
+            std::collections::BTreeMap::new();
         for (index, reference) in inputs.storage.references.iter().enumerate() {
             if reference.kind == ReferenceKind::ExpressionOperand {
                 let id = AuthoredReferenceId::from_index(index)
                     .map_err(|_| ResolutionError::Capacity)?;
-                operands
-                    .entry(reference.source)
-                    .or_default()
-                    .push((reference.ordinal, id));
+                ordered.entry(reference.source).or_default().push(id);
             }
         }
-        let mut ordered: std::collections::BTreeMap<DeclarationId, Vec<AuthoredReferenceId>> =
-            std::collections::BTreeMap::new();
-        for (declaration, mut slots) in operands {
-            slots.sort_by_key(|(ordinal, _)| *ordinal);
-            ordered.insert(declaration, slots.into_iter().map(|(_, id)| id).collect());
+        for slots in ordered.values_mut() {
+            slots.sort_by_key(|id| inputs.storage.references[id.index()].ordinal);
         }
         let empty: Vec<AuthoredReferenceId> = Vec::new();
 
@@ -156,8 +172,240 @@ impl ResolvedExpressionIndex {
             }
         }
 
+        // Retain only substitution identities an expression can actually consume. Scope
+        // members unrelated to bodies or operand bindings need no contextual map entry.
+        let mut expression_elements = vec![false; count];
+        let mut relevant = vec![false; count];
+        for index in 0..count {
+            let declaration =
+                DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            expression_elements[index] = rows[index].is_some()
+                || inputs.types.specialization.entries(declaration).iter().any(
+                    |(ancestor, scopes)| {
+                        scopes & ScopeBits::Redefinition.bit() != 0
+                            && rows[ancestor.index()].is_some()
+                    },
+                );
+            relevant[index] = expression_elements[index];
+        }
+        for row in rows.iter().flatten() {
+            for node in &row.nodes {
+                if let RawExpressionNodeKind::FeatureReference {
+                    target, reference, ..
+                } = &node.kind
+                {
+                    if let Some(target) = target {
+                        relevant[target.index()] = true;
+                    }
+                    if let Some(ResolutionStatus::Resolved(root)) = reference
+                        .and_then(|reference| inputs.resolution.member_access_paths.get(&reference))
+                        .and_then(|path| path.first())
+                    {
+                        relevant[root.index()] = true;
+                    }
+                }
+            }
+        }
+        let mut contextual = std::collections::BTreeMap::new();
+        for context_index in 0..count {
+            let context =
+                DeclarationId::from_index(context_index).map_err(|_| ResolutionError::Capacity)?;
+            let members = inputs.scopes.members(Some(context));
+            if !members
+                .iter()
+                .any(|member| expression_elements[member.index()])
+            {
+                continue;
+            }
+            let substitutions = effective_substitutions(inputs.types, members, &relevant);
+            for (&element, effective) in &substitutions {
+                let effective = effective.as_slice();
+                if !expression_elements[element.index()] {
+                    continue;
+                }
+                if effective.len() != 1 {
+                    contextual.insert(
+                        (context, element),
+                        ContextualExpressionRow {
+                            authored: element,
+                            effective: element,
+                            result: ContextualExpressionResult::Ambiguous(
+                                effective.to_vec().into_boxed_slice(),
+                            ),
+                        },
+                    );
+                    continue;
+                }
+                let effective = effective[0];
+                let mut origins = Vec::new();
+                if rows[effective.index()].is_some() {
+                    origins.push(effective);
+                } else {
+                    origins.extend(
+                        inputs
+                            .types
+                            .specialization
+                            .entries(effective)
+                            .iter()
+                            .filter(|(_, scopes)| scopes & ScopeBits::Redefinition.bit() != 0)
+                            .map(|(ancestor, _)| *ancestor)
+                            .filter(|ancestor| rows[ancestor.index()].is_some()),
+                    );
+                    let all = origins.clone();
+                    origins.retain(|general| {
+                        !all.iter().any(|specific| {
+                            specific != general
+                                && inputs.types.specialization.reaches(
+                                    *specific,
+                                    *general,
+                                    ScopeBits::Redefinition,
+                                )
+                        })
+                    });
+                }
+                if origins.is_empty() {
+                    continue;
+                }
+                if origins.len() != 1 {
+                    contextual.insert(
+                        (context, element),
+                        ContextualExpressionRow {
+                            authored: element,
+                            effective,
+                            result: ContextualExpressionResult::Ambiguous(
+                                origins.into_boxed_slice(),
+                            ),
+                        },
+                    );
+                    continue;
+                }
+                let origin = origins[0];
+                let Some(owner) = inputs
+                    .storage
+                    .declaration(origin)
+                    .and_then(|declaration| declaration.owner)
+                else {
+                    continue;
+                };
+                if context != owner
+                    && !inputs.types.specialization.reaches(
+                        context,
+                        owner,
+                        ScopeBits::AnySpecialization,
+                    )
+                {
+                    continue;
+                }
+                let mut row = rows[origin.index()]
+                    .as_ref()
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .clone();
+                let mut ambiguous = Vec::new();
+                let mut unresolved = false;
+                for node in row.nodes.iter_mut() {
+                    let RawExpressionNodeKind::FeatureReference {
+                        target, reference, ..
+                    } = &mut node.kind
+                    else {
+                        continue;
+                    };
+                    if let Some(reference_id) = reference {
+                        let root = inputs
+                            .resolution
+                            .member_access_paths
+                            .get(reference_id)
+                            .and_then(|path| path.first());
+                        if matches!(root, Some(ResolutionStatus::Resolved(root)) if substitutions.contains_key(root))
+                        {
+                            let mut contextual_reference =
+                                inputs.storage.references[reference_id.index()].clone();
+                            contextual_reference.source = context;
+                            let mut candidates = Vec::new();
+                            let mut next_candidates = Vec::new();
+                            let mut ambiguous_candidates =
+                                inputs.resolution.ambiguous_candidates.to_vec();
+                            let mut work = crate::resolve::results::ResolutionWork::default();
+                            let status = crate::resolve::resolve_member_access_reference(
+                                &inputs.storage.declarations,
+                                &inputs.storage.paths,
+                                &contextual_reference,
+                                &inputs.resolution.outcomes,
+                                crate::resolve::ResolutionIndexes {
+                                    direct_names: inputs.direct_names,
+                                    exported_names: inputs.direct_names,
+                                    effective_imports: Some(inputs.effective_imports),
+                                    exported_imports: Some(inputs.effective_imports),
+                                    inherited_names: Some(&inputs.resolution.inherited_names),
+                                },
+                                crate::resolve::ResolutionScratch {
+                                    ambiguous_candidates: &mut ambiguous_candidates,
+                                    candidates: &mut candidates,
+                                    next_candidates: &mut next_candidates,
+                                    work: &mut work,
+                                },
+                            )?;
+                            match status {
+                                ResolutionStatus::Resolved(resolved) => *target = Some(resolved),
+                                ResolutionStatus::Ambiguous(range) => ambiguous.extend_from_slice(
+                                    &ambiguous_candidates
+                                        [range.start as usize..(range.start + range.len) as usize],
+                                ),
+                                _ => unresolved = true,
+                            }
+                            continue;
+                        }
+                    }
+                    let Some(target) = target else {
+                        continue;
+                    };
+                    let Some(target_owner) = inputs
+                        .storage
+                        .declaration(*target)
+                        .and_then(|declaration| declaration.owner)
+                    else {
+                        continue;
+                    };
+                    if target_owner != owner
+                        && !inputs.types.specialization.reaches(
+                            owner,
+                            target_owner,
+                            ScopeBits::AnySpecialization,
+                        )
+                    {
+                        continue;
+                    }
+                    match substitutions
+                        .get(target)
+                        .map_or(&[][..], EffectiveCandidates::as_slice)
+                    {
+                        [one] => *target = *one,
+                        [] => {
+                            unresolved = true;
+                        }
+                        many => ambiguous.extend_from_slice(many),
+                    }
+                }
+                ambiguous.sort_unstable();
+                ambiguous.dedup();
+                contextual.insert(
+                    (context, element),
+                    ContextualExpressionRow {
+                        authored: origin,
+                        effective,
+                        result: if unresolved {
+                            ContextualExpressionResult::Unresolved
+                        } else if ambiguous.is_empty() {
+                            ContextualExpressionResult::Resolved(row)
+                        } else {
+                            ContextualExpressionResult::Ambiguous(ambiguous.into_boxed_slice())
+                        },
+                    },
+                );
+            }
+        }
         Ok(Self {
             rows: rows.into_boxed_slice(),
+            contextual,
         })
     }
 
@@ -166,6 +414,75 @@ impl ResolvedExpressionIndex {
             .get(declaration.index())
             .and_then(|row| row.as_ref())
     }
+}
+
+/// Identity-based effective substitutions: only canonical feature-specialization edges can
+/// replace a reference. Equal display names alone never establish a substitution.
+enum EffectiveCandidates {
+    One(DeclarationId),
+    Many(Vec<DeclarationId>),
+}
+
+impl EffectiveCandidates {
+    fn as_slice(&self) -> &[DeclarationId] {
+        match self {
+            Self::One(one) => std::slice::from_ref(one),
+            Self::Many(many) => many,
+        }
+    }
+
+    fn push(&mut self, candidate: DeclarationId) {
+        match self {
+            Self::One(one) if *one == candidate => {}
+            Self::One(one) => *self = Self::Many(vec![*one, candidate]),
+            Self::Many(many) => many.push(candidate),
+        }
+    }
+}
+
+fn effective_substitutions(
+    types: &TypeIndex,
+    members: &[DeclarationId],
+    relevant: &[bool],
+) -> std::collections::BTreeMap<DeclarationId, EffectiveCandidates> {
+    let mut substitutions: std::collections::BTreeMap<_, EffectiveCandidates> =
+        std::collections::BTreeMap::new();
+    for &member in members {
+        if relevant[member.index()] {
+            substitutions
+                .entry(member)
+                .and_modify(|candidates: &mut EffectiveCandidates| candidates.push(member))
+                .or_insert(EffectiveCandidates::One(member));
+        }
+        for &(ancestor, scopes) in types.specialization.entries(member) {
+            if scopes & ScopeBits::Redefinition.bit() != 0 && relevant[ancestor.index()] {
+                substitutions
+                    .entry(ancestor)
+                    .and_modify(|candidates| candidates.push(member))
+                    .or_insert(EffectiveCandidates::One(member));
+            }
+        }
+    }
+    for candidates in substitutions.values_mut() {
+        let EffectiveCandidates::Many(candidates) = candidates else {
+            continue;
+        };
+        candidates.sort_unstable();
+        candidates.dedup();
+        if candidates.len() < 2 {
+            continue;
+        }
+        let all = candidates.clone();
+        candidates.retain(|general| {
+            !all.iter().any(|specific| {
+                specific != general
+                    && types
+                        .specialization
+                        .reaches(*specific, *general, ScopeBits::Redefinition)
+            })
+        });
+    }
+    substitutions
 }
 
 fn classify_declaration(
@@ -278,7 +595,8 @@ impl TreeBuilder<'_> {
     fn feature_reference(&mut self, fallback_span: Span) -> u32 {
         let index = self.next_ordinal as usize;
         self.next_ordinal = self.next_ordinal.saturating_add(1);
-        let (target, authored, span) = match self.operands.get(index).copied() {
+        let reference_id = self.operands.get(index).copied();
+        let (target, authored, span) = match reference_id {
             Some(reference_id) => {
                 let reference = &self.storage.references[reference_id.index()];
                 let target = match self.resolution.outcome(reference_id) {
@@ -294,7 +612,11 @@ impl TreeBuilder<'_> {
             None => (None, Box::from(""), fallback_span),
         };
         self.push(
-            RawExpressionNodeKind::FeatureReference { target, authored },
+            RawExpressionNodeKind::FeatureReference {
+                target,
+                authored,
+                reference: reference_id,
+            },
             span,
         )
     }
@@ -478,6 +800,68 @@ fn authored_path(storage: &SemanticModelStorage, path: SymbolPathId) -> String {
 }
 
 impl<D> SemanticModel<D> {
+    pub(crate) fn contextual_expression(
+        &self,
+        symbol: SymbolId,
+        context: SymbolId,
+    ) -> QueryOutcome<ContextualExpressionOutcome> {
+        let element = match self.single_declaration(symbol) {
+            Ok(element) => element,
+            Err(outcome) => return outcome,
+        };
+        let context_declaration = match self.single_declaration(context) {
+            Ok(context) => context,
+            Err(outcome) => return outcome,
+        };
+        let Some(contextual) = self
+            .resolved_expressions
+            .contextual
+            .get(&(context_declaration, element))
+        else {
+            return self.query_outcome(QueryAnswer::Unresolved);
+        };
+        let row = match &contextual.result {
+            ContextualExpressionResult::Resolved(row) => row,
+            ContextualExpressionResult::Unresolved => {
+                return self.query_outcome(QueryAnswer::Unresolved)
+            }
+            ContextualExpressionResult::Ambiguous(candidates) => {
+                return self.resolved_outcome(ContextualExpressionOutcome::Ambiguous(
+                    candidates
+                        .iter()
+                        .filter_map(|candidate| self.symbol_id(*candidate))
+                        .collect(),
+                ))
+            }
+        };
+        let Some(authored_element) = self.symbol_id(contextual.authored) else {
+            return self.query_outcome(QueryAnswer::Unresolved);
+        };
+        let Some(nodes) = row
+            .nodes
+            .iter()
+            .map(|node| self.project_expression_node(node, row.document))
+            .collect::<Option<Vec<_>>>()
+        else {
+            return self.query_outcome(QueryAnswer::Unresolved);
+        };
+        let Some(effective_element) = self.symbol_id(contextual.effective) else {
+            return self.query_outcome(QueryAnswer::Unresolved);
+        };
+        self.resolved_outcome(ContextualExpressionOutcome::Resolved(
+            PublishedContextualExpression {
+                context,
+                authored_element,
+                expression: PublishedExpression {
+                    element: effective_element,
+                    outcome: row.outcome,
+                    root: row.root,
+                    nodes: nodes.into_boxed_slice(),
+                },
+            },
+        ))
+    }
+
     /// The resolved structure of one element's authored constraint / calc / value expression.
     ///
     /// One indexed lookup and a projection of its rows -- no traversal, no re-resolution, no
@@ -554,12 +938,12 @@ impl<D> SemanticModel<D> {
         };
         let kind = match &raw.kind {
             RawExpressionNodeKind::Literal(value) => ExpressionNodeKind::Literal(value.clone()),
-            RawExpressionNodeKind::FeatureReference { target, authored } => {
-                ExpressionNodeKind::FeatureReference {
-                    symbol: target.and_then(|declaration| self.symbol_id(declaration)),
-                    authored: authored.clone(),
-                }
-            }
+            RawExpressionNodeKind::FeatureReference {
+                target, authored, ..
+            } => ExpressionNodeKind::FeatureReference {
+                symbol: target.and_then(|declaration| self.symbol_id(declaration)),
+                authored: authored.clone(),
+            },
             RawExpressionNodeKind::Operator { operator, operands } => {
                 ExpressionNodeKind::Operator {
                     operator: *operator,

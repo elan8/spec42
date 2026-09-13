@@ -136,7 +136,7 @@ package GeneralNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:ac610e4871c1dcf9829688d24fdccba59b9bd99dda094de3c1b407ee3a37028b",
+  "modelDigest": "blake3:0ab957b9980c758790fe291bc7b22dbc039f7380d0630b01800a4043111fc6bf",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_unresolved.md",

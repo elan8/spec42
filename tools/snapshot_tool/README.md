@@ -27,10 +27,14 @@ The canonical top-level section order is `META`, `SOURCE`, authored `EXPECTED DI
 `EXPECTED SEMANTICS`, `DIAGNOSTICS`, `SMG`, `TYPES`, `EXPRESSIONS`, `METADATA ANNOTATIONS`,
 `CONNECTIONS`, `NAVIGATION`, with optional editor-query sections, `HOVER MARKDOWN`, and
 `GENERATED` last.
-`EXPRESSIONS` is the resolved constraint / calc / value expression trees; `METADATA ANNOTATIONS`
-is every authored metadata annotation with its form, resolved definition, `about` targets, and
+`EXPRESSIONS` is the resolved constraint / calc / value expression trees. It
+also includes contextual expression rows with the effective element, authored body provenance,
+and references rebound through canonical redefinition in each inheriting type or usage.
+The authored declaration rows remain separate. Ambiguous effective bindings do not publish a tree.
+`METADATA ANNOTATIONS` is every authored metadata annotation with its form, resolved definition, `about` targets, and
 body values; `CONNECTIONS` is every workspace `connect` / `interface` connector with its type
-and resolved ends. All three are omitted from fixtures that author none.
+and resolved ends, including one canonical outcome per segment of a dotted path. These sections
+are omitted when their published rows are empty.
 `SOURCE` is authored; generated sections are rewritten to this order with one final newline.
 Semantic and reporting-result sections use canonical `sexpr` fences. `HOVER MARKDOWN` is the
 dedicated renderer projection and contains one labelled `markdown` fence per requested probe.
