@@ -1,3 +1,6 @@
+use std::path::PathBuf;
+use std::time::{Duration, Instant};
+
 use super::harness::TestSession;
 
 /// `spec42/layout` is stateless (issue #119): no document needs to be opened and no workspace
@@ -91,5 +94,51 @@ fn spec42_layout_surfaces_typed_contract_errors() {
     assert!(
         message.contains("nested"),
         "error should name the diagram_layout contract violation: {response}"
+    );
+}
+
+/// Issue #119's acceptance criterion: p95 <= 100ms on a representative packaged-extension model,
+/// or reopen the WASM option. This measures the `spec42/layout` LSP round trip over the same
+/// stdio transport the packaged extension actually uses (`TestSession` spawns the real `spec42`
+/// binary as a subprocess) -- it does not include the further extension-host/webview hops
+/// (`postMessage` + `vscode-languageclient`'s own marshalling), so it is a lower bound on the
+/// full user-perceived latency, not a substitute for measuring the complete path from a real
+/// VS Code session. The fixture is `timer_interconnection.json`, the largest of the #118 parity
+/// corpus (18KB, the same one `tools/elkrs_parity --process-mode cold|warm` measured at ~1.2ms
+/// native layout time in a release build) -- this test necessarily runs the debug `spec42`
+/// binary the integration harness builds, so its absolute numbers are not release-profile
+/// numbers; the budget is generous enough to still be a meaningful regression guard either way.
+#[test]
+fn spec42_layout_p95_latency_is_within_the_interactive_budget() {
+    let fixture = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../tools/elkrs_parity/fixtures/corpus/timer_interconnection.json");
+    let graph: serde_json::Value = serde_json::from_str(
+        &std::fs::read_to_string(&fixture)
+            .unwrap_or_else(|error| panic!("read {}: {error}", fixture.display())),
+    )
+    .unwrap_or_else(|error| panic!("parse {}: {error}", fixture.display()));
+
+    let mut session = TestSession::new();
+    session.initialize_default("layout-latency-test");
+
+    const SAMPLES: usize = 20;
+    const BUDGET: Duration = Duration::from_millis(100);
+    let mut durations = Vec::with_capacity(SAMPLES);
+    for _ in 0..SAMPLES {
+        let started = Instant::now();
+        let response = session.request("spec42/layout", layout_params(graph.clone()));
+        durations.push(started.elapsed());
+        assert!(response.get("error").is_none(), "LSP response: {response}");
+    }
+    durations.sort_unstable();
+    let p95 = durations[(SAMPLES * 95)
+        .div_ceil(100)
+        .saturating_sub(1)
+        .min(SAMPLES - 1)];
+    assert!(
+        p95 <= BUDGET,
+        "p95 layout latency {p95:?} exceeds the {BUDGET:?} interactive budget over {SAMPLES} \
+         samples on {}; durations: {durations:?}",
+        fixture.display(),
     );
 }
