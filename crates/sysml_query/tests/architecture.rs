@@ -1146,6 +1146,7 @@ fn host_crates_keep_their_declared_dependency_sets() {
         set(&[
             "base64",
             "clap",
+            "diagram_layout",
             "generator_api",
             "generator_host",
             "glob",
@@ -1169,7 +1170,10 @@ fn host_crates_keep_their_declared_dependency_sets() {
             "tracing",
             "tracing-subscriber",
         ]),
-        "lsp_server is the editor host and owns no batch path: it must not depend on `workspace`"
+        "lsp_server is the editor host and owns no batch path: it must not depend on \
+         `workspace`; `diagram_layout` is the native layout boundary behind `spec42/layout` \
+         (#119) -- `elk_layout`, the legacy engine, stays inside `server`, which `lsp_server` \
+         cannot depend on (the launch-only edge runs the other way)"
     );
     assert!(
         !normal_dependencies("lsp_server").contains("workspace"),

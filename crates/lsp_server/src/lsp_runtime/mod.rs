@@ -5,6 +5,7 @@ mod documents;
 mod features;
 mod generation;
 mod hierarchy;
+mod layout;
 mod lifecycle;
 mod navigation;
 mod project_registry;
@@ -30,6 +31,7 @@ use generation::{
     DiagramViewsParams, DiagramViewsResult, GenerateParams, GenerateResult, GeneratorService,
     StateTransitionViewsParams, StateTransitionViewsResult,
 };
+use layout::{legacy_engine_requested, LayoutEngine, LayoutParams, LayoutResult};
 use project_registry::ProjectRegistry;
 
 struct Backend {
@@ -677,6 +679,36 @@ impl Backend {
         .map_err(tower_lsp::jsonrpc::Error::invalid_params)
     }
 
+    async fn spec42_layout(&self, params: LayoutParams) -> Result<LayoutResult> {
+        if legacy_engine_requested() {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "SPEC42_LAYOUT_ENGINE=legacy: native layout is disabled on this server; the \
+                 client should fall back to its own local layout",
+            ));
+        }
+        let LayoutParams {
+            model_digest,
+            view_handle,
+            presentation_revision,
+            graph,
+        } = params;
+        let layout = tokio::task::spawn_blocking(move || diagram_layout::layout_value(&graph))
+            .await
+            .map_err(|error| {
+                tower_lsp::jsonrpc::Error::invalid_params(format!(
+                    "layout worker did not complete: {error}"
+                ))
+            })?
+            .map_err(|error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()))?;
+        Ok(LayoutResult {
+            model_digest,
+            view_handle,
+            presentation_revision,
+            layout,
+            engine: LayoutEngine::Native,
+        })
+    }
+
     async fn sysml_library_search(
         &self,
         params: serde_json::Value,
@@ -765,6 +797,7 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     .custom_method("sysml/librarySearch", Backend::sysml_library_search)
     .custom_method("spec42/generate", Backend::spec42_generate)
     .custom_method("spec42/diagramViews", Backend::spec42_diagram_views)
+    .custom_method("spec42/layout", Backend::spec42_layout)
     .custom_method(
         "spec42/stateTransitionViews",
         Backend::spec42_state_transition_views,

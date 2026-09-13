@@ -19,6 +19,31 @@ export interface DisclosureState {
   sectionStates: Array<{ nodeId: string; sectionKey: string; expanded: boolean }>;
 }
 
+/** Identifies which diagram product and which of its views a layout request is for. The server
+ * has no independent notion of this; it only echoes the value back, so the caller can tell a
+ * response for a since-superseded product/view apart from a current one. */
+export interface DiagramProductIdentity {
+  modelDigest: string;
+  viewHandle: string;
+}
+
+/** Requests layout for `graph` (an ELK JSON graph, e.g. from `buildGeneralElkGraph`) from
+ * wherever the host wires this to -- normally the Rust server's `spec42/layout` LSP request via
+ * the VS Code extension host. `presentationRevision` and `signal` exist for the host's own
+ * cancellation/staleness bookkeeping; this function does not interpret them.
+ *
+ * Returns `null` when the host declines or fails to answer (offline, cancelled, server error),
+ * which the caller must treat as "compute layout locally instead", not as an empty layout. Not
+ * every render host can provide this -- headless SVG export and the browser preview harness have
+ * no server to call, so `RenderOptions.requestLayout` is optional and its absence just means
+ * "always lay out in this process". */
+export type RequestServerLayout = (
+  graph: Record<string, unknown>,
+  identity: DiagramProductIdentity,
+  presentationRevision: number,
+  signal: AbortSignal,
+) => Promise<Record<string, unknown> | null>;
+
 export interface RenderOptions {
   onNodeClick?: (node: PreparedNode) => void;
   disclosure?: DisclosureActions;
@@ -27,6 +52,9 @@ export interface RenderOptions {
   theme?: DiagramThemeOverrides;
   delegateZoom?: boolean;
   onPerformance?: (event: string, data: Record<string, unknown>) => void;
+  /** Identity of the diagram product being rendered, required for `requestLayout` to be used. */
+  productIdentity?: DiagramProductIdentity;
+  requestLayout?: RequestServerLayout;
 }
 
 export const nodeWidth = 200;

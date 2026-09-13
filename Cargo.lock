@@ -1328,6 +1328,7 @@ version = "0.52.0"
 dependencies = [
  "base64",
  "clap",
+ "diagram_layout",
  "generator_api",
  "generator_host",
  "glob",

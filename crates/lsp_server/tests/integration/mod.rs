@@ -17,6 +17,7 @@ mod feature_inspector;
 mod generation;
 mod harness;
 mod hover;
+mod layout;
 mod lifecycle;
 mod project_workspaces;
 mod quality_gates;

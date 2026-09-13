@@ -20,9 +20,9 @@ import {
   drawNodes,
   shouldDrawIbdViewFrame,
 } from "./render/drawing";
-import { layoutPrepared } from "./render/layout";
+import { buildGeneralElkGraph, layoutPrepared, reshapeGeneralLayoutResult } from "./render/layout";
 import { contentBoundsFromExtents, type ContentBounds } from "./render/types";
-import type { DisclosureState, RenderOptions } from "./render/types";
+import type { DisclosureState, LayoutResult, RenderOptions } from "./render/types";
 import { installDiagramTooltips } from "./render/diagram-tooltip";
 import { installNodeChromeStyles } from "./render/node-chrome-style";
 
@@ -116,6 +116,7 @@ export async function renderVisualization(
 
   let bounds: ContentBounds;
   let generalRenderGeneration = 0;
+  let activeLayoutAbort: AbortController | undefined;
   let fitView = (): void => undefined;
   let getDisclosureState = (): DisclosureState => ({ expandedNodeIds: [], sectionStates: [] });
   if (view === "action-flow-view") {
@@ -269,13 +270,36 @@ export async function renderVisualization(
           (element as unknown as HTMLElement).focus();
         }
       };
+      /** Lays out `visible` for the current disclosure state. When the host wired up
+       * `requestLayout` (normally the VS Code extension forwarding to the Rust server's
+       * `spec42/layout`), tries that first and falls back to the local elk.js path when it
+       * declines or fails -- offline operation, a stale/superseded response, or any other
+       * reason the host chose not to answer. `generation` doubles as the presentation-state
+       * revision sent to the server and as this closure's own stale-response check: an older
+       * request's caller already discards its result once a newer one has started (checked by
+       * the caller after this resolves), so out-of-order server responses need no separate
+       * bookkeeping here. */
+      const layoutGeneralView = async (visible: PreparedView, generation: number): Promise<LayoutResult> => {
+        activeLayoutAbort?.abort();
+        const { requestLayout, productIdentity } = options;
+        if (requestLayout && productIdentity) {
+          const build = buildGeneralElkGraph(visible);
+          if (build) {
+            const abort = new AbortController();
+            activeLayoutAbort = abort;
+            const laidOut = await requestLayout(build.graph, productIdentity, generation, abort.signal);
+            if (laidOut) return reshapeGeneralLayoutResult(laidOut, build.diagramNodes, build.diagramEdges);
+          }
+        }
+        return layoutPrepared(visible);
+      };
       const redrawGeneral = async (
         focus?: { refocusNodeControl?: string; refocusSection?: { nodeId: string; key: string } },
         fitAfter = false,
       ): Promise<void> => {
         const generation = ++generalRenderGeneration;
         const visible = visibleProjection();
-        const nextLayout = await layoutPrepared(visible);
+        const nextLayout = await layoutGeneralView(visible, generation);
         if (generation !== generalRenderGeneration) return;
         root.selectAll("*").remove();
         drawGeneralPackageContainers(root, visible, nextLayout.nodes, theme);

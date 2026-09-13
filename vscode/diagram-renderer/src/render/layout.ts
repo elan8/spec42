@@ -202,7 +202,11 @@ function hierarchyGeneralLayout(
   return { nodes: laidOutNodes, edges: routedEdges };
 }
 
-type GeneralElkGraphBuild = {
+/** Everything `layoutPrepared` needs to lay out a General View graph, minus the actual layout
+ * call -- shared with the #119 server-relayout path, which sends `graph` to `spec42/layout`
+ * instead of calling `elk.layout()` locally, then reshapes the response with
+ * `reshapeGeneralLayoutResult` exactly as the local path reshapes its own ELK output. */
+export type GeneralElkGraphBuild = {
   graph: Record<string, unknown>;
   /** Builds the non-hierarchical retry graph. Only called on the rare QuickJS-recursion-ceiling
    * fallback path, so building it costs nothing on every other render. */
@@ -272,7 +276,7 @@ function computeContainmentParent(diagramEdges: PreparedView["edges"]): Map<stri
   );
 }
 
-function buildGeneralElkGraph(prepared: PreparedView): GeneralElkGraphBuild | null {
+export function buildGeneralElkGraph(prepared: PreparedView): GeneralElkGraphBuild | null {
   const { diagramNodes, diagramEdges } = generalDiagramElements(prepared);
   if (!diagramNodes.length) return null;
 
@@ -397,6 +401,19 @@ export async function layoutPrepared(prepared: PreparedView): Promise<LayoutResu
       return fallbackGeneralLayout(diagramNodes, diagramEdges);
     }
   }
+  return reshapeGeneralLayoutResult(laidOut, diagramNodes, diagramEdges);
+}
+
+/** Turns ELK's layout output (node/edge JSON with resolved `x`/`y`/`sections`) into the
+ * `LayoutResult` shape the renderer draws from. This is deliberately engine-agnostic: it reads
+ * only the ELK JSON output contract, so it reshapes elk.js's local output exactly as it reshapes
+ * the native `elkrs` output the #119 `spec42/layout` server round trip returns -- the client does
+ * not need to know which engine computed the positions it's drawing. */
+export function reshapeGeneralLayoutResult(
+  laidOut: any,
+  diagramNodes: PreparedNode[],
+  diagramEdges: PreparedView["edges"],
+): LayoutResult {
   const byId = new Map(diagramNodes.map((node) => [node.id, node]));
 
   // Resolve absolute positions recursively: with real package containment, leaf node x/y from
