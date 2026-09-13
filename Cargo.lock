@@ -681,7 +681,7 @@ dependencies = [
 
 [[package]]
 name = "elkrs_parity"
-version = "0.50.0"
+version = "0.52.0"
 dependencies = [
  "anyhow",
  "clap",
