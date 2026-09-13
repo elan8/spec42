@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **The "Wrap in package" editor action now fires for a bare top-level member (#65).** A
+  `part def` at the root of a `.sysml` file is a root member, not an anonymous package, so the
+  previous trigger could never match. Tests now require the edit, apply it, and check that the
+  wrapped document parses and no longer offers the action.
+
 - **The last Spec42-owned bundled-stdlib unresolved references now resolve (#135).** `ref item` /
   `ref action` keep the authored usage metaclass so inherited members such as
   `envelopedItem.innerSpaceDimension` and `thisConnection.start` are visible; an end feature's

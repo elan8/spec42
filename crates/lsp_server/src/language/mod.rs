@@ -368,7 +368,9 @@ pub fn suggest_search_library_for_symbol_quick_fix(diagnostic: &Diagnostic) -> O
 mod tests {
     use super::*;
     use std::sync::Arc;
-    use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, NumberOrString, Url};
+    use tower_lsp::lsp_types::{
+        CodeActionKind, Diagnostic, DiagnosticSeverity, NumberOrString, Position, Range, Url,
+    };
 
     fn action_context(
         source: &str,
@@ -592,28 +594,44 @@ mod tests {
     #[test]
     fn test_suggest_wrap_in_package_unwrapped_member() {
         let uri = Url::parse("file:///test.sysml").unwrap();
-        // When source is a single top-level part def, sysml-v2-parser may parse it as one anonymous package
-        // with one member, in which case we suggest "Wrap in package".
         let source = "part def X { }";
         let (parsed, _) = action_context(source, &uri);
-        if let Some(action) = suggest_wrap_in_package(source, &parsed, &uri) {
-            assert!(action.title.contains("Wrap"));
-            let edit = action.edit.expect("has edit");
-            let doc_edits = edit.document_changes.as_ref().expect("document_changes");
-            use tower_lsp::lsp_types::DocumentChanges;
-            let edits = match doc_edits {
-                DocumentChanges::Edits(v) => v,
-                _ => panic!("expected Edits"),
-            };
-            assert_eq!(edits.len(), 1);
-            assert_eq!(edits[0].edits.len(), 1);
-            let text_edit = match &edits[0].edits[0] {
-                tower_lsp::lsp_types::OneOf::Left(te) => te,
-                _ => panic!("expected TextEdit"),
-            };
-            assert!(text_edit.new_text.contains("package Generated"));
-            assert!(text_edit.new_text.contains("part def X"));
-        }
+        let action = suggest_wrap_in_package(source, &parsed, &uri)
+            .expect("a bare top-level part def must offer wrap-in-package");
+        assert_eq!(action.title, "Wrap in package");
+        assert_eq!(action.kind, Some(CodeActionKind::REFACTOR));
+        let edit = action.edit.expect("has edit");
+        let doc_edits = edit.document_changes.as_ref().expect("document_changes");
+        use tower_lsp::lsp_types::DocumentChanges;
+        let edits = match doc_edits {
+            DocumentChanges::Edits(v) => v,
+            _ => panic!("expected Edits"),
+        };
+        assert_eq!(edits.len(), 1);
+        assert_eq!(edits[0].edits.len(), 1);
+        let text_edit = match &edits[0].edits[0] {
+            tower_lsp::lsp_types::OneOf::Left(te) => te,
+            _ => panic!("expected TextEdit"),
+        };
+        assert_eq!(
+            text_edit.range,
+            Range::new(Position::new(0, 0), Position::new(0, 14))
+        );
+        let wrapped = "package Generated {\npart def X { }\n}\n";
+        assert_eq!(text_edit.new_text, wrapped);
+        let (wrapped_parsed, _) = action_context(wrapped, &uri);
+        assert!(
+            wrapped_parsed.is_clean(),
+            "wrapped document must parse cleanly"
+        );
+        assert_eq!(
+            wrapped_parsed.top_level_package_names(),
+            ["Generated".to_string()]
+        );
+        assert!(
+            suggest_wrap_in_package(wrapped, &wrapped_parsed, &uri).is_none(),
+            "the wrapped document must not offer wrap-in-package again"
+        );
     }
 
     #[test]

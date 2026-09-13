@@ -519,8 +519,8 @@ pub fn suggest_wrap_in_package(
     parsed: &ParsedSource,
     path: &str,
 ) -> Option<TextEditSuggestion> {
-    // An unparseable document is not a document with one anonymous package.
-    if !parsed.is_clean() || !parsed.declares_single_anonymous_package_with_members() {
+    // An unparseable document is not a document with loose top-level members.
+    if !parsed.is_clean() || !parsed.has_unwrapped_root_members() {
         return None;
     }
     let lines: Vec<&str> = source.lines().collect();
