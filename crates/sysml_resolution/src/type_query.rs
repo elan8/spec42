@@ -5,7 +5,7 @@
 //! or any other storage this crate uses to produce them.
 
 use crate::inspection::{MultiplicityFacts, RelationshipProvenance};
-use crate::SymbolId;
+use crate::{MembershipId, SymbolId};
 pub use spec42_constraint_manifest::TypeDerivedFactKind;
 pub use spec42_constraint_manifest::TypeFeaturingCheckKind;
 pub use sysml_contract::{
@@ -14,11 +14,11 @@ pub use sysml_contract::{
     TypeDerivedRelationshipCollection, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
 };
 
-/// A future canonical value of one exact Type derived-fact query.
+/// One canonical value of an exact Type derived-fact query.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TypeDerivedFactValue {
     Feature(SymbolId),
-    FeatureMembership { member: SymbolId },
+    FeatureMembership(MembershipId),
     Multiplicity(MultiplicityFacts),
     Conjugator { original_type: SymbolId },
 }

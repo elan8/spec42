@@ -5723,7 +5723,15 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
             QueryAnswer::Resolved(TypeDerivedFactOutcome::Values(values)) => values,
             other => panic!("expected published values, got {other:?}"),
         };
-    let member = |symbol: SymbolId| TypeDerivedFactValue::FeatureMembership { member: symbol };
+    let membership_member = |value: &TypeDerivedFactValue| match value {
+        TypeDerivedFactValue::FeatureMembership(identity) => {
+            match published.membership(*identity).answer {
+                QueryAnswer::Resolved(membership) => membership.member,
+                other => panic!("expected resolved membership, got {other:?}"),
+            }
+        }
+        other => panic!("expected membership value, got {other:?}"),
+    };
     let inherited = identity_of(
         &published,
         "memory://model.sysml",
@@ -5733,13 +5741,13 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
     let output = identity_of(&published, "memory://model.sysml", "Model::Child::output");
     let endpoint = identity_of(&published, "memory://model.sysml", "Model::Child::endpoint");
 
-    // The Membership relationship identity itself is still unpublished, so only the
-    // owned-membership derivation -- whose normative result *is* that relationship -- stays
-    // explicitly unsupported.
-    unsupported(
-        child,
-        TypeDerivedFactCollection::OwnedFeatureMembership,
-        TypeDerivedFactPrerequisite::FeatureMembershipIdentity,
+    let owned_memberships = values(child, TypeDerivedFactCollection::OwnedFeatureMembership);
+    assert_eq!(
+        owned_memberships
+            .iter()
+            .map(&membership_member)
+            .collect::<Vec<_>>(),
+        vec![input, output, endpoint]
     );
     unsupported(
         sized,
@@ -5753,9 +5761,13 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
         "expected no owned conjugator for an unconjugated type"
     );
 
+    let inherited_memberships = values(child, TypeDerivedFactCollection::InheritedMembership);
     assert_eq!(
-        values(child, TypeDerivedFactCollection::InheritedMembership).into_vec(),
-        vec![member(inherited)]
+        inherited_memberships
+            .iter()
+            .map(&membership_member)
+            .collect::<Vec<_>>(),
+        vec![inherited]
     );
     assert_eq!(
         values(child, TypeDerivedFactCollection::InheritedFeature).into_vec(),
@@ -5767,12 +5779,16 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
     ] {
         let published_values = values(child, collection);
         assert!(published_values.iter().any(|value| match value {
-            TypeDerivedFactValue::FeatureMembership { member } => member == &inherited,
+            TypeDerivedFactValue::FeatureMembership(identity) => {
+                matches!(published.membership(*identity).answer, QueryAnswer::Resolved(value) if value.member == inherited)
+            }
             TypeDerivedFactValue::Feature(feature) => feature == &inherited,
             _ => false,
         }));
         assert!(published_values.iter().any(|value| match value {
-            TypeDerivedFactValue::FeatureMembership { member } => member == &input,
+            TypeDerivedFactValue::FeatureMembership(identity) => {
+                matches!(published.membership(*identity).answer, QueryAnswer::Resolved(value) if value.member == input)
+            }
             TypeDerivedFactValue::Feature(feature) => feature == &input,
             _ => false,
         }));
