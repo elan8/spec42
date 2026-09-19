@@ -1194,6 +1194,7 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
+                    individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
