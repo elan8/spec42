@@ -1,0 +1,278 @@
+{
+  "title": "General",
+  "view": "general-view",
+  "meta": null,
+  "nodes": [
+    {
+      "id": "P::Vehicle",
+      "label": "Vehicle",
+      "kind": "part def",
+      "sourcePath": null,
+      "uri": null,
+      "range": null,
+      "attributes": {
+        "attributes": [
+          "mass"
+        ],
+        "qualifiedName": "",
+        "isPackage": false,
+        "notationRole": "definition"
+      },
+      "compartments": {
+        "header": {
+          "stereotype": "part def",
+          "name": "Vehicle"
+        },
+        "typedByName": null,
+        "attributes": [
+          {
+            "name": "mass",
+            "displayText": "mass"
+          }
+        ],
+        "parts": [],
+        "ports": [],
+        "collapsibleSections": []
+      },
+      "width": 200,
+      "height": 74,
+      "$H": 376,
+      "x": 100,
+      "y": 366
+    },
+    {
+      "id": "P::vehicle",
+      "label": "vehicle",
+      "kind": "part",
+      "sourcePath": null,
+      "uri": null,
+      "range": null,
+      "attributes": {
+        "partType": "Vehicle",
+        "attributes": [
+          "speed"
+        ],
+        "qualifiedName": "",
+        "isPackage": false,
+        "notationRole": "usage"
+      },
+      "compartments": {
+        "header": {
+          "stereotype": "part",
+          "name": "vehicle"
+        },
+        "typedByName": "Vehicle",
+        "attributes": [
+          {
+            "name": "speed",
+            "displayText": "speed"
+          }
+        ],
+        "parts": [],
+        "ports": [],
+        "collapsibleSections": []
+      },
+      "width": 200,
+      "height": 86,
+      "$H": 378,
+      "x": 133,
+      "y": 100
+    },
+    {
+      "id": "P::Wheel",
+      "label": "Wheel",
+      "kind": "part def",
+      "sourcePath": null,
+      "uri": null,
+      "range": null,
+      "attributes": {
+        "generalViewInheritedAttributes": [
+          "radius",
+          "material"
+        ],
+        "qualifiedName": "",
+        "isPackage": false,
+        "notationRole": "definition"
+      },
+      "compartments": {
+        "header": {
+          "stereotype": "part def",
+          "name": "Wheel"
+        },
+        "typedByName": null,
+        "attributes": [],
+        "parts": [],
+        "ports": [],
+        "collapsibleSections": [
+          {
+            "key": "inherited-attributes",
+            "title": "Attributes",
+            "items": [
+              {
+                "name": "radius",
+                "displayText": "radius"
+              },
+              {
+                "name": "material",
+                "displayText": "material"
+              }
+            ],
+            "collapsed": true
+          }
+        ]
+      },
+      "width": 200,
+      "height": 62,
+      "$H": 380,
+      "x": 440,
+      "y": 366
+    }
+  ],
+  "edges": [
+    {
+      "id": "typed",
+      "source": "P::vehicle",
+      "target": "P::Vehicle",
+      "label": "typing",
+      "edgeKind": "typing",
+      "attributes": {
+        "relationType": "typing"
+      },
+      "sourceNode": {
+        "id": "P::vehicle",
+        "label": "vehicle",
+        "kind": "part",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "partType": "Vehicle",
+          "attributes": [
+            "speed"
+          ],
+          "qualifiedName": "",
+          "isPackage": false,
+          "notationRole": "usage"
+        }
+      },
+      "targetNode": {
+        "id": "P::Vehicle",
+        "label": "Vehicle",
+        "kind": "part def",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "attributes": [
+            "mass"
+          ],
+          "qualifiedName": "",
+          "isPackage": false,
+          "notationRole": "definition"
+        }
+      },
+      "layout": {
+        "id": "typed",
+        "sources": [
+          "P::vehicle"
+        ],
+        "targets": [
+          "P::Vehicle"
+        ],
+        "sections": [
+          {
+            "id": "typed_s0",
+            "startPoint": {
+              "x": 200,
+              "y": 186
+            },
+            "endPoint": {
+              "x": 200,
+              "y": 366
+            },
+            "incomingShape": "P::vehicle",
+            "outgoingShape": "P::Vehicle"
+          }
+        ]
+      }
+    },
+    {
+      "id": "has-wheel",
+      "source": "P::vehicle",
+      "target": "P::Wheel",
+      "label": "has-wheel",
+      "edgeKind": "specializes",
+      "attributes": {
+        "relationType": "specializes"
+      },
+      "sourceNode": {
+        "id": "P::vehicle",
+        "label": "vehicle",
+        "kind": "part",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "partType": "Vehicle",
+          "attributes": [
+            "speed"
+          ],
+          "qualifiedName": "",
+          "isPackage": false,
+          "notationRole": "usage"
+        }
+      },
+      "targetNode": {
+        "id": "P::Wheel",
+        "label": "Wheel",
+        "kind": "part def",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "generalViewInheritedAttributes": [
+            "radius",
+            "material"
+          ],
+          "qualifiedName": "",
+          "isPackage": false,
+          "notationRole": "definition"
+        }
+      },
+      "layout": {
+        "id": "has-wheel",
+        "sources": [
+          "P::vehicle"
+        ],
+        "targets": [
+          "P::Wheel"
+        ],
+        "sections": [
+          {
+            "id": "has-wheel_s0",
+            "startPoint": {
+              "x": 266,
+              "y": 186
+            },
+            "endPoint": {
+              "x": 540,
+              "y": 366
+            },
+            "bendPoints": [
+              {
+                "x": 266,
+                "y": 196
+              },
+              {
+                "x": 540,
+                "y": 196
+              }
+            ],
+            "incomingShape": "P::vehicle",
+            "outgoingShape": "P::Wheel"
+          }
+        ]
+      }
+    }
+  ]
+}

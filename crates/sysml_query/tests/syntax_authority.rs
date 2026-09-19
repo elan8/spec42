@@ -166,6 +166,22 @@ const EXEMPTIONS: &[Exemption] = &[
         reason: "catalog digests library files by byte content to identify a root; it reads no syntax",
         must_contain: None,
     },
+    Exemption {
+        path: "crates/diagram_draw/src/graph_normalization.rs",
+        reason: "buckets an already-resolved LaidOutEdge relationship-type label into an SVG marker/stroke\
+                 style; a line-for-line port of the un-flagged `graph-normalization.ts` in\
+                 vscode/diagram-renderer. diagram_draw has no dependency on any authority crate and never\
+                 reads SysML source text -- this is wire vocabulary for a diagram-drawing DTO, same category\
+                 as the generator protocol exemptions above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/edges.rs",
+        reason: "selects marker/dash SVG style from the same already-resolved edge-kind label; a\
+                 line-for-line port of the un-flagged `applyEdgeMarker` in render/drawing.ts, for the same\
+                 reason as graph_normalization.rs above",
+        must_contain: None,
+    },
 ];
 
 /// Fields outside the authorities that may hold a parsed tree: the editor host's index entries,

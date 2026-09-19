@@ -576,6 +576,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "diagram_draw"
+version = "0.52.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "diagram_layout"
 version = "0.52.0"
 dependencies = [
