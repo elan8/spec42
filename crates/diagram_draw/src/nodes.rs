@@ -40,7 +40,10 @@ pub fn draw_nodes(nodes: &[LaidOutNode], theme: &Theme) -> Element {
         );
         let outer_class = format!("general-node viz-node {}", outer_chrome.structure_class);
 
-        let compartments = collect_compartments(&node.label, &node.kind, &node.attributes);
+        let compartments = node
+            .compartments
+            .clone()
+            .unwrap_or_else(|| collect_compartments(&node.label, &node.kind, &node.attributes));
         let chrome = resolve_node_chrome(
             notation_role_from_attributes(&node.attributes),
             ChromeOptions::default(),

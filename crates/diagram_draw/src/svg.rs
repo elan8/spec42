@@ -6,6 +6,11 @@ pub struct Element {
     tag: String,
     attrs: Vec<(String, String)>,
     styles: Vec<(String, String)>,
+    /// Attributes serialized after `style="..."`. Exists for `xmlns` on the export root: `VirtualElement.cloneNode`
+    /// copies existing attrs and resolves `style` onto the clone *before* `exportSvg` calls `setAttribute("xmlns",
+    /// ...)`, so `xmlns` lands after `style` in the real serialized output -- this reproduces that without modeling
+    /// the clone step itself.
+    trailing_attrs: Vec<(String, String)>,
     text: Option<String>,
     children: Vec<Element>,
 }
@@ -16,6 +21,7 @@ impl Element {
             tag: tag.to_string(),
             attrs: Vec::new(),
             styles: Vec::new(),
+            trailing_attrs: Vec::new(),
             text: None,
             children: Vec::new(),
         }
@@ -23,6 +29,11 @@ impl Element {
 
     pub fn attr(mut self, name: &str, value: impl Into<String>) -> Self {
         self.attrs.push((name.to_string(), value.into()));
+        self
+    }
+
+    pub fn attr_trailing(mut self, name: &str, value: impl Into<String>) -> Self {
+        self.trailing_attrs.push((name.to_string(), value.into()));
         self
     }
 
@@ -84,6 +95,13 @@ impl Element {
                 .join(" ");
             out.push_str(" style=\"");
             out.push_str(&escape_xml(&style_value));
+            out.push('"');
+        }
+        for (name, value) in &self.trailing_attrs {
+            out.push(' ');
+            out.push_str(name);
+            out.push_str("=\"");
+            out.push_str(&escape_xml(value));
             out.push('"');
         }
         out.push('>');

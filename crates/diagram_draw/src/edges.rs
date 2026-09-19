@@ -1,94 +1,122 @@
-use std::collections::{BTreeMap, HashMap};
-
-use serde_json::Value;
+use std::collections::HashMap;
 
 use crate::graph_normalization::normalize_edge_kind;
 use crate::svg::{format_number as n, Element};
 use crate::theme::{stroke_color_for_edge, Theme};
-use crate::types::{EdgeSection, LaidOutEdge, LaidOutNode, Point};
+use crate::tooltip::{edge_tooltip_descriptor, tooltip_fallback_text};
+use crate::types::{attr_text, EdgeSection, LaidOutEdge, LaidOutNode, Point};
 
 /// General-View branch of `applyEdgeMarker` in `render/drawing.ts` (the interconnection/IBD
 /// branch is out of scope for this spike -- General View is the only view being ported).
+///
+/// `style` values live in one composed `style="..."` string attribute, so -- unlike ordinary
+/// attributes -- the *order* `.style()` is called in is observable output, not just an
+/// implementation detail. `styles` therefore preserves each branch's exact TS call order rather
+/// than applying a fixed order generically (a mismatch here is exactly the class of drift a
+/// class-count-only test cannot see; see `tests/golden_parity.rs`).
 struct MarkerStyle {
-    stroke_dasharray: Option<&'static str>,
-    marker_start: Option<&'static str>,
-    marker_end: Option<&'static str>,
-    stroke_width: Option<&'static str>,
     unsupported: bool,
+    styles: Vec<(&'static str, &'static str)>,
+}
+
+fn marker_url(id: &'static str) -> &'static str {
+    // `applyEdgeMarker` always spells `url(#...)` inline; the ids below are the only ones this
+    // branch ever needs, so a small static table avoids allocating per edge.
+    match id {
+        "general-d3-specializes" => "url(#general-d3-specializes)",
+        "general-d3-arrow-open" => "url(#general-d3-arrow-open)",
+        "general-d3-diamond" => "url(#general-d3-diamond)",
+        "general-d3-arrow" => "url(#general-d3-arrow)",
+        other => other,
+    }
 }
 
 fn apply_edge_marker(edge_kind: &str) -> MarkerStyle {
-    let none = MarkerStyle {
-        stroke_dasharray: None,
-        marker_start: None,
-        marker_end: None,
-        stroke_width: None,
-        unsupported: false,
+    let ms = |unsupported: bool, styles: Vec<(&'static str, &'static str)>| MarkerStyle {
+        unsupported,
+        styles,
     };
     match edge_kind {
-        "specializes" => MarkerStyle {
-            marker_end: Some("general-d3-specializes"),
-            stroke_width: Some("1.7px"),
-            ..none
-        },
-        "subsetting" => MarkerStyle {
-            marker_end: Some("general-d3-arrow-open"),
-            stroke_dasharray: Some("6,3"),
-            ..none
-        },
-        "typing" => MarkerStyle {
-            marker_end: Some("general-d3-arrow-open"),
-            stroke_dasharray: Some("5,3"),
-            ..none
-        },
-        "hierarchy" => MarkerStyle {
-            marker_start: Some("general-d3-diamond"),
-            marker_end: Some("none"),
-            ..none
-        },
-        "bind" => MarkerStyle {
-            stroke_dasharray: Some("2,2"),
-            marker_end: Some("none"),
-            ..none
-        },
-        "allocate" => MarkerStyle {
-            marker_end: Some("general-d3-arrow"),
-            stroke_dasharray: Some("8,4"),
-            ..none
-        },
-        "dependency" | "usage" => MarkerStyle {
-            marker_end: Some("general-d3-arrow-open"),
-            stroke_dasharray: Some("4,4"),
-            ..none
-        },
-        "redefinition" => MarkerStyle {
-            marker_end: Some("general-d3-specializes"),
-            stroke_dasharray: Some("5,3"),
-            ..none
-        },
-        "composition" => MarkerStyle {
-            marker_start: Some("general-d3-diamond"),
-            marker_end: Some("none"),
-            stroke_dasharray: Some("6,3"),
-            ..none
-        },
-        "connection" => MarkerStyle {
-            marker_start: Some("none"),
-            marker_end: Some("none"),
-            ..none
-        },
-        "satisfy" | "verify" | "derivation" => MarkerStyle {
-            marker_end: Some("general-d3-arrow-open"),
-            stroke_dasharray: Some("7,4"),
-            ..none
-        },
-        _ => MarkerStyle {
-            stroke_dasharray: Some("2,4"),
-            marker_start: Some("none"),
-            marker_end: Some("none"),
-            unsupported: true,
-            ..none
-        },
+        "specializes" => ms(
+            false,
+            vec![
+                ("marker-end", marker_url("general-d3-specializes")),
+                ("stroke-width", "1.7px"),
+            ],
+        ),
+        "subsetting" => ms(
+            false,
+            vec![
+                ("marker-end", marker_url("general-d3-arrow-open")),
+                ("stroke-dasharray", "6,3"),
+            ],
+        ),
+        "typing" => ms(
+            false,
+            vec![
+                ("marker-end", marker_url("general-d3-arrow-open")),
+                ("stroke-dasharray", "5,3"),
+            ],
+        ),
+        "hierarchy" => ms(
+            false,
+            vec![
+                ("marker-start", marker_url("general-d3-diamond")),
+                ("marker-end", "none"),
+            ],
+        ),
+        "bind" => ms(
+            false,
+            vec![("stroke-dasharray", "2,2"), ("marker-end", "none")],
+        ),
+        "allocate" => ms(
+            false,
+            vec![
+                ("marker-end", marker_url("general-d3-arrow")),
+                ("stroke-dasharray", "8,4"),
+            ],
+        ),
+        "dependency" | "usage" => ms(
+            false,
+            vec![
+                ("marker-end", marker_url("general-d3-arrow-open")),
+                ("stroke-dasharray", "4,4"),
+            ],
+        ),
+        "redefinition" => ms(
+            false,
+            vec![
+                ("marker-end", marker_url("general-d3-specializes")),
+                ("stroke-dasharray", "5,3"),
+            ],
+        ),
+        "composition" => ms(
+            false,
+            vec![
+                ("marker-start", marker_url("general-d3-diamond")),
+                ("marker-end", "none"),
+                ("stroke-dasharray", "6,3"),
+            ],
+        ),
+        "connection" => ms(
+            false,
+            vec![("marker-start", "none"), ("marker-end", "none")],
+        ),
+        "satisfy" | "verify" | "derivation" => ms(
+            false,
+            vec![
+                ("marker-end", marker_url("general-d3-arrow-open")),
+                ("stroke-dasharray", "7,4"),
+            ],
+        ),
+        _ => ms(
+            true,
+            vec![
+                ("stroke-dasharray", "2,4"),
+                ("marker-start", "none"),
+                ("marker-end", "none"),
+            ],
+        ),
     }
 }
 
@@ -131,13 +159,6 @@ fn path_from_simple_section(section: Option<&EdgeSection>) -> Option<String> {
     Some(points_to_path_d(&points))
 }
 
-fn attr_string(attributes: &BTreeMap<String, Value>, key: &str) -> String {
-    match attributes.get(key) {
-        Some(Value::String(s)) => s.trim().to_string(),
-        _ => String::new(),
-    }
-}
-
 /// Port of `generalEdgeDisplayLabel` in `render/drawing.ts`.
 fn general_edge_display_label(edge: &LaidOutEdge, edge_kind: &str) -> String {
     const GENERIC: &[&str] = &[
@@ -166,7 +187,7 @@ fn general_edge_display_label(edge: &LaidOutEdge, edge_kind: &str) -> String {
         "binding",
     ];
     let label = edge.label.trim();
-    let relation_type = attr_string(&edge.attributes, "relationType");
+    let relation_type = attr_text(&edge.attributes, "relationType");
     let lower_label = label.to_lowercase();
     if GENERIC.contains(&lower_label.as_str()) {
         return String::new();
@@ -243,6 +264,7 @@ pub fn draw_edges(
 ) -> Vec<Element> {
     let mut edge_layer = Element::new("g").attr("class", "viz-edges");
     struct PendingLabel {
+        edge_id: String,
         edge_kind: String,
         display_label: String,
         anchor: LabelAnchor,
@@ -271,7 +293,7 @@ pub fn draw_edges(
         // General View is never `isInterconnectionView`, so that branch collapses to `1.8`.
         let stroke_width = if edge_kind == "hierarchy" { 1.4 } else { 1.8 };
         let data_type = {
-            let relation_type = attr_string(&edge.attributes, "relationType");
+            let relation_type = attr_text(&edge.attributes, "relationType");
             if !relation_type.is_empty() {
                 relation_type
             } else {
@@ -299,49 +321,40 @@ pub fn draw_edges(
         let marker = apply_edge_marker(&edge_kind);
         if marker.unsupported {
             path_el = path_el.attr("data-notation-status", "unsupported");
+        } else {
+            // Every named branch of `applyEdgeMarker` also redundantly re-sets `stroke` as a
+            // plain attribute (the inline `style` above already carries it) -- harmless in CSS,
+            // but it is real attribute content a byte-level comparison against real TS/D3 output
+            // catches, so it is reproduced rather than "simplified" away.
+            path_el = path_el.attr("stroke", stroke);
         }
-        if let Some(dash) = marker.stroke_dasharray {
-            path_el = path_el.style("stroke-dasharray", dash);
-        }
-        if let Some(width) = marker.stroke_width {
-            path_el = path_el.attr("stroke", stroke).style("stroke-width", width);
-        }
-        if let Some(marker_start) = marker.marker_start {
-            path_el = path_el.style(
-                "marker-start",
-                if marker_start == "none" {
-                    "none".to_string()
-                } else {
-                    format!("url(#{marker_start})")
-                },
-            );
-        }
-        if let Some(marker_end) = marker.marker_end {
-            path_el = path_el.style(
-                "marker-end",
-                if marker_end == "none" {
-                    "none".to_string()
-                } else {
-                    format!("url(#{marker_end})")
-                },
-            );
+        for (name, value) in marker.styles {
+            path_el = path_el.style(name, value);
         }
         edge_layer = edge_layer.child(path_el);
 
+        // Port of `installDiagramTooltips`' static bake-in step: for every `[data-tooltip-kind]`
+        // element it sets `aria-label` (newlines joined with "; ") and appends a `<title>` with
+        // the same text unescaped. The hover/positioning machinery in that file is interaction
+        // -only and never reaches serialized SVG text.
+        let tooltip_text = tooltip_fallback_text(&edge_tooltip_descriptor(edge, nodes_by_id));
         edge_layer = edge_layer.child(
             Element::new("path")
                 .attr("class", "viz-edge-hit-target")
                 .attr("data-tooltip-kind", "edge")
                 .attr("data-tooltip-id", edge.id.clone())
                 .attr("d", path)
+                .attr("aria-label", tooltip_text.replace('\n', "; "))
                 .style("fill", "none")
                 .style("stroke", "transparent")
                 .style("stroke-width", "12px")
-                .style("pointer-events", "stroke"),
+                .style("pointer-events", "stroke")
+                .child(Element::new("title").text(tooltip_text)),
         );
 
         if !display_label.is_empty() {
             labels.push(PendingLabel {
+                edge_id: edge.id.clone(),
                 edge_kind,
                 display_label,
                 anchor: edge_label_anchor(edge, Some(source), Some(target)),
@@ -363,6 +376,7 @@ pub fn draw_edges(
                     "class",
                     format!("viz-edge-label viz-edge-label--{}", label.edge_kind),
                 )
+                .attr("data-connector-id", label.edge_id.clone())
                 .attr_f("x", label.anchor.x)
                 .attr_f("y", label.anchor.y)
                 .attr("text-anchor", label.anchor.text_anchor)

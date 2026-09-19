@@ -3,6 +3,8 @@ use std::collections::BTreeMap;
 use serde::Deserialize;
 use serde_json::Value;
 
+use crate::sysml_node::Compartments;
+
 #[derive(Debug, Clone, Copy, Deserialize)]
 pub struct Point {
     pub x: f64,
@@ -40,6 +42,11 @@ pub struct LaidOutNode {
     pub width: f64,
     #[serde(default)]
     pub height: f64,
+    /// The layout pass's own `collectCompartments(node)` snapshot (`reshapeGeneralLayoutResult` in
+    /// `render/layout.ts`). `drawNodes` prefers this over recomputing from `attributes` --
+    /// `d.compartments ?? collectCompartments(d)` -- so this must be too.
+    #[serde(default)]
+    pub compartments: Option<Compartments>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -70,6 +77,16 @@ pub fn attr_str(attributes: &BTreeMap<String, Value>, key: &str) -> Option<Strin
         Some(Value::Number(n)) => Some(n.to_string()),
         Some(Value::Bool(b)) => Some(b.to_string()),
         _ => None,
+    }
+}
+
+/// Port of `text(value)` in `render/diagram-tooltip.ts`: `String(value ?? "").trim()`.
+pub fn attr_text(attributes: &BTreeMap<String, Value>, key: &str) -> String {
+    match attributes.get(key) {
+        Some(Value::String(s)) => s.trim().to_string(),
+        Some(Value::Number(n)) => n.to_string(),
+        Some(Value::Bool(b)) => b.to_string(),
+        _ => String::new(),
     }
 }
 

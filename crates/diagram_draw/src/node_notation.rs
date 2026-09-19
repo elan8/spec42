@@ -168,7 +168,10 @@ pub fn header_fill_path(
     let top = inset;
     let right = (width - inset).max(left);
     let bottom = (header_bottom - inset).max(top);
-    let r = radius.min((right - left) / 2.0).min(bottom - top).max(0.0);
+    let r = (radius - inset)
+        .min((right - left) / 2.0)
+        .min(bottom - top)
+        .max(0.0);
     if r <= 0.0 {
         return format!(
             "M{left},{top}H{right}V{bottom}H{left}Z",
