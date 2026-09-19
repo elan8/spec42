@@ -85,6 +85,27 @@ impl Element {
         self
     }
 
+    fn has_class(&self, class_name: &str) -> bool {
+        self.attrs.iter().any(|(name, value)| {
+            name == "class" && value.split_whitespace().any(|c| c == class_name)
+        })
+    }
+
+    /// Port of d3's `selection.insert(tag, beforeSelector)`, restricted to the one selector shape
+    /// this crate needs: insert `new_child` immediately before the first existing child whose
+    /// `class` attribute contains `before_class`, or append at the end when no child matches.
+    pub fn insert_before_child(mut self, before_class: &str, new_child: Element) -> Self {
+        let index = self
+            .children
+            .iter()
+            .position(|child| child.has_class(before_class));
+        match index {
+            Some(index) => self.children.insert(index, new_child),
+            None => self.children.push(new_child),
+        }
+        self
+    }
+
     pub fn serialize(&self, out: &mut String) {
         out.push('<');
         out.push_str(&self.tag);

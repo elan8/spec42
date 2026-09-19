@@ -182,6 +182,32 @@ const EXEMPTIONS: &[Exemption] = &[
                  reason as graph_normalization.rs above",
         must_contain: None,
     },
+    Exemption {
+        path: "crates/diagram_draw/src/action_flow.rs",
+        reason: "buckets an already-resolved PreparedNode/PreparedEdge kind label into SVG node shape and\
+                 marker/dash style; a line-for-line port of the un-flagged `views/action-flow.ts`, for the\
+                 same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/state_transition.rs",
+        reason: "same as action_flow.rs above, porting the un-flagged `views/state-transition.ts`",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/sequence.rs",
+        reason: "same as action_flow.rs above, porting the un-flagged `views/sequence.ts`; the \"return\"\
+                 match buckets an already-resolved message-kind label into a dashed-vs-solid style, not\
+                 SysML syntax",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/tooltip.rs",
+        reason: "formats an already-resolved edge-kind label into human-readable tooltip prose; a\
+                 line-for-line port of the un-flagged `edgeTooltipDescriptor` in render/diagram-tooltip.ts,\
+                 for the same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
 ];
 
 /// Fields outside the authorities that may hold a parsed tree: the editor host's index entries,

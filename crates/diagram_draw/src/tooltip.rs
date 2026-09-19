@@ -7,6 +7,9 @@
 
 use std::collections::HashMap;
 
+use serde_json::Value;
+
+use crate::behavior_common::{PreparedEdge, PreparedNode};
 use crate::types::{attr_text, LaidOutEdge, LaidOutNode};
 
 pub struct TooltipDescriptor {
@@ -67,6 +70,18 @@ fn node_label(nodes_by_id: &HashMap<&str, &LaidOutNode>, id: &str) -> String {
     }
 }
 
+const GENERIC_EDGE_LABELS: &[&str] = &[
+    "",
+    "bind",
+    "binding",
+    "connect",
+    "connection",
+    "flow",
+    "succession",
+    "transition",
+    "message",
+];
+
 /// Port of the non-`interconnection`/`action-flow`/`state-transition`/`sequence` branch of
 /// `edgeTooltipDescriptor` -- the only branch that applies to General View.
 pub fn edge_tooltip_descriptor(
@@ -90,20 +105,10 @@ pub fn edge_tooltip_descriptor(
         &raw_kind
     });
 
-    const GENERIC: &[&str] = &[
-        "",
-        "bind",
-        "binding",
-        "connect",
-        "connection",
-        "flow",
-        "succession",
-        "transition",
-        "message",
-    ];
     let raw_kind_lower = raw_kind.to_lowercase();
     let label_lower = edge.label.trim().to_lowercase();
-    let is_generic = GENERIC.contains(&label_lower.as_str()) || label_lower == raw_kind_lower;
+    let is_generic =
+        GENERIC_EDGE_LABELS.contains(&label_lower.as_str()) || label_lower == raw_kind_lower;
 
     let mut rows = Vec::new();
     let mut technical_rows = Vec::new();
@@ -118,6 +123,115 @@ pub fn edge_tooltip_descriptor(
         &mut technical_rows,
         "Semantic ID",
         &attr_text(&edge.attributes, "semanticId"),
+    );
+
+    TooltipDescriptor {
+        title,
+        rows,
+        technical_rows,
+    }
+}
+
+fn behavior_node_label(nodes_by_id: &HashMap<&str, &PreparedNode>, id: &str) -> String {
+    match nodes_by_id.get(id) {
+        Some(node) if !node.label.is_empty() => node.label.clone(),
+        _ => id.to_string(),
+    }
+}
+
+/// Port of the `action-flow-view`/`state-transition-view`/`sequence-view` branches of
+/// `edgeTooltipDescriptor` (the `interconnection-view` and default/General-View branches are
+/// covered by `edge_tooltip_descriptor` above, which operates on the unrelated `LaidOutEdge`
+/// shape). Sequence never actually resolves this descriptor in practice -- see `sequence.rs`'s
+/// module docs -- but the branch is ported for completeness/future reuse.
+pub fn behavior_edge_tooltip_descriptor(
+    view: &str,
+    edge: &PreparedEdge,
+    nodes_by_id: &HashMap<&str, &PreparedNode>,
+) -> TooltipDescriptor {
+    let attrs = &edge.attributes;
+    let raw_kind = match view {
+        "sequence-view" => "message".to_string(),
+        "state-transition-view" => "transition".to_string(),
+        "action-flow-view" => {
+            let succession_flag = matches!(attrs.get("succession"), Some(Value::Bool(true)));
+            let flow_kind = attr_text(attrs, "flowKind").to_lowercase();
+            if succession_flag || flow_kind == "succession" {
+                "succession".to_string()
+            } else {
+                "flow".to_string()
+            }
+        }
+        _ => "relationship".to_string(),
+    };
+    let title = humanize(if raw_kind.is_empty() {
+        if view == "sequence-view" {
+            "message"
+        } else {
+            "relationship"
+        }
+    } else {
+        &raw_kind
+    });
+
+    let raw_kind_lower = raw_kind.to_lowercase();
+    let label_lower = edge.label.trim().to_lowercase();
+    let is_generic =
+        GENERIC_EDGE_LABELS.contains(&label_lower.as_str()) || label_lower == raw_kind_lower;
+
+    let mut rows = Vec::new();
+    let mut technical_rows = Vec::new();
+    if !is_generic {
+        push_row(&mut rows, "Name", &edge.label);
+    }
+    push_row(
+        &mut rows,
+        "From",
+        &behavior_node_label(nodes_by_id, &edge.source),
+    );
+    push_row(
+        &mut rows,
+        "To",
+        &behavior_node_label(nodes_by_id, &edge.target),
+    );
+    push_row(&mut technical_rows, "Source ID", &edge.source);
+    push_row(&mut technical_rows, "Target ID", &edge.target);
+
+    match view {
+        "action-flow-view" => {
+            let guard = attr_text(attrs, "guard");
+            let guard_lower = guard.to_lowercase();
+            if !guard.is_empty()
+                && !["flow", "first", "succession", "succession flow"]
+                    .contains(&guard_lower.as_str())
+            {
+                push_row(&mut rows, "Guard", &guard);
+            }
+            push_row(&mut rows, "Condition", &attr_text(attrs, "condition"));
+        }
+        "state-transition-view" => {
+            push_row(&mut rows, "Trigger", &attr_text(attrs, "trigger"));
+            push_row(&mut rows, "Accept", &attr_text(attrs, "accept"));
+            push_row(&mut rows, "Guard", &attr_text(attrs, "guard"));
+            push_row(&mut rows, "Effect", &attr_text(attrs, "effect"));
+            push_row(&mut rows, "Send", &attr_text(attrs, "send"));
+        }
+        "sequence-view" => {
+            let message_kind = attr_text(attrs, "messageKind");
+            let kind = if !message_kind.is_empty() {
+                message_kind
+            } else {
+                attr_text(attrs, "kind")
+            };
+            push_row(&mut rows, "Message kind", &kind);
+            push_row(&mut rows, "Order", &attr_text(attrs, "order"));
+        }
+        _ => {}
+    }
+    push_row(
+        &mut technical_rows,
+        "Semantic ID",
+        &attr_text(attrs, "semanticId"),
     );
 
     TooltipDescriptor {
