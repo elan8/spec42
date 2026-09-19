@@ -73,11 +73,6 @@ element_kinds! {
     PortUsage,
     OccurrenceDefinition,
     OccurrenceUsage,
-    /// The standalone `individual def` form.
-    ///
-    /// The OMG has no such metaclass -- it is an `OccurrenceDefinition` with `isIndividual` set --
-    /// but that flag is not published for this form, so collapsing would erase the keyword.
-    IndividualDefinition,
     ConnectionDefinition,
     ConnectionUsage,
     InterfaceDefinition,

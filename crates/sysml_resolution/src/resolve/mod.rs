@@ -1726,7 +1726,6 @@ pub(crate) fn definition_usage_source_matches(metaclass: &str, kind: Declaration
                 | DeclarationKind::CalcDefinition
                 | DeclarationKind::ClassDefinition
                 | DeclarationKind::ExtendedDefinition
-                | DeclarationKind::IndividualDefinition
         ),
         "Usage" => is_usage_declaration(kind),
         _ => false,

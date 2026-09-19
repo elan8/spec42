@@ -246,3 +246,44 @@ fn a_warm_relink_of_the_examples_corpus_is_the_cold_publication() {
 
     assert_warm_matches_cold(&warm, &edited);
 }
+
+#[test]
+fn individual_multiplicity_identity_survives_relocation_and_modifier_edits() {
+    let sources = SourceAuthority::new();
+    let warm = authority();
+    let library = admit(
+        &sources,
+        "memory://library.kerml",
+        "standard library package Base { multiplicity zeroOrOne [0..1]; }",
+        SourceKind::StandardLibrary,
+    );
+    let individual = admit(
+        &sources,
+        "memory://individual.sysml",
+        "package Model { individual def Individual; individual part def Part; }",
+        SourceKind::Workspace,
+    );
+    assert_warm_matches_cold(&warm, &[library.clone(), individual.clone()]);
+    let missing_anchor = admit(
+        &sources,
+        "memory://library.kerml",
+        "standard library package Base {}",
+        SourceKind::StandardLibrary,
+    );
+    assert_warm_matches_cold(&warm, &[missing_anchor, individual.clone()]);
+    assert_warm_matches_cold(&warm, &[library.clone(), individual.clone()]);
+    let preceding = admit(
+        &sources,
+        "memory://a.sysml",
+        "package Earlier { part def A; part def B; }",
+        SourceKind::Workspace,
+    );
+    assert_warm_matches_cold(&warm, &[preceding, library.clone(), individual]);
+    let ordinary = admit(
+        &sources,
+        "memory://individual.sysml",
+        "package Model { occurrence def Individual; part def Part; }",
+        SourceKind::Workspace,
+    );
+    assert_warm_matches_cold(&warm, &[library, ordinary]);
+}

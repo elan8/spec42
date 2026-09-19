@@ -306,6 +306,32 @@ impl SemanticModelBuilder {
                 *count = count.checked_add(1).ok_or(ConstructionError::Capacity)?;
             }
         }
+        // SysML 8.4.5.1 maps individual definition syntax to an anonymous nested
+        // Multiplicity. Its library subsetting belongs to resolution, not authored facts.
+        if self.declaration_facts[id.index()].modifiers.individual
+            && crate::model::metaclass::is_occurrence_definition(kind)
+        {
+            let multiplicity = self.push_typed_declaration(
+                document,
+                Some(id),
+                DeclarationKind::KermlMultiplicity,
+                None,
+                span,
+                DeclarationFacts {
+                    is_individual_multiplicity: true,
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            // This implicit owning membership must not consume a pending authored
+            // membership-role override belonging to the enclosing definition.
+            self.memberships.push(MembershipRecord {
+                member: multiplicity,
+                kind: MembershipKind::Owning,
+                visibility: Visibility::Default,
+                role: None,
+                span,
+            });
+        }
         debug_assert_eq!(self.declarations.len(), self.declaration_facts.len());
         Ok(id)
     }
@@ -2313,17 +2339,21 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.identification.name)?;
         let short_name = self.intern_short_name(document, node.identification.short_name)?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
-            DeclarationKind::IndividualDefinition,
+            DeclarationKind::OccurrenceDefinition,
             name,
             node.span,
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    // `individual def` is this declaration's own form; the `individual` prefix
-                    // modifier belongs to the usages and definitions that carry `is_individual`.
+                    // SysML 8.2.2.9.1 maps IndividualDefinition to OccurrenceDefinition.
+                    individual: true,
+                    is_abstract,
+                    variation,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()

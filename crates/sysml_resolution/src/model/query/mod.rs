@@ -1942,6 +1942,54 @@ impl<D> SemanticModel<D> {
             });
         };
         let _normative_rule = (rule.rule_id, rule.metaclass);
+        if kind == SpecializationCheckKind::OccurrenceDefinitionMultiplicity {
+            let mut violated = false;
+            let mut unresolved = false;
+            for (index, (declaration, facts)) in self
+                .storage
+                .declarations
+                .iter()
+                .zip(self.storage.declaration_facts.iter())
+                .enumerate()
+            {
+                if !crate::model::metaclass::is_occurrence_definition(declaration.kind)
+                    || !facts.modifiers.individual
+                {
+                    continue;
+                }
+                let Some(multiplicity) = self
+                    .storage
+                    .individual_multiplicity(DeclarationId(index as u32))
+                else {
+                    violated = true;
+                    continue;
+                };
+                let Some(crate::resolve::implied::LibrarySpecializationAnchor::Resolved(anchor)) =
+                    self.resolution
+                        .library_specialization_anchors
+                        .outcome(rule.rule_id)
+                else {
+                    unresolved = true;
+                    continue;
+                };
+                match self.conformance(
+                    multiplicity,
+                    *anchor,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => violated = true,
+                    Conformance::Indeterminate(_) => unresolved = true,
+                }
+            }
+            return self.resolved_outcome(if violated {
+                SpecializationCheckOutcome::Violated
+            } else if unresolved {
+                SpecializationCheckOutcome::Unresolved
+            } else {
+                SpecializationCheckOutcome::Satisfied
+            });
+        }
         if kind == SpecializationCheckKind::FeatureCrossing {
             let outcome = if self
                 .storage
@@ -2638,7 +2686,7 @@ impl<D> SemanticModel<D> {
             SpecializationCheckKind::UsageVariationDefinition
             | SpecializationCheckKind::UsageVariationUsage => unreachable!("handled above"),
             SpecializationCheckKind::OccurrenceDefinitionMultiplicity => {
-                SpecializationCheckPrerequisite::IndividualMultiplicityAndLibraryAnchor
+                unreachable!("handled above")
             }
             SpecializationCheckKind::OccurrenceUsageSuboccurrence => {
                 SpecializationCheckPrerequisite::OccurrenceOwnerTypingAndLibraryAnchor

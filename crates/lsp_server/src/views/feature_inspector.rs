@@ -98,7 +98,6 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::ItemDefinition
         | ElementKind::PortDefinition
         | ElementKind::OccurrenceDefinition
-        | ElementKind::IndividualDefinition
         | ElementKind::ConnectionDefinition
         | ElementKind::InterfaceDefinition
         | ElementKind::AllocationDefinition

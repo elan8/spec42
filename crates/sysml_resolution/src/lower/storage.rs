@@ -97,6 +97,30 @@ impl ParsedSources {
 }
 
 impl SemanticModelStorage {
+    /// The implicit multiplicities introduced by individual-definition syntax. Their existing
+    /// declaration ownership and this explicit role are the sole relationship representation.
+    pub(crate) fn individual_multiplicities(&self) -> impl Iterator<Item = DeclarationId> + '_ {
+        self.declaration_facts
+            .iter()
+            .enumerate()
+            .filter_map(|(index, facts)| {
+                // Construction bounds the declaration arena to the DeclarationId domain.
+                facts
+                    .is_individual_multiplicity
+                    .then_some(DeclarationId(index as u32))
+            })
+    }
+
+    /// Lowering introduces exactly one such child for each individual definition. Project that
+    /// canonical role without a second parent-to-child store or a persistent derived cache.
+    pub(crate) fn individual_multiplicity(&self, owner: DeclarationId) -> Option<DeclarationId> {
+        if !self.declaration_facts(owner)?.modifiers.individual {
+            return None;
+        }
+        self.individual_multiplicities()
+            .find(|child| self.declarations[child.index()].owner == Some(owner))
+    }
+
     pub(crate) fn document(&self, id: DocumentIdx) -> Option<&CanonicalDocument> {
         self.documents.get(id.index())
     }

@@ -824,15 +824,6 @@ pub(crate) enum DeclarationKind {
     /// `definition_prefix` flag are out of scope, matching every other definition kind's
     /// established "ownership, specialization, and owned-member structure only" scope boundary.
     ExtendedDefinition,
-    /// `individual def` (BNF IndividualDef, `structure.rs` struct `IndividualDef`): a type whose
-    /// owned members participate in the shared Subclassification/FeatureTyping
-    /// `DeclarationDomain::Type` fixed point, mirroring `lower_item_def`/`lower_class_def` --
-    /// `IndividualDef`'s `body: AttributeBody` is the exact same shape, so owned members are
-    /// lowered through the existing `lower_attribute_body`. Distinct from the `individual`
-    /// usage-side prefix (`individual occurrence def`/`individual item ...`, already handled
-    /// elsewhere per planning/UPSTREAM_PARSER_GAPS.md gap #7); this is the standalone `individual def
-    /// <Name> [:> <Type>] { ... }` definition form.
-    IndividualDefinition,
     /// An anonymous connector feature synthesized for a keyword-less bare `connect <from> to
     /// <to> [:> ...] [:>> ...] { ... }` member (BNF `Connect`, distinct from `ConnectStmt`; see
     /// `lower_bare_connect`), mirroring `ForLoop`/`EntryActionBinding`'s nested-declaration
@@ -1429,6 +1420,7 @@ pub(crate) enum EvaluatedValue {
 
 pub(crate) mod element_kind;
 pub(crate) mod evaluation;
+pub(crate) mod metaclass;
 pub(crate) mod query;
 pub(crate) mod render;
 pub(crate) mod resolver;

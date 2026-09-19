@@ -39,7 +39,6 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::PortUsage => ElementKind::PortUsage,
         DeclarationKind::OccurrenceDefinition => ElementKind::OccurrenceDefinition,
         DeclarationKind::OccurrenceUsage => ElementKind::OccurrenceUsage,
-        DeclarationKind::IndividualDefinition => ElementKind::IndividualDefinition,
         DeclarationKind::ConnectionDefinition => ElementKind::ConnectionDefinition,
         DeclarationKind::ConnectionUsage => ElementKind::ConnectionUsage,
         // `'connection' …` and `'connect' …` are one grammar production. The bare form is
@@ -218,7 +217,6 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::PortUsage
         | DeclarationKind::OccurrenceDefinition
         | DeclarationKind::OccurrenceUsage
-        | DeclarationKind::IndividualDefinition
         | DeclarationKind::ConnectionDefinition
         | DeclarationKind::ConnectionUsage
         | DeclarationKind::BareConnect
@@ -451,7 +449,6 @@ mod tests {
         DeclarationKind::Dependency,
         DeclarationKind::ExtendedDefinition,
         DeclarationKind::ExtendedUsage,
-        DeclarationKind::IndividualDefinition,
         DeclarationKind::BareConnect,
         DeclarationKind::PerformParameterBinding,
     ];
