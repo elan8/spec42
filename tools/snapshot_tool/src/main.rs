@@ -4632,6 +4632,7 @@ enum TypeDerivedFactObservation {
     Outcome {
         value: TypeDerivedFactOutcome,
         expected: Option<SymbolId>,
+        membership_members: Box<[SymbolId]>,
     },
     Incomplete,
 }
@@ -4934,7 +4935,27 @@ fn observe_type_derived_fact(
                 .map_err(|status| format!("target reference is {}", status.description()))
         })
         .transpose()?;
-    Ok(TypeDerivedFactObservation::Outcome { value, expected })
+    let membership_members = match &value {
+        TypeDerivedFactOutcome::Values(values) => values
+            .iter()
+            .filter_map(|value| match value {
+                TypeDerivedFactValue::FeatureMembership(identity) => {
+                    match model.inspection().membership(*identity).answer {
+                        QueryAnswer::Resolved(membership) => Some(membership.member),
+                        _ => None,
+                    }
+                }
+                _ => None,
+            })
+            .collect::<Vec<_>>()
+            .into_boxed_slice(),
+        TypeDerivedFactOutcome::Unsupported { .. } => Box::new([]),
+    };
+    Ok(TypeDerivedFactObservation::Outcome {
+        value,
+        expected,
+        membership_members,
+    })
 }
 
 fn observe_action_derived_fact(
@@ -5703,10 +5724,11 @@ fn compare_type_derived_fact_observation(
             TypeDerivedFactObservation::Outcome {
                 value: TypeDerivedFactOutcome::Values(values),
                 expected: Some(expected),
+                membership_members,
             },
         ) if values.iter().any(|value| match value {
             TypeDerivedFactValue::Feature(actual) => actual == expected,
-            TypeDerivedFactValue::FeatureMembership { member } => member == expected,
+            TypeDerivedFactValue::FeatureMembership(_) => membership_members.contains(expected),
             TypeDerivedFactValue::Conjugator { original_type } => original_type == expected,
             TypeDerivedFactValue::Multiplicity(_) => false,
         }) =>
@@ -5718,6 +5740,7 @@ fn compare_type_derived_fact_observation(
             TypeDerivedFactObservation::Outcome {
                 value: TypeDerivedFactOutcome::Values(values),
                 expected: None,
+                ..
             },
         ) if expectation.collection == TypeDerivedFactCollection::Multiplicity
             && values

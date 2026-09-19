@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-type-feature-membership-identity"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "FeatureMembership is compact declaration-aligned storage, not an independently addressable canonical relationship identity, so deriveTypeOwnedFeatureMembership cannot publish its normative relationship result."
-
-[[issue]]
 id = "lowering-gap-type-multiplicity-identity"
 kind = "lowering_gap"
 owner = "spec42-semantic"
