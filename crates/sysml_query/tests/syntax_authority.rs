@@ -208,6 +208,27 @@ const EXEMPTIONS: &[Exemption] = &[
                  for the same reason as graph_normalization.rs above",
         must_contain: None,
     },
+    Exemption {
+        path: "crates/diagram_draw/src/ibd_edges.rs",
+        reason: "selects marker/dash SVG style from an already-resolved LaidOutEdge edge-kind label; a\
+                 line-for-line port of the un-flagged interconnection branch of `applyEdgeMarker` in\
+                 render/drawing.ts, for the same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/ibd_node.rs",
+        reason: "buckets an already-resolved child-record `type` field into a display prefix for a part\
+                 node's content rows; a line-for-line port of the un-flagged `renderIbdNode` in\
+                 render/drawing.ts, for the same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/ibd_ports.rs",
+        reason: "guesses a port's drawing side from its already-resolved display name when no layout\
+                 anchor is available; a line-for-line port of the un-flagged `drawIbdPorts` in\
+                 render/drawing.ts, for the same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
 ];
 
 /// Fields outside the authorities that may hold a parsed tree: the editor host's index entries,

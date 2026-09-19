@@ -11,6 +11,11 @@ mod containers;
 mod edges;
 mod graph_normalization;
 mod hit_target;
+mod ibd_containers;
+mod ibd_edges;
+mod ibd_node;
+mod ibd_ports;
+mod ibd_route;
 mod markers;
 mod node_notation;
 mod nodes;
@@ -29,7 +34,7 @@ use std::collections::HashMap;
 use behavior_common::{BehaviorLayoutResult, PreparedView};
 use svg::{format_number as n, Element};
 use theme::Theme;
-use types::{GeneralViewGraph, LaidOutNode};
+use types::{GeneralViewGraph, InterconnectionViewGraph, LaidOutNode};
 
 const DEFAULT_NODE_WIDTH: f64 = 200.0;
 const DEFAULT_NODE_HEIGHT: f64 = 70.0;
@@ -251,4 +256,76 @@ pub fn render_action_flow_view_svg(
         Some(action_flow::action_flow_marker(theme)),
         root,
     )
+}
+
+/// Port of the Interconnection-View branch of `renderVisualization`'s call site in `renderer.ts`:
+/// `shouldDrawIbdViewFrame` -> `drawIbdViewFrame` -> `drawInterconnectionContainers` -> `drawNodes`
+/// -> `drawEdges` -> `drawInterconnectionPortOverlays` (frame/containers/nodes/edges/overlays --
+/// the opposite node/edge order from General View, confirmed from source, not a mistake). Bounds
+/// for both `drawIbdViewFrame` and the final `viewBox` come from the *same* `content_bounds` used
+/// by General View (`contentBounds` in `render/export.ts` only ever imports the general 200/70
+/// node-size defaults, regardless of view).
+pub fn render_interconnection_view_svg(
+    graph: &InterconnectionViewGraph,
+    theme: &Theme,
+    width: f64,
+    height: f64,
+) -> String {
+    let nodes_by_id: HashMap<&str, &LaidOutNode> = graph
+        .nodes
+        .iter()
+        .map(|node| (node.id.as_str(), node))
+        .collect();
+    let bounds = content_bounds(&graph.nodes);
+    let layout_containers = graph
+        .interconnection_layout
+        .as_ref()
+        .map(|l| l.containers.as_slice())
+        .unwrap_or(&[]);
+    let layout_edges = graph
+        .interconnection_layout
+        .as_ref()
+        .map(|l| l.edges.as_slice())
+        .unwrap_or(&[]);
+
+    let mut root = Element::new("g").attr("class", "viz-root");
+
+    if ibd_containers::should_draw_ibd_view_frame(&graph.nodes) {
+        let selected_root = graph
+            .meta
+            .get("selectedRoot")
+            .and_then(serde_json::Value::as_str)
+            .unwrap_or("");
+        let label = if !selected_root.is_empty() {
+            selected_root
+        } else {
+            &graph.title
+        };
+        if let Some(frame) = ibd_containers::draw_ibd_view_frame(label, bounds, theme) {
+            root = root.child(frame);
+        }
+    }
+
+    if let Some(containers_layer) = ibd_containers::draw_interconnection_containers(
+        &graph.meta,
+        &graph.nodes,
+        theme,
+        layout_containers,
+    ) {
+        root = root.child(containers_layer);
+    }
+
+    let (viz_nodes, overlay) =
+        nodes::draw_ibd_nodes(&graph.nodes, theme, graph.interconnection_layout.as_ref());
+    root = root.child(viz_nodes);
+
+    for edge_layer in ibd_edges::draw_ibd_edges(&graph.edges, &nodes_by_id, layout_edges, theme) {
+        root = root.child(edge_layer);
+    }
+
+    if let Some(overlay) = overlay {
+        root = root.child(overlay);
+    }
+
+    render_svg_document(theme, width, height, &graph.title, bounds, None, root)
 }
