@@ -486,12 +486,11 @@ pub struct HeaderLayout {
     pub name_baselines: Vec<f64>,
     pub typing_text: Option<String>,
     pub typing_baseline: Option<f64>,
+    pub disclosure_target: Option<Region>,
     pub badge: Option<(Region, String)>,
 }
 
-/// Port of `layoutNodeHeader`. `has_disclosure` still reserves header gutter space when the node
-/// carries disclosure state, matching production geometry, even though this spike never draws the
-/// interactive control itself (see module docs on `render_node`).
+/// Port of `layoutNodeHeader`.
 pub fn layout_node_header(
     compartments: &Compartments,
     width: f64,
@@ -575,6 +574,13 @@ pub fn layout_node_header(
         )
     });
 
+    let disclosure_target = has_disclosure.then(|| Region {
+        x: CONTROL_EDGE_INSET,
+        y: (height - DISCLOSURE_TARGET_SIZE) / 2.0,
+        width: DISCLOSURE_TARGET_SIZE,
+        height: DISCLOSURE_TARGET_SIZE,
+    });
+
     HeaderLayout {
         height,
         center_x: width / 2.0,
@@ -583,6 +589,7 @@ pub fn layout_node_header(
         name_baselines,
         typing_text,
         typing_baseline,
+        disclosure_target,
         badge,
     }
 }
@@ -841,16 +848,16 @@ pub struct RenderNodeOptions<'a> {
     pub state: NodeChromeState,
 }
 
-/// Port of `renderSysMLNode`'s General-View output. Deliberately omits the interactive
-/// *node-level* disclosure toggle `<g>` (`general-node-toggle`): in every path this spike targets
-/// (headless export), the renderer never supplies `RenderOptions.disclosure`, so `drawNodes`
-/// always passes `disclosure: null` and that control never actually draws -- only its header
-/// gutter reservation (`layout_node_header`'s `has_disclosure`) is an observable geometry effect,
-/// which is ported. The hidden-relationships badge has no such gate and is ported in full.
-/// Compartment-level disclosure chrome (`sysml-disclosure-target`/`-box`/`-glyph`) is likewise
-/// unconditional on `block.collapsible` in the original -- only the click/keydown *handlers* are
-/// gated on `options.compartmentDisclosure`, and handlers never appear in serialized SVG text
-/// regardless -- so it is drawn in full here.
+/// Port of `renderSysMLNode`'s General-View output, including the interactive-*looking* disclosure
+/// chrome. That chrome is not actually gated on interactivity: `renderVisualization`'s General
+/// View branch builds its own `DisclosureActions` unconditionally (`const disclosure = {
+/// toggleNode, toggleSection }; const generalOptions = { ...options, disclosure };` in
+/// `renderer.ts`) and uses it for every render `redrawGeneral` performs, including the very first
+/// one -- so `drawNodes`' `options.disclosure`/`compartmentDisclosure` are never actually null for
+/// General View, headless export included. Only the click/keydown *handlers* are real-interaction-
+/// only, and handlers never appear in serialized SVG text regardless. So both the node-level
+/// toggle (`general-node-toggle`, gated on `header.disclosure_target`) and the compartment-level
+/// toggle chrome (gated on `block.collapsible`) are drawn unconditionally here.
 pub fn render_node(compartments: &Compartments, options: RenderNodeOptions<'_>) -> Element {
     let theme = options.theme;
     let body = node_notation::node_body_chrome_style(
@@ -974,6 +981,74 @@ pub fn render_node(compartments: &Compartments, options: RenderNodeOptions<'_>) 
         node = node.child(typing);
     }
 
+    if let Some(disclosure_target) = &header.disclosure_target {
+        let expanded = options.state.disclosure == Some("expanded");
+        let box_region = Region {
+            x: disclosure_target.x + (disclosure_target.width - DISCLOSURE_BOX_SIZE) / 2.0,
+            y: disclosure_target.y + (disclosure_target.height - DISCLOSURE_BOX_SIZE) / 2.0,
+            width: DISCLOSURE_BOX_SIZE,
+            height: DISCLOSURE_BOX_SIZE,
+        };
+        let verb = if expanded { "Collapse" } else { "Expand" };
+        let tooltip = if expanded {
+            format!(
+                "Collapse {}: hide its nested elements and their relationships.",
+                options.data_element_name
+            )
+        } else {
+            format!(
+                "Expand {}: show its nested elements and their relationships.",
+                options.data_element_name
+            )
+        };
+        let mut control = Element::new("g")
+            .attr("class", "general-node-toggle sysml-disclosure")
+            .attr("role", "button")
+            .attr("tabindex", "0")
+            .attr(
+                "aria-label",
+                format!("{verb} {}", options.data_element_name),
+            )
+            .attr("aria-expanded", if expanded { "true" } else { "false" })
+            .attr(
+                "data-disclosure-state",
+                if expanded { "expanded" } else { "collapsed" },
+            )
+            .child(Element::new("title").text(tooltip))
+            .child(
+                Element::new("rect")
+                    .attr("class", "sysml-disclosure-target")
+                    .attr_f("x", disclosure_target.x)
+                    .attr_f("y", disclosure_target.y)
+                    .attr_f("width", disclosure_target.width)
+                    .attr_f("height", disclosure_target.height)
+                    .attr("rx", "4")
+                    .style("fill", "transparent")
+                    .style("pointer-events", "all"),
+            )
+            .child(
+                Element::new("rect")
+                    .attr("class", "sysml-disclosure-box")
+                    .attr_f("x", box_region.x)
+                    .attr_f("y", box_region.y)
+                    .attr_f("width", box_region.width)
+                    .attr_f("height", box_region.height)
+                    .attr("rx", "2")
+                    .style("fill", theme.control_fill)
+                    .style("stroke", theme.control_stroke)
+                    .style("stroke-width", "1px"),
+            );
+        for d in disclosure_glyph_paths(&box_region, expanded) {
+            control = control.child(
+                Element::new("path")
+                    .attr("class", "sysml-disclosure-glyph")
+                    .attr("d", d)
+                    .style("fill", theme.control_foreground),
+            );
+        }
+        node = node.child(control);
+    }
+
     if let Some((badge, badge_text)) = &header.badge {
         let group = Element::new("g")
             .attr("class", "general-hidden-relationships sysml-badge")
@@ -1043,9 +1118,11 @@ pub fn render_node(compartments: &Compartments, options: RenderNodeOptions<'_>) 
                 .attr(
                     "aria-label",
                     format!(
-                        "{} {}",
+                        "{} {} of {} ({})",
                         if block.collapsed { "Show" } else { "Hide" },
-                        block.title
+                        block.title,
+                        options.data_element_name,
+                        block.total_items,
                     ),
                 )
         } else {

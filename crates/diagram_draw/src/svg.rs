@@ -27,8 +27,14 @@ impl Element {
         }
     }
 
+    /// Sets an attribute, or -- matching `VirtualElement.setAttribute`'s `Map.set` semantics --
+    /// overwrites the value in place (keeping its original position) if already set on this
+    /// element. `attr`/`style` are called in one long builder chain per element, and it is
+    /// unremarkable for two calls to target the same name (`applyEdgeMarker`'s branches all
+    /// re-set `stroke`, for instance); pushing a second pair would serialize both, which no real
+    /// `VirtualElement`-backed output ever does.
     pub fn attr(mut self, name: &str, value: impl Into<String>) -> Self {
-        self.attrs.push((name.to_string(), value.into()));
+        set_or_update(&mut self.attrs, name, value.into());
         self
     }
 
@@ -38,7 +44,7 @@ impl Element {
     }
 
     pub fn attr_f(mut self, name: &str, value: f64) -> Self {
-        self.attrs.push((name.to_string(), format_number(value)));
+        set_or_update(&mut self.attrs, name, format_number(value));
         self
     }
 
@@ -49,8 +55,11 @@ impl Element {
         }
     }
 
+    /// Same overwrite-in-place semantics as `attr` -- `VirtualStyle.setProperty` is backed by a
+    /// `Map` too, so a later `.style()` call for an already-set property replaces its value
+    /// without moving it or duplicating the declaration in the composed `style="..."` string.
     pub fn style(mut self, name: &str, value: impl Into<String>) -> Self {
-        self.styles.push((name.to_string(), value.into()));
+        set_or_update(&mut self.styles, name, value.into());
         self
     }
 
@@ -136,6 +145,13 @@ pub fn format_number(value: f64) -> String {
             text.truncate(text.len() - 2);
         }
         text
+    }
+}
+
+fn set_or_update(pairs: &mut Vec<(String, String)>, name: &str, value: String) {
+    match pairs.iter_mut().find(|(existing, _)| existing == name) {
+        Some((_, existing_value)) => *existing_value = value,
+        None => pairs.push((name.to_string(), value)),
     }
 }
 

@@ -84,3 +84,75 @@ pub fn draw_nodes(nodes: &[LaidOutNode], theme: &Theme) -> Element {
     }
     layer
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::sysml_node::{Compartments, DetailItem, Section};
+    use crate::theme::LIGHT;
+    use serde_json::json;
+    use std::collections::BTreeMap;
+
+    /// No production-shaped fixture can exercise "prefer the precomputed `compartments` field"
+    /// versus "always recompute from `attributes`" as distinct behaviors, because a real fixture's
+    /// `compartments` blob and its `attributes` always agree (both were produced from the same
+    /// state at the same instant by `reshapeGeneralLayoutResult`). This test manufactures the
+    /// divergence directly -- attributes that would recompute to a *collapsed*, different-content
+    /// section, alongside a precomputed `compartments` snapshot that is already resolved
+    /// *expanded* with different items -- and asserts the drawn SVG reflects the precomputed
+    /// snapshot, matching `d.compartments ?? collectCompartments(d)` in `drawing.ts`.
+    #[test]
+    fn prefers_precomputed_compartments_over_recomputing_from_attributes() {
+        let mut attributes = BTreeMap::new();
+        attributes.insert(
+            "generalViewInheritedAttributes".to_string(),
+            json!(["a", "b"]),
+        );
+
+        let precomputed = Compartments {
+            stereotype: "part def".to_string(),
+            name: "Node".to_string(),
+            typed_by_name: None,
+            attributes: Vec::new(),
+            parts: Vec::new(),
+            ports: Vec::new(),
+            collapsible_sections: vec![Section {
+                key: "inherited-attributes".to_string(),
+                title: "Attributes".to_string(),
+                items: vec![
+                    DetailItem {
+                        display_text: "x".to_string(),
+                        declared_in: None,
+                    },
+                    DetailItem {
+                        display_text: "y".to_string(),
+                        declared_in: None,
+                    },
+                ],
+                collapsed: false,
+            }],
+        };
+
+        let node = LaidOutNode {
+            id: "n".to_string(),
+            label: "Node".to_string(),
+            kind: "part def".to_string(),
+            attributes,
+            x: 0.0,
+            y: 0.0,
+            width: 200.0,
+            height: 100.0,
+            compartments: Some(precomputed),
+        };
+
+        let svg = draw_nodes(std::slice::from_ref(&node), &LIGHT).to_string();
+        assert!(
+            svg.contains(">x<") && svg.contains(">y<"),
+            "expected precomputed items in output:\n{svg}"
+        );
+        assert!(
+            !svg.contains(">a<") && !svg.contains(">b<"),
+            "attributes-recomputed items must not appear when compartments is precomputed:\n{svg}"
+        );
+    }
+}

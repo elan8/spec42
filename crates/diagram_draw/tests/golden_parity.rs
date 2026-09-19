@@ -15,15 +15,31 @@ use diagram_draw::types::GeneralViewGraph;
 use diagram_draw::xml;
 use serde::Deserialize;
 
-fn render_fixture() -> (GeneralViewGraph, String) {
+fn render_fixture(name: &str) -> (GeneralViewGraph, String) {
     let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
-    let fixture_path = manifest_dir.join("tests/fixtures/general-view.laid-out.json");
+    let fixture_path = manifest_dir.join(format!("tests/fixtures/{name}.laid-out.json"));
     let fixture_json = std::fs::read_to_string(&fixture_path)
         .unwrap_or_else(|err| panic!("failed to read {}: {err}", fixture_path.display()));
     let graph: GeneralViewGraph =
         serde_json::from_str(&fixture_json).expect("fixture must deserialize");
     let svg = render_general_view_svg(&graph, &LIGHT, 1280.0, 900.0);
     (graph, svg)
+}
+
+fn assert_matches_real_typescript_output(name: &str) {
+    let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let rendered_path = manifest_dir.join(format!("tests/fixtures/{name}.rendered.svg"));
+    let rendered_svg = std::fs::read_to_string(&rendered_path)
+        .unwrap_or_else(|err| panic!("failed to read {}: {err}", rendered_path.display()));
+
+    let (_graph, actual_svg) = render_fixture(name);
+
+    let expected_tree = xml::parse(&rendered_svg);
+    let actual_tree = xml::parse(&actual_svg);
+    assert_eq!(
+        actual_tree, expected_tree,
+        "Rust output:\n{actual_svg}\n\nReal TS/D3 output:\n{rendered_svg}"
+    );
 }
 
 #[derive(Deserialize)]
@@ -41,7 +57,7 @@ fn general_view_structural_markers_match_the_golden_fixture() {
         "../../vscode/diagram-renderer/src/test-support/golden-parity/general-view.markers.json",
     );
 
-    let (_graph, svg) = render_fixture();
+    let (_graph, svg) = render_fixture("general-view");
     let actual = summarize_svg_markers(&svg);
 
     let golden_json = std::fs::read_to_string(&golden_path)
@@ -71,17 +87,16 @@ fn general_view_structural_markers_match_the_golden_fixture() {
 /// crate build attributes in different but equally arbitrary sequences), same text.
 #[test]
 fn general_view_rendered_svg_matches_the_real_typescript_output() {
-    let manifest_dir = Path::new(env!("CARGO_MANIFEST_DIR"));
-    let rendered_path = manifest_dir.join("tests/fixtures/general-view.rendered.svg");
-    let rendered_svg = std::fs::read_to_string(&rendered_path)
-        .unwrap_or_else(|err| panic!("failed to read {}: {err}", rendered_path.display()));
+    assert_matches_real_typescript_output("general-view");
+}
 
-    let (_graph, actual_svg) = render_fixture();
-
-    let expected_tree = xml::parse(&rendered_svg);
-    let actual_tree = xml::parse(&actual_svg);
-    assert_eq!(
-        actual_tree, expected_tree,
-        "Rust output:\n{actual_svg}\n\nReal TS/D3 output:\n{rendered_svg}"
-    );
+/// `general-view` (above) only has a plain two-node/one-edge `typing` graph -- it never exercises
+/// a collapsed compartment's disclosure chrome, a visible non-generic edge label, a `specializes`
+/// edge (whose marker branch also re-sets `stroke-width`, so it separately guards
+/// `Element`'s set-vs-append semantics), or a header fill on a non-zero-radius node. This fixture
+/// (`generalViewFidelityPayload` in `dump-general-view-fixture.test.ts`) exists specifically to
+/// exercise those paths.
+#[test]
+fn general_view_fidelity_rendered_svg_matches_the_real_typescript_output() {
+    assert_matches_real_typescript_output("general-view-fidelity");
 }
