@@ -29,13 +29,15 @@ pub struct IbdNodeRender {
     pub ports: Vec<Element>,
 }
 
+/// JS `String.length`/`.slice()` count UTF-16 code units, not Unicode scalar values -- use
+/// `encode_utf16` here (matching `behavior_common::truncate_label`), not `.chars()`, so labels
+/// containing non-BMP characters (e.g. emoji) truncate at the same code-unit boundary as the
+/// original TS `truncate` in `drawing.ts`.
 fn truncate(value: &str, max: usize) -> String {
-    let chars: Vec<char> = value.chars().collect();
-    if chars.len() > max {
-        format!(
-            "{}...",
-            chars[..max.saturating_sub(1)].iter().collect::<String>()
-        )
+    let units: Vec<u16> = value.encode_utf16().collect();
+    if units.len() > max {
+        let truncated = String::from_utf16_lossy(&units[..max.saturating_sub(1)]);
+        format!("{truncated}...")
     } else {
         value.to_string()
     }
@@ -207,4 +209,20 @@ pub fn render_ibd_node(
 
     let ports = draw_ibd_ports(node, width, content_start_y + 20.0, theme, layout_node);
     IbdNodeRender { children, ports }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// JS `String.length`/`.slice()` count UTF-16 code units, not Unicode scalar values. Each of
+    /// these two emoji is one `char` but a *surrogate pair* (2 code units) in UTF-16, so a
+    /// `.chars()`-based length check (2 <= max) would wrongly skip truncation entirely, while the
+    /// UTF-16-code-unit check (4 > max) correctly truncates, matching the original TS behavior.
+    #[test]
+    fn truncate_counts_utf16_code_units_like_the_original() {
+        let text = "🙂🙂";
+        let truncated = truncate(text, 3);
+        assert_eq!(truncated, "🙂...");
+    }
 }

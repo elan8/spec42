@@ -162,12 +162,24 @@ fn interconnection_edge_label_anchor(
             }
         })
         .collect();
-    let longest_horizontal = segments
-        .iter()
-        .filter(|s| s.horizontal && s.length >= 24.0)
-        .max_by(|a, b| a.length.total_cmp(&b.length));
-    let segment = longest_horizontal
-        .or_else(|| segments.iter().max_by(|a, b| a.length.total_cmp(&b.length)))?;
+    // TS's stable descending sort keeps the first (lowest-index) segment on a length tie, whereas
+    // `Iterator::max_by` returns the *last* maximum on ties -- break ties on `Reverse(index)` so
+    // the earliest segment wins, matching the stable sort exactly.
+    fn longest<'a>(candidates: &[(usize, &'a Segment)]) -> Option<&'a Segment> {
+        candidates
+            .iter()
+            .max_by(|(ia, a), (ib, b)| a.length.total_cmp(&b.length).then(ib.cmp(ia)))
+            .map(|(_, s)| *s)
+    }
+    let indexed: Vec<(usize, &Segment)> = segments.iter().enumerate().collect();
+    let longest_horizontal = longest(
+        &indexed
+            .iter()
+            .copied()
+            .filter(|(_, s)| s.horizontal && s.length >= 24.0)
+            .collect::<Vec<_>>(),
+    );
+    let segment = longest_horizontal.or_else(|| longest(&indexed))?;
     let x = (segment.start.x + segment.end.x) / 2.0;
     let y = (segment.start.y + segment.end.y) / 2.0;
     Some(if segment.horizontal {
@@ -219,13 +231,15 @@ fn ibd_edge_display_label(edge: &LaidOutEdge, edge_kind: &str) -> String {
     label.to_string()
 }
 
+/// JS `String.length`/`.slice()` count UTF-16 code units, not Unicode scalar values -- use
+/// `encode_utf16` here (matching `behavior_common::truncate_label`), not `.chars()`, so labels
+/// containing non-BMP characters (e.g. emoji) truncate at the same code-unit boundary as the
+/// original TS `truncate` in `drawing.ts`.
 fn truncate(value: &str, max: usize) -> String {
-    let chars: Vec<char> = value.chars().collect();
-    if chars.len() > max {
-        format!(
-            "{}...",
-            chars[..max.saturating_sub(1)].iter().collect::<String>()
-        )
+    let units: Vec<u16> = value.encode_utf16().collect();
+    if units.len() > max {
+        let truncated = String::from_utf16_lossy(&units[..max.saturating_sub(1)]);
+        format!("{truncated}...")
     } else {
         value.to_string()
     }
@@ -364,4 +378,61 @@ pub fn draw_ibd_edges(
         );
     }
     vec![edge_layer, label_layer]
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::BTreeMap;
+
+    fn edge_with_layout_route_points(
+        points: Vec<Point>,
+    ) -> (LaidOutEdge, InterconnectionLayoutEdgeDto) {
+        let edge = LaidOutEdge {
+            id: "e".to_string(),
+            source: "a".to_string(),
+            target: "b".to_string(),
+            label: String::new(),
+            edge_kind: None,
+            attributes: BTreeMap::new(),
+            layout: None,
+        };
+        let layout_edge = InterconnectionLayoutEdgeDto {
+            id: "e".to_string(),
+            route_points: points,
+        };
+        (edge, layout_edge)
+    }
+
+    /// TS's stable descending sort keeps the *first* segment on a length tie; `Iterator::max_by`
+    /// alone would keep the last. A symmetric zig-zag route with two equal-length horizontal
+    /// segments must anchor the label on the earlier one.
+    #[test]
+    fn label_anchor_prefers_the_earliest_segment_on_a_length_tie() {
+        let (edge, layout_edge) = edge_with_layout_route_points(vec![
+            Point { x: 0.0, y: 0.0 },
+            Point { x: 40.0, y: 0.0 },
+            Point { x: 40.0, y: 40.0 },
+            Point { x: 80.0, y: 40.0 },
+        ]);
+        let mut layout_edges_by_id = HashMap::new();
+        layout_edges_by_id.insert(edge.id.as_str(), &layout_edge);
+
+        let anchor = interconnection_edge_label_anchor(&edge, &layout_edges_by_id)
+            .expect("two-plus route points always resolve an anchor");
+        // Midpoint of the *first* horizontal segment (0,0)-(40,0), not the second (40,40)-(80,40).
+        assert_eq!(anchor.x, 20.0);
+        assert_eq!(anchor.y, 0.0);
+    }
+
+    /// JS `String.length`/`.slice()` count UTF-16 code units, not Unicode scalar values. Each of
+    /// these two emoji is one `char` but a *surrogate pair* (2 code units) in UTF-16, so a
+    /// `.chars()`-based length check (2 <= max) would wrongly skip truncation entirely, while the
+    /// UTF-16-code-unit check (4 > max) correctly truncates, matching the original TS behavior.
+    #[test]
+    fn truncate_counts_utf16_code_units_like_the_original() {
+        let text = "🙂🙂";
+        let truncated = truncate(text, 3);
+        assert_eq!(truncated, "🙂...");
+    }
 }

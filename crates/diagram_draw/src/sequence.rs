@@ -93,6 +93,19 @@ struct MessagePosition {
     y: f64,
 }
 
+/// `messagePositions` is a TS `Map`, so a repeated `messageRef` overwrites the earlier entry --
+/// mirror that last-wins semantics by searching from the end, not `Vec::find`'s first-match.
+fn last_position_for<'a>(
+    positions: &'a [(String, MessagePosition)],
+    id: &str,
+) -> Option<&'a MessagePosition> {
+    positions
+        .iter()
+        .rev()
+        .find(|(candidate, _)| candidate == id)
+        .map(|(_, position)| position)
+}
+
 /// Port of `renderSequenceView`. Returns the drawn content plus its `{minX,minY,maxX,maxY}`
 /// extents (`contentBoundsFromExtents` turns these into the `viewBox`-feeding bounds elsewhere).
 pub fn render_sequence_view(
@@ -335,12 +348,8 @@ pub fn render_sequence_view(
     }
     root = root.child(message_layer);
 
-    let position_for = |id: &str| -> Option<&MessagePosition> {
-        message_positions
-            .iter()
-            .find(|(candidate, _)| candidate == id)
-            .map(|(_, position)| position)
-    };
+    let position_for =
+        |id: &str| -> Option<&MessagePosition> { last_position_for(&message_positions, id) };
 
     let mut activation_layer = Element::new("g").attr("class", "sequence-activations");
     for activation in &activations {
@@ -543,4 +552,35 @@ pub fn sequence_marker(theme: &Theme) -> Element {
                 .attr("d", "M0,-5L10,0L0,5")
                 .style("fill", theme.edge_default),
         )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A TS `Map` overwrites an earlier entry when `messageRef` repeats, so a duplicate message
+    /// id/name must resolve to the *last* occurrence's position, not the first.
+    #[test]
+    fn last_position_for_prefers_the_last_occurrence_on_a_duplicate_ref() {
+        let positions = vec![
+            (
+                "m".to_string(),
+                MessagePosition {
+                    source_x: 0.0,
+                    target_x: 10.0,
+                    y: 100.0,
+                },
+            ),
+            (
+                "m".to_string(),
+                MessagePosition {
+                    source_x: 0.0,
+                    target_x: 10.0,
+                    y: 200.0,
+                },
+            ),
+        ];
+        let resolved = last_position_for(&positions, "m").expect("duplicate ref still resolves");
+        assert_eq!(resolved.y, 200.0);
+    }
 }
