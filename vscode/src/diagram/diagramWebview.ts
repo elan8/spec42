@@ -1,6 +1,7 @@
 import { prepareViewData } from "../../diagram-renderer/src/prepare";
 import { renderVisualization, type RenderController } from "../../diagram-renderer/src/renderer";
 import type { PreparedView } from "../../diagram-renderer/src/prepare";
+import type { DiagramProductIdentity, RequestServerLayout } from "../../diagram-renderer/src/render/types";
 import type { DiagramProduct } from "./diagramViewerCore";
 import { isEmptyIncompleteDiagramProduct } from "./diagramProductState";
 
@@ -18,7 +19,85 @@ type RenderMessage = {
   error?: string;
 };
 
+type LayoutResponseMessage = {
+  type: "layoutResponse";
+  requestId: number;
+  modelDigest: string;
+  viewHandle: string;
+  presentationRevision: number;
+  layout: Record<string, unknown>;
+};
+
+type LayoutErrorMessage = {
+  type: "layoutError";
+  requestId: number;
+  message?: string;
+};
+
 const vscode = acquireVsCodeApi();
+
+/** No response within this window is treated the same as an explicit decline: fall back to
+ * local layout rather than block the redraw indefinitely (e.g. the extension host is
+ * unreachable, or genuinely offline). */
+const LAYOUT_REQUEST_TIMEOUT_MS = 1000;
+
+let layoutRequestSeq = 0;
+const pendingLayoutRequests = new Map<
+  number,
+  {
+    settle: (layout: Record<string, unknown> | null) => void;
+    identity: DiagramProductIdentity;
+    presentationRevision: number;
+  }
+>();
+
+/** Bridges `RenderOptions.requestLayout` to the extension host over `postMessage`, since the
+ * webview itself has no LSP client -- the extension host is the one that actually calls
+ * `spec42/layout` (see `diagramViewer.ts`'s `onWebviewMessage` "layoutRequest" case). */
+const requestServerLayout: RequestServerLayout = (graph, identity, presentationRevision, signal) => {
+  if (signal.aborted) return Promise.resolve(null);
+  const requestId = ++layoutRequestSeq;
+  return new Promise((resolve) => {
+    let timeout: ReturnType<typeof setTimeout>;
+    const settle = (layout: Record<string, unknown> | null): void => {
+      pendingLayoutRequests.delete(requestId);
+      clearTimeout(timeout);
+      resolve(layout);
+    };
+    timeout = setTimeout(() => settle(null), LAYOUT_REQUEST_TIMEOUT_MS);
+    signal.addEventListener("abort", () => settle(null), { once: true });
+    pendingLayoutRequests.set(requestId, { settle, identity, presentationRevision });
+    vscode.postMessage({
+      type: "layoutRequest",
+      requestId,
+      modelDigest: identity.modelDigest,
+      viewHandle: identity.viewHandle,
+      presentationRevision,
+      graph,
+    });
+  });
+};
+
+function onLayoutResponse(message: LayoutResponseMessage | LayoutErrorMessage): void {
+  const pending = pendingLayoutRequests.get(message.requestId);
+  if (!pending) return; // superseded, aborted, or already timed out locally
+  if (message.type === "layoutError") {
+    pending.settle(null);
+    return;
+  }
+  // Belt-and-braces: requestId is already unique per request, so this should always match, but
+  // an extension-host bug that echoed the wrong identity/revision must not silently commit a
+  // layout for the wrong product or a stale presentation state.
+  if (
+    message.modelDigest !== pending.identity.modelDigest ||
+    message.viewHandle !== pending.identity.viewHandle ||
+    message.presentationRevision !== pending.presentationRevision
+  ) {
+    pending.settle(null);
+    return;
+  }
+  pending.settle(message.layout);
+}
 
 const canvas = must<HTMLElement>("diagram");
 const viewSelect = must<HTMLSelectElement>("view-select");
@@ -112,8 +191,14 @@ async function render(message: RenderMessage): Promise<void> {
   }
 
   const prepared = prepareViewData(product);
+  const productIdentity: DiagramProductIdentity = {
+    modelDigest: product.modelDigest,
+    viewHandle: message.selectedHandle,
+  };
   controller = await renderVisualization(canvas, prepared, {
     theme: { colorScheme: "vscode" },
+    productIdentity,
+    requestLayout: requestServerLayout,
     onNodeClick: (node) => {
       const range = node.range;
       const uri = node.uri ?? node.sourcePath;
@@ -236,6 +321,8 @@ window.addEventListener("message", (event: MessageEvent) => {
     void render(message as RenderMessage);
   } else if (message.type === "busy") {
     document.body.classList.toggle("busy", Boolean((message as { busy?: unknown }).busy));
+  } else if (message.type === "layoutResponse" || message.type === "layoutError") {
+    onLayoutResponse(message as LayoutResponseMessage | LayoutErrorMessage);
   }
 });
 

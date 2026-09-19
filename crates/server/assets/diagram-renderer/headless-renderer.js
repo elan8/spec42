@@ -7828,6 +7828,9 @@ var Spec42HeadlessRendererBundle = (() => {
         return fallbackGeneralLayout(diagramNodes, diagramEdges);
       }
     }
+    return reshapeGeneralLayoutResult(laidOut, diagramNodes, diagramEdges);
+  }
+  function reshapeGeneralLayoutResult(laidOut, diagramNodes, diagramEdges) {
     const byId = new Map(diagramNodes.map((node) => [node.id, node]));
     const layouts = /* @__PURE__ */ new Map();
     const visit = (elkNode, ox, oy) => {
@@ -8087,6 +8090,7 @@ var Spec42HeadlessRendererBundle = (() => {
     const isBehaviorView = view === "action-flow-view" || view === "state-transition-view" || view === "sequence-view" || view === "browser-view" || view === "grid-view" || view === "geometry-view";
     let bounds;
     let generalRenderGeneration = 0;
+    let activeLayoutAbort;
     let fitView = () => void 0;
     let getDisclosureState = () => ({ expandedNodeIds: [], sectionStates: [] });
     if (view === "action-flow-view") {
@@ -8228,10 +8232,24 @@ var Spec42HeadlessRendererBundle = (() => {
             element.focus();
           }
         };
+        const layoutGeneralView = async (visible, generation) => {
+          activeLayoutAbort?.abort();
+          const { requestLayout, productIdentity } = options;
+          if (requestLayout && productIdentity) {
+            const build = buildGeneralElkGraph(visible);
+            if (build) {
+              const abort = new AbortController();
+              activeLayoutAbort = abort;
+              const laidOut = await requestLayout(build.graph, productIdentity, generation, abort.signal);
+              if (laidOut) return reshapeGeneralLayoutResult(laidOut, build.diagramNodes, build.diagramEdges);
+            }
+          }
+          return layoutPrepared(visible);
+        };
         const redrawGeneral = async (focus, fitAfter = false) => {
           const generation = ++generalRenderGeneration;
           const visible = visibleProjection();
-          const nextLayout = await layoutPrepared(visible);
+          const nextLayout = await layoutGeneralView(visible, generation);
           if (generation !== generalRenderGeneration) return;
           root2.selectAll("*").remove();
           drawGeneralPackageContainers(root2, visible, nextLayout.nodes, theme);
