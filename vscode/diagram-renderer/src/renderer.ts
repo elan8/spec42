@@ -123,6 +123,12 @@ async function renderNativeSvgView(
   let lastBounds: ContentBounds = { x: 0, y: 0, width: 100, height: 100 };
   let fitView = (): void => undefined;
   let lastSvg: string | null = null;
+  let ownedCanvas = false;
+
+  const superseded = (generation?: number): boolean =>
+    options.abortSignal?.aborted === true
+    || activeAbort?.signal.aborted === true
+    || (generation !== undefined && generation !== renderGeneration);
 
   const restoreFocus = (selector: string): void => {
     const element = target.querySelector<SVGGElement>(selector);
@@ -131,8 +137,10 @@ async function renderNativeSvgView(
     }
   };
 
-  const mount = (svgMarkup: string): void => {
+  const mount = (svgMarkup: string, generation: number): void => {
+    if (superseded(generation)) return;
     destroyTooltips();
+    ownedCanvas = true;
     target.innerHTML = svgMarkup;
     const svgNode = target.querySelector<SVGSVGElement>("svg.sysml-viz-svg");
     const rootNode = svgNode?.querySelector<SVGGElement>("g.viz-root");
@@ -171,6 +179,12 @@ async function renderNativeSvgView(
     activeAbort?.abort();
     const abort = new AbortController();
     activeAbort = abort;
+    if (options.abortSignal?.aborted) {
+      abort.abort();
+    } else {
+      options.abortSignal?.addEventListener("abort", () => abort.abort(), { once: true });
+    }
+    if (superseded(generation)) return;
     const svgMarkup = await requestDraw(
       productIdentity,
       generation,
@@ -183,9 +197,10 @@ async function renderNativeSvgView(
       },
       abort.signal,
     );
-    if (generation !== renderGeneration) return;
+    if (superseded(generation)) return;
     if (!svgMarkup) {
       if (lastSvg) return;
+      ownedCanvas = true;
       target.replaceChildren();
       const empty = target.ownerDocument.createElement("div");
       empty.className = "empty";
@@ -194,7 +209,8 @@ async function renderNativeSvgView(
       return;
     }
     lastSvg = svgMarkup;
-    mount(svgMarkup);
+    mount(svgMarkup, generation);
+    if (superseded(generation)) return;
     if (focus?.refocusNodeControl) {
       restoreFocus(`[data-node-id="${focus.refocusNodeControl}"] .general-node-toggle`);
     } else if (focus?.refocusSection) {
@@ -252,11 +268,15 @@ async function renderNativeSvgView(
       return exportSvg(svgNode, lastBounds);
     },
     destroy: () => {
+      renderGeneration += 1;
       activeAbort?.abort();
       destroyTooltips();
       target.removeEventListener("click", onActivate);
       target.removeEventListener("keydown", onActivate);
-      target.innerHTML = "";
+      if (ownedCanvas) {
+        target.innerHTML = "";
+        ownedCanvas = false;
+      }
     },
   };
 }

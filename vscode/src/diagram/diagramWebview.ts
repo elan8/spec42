@@ -1,7 +1,7 @@
 import { prepareViewData } from "../../diagram-renderer/src/prepare";
 import { isNativeDiagramView, renderVisualization, type RenderController } from "../../diagram-renderer/src/renderer";
 import type { PreparedView } from "../../diagram-renderer/src/prepare";
-import type { DiagramProductIdentity, RequestServerDraw } from "../../diagram-renderer/src/render/types";
+import type { DiagramProductIdentity, DisclosureState, RequestServerDraw } from "../../diagram-renderer/src/render/types";
 import type { DiagramProduct } from "./diagramViewerCore";
 import { isEmptyIncompleteDiagramProduct } from "./diagramProductState";
 
@@ -108,6 +108,8 @@ let controller: RenderController | undefined;
 let currentProduct: DiagramProduct | undefined;
 let currentPrepared: PreparedView | undefined;
 let currentIdentity: DiagramProductIdentity | undefined;
+let renderGeneration = 0;
+let renderAbort: AbortController | undefined;
 
 function must<T extends HTMLElement>(id: string): T {
   const element = document.getElementById(id);
@@ -118,6 +120,65 @@ function must<T extends HTMLElement>(id: string): T {
 function currentColorScheme(): "light" | "dark" {
   const classes = document.body.className;
   return classes.includes("vscode-light") || classes.includes("vscode-high-contrast-light") ? "light" : "dark";
+}
+
+function themeClassSignature(): string {
+  return ["vscode-high-contrast-light", "vscode-light", "vscode-high-contrast", "vscode-dark"]
+    .filter((name) => document.body.classList.contains(name))
+    .join(" ");
+}
+
+function beginRender(): { generation: number; signal: AbortSignal } {
+  const generation = ++renderGeneration;
+  renderAbort?.abort();
+  const abort = new AbortController();
+  renderAbort = abort;
+  return { generation, signal: abort.signal };
+}
+
+function isCurrentRender(generation: number, signal: AbortSignal): boolean {
+  return generation === renderGeneration && !signal.aborted;
+}
+
+function openSource(node: { uri?: string; sourcePath?: string; range?: { start?: { line: number; character?: number }; end?: { line?: number; character?: number } } }): void {
+  const range = node.range;
+  const uri = node.uri ?? node.sourcePath;
+  if (!uri || !range?.start || !range.end) return;
+  vscode.postMessage({
+    type: "openSource",
+    target: {
+      uri,
+      startLine: range.start.line,
+      startCharacter: range.start.character ?? 0,
+      endLine: range.end.line ?? range.start.line,
+      endCharacter: range.end.character ?? range.start.character ?? 0,
+    },
+  });
+}
+
+async function mountPrepared(
+  generation: number,
+  signal: AbortSignal,
+  prepared: PreparedView,
+  product: DiagramProduct,
+  productIdentity: DiagramProductIdentity,
+  disclosureState?: DisclosureState,
+): Promise<void> {
+  const next = await renderVisualization(canvas, prepared, {
+    theme: { colorScheme: currentColorScheme() },
+    productIdentity,
+    product,
+    requestDraw: isNativeDiagramView(prepared.view) ? requestServerDraw : undefined,
+    disclosureState,
+    abortSignal: signal,
+    onNodeClick: openSource,
+  });
+  if (!isCurrentRender(generation, signal)) {
+    next.destroy();
+    return;
+  }
+  controller?.destroy();
+  controller = next;
 }
 
 function populateSelect(views: RenderMessage["views"], selectedHandle: string): void {
@@ -158,10 +219,12 @@ function setStatus(header: string, error: string | undefined): void {
 }
 
 async function render(message: RenderMessage): Promise<void> {
+  const { generation, signal } = beginRender();
   populateSelect(message.views, message.selectedHandle);
   setStatus(message.header, message.error);
 
   if (message.placeholder) {
+    if (!isCurrentRender(generation, signal)) return;
     controller?.destroy();
     controller = undefined;
     currentProduct = undefined;
@@ -175,15 +238,17 @@ async function render(message: RenderMessage): Promise<void> {
   try {
     product = JSON.parse(message.productJson) as DiagramProduct;
   } catch {
+    if (!isCurrentRender(generation, signal)) return;
     canvas.replaceChildren(withText("The generated diagram product was not valid JSON."));
     return;
   }
 
-  controller?.destroy();
-  controller = undefined;
   currentProduct = product;
 
   if (isEmptyIncompleteDiagramProduct(product)) {
+    if (!isCurrentRender(generation, signal)) return;
+    controller?.destroy();
+    controller = undefined;
     const reasons = message.incompleteReasons.length > 0
       ? message.incompleteReasons.join(", ")
       : "the projection is empty";
@@ -198,28 +263,14 @@ async function render(message: RenderMessage): Promise<void> {
     viewHandle: message.selectedHandle,
   };
   currentIdentity = productIdentity;
-  const scheme = currentColorScheme();
-  controller = await renderVisualization(canvas, prepared, {
-    theme: { colorScheme: scheme },
-    productIdentity,
-    product,
-    requestDraw: isNativeDiagramView(prepared.view) ? requestServerDraw : undefined,
-    onNodeClick: (node) => {
-      const range = node.range;
-      const uri = node.uri ?? node.sourcePath;
-      if (!uri || !range?.start || !range.end) return;
-      vscode.postMessage({
-        type: "openSource",
-        target: {
-          uri,
-          startLine: range.start.line,
-          startCharacter: range.start.character ?? 0,
-          endLine: range.end.line ?? range.start.line,
-          endCharacter: range.end.character ?? range.start.character ?? 0,
-        },
-      });
-    },
-  });
+  await mountPrepared(generation, signal, prepared, product, productIdentity);
+}
+
+async function redrawPreservingDisclosure(): Promise<void> {
+  if (!currentProduct || !currentPrepared || !currentIdentity) return;
+  const disclosure = controller?.getDisclosureState();
+  const { generation, signal } = beginRender();
+  await mountPrepared(generation, signal, currentPrepared, currentProduct, currentIdentity, disclosure);
 }
 
 function withText(text: string): HTMLElement {
@@ -347,3 +398,11 @@ window.addEventListener("message", (event: MessageEvent) => {
 });
 
 vscode.postMessage({ type: "ready" });
+
+let lastThemeSignature = themeClassSignature();
+new MutationObserver(() => {
+  const next = themeClassSignature();
+  if (next === lastThemeSignature) return;
+  lastThemeSignature = next;
+  void redrawPreservingDisclosure();
+}).observe(document.body, { attributes: true, attributeFilter: ["class"] });

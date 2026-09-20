@@ -53,6 +53,8 @@ export interface RenderOptions {
   /** Schema-5 product JSON (or legacy visualization payload) for `requestDraw`. */
   product?: unknown;
   requestDraw?: RequestServerDraw;
+  /** When aborted, this invocation must not write to the shared canvas. */
+  abortSignal?: AbortSignal;
 }
 
 export const NATIVE_DIAGRAM_VIEWS = new Set([

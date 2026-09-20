@@ -571,6 +571,121 @@ fn diagram_projection_keeps_inherited_features_distinct_in_each_usage_context() 
     assert_ne!(connectors[0].target, connectors[1].target);
 }
 
+#[test]
+fn interconnection_projection_maps_dotted_connectors_onto_distinct_usage_occurrences() {
+    let request = BuildRequest::new(
+        vec![
+            SourceInput::new(
+                "memory://standard-views.sysml",
+                "standard library package StandardViewDefinitions { view def InterconnectionView; }"
+                    .to_owned(),
+                SourceKind::StandardLibrary,
+            ),
+            SourceInput::new(
+                "memory://model.sysml",
+                concat!(
+                    "package Model { import StandardViewDefinitions::*; ",
+                    "part def PropulsionUnit { port cmd; port pwr; } ",
+                    "part def Vehicle { ",
+                    "port motorCmd; port bus; ",
+                    "part propulsion { ",
+                    "part propulsionUnit1 : PropulsionUnit; ",
+                    "part propulsionUnit2 : PropulsionUnit; ",
+                    "part propulsionUnit3 : PropulsionUnit; ",
+                    "part propulsionUnit4 : PropulsionUnit; ",
+                    "} ",
+                    "connect motorCmd to propulsion.propulsionUnit1.cmd; ",
+                    "connect motorCmd to propulsion.propulsionUnit2.cmd; ",
+                    "connect motorCmd to propulsion.propulsionUnit3.cmd; ",
+                    "connect motorCmd to propulsion.propulsionUnit4.cmd; ",
+                    "connect bus to propulsion.propulsionUnit1.pwr; ",
+                    "connect bus to propulsion.propulsionUnit2.pwr; ",
+                    "connect bus to propulsion.propulsionUnit3.pwr; ",
+                    "connect bus to propulsion.propulsionUnit4.pwr; ",
+                    "} ",
+                    "part root : Vehicle; ",
+                    "view connections : InterconnectionView { expose root; } }",
+                )
+                .to_owned(),
+                SourceKind::Workspace,
+            ),
+        ],
+        ConstructionSchedule::Sequential,
+        "contract-v1",
+    )
+    .unwrap();
+    let published = build(request).unwrap();
+    let catalog = match published.diagram_view_catalog().answer {
+        QueryAnswer::Resolved(catalog) => catalog,
+        other => panic!("expected diagram catalog, got {other:?}"),
+    };
+    let view = catalog
+        .iter()
+        .find(|view| view.kind == DiagramViewKind::Interconnection)
+        .unwrap();
+    let projection = match published.diagram_view(view.semantic_id).answer {
+        QueryAnswer::Resolved(projection) => projection,
+        other => panic!("expected Interconnection View projection, got {other:?}"),
+    };
+    assert!(
+        !projection.incomplete_reasons.iter().any(|reason| {
+            matches!(
+                reason,
+                DiagramIncompleteReason::RelationshipUnresolved {
+                    relationship: DiagramRelationshipKind::ConnectorEnd
+                } | DiagramIncompleteReason::RelationshipAmbiguous {
+                    relationship: DiagramRelationshipKind::ConnectorEnd
+                }
+            )
+        }),
+        "dotted connector ends must remap onto a unique occurrence, got {:?}",
+        projection.incomplete_reasons
+    );
+
+    let connectors = projection
+        .edges
+        .iter()
+        .filter(|edge| edge.kind == DiagramEdgeKind::Connector)
+        .collect::<Vec<_>>();
+    assert_eq!(
+        connectors.len(),
+        8,
+        "four cmd and four pwr connectors, one per propulsion unit"
+    );
+
+    for name in [
+        "propulsionUnit1",
+        "propulsionUnit2",
+        "propulsionUnit3",
+        "propulsionUnit4",
+    ] {
+        let unit = projection
+            .elements
+            .iter()
+            .find(|element| element.name.as_deref() == Some(name))
+            .unwrap_or_else(|| panic!("expected part usage {name}"));
+        for port in ["cmd", "pwr"] {
+            let occurrence = projection
+                .elements
+                .iter()
+                .find(|element| {
+                    element.name.as_deref() == Some(port)
+                        && element
+                            .occurrence_id
+                            .semantic_path
+                            .contains(&unit.semantic_id)
+                })
+                .unwrap_or_else(|| panic!("expected {port} under {name}"));
+            assert!(
+                connectors
+                    .iter()
+                    .any(|edge| edge.target == occurrence.occurrence_id),
+                "missing connector onto {name}.{port}"
+            );
+        }
+    }
+}
+
 /// Only an admitted non-workspace reporting addition changes the publication identity.
 #[test]
 fn the_reported_document_set_is_part_of_the_publication_identity() {

@@ -103,23 +103,54 @@ describe("shared renderer", () => {
     expect(target.innerHTML).toBe("");
   });
 
-  it("keeps the last SVG when a later draw request is declined", async () => {
-    const target = host();
-    const requestDraw = vi.fn<RequestServerDraw>()
-      .mockResolvedValueOnce(SAMPLE_SVG)
-      .mockResolvedValueOnce(null);
-    await renderVisualization(
-      target,
-      { title: "General", view: "general-view", nodes: [{ id: "n:0", label: "Root", kind: "part" }], edges: [] },
-      {
-        theme: LIGHT_THEME,
-        productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
-        product: { schemaVersion: 5 },
-        requestDraw,
-      },
-    );
-    target.querySelector(".general-node-toggle")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-    await vi.waitFor(() => expect(requestDraw).toHaveBeenCalledTimes(2));
-    expect(target.querySelector("svg.sysml-viz-svg")).toBeTruthy();
+    it("keeps the last SVG when a later draw request is declined", async () => {
+      const target = host();
+      const requestDraw = vi.fn<RequestServerDraw>()
+        .mockResolvedValueOnce(SAMPLE_SVG)
+        .mockResolvedValueOnce(null);
+      await renderVisualization(
+        target,
+        { title: "General", view: "general-view", nodes: [{ id: "n:0", label: "Root", kind: "part" }], edges: [] },
+        {
+          theme: LIGHT_THEME,
+          productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
+          product: { schemaVersion: 5 },
+          requestDraw,
+        },
+      );
+      target.querySelector(".general-node-toggle")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      await vi.waitFor(() => expect(requestDraw).toHaveBeenCalledTimes(2));
+      expect(target.querySelector("svg.sysml-viz-svg")).toBeTruthy();
+    });
+
+    it("does not mutate the canvas when the host aborts before draw returns", async () => {
+      const target = host();
+      target.innerHTML = "<div id='keep'>keep</div>";
+      const abort = new AbortController();
+      const requestDraw = vi.fn<RequestServerDraw>(async (_identity, _revision, _request, signal) => {
+        abort.abort();
+        return await new Promise((resolve) => {
+          if (signal.aborted) {
+            resolve(null);
+            return;
+          }
+          signal.addEventListener("abort", () => resolve(null), { once: true });
+        });
+      });
+      const pending = renderVisualization(
+        target,
+        { title: "General", view: "general-view", nodes: [{ id: "n:0", label: "Root", kind: "part" }], edges: [] },
+        {
+          theme: LIGHT_THEME,
+          productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
+          abortSignal: abort.signal,
+          product: { schemaVersion: 5 },
+          requestDraw,
+        },
+      );
+      const controller = await pending;
+      expect(target.querySelector("#keep")?.textContent).toBe("keep");
+      controller.destroy();
+      expect(target.querySelector("#keep")?.textContent).toBe("keep");
+    });
   });
-});
