@@ -402,6 +402,11 @@ fn is_presentation_only_membership_key_owner(path: &Path) -> bool {
     let normalized = path.to_string_lossy().replace('\\', "/");
     normalized.ends_with("crates/language_service/src/presentation_hover.rs")
         || normalized.ends_with("crates/workspace/src/comparison/relationships.rs")
+        // Browser View copies already-projected `attributes.visibility` onto row DTOs and
+        // draws a `+`/`-`/`#` glyph. `diagram_draw` never reads `DeclaredRelationshipFacts`
+        // and is a line-for-line port of the un-flagged `prepare/standard-views.ts`.
+        || normalized.ends_with("crates/diagram_draw/src/prepare.rs")
+        || normalized.ends_with("crates/diagram_draw/src/catalog.rs")
 }
 
 /// `diagram_draw` (spec42 #176) reads `stateType`/`actionType`/`itemType` as free-form diagram-DTO
