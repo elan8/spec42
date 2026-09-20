@@ -23,33 +23,17 @@ const SAMPLE_SVG = `<svg class="sysml-viz-svg" width="100%" height="100%" viewBo
 </svg>`;
 
 describe("shared renderer", () => {
-  it("keeps Browser, Grid, and Geometry as local catalog views", async () => {
+  it("does not draw Browser, Grid, or Geometry locally when the host has no requestDraw", async () => {
     for (const view of ["browser-view", "grid-view", "geometry-view"]) {
       const target = host();
       await renderVisualization(target, {
         title: view,
         view,
-        nodes: [
-          {
-            id: "system",
-            label: "System",
-            kind: "part def",
-            attributes: { name: "System", kind: "part def", attributeCount: 1, partCount: 2, portCount: 3 },
-          },
-        ],
+        nodes: [{ id: "system", label: "System", kind: "part def" }],
         edges: [],
-        meta: {
-          rows: [{ id: "system", label: "System", kind: "part def", qualifiedName: "Demo::System" }],
-          cells: [{ id: "system", name: "System", kind: "part def", attributeCount: 1, partCount: 2, portCount: 3 }],
-          elements: [{ id: "system", label: "System", kind: "part def" }],
-          hierarchyLayout: view === "browser-view",
-          provisional: view === "geometry-view",
-        },
       }, { theme: LIGHT_THEME });
-      expect(Boolean(target.querySelector(".provisional-view-badge"))).toBe(view === "geometry-view");
-      if (view === "browser-view") expect(target.querySelectorAll(".browser-row").length).toBeGreaterThan(0);
-      if (view === "grid-view") expect(target.querySelectorAll(".grid-cell").length).toBeGreaterThan(0);
-      if (view === "geometry-view") expect(target.querySelectorAll(".geometry-object").length).toBeGreaterThan(0);
+      expect(target.querySelector("svg")).toBeNull();
+      expect(target.textContent).toMatch(/language server/i);
     }
   });
 

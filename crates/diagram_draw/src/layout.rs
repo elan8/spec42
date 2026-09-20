@@ -24,7 +24,7 @@ const IBD_PORT_LABEL_HEIGHT: f64 = 10.0;
 pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::LayoutError> {
     let view = as_string(field(prepared, "view"), "general-view");
     match view.as_str() {
-        "sequence-view" => Ok(prepared.clone()),
+        "sequence-view" | "browser-view" | "grid-view" | "geometry-view" => Ok(prepared.clone()),
         "action-flow-view" | "state-transition-view" => {
             let horizontal = as_string(field(field(prepared, "meta"), "layoutDirection"), "")
                 .eq_ignore_ascii_case("horizontal");
@@ -40,13 +40,6 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
             }))
         }
         "interconnection-view" => layout_interconnection_prepared(prepared),
-        "browser-view" | "grid-view" | "geometry-view" => Ok(json!({
-            "title": field(prepared, "title"),
-            "view": view,
-            "nodes": [],
-            "edges": [],
-            "meta": field(prepared, "meta"),
-        })),
         _ => layout_general_prepared(prepared),
     }
 }

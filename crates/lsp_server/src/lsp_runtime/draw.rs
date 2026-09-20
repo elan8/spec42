@@ -1,10 +1,10 @@
-//! `spec42/draw`: native prepare + layout + SVG for the webview (issue #176).
+//! `spec42/draw`: native prepare + layout + SVG for the webview (issue #176 / #181).
 //!
 //! Stateless like `spec42/layout`: the client supplies the product JSON, canvas size, colour
 //! scheme, and renderer-owned disclosure state; the server echoes identity fields and returns
 //! SVG. `SPEC42_LAYOUT_ENGINE=legacy` declines this request. There is no client drawing fallback
-//! for the five shipped views — the webview stays on its last SVG (or an inert placeholder)
-//! until native drawing is available again.
+//! — the webview stays on its last SVG (or an inert placeholder) until native drawing is
+//! available again.
 
 use diagram_draw::DisclosureState;
 use serde::{Deserialize, Serialize};

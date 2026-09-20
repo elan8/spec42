@@ -87,11 +87,9 @@ fn native_sequence_svg_has_lifelines_and_the_authored_message() {
 }
 
 #[test]
-fn unsupported_views_fail_without_falling_back_to_quickjs() {
-    let err = render_native_svg(r#"{"view":"browser-view","title":"x"}"#)
-        .expect_err("browser-view is still TS-only");
-    assert!(
-        err.contains("browser-view"),
-        "unsupported-view error should name the view: {err}"
-    );
+fn catalog_views_render_without_falling_back_to_quickjs() {
+    let svg = render_native_svg(r#"{"view":"browser-view","selectedViewName":"x","generalViewGraph":{"nodes":[{"id":"root","name":"Root","type":"part"}],"edges":[]}}"#)
+        .unwrap_or_else(|err| panic!("native browser export failed: {err}"));
+    assert!(svg.contains("<svg"), "browser SVG:\n{svg}");
+    assert!(svg.contains("Root"), "browser SVG:\n{svg}");
 }

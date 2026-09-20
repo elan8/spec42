@@ -1,5 +1,4 @@
 import * as d3 from "d3";
-import type { DiagramTheme } from "../theme";
 import type { ContentBounds } from "./types";
 
 export function applyFit(
@@ -28,11 +27,6 @@ export function applyFit(
   }
   svg.transition().duration(180).call(zoom.transform, transform);
   return transform;
-}
-
-export function addMarkers(svg: d3.Selection<SVGSVGElement, unknown, null, undefined>, theme: DiagramTheme): void {
-  const defs = svg.append("defs");
-  defs.append("marker").attr("id", "viz-arrow").attr("markerWidth", 10).attr("markerHeight", 10).attr("refX", 9).attr("refY", 3).attr("orient", "auto").attr("markerUnits", "strokeWidth").append("path").attr("d", "M0,0 L0,6 L9,3 z").attr("fill", theme.edge.default);
 }
 
 export function exportSvg(svgNode: SVGSVGElement, bounds: ContentBounds): string {

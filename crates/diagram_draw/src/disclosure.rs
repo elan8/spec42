@@ -1,8 +1,12 @@
-//! General View disclosure projection (spec42 #176 webview).
+//! Renderer-owned disclosure projection (spec42 #176 / #181).
 //!
-//! Port of the former TypeScript `visibleProjection`: which nested nodes are visible, which
-//! memberships stay listed as compartments, and the `disclosure`/`compartmentSectionState`
-//! attributes drawing reads.
+//! General View: port of the former TypeScript `visibleProjection` — which nested nodes are
+//! visible, which memberships stay listed as compartments, and the `disclosure` /
+//! `compartmentSectionState` attributes drawing reads.
+//!
+//! Browser View: `expanded_node_ids` is the set of **collapsed** row ids (the toggle set the
+//! client already mutates). Empty means every row is expanded, matching the former TypeScript
+//! local `collapsed` Set. Drawing reads `meta.collapsedRowIds`.
 
 use std::collections::{HashMap, HashSet};
 
@@ -39,12 +43,26 @@ fn owner_of(node: &Value) -> Option<String> {
     }
 }
 
-/// Applies General View expansion/compartment state onto a prepared view, matching the
-/// TypeScript renderer. No-op for other views.
+/// Applies renderer-owned expansion/compartment state onto a prepared view.
+/// No-op for views that have no disclosure.
 pub fn apply_general_disclosure(prepared: &mut Value, state: &DisclosureState) {
-    if as_string(field(prepared, "view"), "") != "general-view" {
-        return;
+    match as_string(field(prepared, "view"), "").as_str() {
+        "general-view" => apply_general_view_disclosure(prepared, state),
+        "browser-view" => apply_browser_disclosure(prepared, state),
+        _ => {}
     }
+}
+
+fn apply_browser_disclosure(prepared: &mut Value, state: &DisclosureState) {
+    let mut meta = as_object(field(prepared, "meta"));
+    meta.insert(
+        "collapsedRowIds".into(),
+        json!(state.expanded_node_ids.clone()),
+    );
+    prepared["meta"] = Value::Object(meta);
+}
+
+fn apply_general_view_disclosure(prepared: &mut Value, state: &DisclosureState) {
     let expanded: HashSet<String> = state.expanded_node_ids.iter().cloned().collect();
     let mut section_state: HashMap<(String, String), bool> = HashMap::new();
     for section in &state.section_states {
@@ -223,6 +241,27 @@ mod tests {
                 ""
             ),
             "expanded"
+        );
+    }
+
+    #[test]
+    fn browser_collapsed_row_ids_are_the_toggle_set() {
+        let mut prepared = json!({
+            "view": "browser-view",
+            "nodes": [],
+            "edges": [],
+            "meta": { "rows": [], "hierarchyLayout": true }
+        });
+        apply_general_disclosure(
+            &mut prepared,
+            &DisclosureState {
+                expanded_node_ids: vec!["root".into()],
+                section_states: vec![],
+            },
+        );
+        assert_eq!(
+            as_array(field(field(&prepared, "meta"), "collapsedRowIds")),
+            &[json!("root")]
         );
     }
 }

@@ -11,7 +11,8 @@ export interface DisclosureActions {
   toggleSection: (nodeId: string, sectionKey: string, currentlyExpanded: boolean) => void;
 }
 
-/** Serializable disclosure state for transferring the current General view to another renderer. */
+/** Serializable disclosure state for transferring the current view to another renderer.
+ * For Browser View, `expandedNodeIds` is the set of collapsed row ids (empty = all expanded). */
 export interface DisclosureState {
   expandedNodeIds: string[];
   sectionStates: Array<{ nodeId: string; sectionKey: string; expanded: boolean }>;
@@ -27,7 +28,7 @@ export interface DiagramProductIdentity {
 
 /** Requests a native SVG from wherever the host wires this to -- normally `spec42/draw` via the
  * VS Code extension host. Returns `null` when the host declines or fails to answer (offline,
- * cancelled, server error). There is no client drawing fallback for the five shipped views. */
+ * cancelled, server error). There is no client drawing fallback. */
 export type RequestServerDraw = (
   identity: DiagramProductIdentity,
   presentationRevision: number,
@@ -63,6 +64,9 @@ export const NATIVE_DIAGRAM_VIEWS = new Set([
   "sequence-view",
   "action-flow-view",
   "state-transition-view",
+  "browser-view",
+  "grid-view",
+  "geometry-view",
 ]);
 
 export function isNativeDiagramView(view: string): boolean {

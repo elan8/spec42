@@ -1,8 +1,6 @@
 //! Headless SVG export for diagram products (CLI / `POST /v1/diagrams/export` / generator smoke).
 //!
-//! The five shipped views prepare, lay out (elkrs), and draw in `diagram_draw`. QuickJS is not
-//! on this path. Browser / grid / geometry stay TypeScript-only and return an unsupported-view
-//! error here.
+//! Every shipped view prepares and draws in `diagram_draw`. QuickJS is not on this path.
 
 use diagram_draw::{render_svg_from_payload_str, DrawError, PipelineError};
 

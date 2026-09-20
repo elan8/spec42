@@ -2,16 +2,13 @@ import * as d3 from "d3";
 import { resolveDiagramTheme } from "./theme";
 import type { PreparedView } from "./prepare";
 import type { PreparedNode } from "./prepare";
-import { renderBrowserView, renderGeometryView, renderGridView } from "./views/standard-views-render";
 import {
-  addMarkers,
   applyFit,
   contentBoundsFromViewBox,
   exportSvg,
 } from "./render/export";
-import { contentBoundsFromExtents, isNativeDiagramView, type ContentBounds, type DisclosureState, type RenderOptions } from "./render/types";
-import { installDiagramTooltips, installNativeSvgTooltips } from "./render/diagram-tooltip";
-import { installNodeChromeStyles } from "./render/node-chrome-style";
+import { isNativeDiagramView, type ContentBounds, type DisclosureState, type RenderOptions } from "./render/types";
+import { installNativeSvgTooltips } from "./render/diagram-tooltip";
 
 export type { DisclosureState, RenderOptions } from "./render/types";
 export { isNativeDiagramView, NATIVE_DIAGRAM_VIEWS } from "./render/types";
@@ -178,7 +175,10 @@ async function renderNativeSvgView(
         prepared.view === "interconnection-view"
           || prepared.view === "action-flow-view"
           || prepared.view === "state-transition-view"
-          || prepared.view === "sequence-view",
+          || prepared.view === "sequence-view"
+          || prepared.view === "browser-view"
+          || prepared.view === "grid-view"
+          || prepared.view === "geometry-view",
         options.delegateZoom === true,
       );
     };
@@ -292,93 +292,13 @@ async function renderNativeSvgView(
   };
 }
 
-async function renderCatalogView(
-  target: HTMLElement,
-  prepared: PreparedView,
-  options: RenderOptions,
-): Promise<RenderController> {
-  const canvasOwner = {};
-  claimCanvas(target, canvasOwner);
-  const renderStartedAt = Date.now();
-  target.innerHTML = "";
-  const theme = resolveDiagramTheme(options.theme);
-  const width = Math.max(720, target.clientWidth || 960);
-  const height = Math.max(480, target.clientHeight || 640);
-  const svg = d3
-    .select(target)
-    .append("svg")
-    .attr("class", "sysml-viz-svg")
-    .attr("width", "100%")
-    .attr("height", "100%")
-    .attr("viewBox", `0 0 ${width} ${height}`)
-    .attr("role", "img")
-    .attr("aria-label", prepared.title || "SysML view")
-    .style("touch-action", "none")
-    .style("cursor", "grab");
-  if (theme.colorScheme === "light" || theme.colorScheme === "dark" || theme.colorScheme === "auto") {
-    const scheme =
-      theme.colorScheme === "auto"
-        ? typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)")?.matches
-          ? "dark"
-          : "light"
-        : theme.colorScheme;
-    svg.attr("data-color-scheme", scheme);
-  }
-  svg.append("rect").attr("class", "viz-bg").attr("width", width).attr("height", height);
-  svg.select(".viz-bg").attr("fill", theme.canvasBackground);
-  addMarkers(svg, theme);
-  installNodeChromeStyles(svg, theme);
-
-  const root = svg.append("g").attr("class", "viz-root");
-  const delegateZoom = options.delegateZoom === true;
-  const zoom = installZoom(svg, root, delegateZoom);
-
-  const view = prepared.view;
-  const drawStartedAt = Date.now();
-  let bounds: ContentBounds;
-  if (view === "browser-view") {
-    bounds = contentBoundsFromExtents(renderBrowserView({ root, prepared, theme, width, height, options }));
-  } else if (view === "grid-view") {
-    bounds = contentBoundsFromExtents(renderGridView({ root, prepared, theme, width, height, options }));
-  } else if (view === "geometry-view") {
-    bounds = contentBoundsFromExtents(renderGeometryView({ root, prepared, theme, width, height, options }));
-  } else {
-    return inertController(target, { expandedNodeIds: [], sectionStates: [] }, `Unsupported view: ${view}`);
-  }
-  options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
-
-  let lastFitTransform = d3.zoomIdentity;
-  const fitView = () => {
-    lastFitTransform = applyFit(svg, zoom, root, bounds, width, height, true, delegateZoom);
-  };
-  fitView();
-  const destroyTooltips = installDiagramTooltips(target, prepared, theme);
-  options.onPerformance?.("sharedRenderer:render", {
-    view,
-    totalMs: Date.now() - renderStartedAt,
-    nodeCount: prepared.nodes.length,
-    edgeCount: prepared.edges.length,
-  });
-
-  return {
-    reset: () => fitView(),
-    getFitTransform: () => lastFitTransform,
-    getDisclosureState: () => ({ expandedNodeIds: [], sectionStates: [] }),
-    exportSvg: () => exportSvg(svg.node() as SVGSVGElement, bounds),
-    destroy: () => {
-      destroyTooltips();
-      clearCanvasIfOwner(target, canvasOwner);
-    },
-  };
-}
-
 export async function renderVisualization(
   target: HTMLElement,
   prepared: PreparedView,
   options: RenderOptions = {},
 ): Promise<RenderController> {
-  if (isNativeDiagramView(prepared.view)) {
-    return renderNativeSvgView(target, prepared, options);
+  if (!isNativeDiagramView(prepared.view)) {
+    return inertController(target, { expandedNodeIds: [], sectionStates: [] }, `Unsupported view: ${prepared.view}`);
   }
-  return renderCatalogView(target, prepared, options);
+  return renderNativeSvgView(target, prepared, options);
 }
