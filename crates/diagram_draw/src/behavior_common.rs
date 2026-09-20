@@ -1,6 +1,7 @@
 //! Port of the drawing-relevant half of `views/behavior-common.ts`, shared by `action_flow.rs`,
 //! `state_transition.rs`, and (for `PreparedView`/`PreparedNode`/`PreparedEdge` only) `sequence.rs`.
-//! Layout (`buildBehaviorElkGraphInput`/`layoutBehaviorGraph`) lives in [`crate::layout`].
+//! Layout (`buildBehaviorElkGraphInput`/`layoutBehaviorGraph`) lives in the crate's private
+//! `layout` module.
 
 use std::collections::BTreeMap;
 
