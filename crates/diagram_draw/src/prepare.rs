@@ -1976,6 +1976,25 @@ fn interconnection_scene_from_typed_projection(
     })
 }
 
+fn required_scene_vertex_index(
+    transition: &Value,
+    field_name: &str,
+    vertex_count: usize,
+) -> Result<usize, String> {
+    let value = field(transition, field_name);
+    let Some(index) = value.as_u64().map(|index| index as usize) else {
+        return Err(format!(
+            "state-transition {field_name} must be a vertex index, got {value}"
+        ));
+    };
+    if index >= vertex_count {
+        return Err(format!(
+            "state-transition {field_name} index {index} is out of range ({vertex_count} vertices)"
+        ));
+    }
+    Ok(index)
+}
+
 fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>> {
     if field(input, "schemaVersion").as_u64() != Some(5) {
         return None;
@@ -2064,26 +2083,18 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
         };
         let mut edges = Vec::new();
         for (index, transition) in as_array(field(scene, "transitions")).iter().enumerate() {
-            let source_index = field(transition, "source").as_u64().unwrap_or(0) as usize;
-            let target_index = field(transition, "target").as_u64().unwrap_or(0) as usize;
-            let source = match nodes.get(source_index) {
-                Some(node) => node,
-                None => {
-                    return Some(Err(format!(
-                        "state-transition source index {source_index} is out of range ({} vertices)",
-                        nodes.len()
-                    )));
-                }
+            let source_index = match required_scene_vertex_index(transition, "source", nodes.len())
+            {
+                Ok(index) => index,
+                Err(err) => return Some(Err(err)),
             };
-            let target = match nodes.get(target_index) {
-                Some(node) => node,
-                None => {
-                    return Some(Err(format!(
-                        "state-transition target index {target_index} is out of range ({} vertices)",
-                        nodes.len()
-                    )));
-                }
+            let target_index = match required_scene_vertex_index(transition, "target", nodes.len())
+            {
+                Ok(index) => index,
+                Err(err) => return Some(Err(err)),
             };
+            let source = &nodes[source_index];
+            let target = &nodes[target_index];
             let trigger = trigger_label(field(transition, "trigger"));
             let guard = feature_label(field(transition, "guard"));
             let effect = feature_label(field(transition, "effect"));

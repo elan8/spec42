@@ -209,3 +209,47 @@ fn schema5_state_transition_out_of_range_endpoint_is_an_error() {
         other => panic!("expected invalid payload, got {other}"),
     }
 }
+
+#[test]
+fn schema5_state_transition_missing_endpoint_is_an_error() {
+    let err = render_svg_from_payload(
+        &schema5_state_transition_payload(
+            vec![json!({ "id": "idle", "label": "idle", "kind": "state" })],
+            vec![json!({ "target": 0, "label": "go" })],
+        ),
+        1280.0,
+        900.0,
+    )
+    .expect_err("missing source must not default to vertex 0");
+    match err {
+        PipelineError::InvalidPayload(message) => {
+            assert!(
+                message.contains("source") && message.contains("vertex index"),
+                "expected a missing-source error, got {message}"
+            );
+        }
+        other => panic!("expected invalid payload, got {other}"),
+    }
+}
+
+#[test]
+fn schema5_state_transition_non_numeric_endpoint_is_an_error() {
+    let err = render_svg_from_payload(
+        &schema5_state_transition_payload(
+            vec![json!({ "id": "idle", "label": "idle", "kind": "state" })],
+            vec![json!({ "source": "idle", "target": 0, "label": "go" })],
+        ),
+        1280.0,
+        900.0,
+    )
+    .expect_err("non-numeric source must not default to vertex 0");
+    match err {
+        PipelineError::InvalidPayload(message) => {
+            assert!(
+                message.contains("source") && message.contains("vertex index"),
+                "expected a malformed-source error, got {message}"
+            );
+        }
+        other => panic!("expected invalid payload, got {other}"),
+    }
+}
