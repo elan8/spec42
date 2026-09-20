@@ -87,20 +87,19 @@ fn spec42_draw_declines_when_legacy_engine_is_requested() {
 }
 
 #[test]
-fn spec42_draw_rejects_catalog_views() {
+fn spec42_draw_renders_browser_view() {
     let mut session = TestSession::new();
     session.initialize_default("draw-catalog-test");
     let mut product = sequence_product();
     product["selectedView"]["kind"] = serde_json::json!("browser-view");
     product["projection"]["kind"] = serde_json::json!("browser-view");
+    product["projection"]["metadata"] = serde_json::json!({ "roots": [0] });
 
     let response = session.request("spec42/draw", draw_params(product));
-    let error = response
-        .get("error")
-        .unwrap_or_else(|| panic!("browser-view must fail spec42/draw: {response}"));
-    let message = error["message"].as_str().unwrap_or_default();
-    assert!(
-        message.contains("browser-view") || message.contains("Unsupported"),
-        "error should name the unsupported catalog view: {response}"
-    );
+    assert!(response.get("error").is_none(), "LSP response: {response}");
+    let result = &response["result"];
+    assert_eq!(result["engine"], "native");
+    let svg = result["svg"].as_str().unwrap_or_default();
+    assert!(svg.contains("<svg"), "expected SVG markup: {svg}");
+    assert!(svg.contains("browser-row") || svg.contains("client"), "{svg}");
 }

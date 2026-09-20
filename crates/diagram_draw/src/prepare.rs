@@ -1,7 +1,6 @@
-//! Port of `prepareViewData` and the five shipped-view prepare paths (general, interconnection,
-//! sequence, action-flow, state-transition), including schema-5 typed products.
-//! Browser / grid / geometry still prepare so a typed product can round-trip; the pipeline
-//! rejects them at draw time.
+//! Port of `prepareViewData` and every shipped-view prepare path (general, interconnection,
+//! sequence, action-flow, state-transition, browser, grid, geometry), including schema-5 typed
+//! products.
 
 use std::collections::{HashMap, HashSet};
 
@@ -36,13 +35,9 @@ fn prepare_legacy_view_data(input: &Value) -> Value {
         "action-flow-view" => prepare_activity(&visualization),
         "state-transition-view" => prepare_state(&visualization),
         "sequence-view" => prepare_sequence(&visualization),
-        "browser-view" | "grid-view" | "geometry-view" => json!({
-            "title": as_string(field(&visualization, "selectedViewName"), "SysML View"),
-            "view": view,
-            "nodes": [],
-            "edges": [],
-            "meta": {},
-        }),
+        "browser-view" => prepare_browser(&visualization),
+        "grid-view" => prepare_grid(&visualization),
+        "geometry-view" => prepare_geometry(&visualization),
         _ => prepare_graph(
             if field(&visualization, "generalViewGraph").is_object() {
                 field(&visualization, "generalViewGraph")
@@ -1995,6 +1990,591 @@ fn required_scene_vertex_index(
     Ok(index)
 }
 
+fn graph_for_standard_view(visualization: &Value) -> &Value {
+    let general = field(visualization, "generalViewGraph");
+    if general.is_object() {
+        general
+    } else {
+        field(visualization, "graph")
+    }
+}
+
+fn projection_hints(visualization: &Value) -> &Value {
+    field(visualization, "projectionHints")
+}
+
+fn nonempty_string(value: &Value) -> Option<String> {
+    let text = as_string(value, "");
+    if text.trim().is_empty() {
+        None
+    } else {
+        Some(text)
+    }
+}
+
+fn first_nonempty_string<'a>(values: impl IntoIterator<Item = &'a Value>) -> Option<String> {
+    values.into_iter().find_map(nonempty_string)
+}
+
+fn qualified_name_of(node: &Value) -> String {
+    as_string(
+        first_present([
+            field(node, "id"),
+            field(node, "qualifiedName"),
+            field(field(node, "attributes"), "qualifiedName"),
+            field(node, "name"),
+        ]),
+        "",
+    )
+}
+
+fn optional_uri_value(node: &Value) -> Value {
+    match js_nonempty_string(first_present([
+        field(node, "uri"),
+        field(node, "sourcePath"),
+        field(node, "source_path"),
+    ])) {
+        Some(uri) => Value::String(uri),
+        None => Value::Null,
+    }
+}
+
+struct BrowserGraphNode {
+    id: String,
+    label: String,
+    kind: String,
+    parent_id: String,
+    qualified_name: String,
+    visibility: Option<String>,
+    uri: Value,
+    range: Value,
+}
+
+fn standard_graph_nodes(visualization: &Value) -> Vec<BrowserGraphNode> {
+    as_array(field(graph_for_standard_view(visualization), "nodes"))
+        .iter()
+        .map(|node| BrowserGraphNode {
+            id: as_string(field(node, "id"), ""),
+            label: as_string(
+                first_present([
+                    field(node, "name"),
+                    field(node, "qualifiedName"),
+                    field(node, "id"),
+                ]),
+                "Unnamed",
+            ),
+            kind: {
+                let kind = element_type_of(node);
+                if kind.is_empty() {
+                    "element".to_string()
+                } else {
+                    kind
+                }
+            },
+            parent_id: first_nonempty_string([
+                field(node, "parent_id"),
+                field(node, "parentId"),
+                field(field(node, "attributes"), "parentId"),
+            ])
+            .unwrap_or_default(),
+            qualified_name: qualified_name_of(node),
+            visibility: nonempty_string(field(field(node, "attributes"), "visibility")),
+            uri: optional_uri_value(node),
+            range: node_range(node),
+        })
+        .collect()
+}
+
+fn browser_row_value(node: &BrowserGraphNode, depth: usize, has_children: bool) -> Value {
+    let mut row = json!({
+        "id": node.id,
+        "label": node.label,
+        "kind": node.kind,
+        "parentId": node.parent_id,
+        "qualifiedName": node.qualified_name,
+        "depth": depth,
+        "hasChildren": has_children,
+        "uri": node.uri,
+        "range": node.range,
+    });
+    if let Some(visibility) = &node.visibility {
+        row["visibility"] = json!(visibility);
+    }
+    row
+}
+
+fn build_hierarchy_rows(graph_nodes: &[BrowserGraphNode], tree_roots: &[String]) -> Vec<Value> {
+    let by_id: HashMap<&str, &BrowserGraphNode> = graph_nodes
+        .iter()
+        .map(|node| (node.id.as_str(), node))
+        .collect();
+    let mut children_by_parent: HashMap<&str, Vec<&BrowserGraphNode>> = HashMap::new();
+    for node in graph_nodes {
+        if node.parent_id.is_empty() || !by_id.contains_key(node.parent_id.as_str()) {
+            continue;
+        }
+        children_by_parent
+            .entry(node.parent_id.as_str())
+            .or_default()
+            .push(node);
+    }
+    let roots: Vec<&BrowserGraphNode> = if tree_roots.is_empty() {
+        graph_nodes
+            .iter()
+            .filter(|node| {
+                node.parent_id.is_empty() || !by_id.contains_key(node.parent_id.as_str())
+            })
+            .collect()
+    } else {
+        tree_roots
+            .iter()
+            .filter_map(|id| by_id.get(id.as_str()).copied())
+            .collect()
+    };
+    let mut rows = Vec::new();
+    fn visit(
+        node: &BrowserGraphNode,
+        depth: usize,
+        children_by_parent: &HashMap<&str, Vec<&BrowserGraphNode>>,
+        rows: &mut Vec<Value>,
+    ) {
+        let children = children_by_parent
+            .get(node.id.as_str())
+            .map(Vec::as_slice)
+            .unwrap_or(&[]);
+        rows.push(browser_row_value(node, depth, !children.is_empty()));
+        for child in children {
+            visit(child, depth + 1, children_by_parent, rows);
+        }
+    }
+    for root in roots {
+        visit(root, 0, &children_by_parent, &mut rows);
+    }
+    rows
+}
+
+fn prepare_browser(visualization: &Value) -> Value {
+    let graph_nodes = standard_graph_nodes(visualization);
+    let hints = projection_hints(visualization);
+    let hierarchy_layout = as_string(field(hints, "browserLayout"), "") == "hierarchy";
+    let tree_roots: Vec<String> = as_array(field(hints, "treeRoots"))
+        .iter()
+        .map(|value| as_string(value, ""))
+        .filter(|value| !value.is_empty())
+        .collect();
+    let mut rows = if hierarchy_layout {
+        build_hierarchy_rows(&graph_nodes, &tree_roots)
+    } else {
+        let mut rows: Vec<Value> = graph_nodes
+            .iter()
+            .map(|node| browser_row_value(node, 0, false))
+            .collect();
+        rows.sort_by(|left, right| {
+            as_string(field(left, "qualifiedName"), "")
+                .cmp(&as_string(field(right, "qualifiedName"), ""))
+        });
+        rows
+    };
+    let nodes: Vec<Value> = rows
+        .iter_mut()
+        .enumerate()
+        .map(|(index, row)| {
+            let id = as_string(field(row, "id"), "");
+            if id.is_empty() {
+                row["id"] = json!(format!("browser-row-{index}"));
+            }
+            json!({
+                "id": field(row, "id"),
+                "label": field(row, "label"),
+                "kind": field(row, "kind"),
+                "uri": field(row, "uri"),
+                "range": field(row, "range"),
+                "attributes": row,
+            })
+        })
+        .collect();
+    json!({
+        "title": as_string(field(visualization, "selectedViewName"), "Browser View"),
+        "view": "browser-view",
+        "nodes": nodes,
+        "edges": [],
+        "meta": {
+            "rows": rows,
+            "hierarchyLayout": hierarchy_layout,
+            "provisional": !hierarchy_layout,
+        },
+    })
+}
+
+fn build_relationship_matrix(node_ids: &[String], graph_edges: &[Value]) -> Vec<Value> {
+    let mut edge_by_pair: HashMap<String, Vec<String>> = HashMap::new();
+    for edge in graph_edges {
+        let source = as_string(field(edge, "source"), "");
+        let target = as_string(field(edge, "target"), "");
+        if source.is_empty() || target.is_empty() {
+            continue;
+        }
+        let label = as_string(
+            first_present([
+                field(edge, "name"),
+                field(edge, "label"),
+                field(edge, "type"),
+                field(edge, "rel_type"),
+            ]),
+            "",
+        );
+        if label.is_empty() {
+            continue;
+        }
+        edge_by_pair
+            .entry(format!("{source}::{target}"))
+            .or_default()
+            .push(label);
+    }
+    let mut cells = Vec::new();
+    for source in node_ids {
+        for target in node_ids {
+            let labels = edge_by_pair
+                .get(&format!("{source}::{target}"))
+                .cloned()
+                .unwrap_or_default();
+            cells.push(json!({
+                "source": source,
+                "target": target,
+                "present": !labels.is_empty(),
+                "labels": labels,
+            }));
+        }
+    }
+    cells
+}
+
+fn prepare_grid(visualization: &Value) -> Value {
+    let graph = graph_for_standard_view(visualization);
+    let hints = projection_hints(visualization);
+    let relationship_matrix = as_string(field(hints, "gridSubtype"), "") == "relationship_matrix";
+    let mut cells: Vec<Value> = as_array(field(graph, "nodes"))
+        .iter()
+        .map(|node| {
+            let attrs = field(node, "attributes");
+            let qualified_name = qualified_name_of(node);
+            let kind = element_type_of(node);
+            json!({
+                "id": as_string(field(node, "id"), ""),
+                "name": as_string(
+                    first_present([
+                        field(node, "name"),
+                        field(node, "qualifiedName"),
+                        field(node, "id"),
+                    ]),
+                    "Unnamed",
+                ),
+                "kind": if kind.is_empty() { "element" } else { kind.as_str() },
+                "qualifiedName": qualified_name,
+                "attributeCount": as_array(field(attrs, "attributes")).len(),
+                "partCount": as_array(field(attrs, "parts")).len(),
+                "portCount": as_array(field(attrs, "ports")).len(),
+                "unsupportedRendering": "Unsupported rendering",
+                "uri": optional_uri_value(node),
+                "range": node_range(node),
+            })
+        })
+        .collect();
+    cells.sort_by(|left, right| {
+        as_string(field(left, "qualifiedName"), "")
+            .cmp(&as_string(field(right, "qualifiedName"), ""))
+    });
+    let node_ids: Vec<String> = cells
+        .iter()
+        .map(|cell| as_string(field(cell, "id"), ""))
+        .filter(|id| !id.is_empty())
+        .collect();
+    let matrix_cells = if relationship_matrix {
+        build_relationship_matrix(&node_ids, as_array(field(graph, "edges")))
+    } else {
+        Vec::new()
+    };
+    let column_views: Vec<Value> = as_array(field(hints, "columnViews"))
+        .iter()
+        .map(|entry| {
+            let rendering_type = as_string(field(entry, "renderingType"), "");
+            json!({
+                "label": as_string(field(entry, "label"), "Column"),
+                "renderingType": rendering_type,
+                "supported": rendering_type == "asTextualNotation",
+            })
+        })
+        .collect();
+    let columns = if column_views.is_empty() {
+        Value::Null
+    } else {
+        Value::Array(
+            column_views
+                .iter()
+                .map(|column| {
+                    let supported = field(column, "supported") == &json!(true);
+                    json!({
+                        "key": if supported { "name" } else { "unsupportedRendering" },
+                        "label": field(column, "label"),
+                        "renderingType": field(column, "renderingType"),
+                        "notationStatus": if supported { "normative" } else { "unsupported" },
+                    })
+                })
+                .collect(),
+        )
+    };
+    let nodes: Vec<Value> = cells
+        .iter()
+        .enumerate()
+        .map(|(index, cell)| {
+            let id = as_string(field(cell, "id"), "");
+            json!({
+                "id": if id.is_empty() {
+                    Value::String(format!("grid-row-{index}"))
+                } else {
+                    field(cell, "id").clone()
+                },
+                "label": field(cell, "name"),
+                "kind": field(cell, "kind"),
+                "uri": field(cell, "uri"),
+                "range": field(cell, "range"),
+                "attributes": cell,
+            })
+        })
+        .collect();
+    let mut meta = json!({
+        "cells": cells,
+        "relationshipMatrix": relationship_matrix,
+        "matrixRowIds": if relationship_matrix { json!(node_ids) } else { json!([]) },
+        "matrixColIds": if relationship_matrix { json!(node_ids) } else { json!([]) },
+        "matrixCells": matrix_cells,
+        "provisional": column_views.iter().any(|column| field(column, "supported") != &json!(true)),
+    });
+    if !columns.is_null() {
+        meta["columns"] = columns;
+    }
+    json!({
+        "title": as_string(field(visualization, "selectedViewName"), "Grid View"),
+        "view": "grid-view",
+        "nodes": nodes,
+        "edges": [],
+        "meta": meta,
+    })
+}
+
+fn prepare_geometry(visualization: &Value) -> Value {
+    let graph = graph_for_standard_view(visualization);
+    let hints = projection_hints(visualization);
+    let elements: Vec<Value> = as_array(field(graph, "nodes"))
+        .iter()
+        .map(|node| {
+            let kind = element_type_of(node);
+            json!({
+                "id": as_string(field(node, "id"), ""),
+                "label": as_string(
+                    first_present([
+                        field(node, "name"),
+                        field(node, "qualifiedName"),
+                        field(node, "id"),
+                    ]),
+                    "Unnamed",
+                ),
+                "kind": if kind.is_empty() { "element" } else { kind.as_str() },
+                "qualifiedName": qualified_name_of(node),
+                "uri": optional_uri_value(node),
+                "range": node_range(node),
+            })
+        })
+        .collect();
+    let node_ids: HashSet<String> = elements
+        .iter()
+        .map(|element| as_string(field(element, "id"), ""))
+        .collect();
+    let nodes: Vec<Value> = elements
+        .iter()
+        .enumerate()
+        .map(|(index, element)| {
+            let id = as_string(field(element, "id"), "");
+            json!({
+                "id": if id.is_empty() {
+                    Value::String(format!("geometry-node-{index}"))
+                } else {
+                    field(element, "id").clone()
+                },
+                "label": field(element, "label"),
+                "kind": field(element, "kind"),
+                "uri": field(element, "uri"),
+                "range": field(element, "range"),
+                "attributes": element,
+            })
+        })
+        .collect();
+    let edges: Vec<Value> = as_array(field(graph, "edges"))
+        .iter()
+        .enumerate()
+        .filter_map(|(index, edge)| {
+            let source = as_string(field(edge, "source"), "");
+            let target = as_string(field(edge, "target"), "");
+            if !node_ids.contains(&source) || !node_ids.contains(&target) {
+                return None;
+            }
+            Some(json!({
+                "id": as_string(field(edge, "id"), &format!("geometry-edge-{index}")),
+                "source": source,
+                "target": target,
+                "label": as_string(
+                    first_present([
+                        field(edge, "name"),
+                        field(edge, "label"),
+                        field(edge, "type"),
+                        field(edge, "rel_type"),
+                    ]),
+                    "",
+                ),
+            }))
+        })
+        .collect();
+    json!({
+        "title": as_string(field(visualization, "selectedViewName"), "Geometry View"),
+        "view": "geometry-view",
+        "nodes": nodes,
+        "edges": edges,
+        "meta": {
+            "elements": elements,
+            "geometryMode": as_string(field(hints, "geometryMode"), "2d"),
+            "geometryProjection": as_string(field(hints, "geometryProjection"), "orthographic"),
+            "provisional": true,
+        },
+    })
+}
+
+fn typed_owner_node_id(node: &Value) -> String {
+    match field(field(node, "attributes"), "owner") {
+        Value::Number(number) => number
+            .as_u64()
+            .map(|index| format!("n:{index}"))
+            .or_else(|| number.as_i64().map(|index| format!("n:{index}")))
+            .unwrap_or_default(),
+        Value::String(value) => value.clone(),
+        _ => String::new(),
+    }
+}
+
+fn enrich_typed_catalog_product(selected_kind: &str, product: &mut Value) {
+    match selected_kind {
+        "browser-view" => {
+            let nodes = as_array(field(product, "nodes"));
+            let metadata = field(field(product, "meta"), "viewMetadata");
+            let tree_roots: Vec<String> = as_array(field(metadata, "roots"))
+                .iter()
+                .map(|index| format!("n:{}", as_string(index, "")))
+                .filter(|id| id != "n:")
+                .collect();
+            let graph_nodes: Vec<BrowserGraphNode> = nodes
+                .iter()
+                .map(|node| BrowserGraphNode {
+                    id: as_string(field(node, "id"), ""),
+                    label: as_string(field(node, "label"), "Unnamed"),
+                    kind: as_string(field(node, "kind"), "element"),
+                    parent_id: typed_owner_node_id(node),
+                    qualified_name: as_string(field(node, "id"), ""),
+                    visibility: nonempty_string(field(field(node, "attributes"), "visibility")),
+                    uri: field(node, "uri").clone(),
+                    range: field(node, "range").clone(),
+                })
+                .collect();
+            let by_id: HashSet<String> = graph_nodes.iter().map(|node| node.id.clone()).collect();
+            let hierarchy_layout = graph_nodes
+                .iter()
+                .any(|node| !node.parent_id.is_empty() && by_id.contains(&node.parent_id));
+            let rows = if hierarchy_layout {
+                build_hierarchy_rows(&graph_nodes, &tree_roots)
+            } else {
+                graph_nodes
+                    .iter()
+                    .map(|node| browser_row_value(node, 0, false))
+                    .collect()
+            };
+            let mut meta = as_object(field(product, "meta"));
+            meta.insert("rows".into(), Value::Array(rows));
+            meta.insert("hierarchyLayout".into(), json!(hierarchy_layout));
+            meta.insert("provisional".into(), json!(!hierarchy_layout));
+            product["meta"] = Value::Object(meta);
+        }
+        "grid-view" => {
+            let nodes = as_array(field(product, "nodes")).to_vec();
+            let metadata = field(field(product, "meta"), "viewMetadata");
+            let grid_rows: Vec<usize> = as_array(field(metadata, "rows"))
+                .iter()
+                .filter_map(|value| value.as_u64().map(|index| index as usize))
+                .filter(|index| *index < nodes.len())
+                .collect();
+            let grid_columns: Vec<String> = as_array(field(metadata, "columns"))
+                .iter()
+                .map(|value| as_string(value, ""))
+                .filter(|value| !value.is_empty())
+                .collect();
+            let grid_relationships = as_array(field(metadata, "cells"));
+            let cells: Vec<Value> = grid_rows
+                .iter()
+                .map(|node_index| {
+                    let node = &nodes[*node_index];
+                    let mut cell = json!({
+                        "id": field(node, "id"),
+                        "name": field(node, "label"),
+                        "kind": field(node, "kind"),
+                    });
+                    for column in &grid_columns {
+                        let present = grid_relationships.iter().any(|entry| {
+                            entry.get("row").and_then(Value::as_u64) == Some(*node_index as u64)
+                                && as_string(field(entry, "column"), "") == *column
+                        });
+                        cell[format!("relationship:{column}")] =
+                            json!(if present { "✓" } else { "" });
+                    }
+                    cell
+                })
+                .collect();
+            let mut columns = vec![json!({
+                "key": "name",
+                "label": "Element",
+                "notationStatus": "normative",
+            })];
+            columns.extend(grid_columns.iter().map(|column| {
+                json!({
+                    "key": format!("relationship:{column}"),
+                    "label": column,
+                    "notationStatus": "normative",
+                })
+            }));
+            let mut meta = as_object(field(product, "meta"));
+            meta.insert("cells".into(), Value::Array(cells));
+            meta.insert("columns".into(), Value::Array(columns));
+            meta.insert("provisional".into(), json!(false));
+            product["meta"] = Value::Object(meta);
+        }
+        "geometry-view" => {
+            let elements: Vec<Value> = as_array(field(product, "nodes"))
+                .iter()
+                .map(|node| {
+                    json!({
+                        "id": field(node, "id"),
+                        "label": field(node, "label"),
+                        "kind": field(node, "kind"),
+                    })
+                })
+                .collect();
+            let mut meta = as_object(field(product, "meta"));
+            meta.insert("elements".into(), Value::Array(elements));
+            meta.insert("geometryMode".into(), json!("2d"));
+            meta.insert("geometryProjection".into(), json!("orthographic"));
+            meta.insert("provisional".into(), json!(true));
+            product["meta"] = Value::Object(meta);
+        }
+        _ => {}
+    }
+}
+
 fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>> {
     if field(input, "schemaVersion").as_u64() != Some(5) {
         return None;
@@ -2285,13 +2865,15 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
     if let Some(sequence_diagram) = sequence_diagram {
         meta["sequenceDiagram"] = sequence_diagram;
     }
-    Some(Ok(json!({
+    let mut prepared = json!({
         "title": selected_name,
         "view": selected_kind,
         "nodes": nodes,
         "edges": edges,
         "meta": meta,
-    })))
+    });
+    enrich_typed_catalog_product(selected_kind, &mut prepared);
+    Some(Ok(prepared))
 }
 
 #[cfg(test)]
@@ -2321,5 +2903,71 @@ mod tests {
         ];
         let best = best_behavior_diagram(&diagrams).expect("catalog is non-empty");
         assert_eq!(best["name"], "first");
+    }
+
+    #[test]
+    fn browser_hierarchy_preserves_tree_roots_and_sibling_order() {
+        let prepared = prepare_view_data(&json!({
+            "view": "browser-view",
+            "selectedViewName": "Structure Browser",
+            "projectionHints": {
+                "browserLayout": "hierarchy",
+                "treeRoots": ["zRoot", "aRoot"]
+            },
+            "generalViewGraph": {
+                "nodes": [
+                    { "id": "zRoot", "name": "zRoot", "type": "part", "parentId": "" },
+                    { "id": "aRoot", "name": "aRoot", "type": "part", "parentId": "" },
+                    { "id": "zChild", "name": "zChild", "type": "part", "parentId": "zRoot" },
+                    { "id": "aChild", "name": "aChild", "type": "part", "parentId": "zRoot" }
+                ],
+                "edges": []
+            }
+        }))
+        .expect("prepare");
+        let rows = as_array(field(field(&prepared, "meta"), "rows"));
+        assert_eq!(field(&prepared, "view"), "browser-view");
+        assert_eq!(field(field(&prepared, "meta"), "hierarchyLayout"), true);
+        assert_eq!(
+            rows.iter()
+                .map(|row| as_string(field(row, "id"), ""))
+                .collect::<Vec<_>>(),
+            vec!["zRoot", "zChild", "aChild", "aRoot"]
+        );
+        assert_eq!(field(&rows[0], "hasChildren"), true);
+        assert_eq!(field(&rows[1], "parentId"), "zRoot");
+    }
+
+    #[test]
+    fn grid_relationship_matrix_keeps_every_kind_between_a_pair() {
+        let prepared = prepare_view_data(&json!({
+            "view": "grid-view",
+            "projectionHints": { "gridSubtype": "relationship_matrix" },
+            "generalViewGraph": {
+                "nodes": [
+                    { "id": "a", "name": "a", "type": "part" },
+                    { "id": "b", "name": "b", "type": "part" }
+                ],
+                "edges": [
+                    { "source": "a", "target": "b", "type": "Dependency" },
+                    { "source": "a", "target": "b", "type": "Satisfy" }
+                ]
+            }
+        }))
+        .expect("prepare");
+        assert_eq!(field(field(&prepared, "meta"), "relationshipMatrix"), true);
+        let cells = as_array(field(field(&prepared, "meta"), "matrixCells"));
+        let cell = cells
+            .iter()
+            .find(|entry| {
+                as_string(field(entry, "source"), "") == "a"
+                    && as_string(field(entry, "target"), "") == "b"
+            })
+            .expect("a→b cell");
+        assert_eq!(field(cell, "present"), true);
+        assert_eq!(
+            field(cell, "labels").clone(),
+            json!(["Dependency", "Satisfy"])
+        );
     }
 }

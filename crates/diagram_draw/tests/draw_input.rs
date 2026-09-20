@@ -47,12 +47,13 @@ fn dispatcher_renders_every_dumped_view_fixture() {
 }
 
 #[test]
-fn dispatcher_rejects_views_without_a_native_renderer() {
-    let err = render_svg_from_str(
-        r#"{"view":"browser-view","title":"x","nodes":[],"edges":[]}"#,
+fn dispatcher_renders_catalog_views() {
+    let browser = render_svg_from_str(
+        r#"{"view":"browser-view","title":"Browser","nodes":[{"id":"root","label":"Root","kind":"part"}],"edges":[],"meta":{"rows":[{"id":"root","label":"Root","kind":"part","depth":0,"hasChildren":false}],"hierarchyLayout":true}}"#,
         1280.0,
         900.0,
     )
-    .expect_err("browser-view is still TS-only");
-    assert!(err.to_string().contains("browser-view"), "{err}");
+    .unwrap_or_else(|err| panic!("{err}"));
+    assert!(browser.contains("browser-row"), "{browser}");
+    assert!(browser.contains("Root"), "{browser}");
 }

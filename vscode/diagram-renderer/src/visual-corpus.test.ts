@@ -4,12 +4,12 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseDiagramProduct } from "../../src/diagram/diagramViewerCore";
 import { prepareViewData } from "./prepare";
-import { isNativeDiagramView, renderVisualization } from "./renderer";
+import { isNativeDiagramView } from "./renderer";
 import type { PreparedView } from "./prepare/types";
 
 /**
- * Catalog views still draw in this package. Native views are covered by `diagram_draw` goldens
- * and `spec42/draw` integration tests — they have no client drawing fallback here.
+ * Every snapshot view prepares as a native `spec42/draw` view. Drawing is covered by
+ * `diagram_draw` goldens and `spec42/draw` integration tests — there is no client fallback.
  */
 const SNAPSHOT_DIR = resolve(process.cwd(), "../../tests/snapshots/generation");
 
@@ -27,21 +27,10 @@ function preparedFromSnapshot(file: string): PreparedView {
   return prepareViewData(parseDiagramProduct(match[1]) as unknown as Record<string, unknown>);
 }
 
-function host(width: number, height: number): HTMLElement {
-  const target = document.createElement("div");
-  Object.defineProperty(target, "clientWidth", { value: width, configurable: true });
-  Object.defineProperty(target, "clientHeight", { value: height, configurable: true });
-  return target;
-}
-
 describe("visual review corpus", () => {
-  it.each(productFiles())("renders catalog views from %s", async (file) => {
+  it.each(productFiles())("prepares %s as a native view", (file) => {
     const prepared = preparedFromSnapshot(file);
-    if (isNativeDiagramView(prepared.view)) return;
-    const target = host(1280, 800);
-    const controller = await renderVisualization(target, prepared, { theme: { colorScheme: "light" } });
-    expect(target.querySelector("svg")).toBeTruthy();
-    expect(controller.exportSvg()).toContain("<svg");
-    controller.destroy();
-  }, 30_000);
+    expect(prepared.view).toBeTruthy();
+    expect(isNativeDiagramView(prepared.view)).toBe(true);
+  });
 });

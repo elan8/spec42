@@ -1,12 +1,12 @@
-//! JSON dispatcher used by the native drawing path (spec42 #176).
+//! JSON dispatcher used by the native drawing path (spec42 #176 / #181).
 //!
 //! Callers that already have laid-out JSON (parity fixtures) can render directly. Headless
-//! export instead runs [`crate::pipeline`]: visualization payload → prepare → elkrs layout →
-//! this dispatcher. The five dump shapes are:
+//! export instead runs [`crate::pipeline`]: visualization payload → prepare → elkrs layout
+//! (skipped for sequence / browser / grid / geometry) → this dispatcher. The dump shapes are:
 //!
 //! - General View: `{ title, view, meta, nodes, edges }`
 //! - Interconnection View: the General View shape plus `interconnectionLayout`
-//! - Sequence View: a `PreparedView` (`{ title, view, nodes, edges, meta }`)
+//! - Sequence / Browser / Grid / Geometry: a `PreparedView` (`{ title, view, nodes, edges, meta }`)
 //! - Action-flow / state-transition: `{ prepared, behaviorLayout }`
 
 use serde::Deserialize;
@@ -16,7 +16,8 @@ use crate::behavior_common::{BehaviorLayoutResult, PreparedView};
 use crate::theme::{Theme, LIGHT};
 use crate::types::{GeneralViewGraph, InterconnectionViewGraph};
 use crate::{
-    render_action_flow_view_svg, render_general_view_svg, render_interconnection_view_svg,
+    render_action_flow_view_svg, render_browser_view_svg, render_general_view_svg,
+    render_geometry_view_svg, render_grid_view_svg, render_interconnection_view_svg,
     render_sequence_view_svg, render_state_transition_view_svg,
 };
 
@@ -114,13 +115,22 @@ pub fn render_svg_from_json_with_theme(
             let prepared: PreparedView = decode(input, "sequence-view draw input")?;
             Ok(render_sequence_view_svg(&prepared, theme, width, height))
         }
+        "browser-view" => {
+            let prepared: PreparedView = decode(input, "browser-view draw input")?;
+            Ok(render_browser_view_svg(&prepared, theme, width, height))
+        }
+        "grid-view" => {
+            let prepared: PreparedView = decode(input, "grid-view draw input")?;
+            Ok(render_grid_view_svg(&prepared, theme, width, height))
+        }
+        "geometry-view" => {
+            let prepared: PreparedView = decode(input, "geometry-view draw input")?;
+            Ok(render_geometry_view_svg(&prepared, theme, width, height))
+        }
         "action-flow-view" | "state-transition-view" => Err(DrawError::InvalidInput(
             "action-flow-view and state-transition-view require `{ prepared, behaviorLayout }`"
                 .into(),
         )),
-        "browser-view" | "grid-view" | "geometry-view" => {
-            Err(DrawError::UnsupportedView(view_of(input).to_string()))
-        }
         "general-view" => {
             let graph: GeneralViewGraph = decode(input, "general-view draw input")?;
             Ok(render_general_view_svg(&graph, theme, width, height))

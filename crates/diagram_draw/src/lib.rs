@@ -1,12 +1,13 @@
-//! Native Rust SVG drawing for Spec42 diagram views (spec42 #176).
+//! Native Rust SVG drawing for Spec42 diagram views (spec42 #176 / #181).
 //!
-//! The five shipped views (General, Interconnection, Sequence, Action-Flow, State-Transition)
-//! prepare, lay out, and draw in this crate. Headless export (`crates/server`) and the
-//! interactive webview (`spec42/draw` on `lsp_server`) both call [`pipeline`]. Browser / grid /
-//! geometry stay TypeScript-only.
+//! Every shipped view prepares and draws in this crate. General, Interconnection, Action-Flow,
+//! and State-Transition also lay out through elkrs. Sequence, Browser, Grid, and Geometry skip
+//! ELK. Headless export (`crates/server`) and the interactive webview (`spec42/draw` on
+//! `lsp_server`) both call [`pipeline`].
 
 pub mod action_flow;
 pub mod behavior_common;
+mod catalog;
 mod containers;
 pub mod disclosure;
 pub mod draw_input;
@@ -208,6 +209,60 @@ pub fn render_sequence_view_svg(
         Some(sequence::sequence_marker(theme)),
         root,
     )
+}
+
+/// Port of `renderBrowserView` in `views/standard-views-render.ts`.
+pub fn render_browser_view_svg(
+    prepared: &PreparedView,
+    theme: &Theme,
+    width: f64,
+    height: f64,
+) -> String {
+    let (root, (min_x, min_y, max_x, max_y)) =
+        catalog::render_browser_view(prepared, theme, width, height);
+    let bounds = (
+        min_x,
+        min_y,
+        (max_x - min_x).max(1.0),
+        (max_y - min_y).max(1.0),
+    );
+    render_svg_document(theme, width, height, &prepared.title, bounds, None, root)
+}
+
+/// Port of `renderGridView` in `views/standard-views-render.ts`.
+pub fn render_grid_view_svg(
+    prepared: &PreparedView,
+    theme: &Theme,
+    width: f64,
+    height: f64,
+) -> String {
+    let (root, (min_x, min_y, max_x, max_y)) =
+        catalog::render_grid_view(prepared, theme, width, height);
+    let bounds = (
+        min_x,
+        min_y,
+        (max_x - min_x).max(1.0),
+        (max_y - min_y).max(1.0),
+    );
+    render_svg_document(theme, width, height, &prepared.title, bounds, None, root)
+}
+
+/// Port of `renderGeometryView` in `views/standard-views-render.ts`.
+pub fn render_geometry_view_svg(
+    prepared: &PreparedView,
+    theme: &Theme,
+    width: f64,
+    height: f64,
+) -> String {
+    let (root, (min_x, min_y, max_x, max_y)) =
+        catalog::render_geometry_view(prepared, theme, width, height);
+    let bounds = (
+        min_x,
+        min_y,
+        (max_x - min_x).max(1.0),
+        (max_y - min_y).max(1.0),
+    );
+    render_svg_document(theme, width, height, &prepared.title, bounds, None, root)
 }
 
 /// Port of `renderStateTransitionView`'s call site in `renderer.ts`.

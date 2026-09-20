@@ -1,12 +1,11 @@
 //! Visualization payload → prepare → layout → SVG. This is the fully native path
-//! (spec42 #176): QuickJS is not involved. Headless export omits disclosure so nested
+//! (spec42 #176 / #181): QuickJS is not involved. Headless export omits disclosure so nested
 //! membership stays visible; `spec42/draw` supplies renderer-owned expansion state.
 
 use serde_json::Value;
 
 use crate::disclosure::{apply_general_disclosure, DisclosureState};
 use crate::draw_input::DrawError;
-use crate::json_util::{as_string, field};
 use crate::layout::layout_to_draw_input;
 use crate::prepare::prepare_view_data;
 use crate::theme::{Theme, LIGHT};
@@ -57,13 +56,6 @@ pub fn draw_input_from_payload_with_disclosure(
     let mut prepared = prepare_view_data(payload).map_err(PipelineError::InvalidPayload)?;
     if let Some(state) = disclosure {
         apply_general_disclosure(&mut prepared, state);
-    }
-    let view = as_string(field(&prepared, "view"), "general-view");
-    if matches!(
-        view.as_str(),
-        "browser-view" | "grid-view" | "geometry-view"
-    ) {
-        return Err(PipelineError::Draw(DrawError::UnsupportedView(view)));
     }
     Ok(layout_to_draw_input(&prepared)?)
 }

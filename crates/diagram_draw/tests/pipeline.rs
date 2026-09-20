@@ -1,7 +1,10 @@
 //! End-to-end native pipeline: visualization payload → prepare → layout → SVG.
 //! Sequence needs no ELK; general/interconnection/behavior go through `diagram_layout`.
 
-use diagram_draw::{draw_input_from_payload, render_svg_from_payload, DrawError, PipelineError};
+use diagram_draw::{
+    draw_input_from_payload, render_svg_from_payload, render_svg_from_payload_with_options,
+    PipelineError,
+};
 use serde_json::json;
 
 fn general_golden_payload() -> serde_json::Value {
@@ -147,19 +150,79 @@ fn action_flow_payload_lays_out_through_elkrs_and_draws() {
 }
 
 #[test]
-fn browser_view_is_rejected() {
-    let err = render_svg_from_payload(
-        &json!({ "view": "browser-view", "title": "x" }),
+fn browser_view_renders_hierarchy_and_honours_collapse() {
+    let payload = json!({
+        "view": "browser-view",
+        "selectedViewName": "Structure",
+        "projectionHints": { "browserLayout": "hierarchy", "treeRoots": ["root"] },
+        "generalViewGraph": {
+            "nodes": [
+                { "id": "root", "name": "Root", "type": "part def", "parentId": "" },
+                { "id": "child", "name": "Child", "type": "part", "parentId": "root" }
+            ],
+            "edges": []
+        }
+    });
+    let svg =
+        render_svg_from_payload(&payload, 1280.0, 900.0).unwrap_or_else(|err| panic!("{err}"));
+    assert!(svg.contains("browser-row"), "{svg}");
+    assert!(svg.contains("Root"), "{svg}");
+    assert!(svg.contains("Child"), "{svg}");
+    assert!(svg.contains("▾"), "{svg}");
+
+    let collapsed = render_svg_from_payload_with_options(
+        &payload,
+        &diagram_draw::theme::LIGHT,
+        1280.0,
+        900.0,
+        Some(&diagram_draw::DisclosureState {
+            expanded_node_ids: vec!["root".into()],
+            section_states: vec![],
+        }),
+    )
+    .unwrap_or_else(|err| panic!("{err}"));
+    assert!(collapsed.contains("Root"), "{collapsed}");
+    assert!(
+        !collapsed.contains(">Child<"),
+        "collapsed parent should hide the child row: {collapsed}"
+    );
+    assert!(collapsed.contains("▸"), "{collapsed}");
+}
+
+#[test]
+fn grid_and_geometry_views_render() {
+    let grid = render_svg_from_payload(
+        &json!({
+            "view": "grid-view",
+            "selectedViewName": "Parts",
+            "generalViewGraph": {
+                "nodes": [{ "id": "robot", "name": "robot", "type": "part", "attributes": { "parts": ["arm"] } }],
+                "edges": []
+            }
+        }),
         1280.0,
         900.0,
     )
-    .expect_err("browser-view is TS-only");
-    match err {
-        PipelineError::Draw(DrawError::UnsupportedView(view)) => {
-            assert_eq!(view, "browser-view");
-        }
-        other => panic!("expected unsupported view, got {other}"),
-    }
+    .unwrap_or_else(|err| panic!("{err}"));
+    assert!(grid.contains("grid-cell"), "{grid}");
+    assert!(grid.contains("robot"), "{grid}");
+
+    let geometry = render_svg_from_payload(
+        &json!({
+            "view": "geometry-view",
+            "selectedViewName": "Shape",
+            "generalViewGraph": {
+                "nodes": [{ "id": "body", "name": "body", "type": "part" }],
+                "edges": []
+            }
+        }),
+        1280.0,
+        900.0,
+    )
+    .unwrap_or_else(|err| panic!("{err}"));
+    assert!(geometry.contains("geometry-object"), "{geometry}");
+    assert!(geometry.contains("provisional-view-badge"), "{geometry}");
+    assert!(geometry.contains("2d orthographic preview"), "{geometry}");
 }
 
 fn schema5_state_transition_payload(

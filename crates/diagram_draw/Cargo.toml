@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
-description = "Native Rust SVG drawing for Spec42 diagram views (spec42 #176)"
+description = "Native Rust SVG drawing for Spec42 diagram views (spec42 #176 / #181)"
 
 [dependencies]
 diagram_layout = { path = "../diagram_layout" }
