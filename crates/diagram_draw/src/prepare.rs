@@ -3,7 +3,7 @@
 //! Browser / grid / geometry still prepare so a typed product can round-trip; the pipeline
 //! rejects them at draw time.
 
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{HashMap, HashSet};
 
 use serde_json::{json, Map, Value};
 
@@ -12,10 +12,14 @@ use crate::graph_normalization::{
 };
 use crate::json_util::{as_array, as_array_opt, as_object, as_string, field, first_present};
 
-pub fn prepare_view_data(input: &Value) -> Value {
+pub fn prepare_view_data(input: &Value) -> Result<Value, String> {
     if let Some(typed) = prepare_typed_diagram_product(input) {
         return typed;
     }
+    Ok(prepare_legacy_view_data(input))
+}
+
+fn prepare_legacy_view_data(input: &Value) -> Value {
     let passthrough = field(input, "preparedView");
     if passthrough.is_object() {
         let view = field(passthrough, "view");
@@ -239,7 +243,8 @@ fn build_behavior_node(node: &Value, defaults: (&str, &str, &str)) -> Value {
 }
 
 fn build_general_package_container_groups(nodes: &[Value]) -> Vec<Value> {
-    let mut by_package: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    let mut order: Vec<String> = Vec::new();
+    let mut by_package: HashMap<String, Vec<String>> = HashMap::new();
     for node in nodes {
         let attrs = field(node, "attributes");
         let qn = {
@@ -258,16 +263,20 @@ fn build_general_package_container_groups(nodes: &[Value]) -> Vec<Value> {
         }
         let pkg = qn[..sep].to_string();
         by_package
-            .entry(pkg)
-            .or_default()
+            .entry(pkg.clone())
+            .or_insert_with(|| {
+                order.push(pkg.clone());
+                Vec::new()
+            })
             .push(as_string(field(node, "id"), ""));
     }
-    if by_package.len() < 2 {
+    if order.len() < 2 {
         return Vec::new();
     }
-    by_package
+    order
         .into_iter()
-        .map(|(name, member_ids)| {
+        .map(|name| {
+            let member_ids = by_package.remove(&name).unwrap_or_default();
             json!({
                 "id": format!("package:{name}"),
                 "name": name,
@@ -465,23 +474,31 @@ fn select_named_diagram(
     }
 }
 
+fn behavior_diagram_score(diagram: &Value) -> usize {
+    let nodes = as_array(first_present([
+        field(diagram, "nodes"),
+        field(diagram, "actions"),
+        field(diagram, "steps"),
+    ]))
+    .len();
+    let edges = as_array(first_present([
+        field(diagram, "edges"),
+        field(diagram, "flows"),
+        field(diagram, "transitions"),
+    ]))
+    .len();
+    nodes * 10 + edges
+}
+
 fn best_behavior_diagram(diagrams: &[Value]) -> Option<Value> {
     diagrams
         .iter()
-        .max_by_key(|diagram| {
-            let nodes = as_array(first_present([
-                field(diagram, "nodes"),
-                field(diagram, "actions"),
-                field(diagram, "steps"),
-            ]))
-            .len();
-            let edges = as_array(first_present([
-                field(diagram, "edges"),
-                field(diagram, "flows"),
-                field(diagram, "transitions"),
-            ]))
-            .len();
-            nodes * 10 + edges
+        .fold(None, |best: Option<&Value>, diagram| match best {
+            None => Some(diagram),
+            Some(current) if behavior_diagram_score(diagram) > behavior_diagram_score(current) => {
+                Some(diagram)
+            }
+            Some(current) => Some(current),
         })
         .cloned()
 }
@@ -1959,7 +1976,7 @@ fn interconnection_scene_from_typed_projection(
     })
 }
 
-fn prepare_typed_diagram_product(input: &Value) -> Option<Value> {
+fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>> {
     if field(input, "schemaVersion").as_u64() != Some(5) {
         return None;
     }
@@ -2045,49 +2062,64 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Value> {
                 String::new()
             }
         };
-        let edges: Vec<Value> = as_array(field(scene, "transitions"))
-            .iter()
-            .enumerate()
-            .map(|(index, transition)| {
-                let source_index = field(transition, "source").as_u64().unwrap_or(0) as usize;
-                let target_index = field(transition, "target").as_u64().unwrap_or(0) as usize;
-                let trigger = trigger_label(field(transition, "trigger"));
-                let guard = feature_label(field(transition, "guard"));
-                let effect = feature_label(field(transition, "effect"));
-                let mut parts = Vec::new();
-                if !trigger.is_empty() {
-                    parts.push(trigger.clone());
+        let mut edges = Vec::new();
+        for (index, transition) in as_array(field(scene, "transitions")).iter().enumerate() {
+            let source_index = field(transition, "source").as_u64().unwrap_or(0) as usize;
+            let target_index = field(transition, "target").as_u64().unwrap_or(0) as usize;
+            let source = match nodes.get(source_index) {
+                Some(node) => node,
+                None => {
+                    return Some(Err(format!(
+                        "state-transition source index {source_index} is out of range ({} vertices)",
+                        nodes.len()
+                    )));
                 }
-                if !guard.is_empty() {
-                    parts.push(format!("[{guard}]"));
+            };
+            let target = match nodes.get(target_index) {
+                Some(node) => node,
+                None => {
+                    return Some(Err(format!(
+                        "state-transition target index {target_index} is out of range ({} vertices)",
+                        nodes.len()
+                    )));
                 }
-                if !effect.is_empty() {
-                    parts.push(effect.clone());
-                }
-                let label = if parts.is_empty() {
-                    as_string(field(transition, "label"), "")
-                } else {
-                    parts.join(" / ")
-                };
-                json!({
-                    "id": format!("transition:{index}"),
-                    "source": field(&nodes[source_index], "id"),
-                    "target": field(&nodes[target_index], "id"),
-                    "label": label,
-                    "edgeKind": "transition",
-                    "attributes": {
-                        "semanticSceneId": field(transition, "id"),
-                        "relationType": "transition",
-                        "selfLoop": field(transition, "source") == field(transition, "target"),
-                        "trigger": trigger,
-                        "guard": guard,
-                        "effect": effect,
-                        "provenance": field(transition, "provenance"),
-                        "sourceNavigation": navigation(field(transition, "navigation")),
-                    },
-                })
-            })
-            .collect();
+            };
+            let trigger = trigger_label(field(transition, "trigger"));
+            let guard = feature_label(field(transition, "guard"));
+            let effect = feature_label(field(transition, "effect"));
+            let mut parts = Vec::new();
+            if !trigger.is_empty() {
+                parts.push(trigger.clone());
+            }
+            if !guard.is_empty() {
+                parts.push(format!("[{guard}]"));
+            }
+            if !effect.is_empty() {
+                parts.push(effect.clone());
+            }
+            let label = if parts.is_empty() {
+                as_string(field(transition, "label"), "")
+            } else {
+                parts.join(" / ")
+            };
+            edges.push(json!({
+                "id": format!("transition:{index}"),
+                "source": field(source, "id"),
+                "target": field(target, "id"),
+                "label": label,
+                "edgeKind": "transition",
+                "attributes": {
+                    "semanticSceneId": field(transition, "id"),
+                    "relationType": "transition",
+                    "selfLoop": field(transition, "source") == field(transition, "target"),
+                    "trigger": trigger,
+                    "guard": guard,
+                    "effect": effect,
+                    "provenance": field(transition, "provenance"),
+                    "sourceNavigation": navigation(field(transition, "navigation")),
+                },
+            }));
+        }
         let title = {
             let label = as_string(field(frame, "label"), "");
             if label.is_empty() {
@@ -2096,7 +2128,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Value> {
                 label
             }
         };
-        return Some(json!({
+        return Some(Ok(json!({
             "title": title,
             "view": selected_kind,
             "nodes": nodes,
@@ -2106,10 +2138,10 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Value> {
                 "frame": frame,
                 "layoutDirection": "horizontal",
             },
-        }));
+        })));
     }
     if selected_kind == "interconnection-view" {
-        return Some(prepare_interconnection_from_typed_projection(
+        return Some(Ok(prepare_interconnection_from_typed_projection(
             selected_name,
             projection_nodes,
             projection_edges,
@@ -2117,7 +2149,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Value> {
             field(projection, "metadata"),
             &references,
             &navigation,
-        ));
+        )));
     }
     let mut nodes: Vec<Value> = projection_nodes
         .iter()
@@ -2242,11 +2274,41 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Value> {
     if let Some(sequence_diagram) = sequence_diagram {
         meta["sequenceDiagram"] = sequence_diagram;
     }
-    Some(json!({
+    Some(Ok(json!({
         "title": selected_name,
         "view": selected_kind,
         "nodes": nodes,
         "edges": edges,
         "meta": meta,
-    }))
+    })))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn package_container_groups_keep_encounter_order() {
+        let groups = build_general_package_container_groups(&[
+            json!({ "id": "B::one", "attributes": {} }),
+            json!({ "id": "A::two", "attributes": {} }),
+        ]);
+        assert_eq!(
+            groups
+                .iter()
+                .map(|group| as_string(field(group, "name"), ""))
+                .collect::<Vec<_>>(),
+            vec!["B".to_string(), "A".to_string()]
+        );
+    }
+
+    #[test]
+    fn best_behavior_diagram_keeps_the_first_equal_score() {
+        let diagrams = vec![
+            json!({ "name": "first", "nodes": [{}, {}], "edges": [{}] }),
+            json!({ "name": "second", "nodes": [{}, {}], "edges": [{}] }),
+        ];
+        let best = best_behavior_diagram(&diagrams).expect("catalog is non-empty");
+        assert_eq!(best["name"], "first");
+    }
 }

@@ -161,3 +161,51 @@ fn browser_view_is_rejected() {
         other => panic!("expected unsupported view, got {other}"),
     }
 }
+
+fn schema5_state_transition_payload(
+    vertices: Vec<serde_json::Value>,
+    transitions: Vec<serde_json::Value>,
+) -> serde_json::Value {
+    json!({
+        "schemaVersion": 5,
+        "documents": [{ "uri": "file:///model.sysml" }],
+        "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
+        "references": [{ "kind": "qualified-name" }],
+        "selectedView": { "reference": 0, "kind": "state-transition-view", "name": "States", "source": 0 },
+        "completeness": { "status": "complete", "reasons": [] },
+        "projection": {
+            "kind": "state-transition-view",
+            "exposedRoots": [],
+            "nodes": [],
+            "edges": [],
+            "scene": {
+                "kind": "state-transition",
+                "frame": { "label": "States" },
+                "vertices": vertices,
+                "transitions": transitions
+            }
+        }
+    })
+}
+
+#[test]
+fn schema5_state_transition_out_of_range_endpoint_is_an_error() {
+    let err = render_svg_from_payload(
+        &schema5_state_transition_payload(
+            vec![],
+            vec![json!({ "source": 0, "target": 0, "label": "go" })],
+        ),
+        1280.0,
+        900.0,
+    )
+    .expect_err("out-of-range scene indices must not panic");
+    match err {
+        PipelineError::InvalidPayload(message) => {
+            assert!(
+                message.contains("out of range"),
+                "expected an index error, got {message}"
+            );
+        }
+        other => panic!("expected invalid payload, got {other}"),
+    }
+}

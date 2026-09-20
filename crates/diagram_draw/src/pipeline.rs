@@ -44,7 +44,7 @@ impl From<diagram_layout::LayoutError> for PipelineError {
 
 /// Prepare + layout a visualization payload into the JSON `render_svg_from_json` draws from.
 pub fn draw_input_from_payload(payload: &Value) -> Result<Value, PipelineError> {
-    let prepared = prepare_view_data(payload);
+    let prepared = prepare_view_data(payload).map_err(PipelineError::InvalidPayload)?;
     let view = as_string(field(&prepared, "view"), "general-view");
     if matches!(
         view.as_str(),
