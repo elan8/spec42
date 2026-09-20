@@ -354,3 +354,138 @@ export function installDiagramTooltips(
   activeTooltipControllers.set(target, cleanup);
   return cleanup;
 }
+
+function descriptorFromTitle(text: string): DiagramTooltipDescriptor {
+  const lines = text.split("\n").map((line) => line.trim()).filter(Boolean);
+  const title = lines[0] ?? "";
+  const rows: DiagramTooltipDescriptor["rows"] = [];
+  for (const line of lines.slice(1)) {
+    const separator = line.indexOf(": ");
+    if (separator > 0) {
+      rows.push({ label: line.slice(0, separator), value: line.slice(separator + 2) });
+    } else {
+      rows.push({ label: "", value: line });
+    }
+  }
+  return { title, rows };
+}
+
+/** HTML overlay for server-rendered SVG, which already bakes `<title>` / `aria-label`. */
+export function installNativeSvgTooltips(target: HTMLElement, theme: DiagramTheme): () => void {
+  activeTooltipControllers.get(target)?.();
+  const previousPosition = target.style.position;
+  if (!previousPosition) target.style.position = "relative";
+  const tooltip = target.ownerDocument.createElement("div");
+  tooltip.className = "sysml-diagram-tooltip";
+  Object.assign(tooltip.style, {
+    position: "absolute",
+    display: "none",
+    pointerEvents: "none",
+    zIndex: "20",
+    width: "max-content",
+    maxWidth: "340px",
+    padding: "9px 11px",
+    borderRadius: "5px",
+    border: `1px solid ${theme.nodeBorder}`,
+    background: theme.nodeFill,
+    color: theme.textPrimary,
+    boxShadow: "0 4px 14px rgba(0, 0, 0, 0.35)",
+    fontFamily: "system-ui, sans-serif",
+    fontSize: "12px",
+    lineHeight: "1.35",
+  });
+  target.appendChild(tooltip);
+
+  let activeEdgeId = "";
+  let suppressedNativeTitle: { element: SVGElement; title: SVGTitleElement } | null = null;
+  const restoreNativeTitle = (): void => {
+    if (!suppressedNativeTitle) return;
+    suppressedNativeTitle.element.appendChild(suppressedNativeTitle.title);
+    suppressedNativeTitle = null;
+  };
+  const suppressNativeTitle = (element: SVGElement): void => {
+    restoreNativeTitle();
+    const title = Array.from(element.children)
+      .find((child): child is SVGTitleElement => child.tagName.toLowerCase() === "title");
+    if (!title) return;
+    title.remove();
+    suppressedNativeTitle = { element, title };
+  };
+  const highlightEdge = (edgeId: string, active: boolean): void => {
+    for (const edgeElement of Array.from(target.querySelectorAll<SVGGeometryElement>("[data-edge-id]"))) {
+      if (edgeElement.getAttribute("data-edge-id") !== edgeId) continue;
+      const base = Number(edgeElement.getAttribute("data-base-stroke-width") || 2);
+      edgeElement.classList.toggle("viz-edge-hovered", active);
+      edgeElement.style.strokeWidth = `${active ? base + 1.5 : base}px`;
+      edgeElement.style.opacity = active ? "1" : "0.9";
+    }
+  };
+  const positionTooltip = (event: MouseEvent): void => {
+    const bounds = target.getBoundingClientRect();
+    const width = tooltip.offsetWidth || 280;
+    const height = tooltip.offsetHeight || 80;
+    const left = Math.max(4, Math.min(event.clientX - bounds.left + 14, bounds.width - width - 4));
+    const top = Math.max(4, Math.min(event.clientY - bounds.top + 14, bounds.height - height - 4));
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+  };
+  const tooltipElement = (event: Event): SVGElement | null => {
+    const candidate = event.target instanceof Element
+      ? event.target.closest<SVGElement>("[data-tooltip-kind]")
+      : null;
+    return candidate && target.contains(candidate) ? candidate : null;
+  };
+  const show = (event: MouseEvent): void => {
+    const element = tooltipElement(event);
+    if (!element) return;
+    const title = element.querySelector("title")?.textContent
+      ?? element.getAttribute("aria-label")?.replace(/; /g, "\n")
+      ?? "";
+    if (!title) return;
+    suppressNativeTitle(element);
+    renderHtmlTooltip(tooltip, descriptorFromTitle(title), theme);
+    tooltip.style.display = "block";
+    positionTooltip(event);
+    if (element.dataset.tooltipKind === "edge") {
+      const nextEdgeId = element.dataset.tooltipId ?? "";
+      if (activeEdgeId && activeEdgeId !== nextEdgeId) highlightEdge(activeEdgeId, false);
+      activeEdgeId = nextEdgeId;
+      highlightEdge(activeEdgeId, true);
+    }
+  };
+  const move = (event: MouseEvent): void => {
+    if (tooltip.style.display !== "none") positionTooltip(event);
+  };
+  const hide = (): void => {
+    tooltip.style.display = "none";
+    restoreNativeTitle();
+    if (activeEdgeId) highlightEdge(activeEdgeId, false);
+    activeEdgeId = "";
+  };
+  const leave = (event: MouseEvent): void => {
+    const current = tooltipElement(event);
+    if (!current) return;
+    const next = event.relatedTarget instanceof Element
+      ? event.relatedTarget.closest<SVGElement>("[data-tooltip-kind]")
+      : null;
+    if (next === current) return;
+    hide();
+  };
+  target.addEventListener("mouseover", show);
+  target.addEventListener("mousemove", move);
+  target.addEventListener("mouseout", leave);
+  target.addEventListener("mouseleave", hide);
+
+  const cleanup = () => {
+    hide();
+    target.removeEventListener("mouseover", show);
+    target.removeEventListener("mousemove", move);
+    target.removeEventListener("mouseout", leave);
+    target.removeEventListener("mouseleave", hide);
+    tooltip.remove();
+    if (!previousPosition) target.style.position = "";
+    if (activeTooltipControllers.get(target) === cleanup) activeTooltipControllers.delete(target);
+  };
+  activeTooltipControllers.set(target, cleanup);
+  return cleanup;
+}

@@ -1,8 +1,7 @@
 //! Minimal recursive-descent XML/SVG parser for test use: comparing a Rust-rendered SVG string
-//! against a real TS/D3-rendered one (`tests/golden_parity.rs`). Only handles what both
-//! serializers actually produce -- nested elements with quoted attributes and text content, no
-//! self-closing tags, no comments, no CDATA, no namespaces beyond attribute names -- since both
-//! `svg::Element::serialize` and `VirtualElement.serialize` (`headless-export.ts`) are that simple.
+//! against checked-in fixtures (`tests/golden_parity.rs`). Only handles what the serializer
+//! actually produces -- nested elements with quoted attributes and text content, no
+//! self-closing tags, no comments, no CDATA, no namespaces beyond attribute names.
 
 use std::collections::BTreeMap;
 

@@ -1,4 +1,4 @@
-//! `spec42/layout`: native ELK layout for a webview-supplied graph (issue #119).
+//! `spec42/layout`: native ELK layout for a client-supplied graph (issue #119).
 //!
 //! Stateless by design, unlike `spec42_generate`/`spec42_diagram_views`: layout is a pure
 //! function of the client-supplied graph JSON, so there is no workspace publication to look up
@@ -9,8 +9,8 @@
 //!
 //! `diagram_layout` (the native `elkrs` adapter) is this handler's only engine.
 //! `SPEC42_LAYOUT_ENGINE=legacy` therefore cannot mean "run a second engine here"; it means
-//! "decline, so the client's own existing in-webview `layoutPrepared`/elk.js fallback takes
-//! over" -- the same path a request failure or an offline extension host already falls back to.
+//! "decline this request". The interactive webview draws through `spec42/draw` and has no
+//! client drawing fallback when native drawing is declined.
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -40,9 +40,9 @@ pub(crate) struct LayoutResult {
     pub(crate) engine: LayoutEngine,
 }
 
-/// `true` when `SPEC42_LAYOUT_ENGINE` explicitly asks the webview to keep its in-webview elk.js
-/// path. There is no second engine to run here (see module docs), so this is read as "decline
-/// this request", not as a code path to execute.
+/// `true` when `SPEC42_LAYOUT_ENGINE=legacy`. There is no second engine to run here (see module
+/// docs), so this is read as "decline `spec42/layout` and `spec42/draw`", not as a code path to
+/// execute.
 pub(crate) fn legacy_engine_requested() -> bool {
     std::env::var("SPEC42_LAYOUT_ENGINE").as_deref() == Ok("legacy")
 }

@@ -1,8 +1,10 @@
-//! Visualization payload → prepare → layout → SVG. This is the fully native headless path
-//! (spec42 #176): QuickJS is not involved.
+//! Visualization payload → prepare → layout → SVG. This is the fully native path
+//! (spec42 #176): QuickJS is not involved. Headless export omits disclosure so nested
+//! membership stays visible; `spec42/draw` supplies renderer-owned expansion state.
 
 use serde_json::Value;
 
+use crate::disclosure::{apply_general_disclosure, DisclosureState};
 use crate::draw_input::DrawError;
 use crate::json_util::{as_string, field};
 use crate::layout::layout_to_draw_input;
@@ -43,8 +45,19 @@ impl From<diagram_layout::LayoutError> for PipelineError {
 }
 
 /// Prepare + layout a visualization payload into the JSON `render_svg_from_json` draws from.
+/// Headless export uses this (no disclosure projection).
 pub fn draw_input_from_payload(payload: &Value) -> Result<Value, PipelineError> {
-    let prepared = prepare_view_data(payload).map_err(PipelineError::InvalidPayload)?;
+    draw_input_from_payload_with_disclosure(payload, None)
+}
+
+pub fn draw_input_from_payload_with_disclosure(
+    payload: &Value,
+    disclosure: Option<&DisclosureState>,
+) -> Result<Value, PipelineError> {
+    let mut prepared = prepare_view_data(payload).map_err(PipelineError::InvalidPayload)?;
+    if let Some(state) = disclosure {
+        apply_general_disclosure(&mut prepared, state);
+    }
     let view = as_string(field(&prepared, "view"), "general-view");
     if matches!(
         view.as_str(),
@@ -79,7 +92,17 @@ pub fn render_svg_from_payload_with_theme(
     width: f64,
     height: f64,
 ) -> Result<String, PipelineError> {
-    let draw_input = draw_input_from_payload(payload)?;
+    render_svg_from_payload_with_options(payload, theme, width, height, None)
+}
+
+pub fn render_svg_from_payload_with_options(
+    payload: &Value,
+    theme: &Theme,
+    width: f64,
+    height: f64,
+    disclosure: Option<&DisclosureState>,
+) -> Result<String, PipelineError> {
+    let draw_input = draw_input_from_payload_with_disclosure(payload, disclosure)?;
     Ok(crate::draw_input::render_svg_from_json_with_theme(
         &draw_input,
         theme,

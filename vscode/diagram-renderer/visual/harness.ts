@@ -1,17 +1,16 @@
 /**
  * Chrome visual-review harness entry point.
  *
- * Renders one corpus case per page so screenshots are taken at the real viewport size:
+ * Native views (General, Interconnection, Sequence, Action-Flow, State-Transition) are drawn by
+ * `spec42/draw` in the language server; this harness has no LSP client, so those cases show an
+ * inert placeholder. Browser / grid / geometry still render locally.
  *
  *   harness.html?case=<id>&theme=light|dark[&w=<px>&h=<px>][&chrome=0]
- *
- * The page sets `data-visual-ready="1"` on <html> once layout, drawing, fitting, and any scripted
- * disclosure activation have settled, so a screenshot driver never captures a partial frame.
  */
 import { isEmptyIncompleteDiagramProduct } from "../../src/diagram/diagramProductState";
 import { prepareViewData } from "../src/prepare";
 import type { PreparedView } from "../src/prepare/types";
-import { renderVisualization } from "../src/renderer";
+import { isNativeDiagramView, renderVisualization } from "../src/renderer";
 import { SYNTHETIC_CASES, type VisualCase } from "./synthetic-cases";
 
 interface ProductCase {
@@ -29,7 +28,7 @@ interface ResolvedCase {
   id: string;
   title: string;
   prepared: PreparedView | null;
-  /** Set when the product publishes an empty incomplete state instead of a view. */
+  product?: Record<string, unknown>;
   incompleteReasons?: string[];
   expand: string[];
 }
@@ -55,8 +54,6 @@ function resolveCase(id: string): ResolvedCase | null {
     projection: { nodes: unknown[] };
   };
   if (isEmptyIncompleteDiagramProduct(state)) {
-    // Same explicit incomplete state the VS Code webview shows; it must not look like an empty
-    // but successful diagram.
     return {
       id: product.id,
       title: product.title,
@@ -69,29 +66,13 @@ function resolveCase(id: string): ResolvedCase | null {
     id: product.id,
     title: product.title,
     prepared: prepareViewData(product.product),
+    product: product.product,
     expand: [],
   };
 }
 
 function frame(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function activateDisclosure(host: HTMLElement, nodeId: string): Promise<void> {
-  for (let attempt = 0; attempt < 60; attempt += 1) {
-    const control = host.querySelector<SVGGElement>(`[data-node-id="${nodeId}"] .general-node-toggle`);
-    if (control) {
-      control.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-      // The redraw is asynchronous (ELK relayout); wait for the control to report the new state.
-      for (let settle = 0; settle < 120; settle += 1) {
-        const after = host.querySelector<SVGGElement>(`[data-node-id="${nodeId}"] .general-node-toggle`);
-        if (after?.getAttribute("aria-expanded") === "true") return;
-        await frame(10);
-      }
-      return;
-    }
-    await frame(10);
-  }
 }
 
 function renderIndex(root: HTMLElement, theme: string): void {
@@ -150,19 +131,21 @@ async function main(): Promise<void> {
     document.documentElement.setAttribute("data-visual-ready", "1");
     return;
   }
+  if (isNativeDiagramView(resolved.prepared.view)) {
+    const empty = document.createElement("div");
+    empty.className = "incomplete";
+    empty.textContent = "native view — open in VS Code or `spec42 diagrams export`";
+    host.appendChild(empty);
+    document.documentElement.setAttribute("data-visual-ready", "1");
+    return;
+  }
   const controller = await renderVisualization(host, resolved.prepared, {
     theme: { colorScheme: theme },
     onNodeClick: () => {
-      // Source navigation is a host concern; the harness only records that it fired.
       document.documentElement.setAttribute("data-node-click", "1");
     },
   });
-  for (const nodeId of resolved.expand) {
-    await activateDisclosure(host, nodeId);
-  }
   controller.reset();
-  // `applyFit` animates the fit transform over 180ms; wait past it so a driver never screenshots
-  // (or clicks) a frame that is still moving.
   await frame(320);
   document.documentElement.setAttribute("data-visual-ready", "1");
 }

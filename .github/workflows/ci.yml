@@ -317,12 +317,6 @@ jobs:
       - name: npm ci (vscode)
         run: cd vscode && npm ci
 
-      - name: Check headless renderer bundle
-        run: |
-          cd vscode
-          npm run build:headless-renderer
-          git diff --exit-code ../crates/server/assets/diagram-renderer/headless-renderer.js
-
       - name: Typecheck extension
         run: cd vscode && npm run typecheck
 

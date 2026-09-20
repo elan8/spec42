@@ -1,12 +1,14 @@
 //! Native Rust SVG drawing for Spec42 diagram views (spec42 #176).
 //!
 //! The five shipped views (General, Interconnection, Sequence, Action-Flow, State-Transition)
-//! prepare, lay out, and draw in this crate. Headless export (`crates/server`) calls
-//! [`pipeline`] with a visualization payload; the interactive webview is still a later phase.
+//! prepare, lay out, and draw in this crate. Headless export (`crates/server`) and the
+//! interactive webview (`spec42/draw` on `lsp_server`) both call [`pipeline`]. Browser / grid /
+//! geometry stay TypeScript-only.
 
 pub mod action_flow;
 pub mod behavior_common;
 mod containers;
+pub mod disclosure;
 pub mod draw_input;
 mod edges;
 mod graph_normalization;
@@ -133,7 +135,7 @@ fn render_svg_document(
                 title.to_string()
             },
         )
-        .attr("data-color-scheme", "light")
+        .attr("data-color-scheme", theme.color_scheme)
         .style("touch-action", "none")
         .style("cursor", "grab")
         .child(viz_bg)
@@ -334,10 +336,12 @@ pub fn render_interconnection_view_svg(
     render_svg_document(theme, width, height, &graph.title, bounds, None, root)
 }
 
+pub use disclosure::DisclosureState;
 pub use draw_input::{
     render_svg_from_json, render_svg_from_json_with_theme, render_svg_from_str, DrawError,
 };
 pub use pipeline::{
-    draw_input_from_payload, render_svg_from_payload, render_svg_from_payload_str,
+    draw_input_from_payload, draw_input_from_payload_with_disclosure, render_svg_from_payload,
+    render_svg_from_payload_str, render_svg_from_payload_with_options,
     render_svg_from_payload_with_theme, PipelineError,
 };

@@ -716,6 +716,8 @@ impl PublishedResolution {
                                 &element.occurrence_id,
                                 *target,
                                 &elements,
+                                relationship.authored.as_deref(),
+                                |identity| self.symbol_name(identity),
                             ))
                         }
                         RelationshipTarget::Ambiguous(candidates) => {
@@ -732,6 +734,8 @@ impl PublishedResolution {
                                             &element.occurrence_id,
                                             *candidate,
                                             &elements,
+                                            relationship.authored.as_deref(),
+                                            |identity| self.symbol_name(identity),
                                         )
                                     })
                                     .collect::<Vec<_>>()
@@ -1096,31 +1100,74 @@ fn semantic_reference(
     }
 }
 
-fn contextual_endpoint(
+/// How much of an authored feature-chain (`propulsion::propulsionUnit1::cmd`) appears, in
+/// order, along one occurrence's name path. Shared-prefix scoring alone ties when several
+/// usages of the same definition contribute the same terminal `semantic_id` (four
+/// `PropulsionUnit::cmd` ports) and the connector itself does not sit under a distinguishing
+/// ancestor; the authored intermediates break that tie.
+fn authored_chain_score(authored: Option<&str>, names: &[&str]) -> usize {
+    let Some(authored) = authored.filter(|text| !text.is_empty()) else {
+        return 0;
+    };
+    let segments = authored
+        .split("::")
+        .filter(|segment| !segment.is_empty() && *segment != "$");
+    let mut matched = 0;
+    let mut names = names.iter();
+    for segment in segments {
+        loop {
+            match names.next() {
+                Some(name) if *name == segment => {
+                    matched += 1;
+                    break;
+                }
+                Some(_) => continue,
+                None => return matched,
+            }
+        }
+    }
+    matched
+}
+
+fn contextual_endpoint<'a>(
     source: &DiagramOccurrenceIdentity,
     semantic_id: SymbolId,
     elements: &[DiagramElement],
+    authored: Option<&str>,
+    symbol_name: impl Fn(SymbolId) -> Option<&'a str>,
 ) -> DiagramRelationshipEndpoint {
     let mut candidates = elements
         .iter()
         .filter(|element| element.semantic_id == semantic_id)
         .map(|element| {
+            let names = element
+                .occurrence_id
+                .semantic_path
+                .iter()
+                .filter_map(|identity| symbol_name(*identity))
+                .collect::<Vec<_>>();
+            let authored_match = authored_chain_score(authored, &names);
             let shared = source
                 .semantic_path
                 .iter()
                 .zip(element.occurrence_id.semantic_path.iter())
                 .take_while(|(left, right)| left == right)
                 .count();
-            (shared, element.occurrence_id.clone())
+            (authored_match, shared, element.occurrence_id.clone())
         })
         .collect::<Vec<_>>();
     candidates.sort();
-    let occurrence = match candidates.last().map(|candidate| candidate.0) {
+    let occurrence = match candidates
+        .last()
+        .map(|candidate| (candidate.0, candidate.1))
+    {
         None => DiagramEndpointOccurrence::OutsideProjection,
         Some(best) => {
             let best = candidates
                 .into_iter()
-                .filter_map(|(shared, occurrence)| (shared == best).then_some(occurrence))
+                .filter_map(|(authored_match, shared, occurrence)| {
+                    (authored_match == best.0 && shared == best.1).then_some(occurrence)
+                })
                 .collect::<Vec<_>>();
             if let [occurrence] = best.as_slice() {
                 DiagramEndpointOccurrence::Resolved(occurrence.clone())
@@ -1764,7 +1811,10 @@ impl DiagramViewProjection {
 mod tests {
     use std::collections::BTreeSet;
 
-    use super::{canonical_sequence_order, compartment_kind, usable_value, DiagramCompartmentKind};
+    use super::{
+        authored_chain_score, canonical_sequence_order, compartment_kind, usable_value,
+        DiagramCompartmentKind,
+    };
     use crate::{
         ElementKind, PublicationCompleteness, PublicationObstacle, QueryAnswer, QueryOutcome,
     };
@@ -1848,5 +1898,21 @@ mod tests {
         let messages = BTreeSet::from([0, 1, 2]);
         let order = canonical_sequence_order(&messages, [(0, 1), (1, 0)]);
         assert_eq!(order, [(2, 1)].into_iter().collect());
+    }
+
+    #[test]
+    fn authored_chain_score_uses_intermediate_segments() {
+        let unit1 = ["vehicle", "propulsion", "propulsionUnit1", "cmd"];
+        let unit2 = ["vehicle", "propulsion", "propulsionUnit2", "cmd"];
+        assert_eq!(
+            authored_chain_score(Some("propulsion::propulsionUnit1::cmd"), &unit1),
+            3
+        );
+        assert_eq!(
+            authored_chain_score(Some("propulsion::propulsionUnit1::cmd"), &unit2),
+            1
+        );
+        assert_eq!(authored_chain_score(Some("pcb"), &["left", "pcb"]), 1);
+        assert_eq!(authored_chain_score(None, &unit1), 0);
     }
 }

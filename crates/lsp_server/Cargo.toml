@@ -19,6 +19,7 @@ library_catalog = { path = "../library_catalog", default-features = false }
 generator_api = { path = "../generator_api" }
 generator_host = { path = "../generator_host" }
 diagram_layout = { path = "../diagram_layout" }
+diagram_draw = { path = "../diagram_draw" }
 spec42-generator-protocol = { path = "../generator_protocol" }
 base64 = "0.22"
 sysml_diagnostics = { path = "../sysml_diagnostics" }

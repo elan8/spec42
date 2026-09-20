@@ -9,20 +9,11 @@ Spec42 embeds the textual normative SysML/KerML standard library from the
 
 The embedded artifact contains only the `sysml.library/` tree from that release, repacked at build time.
 
-## ELK.js (`elkjs`)
-
-The VS Code diagram webview still depends on the `elkjs` 0.11.1 npm package
-(`vscode/diagram-renderer`) so in-webview layout can run when `spec42/layout`
-is declined (`SPEC42_LAYOUT_ENGINE=legacy`) or unavailable. Headless SVG export
-does not use ELK.js; it lays out through native `elkrs`.
-
-ELK.js is distributed under the Eclipse Public License 2.0.
-See https://github.com/kieler/elkjs and https://www.eclipse.org/legal/epl-2.0/.
-
 ## elkrs (native diagram layout)
 
 The `crates/diagram_layout` native layout boundary, headless export through
-`crates/diagram_draw`, and `crates/lsp_server`'s `spec42/layout` request (#119)
+`crates/diagram_draw`, and `crates/lsp_server`'s `spec42/layout` and `spec42/draw`
+requests (#119, #176)
 depend on the public `elan8/elkrs` repository at revision
 `8309be8cf614cfe277c572b28e4f79a1703f8e32`.
 
