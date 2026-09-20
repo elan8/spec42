@@ -9,7 +9,7 @@ import { buildGeneralElkGraphInput } from "./layout";
 
 const fixtureDir = join(
   dirname(fileURLToPath(import.meta.url)),
-  "../../../../tools/elkrs_parity/fixtures",
+  "../../test-fixtures/elk-parity",
 );
 
 function node(id: string, kind: string, label = id, attributes?: Record<string, unknown>): PreparedNode {

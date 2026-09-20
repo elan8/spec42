@@ -579,6 +579,7 @@ dependencies = [
 name = "diagram_draw"
 version = "0.52.0"
 dependencies = [
+ "diagram_layout",
  "serde",
  "serde_json",
 ]
@@ -694,19 +695,6 @@ dependencies = [
  "indexmap",
  "serde",
  "serde_json",
-]
-
-[[package]]
-name = "elkrs_parity"
-version = "0.52.0"
-dependencies = [
- "anyhow",
- "clap",
- "diagram_layout",
- "serde",
- "serde_json",
- "server",
- "sha2",
 ]
 
 [[package]]
@@ -1006,11 +994,6 @@ name = "hashbrown"
 version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "841d1cc9bed7f9236f321df977030373f4a4163ae1a7dbfe1a51a2c1a51d9100"
-dependencies = [
- "allocator-api2",
- "equivalent",
- "foldhash 0.2.0",
-]
 
 [[package]]
 name = "hashbrown"
@@ -1745,44 +1728,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 
 [[package]]
-name = "relative-path"
-version = "2.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bca40a312222d8ba74837cb474edef44b37f561da5f773981007a10bbaa992b0"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "rquickjs"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c50dc6d6c587c339edb4769cf705867497a2baf0eca8b4645fa6ecd22f02c77a"
-dependencies = [
- "rquickjs-core",
-]
-
-[[package]]
-name = "rquickjs-core"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8bf7840285c321c3ab20e752a9afb95548c75cd7f4632a0627cea3507e310c1"
-dependencies = [
- "hashbrown 0.16.1",
- "relative-path",
- "rquickjs-sys",
-]
-
-[[package]]
-name = "rquickjs-sys"
-version = "0.11.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "27344601ef27460e82d6a4e1ecb9e7e99f518122095f3c51296da8e9be2b9d83"
-dependencies = [
- "cc",
-]
-
-[[package]]
 name = "rustc-demangle"
 version = "0.1.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1920,22 +1865,19 @@ version = "0.52.0"
 dependencies = [
  "anyhow",
  "clap",
- "diagram_layout",
+ "diagram_draw",
  "directories",
- "elkrs_parity",
  "generator_api",
  "generator_host",
  "kpar",
  "library_catalog",
  "lsp_server",
- "rquickjs",
  "serde",
  "serde_json",
  "sha2",
  "sysml_diagnostics",
  "sysml_query",
  "tempfile",
- "thiserror 2.0.19",
  "tokio",
  "toml 0.8.23",
  "tower-lsp",

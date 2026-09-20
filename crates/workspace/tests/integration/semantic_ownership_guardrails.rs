@@ -405,14 +405,16 @@ fn is_presentation_only_membership_key_owner(path: &Path) -> bool {
 }
 
 /// `diagram_draw` (spec42 #176) reads `stateType`/`actionType`/`itemType` as free-form diagram-DTO
-/// attribute keys, line-for-line ports of the pre-existing, untouched TS/D3 drawing code
-/// (`views/action-flow.ts`, `render/drawing.ts`) that these keys have always lived in. Nothing in
-/// production Rust or TypeScript actually populates these keys today -- they are vestigial reads
-/// carried over unchanged from the source being ported, not a reintroduction of the retired
-/// `DeclaredRelationshipFacts::typing` projection. `diagram_draw` has no dependency on the semantic
-/// graph crates this guard protects and never reads `DeclaredRelationshipFacts`.
+/// attribute keys, line-for-line ports of the pre-existing, untouched TS/D3 drawing and prepare
+/// code (`views/action-flow.ts`, `render/drawing.ts`, `prepare/`) that these keys have always
+/// lived in. Nothing in production Rust or TypeScript actually populates these keys today -- they
+/// are vestigial reads carried over unchanged from the source being ported, not a reintroduction
+/// of the retired `DeclaredRelationshipFacts::typing` projection. `diagram_draw` has no
+/// dependency on the semantic graph crates this guard protects and never reads
+/// `DeclaredRelationshipFacts`.
 fn is_retired_typing_key_exempt(path: &Path) -> bool {
     let normalized = path.to_string_lossy().replace('\\', "/");
     normalized.ends_with("crates/diagram_draw/src/action_flow.rs")
         || normalized.ends_with("crates/diagram_draw/src/ibd_edges.rs")
+        || normalized.ends_with("crates/diagram_draw/src/prepare.rs")
 }

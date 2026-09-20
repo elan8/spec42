@@ -1,7 +1,8 @@
-//! Port of `render/ibd-route.ts`, minus `lcaOffsetForNodes` (layout-only, never reached from
-//! drawing -- `edge.layout.lcaOffset` already carries its result by the time drawing runs).
+//! Port of `render/ibd-route.ts`.
 
-use crate::types::{EdgeSection, LaidOutEdge, Point};
+use std::collections::HashMap;
+
+use crate::types::{attr_str, EdgeSection, LaidOutEdge, LaidOutNode, Point};
 
 /// Port of `pruneRoutePoints`: dedupes adjacent points and collapses runs of 3+ collinear
 /// (axis-aligned) points down to their endpoints.
@@ -27,6 +28,44 @@ pub fn prune_route_points(points: &[Point]) -> Vec<Point> {
         }
     }
     pruned
+}
+
+fn container_chain(node: &LaidOutNode, nodes_by_id: &HashMap<String, LaidOutNode>) -> Vec<String> {
+    let mut chain = Vec::new();
+    let mut current = Some(node);
+    while let Some(node) = current {
+        chain.push(node.id.clone());
+        let parent_id = attr_str(&node.attributes, "containerId").unwrap_or_default();
+        current = if parent_id.is_empty() {
+            None
+        } else {
+            nodes_by_id.get(&parent_id)
+        };
+    }
+    chain
+}
+
+/// Port of `lcaOffsetForNodes`.
+pub fn lca_offset_for_nodes(
+    source_node: &LaidOutNode,
+    target_node: &LaidOutNode,
+    laid_out_nodes: &HashMap<String, LaidOutNode>,
+) -> Point {
+    let source_chain = container_chain(source_node, laid_out_nodes);
+    let target_set: std::collections::HashSet<String> =
+        container_chain(target_node, laid_out_nodes)
+            .into_iter()
+            .collect();
+    let Some(lca_id) = source_chain.into_iter().find(|id| target_set.contains(id)) else {
+        return Point { x: 0.0, y: 0.0 };
+    };
+    laid_out_nodes
+        .get(&lca_id)
+        .map(|node| Point {
+            x: node.x,
+            y: node.y,
+        })
+        .unwrap_or(Point { x: 0.0, y: 0.0 })
 }
 
 /// Port of `pointsFromElkSections`.

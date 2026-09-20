@@ -103,15 +103,16 @@ fn spec42_layout_surfaces_typed_contract_errors() {
 /// binary as a subprocess) -- it does not include the further extension-host/webview hops
 /// (`postMessage` + `vscode-languageclient`'s own marshalling), so it is a lower bound on the
 /// full user-perceived latency, not a substitute for measuring the complete path from a real
-/// VS Code session. The fixture is `timer_interconnection.json`, the largest of the #118 parity
-/// corpus (18KB, the same one `tools/elkrs_parity --process-mode cold|warm` measured at ~1.2ms
-/// native layout time in a release build) -- this test necessarily runs the debug `spec42`
-/// binary the integration harness builds, so its absolute numbers are not release-profile
-/// numbers; the budget is generous enough to still be a meaningful regression guard either way.
+/// VS Code session. The fixture is `timer_interconnection.json`, the largest checked-in ELK
+/// graph the diagram-renderer builders emit (18KB) -- this test necessarily runs the debug
+/// `spec42` binary the integration harness builds, so its absolute numbers are not
+/// release-profile numbers; the budget is generous enough to still be a meaningful regression
+/// guard either way.
 #[test]
 fn spec42_layout_p95_latency_is_within_the_interactive_budget() {
-    let fixture = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../tools/elkrs_parity/fixtures/corpus/timer_interconnection.json");
+    let fixture = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join(
+        "../../vscode/diagram-renderer/test-fixtures/elk-parity/corpus/timer_interconnection.json",
+    );
     let graph: serde_json::Value = serde_json::from_str(
         &std::fs::read_to_string(&fixture)
             .unwrap_or_else(|error| panic!("read {}: {error}", fixture.display())),

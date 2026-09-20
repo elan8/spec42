@@ -12,16 +12,16 @@ import { buildGeneralElkGraphInput } from "./layout";
 import { buildBehaviorElkGraphInput } from "../views/behavior-common";
 
 /**
- * Extends the hand-authored parity fixtures in `elk-parity-fixtures.test.ts` with the exact ELK
+ * Extends the hand-authored ELK-input goldens in `elk-parity-fixtures.test.ts` with the exact ELK
  * graph JSON built from every checked-in repository diagram product plus the synthetic node-chrome
- * corpus, so the Rust-side shadow comparison (`layout_shadow_corpus.rs`) proves parity against
- * production-shaped inputs, not just hand-picked cases.
+ * corpus, so the TypeScript graph builders stay owned by production-shaped inputs, not just
+ * hand-picked cases.
  */
 
 const SNAPSHOT_DIR = resolve(process.cwd(), "../../tests/snapshots/generation");
 const CORPUS_FIXTURE_DIR = join(
   dirname(fileURLToPath(import.meta.url)),
-  "../../../../tools/elkrs_parity/fixtures/corpus",
+  "../../test-fixtures/elk-parity/corpus",
 );
 
 function productFiles(): string[] {

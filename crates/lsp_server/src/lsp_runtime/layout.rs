@@ -7,13 +7,10 @@
 //! presentation state; the client is the one that compares the echo against its own current
 //! values to reject a stale or superseded response.
 //!
-//! `diagram_layout` (the native `elkrs` adapter) is this handler's only engine. The legacy
-//! ELK.js/QuickJS engine lives in `crates/server`'s `elk_layout` module, which `lsp_server`
-//! cannot depend on -- `crates/sysml_query/tests/architecture.rs` pins the launch-only edge the
-//! other way (`server` depends on `lsp_server`, not the reverse). `SPEC42_LAYOUT_ENGINE=legacy`
-//! therefore cannot mean "run the legacy engine here"; it means "decline, so the client's own
-//! existing in-webview `layoutPrepared`/elk.js fallback takes over" -- the same path a request
-//! failure or an offline extension host already falls back to.
+//! `diagram_layout` (the native `elkrs` adapter) is this handler's only engine.
+//! `SPEC42_LAYOUT_ENGINE=legacy` therefore cannot mean "run a second engine here"; it means
+//! "decline, so the client's own existing in-webview `layoutPrepared`/elk.js fallback takes
+//! over" -- the same path a request failure or an offline extension host already falls back to.
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -43,9 +40,9 @@ pub(crate) struct LayoutResult {
     pub(crate) engine: LayoutEngine,
 }
 
-/// `true` when `SPEC42_LAYOUT_ENGINE` explicitly asks for the legacy engine. There is no legacy
-/// engine to run here (see module docs), so this is read as "decline this request", not as a
-/// second code path to execute.
+/// `true` when `SPEC42_LAYOUT_ENGINE` explicitly asks the webview to keep its in-webview elk.js
+/// path. There is no second engine to run here (see module docs), so this is read as "decline
+/// this request", not as a code path to execute.
 pub(crate) fn legacy_engine_requested() -> bool {
     std::env::var("SPEC42_LAYOUT_ENGINE").as_deref() == Ok("legacy")
 }

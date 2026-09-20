@@ -93,3 +93,42 @@ pub fn normalize_edge_kind(relationship_type: &str) -> String {
         sanitized
     }
 }
+
+/// Port of `isPackageElementType`.
+pub fn is_package_element_type(element_type: &str) -> bool {
+    let normalized = element_type.trim().to_ascii_lowercase();
+    normalized.is_empty()
+        || normalized == "package"
+        || normalized == "library package"
+        || normalized.ends_with("_package")
+        || normalized.contains("package_def")
+}
+
+/// Port of `isNonDiagramSemanticElementType`.
+pub fn is_non_diagram_semantic_element_type(element_type: &str) -> bool {
+    let normalized = element_type.trim().to_ascii_lowercase();
+    normalized.is_empty()
+        || normalized == "import"
+        || normalized == "documentation"
+        || normalized == "comment"
+        || normalized == "diagnostic"
+        || normalized.contains("diagnostic")
+}
+
+/// Port of `isOverviewVisualElementType`.
+pub fn is_overview_visual_element_type(element_type: &str) -> bool {
+    !is_package_element_type(element_type) && !is_non_diagram_semantic_element_type(element_type)
+}
+
+/// Port of `isConnectorUsageElementType`.
+pub fn is_connector_usage_element_type(element_type: &str) -> bool {
+    let normalized: String = element_type
+        .trim()
+        .to_ascii_lowercase()
+        .chars()
+        .filter(|c| c.is_ascii_alphanumeric())
+        .collect();
+    normalized == "connectionusage"
+        || normalized == "bindingconnectorusage"
+        || normalized == "flowconnectionusage"
+}

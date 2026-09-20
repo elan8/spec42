@@ -8,6 +8,8 @@ Active planning material lives here so the root remains reserved for general pro
   acceptance evidence.
 - [SYNTAX_FOLLOW_UPS.md](SYNTAX_FOLLOW_UPS.md) — consumer code that still derives syntax answers
   from source text, and the typed syntax-service queries that retire it.
+- [ELKRS_MIGRATION.md](ELKRS_MIGRATION.md) — native elkrs vs remaining in-webview elk.js work
+  (#176).
 
 Keep design decisions in the root `design.md` and trackers limited to active blockers and next
 actions. Delete completed items and documents; retain their history only in git. Move enduring

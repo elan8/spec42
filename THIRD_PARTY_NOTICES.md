@@ -11,29 +11,27 @@ The embedded artifact contains only the `sysml.library/` tree from that release,
 
 ## ELK.js (`elkjs`)
 
-Spec42 vendors ELK.js 0.11.1 assets under `crates/server/assets/elkjs/` for
-headless Rust-owned diagram export. The exporter embeds QuickJS to execute ELK
-layout and routing without requiring Node.js, npm, or VS Code webview assets at
-export time.
+The VS Code diagram webview still depends on the `elkjs` 0.11.1 npm package
+(`vscode/diagram-renderer`) so in-webview layout can run when `spec42/layout`
+is declined (`SPEC42_LAYOUT_ENGINE=legacy`) or unavailable. Headless SVG export
+does not use ELK.js; it lays out through native `elkrs`.
 
 ELK.js is distributed under the Eclipse Public License 2.0.
 See https://github.com/kieler/elkjs and https://www.eclipse.org/legal/epl-2.0/.
 
 ## elkrs (native diagram layout)
 
-The `crates/diagram_layout` native layout boundary, `tools/elkrs_parity` development tool, and
-`crates/lsp_server`'s `spec42/layout` request (#119) depend on the public `elan8/elkrs` repository
-at revision `8309be8cf614cfe277c572b28e4f79a1703f8e32`.
+The `crates/diagram_layout` native layout boundary, headless export through
+`crates/diagram_draw`, and `crates/lsp_server`'s `spec42/layout` request (#119)
+depend on the public `elan8/elkrs` repository at revision
+`8309be8cf614cfe277c572b28e4f79a1703f8e32`.
 
 As of #119, `diagram_layout` is a plain (non-feature-gated) `lsp_server` dependency. `crates/server`
 (the single `spec42` binary that is both the CLI/MCP host and, via its own plain, non-optional
 dependency on `lsp_server`, the language server the VS Code extension bundles) normally depends on
 `lsp_server` to launch it, so `elkrs` is linked into every default build of `spec42` -- confirmed
 via `cargo tree -p server -i elkrs`, which shows `elkrs -> diagram_layout -> lsp_server -> server`
-with no feature gate or dev-dependency edge on that path. This is no longer confined to the opt-in
-`native-layout-shadow`/`elk-layout-spike` development features `crates/server` still carries
-separately for #118's shadow-mode comparison tooling (those remain feature-gated and unrelated to
-this path).
+with no feature gate or dev-dependency edge on that path.
 
 `elkrs` 0.1.1 is distributed under the Apache License 2.0. The public repository records that its
 history was recovered from the crates.io package with SHA-256

@@ -15,7 +15,10 @@ pub struct XmlNode {
 }
 
 pub fn parse(input: &str) -> XmlNode {
-    let trimmed = input.trim();
+    // Checked-out fixtures may carry CRLF on Windows/WSL; both serializers emit LF. Normalize so
+    // the tree comparison is about SVG structure, not checkout line endings.
+    let normalized = input.replace("\r\n", "\n").replace('\r', "\n");
+    let trimmed = normalized.trim();
     let bytes = trimmed.as_bytes();
     let start = bytes
         .iter()

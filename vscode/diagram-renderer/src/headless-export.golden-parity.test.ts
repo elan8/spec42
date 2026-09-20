@@ -6,11 +6,11 @@ import generalViewGolden from "./test-support/golden-parity/general-view.markers
 import interconnectionViewGolden from "./test-support/golden-parity/interconnection-view.markers.json";
 
 /**
- * Headless path: same virtual DOM used by `spec42 diagrams export` and
- * `POST /v1/diagrams/export` (via the compiled `headless-renderer.js` bundle run through
- * QuickJS in `crates/server/src/headless_renderer.rs`). Renders the identical fixture
- * payloads `renderer.golden-parity.test.ts` renders through a real jsdom DOM, and must
- * produce the same structural markers -- see that file's doc comment and
+ * Headless path: the compiled `headless-renderer.js` bundle's virtual DOM, used by the
+ * TypeScript renderer tests. Production `spec42 diagrams export` / `POST /v1/diagrams/export`
+ * now run prepare + layout + draw in Rust (`crates/server/src/headless_renderer.rs`). Renders
+ * the identical fixture payloads `renderer.golden-parity.test.ts` renders through a real
+ * jsdom DOM, and must produce the same structural markers -- see that file's doc comment and
  * CLI vs VS Code golden parity structural markers.
  *
  * A failure here that the jsdom suite doesn't share means the virtual DOM shim in

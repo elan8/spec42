@@ -229,6 +229,27 @@ const EXEMPTIONS: &[Exemption] = &[
                  render/drawing.ts, for the same reason as graph_normalization.rs above",
         must_contain: None,
     },
+    Exemption {
+        path: "crates/diagram_draw/src/prepare.rs",
+        reason: "buckets already-resolved visualization DTO kind/type labels into a PreparedView; a\
+                 line-for-line port of the un-flagged `prepare/` TypeScript, for the same reason as\
+                 graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/layout.rs",
+        reason: "builds ELK JSON and reshapes engine output from already-resolved PreparedView kind\
+                 labels; a line-for-line port of the un-flagged `render/layout.ts` and\
+                 `views/behavior-common.ts` layout, for the same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/sysml_node.rs",
+        reason: "maps already-resolved element-kind labels to SysML node-chrome stereotypes for SVG\
+                 drawing and ELK sizing; a line-for-line port of the un-flagged `sysml-node-builder.ts`,\
+                 for the same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
 ];
 
 /// Fields outside the authorities that may hold a parsed tree: the editor host's index entries,

@@ -5,15 +5,11 @@
 pub mod ai_tools;
 pub mod cli;
 pub mod diagnostic_catalog;
-#[cfg(any(test, feature = "elk-layout-spike"))]
-pub mod elk_layout;
 pub mod environment;
 pub mod generation;
 pub mod headless_renderer;
 pub mod host_snapshot;
 pub mod kpar_libraries;
-#[cfg(feature = "native-layout-shadow")]
-pub mod layout_shadow;
 pub mod library_bundle;
 pub mod library_status_rpc;
 pub mod model_projection;
