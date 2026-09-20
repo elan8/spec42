@@ -1,0 +1,99 @@
+name: Prepare Rust CI
+description: Install the pinned toolchain, restore Cargo caches, and fetch library bundles.
+
+inputs:
+  components:
+    description: Extra rustup components, comma-separated (for example clippy).
+    required: false
+    default: ""
+  targets:
+    description: Extra rustup targets, comma-separated (for example wasm32-unknown-unknown).
+    required: false
+    default: ""
+  install-deny:
+    description: Whether to install cargo-deny.
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
+        components: ${{ inputs.components }}
+        targets: ${{ inputs.targets }}
+
+    - name: Cache cargo
+      uses: Swatinem/rust-cache@v2
+
+    - name: Install cargo-deny
+      if: inputs.install-deny == 'true'
+      uses: taiki-e/install-action@v2
+      with:
+        tool: cargo-deny
+
+    - name: Prepare SysML stdlib bundle
+      id: stdlib
+      shell: bash
+      run: |
+        VERSION=$(node -p "require('./config/standard-library.json').version")
+        echo "SPEC42_STDLIB_VERSION=${VERSION}" >> "$GITHUB_ENV"
+        echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> "$GITHUB_ENV"
+        echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+    - name: Restore SysML stdlib bundle cache
+      uses: actions/cache/restore@v4
+      id: stdlib-cache
+      with:
+        path: .cache/sysml-stdlib-kpar-${{ steps.stdlib.outputs.version }}
+        key: sysml-stdlib-${{ steps.stdlib.outputs.version }}
+
+    - name: Fetch SysML stdlib bundle
+      if: steps.stdlib-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: bash scripts/fetch-stdlib-bundle.sh
+
+    - name: Save SysML stdlib bundle cache
+      if: steps.stdlib-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: .cache/sysml-stdlib-kpar-${{ steps.stdlib.outputs.version }}
+        key: sysml-stdlib-${{ steps.stdlib.outputs.version }}
+
+    - name: Prepare KPAR library bundles
+      id: kpar
+      shell: bash
+      run: |
+        DOMAIN_VERSION=$(node -p "require('./config/libraries/domain.json').version")
+        METHOD_VERSION=$(node -p "require('./config/libraries/method.json').version")
+        echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${DOMAIN_VERSION}" >> "$GITHUB_ENV"
+        echo "SPEC42_METHOD_LIBRARIES_VERSION=${METHOD_VERSION}" >> "$GITHUB_ENV"
+        echo "SPEC42_KPAR_LIBRARY_BUNDLE_DOMAIN=${{ github.workspace }}/.cache/elan8-domain-libraries-${DOMAIN_VERSION}.kpar" >> "$GITHUB_ENV"
+        echo "SPEC42_KPAR_LIBRARY_BUNDLE_METHOD=${{ github.workspace }}/.cache/elan8-method-libraries-${METHOD_VERSION}.kpar" >> "$GITHUB_ENV"
+        echo "domain=${DOMAIN_VERSION}" >> "$GITHUB_OUTPUT"
+        echo "method=${METHOD_VERSION}" >> "$GITHUB_OUTPUT"
+
+    - name: Restore KPAR library bundles cache
+      uses: actions/cache/restore@v4
+      id: kpar-libraries-cache
+      with:
+        path: |
+          .cache/elan8-domain-libraries-${{ steps.kpar.outputs.domain }}.kpar
+          .cache/elan8-method-libraries-${{ steps.kpar.outputs.method }}.kpar
+        key: kpar-libraries-domain-${{ steps.kpar.outputs.domain }}-method-${{ steps.kpar.outputs.method }}
+
+    - name: Fetch KPAR library bundles
+      if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: bash scripts/fetch-kpar-libraries-bundle.sh
+
+    - name: Save KPAR library bundles cache
+      if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          .cache/elan8-domain-libraries-${{ steps.kpar.outputs.domain }}.kpar
+          .cache/elan8-method-libraries-${{ steps.kpar.outputs.method }}.kpar
+        key: kpar-libraries-domain-${{ steps.kpar.outputs.domain }}-method-${{ steps.kpar.outputs.method }}

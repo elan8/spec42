@@ -1,4 +1,6 @@
-# CI: required fast checks plus targeted integration smoke tests.
+# CI: required checks plus targeted integration smoke tests.
+# Rust Mini CI suites run as parallel jobs; `Rust core checks` is the aggregator that
+# branch protection can keep requiring.
 name: CI
 
 on:
@@ -16,93 +18,84 @@ env:
   RUST_TOOLCHAIN_VERSION: "1.97.1"
 
 jobs:
-  rust-core:
-    name: Rust core checks
+  rust-lint:
+    name: Rust lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
           submodules: recursive
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
+      - uses: ./.github/actions/prepare-rust-ci
         with:
-          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
           components: clippy
           targets: wasm32-unknown-unknown
+          install-deny: "true"
 
-      - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
+      - name: Mini CI (lint)
+        run: scripts/minici.sh lint
 
-      - name: Install cargo-deny
-        uses: taiki-e/install-action@v2
+  rust-tests-workspace:
+    name: Rust tests (workspace)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
         with:
-          tool: cargo-deny
+          submodules: recursive
 
-      - name: Prepare SysML stdlib bundle
-        run: |
-          VERSION=$(node -p "require('./config/standard-library.json').version")
-          echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
-
-      - name: Restore SysML stdlib bundle cache
-        uses: actions/cache/restore@v4
-        id: stdlib-cache
+      - uses: ./.github/actions/prepare-rust-ci
         with:
-          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
-          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
+          targets: wasm32-unknown-unknown
 
-      - name: Fetch SysML stdlib bundle
-        if: steps.stdlib-cache.outputs.cache-hit != 'true'
-        run: bash scripts/fetch-stdlib-bundle.sh
+      - name: Mini CI (workspace tests)
+        run: scripts/minici.sh tests-workspace
 
-      - name: Save SysML stdlib bundle cache
-        if: steps.stdlib-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+  rust-tests-lsp:
+    name: Rust tests (language server)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
         with:
-          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
-          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
+          submodules: recursive
 
-      - name: Prepare KPAR library bundles
-        run: |
-          DOMAIN_VERSION=$(node -p "require('./config/libraries/domain.json').version")
-          METHOD_VERSION=$(node -p "require('./config/libraries/method.json').version")
-          echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${DOMAIN_VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_METHOD_LIBRARIES_VERSION=${METHOD_VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_KPAR_LIBRARY_BUNDLE_DOMAIN=${{ github.workspace }}/.cache/elan8-domain-libraries-${DOMAIN_VERSION}.kpar" >> $GITHUB_ENV
-          echo "SPEC42_KPAR_LIBRARY_BUNDLE_METHOD=${{ github.workspace }}/.cache/elan8-method-libraries-${METHOD_VERSION}.kpar" >> $GITHUB_ENV
-
-      - name: Restore KPAR library bundles cache
-        uses: actions/cache/restore@v4
-        id: kpar-libraries-cache
+      - uses: ./.github/actions/prepare-rust-ci
         with:
-          path: |
-            .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
-            .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
-          key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
+          targets: wasm32-unknown-unknown
 
-      - name: Fetch KPAR library bundles
-        if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
-        run: bash scripts/fetch-kpar-libraries-bundle.sh
+      - name: Mini CI (language-server tests)
+        run: scripts/minici.sh tests-lsp
 
-      - name: Save KPAR library bundles cache
-        if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+  rust-tests-server:
+    name: Rust tests (server)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
         with:
-          path: |
-            .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
-            .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
-          key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
+          submodules: recursive
 
-      # This is also the local pre-push entry point. Keep the commands in one place so local and
-      # hosted Rust-core checks cannot silently drift apart.
-      - name: Mini CI
-        id: repository-plugins
-        run: scripts/minici.sh
+      - uses: ./.github/actions/prepare-rust-ci
+
+      - name: Mini CI (server tests)
+        run: scripts/minici.sh tests-server
+
+  rust-tests-generator:
+    name: Rust tests (generator)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - uses: ./.github/actions/prepare-rust-ci
+        with:
+          targets: wasm32-unknown-unknown
 
       # Robot-vacuum zero-warning / view smoke stay local-only (`--ignored` tests plus
       # scripts/fetch-robot-vacuum-cleaner.sh). The showcase repo already gates Spec42
       # errors/warnings in its own CI, so pinning it here would couple releases to showcase drift.
+      - name: Mini CI (generator)
+        id: repository-plugins
+        run: scripts/minici.sh generator
 
       # The report deliberately exits non-zero while the manifest has uncovered normative rules.
       # Keep that known debt visible as an artifact without turning the existing baseline into a
@@ -117,6 +110,7 @@ jobs:
         with:
           name: semantic-evidence-coverage
           path: target/snapshot-report.json
+
       - name: Upload repository generator plugins
         if: always() && steps.repository-plugins.outcome == 'success'
         uses: actions/upload-artifact@v4
@@ -125,6 +119,25 @@ jobs:
           path: generator-plugins/target/wasm32-unknown-unknown/release/*.wasm
           if-no-files-found: error
           retention-days: 14
+
+  rust-core:
+    name: Rust core checks
+    if: ${{ always() && !cancelled() }}
+    needs:
+      - rust-lint
+      - rust-tests-workspace
+      - rust-tests-lsp
+      - rust-tests-server
+      - rust-tests-generator
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm all Rust suites passed
+        run: |
+          test "${{ needs.rust-lint.result }}" = success
+          test "${{ needs.rust-tests-workspace.result }}" = success
+          test "${{ needs.rust-tests-lsp.result }}" = success
+          test "${{ needs.rust-tests-server.result }}" = success
+          test "${{ needs.rust-tests-generator.result }}" = success
 
   audit:
     name: Dependency audit
@@ -215,68 +228,7 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
-
-      - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
-
-      - name: Prepare SysML stdlib bundle
-        run: |
-          VERSION=$(node -p "require('./config/standard-library.json').version")
-          echo "SPEC42_STDLIB_VERSION=${VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
-
-      - name: Restore SysML stdlib bundle cache
-        uses: actions/cache/restore@v4
-        id: stdlib-cache
-        with:
-          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
-          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
-
-      - name: Fetch SysML stdlib bundle
-        if: steps.stdlib-cache.outputs.cache-hit != 'true'
-        run: bash scripts/fetch-stdlib-bundle.sh
-
-      - name: Save SysML stdlib bundle cache
-        if: steps.stdlib-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
-          key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
-
-      - name: Prepare KPAR library bundles
-        run: |
-          DOMAIN_VERSION=$(node -p "require('./config/libraries/domain.json').version")
-          METHOD_VERSION=$(node -p "require('./config/libraries/method.json').version")
-          echo "SPEC42_DOMAIN_LIBRARIES_VERSION=${DOMAIN_VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_METHOD_LIBRARIES_VERSION=${METHOD_VERSION}" >> $GITHUB_ENV
-          echo "SPEC42_KPAR_LIBRARY_BUNDLE_DOMAIN=${{ github.workspace }}/.cache/elan8-domain-libraries-${DOMAIN_VERSION}.kpar" >> $GITHUB_ENV
-          echo "SPEC42_KPAR_LIBRARY_BUNDLE_METHOD=${{ github.workspace }}/.cache/elan8-method-libraries-${METHOD_VERSION}.kpar" >> $GITHUB_ENV
-
-      - name: Restore KPAR library bundles cache
-        uses: actions/cache/restore@v4
-        id: kpar-libraries-cache
-        with:
-          path: |
-            .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
-            .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
-          key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
-
-      - name: Fetch KPAR library bundles
-        if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
-        run: bash scripts/fetch-kpar-libraries-bundle.sh
-
-      - name: Save KPAR library bundles cache
-        if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
-            .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
-          key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
+      - uses: ./.github/actions/prepare-rust-ci
 
       - name: Agent CLI surface integration tests
         run: |

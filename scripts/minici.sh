@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # Run the high-signal, platform-independent portion of required CI locally.
 #
+# With no argument this runs every suite sequentially (the local pre-push path). CI splits the
+# same suites across parallel jobs by passing one of: lint, tests-workspace, tests-lsp,
+# tests-server, generator. Keep the cargo invocations here so local and hosted checks cannot
+# silently drift apart.
+#
 # This script deliberately performs no downloads. Prepare the pinned library bundles with the
 # repository fetch scripts before running it. CI-only packaging and cross-platform jobs remain in
 # .github/workflows/ci.yml.
@@ -8,6 +13,15 @@ set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$root"
+
+SUITE="${1:-all}"
+case "$SUITE" in
+  all|lint|tests-workspace|tests-lsp|tests-server|generator) ;;
+  *)
+    echo "usage: scripts/minici.sh [all|lint|tests-workspace|tests-lsp|tests-server|generator]" >&2
+    exit 2
+    ;;
+esac
 
 step() {
   echo
@@ -31,11 +45,20 @@ require_path() {
   fi
 }
 
+wants() {
+  local name="$1"
+  [[ "$SUITE" == "all" || "$SUITE" == "$name" ]]
+}
+
+needs_wasm() {
+  wants lint || wants tests-workspace || wants tests-lsp || wants generator
+}
+
 for command in cargo git node python3 rustc rustup; do
   require_command "$command"
 done
 
-if ! rustup target list --installed | grep -q '^wasm32-unknown-unknown$'; then
+if needs_wasm && ! rustup target list --installed | grep -q '^wasm32-unknown-unknown$'; then
   echo "error: the wasm32-unknown-unknown Rust target is not installed" >&2
   echo "install it explicitly with: rustup target add wasm32-unknown-unknown" >&2
   exit 2
@@ -62,77 +85,105 @@ require_path "$SPEC42_STDLIB_KPAR_DIR" "bash scripts/fetch-stdlib-bundle.sh"
 require_path "$SPEC42_KPAR_LIBRARY_BUNDLE_DOMAIN" "bash scripts/fetch-kpar-libraries-bundle.sh"
 require_path "$SPEC42_KPAR_LIBRARY_BUNDLE_METHOD" "bash scripts/fetch-kpar-libraries-bundle.sh"
 
-step "Formatting"
-cargo fmt --all -- --check
+build_repository_plugins() {
+  step "Repository generator guests"
+  # Rust integration tests execute the real diagram guest. Build repository guests before those
+  # tests, without staging a package-only copy beneath vscode/.
+  SPEC42_PACKAGE_REPOSITORY_GENERATORS=0 scripts/build-repository-generator-plugins.sh
+}
 
-step "Workspace Clippy (all targets and features)"
-cargo clippy --workspace --all-targets --all-features -- -D warnings
+if wants lint; then
+  step "Formatting"
+  cargo fmt --all -- --check
 
-step "Dependency policy"
-require_command cargo-deny
-cargo deny check bans
+  step "Workspace Clippy (all targets and features)"
+  cargo clippy --workspace --all-targets --all-features -- -D warnings
 
-step "Generated configuration and contract checks"
-node scripts/sync-standard-library-config.mjs --check
-node scripts/sync-kpar-libraries-config.mjs --check
-node scripts/sync-workspace-version.mjs --check
-node scripts/generate-conformance-matrix.mjs --check
-node scripts/sync-generator-abi.mjs --check
-node scripts/sync-docs-meta.mjs --check
+  step "Dependency policy"
+  require_command cargo-deny
+  cargo deny check bans
 
-abi_manifest="$(mktemp "${TMPDIR:-/tmp}/spec42-generator-abi.XXXXXX")"
-trap 'rm -f "$abi_manifest"' EXIT
-cargo run -p spec42-generator-protocol --example abi-manifest >"$abi_manifest"
-if ! cmp -s "$abi_manifest" docs/generation/generator-abi.json; then
-  echo "error: docs/generation/generator-abi.json is stale" >&2
-  diff -u docs/generation/generator-abi.json "$abi_manifest" || true
-  exit 1
+  step "Generated configuration and contract checks"
+  node scripts/sync-standard-library-config.mjs --check
+  node scripts/sync-kpar-libraries-config.mjs --check
+  node scripts/sync-workspace-version.mjs --check
+  node scripts/generate-conformance-matrix.mjs --check
+  node scripts/sync-generator-abi.mjs --check
+  node scripts/sync-docs-meta.mjs --check
+
+  abi_manifest="$(mktemp "${TMPDIR:-/tmp}/spec42-generator-abi.XXXXXX")"
+  trap 'rm -f "$abi_manifest"' EXIT
+  cargo run -p spec42-generator-protocol --example abi-manifest >"$abi_manifest"
+  if ! cmp -s "$abi_manifest" docs/generation/generator-abi.json; then
+    echo "error: docs/generation/generator-abi.json is stale" >&2
+    diff -u docs/generation/generator-abi.json "$abi_manifest" || true
+    exit 1
+  fi
+
+  step "Reference tooling"
+  python3 -m unittest tools/sysml_reference/test_tools.py
 fi
 
-step "Repository generator guests"
-# Rust integration tests execute the real diagram guest. Build repository guests before those
-# tests, without staging a package-only copy beneath vscode/.
-SPEC42_PACKAGE_REPOSITORY_GENERATORS=0 scripts/build-repository-generator-plugins.sh
-
-step "Reference tooling"
-python3 -m unittest tools/sysml_reference/test_tools.py
-
-step "Core workspace tests"
-export RUST_MIN_STACK=16777216
-cargo test --workspace --exclude server --exclude lsp_server
-cargo test -p lsp_server --lib --test debt_guardrails --test parse_validation
-cargo test -p lsp_server --test lsp_integration -- --test-threads=1
-cargo test -p server --lib
-cargo test --manifest-path fuzz/Cargo.toml --test sysml_seed_corpus
-
-step "Generator conformance and smoke tests"
-scripts/build-generator-plugins.sh
-cargo run -p generator_conformance --bin generator-conformance
-if [[ "${CI:-false}" == "true" ]]; then
-  git diff --exit-code generator-tests/golden
+if wants tests-workspace || wants tests-lsp || wants generator; then
+  build_repository_plugins
 fi
-cargo test -p server --test integration generator_cli
 
-cargo run -p server --bin spec42 -- --no-stdlib generate \
-  generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm \
-  vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust
-cargo run -p server --bin spec42 -- --no-stdlib generate \
-  generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm \
-  vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
-cargo test -p server --test integration diagram_generator_smoke
+if wants tests-workspace; then
+  step "Core workspace tests"
+  export RUST_MIN_STACK=16777216
+  cargo test --workspace --exclude server --exclude lsp_server
+fi
 
-step "Standard-library publication ratchet"
-# Curated-corpus admission (a small workspace resolves against tests/snapshots/sysml.library/).
-cargo snapshot check --fixture standard_library_admission.md
-# Shipped-artifact ratchet (issue #135): the pinned KPAR bundle unpacks completely and
-# publishes with its reviewed diagnostic inventory. SPEC42_STDLIB_KPAR_DIR is already required above.
-cargo test -p server --test integration stdlib_bundle_ratchet
+if wants tests-lsp; then
+  step "Language-server tests"
+  export RUST_MIN_STACK=16777216
+  cargo test -p lsp_server --lib --test debt_guardrails --test parse_validation
+  # Each integration test starts a server and awaits asynchronous indexing.
+  # Run this suite serially so CPU contention cannot exhaust its retry budget.
+  cargo test -p lsp_server --test lsp_integration -- --test-threads=1
+fi
 
-step "Semantic snapshot corpus"
-cargo snapshot check
+if wants tests-server; then
+  step "Server library, fuzz corpus, and stdlib ratchet"
+  export RUST_MIN_STACK=16777216
+  cargo test -p server --lib
+  cargo test --manifest-path fuzz/Cargo.toml --test sysml_seed_corpus
+  # Curated-corpus admission (a small workspace resolves against tests/snapshots/sysml.library/).
+  cargo snapshot check --fixture standard_library_admission.md
+  # Shipped-artifact ratchet (issue #135): the pinned KPAR bundle unpacks completely and
+  # publishes with its reviewed diagnostic inventory. SPEC42_STDLIB_KPAR_DIR is already required above.
+  cargo test -p server --test integration stdlib_bundle_ratchet
+fi
 
-step "Workspace documentation"
-RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --workspace
+if wants generator; then
+  step "Generator conformance and smoke tests"
+  scripts/build-generator-plugins.sh
+  cargo run -p generator_conformance --bin generator-conformance
+  if [[ "${CI:-false}" == "true" ]]; then
+    git diff --exit-code generator-tests/golden
+  fi
+  cargo test -p server --test integration generator_cli
+
+  cargo run -p server --bin spec42 -- --no-stdlib generate \
+    generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm \
+    vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke -- target=rust
+  cargo run -p server --bin spec42 -- --no-stdlib generate \
+    generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm \
+    vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
+  cargo test -p server --test integration diagram_generator_smoke
+
+  step "Semantic snapshot corpus"
+  cargo snapshot check
+fi
+
+if wants lint; then
+  step "Workspace documentation"
+  RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --workspace
+fi
 
 echo
-echo "mini CI passed"
+if [[ "$SUITE" == "all" ]]; then
+  echo "mini CI passed"
+else
+  echo "mini CI suite '$SUITE' passed"
+fi
