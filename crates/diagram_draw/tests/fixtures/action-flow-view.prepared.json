@@ -1,0 +1,647 @@
+{
+  "prepared": {
+    "title": "Fulfillment",
+    "view": "action-flow-view",
+    "nodes": [
+      {
+        "id": "start",
+        "label": "start",
+        "kind": "initial",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "qualifiedName": "start"
+        }
+      },
+      {
+        "id": "pack",
+        "label": "Pack Order",
+        "kind": "action",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "inputs": [
+            "order"
+          ],
+          "outputs": [
+            "package"
+          ],
+          "swimLane": "Warehouse",
+          "qualifiedName": "pack"
+        }
+      },
+      {
+        "id": "decide",
+        "label": "decide",
+        "kind": "decision",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "qualifiedName": "decide"
+        }
+      },
+      {
+        "id": "ship",
+        "label": "Ship Package",
+        "kind": "perform",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "swimLane": "Logistics",
+          "qualifiedName": "ship"
+        }
+      },
+      {
+        "id": "split",
+        "label": "split",
+        "kind": "fork",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "qualifiedName": "split"
+        }
+      },
+      {
+        "id": "notify",
+        "label": "Notify Customer",
+        "kind": "action",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "swimLane": "Logistics",
+          "qualifiedName": "notify"
+        }
+      },
+      {
+        "id": "archive",
+        "label": "Archive Order",
+        "kind": "action",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "swimLane": "Warehouse",
+          "qualifiedName": "archive"
+        }
+      },
+      {
+        "id": "join",
+        "label": "join",
+        "kind": "join",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "qualifiedName": "join"
+        }
+      },
+      {
+        "id": "end",
+        "label": "end",
+        "kind": "final",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "qualifiedName": "end"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "flow-0",
+        "source": "start",
+        "target": "pack",
+        "label": "",
+        "attributes": {
+          "guard": "first",
+          "succession": true,
+          "streamingFlow": false,
+          "flowKind": "succession",
+          "conditional": false
+        }
+      },
+      {
+        "id": "flow-1",
+        "source": "pack",
+        "target": "decide",
+        "label": "",
+        "attributes": {
+          "succession": false,
+          "streamingFlow": false,
+          "flowKind": "other",
+          "conditional": false
+        }
+      },
+      {
+        "id": "flow-2",
+        "source": "decide",
+        "target": "ship",
+        "label": "approved",
+        "attributes": {
+          "condition": "approved",
+          "succession": false,
+          "streamingFlow": false,
+          "flowKind": "other",
+          "conditional": true
+        }
+      },
+      {
+        "id": "flow-3",
+        "source": "decide",
+        "target": "end",
+        "label": "rejected",
+        "attributes": {
+          "condition": "rejected",
+          "succession": false,
+          "streamingFlow": false,
+          "flowKind": "other",
+          "conditional": true
+        }
+      },
+      {
+        "id": "flow-4",
+        "source": "ship",
+        "target": "split",
+        "label": "",
+        "attributes": {
+          "guard": "flow",
+          "succession": false,
+          "streamingFlow": true,
+          "flowKind": "streaming",
+          "conditional": false
+        }
+      },
+      {
+        "id": "flow-5",
+        "source": "split",
+        "target": "notify",
+        "label": "",
+        "attributes": {
+          "succession": false,
+          "streamingFlow": false,
+          "flowKind": "other",
+          "conditional": false
+        }
+      },
+      {
+        "id": "flow-6",
+        "source": "split",
+        "target": "archive",
+        "label": "",
+        "attributes": {
+          "succession": false,
+          "streamingFlow": false,
+          "flowKind": "other",
+          "conditional": false
+        }
+      },
+      {
+        "id": "flow-7",
+        "source": "notify",
+        "target": "join",
+        "label": "",
+        "attributes": {
+          "succession": false,
+          "streamingFlow": false,
+          "flowKind": "other",
+          "conditional": false
+        }
+      },
+      {
+        "id": "flow-8",
+        "source": "archive",
+        "target": "join",
+        "label": "",
+        "attributes": {
+          "succession": false,
+          "streamingFlow": false,
+          "flowKind": "other",
+          "conditional": false
+        }
+      },
+      {
+        "id": "flow-9",
+        "source": "join",
+        "target": "end",
+        "label": "",
+        "attributes": {
+          "succession": false,
+          "streamingFlow": false,
+          "flowKind": "other",
+          "conditional": false
+        }
+      }
+    ],
+    "meta": {
+      "selectedDiagramId": "",
+      "nodeCount": 9,
+      "edgeCount": 10,
+      "layoutDirection": "vertical",
+      "activityDiagram": {
+        "name": "Fulfillment",
+        "nodes": [
+          {
+            "id": "start",
+            "kind": "initial"
+          },
+          {
+            "id": "pack",
+            "kind": "action",
+            "name": "Pack Order",
+            "attributes": {
+              "inputs": [
+                "order"
+              ],
+              "outputs": [
+                "package"
+              ],
+              "swimLane": "Warehouse"
+            }
+          },
+          {
+            "id": "decide",
+            "kind": "decision"
+          },
+          {
+            "id": "ship",
+            "kind": "perform",
+            "name": "Ship Package",
+            "attributes": {
+              "swimLane": "Logistics"
+            }
+          },
+          {
+            "id": "split",
+            "kind": "fork"
+          },
+          {
+            "id": "notify",
+            "kind": "action",
+            "name": "Notify Customer",
+            "attributes": {
+              "swimLane": "Logistics"
+            }
+          },
+          {
+            "id": "archive",
+            "kind": "action",
+            "name": "Archive Order",
+            "attributes": {
+              "swimLane": "Warehouse"
+            }
+          },
+          {
+            "id": "join",
+            "kind": "join"
+          },
+          {
+            "id": "end",
+            "kind": "final"
+          }
+        ],
+        "flows": [
+          {
+            "from": "start",
+            "to": "pack",
+            "guard": "first"
+          },
+          {
+            "from": "pack",
+            "to": "decide"
+          },
+          {
+            "from": "decide",
+            "to": "ship",
+            "condition": "approved"
+          },
+          {
+            "from": "decide",
+            "to": "end",
+            "condition": "rejected"
+          },
+          {
+            "from": "ship",
+            "to": "split",
+            "guard": "flow"
+          },
+          {
+            "from": "split",
+            "to": "notify"
+          },
+          {
+            "from": "split",
+            "to": "archive"
+          },
+          {
+            "from": "notify",
+            "to": "join"
+          },
+          {
+            "from": "archive",
+            "to": "join"
+          },
+          {
+            "from": "join",
+            "to": "end"
+          }
+        ],
+        "hasBehavioralFlow": true,
+        "hasRenderableContent": true
+      },
+      "parentContext": "Fulfillment",
+      "swimLanes": [
+        "Warehouse",
+        "Logistics"
+      ]
+    }
+  },
+  "behaviorLayout": {
+    "positions": {
+      "start": {
+        "x": 483,
+        "y": 80,
+        "width": 40,
+        "height": 40
+      },
+      "pack": {
+        "x": 393,
+        "y": 290,
+        "width": 220,
+        "height": 68
+      },
+      "decide": {
+        "x": 465,
+        "y": 528,
+        "width": 76,
+        "height": 76
+      },
+      "ship": {
+        "x": 380,
+        "y": 960,
+        "width": 220,
+        "height": 68
+      },
+      "split": {
+        "x": 380,
+        "y": 1199.3333333333333,
+        "width": 220,
+        "height": 14
+      },
+      "notify": {
+        "x": 420,
+        "y": 1384,
+        "width": 220,
+        "height": 68
+      },
+      "archive": {
+        "x": 80,
+        "y": 1384,
+        "width": 220,
+        "height": 68
+      },
+      "join": {
+        "x": 383,
+        "y": 1622,
+        "width": 220,
+        "height": 14
+      },
+      "end": {
+        "x": 693,
+        "y": 1806,
+        "width": 40,
+        "height": 40
+      }
+    },
+    "edgeSectionsById": {
+      "flow-0": [
+        {
+          "id": "flow-0_s0",
+          "startPoint": {
+            "x": 503,
+            "y": 120
+          },
+          "endPoint": {
+            "x": 503,
+            "y": 290
+          },
+          "incomingShape": "start",
+          "outgoingShape": "pack"
+        }
+      ],
+      "flow-1": [
+        {
+          "id": "flow-1_s0",
+          "startPoint": {
+            "x": 503,
+            "y": 358
+          },
+          "endPoint": {
+            "x": 503,
+            "y": 528
+          },
+          "incomingShape": "pack",
+          "outgoingShape": "decide"
+        }
+      ],
+      "flow-2": [
+        {
+          "id": "flow-2_s0",
+          "startPoint": {
+            "x": 490,
+            "y": 604
+          },
+          "endPoint": {
+            "x": 490,
+            "y": 960
+          },
+          "incomingShape": "decide",
+          "outgoingShape": "ship"
+        }
+      ],
+      "flow-3": [
+        {
+          "id": "flow-3_s0",
+          "startPoint": {
+            "x": 516,
+            "y": 604
+          },
+          "endPoint": {
+            "x": 720,
+            "y": 1806
+          },
+          "bendPoints": [
+            {
+              "x": 516,
+              "y": 614
+            },
+            {
+              "x": 720,
+              "y": 614
+            }
+          ],
+          "incomingShape": "decide",
+          "outgoingShape": "end"
+        }
+      ],
+      "flow-4": [
+        {
+          "id": "flow-4_s0",
+          "startPoint": {
+            "x": 490,
+            "y": 1028
+          },
+          "endPoint": {
+            "x": 490,
+            "y": 1199.3333333333333
+          },
+          "incomingShape": "ship",
+          "outgoingShape": "split"
+        }
+      ],
+      "flow-5": [
+        {
+          "id": "flow-5_s0",
+          "startPoint": {
+            "x": 527,
+            "y": 1213.3333333333333
+          },
+          "endPoint": {
+            "x": 530,
+            "y": 1384
+          },
+          "bendPoints": [
+            {
+              "x": 527,
+              "y": 1224
+            },
+            {
+              "x": 530,
+              "y": 1224
+            }
+          ],
+          "incomingShape": "split",
+          "outgoingShape": "notify"
+        }
+      ],
+      "flow-6": [
+        {
+          "id": "flow-6_s0",
+          "startPoint": {
+            "x": 453,
+            "y": 1213.3333333333333
+          },
+          "endPoint": {
+            "x": 190,
+            "y": 1384
+          },
+          "bendPoints": [
+            {
+              "x": 453,
+              "y": 1224
+            },
+            {
+              "x": 190,
+              "y": 1224
+            }
+          ],
+          "incomingShape": "split",
+          "outgoingShape": "archive"
+        }
+      ],
+      "flow-7": [
+        {
+          "id": "flow-7_s0",
+          "startPoint": {
+            "x": 530,
+            "y": 1452
+          },
+          "endPoint": {
+            "x": 530,
+            "y": 1622
+          },
+          "incomingShape": "notify",
+          "outgoingShape": "join"
+        }
+      ],
+      "flow-8": [
+        {
+          "id": "flow-8_s0",
+          "startPoint": {
+            "x": 190,
+            "y": 1452
+          },
+          "endPoint": {
+            "x": 456,
+            "y": 1622
+          },
+          "bendPoints": [
+            {
+              "x": 190,
+              "y": 1462
+            },
+            {
+              "x": 456,
+              "y": 1462
+            }
+          ],
+          "incomingShape": "archive",
+          "outgoingShape": "join"
+        }
+      ],
+      "flow-9": [
+        {
+          "id": "flow-9_s0",
+          "startPoint": {
+            "x": 493,
+            "y": 1636
+          },
+          "endPoint": {
+            "x": 706,
+            "y": 1806
+          },
+          "bendPoints": [
+            {
+              "x": 493,
+              "y": 1646
+            },
+            {
+              "x": 706,
+              "y": 1646
+            }
+          ],
+          "incomingShape": "join",
+          "outgoingShape": "end"
+        }
+      ]
+    },
+    "edgeLabelsById": {
+      "flow-2": [
+        {
+          "id": "flow-2::label",
+          "text": "approved",
+          "x": 422,
+          "y": 774,
+          "width": 56,
+          "height": 16
+        }
+      ],
+      "flow-3": [
+        {
+          "id": "flow-3::label",
+          "text": "rejected",
+          "x": 733,
+          "y": 1198,
+          "width": 56,
+          "height": 16
+        }
+      ]
+    }
+  }
+}

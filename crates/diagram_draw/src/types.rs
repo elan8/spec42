@@ -25,7 +25,14 @@ pub struct EdgeSection {
 pub struct EdgeLayout {
     #[serde(default)]
     pub sections: Vec<EdgeSection>,
+    #[serde(rename = "edgeOwnerOffset", default)]
+    pub edge_owner_offset: Option<Point>,
+    #[serde(rename = "lcaOffset", default)]
+    pub lca_offset: Option<Point>,
 }
+
+pub const IBD_NODE_WIDTH: f64 = 280.0;
+pub const IBD_NODE_HEIGHT: f64 = 140.0;
 
 #[derive(Debug, Deserialize)]
 pub struct LaidOutNode {
@@ -69,6 +76,92 @@ pub struct GeneralViewGraph {
     pub meta: Value,
     pub nodes: Vec<LaidOutNode>,
     pub edges: Vec<LaidOutEdge>,
+}
+
+/// Port of `InterconnectionLayoutPortAnchor` (`prepare/types.ts:102-113`). `label` is node-relative
+/// pre-measured text placement, present only when the layout pass resolved a label box for this
+/// port.
+#[derive(Debug, Deserialize)]
+pub struct InterconnectionLayoutPortLabel {
+    pub x: f64,
+    pub y: f64,
+    pub width: f64,
+    pub height: f64,
+    pub text: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct InterconnectionLayoutPortAnchor {
+    pub x: f64,
+    pub y: f64,
+    pub side: String,
+    #[serde(default)]
+    pub label: Option<InterconnectionLayoutPortLabel>,
+}
+
+#[derive(Debug, Default, Deserialize)]
+pub struct InterconnectionLayoutPortDrawOrder {
+    #[serde(default)]
+    pub west: Vec<String>,
+    #[serde(default)]
+    pub east: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct InterconnectionLayoutNodeDto {
+    pub id: String,
+    pub x: f64,
+    pub y: f64,
+    pub width: f64,
+    pub height: f64,
+    #[serde(rename = "portAnchors", default)]
+    pub port_anchors: BTreeMap<String, InterconnectionLayoutPortAnchor>,
+    #[serde(rename = "portDrawOrder", default)]
+    pub port_draw_order: Option<InterconnectionLayoutPortDrawOrder>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct InterconnectionLayoutEdgeDto {
+    #[allow(dead_code)]
+    pub id: String,
+    #[serde(rename = "routePoints", default)]
+    pub route_points: Vec<Point>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct InterconnectionLayoutContainerDto {
+    #[allow(dead_code)]
+    pub id: String,
+    pub label: String,
+    pub x: f64,
+    pub y: f64,
+    pub width: f64,
+    pub height: f64,
+}
+
+/// Port of `InterconnectionLayoutDto` (`prepare/types.ts:146-151`) -- the already-laid-out
+/// interconnection graph: absolute node boxes, node-relative port anchors/draw order, edge route
+/// points, and containers. `render/layout.ts`'s `layoutInterconnectionPrepared` omits this field
+/// entirely on ELK failure, so it stays optional on `InterconnectionViewGraph`.
+#[derive(Debug, Default, Deserialize)]
+pub struct InterconnectionLayoutDto {
+    #[serde(default)]
+    pub nodes: Vec<InterconnectionLayoutNodeDto>,
+    #[serde(default)]
+    pub edges: Vec<InterconnectionLayoutEdgeDto>,
+    #[serde(default)]
+    pub containers: Vec<InterconnectionLayoutContainerDto>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct InterconnectionViewGraph {
+    pub title: String,
+    #[serde(default)]
+    pub meta: Value,
+    pub nodes: Vec<LaidOutNode>,
+    pub edges: Vec<LaidOutEdge>,
+    #[serde(rename = "interconnectionLayout", default)]
+    pub interconnection_layout: Option<InterconnectionLayoutDto>,
 }
 
 pub fn attr_str(attributes: &BTreeMap<String, Value>, key: &str) -> Option<String> {
