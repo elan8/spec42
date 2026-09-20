@@ -1146,6 +1146,7 @@ fn host_crates_keep_their_declared_dependency_sets() {
         set(&[
             "base64",
             "clap",
+            "diagram_draw",
             "diagram_layout",
             "generator_api",
             "generator_host",
@@ -1172,9 +1173,10 @@ fn host_crates_keep_their_declared_dependency_sets() {
         ]),
         "lsp_server is the editor host and owns no batch path: it must not depend on \
          `workspace`; `diagram_layout` is the native layout boundary behind `spec42/layout` \
-         (#119). `SPEC42_LAYOUT_ENGINE=legacy` declines that request so the webview can fall \
-         back to in-webview elk.js; `lsp_server` cannot depend on `server` (the launch-only \
-         edge runs the other way)"
+         (#119) and `diagram_draw` is the native SVG path behind `spec42/draw` (#176). \
+         `SPEC42_LAYOUT_ENGINE=legacy` declines those requests; there is no client drawing \
+         fallback. `lsp_server` cannot depend on `server` (the launch-only edge runs the other \
+         way)"
     );
     assert!(
         !normal_dependencies("lsp_server").contains("workspace"),

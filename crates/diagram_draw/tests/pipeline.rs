@@ -253,3 +253,60 @@ fn schema5_state_transition_non_numeric_endpoint_is_an_error() {
         other => panic!("expected invalid payload, got {other}"),
     }
 }
+
+#[test]
+fn general_view_disclosure_hides_nested_nodes_until_expanded() {
+    use diagram_draw::theme::LIGHT;
+    use diagram_draw::{render_svg_from_payload_with_options, DisclosureState};
+
+    let payload = json!({
+        "schemaVersion": 5,
+        "documents": [{ "uri": "file:///model.sysml" }],
+        "sources": [{ "document": 0, "range": [0, 0, 0, 1] }],
+        "references": [{ "kind": "qualified-name" }],
+        "selectedView": { "reference": 0, "kind": "general-view", "name": "Nested", "source": 0 },
+        "completeness": { "status": "complete", "reasons": [] },
+        "projection": {
+            "kind": "general-view",
+            "exposedRoots": [0],
+            "nodes": [
+                { "reference": 0, "metaclass": "PartUsage", "notationRole": "usage", "name": "root", "typing": { "status": "absent" }, "owner": null, "source": 0, "compartments": [] },
+                { "reference": 0, "metaclass": "PartUsage", "notationRole": "usage", "name": "child", "typing": { "status": "absent" }, "owner": 0, "source": 0, "compartments": [] }
+            ],
+            "relationships": [],
+            "edges": [],
+            "metadata": {},
+            "scene": { "kind": "general" }
+        }
+    });
+    let collapsed = render_svg_from_payload_with_options(
+        &payload,
+        &LIGHT,
+        800.0,
+        600.0,
+        Some(&DisclosureState::default()),
+    )
+    .expect("collapsed general view");
+    assert!(collapsed.contains("data-node-id=\"n:0\""), "{collapsed}");
+    assert!(
+        !collapsed.contains("data-node-id=\"n:1\""),
+        "nested child must stay hidden until expanded: {collapsed}"
+    );
+
+    let expanded = render_svg_from_payload_with_options(
+        &payload,
+        &LIGHT,
+        800.0,
+        600.0,
+        Some(&DisclosureState {
+            expanded_node_ids: vec!["n:0".into()],
+            section_states: vec![],
+        }),
+    )
+    .expect("expanded general view");
+    assert!(expanded.contains("data-node-id=\"n:0\""), "{expanded}");
+    assert!(
+        expanded.contains("data-node-id=\"n:1\""),
+        "expanded owner must reveal the nested child: {expanded}"
+    );
+}

@@ -8,8 +8,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "d3": "^7.9.0",
-    "elkjs": "^0.11.1"
+    "d3": "^7.9.0"
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",
@@ -27,8 +26,6 @@
     "./node-notation": "./src/node-notation.ts",
     "./renderer": "./src/renderer.ts",
     "./sysml-node-builder": "./src/sysml-node-builder.ts",
-    "./behavior-interaction": "./src/views/behavior-interaction.ts",
-    "./headless-export": "./src/headless-export.ts",
-    "./pipeline-export": "./src/pipeline-export.ts"
+    "./behavior-interaction": "./src/views/behavior-interaction.ts"
   }
 }

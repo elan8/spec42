@@ -3,8 +3,8 @@ import type { PreparedNode } from "../prepare";
 import { asArray, asRecord, asString } from "../prepare/util";
 import type { DiagramTheme } from "../theme";
 import { attachBehaviorNodeClick } from "./behavior-interaction";
-import type { BehaviorSceneContext } from "./behavior-common";
-import { truncateLabel } from "./behavior-common";
+import type { BehaviorSceneContext } from "./catalog-common";
+import { truncateLabel } from "./catalog-common";
 import { formatStereotype } from "../sysml-node-builder";
 
 // UML/SysML visibility glyph convention: + public, - private, # protected.

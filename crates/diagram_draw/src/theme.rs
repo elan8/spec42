@@ -1,7 +1,9 @@
-/// Mirrors `DiagramTheme` / `NOTATION_THEME_LIGHT` in
-/// `vscode/diagram-renderer/src/theme.ts`. Only the light scheme is ported for this spike --
-/// the golden-parity fixtures the headless export path checks against are always rendered with
-/// `colorScheme: "light"`.
+/// Mirrors `DiagramTheme` / `NOTATION_THEME_LIGHT` and `NOTATION_THEME_DARK` in
+/// `vscode/diagram-renderer/src/theme.ts`. VS Code CSS-variable tokens cannot be used in a
+/// server-rendered SVG, so the webview maps `vscode-light`/`vscode-dark` body classes onto these
+/// two palettes before calling `spec42/draw`.
+
+#[derive(Clone, Copy, Debug)]
 pub struct Theme {
     pub canvas_background: &'static str,
     pub panel_background: &'static str,
@@ -21,6 +23,7 @@ pub struct Theme {
     pub edge_default: &'static str,
     pub frame_stroke: &'static str,
     pub frame_text: &'static str,
+    pub color_scheme: &'static str,
 }
 
 pub const LIGHT: Theme = Theme {
@@ -42,7 +45,40 @@ pub const LIGHT: Theme = Theme {
     edge_default: "#374151",
     frame_stroke: "#9ca3af",
     frame_text: "#374151",
+    color_scheme: "light",
 };
+
+pub const DARK: Theme = Theme {
+    canvas_background: "#1a1a1a",
+    panel_background: "#2c2c2c",
+    node_fill: "#232323",
+    node_border: "#d4d4d4",
+    text_primary: "#e5e5e5",
+    text_secondary: "#a3a3a3",
+    divider: "#525252",
+    highlight: "#fbbf24",
+    control_fill: "#232323",
+    control_stroke: "#a3a3a3",
+    control_foreground: "#e5e5e5",
+    control_hover_fill: "#3f3f3f",
+    focus_ring: "#60a5fa",
+    badge_fill: "#3a3a3a",
+    badge_text: "#e5e5e5",
+    edge_default: "#d4d4d4",
+    frame_stroke: "#737373",
+    frame_text: "#e5e5e5",
+    color_scheme: "dark",
+};
+
+/// `"dark"` selects [`DARK`]; every other scheme (including `"light"`, `"vscode"`, and omitted)
+/// selects [`LIGHT`].
+pub fn theme_for_scheme(scheme: &str) -> &'static Theme {
+    if scheme.eq_ignore_ascii_case("dark") {
+        &DARK
+    } else {
+        &LIGHT
+    }
+}
 
 /// Notation-neutral: all nodes share the same ink color (`strokeColorForNode` in theme.ts).
 pub fn stroke_color_for_node(theme: &Theme) -> &'static str {

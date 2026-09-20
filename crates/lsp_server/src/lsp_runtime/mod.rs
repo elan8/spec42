@@ -2,6 +2,7 @@ mod capabilities;
 pub(crate) mod custom;
 mod diagnostics;
 mod documents;
+mod draw;
 mod features;
 mod generation;
 mod hierarchy;
@@ -27,6 +28,7 @@ use crate::views::dto;
 use custom::{
     sysml_feature_inspector_result, sysml_library_search_result, sysml_server_stats_result,
 };
+use draw::{canvas_size, DrawEngine, DrawParams, DrawResult};
 use generation::{
     DiagramViewsParams, DiagramViewsResult, GenerateParams, GenerateResult, GeneratorService,
     StateTransitionViewsParams, StateTransitionViewsResult,
@@ -682,8 +684,7 @@ impl Backend {
     async fn spec42_layout(&self, params: LayoutParams) -> Result<LayoutResult> {
         if legacy_engine_requested() {
             return Err(tower_lsp::jsonrpc::Error::invalid_params(
-                "SPEC42_LAYOUT_ENGINE=legacy: native layout is disabled on this server; the \
-                 client should fall back to its own local layout",
+                "SPEC42_LAYOUT_ENGINE=legacy: native layout is disabled on this server",
             ));
         }
         let LayoutParams {
@@ -706,6 +707,53 @@ impl Backend {
             presentation_revision,
             layout,
             engine: LayoutEngine::Native,
+        })
+    }
+
+    async fn spec42_draw(&self, params: DrawParams) -> Result<DrawResult> {
+        if legacy_engine_requested() {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "SPEC42_LAYOUT_ENGINE=legacy: native drawing is disabled on this server; there \
+                 is no client drawing fallback",
+            ));
+        }
+        let DrawParams {
+            model_digest,
+            view_handle,
+            presentation_revision,
+            product,
+            width,
+            height,
+            color_scheme,
+            disclosure,
+        } = params;
+        let width = canvas_size(width, 960.0);
+        let height = canvas_size(height, 640.0);
+        let scheme = color_scheme.unwrap_or_else(|| "light".into());
+        let disclosure = disclosure.unwrap_or_default();
+        let svg = tokio::task::spawn_blocking(move || {
+            let theme = diagram_draw::theme::theme_for_scheme(&scheme);
+            diagram_draw::render_svg_from_payload_with_options(
+                &product,
+                theme,
+                width,
+                height,
+                Some(&disclosure),
+            )
+        })
+        .await
+        .map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!(
+                "draw worker did not complete: {error}"
+            ))
+        })?
+        .map_err(|error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()))?;
+        Ok(DrawResult {
+            model_digest,
+            view_handle,
+            presentation_revision,
+            svg,
+            engine: DrawEngine::Native,
         })
     }
 
@@ -798,6 +846,7 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     .custom_method("spec42/generate", Backend::spec42_generate)
     .custom_method("spec42/diagramViews", Backend::spec42_diagram_views)
     .custom_method("spec42/layout", Backend::spec42_layout)
+    .custom_method("spec42/draw", Backend::spec42_draw)
     .custom_method(
         "spec42/stateTransitionViews",
         Backend::spec42_state_transition_views,

@@ -1,7 +1,7 @@
 import { prepareViewData } from "../../diagram-renderer/src/prepare";
-import { renderVisualization, type RenderController } from "../../diagram-renderer/src/renderer";
+import { isNativeDiagramView, renderVisualization, type RenderController } from "../../diagram-renderer/src/renderer";
 import type { PreparedView } from "../../diagram-renderer/src/prepare";
-import type { DiagramProductIdentity, RequestServerLayout } from "../../diagram-renderer/src/render/types";
+import type { DiagramProductIdentity, RequestServerDraw } from "../../diagram-renderer/src/render/types";
 import type { DiagramProduct } from "./diagramViewerCore";
 import { isEmptyIncompleteDiagramProduct } from "./diagramProductState";
 
@@ -19,75 +19,72 @@ type RenderMessage = {
   error?: string;
 };
 
-type LayoutResponseMessage = {
-  type: "layoutResponse";
+type DrawResponseMessage = {
+  type: "drawResponse";
   requestId: number;
   modelDigest: string;
   viewHandle: string;
   presentationRevision: number;
-  layout: Record<string, unknown>;
+  svg: string;
 };
 
-type LayoutErrorMessage = {
-  type: "layoutError";
+type DrawErrorMessage = {
+  type: "drawError";
   requestId: number;
   message?: string;
 };
 
 const vscode = acquireVsCodeApi();
 
-/** No response within this window is treated the same as an explicit decline: fall back to
- * local layout rather than block the redraw indefinitely (e.g. the extension host is
- * unreachable, or genuinely offline). */
-const LAYOUT_REQUEST_TIMEOUT_MS = 1000;
+/** Draw includes prepare+layout+SVG, so this is longer than the old layout-only timeout.
+ * No response is treated as a decline: keep the last SVG or show an inert placeholder. */
+const DRAW_REQUEST_TIMEOUT_MS = 8_000;
 
-let layoutRequestSeq = 0;
-const pendingLayoutRequests = new Map<
+let drawRequestSeq = 0;
+const pendingDrawRequests = new Map<
   number,
   {
-    settle: (layout: Record<string, unknown> | null) => void;
+    settle: (svg: string | null) => void;
     identity: DiagramProductIdentity;
     presentationRevision: number;
   }
 >();
 
-/** Bridges `RenderOptions.requestLayout` to the extension host over `postMessage`, since the
- * webview itself has no LSP client -- the extension host is the one that actually calls
- * `spec42/layout` (see `diagramViewer.ts`'s `onWebviewMessage` "layoutRequest" case). */
-const requestServerLayout: RequestServerLayout = (graph, identity, presentationRevision, signal) => {
+const requestServerDraw: RequestServerDraw = (identity, presentationRevision, request, signal) => {
   if (signal.aborted) return Promise.resolve(null);
-  const requestId = ++layoutRequestSeq;
+  const requestId = ++drawRequestSeq;
   return new Promise((resolve) => {
     let timeout: ReturnType<typeof setTimeout>;
-    const settle = (layout: Record<string, unknown> | null): void => {
-      pendingLayoutRequests.delete(requestId);
+    const settle = (svg: string | null): void => {
+      pendingDrawRequests.delete(requestId);
       clearTimeout(timeout);
-      resolve(layout);
+      resolve(svg);
     };
-    timeout = setTimeout(() => settle(null), LAYOUT_REQUEST_TIMEOUT_MS);
+    timeout = setTimeout(() => settle(null), DRAW_REQUEST_TIMEOUT_MS);
     signal.addEventListener("abort", () => settle(null), { once: true });
-    pendingLayoutRequests.set(requestId, { settle, identity, presentationRevision });
+    pendingDrawRequests.set(requestId, { settle, identity, presentationRevision });
     vscode.postMessage({
-      type: "layoutRequest",
+      type: "drawRequest",
       requestId,
       modelDigest: identity.modelDigest,
       viewHandle: identity.viewHandle,
       presentationRevision,
-      graph,
+      product: request.product,
+      width: request.width,
+      height: request.height,
+      colorScheme: request.colorScheme,
+      disclosure: request.disclosure,
     });
   });
 };
 
-function onLayoutResponse(message: LayoutResponseMessage | LayoutErrorMessage): void {
-  const pending = pendingLayoutRequests.get(message.requestId);
-  if (!pending) return; // superseded, aborted, or already timed out locally
-  if (message.type === "layoutError") {
+function onDrawResponse(message: DrawResponseMessage | DrawErrorMessage): void {
+  const pending = pendingDrawRequests.get(message.requestId);
+  if (!pending) return;
+  if (message.type === "drawError") {
     pending.settle(null);
     return;
   }
-  // Belt-and-braces: requestId is already unique per request, so this should always match, but
-  // an extension-host bug that echoed the wrong identity/revision must not silently commit a
-  // layout for the wrong product or a stale presentation state.
   if (
     message.modelDigest !== pending.identity.modelDigest ||
     message.viewHandle !== pending.identity.viewHandle ||
@@ -96,7 +93,7 @@ function onLayoutResponse(message: LayoutResponseMessage | LayoutErrorMessage): 
     pending.settle(null);
     return;
   }
-  pending.settle(message.layout);
+  pending.settle(message.svg);
 }
 
 const canvas = must<HTMLElement>("diagram");
@@ -109,6 +106,8 @@ const exportPngButton = must<HTMLButtonElement>("export-png");
 
 let controller: RenderController | undefined;
 let currentProduct: DiagramProduct | undefined;
+let currentPrepared: PreparedView | undefined;
+let currentIdentity: DiagramProductIdentity | undefined;
 
 function must<T extends HTMLElement>(id: string): T {
   const element = document.getElementById(id);
@@ -166,6 +165,8 @@ async function render(message: RenderMessage): Promise<void> {
     controller?.destroy();
     controller = undefined;
     currentProduct = undefined;
+    currentPrepared = undefined;
+    currentIdentity = undefined;
     canvas.replaceChildren(message.loading ? withLoading(message.placeholder) : withText(message.placeholder));
     return;
   }
@@ -191,14 +192,18 @@ async function render(message: RenderMessage): Promise<void> {
   }
 
   const prepared = prepareViewData(product);
+  currentPrepared = prepared;
   const productIdentity: DiagramProductIdentity = {
     modelDigest: product.modelDigest,
     viewHandle: message.selectedHandle,
   };
+  currentIdentity = productIdentity;
+  const scheme = currentColorScheme();
   controller = await renderVisualization(canvas, prepared, {
-    theme: { colorScheme: "vscode" },
+    theme: { colorScheme: scheme },
     productIdentity,
-    requestLayout: requestServerLayout,
+    product,
+    requestDraw: isNativeDiagramView(prepared.view) ? requestServerDraw : undefined,
     onNodeClick: (node) => {
       const range = node.range;
       const uri = node.uri ?? node.sourcePath;
@@ -236,11 +241,26 @@ function withLoading(text: string): HTMLElement {
   return div;
 }
 
-/** Re-render off-screen with a literal (non-CSS-variable) theme so the SVG stands alone. */
 async function standaloneSvg(): Promise<string> {
-  if (!currentProduct) throw new Error("Open a diagram before exporting it.");
+  if (!currentProduct || !currentIdentity) throw new Error("Open a diagram before exporting it.");
   if (!controller) throw new Error("Wait for the diagram to finish rendering before exporting it.");
   const scheme = currentColorScheme();
+  if (currentPrepared && isNativeDiagramView(currentPrepared.view)) {
+    const svg = await requestServerDraw(
+      currentIdentity,
+      Date.now(),
+      {
+        product: currentProduct,
+        width: 1600,
+        height: 1000,
+        colorScheme: scheme,
+        disclosure: controller.getDisclosureState(),
+      },
+      new AbortController().signal,
+    );
+    if (!svg) throw new Error("Could not export the diagram while the language server is unavailable.");
+    return withBackground(svg, scheme);
+  }
   const prepared: PreparedView = prepareViewData(currentProduct);
   const holder = document.createElement("div");
   holder.style.cssText = "position:absolute;left:-99999px;top:0;width:1600px;height:1000px;pointer-events:none";
@@ -321,8 +341,8 @@ window.addEventListener("message", (event: MessageEvent) => {
     void render(message as RenderMessage);
   } else if (message.type === "busy") {
     document.body.classList.toggle("busy", Boolean((message as { busy?: unknown }).busy));
-  } else if (message.type === "layoutResponse" || message.type === "layoutError") {
-    onLayoutResponse(message as LayoutResponseMessage | LayoutErrorMessage);
+  } else if (message.type === "drawResponse" || message.type === "drawError") {
+    onDrawResponse(message as DrawResponseMessage | DrawErrorMessage);
   }
 });
 

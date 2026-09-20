@@ -1,14 +1,16 @@
 # Diagram renderer
 
-D3 + ELK renderer owned by the VS Code package for Spec42 diagram-generator products.
+Interaction layer owned by the VS Code package for Spec42 diagram-generator products.
+The five shipped views are drawn in Rust (`spec42/draw`); this package mounts that SVG and
+keeps zoom, tooltips, and disclosure. Browser / grid / geometry still draw locally with D3.
 
-| View | Layout | Module |
-|------|--------|--------|
-| `general-view` | ELK | `renderer.ts` |
-| `interconnection-view` | ELK hierarchical | `renderer.ts` |
-| `action-flow-view` | ELK layered | `views/action-flow.ts` |
-| `state-transition-view` | ELK | `views/state-transition.ts` |
-| `sequence-view` | D3 columns | `views/sequence.ts` |
+| View | Layout / draw | Module |
+|------|---------------|--------|
+| `general-view` | native (`spec42/draw`) | `renderer.ts` mount |
+| `interconnection-view` | native (`spec42/draw`) | `renderer.ts` mount |
+| `action-flow-view` | native (`spec42/draw`) | `renderer.ts` mount |
+| `state-transition-view` | native (`spec42/draw`) | `renderer.ts` mount |
+| `sequence-view` | native (`spec42/draw`) | `renderer.ts` mount |
 | `browser-view` | D3 collapsible membership tree | `views/standard-views-render.ts` |
 | `grid-view` | D3 element table / relationship matrix | `views/standard-views-render.ts` |
 | `geometry-view` | D3 provisional 2D scene | `views/standard-views-render.ts` |
@@ -16,24 +18,25 @@ D3 + ELK renderer owned by the VS Code package for Spec42 diagram-generator prod
 Browser and Grid implement the presentation forms described by SysML v2 §9.2.20. Geometry remains provisional: Spec42 does not yet extract and render model-authored spatial coordinates, shapes, orientation, or 3D viewing parameters. Filtered standard views such as case/requirement-style views are projected through `general-view` with filters preserved by the backend.
 
 The renderer consumes the versioned JSON artifact emitted by `generator-plugins/diagram`. Semantic
-membership and relationships belong to typed generator queries; this package owns only preparation,
-layout, interaction, and drawing.
+membership and relationships belong to typed generator queries; this package owns preparation for
+catalog views plus interaction on native SVG.
 
 ## Notation-neutral theme
 
 Diagrams use a single ink color for nodes and edges. Meaning comes from SysML notation (definition vs usage borders, edge markers, dash patterns), not per-element hues. Filter chips in the VS Code UI may still use colors for discoverability; SVG diagram content does not.
 
-### `colorScheme`
+Native SVG uses the Rust `LIGHT`/`DARK` palettes. The webview maps VS Code light/dark body classes
+onto those palettes before `spec42/draw`. Catalog views still accept `theme.colorScheme` as below.
+
+### `colorScheme` (catalog views)
 
 Pass via `renderVisualization(..., { theme: { colorScheme } })`:
 
 | Value | Use |
 |-------|-----|
-| `vscode` | VS Code webview (default): `var(--vscode-*)` follows editor light/dark |
-| `light` / `dark` | Static hex tokens for tests, export, standalone hosts |
-| `auto` | `prefers-color-scheme` when `window` exists; else light (headless hosts) |
-
-Hosts that embed exported SVG outside VS Code should use `light` or `dark`, not `vscode`, so strokes are real colors.
+| `vscode` | VS Code CSS variables |
+| `light` / `dark` | Static hex tokens for tests and export |
+| `auto` | `prefers-color-scheme` when `window` exists; else light |
 
 ### Structure CSS classes (SysML v2 graphical notation)
 
@@ -49,21 +52,9 @@ adapter.
 
 ### Node chrome
 
-`src/sysml-node-builder.ts` owns every coordinate inside a General View node. `layoutSysMLNode`
-computes the header regions and compartment blocks once; `computeNodeHeight`/`computeNodeWidth`
-(ELK sizing, in `render/layout.ts`) and `renderSysMLNode` (drawing) both read that same layout, so
-a node cannot be measured at one size and painted at another. Header height and node width are
-derived from header and compartment content, not from fixed coordinates.
-
-The header fill is a path from `headerFillPath` (`src/node-notation.ts`) that follows the body's
-own rounded corners inset by half the border stroke, so the outer border stays visually continuous
-and the header never introduces corners of its own.
-
-Expansion and compartment disclosure are renderer-owned presentation state held by
-`renderVisualization` for the lifetime of a controller. It reaches layout and drawing only through
-the projected node attributes `disclosure`, `hiddenRelationshipCount` and
-`compartmentSectionState`; `RenderOptions.disclosure` carries toggles back. Nothing in the node
-chrome infers model semantics.
+`src/sysml-node-builder.ts` still owns General View node measurement used by prepare. Native
+drawing lives in `crates/diagram_draw`. Expansion and compartment disclosure are renderer-owned
+presentation state held by `renderVisualization` and sent to `spec42/draw` on each redraw.
 
 ### Visual review harness
 
@@ -73,28 +64,5 @@ python3 -m http.server 8731 --directory visual-out
 ```
 
 Open `harness.html?case=<id>&theme=light|dark[&w=&h=][&chrome=0]`; `harness.html` with no `case`
-lists every id. The corpus is every checked-in repository diagram product
-(`tests/snapshots/generation/diagram_*.md`) plus the authored node-chrome stress cases in
-`visual/synthetic-cases.ts`. The page sets `data-visual-ready="1"` once layout, drawing, fitting
-and any scripted disclosure activation have settled, so a screenshot driver never captures a
-partial frame.
-
-`src/visual-corpus.test.ts` renders the same corpus headlessly and asserts the geometry invariants
-the screenshots are reviewed for (header fill inside the border, dividers inside the boundary,
-non-overlapping header regions, minimum pointer target, no non-finite coordinates).
-
-### Golden marker fixtures
-
-`src/test-support/golden-parity/*.markers.json` are derived from renderer output. Rebuild them with
-`node scripts/update-golden-markers.mjs` when a chrome or marker change is intentional; do not edit
-them by hand.
-
-### Rebuild VS Code webview
-
-After changing renderer sources, run from `vscode/`:
-
-```bash
-npm run build:diagram-webview
-```
-
-`media/diagram-viewer.js` is generated for extension packaging and is gitignored.
+lists every id. Native views show an inert placeholder here (no language server). Catalog views
+still render locally.

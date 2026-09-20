@@ -628,10 +628,9 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run build:diagram-generator && npm run stage:package-content && npm run build:headless-renderer && npm run compile",
+    "vscode:prepublish": "npm run build:diagram-generator && npm run stage:package-content && npm run compile",
     "build:diagram-generator": "../scripts/build-repository-generator-plugins.sh",
     "stage:package-content": "node scripts/stage-package-content.js",
-    "build:headless-renderer": "node scripts/build-headless-renderer.js",
     "build:extension": "node scripts/build-extension.js",
     "build:diagram-webview": "node scripts/build-diagram-webview.js",
     "compile": "npm run typecheck && tsc -p ./ && npm run build:extension && npm run build:diagram-webview",

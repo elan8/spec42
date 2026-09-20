@@ -1,7 +1,5 @@
-/// Minimal SVG element tree + serializer, standing in for the `VirtualElement` DOM shim
-/// `headless-export.ts` uses to let D3 build an SVG tree without a real browser. Attribute order
-/// is irrelevant here: the golden-parity check (`svg-markers.ts`) only regexes `class="..."` and
-/// `<marker ... id="...">` occurrences, not a byte-for-byte tree diff.
+/// Minimal SVG element tree + serializer for native diagram drawing. Attribute order is stable
+/// (first write wins position; later writes update in place) so golden fixtures stay comparable.
 pub struct Element {
     tag: String,
     attrs: Vec<(String, String)>,
