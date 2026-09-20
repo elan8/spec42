@@ -244,6 +244,13 @@ const EXEMPTIONS: &[Exemption] = &[
         must_contain: None,
     },
     Exemption {
+        path: "crates/diagram_draw/src/catalog.rs",
+        reason: "truncates already-resolved qualified-name display labels for Browser indent depth\
+                 and Grid matrix headers; a line-for-line port of the un-flagged\
+                 `views/standard-views-render.ts`, for the same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
         path: "crates/diagram_draw/src/sysml_node.rs",
         reason: "maps already-resolved element-kind labels to SysML node-chrome stereotypes for SVG\
                  drawing and ELK sizing; a line-for-line port of the un-flagged `sysml-node-builder.ts`,\

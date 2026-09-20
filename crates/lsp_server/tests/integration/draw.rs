@@ -101,5 +101,8 @@ fn spec42_draw_renders_browser_view() {
     assert_eq!(result["engine"], "native");
     let svg = result["svg"].as_str().unwrap_or_default();
     assert!(svg.contains("<svg"), "expected SVG markup: {svg}");
-    assert!(svg.contains("browser-row") || svg.contains("client"), "{svg}");
+    assert!(
+        svg.contains("browser-row") || svg.contains("client"),
+        "{svg}"
+    );
 }
