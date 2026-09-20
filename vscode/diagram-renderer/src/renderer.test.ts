@@ -123,6 +123,30 @@ describe("shared renderer", () => {
       expect(target.querySelector("svg.sysml-viz-svg")).toBeTruthy();
     });
 
+    it("does not let a previous controller clear a later mount on the same canvas", async () => {
+      const target = host();
+      const requestDraw = vi.fn<RequestServerDraw>(async () => SAMPLE_SVG);
+      const options = {
+        theme: LIGHT_THEME,
+        productIdentity: { modelDigest: "blake3:test", viewHandle: "general/root" },
+        product: { schemaVersion: 5 },
+        requestDraw,
+      };
+      const prepared = {
+        title: "General",
+        view: "general-view" as const,
+        nodes: [{ id: "n:0", label: "Root", kind: "part" }],
+        edges: [],
+      };
+      const first = await renderVisualization(target, prepared, options);
+      const second = await renderVisualization(target, prepared, options);
+      expect(target.querySelector("svg.sysml-viz-svg")).toBeTruthy();
+      first.destroy();
+      expect(target.querySelector("svg.sysml-viz-svg")).toBeTruthy();
+      second.destroy();
+      expect(target.innerHTML).toBe("");
+    });
+
     it("does not mutate the canvas when the host aborts before draw returns", async () => {
       const target = host();
       target.innerHTML = "<div id='keep'>keep</div>";

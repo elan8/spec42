@@ -140,6 +140,14 @@ function isCurrentRender(generation: number, signal: AbortSignal): boolean {
   return generation === renderGeneration && !signal.aborted;
 }
 
+function clearRenderState(): void {
+  controller?.destroy();
+  controller = undefined;
+  currentProduct = undefined;
+  currentPrepared = undefined;
+  currentIdentity = undefined;
+}
+
 function openSource(node: { uri?: string; sourcePath?: string; range?: { start?: { line: number; character?: number }; end?: { line?: number; character?: number } } }): void {
   const range = node.range;
   const uri = node.uri ?? node.sourcePath;
@@ -164,6 +172,9 @@ async function mountPrepared(
   productIdentity: DiagramProductIdentity,
   disclosureState?: DisclosureState,
 ): Promise<void> {
+  const previous = controller;
+  controller = undefined;
+  previous?.destroy();
   const next = await renderVisualization(canvas, prepared, {
     theme: { colorScheme: currentColorScheme() },
     productIdentity,
@@ -177,7 +188,6 @@ async function mountPrepared(
     next.destroy();
     return;
   }
-  controller?.destroy();
   controller = next;
 }
 
@@ -225,11 +235,7 @@ async function render(message: RenderMessage): Promise<void> {
 
   if (message.placeholder) {
     if (!isCurrentRender(generation, signal)) return;
-    controller?.destroy();
-    controller = undefined;
-    currentProduct = undefined;
-    currentPrepared = undefined;
-    currentIdentity = undefined;
+    clearRenderState();
     canvas.replaceChildren(message.loading ? withLoading(message.placeholder) : withText(message.placeholder));
     return;
   }
@@ -239,22 +245,22 @@ async function render(message: RenderMessage): Promise<void> {
     product = JSON.parse(message.productJson) as DiagramProduct;
   } catch {
     if (!isCurrentRender(generation, signal)) return;
+    clearRenderState();
     canvas.replaceChildren(withText("The generated diagram product was not valid JSON."));
     return;
   }
 
-  currentProduct = product;
-
   if (isEmptyIncompleteDiagramProduct(product)) {
     if (!isCurrentRender(generation, signal)) return;
-    controller?.destroy();
-    controller = undefined;
+    clearRenderState();
     const reasons = message.incompleteReasons.length > 0
       ? message.incompleteReasons.join(", ")
       : "the projection is empty";
     canvas.replaceChildren(withText(`Nothing to draw yet — ${reasons}.`));
     return;
   }
+
+  currentProduct = product;
 
   const prepared = prepareViewData(product);
   currentPrepared = prepared;

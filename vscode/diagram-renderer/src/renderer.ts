@@ -60,7 +60,21 @@ function installZoom(
   return zoom;
 }
 
+const canvasOwners = new WeakMap<HTMLElement, object>();
+
+function claimCanvas(target: HTMLElement, owner: object): void {
+  canvasOwners.set(target, owner);
+}
+
+function clearCanvasIfOwner(target: HTMLElement, owner: object): void {
+  if (canvasOwners.get(target) !== owner) return;
+  target.innerHTML = "";
+  canvasOwners.delete(target);
+}
+
 function inertController(target: HTMLElement, disclosure: DisclosureState, message = INERT_MESSAGE): RenderController {
+  const owner = {};
+  claimCanvas(target, owner);
   target.replaceChildren();
   const empty = target.ownerDocument.createElement("div");
   empty.className = "empty";
@@ -72,7 +86,7 @@ function inertController(target: HTMLElement, disclosure: DisclosureState, messa
       throw new Error("Wait for the diagram to finish rendering before exporting it.");
     },
     destroy: () => {
-      target.innerHTML = "";
+      clearCanvasIfOwner(target, owner);
     },
     getFitTransform: () => d3.zoomIdentity,
     getDisclosureState: () => disclosure,
@@ -123,7 +137,7 @@ async function renderNativeSvgView(
   let lastBounds: ContentBounds = { x: 0, y: 0, width: 100, height: 100 };
   let fitView = (): void => undefined;
   let lastSvg: string | null = null;
-  let ownedCanvas = false;
+  const canvasOwner = {};
 
   const superseded = (generation?: number): boolean =>
     options.abortSignal?.aborted === true
@@ -140,7 +154,7 @@ async function renderNativeSvgView(
   const mount = (svgMarkup: string, generation: number): void => {
     if (superseded(generation)) return;
     destroyTooltips();
-    ownedCanvas = true;
+    claimCanvas(target, canvasOwner);
     target.innerHTML = svgMarkup;
     const svgNode = target.querySelector<SVGSVGElement>("svg.sysml-viz-svg");
     const rootNode = svgNode?.querySelector<SVGGElement>("g.viz-root");
@@ -200,7 +214,7 @@ async function renderNativeSvgView(
     if (superseded(generation)) return;
     if (!svgMarkup) {
       if (lastSvg) return;
-      ownedCanvas = true;
+      claimCanvas(target, canvasOwner);
       target.replaceChildren();
       const empty = target.ownerDocument.createElement("div");
       empty.className = "empty";
@@ -273,10 +287,7 @@ async function renderNativeSvgView(
       destroyTooltips();
       target.removeEventListener("click", onActivate);
       target.removeEventListener("keydown", onActivate);
-      if (ownedCanvas) {
-        target.innerHTML = "";
-        ownedCanvas = false;
-      }
+      clearCanvasIfOwner(target, canvasOwner);
     },
   };
 }
@@ -286,6 +297,8 @@ async function renderCatalogView(
   prepared: PreparedView,
   options: RenderOptions,
 ): Promise<RenderController> {
+  const canvasOwner = {};
+  claimCanvas(target, canvasOwner);
   const renderStartedAt = Date.now();
   target.innerHTML = "";
   const theme = resolveDiagramTheme(options.theme);
@@ -354,7 +367,7 @@ async function renderCatalogView(
     exportSvg: () => exportSvg(svg.node() as SVGSVGElement, bounds),
     destroy: () => {
       destroyTooltips();
-      target.innerHTML = "";
+      clearCanvasIfOwner(target, canvasOwner);
     },
   };
 }
