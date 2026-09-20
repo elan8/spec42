@@ -1,13 +1,13 @@
 //! Native Rust SVG drawing for Spec42 diagram views (spec42 #176).
 //!
-//! Phase 1 ported General View. Phase 2 adds Interconnection View and the three Behavior views
-//! (action-flow, state-transition, sequence). All five draw from an already-laid-out/prepared
-//! input -- layout itself, headless-export wiring, and the interactive webview stay out of scope;
-//! see the issue and this crate's tests for the acceptance bar each view targets.
+//! The five shipped views (General, Interconnection, Sequence, Action-Flow, State-Transition)
+//! prepare, lay out, and draw in this crate. Headless export (`crates/server`) calls
+//! [`pipeline`] with a visualization payload; the interactive webview is still a later phase.
 
 pub mod action_flow;
 pub mod behavior_common;
 mod containers;
+pub mod draw_input;
 mod edges;
 mod graph_normalization;
 mod hit_target;
@@ -16,9 +16,13 @@ mod ibd_edges;
 mod ibd_node;
 mod ibd_ports;
 mod ibd_route;
+mod json_util;
+mod layout;
 mod markers;
 mod node_notation;
 mod nodes;
+pub mod pipeline;
+mod prepare;
 pub mod sequence;
 pub mod state_transition;
 pub mod svg;
@@ -329,3 +333,11 @@ pub fn render_interconnection_view_svg(
 
     render_svg_document(theme, width, height, &graph.title, bounds, None, root)
 }
+
+pub use draw_input::{
+    render_svg_from_json, render_svg_from_json_with_theme, render_svg_from_str, DrawError,
+};
+pub use pipeline::{
+    draw_input_from_payload, render_svg_from_payload, render_svg_from_payload_str,
+    render_svg_from_payload_with_theme, PipelineError,
+};

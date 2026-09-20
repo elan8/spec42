@@ -1,8 +1,6 @@
 //! Port of the drawing-relevant half of `views/behavior-common.ts`, shared by `action_flow.rs`,
 //! `state_transition.rs`, and (for `PreparedView`/`PreparedNode`/`PreparedEdge` only) `sequence.rs`.
-//! Layout (`buildBehaviorElkGraphInput`/`layoutBehaviorGraph`) stays out of scope, same principle
-//! as General View: these three views draw from an already-computed `BehaviorLayoutResult` (for
-//! the two ELK-based views) dumped straight from the real `layoutBehaviorGraph` call.
+//! Layout (`buildBehaviorElkGraphInput`/`layoutBehaviorGraph`) lives in [`crate::layout`].
 
 use std::collections::BTreeMap;
 

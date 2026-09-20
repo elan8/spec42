@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { exportHeadlessSvg } from "./headless-export";
+import { exportHeadlessDrawInput, exportHeadlessSvg } from "./headless-export";
 
 const basePayload = {
   version: 1,
@@ -197,5 +197,27 @@ describe("headless SVG export", () => {
     expect(svg).toContain("browser-toggle");
     expect(svg).toContain('data-node-id="child"');
     expect(svg).not.toContain("provisional SysML notation");
+  });
+
+  it("exportHeadlessDrawInput yields a sequence PreparedView the native renderer can consume", async () => {
+    const drawInput = await exportHeadlessDrawInput({
+      ...basePayload,
+      view: "sequence-view",
+      graph: null,
+      generalViewGraph: null,
+      activityDiagrams: null,
+      stateMachines: null,
+      sequenceDiagrams: [{
+        id: "q",
+        name: "Seq",
+        lifelines: [{ id: "a", name: "A" }, { id: "b", name: "B" }],
+        messages: [{ id: "m", source: "a", target: "b", label: "call" }],
+      }],
+    });
+    expect(drawInput.view).toBe("sequence-view");
+    expect(drawInput.meta).toEqual(expect.objectContaining({
+      sequenceDiagram: expect.objectContaining({ name: "Seq" }),
+    }));
+    expect(Array.isArray(drawInput.nodes)).toBe(true);
   });
 });

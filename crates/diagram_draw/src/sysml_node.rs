@@ -1,7 +1,6 @@
 //! Port of the General-View-relevant parts of `sysml-node-builder.ts`: compartment collection,
-//! header/compartment geometry, and SVG drawing (`renderSysMLNode`). Sizing-time-only functions
-//! (`computeNodeWidth`/`computeNodeHeight`, used to build ELK layout input) are intentionally not
-//! ported -- this spike draws from an already-laid-out graph, so node width/height are given.
+//! header/compartment geometry, SVG drawing (`renderSysMLNode`), and the sizing-time helpers
+//! (`computeNodeWidth`/`computeNodeHeight`) used to build ELK layout input.
 
 use std::collections::BTreeMap;
 
@@ -36,6 +35,9 @@ pub const CONTROL_EDGE_INSET: f64 = 3.0;
 pub const BADGE_MIN_WIDTH: f64 = 18.0;
 const OVERFLOW_LINE_HEIGHT: f64 = 12.0;
 const AVERAGE_GLYPH_RATIO_REGULAR: f64 = 0.54;
+const AVERAGE_GLYPH_RATIO_BOLD: f64 = 0.6;
+pub const NODE_WIDTH_MIN: f64 = 200.0;
+pub const NODE_WIDTH_MAX: f64 = 320.0;
 
 /// General View nodes cap each compartment at this many rows and show a `+n more` line
 /// (`GENERAL_NODE_CONFIG` in `render/drawing.ts`).
@@ -744,6 +746,120 @@ pub fn layout_compartment_blocks(
         blocks,
         cursor.max(header_height).max(DISCLOSURE_TARGET_SIZE + 4.0),
     )
+}
+
+fn utf16_len(value: &str) -> usize {
+    value.encode_utf16().count()
+}
+
+/// Port of `computeNodeWidth` in `sysml-node-builder.ts`.
+pub fn compute_node_width(compartments: &Compartments, state: &NodeChromeState) -> f64 {
+    let hidden_count = state.hidden_relationship_count;
+    let badge_text = if hidden_count > 0 {
+        Some(hidden_count.to_string())
+    } else {
+        None
+    };
+    let has_disclosure = matches!(state.disclosure, Some("expanded") | Some("collapsed"));
+    let gutter = if has_disclosure {
+        CONTROL_EDGE_INSET + DISCLOSURE_TARGET_SIZE + 2.0
+    } else {
+        0.0
+    }
+    .max(
+        badge_text
+            .as_ref()
+            .map(|text| CONTROL_EDGE_INSET + badge_width_for(text) + 2.0)
+            .unwrap_or(0.0),
+    )
+    .max(HEADER_PADDING_X);
+
+    let name = if compartments.name.is_empty() {
+        "Unnamed"
+    } else {
+        compartments.name.as_str()
+    };
+    let per_name_line = ((utf16_len(name) as f64) / NAME_MAX_LINES as f64).ceil();
+    let stereotype = format_stereotype(&compartments.stereotype);
+    let typing_width = compartments
+        .typed_by_name
+        .as_ref()
+        .map(|typed| (utf16_len(typed) + 2) as f64 * TYPING_FONT_SIZE * AVERAGE_GLYPH_RATIO_REGULAR)
+        .unwrap_or(0.0);
+    let header_content = (per_name_line * NAME_FONT_SIZE * AVERAGE_GLYPH_RATIO_BOLD)
+        .max(utf16_len(&stereotype) as f64 * STEREOTYPE_FONT_SIZE * AVERAGE_GLYPH_RATIO_REGULAR)
+        .max(typing_width);
+    let mut widest = gutter * 2.0 + header_content;
+
+    for section in compartment_sections(compartments) {
+        let label_width = PADDING
+            + DISCLOSURE_BOX_SIZE
+            + 5.0
+            + utf16_len(section.title) as f64 * COMPARTMENT_FONT_SIZE * AVERAGE_GLYPH_RATIO_BOLD
+            + PADDING;
+        widest = widest.max(label_width);
+        if section.collapsed {
+            continue;
+        }
+        let limit = section.items.len().min(MAX_LINES_PER_COMPARTMENT);
+        for item in &section.items[..limit] {
+            widest = widest.max(
+                PADDING * 2.0
+                    + 4.0
+                    + utf16_len(&item.display_text) as f64
+                        * COMPARTMENT_FONT_SIZE
+                        * AVERAGE_GLYPH_RATIO_REGULAR,
+            );
+        }
+    }
+
+    let rounded = (widest / 2.0).ceil() * 2.0;
+    rounded.clamp(NODE_WIDTH_MIN, NODE_WIDTH_MAX)
+}
+
+/// Port of `computeNodeHeight` in `sysml-node-builder.ts` (stroke width 2, matching the
+/// layout-time call in `render/layout.ts`).
+pub fn compute_node_height(
+    compartments: &Compartments,
+    width: f64,
+    state: &NodeChromeState,
+) -> f64 {
+    let header = layout_node_header(compartments, width, state);
+    layout_compartment_blocks(compartments, width, header.height, 2.0).1
+}
+
+/// Wire shape `reshapeGeneralLayoutResult` dumps onto each laid-out node (`header` wrapper).
+pub fn compartments_to_value(compartments: &Compartments) -> Value {
+    let item = |item: &DetailItem| {
+        let mut map = serde_json::Map::new();
+        map.insert(
+            "displayText".into(),
+            Value::String(item.display_text.clone()),
+        );
+        if let Some(declared_in) = &item.declared_in {
+            map.insert("declaredIn".into(), Value::String(declared_in.clone()));
+        }
+        Value::Object(map)
+    };
+    let section = |section: &Section| {
+        serde_json::json!({
+            "key": section.key,
+            "title": section.title,
+            "items": section.items.iter().map(item).collect::<Vec<_>>(),
+            "collapsed": section.collapsed,
+        })
+    };
+    serde_json::json!({
+        "header": {
+            "stereotype": compartments.stereotype,
+            "name": compartments.name,
+        },
+        "typedByName": compartments.typed_by_name,
+        "attributes": compartments.attributes.iter().map(item).collect::<Vec<_>>(),
+        "parts": compartments.parts.iter().map(item).collect::<Vec<_>>(),
+        "ports": compartments.ports.iter().map(item).collect::<Vec<_>>(),
+        "collapsibleSections": compartments.collapsible_sections.iter().map(section).collect::<Vec<_>>(),
+    })
 }
 
 /// `+`/`-` glyph inside a disclosure box, drawn as filled bars so it stays legible at any zoom.

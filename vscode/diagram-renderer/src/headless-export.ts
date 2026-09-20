@@ -1,5 +1,7 @@
 import { prepareViewData } from "./prepare";
 import { renderVisualization } from "./renderer";
+import { layoutPrepared } from "./render/layout";
+import { layoutBehaviorGraph } from "./views/behavior-common";
 import type { PreparedView, UnknownRecord } from "./prepare/types";
 
 export interface HeadlessExportOptions {
@@ -285,6 +287,62 @@ function ensureHeadlessDom(): VirtualDocument {
   return document;
 }
 
+function preparedSnapshot(prepared: PreparedView): UnknownRecord {
+  return {
+    title: prepared.title,
+    view: prepared.view,
+    nodes: prepared.nodes,
+    edges: prepared.edges,
+    meta: prepared.meta ?? null,
+  };
+}
+
+function mapToObject<V>(map: Map<string, V>): Record<string, V> {
+  return Object.fromEntries(map.entries());
+}
+
+/**
+ * Prepare + layout only: the JSON `crates/diagram_draw` can also draw from. Kept for TS tests
+ * and the webview path; headless SVG in `crates/server` is fully native (prepare + elkrs + draw).
+ * Sequence needs no ELK pass; action-flow/state-transition include `behaviorLayout`;
+ * general/interconnection include the laid-out node/edge arrays.
+ */
+export async function exportHeadlessDrawInput(
+  payload: UnknownRecord,
+  _options: HeadlessExportOptions = {},
+): Promise<UnknownRecord> {
+  const prepared = preparedViewFromPayload(payload) ?? prepareViewData(payload);
+  if (prepared.view === "sequence-view") {
+    return preparedSnapshot(prepared);
+  }
+  if (prepared.view === "action-flow-view" || prepared.view === "state-transition-view") {
+    const horizontal = String(prepared.meta?.layoutDirection ?? "").toLowerCase() === "horizontal";
+    const layout = await layoutBehaviorGraph(prepared, {
+      horizontal,
+      mode: prepared.view === "state-transition-view" ? "state" : "action",
+    });
+    return {
+      prepared: preparedSnapshot(prepared),
+      behaviorLayout: {
+        positions: mapToObject(layout.positions),
+        edgeSectionsById: mapToObject(layout.edgeSectionsById),
+        edgeLabelsById: mapToObject(layout.edgeLabelsById),
+      },
+    };
+  }
+  const layout = await layoutPrepared(prepared);
+  return {
+    title: prepared.title,
+    view: prepared.view,
+    meta: prepared.meta ?? null,
+    nodes: layout.nodes,
+    edges: layout.edges,
+    ...(prepared.view === "interconnection-view"
+      ? { interconnectionLayout: layout.interconnectionLayout ?? null }
+      : {}),
+  };
+}
+
 export async function exportHeadlessSvg(
   payload: UnknownRecord,
   options: HeadlessExportOptions = {},
@@ -317,6 +375,9 @@ function escapeXml(value: string): string {
 }
 
 const globalApi = globalThis as unknown as {
-  Spec42HeadlessRenderer?: { exportHeadlessSvg: typeof exportHeadlessSvg };
+  Spec42HeadlessRenderer?: {
+    exportHeadlessSvg: typeof exportHeadlessSvg;
+    exportHeadlessDrawInput: typeof exportHeadlessDrawInput;
+  };
 };
-globalApi.Spec42HeadlessRenderer = { exportHeadlessSvg };
+globalApi.Spec42HeadlessRenderer = { exportHeadlessSvg, exportHeadlessDrawInput };

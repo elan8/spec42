@@ -1172,8 +1172,9 @@ fn host_crates_keep_their_declared_dependency_sets() {
         ]),
         "lsp_server is the editor host and owns no batch path: it must not depend on \
          `workspace`; `diagram_layout` is the native layout boundary behind `spec42/layout` \
-         (#119) -- `elk_layout`, the legacy engine, stays inside `server`, which `lsp_server` \
-         cannot depend on (the launch-only edge runs the other way)"
+         (#119). `SPEC42_LAYOUT_ENGINE=legacy` declines that request so the webview can fall \
+         back to in-webview elk.js; `lsp_server` cannot depend on `server` (the launch-only \
+         edge runs the other way)"
     );
     assert!(
         !normal_dependencies("lsp_server").contains("workspace"),
@@ -1183,21 +1184,19 @@ fn host_crates_keep_their_declared_dependency_sets() {
         normal_dependencies("server"),
         set(&[
             "clap",
-            "diagram_layout",
+            "diagram_draw",
             "directories",
             "generator_api",
             "generator_host",
             "kpar",
             "library_catalog",
             "lsp_server",
-            "rquickjs",
             "serde",
             "serde_json",
             "sha2",
             "sysml_diagnostics",
             "sysml_query",
             "tempfile",
-            "thiserror",
             "tokio",
             "toml",
             "tower-lsp",
@@ -1205,7 +1204,8 @@ fn host_crates_keep_their_declared_dependency_sets() {
             "zip",
         ]),
         "server reaches validation through `workspace`; `lsp_server` is the launch-only edge; \
-         `diagram_layout` is the optional native layout boundary behind native-layout-shadow"
+         `diagram_draw` is the native prepare+layout+SVG path for headless export (#176); \
+         `diagram_layout`/`elkrs` reach the binary through `diagram_draw` and `lsp_server`"
     );
 }
 

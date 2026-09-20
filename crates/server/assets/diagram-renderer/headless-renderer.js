@@ -21,6 +21,7 @@ var Spec42HeadlessRendererBundle = (() => {
   // diagram-renderer/src/headless-export.ts
   var headless_export_exports = {};
   __export(headless_export_exports, {
+    exportHeadlessDrawInput: () => exportHeadlessDrawInput,
     exportHeadlessSvg: () => exportHeadlessSvg
   });
 
@@ -8542,6 +8543,48 @@ var Spec42HeadlessRendererBundle = (() => {
     global.Node = VirtualElement;
     return document2;
   }
+  function preparedSnapshot(prepared) {
+    return {
+      title: prepared.title,
+      view: prepared.view,
+      nodes: prepared.nodes,
+      edges: prepared.edges,
+      meta: prepared.meta ?? null
+    };
+  }
+  function mapToObject(map) {
+    return Object.fromEntries(map.entries());
+  }
+  async function exportHeadlessDrawInput(payload, _options = {}) {
+    const prepared = preparedViewFromPayload(payload) ?? prepareViewData(payload);
+    if (prepared.view === "sequence-view") {
+      return preparedSnapshot(prepared);
+    }
+    if (prepared.view === "action-flow-view" || prepared.view === "state-transition-view") {
+      const horizontal = String(prepared.meta?.layoutDirection ?? "").toLowerCase() === "horizontal";
+      const layout2 = await layoutBehaviorGraph(prepared, {
+        horizontal,
+        mode: prepared.view === "state-transition-view" ? "state" : "action"
+      });
+      return {
+        prepared: preparedSnapshot(prepared),
+        behaviorLayout: {
+          positions: mapToObject(layout2.positions),
+          edgeSectionsById: mapToObject(layout2.edgeSectionsById),
+          edgeLabelsById: mapToObject(layout2.edgeLabelsById)
+        }
+      };
+    }
+    const layout = await layoutPrepared(prepared);
+    return {
+      title: prepared.title,
+      view: prepared.view,
+      meta: prepared.meta ?? null,
+      nodes: layout.nodes,
+      edges: layout.edges,
+      ...prepared.view === "interconnection-view" ? { interconnectionLayout: layout.interconnectionLayout ?? null } : {}
+    };
+  }
   async function exportHeadlessSvg(payload, options = {}) {
     const document2 = ensureHeadlessDom();
     const target = document2.createElement("div");
@@ -8565,6 +8608,6 @@ var Spec42HeadlessRendererBundle = (() => {
     return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
   var globalApi = globalThis;
-  globalApi.Spec42HeadlessRenderer = { exportHeadlessSvg };
+  globalApi.Spec42HeadlessRenderer = { exportHeadlessSvg, exportHeadlessDrawInput };
   return __toCommonJS(headless_export_exports);
 })();

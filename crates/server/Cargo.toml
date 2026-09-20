@@ -16,11 +16,6 @@ path = "src/lib.rs"
 default = ["embed-stdlib", "embed-kpar-libraries"]
 embed-stdlib = ["library_catalog/embed-stdlib"]
 embed-kpar-libraries = ["library_catalog/embed-kpar-libraries"]
-# Exposes the existing standalone ELK.js adapter to the development-only parity harness.
-elk-layout-spike = []
-# Compiles the native layout boundary and a legacy-primary comparison seam. This deliberately does
-# not change the headless renderer or webview default.
-native-layout-shadow = ["elk-layout-spike", "dep:diagram_layout", "dep:thiserror"]
 
 [dependencies]
 # The batch host: validation, reports, engine and snapshots.
@@ -38,13 +33,12 @@ tokio = { version = "1", features = ["full"] }
 serde_json = { workspace = true }
 clap = { workspace = true }
 serde = { workspace = true }
-thiserror = { workspace = true, optional = true }
 directories = "5"
-diagram_layout = { path = "../diagram_layout", optional = true }
+# Native prepare + elkrs layout + SVG drawing for headless export (#176).
+diagram_draw = { path = "../diagram_draw" }
 toml = "0.8"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 tower-lsp = "0.20"
-rquickjs = "0.11"
 sha2 = { workspace = true }
 tempfile = "3"
 
@@ -56,7 +50,3 @@ tempfile = "3"
 tower-lsp = "0.20"
 url = "2"
 anyhow = "1"
-# Shared geometry-scalar comparison for the native-layout-shadow parity corpus test. This is a
-# deliberate dev-dependency cycle (elkrs_parity normal-depends on `server` with elk-layout-spike);
-# Cargo permits cycles broken by a dev-dependency edge.
-elkrs_parity = { path = "../../tools/elkrs_parity" }

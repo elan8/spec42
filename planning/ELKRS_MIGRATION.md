@@ -9,12 +9,17 @@ Implementation follow-ups:
 
 ## Current decision
 
-Proceed with the native-server integration behind an explicit rollout switch. The shared adapter is
-now owned by `crates/diagram_layout`, and `server/native-layout-shadow` compiles a comparison seam
-that returns the unchanged ELK.js result as primary plus the normalized native result. It is not yet
-wired into the headless renderer or webview, so production behavior remains unchanged.
+**Retired (spec42 #176):** the ELK.js/QuickJS shadow spike is gone. Headless SVG is fully native
+(`diagram_draw` prepare + `diagram_layout`/`elkrs` + draw). `crates/server` no longer vendors
+ELK.js, links `rquickjs`, or compiles `elk-layout-spike` / `native-layout-shadow`. The
+`tools/elkrs_parity` comparison harness is deleted; TypeScript ELK-input goldens live under
+`vscode/diagram-renderer/test-fixtures/elk-parity/`. The VS Code webview still ships `elkjs` so
+`SPEC42_LAYOUT_ENGINE=legacy` can decline `spec42/layout` and fall back to in-webview layout.
 
-### Rollback switch
+Historical notes below describe the #118/#119 rollout as it was measured; they are not current
+runtime wiring.
+
+### Rollback switch (historical, #118)
 
 Two mechanisms, for two different questions:
 

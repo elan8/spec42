@@ -5,13 +5,13 @@ use serde_json::Value;
 
 use crate::sysml_node::Compartments;
 
-#[derive(Debug, Clone, Copy, Deserialize)]
+#[derive(Debug, Clone, Copy, Deserialize, serde::Serialize)]
 pub struct Point {
     pub x: f64,
     pub y: f64,
 }
 
-#[derive(Debug, Default, Deserialize)]
+#[derive(Debug, Default, Clone, Deserialize)]
 pub struct EdgeSection {
     #[serde(rename = "startPoint")]
     pub start_point: Option<Point>,
@@ -21,7 +21,7 @@ pub struct EdgeSection {
     pub end_point: Option<Point>,
 }
 
-#[derive(Debug, Default, Deserialize)]
+#[derive(Debug, Default, Clone, Deserialize)]
 pub struct EdgeLayout {
     #[serde(default)]
     pub sections: Vec<EdgeSection>,
@@ -34,7 +34,7 @@ pub struct EdgeLayout {
 pub const IBD_NODE_WIDTH: f64 = 280.0;
 pub const IBD_NODE_HEIGHT: f64 = 140.0;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct LaidOutNode {
     pub id: String,
     pub label: String,
@@ -56,7 +56,7 @@ pub struct LaidOutNode {
     pub compartments: Option<Compartments>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct LaidOutEdge {
     pub id: String,
     pub source: String,

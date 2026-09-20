@@ -14,10 +14,11 @@ use crate::types::{InterconnectionLayoutNodeDto, InterconnectionLayoutPortAnchor
 
 const IBD_PORT_LABEL_FONT_SIZE: f64 = 8.0;
 const IBD_PORT_LABEL_MAX_LENGTH: usize = 20;
+const IBD_PORT_LABEL_CHARACTER_WIDTH: f64 = 5.0;
 
 /// Port of `formatIbdPortLabel` + `ibdPortLabelText` (the `detail` parameter is explicitly unused
 /// upstream too).
-fn ibd_port_label_text(name: &str) -> String {
+pub(crate) fn ibd_port_label_text(name: &str) -> String {
     let trimmed = name.trim();
     let units: Vec<u16> = trimmed.encode_utf16().collect();
     if units.len() > IBD_PORT_LABEL_MAX_LENGTH {
@@ -28,6 +29,11 @@ fn ibd_port_label_text(name: &str) -> String {
     } else {
         trimmed.to_string()
     }
+}
+
+/// Port of `ibdPortLabelWidth`.
+pub(crate) fn ibd_port_label_width(text: &str) -> f64 {
+    (text.encode_utf16().count() as f64 * IBD_PORT_LABEL_CHARACTER_WIDTH).max(12.0)
 }
 
 fn port_detail<'a>(details: &'a [Value], name: &str) -> Option<&'a Value> {
