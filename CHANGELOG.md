@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Workspace dependency hygiene and incremental-vs-full publication parity (#43).** `walkdir`,
+  `sha2`, `toml`, and `zip` are declared once in `[workspace.dependencies]` and inherited by
+  member crates. A deterministic edit-sequence harness in `sysml_resolution` proves a warm
+  (incremental memo) publication is the cold (full) one for identity, model digest, and
+  diagnostics after each edit, and snapshots that sequence with `insta`.
+
 - Individual definitions now publish their implicit multiplicity and specialization to
   `Base::zeroOrOne`, including the `individual def` shorthand and specialized definition kinds.
 

@@ -1211,6 +1211,109 @@ fn host_crates_keep_their_declared_dependency_sets() {
     );
 }
 
+/// Shared crates that used to be pinned independently in several manifests.
+const WORKSPACE_HOISTED_CRATES: &[&str] = &["insta", "sha2", "toml", "walkdir", "zip"];
+
+fn workspace_dependency_keys(manifest: &str) -> BTreeSet<String> {
+    let mut keys = BTreeSet::new();
+    let mut in_workspace_dependencies = false;
+    for line in manifest.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with('[') {
+            in_workspace_dependencies = trimmed == "[workspace.dependencies]";
+            continue;
+        }
+        if !in_workspace_dependencies || trimmed.is_empty() || trimmed.starts_with('#') {
+            continue;
+        }
+        let key = trimmed
+            .split(['=', '.'])
+            .next()
+            .unwrap_or_default()
+            .trim()
+            .to_owned();
+        if !key.is_empty() {
+            keys.insert(key);
+        }
+    }
+    keys
+}
+
+fn workspace_member_manifests(root: &Path) -> Vec<PathBuf> {
+    fn walk(dir: &Path, out: &mut Vec<PathBuf>) {
+        let Ok(entries) = fs::read_dir(dir) else {
+            return;
+        };
+        for entry in entries.flatten() {
+            if entry.file_type().map_or(true, |kind| kind.is_symlink()) {
+                continue;
+            }
+            let path = entry.path();
+            let name = entry.file_name();
+            let name = name.to_string_lossy();
+            if path.is_dir() {
+                if matches!(name.as_ref(), "target" | ".git") {
+                    continue;
+                }
+                walk(&path, out);
+            } else if name == "Cargo.toml" {
+                out.push(path);
+            }
+        }
+    }
+    let mut out = Vec::new();
+    for dir in ["crates", "tools"] {
+        walk(&root.join(dir), &mut out);
+    }
+    out.sort();
+    out
+}
+
+/// `walkdir` / `sha2` / `toml` / `zip` (and `insta`) are declared once in the root workspace
+/// and inherited. A member that pins its own version is the drift this rule exists to catch.
+#[test]
+fn shared_dependencies_are_inherited_from_the_workspace() {
+    let root = repository_root();
+    let workspace_toml = fs::read_to_string(root.join("Cargo.toml")).expect("root Cargo.toml");
+    let workspace_keys = workspace_dependency_keys(&workspace_toml);
+    for name in WORKSPACE_HOISTED_CRATES {
+        assert!(
+            workspace_keys.contains(*name),
+            "`{name}` must be declared in [workspace.dependencies] so member crates cannot drift"
+        );
+    }
+
+    let mut offenders = Vec::new();
+    for manifest in workspace_member_manifests(&root) {
+        let relative = manifest
+            .strip_prefix(&root)
+            .unwrap_or(&manifest)
+            .to_string_lossy()
+            .replace('\\', "/");
+        let source = fs::read_to_string(&manifest).expect("member Cargo.toml");
+        for (line_no, line) in source.lines().enumerate() {
+            let trimmed = line.trim();
+            if trimmed.starts_with('#') || trimmed.is_empty() {
+                continue;
+            }
+            let key = trimmed.split(['=', '.']).next().unwrap_or_default().trim();
+            if !WORKSPACE_HOISTED_CRATES.contains(&key) {
+                continue;
+            }
+            let inherits =
+                trimmed.contains("workspace = true") || trimmed.contains(".workspace = true");
+            if !inherits {
+                offenders.push(format!("{relative}:{}: {trimmed}", line_no + 1));
+            }
+        }
+    }
+    assert!(
+        offenders.is_empty(),
+        "shared crates must be inherited with `workspace = true`; pinned copies:\n  {}",
+        offenders.join("\n  ")
+    );
+}
+
 /// `lsp_server` owns no validation pipeline and no batch entry point.
 ///
 /// The dependency-set assertion above proves the crate cannot call into `workspace`; this proves

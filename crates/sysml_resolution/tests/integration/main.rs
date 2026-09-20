@@ -7,6 +7,7 @@ mod construction_schedule_parity;
 mod diagnostics_contract;
 mod evaluation_contract;
 mod incremental_reuse;
+mod incremental_vs_full;
 mod lowering_contract;
 mod navigation_contract;
 mod phase_order;

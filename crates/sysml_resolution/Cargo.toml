@@ -21,4 +21,5 @@ spec42_constraint_manifest = { package = "spec42-constraint-manifest", path = ".
 spec42_constraint_manifest = { package = "spec42-constraint-manifest", path = "../../tools/constraint_manifest" }
 
 [dev-dependencies]
+insta = { workspace = true }
 tempfile = "3"
