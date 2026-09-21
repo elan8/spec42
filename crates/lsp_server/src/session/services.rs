@@ -135,39 +135,8 @@ pub(crate) fn store_parsed_document_text(
     warning_from_parse_errors(uri_norm, parse_errors, diagnostic_count, context)
 }
 
-pub(crate) fn store_document_text(
-    state: &mut impl DocumentStore,
-    uri_norm: &Url,
-    text: String,
-) -> Option<String> {
-    let document =
-        state
-            .services()
-            .source
-            .admit_url(uri_norm.clone(), &text, SourceKind::Workspace);
-    let parsed = state.services().syntax.parse(&document);
-    let parse_errors = parsed
-        .diagnostics()
-        .iter()
-        .take(5)
-        .map(|e| e.message.clone())
-        .collect::<Vec<_>>();
-    let diagnostic_count = parsed.diagnostics().len();
-    store_parsed_document_text(
-        state,
-        uri_norm,
-        document,
-        parsed,
-        &parse_errors,
-        diagnostic_count,
-        "store_document_text",
-        true,
-    )
-}
-
-/// Like `store_document_text` but skips the expensive cross-document evaluation
-/// pass (`evaluate: false`). The caller is responsible for scheduling an async
-/// relink to rebuild cross-document edges and expression evaluation.
+/// Parses and stores source without evaluating cross-document edges. The caller rebuilds the
+/// semantic publication after all source changes in the batch have been applied.
 pub(crate) fn store_document_text_fast(
     state: &mut impl DocumentStore,
     uri_norm: &Url,
@@ -196,14 +165,6 @@ pub(crate) fn store_document_text_fast(
         "store_document_text_fast",
         false,
     )
-}
-
-pub(crate) fn refresh_document(
-    state: &mut impl DocumentStore,
-    uri_norm: &Url,
-    content: String,
-) -> Option<String> {
-    store_document_text(state, uri_norm, content)
 }
 
 pub(crate) fn ingest_parsed_scan_entries(

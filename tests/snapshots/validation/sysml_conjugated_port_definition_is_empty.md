@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.12.2:validateConjugatedPortDefinitionConjugatedPortDefinitionIsEmpty
-blocked_by=lowering-conjugated-port-definition
 type=file
 ~~~
 # SOURCE
@@ -40,12 +39,6 @@ package Ports {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 9 8) (end 9 31))
-      )
     )
   )
 )

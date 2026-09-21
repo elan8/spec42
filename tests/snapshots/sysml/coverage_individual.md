@@ -44,12 +44,6 @@ package CoverageIndividual {
         (source "semantic")
         (range (start 22 1) (end 22 20))
       )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 23 1) (end 23 21))
-      )
     )
   )
 )

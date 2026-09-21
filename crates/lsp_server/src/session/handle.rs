@@ -66,6 +66,103 @@ mod publication_tests {
         );
     }
 
+    #[tokio::test]
+    async fn watched_rename_rebuilds_one_publication_with_new_source_identity() {
+        let old_uri = Url::parse("memory://workspace/old.sysml").unwrap();
+        let new_uri = Url::parse("memory://workspace/new.sysml").unwrap();
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        state.index.insert(
+            old_uri.clone(),
+            entry(&old_uri, "package Old { part def Part; }"),
+        );
+        let handle = WorkspaceHandle::spawn(state);
+        handle.rebuild_publication().await.unwrap();
+        let previous = handle.snapshot().session.publication();
+
+        handle
+            .apply_watched_file_changes(vec![
+                (old_uri.clone(), None),
+                (
+                    new_uri.clone(),
+                    Some("package New { part def Part; }".to_string()),
+                ),
+            ])
+            .await
+            .unwrap();
+
+        let snapshot = handle.snapshot();
+        assert!(!snapshot.index.contains_key(&old_uri));
+        assert!(snapshot.index.contains_key(&new_uri));
+        assert!(!snapshot.session.is_publication_current(&previous));
+        assert!(matches!(
+            snapshot
+                .session
+                .current()
+                .inspection()
+                .document_symbols(new_uri.as_str()),
+            sysml_query::resolved_slice::QueryOutcome {
+                answer: sysml_query::resolved_slice::QueryAnswer::Resolved(ref symbols),
+                ..
+            } if !symbols.is_empty()
+        ));
+    }
+
+    #[tokio::test]
+    async fn watched_save_echo_does_not_rebuild_publication() {
+        let uri = Url::parse("memory://workspace/model.sysml").unwrap();
+        let text = "package P { part def Product; }";
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        state.index.insert(uri.clone(), entry(&uri, text));
+        let handle = WorkspaceHandle::spawn(state);
+        handle.rebuild_publication().await.unwrap();
+        let previous = handle.snapshot().session.publication();
+
+        handle
+            .apply_watched_file_changes(vec![(uri, Some(text.to_string()))])
+            .await
+            .unwrap();
+
+        assert!(handle.snapshot().session.is_publication_current(&previous));
+    }
+
+    #[tokio::test]
+    async fn watched_delete_create_same_uri_preserves_file() {
+        let uri = Url::parse("memory://workspace/model.sysml").unwrap();
+        let text = "package P { part def Product; }";
+        let mut state = ServerState::default();
+        state.session.complete_startup();
+        state.index.insert(uri.clone(), entry(&uri, text));
+        let handle = WorkspaceHandle::spawn(state);
+        handle.rebuild_publication().await.unwrap();
+
+        handle
+            .apply_watched_file_changes(vec![
+                (uri.clone(), None),
+                (uri.clone(), Some(text.to_string())),
+            ])
+            .await
+            .unwrap();
+
+        let snapshot = handle.snapshot();
+        assert_eq!(
+            snapshot.index.get(&uri).map(|entry| entry.content()),
+            Some(text)
+        );
+        assert!(matches!(
+            snapshot
+                .session
+                .current()
+                .inspection()
+                .document_symbols(uri.as_str()),
+            sysml_query::resolved_slice::QueryOutcome {
+                answer: sysml_query::resolved_slice::QueryAnswer::Resolved(ref symbols),
+                ..
+            } if !symbols.is_empty()
+        ));
+    }
+
     /// A document the host has admitted must never be missing from the publication that answers
     /// requests for it. The regression: `rebuild_publication` prepared its inputs off the actor
     /// and only *then* took a build token, so a rebuild that had already read a stale index could
@@ -94,7 +191,10 @@ mod publication_tests {
             let refresh_uri = uri.clone();
             let refresh = tokio::spawn(async move {
                 refresher
-                    .refresh_document(refresh_uri, "package Late { part p; }".to_string())
+                    .apply_watched_file_changes(vec![(
+                        refresh_uri,
+                        Some("package Late { part p; }".to_string()),
+                    )])
                     .await
             });
             bare.await.unwrap().expect("bare rebuild");
@@ -584,49 +684,57 @@ impl WorkspaceHandle {
 
     // --- did_change_watched_files --------------------------------------------------------
 
-    pub(crate) async fn refresh_document(
+    /// Applies one watched-file notification as a single source revision and rebuilds once.
+    /// Rename notifications commonly contain a delete and a create in the same batch.
+    pub(crate) async fn apply_watched_file_changes(
         &self,
-        uri: Url,
-        content: String,
-    ) -> Result<Option<String>, MutatePanicked> {
+        changes: Vec<(Url, Option<String>)>,
+    ) -> Result<(bool, Vec<String>), MutatePanicked> {
         let outcome = self
             .actor
-            .mutate_if_changed(move |s| {
-                if s.index
-                    .get(&uri)
-                    .is_some_and(|entry| entry.content() == content)
-                {
-                    return Mutation::Unchanged(None);
+            .mutate_if_changed(move |state| {
+                let mut warnings = Vec::new();
+                let mut changed = false;
+                for (uri, content) in changes {
+                    match content {
+                        Some(content) => {
+                            if state
+                                .index
+                                .get(&uri)
+                                .is_some_and(|entry| entry.content() == content)
+                            {
+                                continue;
+                            }
+                            if let Some(warning) =
+                                crate::session::services::store_document_text_fast(
+                                    state, &uri, content,
+                                )
+                            {
+                                warnings.push(warning);
+                            }
+                        }
+                        None => {
+                            if !state.index.contains_key(&uri) {
+                                continue;
+                            }
+                            crate::session::services::remove_document(state, &uri);
+                        }
+                    }
+                    changed = true;
                 }
-                let warning = crate::session::services::refresh_document(s, &uri, content);
-                s.semantic_revision = s.semantic_revision.wrapping_add(1);
-                s.session.invalidate_inputs();
-                Mutation::Changed(warning)
+                if changed {
+                    state.semantic_revision = state.semantic_revision.wrapping_add(1);
+                    state.session.invalidate_inputs();
+                    Mutation::Changed(warnings)
+                } else {
+                    Mutation::Unchanged(warnings)
+                }
             })
             .await?;
         if outcome.published {
             self.rebuild_publication().await?;
         }
-        Ok(outcome.value)
-    }
-
-    pub(crate) async fn remove_document(&self, uri: Url) -> Result<(), MutatePanicked> {
-        let outcome = self
-            .actor
-            .mutate_if_changed(move |s| {
-                if !s.index.contains_key(&uri) {
-                    return Mutation::Unchanged(());
-                }
-                crate::session::services::remove_document(s, &uri);
-                s.semantic_revision = s.semantic_revision.wrapping_add(1);
-                s.session.invalidate_inputs();
-                Mutation::Changed(())
-            })
-            .await?;
-        if outcome.published {
-            self.rebuild_publication().await?;
-        }
-        Ok(())
+        Ok((outcome.published, outcome.value))
     }
 
     // --- did_change_configuration (library reindex) ---------------------------------------

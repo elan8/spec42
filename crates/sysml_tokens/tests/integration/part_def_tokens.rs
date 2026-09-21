@@ -3,7 +3,7 @@ use sysml_query::syntax::ParsedSource;
 fn parse_for_editor(text: &str) -> ParsedSource {
     sysml_query::syntax::SyntaxService::new().parse_text(text)
 }
-use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full, TYPE_PROPERTY};
+use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full, TYPE_CLASS, TYPE_PROPERTY};
 
 fn decode_semantic_tokens(data: &[u32]) -> Vec<(u32, u32, u32, u32)> {
     let mut line: u32 = 0;
@@ -71,6 +71,20 @@ fn part_def_body_tokenizes_ref_and_part_usage_names() {
     assert!(token_text(content, &decoded, "axle"));
     assert!(token_text(content, &decoded, "wheel"));
     assert!(token_text(content, &decoded, "Wheel"));
+}
+
+#[test]
+fn part_definition_name_has_same_highlight_with_or_without_body() {
+    let content = "package P {\n  part def Bare;\n  part def Braced { }\n}";
+    let parsed = parse_for_editor(content);
+    let ranges = ast_semantic_ranges(&parsed, content);
+    let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
+    let decoded = decode_semantic_tokens(&tokens.data);
+    assert_eq!(token_type_for(content, &decoded, "Bare"), Some(TYPE_CLASS));
+    assert_eq!(
+        token_type_for(content, &decoded, "Braced"),
+        Some(TYPE_CLASS)
+    );
 }
 
 #[test]

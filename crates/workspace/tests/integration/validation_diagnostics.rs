@@ -123,15 +123,6 @@ fn surveillance_drone_semantic_diagnostics_have_meaningful_ranges() {
         "expected semantic diagnostics to avoid line1/col1 sentinel ranges"
     );
 
-    let unconnected_count = semantic_diags
-        .iter()
-        .filter(|diagnostic| diagnostic.code == "unconnected_port")
-        .count();
-    assert!(
-        unconnected_count <= 25,
-        "expected reduced unconnected_port noise, got {unconnected_count}"
-    );
-
     let unresolved: Vec<_> = semantic_diags
         .iter()
         .filter(|diagnostic| diagnostic.code == "unresolved_type_reference")

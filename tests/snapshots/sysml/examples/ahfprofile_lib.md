@@ -159,12 +159,6 @@ library package AHFProfileMetadata{
         (range (start 10 29) (end 10 35))
       )
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 31 2) (end 31 26))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -189,22 +183,10 @@ library package AHFProfileMetadata{
         (range (start 41 26) (end 41 32))
       )
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 47 2) (end 47 19))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_import_target")
         (source "semantic")
         (range (start 69 16) (end 69 45))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 72 1) (end 72 19))
       )
       (diagnostic
         (severity warning)
@@ -289,12 +271,6 @@ library package AHFProfileMetadata{
         (code "unresolved_reference")
         (source "semantic")
         (range (start 94 33) (end 94 49))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 98 1) (end 98 23))
       )
       (diagnostic
         (severity warning)

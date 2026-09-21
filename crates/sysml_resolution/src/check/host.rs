@@ -508,13 +508,12 @@ impl<D> SemanticModel<D> {
     // Connection conformance
     // ------------------------------------------------------------------------------------------
 
-    /// Reports connectors whose ends are not connectable, and ports that connect to nothing.
+    /// Reports connectors whose ends are not connectable.
     pub(crate) fn collect_connection_structure(
         &self,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        let mut connected_ends: BTreeSet<DeclarationId> = BTreeSet::new();
         for id in declared.iter().copied() {
             let declaration = self
                 .storage
@@ -530,7 +529,6 @@ impl<D> SemanticModel<D> {
                     continue;
                 };
                 settled.push((target, *reference));
-                connected_ends.insert(target);
             }
             if settled.len() < 2 {
                 // One settled end states no relationship to judge; the other end is already its
@@ -632,67 +630,8 @@ impl<D> SemanticModel<D> {
             }
         }
 
-        self.collect_unconnected_ports(declared, &connected_ends, diagnostics)?;
         self.collect_interface_ends(declared, diagnostics)?;
         self.collect_binding_connectors(declared, diagnostics)?;
-        Ok(())
-    }
-
-    /// Reports ports that no connector, flow or binding names.
-    ///
-    /// A port that redefines or subsets another states a refinement of a connected feature rather
-    /// than a new endpoint, so it is not reported: the feature it specializes carries the
-    /// connection.
-    pub(crate) fn collect_unconnected_ports(
-        &self,
-        declared: &[DeclarationId],
-        connected: &BTreeSet<DeclarationId>,
-        diagnostics: &mut Vec<Diagnostic>,
-    ) -> Result<(), ResolutionError> {
-        for id in declared.iter().copied() {
-            if self.kind_of(id) != Some(DeclarationKind::PortUsage) {
-                continue;
-            }
-            if connected.contains(&id) {
-                continue;
-            }
-            if !self
-                .authored_references(
-                    id,
-                    &[
-                        ReferenceKind::Redefinition,
-                        ReferenceKind::Subsetting,
-                        ReferenceKind::References,
-                    ],
-                )
-                .is_empty()
-            {
-                continue;
-            }
-            // A port named by any endpoint-bearing reference is connected, whatever the spelling.
-            if self.reverse_references.references(id).iter().any(|id| {
-                matches!(
-                    self.storage.references[id.index()].kind,
-                    ReferenceKind::ConnectorEnd
-                        | ReferenceKind::MemberAccessOperand
-                        | ReferenceKind::FlowSource
-                        | ReferenceKind::FlowTarget
-                        | ReferenceKind::BindSource
-                        | ReferenceKind::BindTarget
-                )
-            }) {
-                continue;
-            }
-            diagnostics.push(self.declaration_message_diagnostic(
-                id,
-                DiagnosticCode::UnconnectedPort,
-                DiagnosticSeverity::Information,
-                Some(format!(
-                    "Port '{}' takes part in no connection.",
-                    self.display_name(id)
-                )),
-            )?);
-        }
         Ok(())
     }
 

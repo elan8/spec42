@@ -183,12 +183,6 @@ package VehicleVariabilityModel {
         (range (start 3 16) (end 3 34))
       )
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 31 10) (end 31 35))
-      )
-      (diagnostic
         (severity warning)
         (code "unsupported_attribute_member")
         (source "semantic")

@@ -456,13 +456,6 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
-        code: "unconnected_port",
-        severity: "information",
-        meaning: "A port is not connected in the current structural context.",
-        typical_fix: "Add a connection or mark the port as intentionally unused.",
-        editor_quick_fixes: None,
-    },
-    DiagnosticCatalogEntry {
         code: "connection_context_invalid",
         severity: "warning",
         meaning: "Connection endpoints are not connectable in the containing structural context.",
@@ -746,7 +739,6 @@ const MODELING_GUIDANCE_CODES: &[&str] = &[
     "missing_initial_state",
     "missing_library_context",
     "multiple_final_states",
-    "unconnected_port",
     "untyped_part_usage",
     "view_expose_empty",
 ];

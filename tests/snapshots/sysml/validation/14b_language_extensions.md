@@ -62,12 +62,6 @@ package '14b-Language-Extensions' {
 (fixture-diagnostics
   (document "memory://snapshot/14b_language_extensions.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 36 5) (end 36 26))
-      )
     )
   )
 )
