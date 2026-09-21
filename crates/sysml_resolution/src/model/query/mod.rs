@@ -58,6 +58,7 @@ use crate::resolve::implied::element_derived_documentation_rule;
 use crate::resolve::implied::element_derived_owner_rule;
 use crate::resolve::implied::feature_derived_relationship_kinds;
 use crate::resolve::implied::feature_derived_relationship_rule;
+use crate::resolve::implied::individual_occurrence_multiplicity_anchor;
 use crate::resolve::implied::lowered_redefinition_source_kind;
 use crate::resolve::implied::namespace_derived_element_rule;
 use crate::resolve::implied::namespace_import_derived_element_rule;
@@ -2577,6 +2578,40 @@ impl<D> SemanticModel<D> {
                         outcome = SpecializationCheckOutcome::Unresolved;
                         break;
                     }
+                }
+            }
+            return self.resolved_outcome(outcome);
+        }
+        if kind == SpecializationCheckKind::OccurrenceDefinitionMultiplicity {
+            let Some(anchor) = individual_occurrence_multiplicity_anchor(&self.storage) else {
+                return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+            };
+            let mut outcome = SpecializationCheckOutcome::Satisfied;
+            for (index, declaration) in self.storage.declarations.iter().enumerate() {
+                let Some(facts) = self.storage.declaration_facts.get(index) else {
+                    return self.resolved_outcome(SpecializationCheckOutcome::Unresolved);
+                };
+                if declaration.kind != DeclarationKind::OccurrenceDefinition
+                    || !facts.modifiers.individual
+                {
+                    continue;
+                }
+                let Some(multiplicity) = facts.owned_multiplicity else {
+                    outcome = SpecializationCheckOutcome::Unresolved;
+                    break;
+                };
+                if !self
+                    .resolution
+                    .implied_relationships
+                    .iter()
+                    .any(|relationship| {
+                        relationship.kind == ReferenceKind::Subsetting
+                            && relationship.source == multiplicity
+                            && relationship.target == anchor
+                    })
+                {
+                    outcome = SpecializationCheckOutcome::Violated;
+                    break;
                 }
             }
             return self.resolved_outcome(outcome);

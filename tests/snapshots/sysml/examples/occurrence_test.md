@@ -60,6 +60,7 @@ package OccurrenceTest {
   (declarations
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Ind"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers individual)))
+    (declaration (id (node (document "memory://snapshot/occurrence_test.md") (path (named (kind package) (name "OccurrenceTest")) (named (kind occurrence-def) (name "Ind")) (anonymous (kind kerml-multiplicity) (ordinal 0))))) (kind kerml-multiplicity) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 0) (upper 1))))
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Ind::s2"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (portion snapshot)))
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Ind::t2"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (portion timeslice)))
     (declaration (id (node (document "memory://snapshot/occurrence_test.md") (qualified-name "OccurrenceTest::Occ"))) (kind occurrence-def) (membership (kind owning) (visibility default)))

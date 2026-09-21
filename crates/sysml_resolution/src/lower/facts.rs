@@ -174,6 +174,10 @@ pub(crate) struct DeclarationFacts {
     pub(crate) portion_kind: Option<PortionKind>,
     pub(crate) direction: Option<ParameterDirection>,
     pub(crate) multiplicity: Option<MultiplicityRecord>,
+    /// The canonical Multiplicity element owned by this declaration when the concrete syntax
+    /// implies one rather than spelling one as a child declaration. SysML individual
+    /// OccurrenceDefinitions own a zero-or-one Multiplicity through this endpoint.
+    pub(crate) owned_multiplicity: Option<DeclarationId>,
     /// Authored negation for a declaration whose exact metaclass owns an `isNegated` fact.
     ///
     /// Satisfy, assert, and invariant spell the polarity at different grammar positions, but

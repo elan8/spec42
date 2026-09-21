@@ -1877,6 +1877,30 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
+        if node.value.is_individual {
+            let multiplicity = self.push_typed_declaration(
+                document,
+                Some(declaration),
+                DeclarationKind::KermlMultiplicity,
+                None,
+                node.span,
+                DeclarationFacts {
+                    multiplicity: Some(crate::lower::facts::MultiplicityRecord {
+                        lower: crate::lower::facts::MultiplicityBound::Literal(0),
+                        upper: crate::lower::facts::MultiplicityBound::Literal(1),
+                        span: node.span,
+                    }),
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            self.push_membership(
+                multiplicity,
+                MembershipKind::Owning,
+                Visibility::Default,
+                node.span,
+            )?;
+            self.declaration_facts[declaration.index()].owned_multiplicity = Some(multiplicity);
+        }
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }

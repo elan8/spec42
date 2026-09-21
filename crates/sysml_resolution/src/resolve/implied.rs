@@ -938,6 +938,8 @@ pub(crate) fn synthesize_implied_relationships(
         synthesize_feature_membership_type_featurings(storage, &storage.references)?.into_vec(),
     );
     implied.extend(synthesize_feature_valuation_specializations(storage)?.into_vec());
+    implied
+        .extend(synthesize_individual_occurrence_multiplicity_specializations(storage)?.into_vec());
     implied.sort_by_key(|relationship| {
         (
             relationship.kind,
@@ -947,6 +949,39 @@ pub(crate) fn synthesize_implied_relationships(
     });
     implied.dedup();
     Ok(implied.into_boxed_slice())
+}
+
+/// Synthesizes the exact SysML 8.3.9.3 relationship required by
+/// `checkOccurrenceDefinitionMultiplicitySpecialization`. The Multiplicity source is the
+/// canonical implied child published during lowering; the target is the uniquely identified
+/// standard-library `Base::zeroOrOne` declaration. Missing or ambiguous anchors remain explicit
+/// by producing no edge, which makes the check unresolved rather than guessing a target.
+fn synthesize_individual_occurrence_multiplicity_specializations(
+    storage: &SemanticModelStorage,
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    let Some(anchor) = individual_occurrence_multiplicity_anchor(storage) else {
+        return Ok(Box::default());
+    };
+    let mut implied = Vec::new();
+    for facts in storage.declaration_facts.iter() {
+        if let Some(source) = facts.owned_multiplicity {
+            implied.push(ImpliedRelationship {
+                kind: ReferenceKind::Subsetting,
+                source,
+                target: anchor,
+            });
+        }
+    }
+    Ok(implied.into_boxed_slice())
+}
+
+pub(crate) fn individual_occurrence_multiplicity_anchor(
+    storage: &SemanticModelStorage,
+) -> Option<DeclarationId> {
+    match resolve_library_specialization_anchor(storage, "Base::zeroOrOne") {
+        LibrarySpecializationAnchor::Resolved(anchor) => Some(anchor),
+        LibrarySpecializationAnchor::Missing | LibrarySpecializationAnchor::Ambiguous(_) => None,
+    }
 }
 
 /// Synthesizes `checkFeatureValuationSpecialization` (KerML 8.3.3.3.4): a non-default
