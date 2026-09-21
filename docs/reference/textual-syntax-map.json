@@ -1,0 +1,124 @@
+{
+  "pin": {
+    "release_tag": "2026-04",
+    "release_repo": "https://github.com/Systems-Modeling/SysML-v2-Release",
+    "sysml_bnf_productions": 350,
+    "kerml_bnf_productions": 290,
+    "sysml_bnf": "tools/sysml_reference/SysML-textual-bnf.kebnf",
+    "kerml_bnf": "tools/sysml_reference/KerML-textual-bnf.kebnf"
+  },
+  "overlays": [
+    {
+      "grammar": "SysML",
+      "production": "PartDefinition",
+      "status": "supported",
+      "notes": "OccurrenceDefinitionPrefix 'part' 'def' Definition; semicolon and brace bodies are both DefinitionBody.",
+      "forms": [
+        { "kind": "accept", "path": "tests/snapshots/syntax/part_def_with_and_without_body.md" },
+        { "kind": "accept", "path": "tests/snapshots/sysml_part_def.md" },
+        { "kind": "accept", "path": "tests/snapshots/parse_part_def_with_body.md" },
+        { "kind": "accept", "path": "tests/snapshots/parse_package_with_parts.md" },
+        { "kind": "reject", "path": "tests/snapshots/incomplete_part_unmatched_braces.md", "code": "missing_closing_brace" }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "PartUsage",
+      "status": "supported",
+      "notes": "OccurrenceUsagePrefix 'part' Usage; nested usages parse inside a part definition body.",
+      "forms": [
+        { "kind": "accept", "path": "tests/snapshots/syntax/part_def_with_and_without_body.md" }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "Definition",
+      "status": "supported",
+      "forms": [
+        { "kind": "accept", "path": "tests/snapshots/syntax/part_def_with_and_without_body.md" }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "DefinitionBody",
+      "status": "supported",
+      "notes": "';' | '{' DefinitionBodyItem* '}'; declarations with and without a body must both parse.",
+      "forms": [
+        { "kind": "accept", "path": "tests/snapshots/syntax/part_def_with_and_without_body.md" },
+        { "kind": "reject", "path": "tests/snapshots/incomplete_part_unmatched_braces.md", "code": "missing_closing_brace" }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "Package",
+      "status": "supported",
+      "forms": [
+        { "kind": "accept", "path": "tests/snapshots/parse_package_with_parts.md" }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "IfNode",
+      "status": "supported",
+      "notes": "IfNode has no 'then' keyword; ActionBodyParameter is always a braced body (SysML BNF 1123-1138). The shorthand `if <cond> then <a> else <b>;` is not a production.",
+      "forms": [
+        { "kind": "accept", "path": "tests/snapshots/validation/sysml_if_action_usage_parameters.md" }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionBodyParameter",
+      "status": "supported",
+      "forms": [
+        { "kind": "accept", "path": "tests/snapshots/validation/sysml_if_action_usage_parameters.md" }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "TransitionUsage",
+      "status": "supported",
+      "notes": "EffectBehaviorMember (`do`) is before TransitionSuccessionMember (`then`).",
+      "forms": [
+        { "kind": "accept", "path": "tests/snapshots/validation/sysml_transition_feature_membership_effect_action.md" }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "EffectBehaviorMember",
+      "status": "supported",
+      "forms": [
+        { "kind": "accept", "path": "tests/snapshots/validation/sysml_transition_feature_membership_effect_action.md" }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "BasicDefinitionPrefix",
+      "status": "supported",
+      "notes": "One exclusive slot: `abstract` | `variation`. Pairing both keywords has no spelling and is recovered rather than parsed as two modifiers.",
+      "issue": "abstract-syntax-nonrepresentable-abstract-variation",
+      "forms": [
+        { "kind": "accept", "path": "tests/snapshots/validation/sysml_definition_variation_owned_feature_membership.md" },
+        { "kind": "reject", "path": "tests/snapshots/syntax/abstract_variation_is_unrepresentable.md", "code": "recovered_package_body_element" }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "RefPrefix",
+      "status": "supported",
+      "notes": "Variance slot is `abstract` | `variation`; `constant` is a separate optional. SysML has no `var`/`variable` keyword.",
+      "forms": [
+        { "kind": "accept", "path": "tests/snapshots/validation/sysml_assignment_action_usage.md" },
+        { "kind": "reject", "path": "tests/snapshots/syntax/abstract_variation_is_unrepresentable.md", "code": "recovered_package_body_element" }
+      ]
+    },
+    {
+      "grammar": "KerML",
+      "production": "TypedBy",
+      "status": "supported",
+      "notes": "Feature typing is `:` / `typed by`. Classifier `specializes` is TypeDeclaration, not FeatureDeclaration.",
+      "forms": [
+        { "kind": "accept", "path": "tests/snapshots/validation/kerml_connector_binary_specialization.md" }
+      ]
+    }
+  ]
+}

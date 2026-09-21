@@ -1,0 +1,5234 @@
+{
+  "source": {
+    "repository": "https://github.com/Systems-Modeling/SysML-v2-Release",
+    "version": "2026-04",
+    "parserRevision": "9f00caf353581a3c0ccc13676c5d8829f90708b3",
+    "sysmlBnf": "tools/sysml_reference/SysML-textual-bnf.kebnf",
+    "kermlBnf": "tools/sysml_reference/KerML-textual-bnf.kebnf",
+    "sysmlBnfSha256": "sha256:2e9198be3cf83edb6c8e0e9a1b40c2b1ca161c4193c5b7e48c95ebc4faf63017",
+    "kermlBnfSha256": "sha256:05c11c4092d2b3667afa918bc83294726d3262be7c9e0320699dadb73132abe2"
+  },
+  "counts": {
+    "productions": 640,
+    "sysml": 350,
+    "kerml": 290,
+    "supported": 12,
+    "recovered": 0,
+    "unsupported": 0,
+    "untested": 628
+  },
+  "productions": [
+    {
+      "grammar": "SysML",
+      "production": "AcceptNode",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AcceptNodeDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AcceptParameterPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionBehaviorMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionBodyItem",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionBodyParameter",
+      "status": "supported",
+      "notes": "",
+      "issue": null,
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/sysml_if_action_usage_parameters.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionBodyParameterMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionNode",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionNodeMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionNodePrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionNodeUsageDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionTargetSuccession",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionTargetSuccessionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionUsageDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActorMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActorUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AliasMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AllocationDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AllocationUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AllocationUsageDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AnalysisCaseDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AnalysisCaseUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AnnotatingElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AnnotatingMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Annotation",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Argument",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ArgumentExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ArgumentExpressionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ArgumentExpressionValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ArgumentMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ArgumentValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AssertConstraintUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AssignmentNode",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AssignmentNodeDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AssignmentTargetBinding",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AssignmentTargetMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AssignmentTargetParameter",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AttributeDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "AttributeUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "BasicDefinitionPrefix",
+      "status": "supported",
+      "notes": "One exclusive slot: `abstract` | `variation`. Pairing both keywords has no spelling and is recovered rather than parsed as two modifiers.",
+      "issue": "abstract-syntax-nonrepresentable-abstract-variation",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/sysml_definition_variation_owned_feature_membership.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/abstract_variation_is_unrepresentable.md",
+          "code": "recovered_package_body_element"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "BasicUsagePrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "BehaviorUsageElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "BehaviorUsageMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "BinaryConnectorPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "BinaryInterfacePart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "BindingConnectorAsUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "CROSSES",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "CalculationBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "CalculationBodyItem",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "CalculationBodyPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "CalculationDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "CalculationUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "CaseBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "CaseBodyItem",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "CaseDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "CaseUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Comment",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConcernDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConcernUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConjugatedPortDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConjugatedPortDefinitionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConjugatedPortTyping",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConnectionDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConnectionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConnectorEnd",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConnectorEndMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConnectorPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConstraintDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConstraintUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConstraintUsageDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ControlNode",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ControlNodePrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Crosses",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "DEFINED_BY",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "DecisionNode",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "DefaultInterfaceEnd",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "DefaultReferenceUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "DefaultTargetSuccession",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Definition",
+      "status": "supported",
+      "notes": "",
+      "issue": null,
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/part_def_with_and_without_body.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "DefinitionBody",
+      "status": "supported",
+      "notes": "';' | '{' DefinitionBodyItem* '}'; declarations with and without a body must both parse.",
+      "issue": null,
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/part_def_with_and_without_body.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/incomplete_part_unmatched_braces.md",
+          "code": "missing_closing_brace"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "DefinitionBodyItem",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "DefinitionDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "DefinitionElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "DefinitionExtensionKeyword",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "DefinitionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "DefinitionPrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Dependency",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "DependencyDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "DoActionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Documentation",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EffectBehaviorMember",
+      "status": "supported",
+      "notes": "",
+      "issue": null,
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/sysml_transition_feature_membership_effect_action.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "EffectBehaviorUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ElementFilterMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EmptyActionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EmptyEndMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EmptyFeature",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EmptyMultiplicity",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EmptyMultiplicityMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EmptyParameterMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EmptyUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EndUsagePrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EntryActionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EntryTransitionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EnumeratedValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EnumerationBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EnumerationDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EnumerationUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EnumerationUsageMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "EventOccurrenceUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ExhibitStateUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ExitActionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Expose",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ExpressionParameterMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ExtendedDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ExtendedUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FeatureBinding",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FeatureChainMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FeatureChainPrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FeatureDirection",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FeatureSpecialization",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FeatureSpecializationPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FeatureTyping",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FeatureValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FilterPackage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FilterPackageMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FlowDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FlowDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FlowEnd",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FlowEndMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FlowEndSubsetting",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FlowFeature",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FlowFeatureMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FlowFeatureRedefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FlowPayloadFeature",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FlowPayloadFeatureMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FlowUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ForLoopNode",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ForVariableDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ForVariableDeclarationMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ForkNode",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FramedConcernMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "FramedConcernUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "GuardExpressionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "GuardedSuccession",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "GuardedSuccessionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "GuardedTargetSuccession",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Identification",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "IfNode",
+      "status": "supported",
+      "notes": "IfNode has no 'then' keyword; ActionBodyParameter is always a braced body (SysML BNF 1123-1138). The shorthand `if <cond> then <a> else <b>;` is not a production.",
+      "issue": null,
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/sysml_if_action_usage_parameters.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "IfNodeParameterMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Import",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ImportDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "IncludeUseCaseUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "IndividualDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "IndividualUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "InitialNodeMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceBodyItem",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceEnd",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceEndMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceNonOccurrenceUsageElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceNonOccurrenceUsageMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceOccurrenceUsageElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceOccurrenceUsageMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfacePart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceUsageDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ItemDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ItemUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "JoinNode",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "LibraryPackage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MemberPrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MembershipExpose",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MembershipImport",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MergeNode",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Message",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MessageDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MessageEvent",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MessageEventMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MetadataBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MetadataBodyUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MetadataBodyUsageMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MetadataDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MetadataUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MetadataUsageDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MultiplicityExpressionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MultiplicityPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "MultiplicityRange",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "NamespaceExpose",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "NamespaceImport",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "NaryConnectorPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "NaryInterfacePart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "NodeParameter",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "NodeParameterMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "NonBehaviorBodyItem",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "NonOccurrenceUsageElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "NonOccurrenceUsageMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ObjectiveMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ObjectiveRequirementUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OccurrenceDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OccurrenceDefinitionPrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OccurrenceUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OccurrenceUsageElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OccurrenceUsageMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OccurrenceUsagePrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedAnnotation",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedCrossFeature",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedCrossFeatureMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedCrossMultiplicity",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedCrossMultiplicityMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedCrossSubsetting",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedFeatureChain",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedFeatureChainMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedFeatureChaining",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedFeatureTyping",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedMultiplicity",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedRedefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedReferenceSubsetting",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedSubclassification",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "OwnedSubsetting",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Package",
+      "status": "supported",
+      "notes": "",
+      "issue": null,
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/parse_package_with_parts.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "PackageBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PackageBodyElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PackageDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PackageMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PartDefinition",
+      "status": "supported",
+      "notes": "OccurrenceDefinitionPrefix 'part' 'def' Definition; semicolon and brace bodies are both DefinitionBody.",
+      "issue": null,
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/part_def_with_and_without_body.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/sysml_part_def.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/parse_part_def_with_body.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/parse_package_with_parts.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/incomplete_part_unmatched_braces.md",
+          "code": "missing_closing_brace"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "PartUsage",
+      "status": "supported",
+      "notes": "OccurrenceUsagePrefix 'part' Usage; nested usages parse inside a part definition body.",
+      "issue": null,
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/part_def_with_and_without_body.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "PayloadFeature",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PayloadFeatureSpecializationPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PayloadParameter",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PayloadParameterMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PerformActionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PerformActionUsageDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PortConjugation",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PortDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PortUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PortionKind",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PortionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PrefixMetadataAnnotation",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PrefixMetadataMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "PrefixMetadataUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "REDEFINES",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "REFERENCES",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RESERVED_KEYWORD",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Redefines",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Redefinitions",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RefPrefix",
+      "status": "supported",
+      "notes": "Variance slot is `abstract` | `variation`; `constant` is a separate optional. SysML has no `var`/`variable` keyword.",
+      "issue": null,
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/sysml_assignment_action_usage.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/abstract_variation_is_unrepresentable.md",
+          "code": "recovered_package_body_element"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ReferenceUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "References",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RelationshipBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RenderingDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RenderingUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RequirementBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RequirementBodyItem",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RequirementConstraintMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RequirementConstraintUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RequirementDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RequirementKind",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RequirementUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RequirementVerificationMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RequirementVerificationUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ResultExpressionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ReturnParameterMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "RootNamespace",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SPECIALIZES",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SUBSETS",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SatisfactionFeatureValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SatisfactionParameter",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SatisfactionReferenceExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SatisfactionSubjectMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SatisfyRequirementUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SendNode",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SendNodeDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SenderReceiverPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SourceEnd",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SourceEndMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SourceSuccession",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SourceSuccessionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "StakeholderMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "StakeholderUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "StateAcceptActionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "StateActionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "StateAssignmentActionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "StateBodyItem",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "StateDefBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "StateDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "StatePerformActionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "StateSendActionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "StateUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "StateUsageBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "StructureUsageElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "StructureUsageMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SubclassificationPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SubjectMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SubjectUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Subsets",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Subsettings",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SuccessionAsUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "SuccessionFlowUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TargetSuccession",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TargetTransitionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TargetTransitionUsageMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TerminateNode",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TextualRepresentation",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TransitionAcceptActionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TransitionAssignmentActionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TransitionPerformActionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TransitionSendActionUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TransitionSuccession",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TransitionSuccessionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TransitionUsage",
+      "status": "supported",
+      "notes": "EffectBehaviorMember (`do`) is before TransitionSuccessionMember (`then`).",
+      "issue": null,
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/sysml_transition_feature_membership_effect_action.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "TransitionUsageMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TriggerAction",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TriggerActionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TriggerExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TriggerFeatureValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TriggerValuePart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "TypedBy",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Typings",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "UnextendedUsagePrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "Usage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "UsageBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "UsageCompletion",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "UsageDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "UsageElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "UsageExtensionKeyword",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "UsagePrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "UseCaseDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "UseCaseUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ValuePart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "VariantReference",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "VariantUsageElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "VariantUsageMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "VerificationCaseDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "VerificationCaseUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ViewBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ViewBodyItem",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ViewDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ViewDefinitionBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ViewDefinitionBodyItem",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ViewRenderingMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ViewRenderingUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ViewUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ViewpointDefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "ViewpointUsage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "VisibilityIndicator",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "SysML",
+      "production": "WhileLoopNode",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ALPHABETIC_CHARACTER",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "AliasMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "AnnotatingElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Annotation",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Argument",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ArgumentExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ArgumentExpressionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ArgumentExpressionValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ArgumentList",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ArgumentMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ArgumentValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Association",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "AssociationStructure",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BASIC_INITIAL_CHARACTER",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BASIC_NAME",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BASIC_NAME_CHARACTER",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BaseExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BasicFeaturePrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Behavior",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BinaryConnectorDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BinaryOperator",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BinaryOperatorExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BindingConnector",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BindingConnectorDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BodyArgument",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BodyArgumentMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BodyArgumentValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BodyExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BooleanExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BooleanValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "BracketExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "COMMENT_LINE_TEXT",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "COMMENT_TEXT",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "CONJUGATES",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "CROSSES",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "CastOperator",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ChainingPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Class",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ClassificationExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ClassificationTestOperator",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Classifier",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ClassifierDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "CollectExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Comment",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ConditionalBinaryOperator",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ConditionalBinaryOperatorExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ConditionalExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Conjugation",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ConjugationPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Connector",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ConnectorDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ConnectorEnd",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ConnectorEndMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ConstructorExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ConstructorResult",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ConstructorResultMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Crosses",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "DECIMAL_DIGIT",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "DECIMAL_VALUE",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "DataType",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Dependency",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Differencing",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "DifferencingPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Disjoining",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "DisjoiningPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Documentation",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ESCAPE_SEQUENCE",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "EXPONENTIAL_VALUE",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ElementFilterMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ElementReferenceMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "EmptyFeature",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "EmptyResultMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "EndFeaturePrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Expression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ExpressionBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ExpressionBodyMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ExtentExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Feature",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureChain",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureChainExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureChainMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureDirection",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureIdentification",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureInverting",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeaturePrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureReference",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureReferenceExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureReferenceMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureRelationshipPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureSpecialization",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureSpecializationPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureTyping",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FeatureValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FilterPackage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FilterPackageMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Flow",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FlowDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FlowEnd",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FlowEndMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FlowFeature",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FlowFeatureMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FlowFeatureRedefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Function",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FunctionBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FunctionBodyPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FunctionOperationExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FunctionReference",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FunctionReferenceArgument",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FunctionReferenceArgumentMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FunctionReferenceArgumentValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FunctionReferenceExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "FunctionReferenceMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "GeneralType",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Identification",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Import",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ImportDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "IndexExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "InstantiatedTypeMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "InstantiatedTypeReference",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Interaction",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Intersecting",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "IntersectingPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Invariant",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "InvertingPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "InvocationExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "LINE_TERMINATOR",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "LINE_TEXT",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "LibraryPackage",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "LiteralBoolean",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "LiteralExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "LiteralInfinity",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "LiteralInteger",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "LiteralReal",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "LiteralString",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MULTILINE_NOTE",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MemberElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MemberPrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MembershipImport",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MetaCastOperator",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Metaclass",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MetaclassificationExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MetaclassificationTestOperator",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MetadataAccessExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MetadataArgument",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MetadataArgumentMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MetadataBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MetadataBodyElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MetadataBodyFeature",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MetadataBodyFeatureMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MetadataFeature",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MetadataFeatureDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MetadataReference",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MetadataValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Multiplicity",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MultiplicityBounds",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MultiplicityExpressionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MultiplicityPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MultiplicityRange",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "MultiplicitySubset",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NAME",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NAME_CHARACTER",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NamedArgument",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NamedArgumentList",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NamedArgumentMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Namespace",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NamespaceBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NamespaceBodyElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NamespaceDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NamespaceFeatureMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NamespaceImport",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NamespaceMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NaryConnectorDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NonFeatureChainPrimaryArgument",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NonFeatureChainPrimaryArgumentMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NonFeatureChainPrimaryArgumentValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NonFeatureChainPrimaryExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NonFeatureElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NonFeatureMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "NullExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedAnnotation",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedConjugation",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedCrossFeature",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedCrossFeatureMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedCrossMultiplicity",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedCrossMultiplicityMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedCrossSubsetting",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedDisjoining",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedExpressionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedExpressionReference",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedExpressionReferenceMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedFeatureChain",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedFeatureChainMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedFeatureChaining",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedFeatureInverting",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedFeatureMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedFeatureTyping",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedMultiplicity",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedMultiplicityRange",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedRedefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedReferenceSubsetting",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedRelatedElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedSpecialization",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedSubclassification",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedSubsetting",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "OwnedTypeFeaturing",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Package",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "PackageBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "PackageDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ParameterRedefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "PayloadFeature",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "PayloadFeatureMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "PayloadFeatureSpecializationPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "PositionalArgumentList",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Predicate",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "PrefixMetadataAnnotation",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "PrefixMetadataFeature",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "PrefixMetadataMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "PrimaryArgument",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "PrimaryArgumentMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "PrimaryArgumentValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "PrimaryExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "QualifiedName",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "REDEFINES",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "REFERENCES",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "REGULAR_COMMENT",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "RESERVED_KEYWORD",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "RESERVED_SYMBOL",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "RealValue",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Redefines",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Redefinition",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Redefinitions",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ReferenceTyping",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "References",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "RelationshipBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "RelationshipOwnedElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ResultExpressionMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ReturnFeatureMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "RootNamespace",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "SINGLE_LINE_NOTE",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "SINGLE_QUOTE",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "SPECIALIZES",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "STRING_CHARACTER",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "STRING_VALUE",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "SUBSETS",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "SelectExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "SequenceExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "SequenceExpressionList",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "SequenceExpressionListMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "SequenceOperatorExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Specialization",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "SpecializationPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "SpecificType",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Step",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Structure",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Subclassification",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Subsets",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Subsetting",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Subsettings",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Succession",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "SuccessionDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "SuccessionFlow",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "SuperclassingPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "TYPED_BY",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "TextualRepresentation",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Type",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "TypeBody",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "TypeBodyElement",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "TypeDeclaration",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "TypeFeatureMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "TypeFeaturing",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "TypeFeaturingPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "TypePrefix",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "TypeReference",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "TypeReferenceMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "TypeRelationshipPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "TypeResultMember",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "TypedBy",
+      "status": "supported",
+      "notes": "Feature typing is `:` / `typed by`. Classifier `specializes` is TypeDeclaration, not FeatureDeclaration.",
+      "issue": null,
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/kerml_connector_binary_specialization.md"
+        }
+      ]
+    },
+    {
+      "grammar": "KerML",
+      "production": "Typings",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "UNRESTRICTED_NAME",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "UnaryOperator",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "UnaryOperatorExpression",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "Unioning",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "UnioningPart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "ValuePart",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "VisibilityIndicator",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    },
+    {
+      "grammar": "KerML",
+      "production": "WHITE_SPACE",
+      "status": "untested",
+      "notes": "",
+      "issue": null,
+      "forms": []
+    }
+  ]
+}
