@@ -1257,28 +1257,12 @@ const HOST_TEXT_ENTRY_POINT_ALLOWLIST: &[(&str, &str)] = &[
         "store_document_text_fast",
     ),
     (
-        "crates/lsp_server/src/session/handle.rs",
-        "refresh_document",
-    ),
-    (
         "crates/lsp_server/src/session/services.rs",
         "parse_scanned_entry",
     ),
     (
         "crates/lsp_server/src/session/services.rs",
-        "store_document_text",
-    ),
-    (
-        "crates/lsp_server/src/session/services.rs",
         "store_document_text_fast",
-    ),
-    (
-        "crates/lsp_server/src/session/services.rs",
-        "refresh_document",
-    ),
-    (
-        "crates/lsp_server/src/lsp_runtime/documents/sync.rs",
-        "watched_file_content_already_current",
     ),
     // Text projection: slicing a range the authority settled out of the text it settled it over.
     (
