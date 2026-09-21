@@ -33,7 +33,7 @@ serde_json = { workspace = true }
 sha2 = { workspace = true }
 thiserror = { workspace = true }
 clap = { workspace = true }
-tempfile = "3.27.0"
+tempfile = { workspace = true }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 toml = { workspace = true }

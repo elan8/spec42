@@ -2193,6 +2193,7 @@ dependencies = [
  "syn 2.0.119",
  "sysml_contract",
  "sysml_resolution",
+ "toml 0.8.23",
 ]
 
 [[package]]

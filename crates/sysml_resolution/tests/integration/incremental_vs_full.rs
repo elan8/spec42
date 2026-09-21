@@ -39,6 +39,18 @@ fn render(publication: &PublishedResolution) -> String {
         .write_navigation_sexpr(&mut output)
         .expect("navigation");
     debug.write_types_sexpr(&mut output).expect("types");
+    debug
+        .write_expressions_sexpr(&mut output)
+        .expect("expressions");
+    debug
+        .write_metadata_annotations_sexpr(&mut output)
+        .expect("metadata annotations");
+    debug
+        .write_connections_sexpr(&mut output)
+        .expect("connections");
+    debug
+        .write_projection_sexpr(&mut output)
+        .expect("projection");
     output
 }
 
@@ -203,33 +215,12 @@ struct Step {
     documents: Vec<SourceDocument>,
 }
 
-fn report_step(label: &str, publication: &PublishedResolution) -> String {
-    let codes = diagnostic_codes(&diagnostics_sexpr(publication));
-    let codes = if codes.is_empty() {
-        "[]".to_owned()
-    } else {
-        format!("[{}]", codes.join(", "))
-    };
-    format!(
-        "{label}\n  source {}\n  model {}\n  codes {codes}\n",
-        publication.identity().source_digest(),
-        publication.identity().model_digest(),
-    )
-}
-
 /// A representative edit sequence: comment-only, unresolved reference, revert, add, remove.
 ///
-/// Each step is a new publication of the whole workspace. Warm construction may reuse every
-/// unchanged document's lowering; it must not produce a different identity or diagnostic set
-/// than building the same sources cold.
-#[test]
-fn an_edit_sequence_agrees_warm_and_cold() {
-    let sources = SourceAuthority::new();
-    let warm = authority();
-    let mut documents = baseline(&sources);
-    // Populate the memo so the baseline observation is a true warm republish.
-    warm.publish(&documents, []).expect("seed publication");
-
+/// Shared by the correctness test and the reuse-count test below so the two concerns can be
+/// asserted independently over the same fixture rather than duplicating it.
+fn edit_sequence(sources: &SourceAuthority) -> Vec<Step> {
+    let mut documents = baseline(sources);
     let mut steps = Vec::new();
     steps.push(Step {
         label: "baseline",
@@ -237,21 +228,21 @@ fn an_edit_sequence_agrees_warm_and_cold() {
         documents: documents.clone(),
     });
 
-    documents = replace_uri(&sources, &documents, FLEET_URI, FLEET_COMMENTED);
+    documents = replace_uri(sources, &documents, FLEET_URI, FLEET_COMMENTED);
     steps.push(Step {
         label: "comment-only-on-fleet",
         expected_lowered: 1,
         documents: documents.clone(),
     });
 
-    documents = replace_uri(&sources, &documents, FLEET_URI, FLEET_UNRESOLVED);
+    documents = replace_uri(sources, &documents, FLEET_URI, FLEET_UNRESOLVED);
     steps.push(Step {
         label: "unresolved-type-on-fleet",
         expected_lowered: 1,
         documents: documents.clone(),
     });
 
-    documents = replace_uri(&sources, &documents, FLEET_URI, FLEET);
+    documents = replace_uri(sources, &documents, FLEET_URI, FLEET);
     steps.push(Step {
         label: "revert-fleet-to-baseline",
         expected_lowered: 1,
@@ -259,7 +250,7 @@ fn an_edit_sequence_agrees_warm_and_cold() {
     });
 
     documents = add_document(
-        &sources,
+        sources,
         &documents,
         DRIVER_URI,
         DRIVER,
@@ -278,18 +269,94 @@ fn an_edit_sequence_agrees_warm_and_cold() {
         documents,
     });
 
+    steps
+}
+
+fn report_step(label: &str, publication: &PublishedResolution) -> String {
+    let codes = diagnostic_codes(&diagnostics_sexpr(publication));
+    let codes = if codes.is_empty() {
+        "[]".to_owned()
+    } else {
+        format!("[{}]", codes.join(", "))
+    };
+    format!(
+        "{label}\n  source {}\n  model {}\n  codes {codes}\n",
+        publication.identity().source_digest(),
+        publication.identity().model_digest(),
+    )
+}
+
+/// Each step is a new publication of the whole workspace. Warm construction may reuse every
+/// unchanged document's lowering; it must not produce a different identity or diagnostic set than
+/// building the same sources cold. The revert and remove steps must also restore the exact
+/// baseline identity and model digest -- not merely agree with their own cold rebuild, which would
+/// still pass if edit-then-undo left both warm and cold wrong in the same way.
+///
+/// This test does not check how many documents were relowered: that is a memo-policy fact, not a
+/// correctness fact, and is asserted on its own below by
+/// `an_edit_sequence_lowers_only_the_changed_documents` so a smarter memo cannot fail this test
+/// even though warm and cold still agree.
+#[test]
+fn an_edit_sequence_agrees_warm_and_cold() {
+    let sources = SourceAuthority::new();
+    let warm = authority();
+    let steps = edit_sequence(&sources);
+    // Populate the memo so the baseline observation is a true warm republish.
+    warm.publish(&steps[0].documents, [])
+        .expect("seed publication");
+
+    let mut baseline_identity = None;
     let mut report = String::new();
     for (index, step) in steps.iter().enumerate() {
-        let (publication, measurements) =
+        let (publication, _measurements) =
             assert_warm_matches_cold(&warm, &step.documents, step.label);
-        assert_eq!(
-            measurements.documents_lowered, step.expected_lowered,
-            "{}: expected {} document(s) lowered, got {}",
-            step.label, step.expected_lowered, measurements.documents_lowered
-        );
+        match step.label {
+            "baseline" => baseline_identity = Some(publication.identity().clone()),
+            "revert-fleet-to-baseline" | "remove-driver" => {
+                let expected = baseline_identity
+                    .as_ref()
+                    .expect("baseline step observed before revert/remove");
+                assert_eq!(
+                    publication.identity(),
+                    expected,
+                    "{}: must restore the baseline publication identity",
+                    step.label
+                );
+            }
+            _ => {}
+        }
         report.push_str(&format!("step {index} "));
         report.push_str(&report_step(step.label, &publication));
     }
 
     insta::assert_snapshot!(report);
+}
+
+/// The reuse contract for the memo: a one-document edit lowers that document and no other.
+///
+/// This is a memo-policy fact rather than a correctness fact -- see
+/// `an_edit_sequence_agrees_warm_and_cold` above, which asserts warm/cold parity without
+/// depending on these counts. A future memo that, say, recognized a reverted document as
+/// bit-identical to a prior lowering would change what this test expects without changing
+/// whether warm and cold agree.
+#[test]
+fn an_edit_sequence_lowers_only_the_changed_documents() {
+    let sources = SourceAuthority::new();
+    let warm = authority();
+    let steps = edit_sequence(&sources);
+    warm.publish(&steps[0].documents, [])
+        .expect("seed publication");
+
+    for step in &steps {
+        let (_publication, measurements) = warm
+            .prepare(&step.documents, [])
+            .unwrap_or_else(|error| panic!("{}: warm prepare: {error}", step.label))
+            .build_measured()
+            .unwrap_or_else(|error| panic!("{}: warm publication: {error}", step.label));
+        assert_eq!(
+            measurements.documents_lowered, step.expected_lowered,
+            "{}: expected {} document(s) lowered, got {}",
+            step.label, step.expected_lowered, measurements.documents_lowered
+        );
+    }
 }

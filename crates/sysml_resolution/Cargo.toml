@@ -22,4 +22,4 @@ spec42_constraint_manifest = { package = "spec42-constraint-manifest", path = ".
 
 [dev-dependencies]
 insta = { workspace = true }
-tempfile = "3"
+tempfile = { workspace = true }

@@ -15,7 +15,7 @@ rayon = "1.12"
 serde.workspace = true
 serde_json.workspace = true
 toml.workspace = true
-tempfile = "3"
+tempfile.workspace = true
 spec42_constraint_manifest = { package = "spec42-constraint-manifest", path = "../constraint_manifest" }
 generator_api = { path = "../../crates/generator_api" }
 generator_host = { path = "../../crates/generator_host" }

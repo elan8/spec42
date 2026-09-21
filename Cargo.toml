@@ -56,6 +56,7 @@ toml = "0.8"
 walkdir = "2"
 zip = { version = "2", default-features = false, features = ["deflate"] }
 insta = "1"
+tempfile = "3.27.0"
 
 # The resolver and the parser do real work in every integration test; unoptimised they make
 # a cold standard-library build 3-5x slower. opt-level 1 costs ~3s on an incremental rebuild.

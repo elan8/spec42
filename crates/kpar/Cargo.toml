@@ -15,7 +15,7 @@ sysml_query = { path = "../sysml_query" }
 thiserror = { workspace = true }
 walkdir = { workspace = true }
 zip = { workspace = true }
-tempfile = "3"
+tempfile = { workspace = true }
 
 [dev-dependencies]
 crc32fast = "1"

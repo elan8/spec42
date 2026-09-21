@@ -14,3 +14,4 @@ sysml_resolution = { path = "../sysml_resolution" }
 serde_json.workspace = true
 syn = { version = "2", features = ["full", "visit"] }
 proc-macro2 = "1"
+toml.workspace = true

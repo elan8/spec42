@@ -40,13 +40,13 @@ toml = { workspace = true }
 zip = { workspace = true }
 tower-lsp = "0.20"
 sha2 = { workspace = true }
-tempfile = "3"
+tempfile = { workspace = true }
 
 [dev-dependencies]
 wat = "1"
 lsp_server = { path = "../lsp_server" }
 serde_json = { workspace = true }
-tempfile = "3"
+tempfile = { workspace = true }
 tower-lsp = "0.20"
 url = "2"
 anyhow = "1"
