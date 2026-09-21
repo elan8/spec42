@@ -1214,6 +1214,194 @@ fn closing_workspace_document_keeps_project_diagnostics() {
 }
 
 #[test]
+fn closing_unsaved_buffer_restores_disk_diagnostics() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root = temp.path().canonicalize().expect("canonical root");
+    let path = root.join("model.sysml");
+    let disk_content = "package P { part def Thing; }";
+    fs::write(&path, disk_content).expect("write source");
+    let root_uri = url::Url::from_file_path(&root).expect("root uri");
+    let uri = url::Url::from_file_path(&path)
+        .expect("file uri")
+        .to_string();
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0", "id": init_id, "method": "initialize",
+            "params": { "processId": null, "rootUri": root_uri, "capabilities": {} }
+        })
+        .to_string(),
+    );
+    let _ = super::harness::read_response(&mut stdout, init_id).expect("initialize response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    super::harness::wait_for_publication(&mut stdout, &uri);
+    super::harness::lsp_barrier(&mut stdin, &mut stdout);
+
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0", "method": "textDocument/didOpen",
+            "params": { "textDocument": {
+                "uri": uri, "languageId": "sysml", "version": 1,
+                "text": "package P { part def Thing; } }"
+            }}
+        })
+        .to_string(),
+    );
+    loop {
+        let message = read_message(&mut stdout).expect("unsaved buffer diagnostics");
+        let json: serde_json::Value = serde_json::from_str(&message).expect("json message");
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"]
+                .as_str()
+                .is_some_and(|published| published.eq_ignore_ascii_case(&uri))
+        {
+            assert!(
+                !json["params"]["diagnostics"]
+                    .as_array()
+                    .expect("diagnostics array")
+                    .is_empty(),
+                "unsaved syntax error was not diagnosed: {json}"
+            );
+            break;
+        }
+    }
+
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0", "method": "textDocument/didClose",
+            "params": { "textDocument": { "uri": uri } }
+        })
+        .to_string(),
+    );
+    let barrier_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0", "id": barrier_id, "method": "workspace/symbol",
+            "params": { "query": "" }
+        })
+        .to_string(),
+    );
+    let mut restored = false;
+    loop {
+        let message = read_message(&mut stdout).expect("message before close barrier");
+        let json: serde_json::Value = serde_json::from_str(&message).expect("json message");
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"]
+                .as_str()
+                .is_some_and(|published| published.eq_ignore_ascii_case(&uri))
+        {
+            restored = json["params"]["diagnostics"]
+                .as_array()
+                .is_some_and(Vec::is_empty);
+        }
+        if json["id"].as_i64() == Some(barrier_id) {
+            break;
+        }
+    }
+    assert!(restored, "close did not restore the valid on-disk source");
+}
+
+#[test]
+fn watched_rename_batch_publishes_once_without_transient_dependent_error() {
+    let temp = tempfile::tempdir().expect("temp dir");
+    let root = temp.path().canonicalize().expect("canonical root");
+    let old_path = root.join("old.sysml");
+    let new_path = root.join("new.sysml");
+    let usage_path = root.join("usage.sysml");
+    fs::write(&old_path, "package Lib { part def Thing; }").expect("definition");
+    fs::write(&usage_path, "package Use { part x : Lib::Thing; }").expect("usage");
+    let root_uri = url::Url::from_file_path(&root).expect("root uri");
+    let old_uri = url::Url::from_file_path(&old_path).expect("old uri");
+    let new_uri = url::Url::from_file_path(&new_path).expect("new uri");
+    let usage_uri = url::Url::from_file_path(&usage_path).expect("usage uri");
+
+    let mut child = spawn_server();
+    let mut stdin = child.stdin.take().expect("stdin");
+    let mut stdout = child.stdout.take().expect("stdout");
+    let init_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0", "id": init_id, "method": "initialize",
+            "params": { "processId": null, "rootUri": root_uri, "capabilities": {} }
+        })
+        .to_string(),
+    );
+    let _ = super::harness::read_response(&mut stdout, init_id).expect("initialize response");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
+    );
+    super::harness::wait_for_publication(&mut stdout, usage_uri.as_str());
+    super::harness::lsp_barrier(&mut stdin, &mut stdout);
+
+    fs::rename(&old_path, &new_path).expect("rename definition");
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0", "method": "workspace/didChangeWatchedFiles",
+            "params": { "changes": [
+                { "uri": old_uri, "type": 3 },
+                { "uri": new_uri, "type": 1 }
+            ] }
+        })
+        .to_string(),
+    );
+    let barrier_id = next_id();
+    send_message(
+        &mut stdin,
+        &serde_json::json!({
+            "jsonrpc": "2.0", "id": barrier_id, "method": "workspace/symbol",
+            "params": { "query": "" }
+        })
+        .to_string(),
+    );
+    let mut publications = 0;
+    let mut usage_republished = false;
+    loop {
+        let message = read_message(&mut stdout).expect("message before rename barrier");
+        let json: serde_json::Value = serde_json::from_str(&message).expect("json message");
+        if json["method"].as_str() == Some("spec42/publicationChanged") {
+            publications += 1;
+        }
+        if json["method"].as_str() == Some("textDocument/publishDiagnostics")
+            && json["params"]["uri"]
+                .as_str()
+                .is_some_and(|published| published.eq_ignore_ascii_case(usage_uri.as_str()))
+        {
+            usage_republished = true;
+            assert!(
+                !json["params"]["diagnostics"]
+                    .as_array()
+                    .expect("diagnostics array")
+                    .iter()
+                    .any(|diagnostic| diagnostic["code"] == "unresolved_type_reference"),
+                "rename batch published an intermediate unresolved dependency: {json}"
+            );
+        }
+        if json["id"].as_i64() == Some(barrier_id) {
+            break;
+        }
+    }
+    assert_eq!(publications, 1, "rename should build one publication");
+    assert!(
+        usage_republished,
+        "dependent diagnostics were not refreshed"
+    );
+}
+
+#[test]
 fn deleting_definition_file_republishes_dependent_diagnostics() {
     let temp = tempfile::tempdir().expect("temp dir");
     let root = temp.path().canonicalize().expect("canonical root");

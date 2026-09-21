@@ -23,7 +23,7 @@ use tower_lsp::{Client, LanguageServer, LspService, Server};
 
 use crate::host::config::Spec42Config;
 use crate::session::state::ServerState;
-use crate::session::RuntimeConfig;
+use crate::session::{RuntimeConfig, WorkspaceHandle};
 use crate::views::dto;
 use custom::{
     sysml_feature_inspector_result, sysml_library_search_result, sysml_server_stats_result,
@@ -141,11 +141,19 @@ impl LanguageServer for Backend {
             handles.push(handle);
         }
         for handle in handles {
-            documents::did_close(&self.client, &handle, params.clone()).await;
+            documents::did_close(
+                &self.client,
+                &handle,
+                &self.config,
+                &self.runtime_config,
+                params.clone(),
+            )
+            .await;
         }
     }
 
     async fn did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {
+        let mut ordinary_changes = Vec::new();
         for change in params.changes {
             if change
                 .uri
@@ -164,17 +172,29 @@ impl LanguageServer for Backend {
                 .await;
                 continue;
             }
+            ordinary_changes.push(change);
+        }
+        let mut grouped: Vec<(WorkspaceHandle, Vec<FileEvent>)> = Vec::new();
+        for change in ordinary_changes {
             let Some(handle) = self.projects.handle_for_uri(&change.uri).await else {
                 continue;
             };
+            if let Some((_, events)) = grouped
+                .iter_mut()
+                .find(|(candidate, _)| candidate.same_session(&handle))
+            {
+                events.push(change);
+            } else {
+                grouped.push((handle, vec![change]));
+            }
+        }
+        for (handle, changes) in grouped {
             documents::did_change_watched_files(
                 &self.client,
                 &handle,
                 &self.config,
                 &self.runtime_config,
-                DidChangeWatchedFilesParams {
-                    changes: vec![change],
-                },
+                DidChangeWatchedFilesParams { changes },
             )
             .await;
         }

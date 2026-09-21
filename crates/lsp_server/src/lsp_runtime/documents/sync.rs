@@ -202,15 +202,37 @@ pub(crate) async fn did_change(
 pub(crate) async fn did_close(
     client: &Client,
     handle: &WorkspaceHandle,
+    config: &Arc<Spec42Config>,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidCloseTextDocumentParams,
 ) {
     let uri = params.text_document.uri;
+    let uri_norm = util::normalize_file_uri(&uri);
     let library = handle
-        .set_document_open(util::normalize_file_uri(&uri), false)
+        .set_document_open(uri_norm.clone(), false)
         .await
         .unwrap_or(false);
-    // Closing an editor does not remove its source from the workspace publication. Keep its
-    // project diagnostics visible in Problems until the file is actually removed.
+    // An unsaved editor buffer ceases to be authoritative on close. Re-admit the on-disk source
+    // through the same watched-file path so dependants and project diagnostics use that revision.
+    let typ = if uri.to_file_path().ok().is_some_and(|path| path.is_file()) {
+        FileChangeType::CHANGED
+    } else {
+        FileChangeType::DELETED
+    };
+    did_change_watched_files(
+        client,
+        handle,
+        config,
+        runtime_config,
+        DidChangeWatchedFilesParams {
+            changes: vec![FileEvent {
+                uri: uri.clone(),
+                typ,
+            }],
+        },
+    )
+    .await;
+    // Library diagnostics are only shown while their editor is open.
     if library {
         client.publish_diagnostics(uri, vec![], None).await;
     }

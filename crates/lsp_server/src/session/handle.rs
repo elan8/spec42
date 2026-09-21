@@ -310,15 +310,21 @@ impl PreparedDocumentEdit {
 
 #[derive(Clone)]
 pub(crate) struct WorkspaceHandle {
+    identity: Arc<()>,
     actor: SessionActor<ServerState>,
     snapshot: SnapshotHandle<ServerState>,
     diagnostics_debounce_generation: Arc<AtomicU64>,
 }
 
 impl WorkspaceHandle {
+    pub(crate) fn same_session(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.identity, &other.identity)
+    }
+
     pub(crate) fn spawn(initial: ServerState) -> Self {
         let (actor, snapshot) = SessionActor::spawn(initial);
         Self {
+            identity: Arc::new(()),
             actor,
             snapshot,
             diagnostics_debounce_generation: Arc::new(AtomicU64::new(0)),
