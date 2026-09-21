@@ -36,17 +36,17 @@ serde = { workspace = true }
 directories = "5"
 # Native prepare + elkrs layout + SVG drawing for headless export (#176).
 diagram_draw = { path = "../diagram_draw" }
-toml = "0.8"
-zip = { version = "2", default-features = false, features = ["deflate"] }
+toml = { workspace = true }
+zip = { workspace = true }
 tower-lsp = "0.20"
 sha2 = { workspace = true }
-tempfile = "3"
+tempfile = { workspace = true }
 
 [dev-dependencies]
 wat = "1"
 lsp_server = { path = "../lsp_server" }
 serde_json = { workspace = true }
-tempfile = "3"
+tempfile = { workspace = true }
 tower-lsp = "0.20"
 url = "2"
 anyhow = "1"
