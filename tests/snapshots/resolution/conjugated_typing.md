@@ -18,18 +18,6 @@ package ConjugatedTypingCoverage {
 (fixture-diagnostics
   (document "memory://snapshot/conjugated_typing.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 3 4) (end 3 29))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 4 4) (end 4 30))
-      )
     )
   )
 )

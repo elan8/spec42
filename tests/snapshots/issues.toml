@@ -265,12 +265,6 @@ owner = "spec42-semantic"
 summary = "the implied input parameters of this action form are not published, so the rule has no parameter list to count; only the accepted side is authored here"
 
 [[issue]]
-id = "lowering-conjugated-port-definition"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "ConjugatedPortDefinition is not published as a distinct declaration, so neither side of the rule can be observed in SMG"
-
-[[issue]]
 id = "lowering-event-occurrence-reference"
 kind = "lowering_gap"
 owner = "spec42-semantic"

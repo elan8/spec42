@@ -74,6 +74,20 @@ fn part_def_body_tokenizes_ref_and_part_usage_names() {
 }
 
 #[test]
+fn part_definition_name_has_same_highlight_with_or_without_body() {
+    let content = "package P {\n  part def Bare;\n  part def Braced { }\n}";
+    let parsed = parse_for_editor(content);
+    let ranges = ast_semantic_ranges(&parsed, content);
+    let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
+    let decoded = decode_semantic_tokens(&tokens.data);
+    assert_eq!(token_type_for(content, &decoded, "Bare"), Some(TYPE_CLASS));
+    assert_eq!(
+        token_type_for(content, &decoded, "Braced"),
+        Some(TYPE_CLASS)
+    );
+}
+
+#[test]
 fn item_def_body_tokenizes_inner_attribute_name() {
     let content = r#"package P {
   item def Payload {

@@ -21,24 +21,6 @@ package Connections {
   (document "memory://snapshot/nary_bare_connect.md"
     (diagnostics
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 1 17) (end 1 24))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 1 25) (end 1 32))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 2 17) (end 2 24))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_part_def_body_element")
         (source "parser")

@@ -91,12 +91,6 @@ package Connections {
         )
       )
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 31 8) (end 31 29))
-      )
-      (diagnostic
         (severity warning)
         (code "flow_direction_incompatible")
         (source "semantic")

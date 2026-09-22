@@ -28,36 +28,6 @@ package PortDirectionExample {
 (fixture-diagnostics
   (document "memory://snapshot/diagram_interconnection_port_direction.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 4 8) (end 4 33))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 5 8) (end 5 35))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 6 8) (end 6 33))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 7 8) (end 7 28))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 8 8) (end 8 32))
-      )
     )
   )
 )
@@ -67,36 +37,6 @@ package PortDirectionExample {
 (fixture-diagnostics
   (document "memory://snapshot/diagram_interconnection_port_direction.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 4 8) (end 4 33))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 5 8) (end 5 35))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 6 8) (end 6 33))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 7 8) (end 7 28))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 8 8) (end 8 32))
-      )
     )
   )
 )

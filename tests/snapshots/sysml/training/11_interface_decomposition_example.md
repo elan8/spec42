@@ -34,18 +34,6 @@ package 'Interface Decomposition Example' {
 (fixture-diagnostics
   (document "memory://snapshot/11_interface_decomposition_example.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 9 2) (end 12 3))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 13 2) (end 16 3))
-      )
     )
   )
 )

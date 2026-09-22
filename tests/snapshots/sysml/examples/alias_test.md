@@ -51,12 +51,6 @@ package AliasTest {
         (source "semantic")
         (range (start 2 16) (end 2 23))
       )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 5 8) (end 5 20))
-      )
     )
   )
 )

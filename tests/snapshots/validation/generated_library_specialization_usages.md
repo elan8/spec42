@@ -82,12 +82,6 @@ package GeneratedUsages {
 (fixture-diagnostics
   (document "memory://snapshot/generated_library_specialization_usages.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 4 4) (end 4 19))
-      )
     )
   )
 )

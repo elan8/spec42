@@ -194,12 +194,6 @@ package '5-State-based Behavior-2' {
         (range (start 78 4) (end 80 19))
       )
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 107 3) (end 109 4))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")

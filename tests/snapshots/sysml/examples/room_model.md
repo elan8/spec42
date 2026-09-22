@@ -87,30 +87,6 @@ package RoomModel {
     (diagnostics
       (diagnostic
         (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 8 16) (end 8 55))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 11 16) (end 11 59))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 15 16) (end 15 67))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 16 16) (end 16 71))
-      )
-      (diagnostic
-        (severity information)
         (code "untyped_part_usage")
         (source "semantic")
         (range (start 47 8) (end 71 9))

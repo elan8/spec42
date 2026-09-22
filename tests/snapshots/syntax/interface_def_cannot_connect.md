@@ -22,18 +22,6 @@ package Interfaces {
   (document "memory://snapshot/interface_def_cannot_connect.md"
     (diagnostics
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 2 17) (end 2 32))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 3 17) (end 3 32))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_part_def_body_element")
         (source "parser")

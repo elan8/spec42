@@ -25,6 +25,18 @@ package C {
         (source "semantic")
         (range (start 5 4) (end 5 11))
       )
+      (diagnostic
+        (severity error)
+        (code "incompatible_type_kind")
+        (source "semantic")
+        (range (start 6 13) (end 6 14))
+        (related-information
+          (related
+            (uri "memory://snapshot/lexical_inner_shadow.md")
+            (range (start 5 4) (end 5 11))
+          )
+        )
+      )
     )
   )
 )

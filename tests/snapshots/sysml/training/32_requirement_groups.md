@@ -63,12 +63,6 @@ package 'Requirement Groups' {
         (range (start 2 16) (end 2 39))
       )
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 5 2) (end 5 30))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")

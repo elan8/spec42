@@ -19,12 +19,6 @@ package Connections {
   (document "memory://snapshot/connect_missing_to.md"
     (diagnostics
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 1 17) (end 1 24))
-      )
-      (diagnostic
         (severity error)
         (code "recovered_part_def_body_element")
         (source "parser")

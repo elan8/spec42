@@ -424,6 +424,20 @@ impl<D> SemanticModel<D> {
 
         let code = match reference.kind {
             ReferenceKind::FeatureTyping => {
+                if source_family == Family::Part
+                    && source_role == Role::Usage
+                    && target_family == Family::Part
+                    && target_role == Role::Usage
+                {
+                    diagnostics.push(self.reference_message_diagnostic(
+                        reference,
+                        DiagnosticCode::IncompatibleTypeKind,
+                        DiagnosticSeverity::Error,
+                        "A part usage cannot type another part; use a part definition.".to_string(),
+                        Some((target, RELATED_DECLARED)),
+                    )?);
+                    return Ok(());
+                }
                 // A usage is typed by a definition. A typing whose target is another usage is a
                 // different relationship shape, not a kind violation this rule can judge.
                 if source_role != Role::Usage || target_role != Role::Definition {

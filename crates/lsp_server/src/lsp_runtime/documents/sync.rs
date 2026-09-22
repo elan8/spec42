@@ -202,31 +202,42 @@ pub(crate) async fn did_change(
 pub(crate) async fn did_close(
     client: &Client,
     handle: &WorkspaceHandle,
+    config: &Arc<Spec42Config>,
+    runtime_config: &Arc<std::sync::OnceLock<RuntimeConfig>>,
     params: DidCloseTextDocumentParams,
 ) {
     let uri = params.text_document.uri;
-    let _ = handle
-        .set_document_open(util::normalize_file_uri(&uri), false)
+    let uri_norm = util::normalize_file_uri(&uri);
+    let library = handle
+        .set_document_open(uri_norm.clone(), false)
+        .await
+        .unwrap_or(false);
+    // An unsaved editor buffer ceases to be authoritative on close. Re-admit the on-disk source
+    // through the same watched-file path so dependants and project diagnostics use that
+    // revision. A URI with no backing file on disk is not this rule's concern -- it is either an
+    // unsaved buffer the workspace never scanned, or a file a concurrent delete already reported
+    // through the client's own file watcher -- so synthesizing a DELETED event here would remove
+    // it from the index on nothing more than a race with that watcher, or on every close of a
+    // buffer that was never saved at all.
+    if uri.to_file_path().ok().is_some_and(|path| path.is_file()) {
+        did_change_watched_files(
+            client,
+            handle,
+            config,
+            runtime_config,
+            DidChangeWatchedFilesParams {
+                changes: vec![FileEvent {
+                    uri: uri.clone(),
+                    typ: FileChangeType::CHANGED,
+                }],
+            },
+        )
         .await;
-    client.publish_diagnostics(uri, vec![], None).await;
-}
-
-/// Whether `content` (freshly read from disk for `uri`) already matches what the server has
-/// tracked in memory for that URI — i.e. this watched-file event is just an echo of an edit
-/// the server already knows about via `textDocument/didChange`, not a genuinely new change.
-/// Pure, `Client`-free predicate so it can be unit tested directly without spinning up a real
-/// LSP client/subprocess (see the test module below for why that matters here).
-pub(crate) fn watched_file_content_already_current(
-    handle: &WorkspaceHandle,
-    uri: &Url,
-    content: &str,
-) -> bool {
-    handle
-        .snapshot()
-        .index
-        .get(uri)
-        .map(|entry| entry.content() == content)
-        .unwrap_or(false)
+    }
+    // Library diagnostics are only shown while their editor is open.
+    if library {
+        client.publish_diagnostics(uri, vec![], None).await;
+    }
 }
 
 pub(crate) async fn did_change_watched_files(
@@ -246,7 +257,7 @@ pub(crate) async fn did_change_watched_files(
     let mut runtime_warnings = Vec::new();
     let mut changed_or_created_uris = Vec::new();
     let mut deleted_uris = Vec::new();
-    let mut refresh_document_ms = 0u64;
+    let mut changes = Vec::new();
     for event in params.changes {
         let uri_norm = util::normalize_file_uri(&event.uri);
         if event.typ == FileChangeType::CREATED || event.typ == FileChangeType::CHANGED {
@@ -271,27 +282,10 @@ pub(crate) async fn did_change_watched_files(
             match admitted {
                 Some(Ok(document)) => {
                     let content = document.content().to_owned();
-                    // The editor already sent `textDocument/didChange` for its own edits
-                    // (handled cheaply/incrementally); saving that same content to disk
-                    // then fires this notification too, with disk content that's already
-                    // byte-identical to what the server has tracked. Doing the full,
-                    // synchronous `refresh_document` (whole-graph relink + eager evaluate)
-                    // again in that case is pure waste — skip it. A genuinely external
-                    // edit (another editor, git checkout, a formatter) still has different
-                    // content and gets the full treatment below, unchanged.
-                    if watched_file_content_already_current(handle, &uri_norm, &content) {
-                        continue;
-                    }
-
-                    let refresh_start = Instant::now();
-                    let warning = handle
-                        .refresh_document(uri_norm.clone(), content)
-                        .await
-                        .unwrap_or_default();
-                    refresh_document_ms += refresh_start.elapsed().as_millis() as u64;
-                    if let Some(message) = warning {
-                        runtime_warnings.push(format!("didChangeWatchedFiles: {}", message));
-                    }
+                    // Compare against the evolving batch inside `apply_watched_file_changes`.
+                    // Comparing against the pre-batch snapshot here would drop the create half
+                    // of a delete/create pair when the new file has identical contents.
+                    changes.push((uri_norm.clone(), Some(content)));
                     changed_or_created_uris.push(uri_norm.clone());
                 }
                 Some(Err(error)) => runtime_warnings.push(format!(
@@ -304,26 +298,66 @@ pub(crate) async fn did_change_watched_files(
                 )),
             }
         } else if event.typ == FileChangeType::DELETED {
-            handle.remove_document(uri_norm.clone()).await.ok();
+            changes.push((uri_norm.clone(), None));
             deleted_uris.push(uri_norm);
         }
     }
+    let event_uris: Vec<Url> = changed_or_created_uris
+        .iter()
+        .chain(deleted_uris.iter())
+        .cloned()
+        .collect();
+    // Cheap: an `Arc` clone of the current state, not the fanout scan below. Held so the old
+    // side of the fanout is still available after the mutation, but the scan itself is deferred
+    // until we know the batch actually changed anything -- a batch of redundant save echoes
+    // must not pay for it.
+    let old = handle.snapshot();
+    let refresh_start = Instant::now();
+    let changed = match handle.apply_watched_file_changes(changes).await {
+        Ok((changed, warnings)) => {
+            runtime_warnings.extend(
+                warnings
+                    .into_iter()
+                    .map(|message| format!("didChangeWatchedFiles: {}", message)),
+            );
+            changed
+        }
+        Err(error) => {
+            runtime_warnings.push(format!(
+                "didChangeWatchedFiles: failed to apply file changes: {}",
+                error
+            ));
+            false
+        }
+    };
+    let refresh_document_ms = refresh_start.elapsed().as_millis() as u64;
     for msg in runtime_warnings {
         client.log_message(MessageType::WARNING, msg).await;
     }
     let diagnostics_start = Instant::now();
-    if !changed_or_created_uris.is_empty() {
-        publish_workspace_diagnostics(
-            client,
-            handle,
-            runtime_config,
-            Some(&changed_or_created_uris),
-        )
-        .await;
+    if changed {
+        let mut diagnostic_uris = event_uris
+            .iter()
+            .flat_map(|uri| diagnostic_fanout(&old, uri))
+            .collect::<Vec<_>>();
+        drop(old);
+        let new = handle.snapshot();
+        for uri in &event_uris {
+            diagnostic_uris =
+                merge_diagnostic_fanout(diagnostic_uris, diagnostic_fanout(&new, uri));
+        }
+        drop(new);
+        publish_workspace_diagnostics(client, handle, runtime_config, Some(&diagnostic_uris)).await;
     }
     let diagnostics_ms = diagnostics_start.elapsed().as_millis() as u64;
     let deleted_uri_count = deleted_uris.len();
-    for uri in deleted_uris {
+    let current = handle.snapshot();
+    let removed_uris = deleted_uris
+        .into_iter()
+        .filter(|uri| !current.index.contains_key(uri))
+        .collect::<Vec<_>>();
+    drop(current);
+    for uri in removed_uris {
         client.publish_diagnostics(uri, vec![], None).await;
     }
     log_perf(

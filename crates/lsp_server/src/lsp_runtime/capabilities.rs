@@ -64,6 +64,28 @@ pub(crate) fn server_capabilities(
                 full: Some(SemanticTokensFullOptions::Bool(true)),
             },
         )),
+        // A single-file rename in the Explorer is otherwise only visible as a delete/create pair
+        // from the filesystem watcher, which is not atomic: a dependent's diagnostics can observe
+        // the gap between the two events. `didRenameFiles` reports both halves of one user action
+        // together, so the rebuild happens as one batch with no such window. Folder renames are
+        // deliberately excluded (`matches: File`): the protocol reports only the folder URI, not
+        // its contents, and the watcher's per-file delete/create pairs already rebuild correctly.
+        workspace: Some(WorkspaceServerCapabilities {
+            file_operations: Some(WorkspaceFileOperationsServerCapabilities {
+                did_rename: Some(FileOperationRegistrationOptions {
+                    filters: vec![FileOperationFilter {
+                        scheme: Some("file".to_string()),
+                        pattern: FileOperationPattern {
+                            glob: "**/*.{sysml,kerml}".to_string(),
+                            matches: Some(FileOperationPatternKind::File),
+                            options: None,
+                        },
+                    }],
+                }),
+                ..WorkspaceFileOperationsServerCapabilities::default()
+            }),
+            ..WorkspaceServerCapabilities::default()
+        }),
         ..ServerCapabilities::default()
     };
 

@@ -101,30 +101,6 @@ package '2c-Parts Interconnection-Multiple Decompositions' {
 (fixture-diagnostics
   (document "memory://snapshot/2c_parts_interconnection_multiple_decompositions.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 5 2) (end 5 10))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 8 2) (end 8 10))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 11 2) (end 11 10))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 14 2) (end 14 10))
-      )
     )
   )
 )

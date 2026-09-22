@@ -25,30 +25,6 @@ package Ports {
 (fixture-diagnostics
   (document "memory://snapshot/port_def_with_and_without_body.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 6 8) (end 6 27))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 9 8) (end 9 23))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 10 8) (end 10 24))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 11 8) (end 11 19))
-      )
     )
   )
 )

@@ -23,7 +23,7 @@ use tower_lsp::{Client, LanguageServer, LspService, Server};
 
 use crate::host::config::Spec42Config;
 use crate::session::state::ServerState;
-use crate::session::RuntimeConfig;
+use crate::session::{RuntimeConfig, WorkspaceHandle};
 use crate::views::dto;
 use custom::{
     sysml_feature_inspector_result, sysml_library_search_result, sysml_server_stats_result,
@@ -141,11 +141,19 @@ impl LanguageServer for Backend {
             handles.push(handle);
         }
         for handle in handles {
-            documents::did_close(&self.client, &handle, params.clone()).await;
+            documents::did_close(
+                &self.client,
+                &handle,
+                &self.config,
+                &self.runtime_config,
+                params.clone(),
+            )
+            .await;
         }
     }
 
     async fn did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {
+        let mut ordinary_changes = Vec::new();
         for change in params.changes {
             if change
                 .uri
@@ -164,20 +172,35 @@ impl LanguageServer for Backend {
                 .await;
                 continue;
             }
-            let Some(handle) = self.projects.handle_for_uri(&change.uri).await else {
+            ordinary_changes.push(change);
+        }
+        self.publish_grouped_file_events(ordinary_changes).await;
+    }
+
+    /// A rename reported this way is one user action, not two independent filesystem events: the
+    /// old and new halves rebuild in the same batch this dispatches, so a dependant's diagnostics
+    /// never observe the gap between a delete and a create the way two separate watched-file
+    /// notifications could. The declared capability filter admits only file-pattern matches, so a
+    /// folder rename (reported as one URI covering unlisted children) never reaches this handler;
+    /// the filesystem watcher's per-file delete/create pairs remain the path for those.
+    async fn did_rename_files(&self, params: RenameFilesParams) {
+        let mut events = Vec::new();
+        for rename in params.files {
+            let (Ok(old_uri), Ok(new_uri)) =
+                (Url::parse(&rename.old_uri), Url::parse(&rename.new_uri))
+            else {
                 continue;
             };
-            documents::did_change_watched_files(
-                &self.client,
-                &handle,
-                &self.config,
-                &self.runtime_config,
-                DidChangeWatchedFilesParams {
-                    changes: vec![change],
-                },
-            )
-            .await;
+            events.push(FileEvent {
+                uri: old_uri,
+                typ: FileChangeType::DELETED,
+            });
+            events.push(FileEvent {
+                uri: new_uri,
+                typ: FileChangeType::CREATED,
+            });
         }
+        self.publish_grouped_file_events(events).await;
     }
 
     async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
@@ -520,6 +543,37 @@ impl LanguageServer for Backend {
 }
 
 impl Backend {
+    /// Groups file-change events by the project they resolve to and applies each project's group
+    /// as one batch, so one file operation on many URIs becomes one semantic publication per
+    /// project rather than one per event. Shared by `did_change_watched_files` and
+    /// `did_rename_files`, which differ only in how they derive their `FileEvent`s.
+    async fn publish_grouped_file_events(&self, changes: Vec<FileEvent>) {
+        let mut grouped: Vec<(WorkspaceHandle, Vec<FileEvent>)> = Vec::new();
+        for change in changes {
+            let Some(handle) = self.projects.handle_for_uri(&change.uri).await else {
+                continue;
+            };
+            if let Some((_, events)) = grouped
+                .iter_mut()
+                .find(|(candidate, _)| candidate.same_session(&handle))
+            {
+                events.push(change);
+            } else {
+                grouped.push((handle, vec![change]));
+            }
+        }
+        for (handle, changes) in grouped {
+            documents::did_change_watched_files(
+                &self.client,
+                &handle,
+                &self.config,
+                &self.runtime_config,
+                DidChangeWatchedFilesParams { changes },
+            )
+            .await;
+        }
+    }
+
     fn state_for_uri(&self, uri: &Url) -> Result<Arc<ServerState>> {
         if let Some(error) = self.projects.admission_error_for_uri(uri) {
             return Err(tower_lsp::jsonrpc::Error::invalid_params(error));

@@ -506,11 +506,6 @@ semantic_diagnostic_codes! {
     FlowDirectionIncompatible => "flow_direction_incompatible",
         "These connected ports mirror the same direction, so nothing can flow between them.";
     }
-    Advisory {
-    /// A declared port takes part in no connection.
-    UnconnectedPort => "unconnected_port",
-        "This port takes part in no connection.";
-    }
     Validation {
     /// Connected elements are neither ports nor a pair of structural parts.
     ConnectionContextInvalid => "connection_context_invalid",

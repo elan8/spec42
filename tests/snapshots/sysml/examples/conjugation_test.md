@@ -48,45 +48,9 @@ package ConjugationTest {
     (diagnostics
       (diagnostic
         (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 4 2) (end 4 13))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 5 2) (end 5 14))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 9 2) (end 9 17))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 10 2) (end 10 18))
-      )
-      (diagnostic
-        (severity information)
         (code "untyped_part_usage")
         (source "semantic")
         (range (start 19 2) (end 22 3))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 20 3) (end 20 14))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 21 3) (end 21 15))
       )
     )
   )
