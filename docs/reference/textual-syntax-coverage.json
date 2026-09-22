@@ -5,8 +5,8 @@
     "parserRevision": "9f00caf353581a3c0ccc13676c5d8829f90708b3",
     "sysmlBnf": "tools/sysml_reference/SysML-textual-bnf.kebnf",
     "kermlBnf": "tools/sysml_reference/KerML-textual-bnf.kebnf",
-    "sysmlBnfSha256": "sha256:2e9198be3cf83edb6c8e0e9a1b40c2b1ca161c4193c5b7e48c95ebc4faf63017",
-    "kermlBnfSha256": "sha256:05c11c4092d2b3667afa918bc83294726d3262be7c9e0320699dadb73132abe2"
+    "sysmlBnfSha256": "sha256:6ad22f90cd5e4f1a9aed2fefdf3b96cd3e71d42607b093d7623f36c997c20d8a",
+    "kermlBnfSha256": "sha256:526ba72d147e91a47dc5ccdc3fa1587e920bc15a64114daf41756e99b2dbfe7a"
   },
   "counts": {
     "productions": 640,
