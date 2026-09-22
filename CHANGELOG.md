@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Renaming a `.sysml`/`.kerml` file from the VS Code Explorer now rebuilds the semantic model as
+  one atomic publication via `workspace/didRenameFiles`, instead of relying on the filesystem
+  watcher's separate delete and create events, which left a window where a dependent's diagnostics
+  could observe the file as briefly missing (#190).
+
 - Individual definitions now publish their implicit multiplicity and specialization to
   `Base::zeroOrOne`, including the `individual def` shorthand and specialized definition kinds.
 
