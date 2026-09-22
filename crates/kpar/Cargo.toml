@@ -10,12 +10,12 @@ description = "KerML Project Archive (KPAR) read, pack, and validate for Spec42"
 chrono = { version = "0.4", default-features = false, features = ["std"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
-sha2 = "0.10"
+sha2 = { workspace = true }
 sysml_query = { path = "../sysml_query" }
 thiserror = { workspace = true }
-walkdir = "2"
-zip = { version = "2", default-features = false, features = ["deflate"] }
-tempfile = "3"
+walkdir = { workspace = true }
+zip = { workspace = true }
+tempfile = { workspace = true }
 
 [dev-dependencies]
 crc32fast = "1"

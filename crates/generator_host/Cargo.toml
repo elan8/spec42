@@ -17,5 +17,5 @@ thiserror = { workspace = true }
 
 [dev-dependencies]
 wat = "1"
-tempfile = "3.27.0"
+tempfile = { workspace = true }
 sysml_query = { path = "../sysml_query" }

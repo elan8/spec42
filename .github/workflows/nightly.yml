@@ -120,6 +120,9 @@ jobs:
           SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release
         run: node scripts/generate-notation-inventory.mjs --check
 
+      - name: Check SysML/KerML textual syntax inventory
+        run: node scripts/generate-textual-syntax-inventory.mjs --check
+
       - name: Run workspace scan test with SysML release
         env:
           SYSML_V2_RELEASE_DIR: ${{ github.workspace }}/sysml-v2-release

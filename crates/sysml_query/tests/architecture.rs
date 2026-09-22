@@ -1211,6 +1211,136 @@ fn host_crates_keep_their_declared_dependency_sets() {
     );
 }
 
+/// Shared crates that used to be pinned independently in several manifests.
+const WORKSPACE_HOISTED_CRATES: &[&str] = &["insta", "sha2", "tempfile", "toml", "walkdir", "zip"];
+
+/// Manifests that legitimately pin a hoisted crate outside workspace inheritance -- a fixture
+/// simulating an independent project, for example. Empty today; a real exception belongs here,
+/// named and relative to the repository root, rather than as a special case in the scan below.
+const MANIFEST_SCAN_EXEMPTIONS: &[&str] = &[];
+
+fn workspace_dependency_keys(manifest: &toml::Value) -> BTreeSet<String> {
+    manifest
+        .get("workspace")
+        .and_then(|workspace| workspace.get("dependencies"))
+        .and_then(toml::Value::as_table)
+        .map(|table| table.keys().cloned().collect())
+        .unwrap_or_default()
+}
+
+/// Every `Cargo.toml` in the repository, except the root workspace manifest itself (read
+/// separately as the source of truth for what is hoisted).
+///
+/// This walks the whole tree rather than just `crates/` and `tools/`, so the nested `fuzz`,
+/// `generator-plugins`, `generator-tests/plugins` and `zed` workspaces are covered too. Each of
+/// those declares its own `[workspace]` and so cannot inherit the root's
+/// `[workspace.dependencies]`, but a version pinned directly in one of them is exactly the drift
+/// this rule exists to catch.
+fn repository_manifests(root: &Path) -> Vec<PathBuf> {
+    fn walk(dir: &Path, out: &mut Vec<PathBuf>) {
+        let Ok(entries) = fs::read_dir(dir) else {
+            return;
+        };
+        for entry in entries.flatten() {
+            if entry.file_type().map_or(true, |kind| kind.is_symlink()) {
+                continue;
+            }
+            let path = entry.path();
+            let name = entry.file_name();
+            let name = name.to_string_lossy();
+            if path.is_dir() {
+                if matches!(
+                    name.as_ref(),
+                    "target" | ".git" | ".claude" | ".cache" | "node_modules"
+                ) {
+                    continue;
+                }
+                walk(&path, out);
+            } else if name == "Cargo.toml" {
+                out.push(path);
+            }
+        }
+    }
+    let mut out = Vec::new();
+    walk(root, &mut out);
+    let workspace_manifest = root.join("Cargo.toml");
+    out.retain(|manifest| *manifest != workspace_manifest);
+    out.sort();
+    out
+}
+
+/// The package name a dependency entry actually names: the table key, unless the entry renames
+/// itself with an explicit `package = "..."` (`toml2 = { package = "toml", workspace = true }`).
+fn dependency_package_name(key: &str, value: &toml::Value) -> String {
+    value
+        .get("package")
+        .and_then(toml::Value::as_str)
+        .unwrap_or(key)
+        .to_owned()
+}
+
+fn dependency_inherits_workspace(value: &toml::Value) -> bool {
+    value
+        .get("workspace")
+        .and_then(toml::Value::as_bool)
+        .unwrap_or(false)
+}
+
+/// `walkdir` / `sha2` / `tempfile` / `toml` / `zip` (and `insta`) are declared once in the root
+/// workspace and inherited. A member that pins its own version is the drift this rule exists to
+/// catch -- table form (`[dependencies.zip]`) and a `package = "..."` rename included, since this
+/// parses every manifest as TOML rather than matching against dependency lines as text.
+#[test]
+fn shared_dependencies_are_inherited_from_the_workspace() {
+    let root = repository_root();
+    let workspace_toml: toml::Value = fs::read_to_string(root.join("Cargo.toml"))
+        .expect("root Cargo.toml")
+        .parse()
+        .expect("parse root Cargo.toml");
+    let workspace_keys = workspace_dependency_keys(&workspace_toml);
+    for name in WORKSPACE_HOISTED_CRATES {
+        assert!(
+            workspace_keys.contains(*name),
+            "`{name}` must be declared in [workspace.dependencies] so member crates cannot drift"
+        );
+    }
+
+    let mut offenders = Vec::new();
+    for manifest in repository_manifests(&root) {
+        let relative = manifest
+            .strip_prefix(&root)
+            .unwrap_or(&manifest)
+            .to_string_lossy()
+            .replace('\\', "/");
+        if MANIFEST_SCAN_EXEMPTIONS.contains(&relative.as_str()) {
+            continue;
+        }
+        let source = fs::read_to_string(&manifest).expect("member Cargo.toml");
+        let parsed: toml::Value = source
+            .parse()
+            .unwrap_or_else(|error| panic!("parse {relative}: {error}"));
+        for table_name in ["dependencies", "dev-dependencies", "build-dependencies"] {
+            let Some(table) = parsed.get(table_name).and_then(toml::Value::as_table) else {
+                continue;
+            };
+            for (key, value) in table {
+                let name = dependency_package_name(key, value);
+                if !WORKSPACE_HOISTED_CRATES.contains(&name.as_str()) {
+                    continue;
+                }
+                if !dependency_inherits_workspace(value) {
+                    offenders.push(format!("{relative}: [{table_name}] {key} ({name})"));
+                }
+            }
+        }
+    }
+    assert!(
+        offenders.is_empty(),
+        "shared crates must be inherited with `workspace = true`; pinned copies:\n  {}",
+        offenders.join("\n  ")
+    );
+}
+
 /// `lsp_server` owns no validation pipeline and no batch entry point.
 ///
 /// The dependency-set assertion above proves the crate cannot call into `workspace`; this proves

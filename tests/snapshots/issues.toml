@@ -343,10 +343,10 @@ owner = "spec42-semantic"
 summary = "KerML connector body end features lower as owned features, but the connector's canonical connectorEnd count and conditional BinaryLink specialization do not include them"
 
 [[issue]]
-id = "parser-gap-kerml-connector-specialization"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "at pinned 695b2b44 a KerML `connector name specializes Type { ... }` declaration is rejected, so explicit BinaryLink specialization cannot reach semantic validation"
+id = "semantic-connector-binary-specialization"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "KerML connectors typed by Links::BinaryLink parse, including n-ary body ends, but validateConnectorBinarySpecialization does not report binary_connector_end_count"
 
 [[issue]]
 id = "semantic-requirement-constraint-owner"
@@ -379,28 +379,28 @@ owner = "spec42-semantic"
 summary = "the parser now preserves ordered feature specialization clauses, but semantic facts collapse each clause to relationship targets and do not retain per-kind authored clause counts"
 
 [[issue]]
-id = "parser-gap-77-transition-body-members"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "at pinned 695b2b44 transitions in action bodies are typed, but the transition effect-action spelling used by the state-body conformance fixture still produces unsupported syntax"
+id = "abstract-syntax-nonrepresentable-abstract-variation"
+kind = "abstract_syntax_coverage_gap"
+owner = "spec42-snapshot"
+summary = "SysML `BasicDefinitionPrefix` and `RefPrefix` spell `abstract` | `variation` as one exclusive slot (BNF 219 and 278), so `abstract variation` has no textual spelling and a distinct non-abstract variation cannot be authored"
 
 [[issue]]
-id = "parser-gap-76-action-body-members"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "at pinned 695b2b44 `accept when <expr>;` and `accept at <expr>;` parse and lower, but the shorthand `if <cond> then <a> else <b>;` is still recovered_action_body_element as an action-body statement"
+id = "semantic-variation-owned-feature-membership"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "variation definitions and usages parse from the exclusive prefix slot, but validateDefinitionVariationOwnedFeatureMembership and validateUsageVariationOwnedFeatureMembership are not evaluated"
 
 [[issue]]
-id = "parser-gap-78-variation-forms"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "at pinned 695b2b44 a bare `variation part def D;` / `variation part u : T;` parses, but pairing it with `abstract` in either order (`abstract variation part def Good;`) is still recovered at the package and part-definition body boundaries (and unsupported_grammar_form in an attribute body), so the abstractness rules cannot be exercised"
+id = "semantic-variation-specialization"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "variation definitions and usages parse from the exclusive prefix slot, but validateDefinitionVariationSpecialization and validateUsageVariationSpecialization are not evaluated"
 
 [[issue]]
-id = "parser-gap-52-var-modifier"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "at pinned 695b2b44 the parser has no SysML `var` / `variable` feature-variability modifier, so `var attribute tracked : Reading;` in an occurrence definition body is unrecognized_declaration_in_scope and no time-varying fact reaches semantics"
+id = "semantic-assignment-action-usage"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "assignment actions parse against constant and non-constant SysML attributes, but validateAssignmentActionUsage does not report assignment_target_not_time_varying"
 
 [[issue]]
 id = "semantic-association-end-type-not-one"

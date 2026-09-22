@@ -12,6 +12,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   watcher's separate delete and create events, which left a window where a dependent's diagnostics
   could observe the file as briefly missing (#190).
 
+- **Textual SysML/KerML grammar audit against the pinned BNF (#194).** Spec42 now keeps a
+  production-level inventory (`docs/reference/TEXTUAL-SYNTAX-INVENTORY.md`) versioned with the
+  parser revision and the bundled 2026-04 kebnf. Several validation fixtures that blamed parser
+  gaps were using spellings the grammar does not contain (`if … then`, `then … do`, `abstract
+  variation`, SysML `var`, KerML `connector … specializes`); they now author the productions,
+  and dual-keyword `abstract variation` is an explicit grammar exclusion. Ports, connections,
+  interfaces, and actions have dedicated accept/reject snapshots: SysML `connect`/`bind` parse,
+  KerML `connector … from` / `binding … of` in a SysML fence recover, and the keyword-less n-ary
+  `connect (e1, e2, e3)` alternative recovers in a part definition body while named
+  `connection … connect (…)` parses.
+
+- **Workspace dependency hygiene and incremental-vs-full publication parity (#43).** `walkdir`,
+  `sha2`, `toml`, and `zip` are declared once in `[workspace.dependencies]` and inherited by
+  member crates. A deterministic edit-sequence harness in `sysml_resolution` proves a warm
+  (incremental memo) publication is the cold (full) one for identity, model digest, and
+  diagnostics after each edit, and snapshots that sequence with `insta`.
+
 - Individual definitions now publish their implicit multiplicity and specialization to
   `Base::zeroOrOne`, including the `individual def` shorthand and specialized definition kinds.
 

@@ -108,6 +108,7 @@ if wants lint; then
   node scripts/sync-kpar-libraries-config.mjs --check
   node scripts/sync-workspace-version.mjs --check
   node scripts/generate-conformance-matrix.mjs --check
+  node scripts/generate-textual-syntax-inventory.mjs --check
   node scripts/sync-generator-abi.mjs --check
   node scripts/sync-docs-meta.mjs --check
 

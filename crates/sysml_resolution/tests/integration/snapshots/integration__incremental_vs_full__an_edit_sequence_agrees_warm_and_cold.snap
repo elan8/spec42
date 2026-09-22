@@ -1,0 +1,28 @@
+---
+source: crates/sysml_resolution/tests/integration/incremental_vs_full.rs
+expression: report
+---
+step 0 baseline
+  source blake3:d88b65746e5efc516146403f53b84ffed277aaeaae8584652c2a7b0162c5f961
+  model blake3:3297dc2f706ba2a004dcfe920d7e593e339815d7cf85526e749652d0e1c4bca9
+  codes []
+step 1 comment-only-on-fleet
+  source blake3:dca87ffc7bde204a43fe06c34ec5ed835160dc685cff0300167d01194ce28cc3
+  model blake3:23c3bc940e3cefb38abd59dd37a68a9cdc3e42c8d1408b1a896c6ee6a8039eac
+  codes []
+step 2 unresolved-type-on-fleet
+  source blake3:63d88de5c429464846b368337de7b41d1d510dde1ece66462bcdc383fa7c8b19
+  model blake3:2abf0a44b63a8896e6a0489dccb83150e893f26c9beac7bfbf65bf189649e736
+  codes [missing_library_context, unresolved_type_reference]
+step 3 revert-fleet-to-baseline
+  source blake3:d88b65746e5efc516146403f53b84ffed277aaeaae8584652c2a7b0162c5f961
+  model blake3:3297dc2f706ba2a004dcfe920d7e593e339815d7cf85526e749652d0e1c4bca9
+  codes []
+step 4 add-driver
+  source blake3:0681d1c3268e340ced5fa85a3d03292a17f5204560f9d7720611a267592ff097
+  model blake3:a8aba6252005c0c984a22fc628251a541d6492dd5c928544e1183a1d939d5da8
+  codes []
+step 5 remove-driver
+  source blake3:d88b65746e5efc516146403f53b84ffed277aaeaae8584652c2a7b0162c5f961
+  model blake3:3297dc2f706ba2a004dcfe920d7e593e339815d7cf85526e749652d0e1c4bca9
+  codes []
