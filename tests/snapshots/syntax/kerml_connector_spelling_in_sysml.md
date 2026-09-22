@@ -22,18 +22,6 @@ package Connections {
   (document "memory://snapshot/kerml_connector_spelling_in_sysml.md"
     (diagnostics
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 1 17) (end 1 24))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 2 17) (end 2 24))
-      )
-      (diagnostic
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
