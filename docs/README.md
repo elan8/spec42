@@ -39,6 +39,7 @@ The user guide lives here in `docs/user/` and on GitHub — there is no separate
 | Topic | Document |
 | --- | --- |
 | Conformance matrix | [reference/CONFORMANCE-MATRIX.md](reference/CONFORMANCE-MATRIX.md) (from [conformance-metadata.json](reference/conformance-metadata.json)) |
+| SysML/KerML textual syntax inventory | [reference/TEXTUAL-SYNTAX-INVENTORY.md](reference/TEXTUAL-SYNTAX-INVENTORY.md) (`scripts/generate-textual-syntax-inventory.mjs`) |
 | SysML notation inventory | [reference/SYSML-NOTATION-INVENTORY.md](reference/SYSML-NOTATION-INVENTORY.md) (`scripts/generate-notation-inventory.mjs`) |
 | What's included (Spec42 + bundled library versions) | [reference/WHATS-INCLUDED.md](reference/WHATS-INCLUDED.md) (`scripts/sync-docs-meta.mjs`) |
 | Domain libraries (KPAR package/file tree) | [reference/DOMAIN-LIBRARIES.md](reference/DOMAIN-LIBRARIES.md) (`scripts/sync-docs-meta.mjs`) |

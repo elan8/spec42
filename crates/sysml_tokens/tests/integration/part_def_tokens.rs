@@ -3,7 +3,7 @@ use sysml_query::syntax::ParsedSource;
 fn parse_for_editor(text: &str) -> ParsedSource {
     sysml_query::syntax::SyntaxService::new().parse_text(text)
 }
-use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full, TYPE_PROPERTY};
+use sysml_tokens::{ast_semantic_ranges, semantic_tokens_full, TYPE_CLASS, TYPE_PROPERTY};
 
 fn decode_semantic_tokens(data: &[u32]) -> Vec<(u32, u32, u32, u32)> {
     let mut line: u32 = 0;
@@ -128,4 +128,23 @@ fn metadata_def_body_tokenizes_inner_attribute_name() {
         token_text(content, &decoded, "isMandatory"),
         "metadata def inner attribute name should be tokenized"
     );
+}
+
+#[test]
+fn part_def_names_tokenize_the_same_with_and_without_a_body() {
+    let content = r#"package P {
+    part def Bare;
+    part def Braced { }
+}"#;
+    let parsed = parse_for_editor(content);
+    let ranges = ast_semantic_ranges(&parsed, content);
+    let (tokens, _) = semantic_tokens_full(content, Some(&ranges));
+    let decoded = decode_semantic_tokens(&tokens.data);
+    assert_eq!(token_type_for(content, &decoded, "Bare"), Some(TYPE_CLASS));
+    assert_eq!(
+        token_type_for(content, &decoded, "Braced"),
+        token_type_for(content, &decoded, "Bare"),
+        "part def names with and without a body must use the same token type"
+    );
+    assert!(token_text(content, &decoded, "part"));
 }

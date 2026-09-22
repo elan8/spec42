@@ -8,22 +8,20 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.18.8:validateTransitionFeatureMembershipEffectAction
-blocked_by=parser-gap-77-transition-body-members
 type=file
 ~~~
 # SOURCE
 ~~~sysml
-// Conforming: the effect feature below is the action the transition syntax authors.
+// Conforming: EffectBehaviorMember (`do`) precedes TransitionSuccessionMember (`then`)
+// (SysML BNF 1277-1286). The previous `then … do …` order is not a production.
 //
-// The violating side has no textual counterpart: the do clause of a transition always produces an
-// ActionUsage, so a source document cannot give an effect membership another kind of transition
-// feature.
+// The violating side has no textual counterpart: the do clause always produces an ActionUsage.
 package Transitions {
     state def Machine {
         state idle;
         state running;
         action notify;
-        transition first idle then running do notify;
+        transition first idle do notify then running;
     }
 }
 ~~~
@@ -32,6 +30,18 @@ package Transitions {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md"
     (diagnostics
+      (diagnostic
+        (severity information)
+        (code "missing_final_state")
+        (source "semantic")
+        (range (start 5 4) (end 10 5))
+      )
+      (diagnostic
+        (severity information)
+        (code "missing_initial_state")
+        (source "semantic")
+        (range (start 5 4) (end 10 5))
+      )
     )
   )
 )
@@ -45,19 +55,13 @@ package Transitions {
         (severity information)
         (code "missing_final_state")
         (source "semantic")
-        (range (start 6 4) (end 11 5))
+        (range (start 5 4) (end 10 5))
       )
       (diagnostic
         (severity information)
         (code "missing_initial_state")
         (source "semantic")
-        (range (start 6 4) (end 11 5))
-      )
-      (diagnostic
-        (severity error)
-        (code "recovered_state_body_element")
-        (source "parser")
-        (range (start 10 8) (end 11 4))
+        (range (start 5 4) (end 10 5))
       )
     )
   )
@@ -66,17 +70,42 @@ package Transitions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:2a5d9438dab8ab4e82aed67d828a4427ed8c08d3b4822e571fcff75b5db91005"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2f9ecd512cc8eae180c29a37a5d119fa169f080df8c6baa397ac476b37392a7c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine"))) (kind state-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "idle")) (transitionTarget (reference "running")) (transitionEffect (reference "notify")))))
+    (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "idle")) (succession (reference "running")))))
+    (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind action) (ordinal 0))))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::idle"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::notify"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::running"))) (kind state) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (kind transitionSource) (ordinal 0))
+      (authored-target "idle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::idle")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (kind transitionTarget) (ordinal 0))
+      (authored-target "running")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::running")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (kind transitionEffect) (ordinal 0))
+      (authored-target "notify")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::notify")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
+      (authored-target "idle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::idle")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1))
+      (authored-target "running")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::running")))))
   )
   (relationships
+    (relationship (kind transitionSource) (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::idle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (kind transitionSource) (ordinal 0)))
+    (relationship (kind transitionTarget) (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::running"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (kind transitionTarget) (ordinal 0)))
+    (relationship (kind transitionEffect) (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::notify"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (kind transitionEffect) (ordinal 0)))
+    (relationship (kind succession) (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::idle"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
+    (relationship (kind succession) (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::running"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::idle"))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::notify"))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::running"))) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine"))) (provenance implied))
@@ -88,6 +117,12 @@ package Transitions {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine")))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0)))))
+    )
     (declaration (id (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::idle")))
       (featured-by (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine")))
     )
@@ -102,5 +137,30 @@ package Transitions {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (range (start 9 25) (end 9 29)) (probe (position 9 25))
+    (reference (id (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (kind transitionSource) (ordinal 0) (authored-target "idle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::idle")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (range (start 9 45) (end 9 52)) (probe (position 9 45))
+    (reference (id (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (kind transitionTarget) (ordinal 0) (authored-target "running")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::running")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (range (start 9 33) (end 9 39)) (probe (position 9 33))
+    (reference (id (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0))))) (kind transitionEffect) (ordinal 0) (authored-target "notify")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::notify")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (range (start 9 25) (end 9 29)) (probe (position 9 25))
+    (reference (id (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "idle")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::idle")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (range (start 9 45) (end 9 52)) (probe (position 9 45))
+    (reference (id (source (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (path (named (kind package) (name "Transitions")) (named (kind state-def) (name "Machine")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1) (authored-target "running")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_transition_feature_membership_effect_action.md") (qualified-name "Transitions::Machine::running")))))
+    )
+  )
 )
 ~~~
