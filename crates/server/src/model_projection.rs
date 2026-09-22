@@ -380,6 +380,7 @@ fn element_json(model: &PublishedModel, element: &ProjectedElement) -> Value {
             "incoming": connected_json(model, &details.incoming),
             "outgoing": connected_json(model, &details.outgoing),
         },
+        "conjugated": details.conjugated,
         "expression": expression_json(model, &element.expression),
         "metadata_annotations": element
             .metadata_annotations

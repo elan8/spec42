@@ -68,6 +68,12 @@ package 'Derivation Constraints' {
       )
       (diagnostic
         (severity warning)
+        (code "analysis_evaluation_unresolved")
+        (source "semantic")
+        (range (start 6 2) (end 6 80))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 6 34) (end 6 45))
@@ -264,8 +270,8 @@ package 'Derivation Constraints' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics"))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle1")) (anonymous (kind assert-constraint) (ordinal 0))))) (state unsupported))
-    (evaluated (declaration (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle2")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle1")) (anonymous (kind assert-constraint) (ordinal 0))))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle2")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
     (unit (declaration (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics"))) (ordinal 0) (authored "kg") (start 21 11) (end 21 13) (outcome (status catalog-unavailable)))
   )
 )
@@ -306,8 +312,8 @@ package 'Derivation Constraints' {
 ~~~sexpr
 (expressions
   (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics"))) (outcome resolved) (operator "and" (operator "==" (operator "*" (feature-reference "force" (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics::force")))) (feature-reference "deltaT" (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics::deltaT"))))) (operator "*" (feature-reference "mass" (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics::mass")))) (operator "-" (feature-reference "finalSpeed" (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics::finalSpeed")))) (feature-reference "initialSpeed" (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics::initialSpeed"))))))) (operator ">" (feature-reference "mass" (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::Dynamics::mass")))) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 0))) (unit "kg"))))))
-  (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle1")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome unsupported))
-  (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle2")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle1")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome resolved) (operator "==" (feature-reference "totalMass" (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1::totalMass")))) (operator "+" (operator "+" (feature-reference "chassisMass" (target unresolved)) (feature-reference "engine::mass" (target unresolved))) (feature-reference "transmission::mass" (target unresolved)))))
+  (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle2")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "+" (operator "+" (feature-reference "chassisMass" (target unresolved)) (feature-reference "engine::mass" (target unresolved))) (feature-reference "transmission::mass" (target unresolved))))
 )
 ~~~
 # NAVIGATION

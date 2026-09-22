@@ -228,7 +228,7 @@ package 'Calculation Usages-2' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::VehicleDynamics::wheelPower"))) (target (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::VehicleDynamics"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/30_calculation_usages_2.md") (path (named (kind package) (name "Calculation Usages-2")) (named (kind part-def) (name "VehicleDynamics")) (named (kind calc) (name "updateState")) (named (kind attribute) (name "totalPower")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/30_calculation_usages_2.md") (path (named (kind package) (name "Calculation Usages-2")) (named (kind part-def) (name "VehicleDynamics")) (named (kind calc) (name "updateState")) (named (kind attribute) (name "totalPower")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -286,7 +286,7 @@ package 'Calculation Usages-2' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/30_calculation_usages_2.md") (path (named (kind package) (name "Calculation Usages-2")) (named (kind part-def) (name "VehicleDynamics")) (named (kind calc) (name "updateState")) (named (kind attribute) (name "totalPower")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/30_calculation_usages_2.md") (path (named (kind package) (name "Calculation Usages-2")) (named (kind part-def) (name "VehicleDynamics")) (named (kind calc) (name "updateState")) (named (kind attribute) (name "totalPower")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "wheelPower" (target (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::VehicleDynamics::wheelPower")))) (feature-reference "C_d" (target (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::VehicleDynamics::C_d")))) (feature-reference "C_f" (target (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::VehicleDynamics::C_f")))) (feature-reference "mass" (target (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::VehicleDynamics::mass")))) (feature-reference "currState::v" (target (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2::DynamicState::v"))))))
 )
 ~~~
 # NAVIGATION

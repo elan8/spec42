@@ -156,6 +156,10 @@ pub(crate) fn classify_constraint_node(
             let base = classify_constraint_node(parsed, &base.value, ordinal)?;
             Some(EvalNode::Invocation(vec![base]))
         }
+        // A dotted feature chain (`s.error`) is lowered as one `MemberAccessOperand`, not an
+        // `ExpressionOperand`, so it must not advance `ordinal`. Constant folding treats it as a
+        // non-constant leaf; the published expression tree attaches the resolved reference.
+        Expression::MemberAccess { .. } => Some(EvalNode::Invocation(vec![])),
         _ => None,
     }
 }
@@ -305,6 +309,9 @@ pub(crate) fn classify_calc_node(
             let base = classify_calc_node(parsed, &base.value, ordinal)?;
             Some(EvalNode::Invocation(vec![base]))
         }
+        // See `classify_constraint_node`: a dotted chain is a non-constant leaf and does not
+        // consume an `ExpressionOperand` ordinal.
+        Expression::MemberAccess { .. } => Some(EvalNode::Invocation(vec![])),
         _ => None,
     }
 }

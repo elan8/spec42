@@ -386,6 +386,16 @@ impl<D> SemanticModel<D> {
             subsetting,
             redefinition,
             inspection,
+            conjugated: self.typing_is_conjugated(id),
+        })
+    }
+
+    /// `port p : ~T` carries the conjugation on the feature-typing reference. The resolved target
+    /// is still `T`.
+    fn typing_is_conjugated(&self, id: DeclarationId) -> bool {
+        self.outgoing_reference_ids(id).iter().any(|reference_id| {
+            let reference = &self.storage.references[reference_id.index()];
+            reference.kind == ReferenceKind::FeatureTyping && reference.flags.conjugated
         })
     }
 

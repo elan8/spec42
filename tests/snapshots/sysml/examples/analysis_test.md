@@ -133,7 +133,7 @@ package AnalysisTest {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/analysis_test.md") (path (named (kind package) (name "AnalysisTest")) (named (kind part) (name "analysisContext")) (named (kind analysis) (name "analysisPlan")) (named (kind subject) (name "v")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/analysis_test.md") (path (named (kind package) (name "AnalysisTest")) (named (kind part) (name "analysisContext")) (named (kind analysis) (name "analysisPlan")) (named (kind subject) (name "v")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase"))) (state non-constant))
   )
 )
 ~~~
@@ -219,7 +219,7 @@ package AnalysisTest {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase"))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::AnalysisCase"))) (outcome resolved) (feature-reference "v::m" (target (node (document "memory://snapshot/analysis_test.md") (qualified-name "AnalysisTest::V::m")))))
 )
 ~~~
 # NAVIGATION

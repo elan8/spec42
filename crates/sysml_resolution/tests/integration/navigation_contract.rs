@@ -1610,3 +1610,67 @@ fn all_elements_is_the_canonical_ordered_union_of_typed_searches() {
         "the traversal publishes each declaration exactly once"
     );
 }
+
+#[test]
+fn interconnection_view_treats_a_dotted_bind_as_a_resolved_connector() {
+    let published = build(
+        BuildRequest::new(
+            vec![
+                SourceInput::new(
+                    "memory://standard-views.sysml",
+                    "standard library package StandardViewDefinitions { view def InterconnectionView; }"
+                        .to_owned(),
+                    SourceKind::StandardLibrary,
+                ),
+                SourceInput::new(
+                    "memory://model.sysml",
+                    concat!(
+                        "package Model { import StandardViewDefinitions::*; ",
+                        "part def Machine { ",
+                        "port boundary; ",
+                        "part inner { port nested; } ",
+                        "bind boundary = inner.nested; ",
+                        "} ",
+                        "view external : InterconnectionView { expose Machine; } }",
+                    )
+                    .to_owned(),
+                    SourceKind::Workspace,
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let catalog = match published.diagram_view_catalog().answer {
+        QueryAnswer::Resolved(catalog) => catalog,
+        other => panic!("expected diagram catalog, got {other:?}"),
+    };
+    let view = catalog
+        .iter()
+        .find(|view| view.kind == DiagramViewKind::Interconnection)
+        .expect("interconnection view");
+    let projection = match published.diagram_view(view.semantic_id).answer {
+        QueryAnswer::Resolved(projection) => projection,
+        other => panic!("expected interconnection projection, got {other:?}"),
+    };
+    assert!(
+        !projection.incomplete_reasons.iter().any(|reason| {
+            matches!(
+                reason,
+                DiagramIncompleteReason::RelationshipUnresolved {
+                    relationship: DiagramRelationshipKind::ConnectorEnd
+                }
+            )
+        }),
+        "a dotted bind must not be an unresolved connector end, got {:?}",
+        projection.incomplete_reasons
+    );
+    let connectors = projection
+        .edges
+        .iter()
+        .filter(|edge| edge.kind == DiagramEdgeKind::Connector)
+        .count();
+    assert_eq!(connectors, 1, "the delegation bind is one connector edge");
+}

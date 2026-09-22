@@ -270,8 +270,8 @@ package AssignmentTest {
     (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind action) (name "decr")) (anonymous (kind assign) (ordinal 0))))) (state evaluated) (value (kind integer) (integer -1)))
     (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind action) (name "incr")) (anonymous (kind assign) (ordinal 0))))) (state evaluated) (value (kind integer) (integer 1)))
     (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 0))))) (state unsupported))
-    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 1))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 1))))) (state non-constant))
   )
 )
 ~~~
@@ -365,8 +365,8 @@ package AssignmentTest {
   (declaration (id (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind action) (name "decr")) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (operator "-" (feature-reference "count" (target (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counter::count")))) (literal (value (kind integer) (integer 1)))))
   (declaration (id (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind part-def) (name "Counter")) (named (kind action) (name "incr")) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (operator "+" (feature-reference "count" (target (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Counter::count")))) (literal (value (kind integer) (integer 1)))))
   (declaration (id (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment"))) (outcome resolved) (feature-reference "c" (target (node (document "memory://snapshot/assignment_test.md") (qualified-name "AssignmentTest::Increment::c")))))
-  (declaration (id (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 0))))) (outcome unsupported))
-  (declaration (id (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 1))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 0))))) (outcome resolved) (operator "+" (feature-reference "counting::counter::count" (target unresolved)) (literal (value (kind integer) (integer 1)))))
+  (declaration (id (node (document "memory://snapshot/assignment_test.md") (path (named (kind package) (name "AssignmentTest")) (named (kind action) (name "a")) (anonymous (kind assign) (ordinal 1))))) (outcome resolved) (feature-reference "counting::counter::count" (target unresolved)))
 )
 ~~~
 # NAVIGATION

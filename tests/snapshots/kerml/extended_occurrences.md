@@ -348,7 +348,7 @@ package ExtendedOccurrences {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Timeslice::interval"))) (target (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Timeslice"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/extended_occurrences.md") (path (named (kind package) (name "ExtendedOccurrences")) (named (kind class-def) (name "ExtendedOccurrence")) (named (kind kerml-expression) (name "while")) (named (kind parameter) (name "result")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/extended_occurrences.md") (path (named (kind package) (name "ExtendedOccurrences")) (named (kind class-def) (name "ExtendedOccurrence")) (named (kind kerml-expression) (name "while")) (named (kind parameter) (name "result")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (invocation (declaration (node (document "memory://snapshot/extended_occurrences.md") (path (named (kind package) (name "ExtendedOccurrences")) (named (kind class-def) (name "ExtendedOccurrence")) (named (kind kerml-expression) (name "while")) (named (kind parameter) (name "result")) (anonymous (kind kerml-expression) (ordinal 0))))) (callee (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::ExtendedOccurrence::at"))) (supplied 1) (required 0) (start 26 40) (end 26 62))
   )
 )
@@ -474,7 +474,7 @@ package ExtendedOccurrences {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (path (named (kind package) (name "ExtendedOccurrences")) (named (kind class-def) (name "ExtendedOccurrence")) (named (kind kerml-expression) (name "while")) (named (kind parameter) (name "result")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (path (named (kind package) (name "ExtendedOccurrences")) (named (kind class-def) (name "ExtendedOccurrence")) (named (kind kerml-expression) (name "while")) (named (kind parameter) (name "result")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "timeslice::interval" (target (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::Timeslice::interval"))))))
 )
 ~~~
 # CONNECTIONS

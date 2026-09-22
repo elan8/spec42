@@ -111,7 +111,7 @@ package Demo {
     (relationship (kind typeCheckTarget) (source (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::castScope"))) (target (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::Frame"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::castScope"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::castScope"))) (state non-constant))
   )
 )
 ~~~
@@ -161,7 +161,7 @@ package Demo {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::castScope"))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::castScope"))) (outcome resolved) (operator "==" (feature-reference "raw::mRefs" (target (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::Frame::mRefs")))) (feature-reference "raw" (target (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::raw"))))))
 )
 ~~~
 # NAVIGATION

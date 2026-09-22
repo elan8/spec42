@@ -150,6 +150,11 @@ pub struct ElementDetails {
     pub outgoing: Box<[ConnectedElement]>,
     pub evaluation: ElementEvaluation,
     pub analysis: AnalysisEvaluation,
+    /// Whether an authored feature typing conjugates its target (`port p : ~T`).
+    ///
+    /// The typing target is the original port definition either way. This is the polarity the
+    /// author wrote, kept apart from the target's qualified name.
+    pub conjugated: bool,
 }
 
 /// What a reference at a source position resolves to, in full detail.

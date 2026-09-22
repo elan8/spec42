@@ -266,7 +266,7 @@ package 'Verification Case Usage Example' {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/34_verification_case_usage_example.md") (path (named (kind package) (name "Verification Case Usage Example")) (named (kind part) (name "massVerificationSystem")) (named (kind part) (name "scale")) (anonymous (kind perform-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
-    (evaluated (declaration (node (document "memory://snapshot/34_verification_case_usage_example.md") (path (named (kind package) (name "Verification Case Usage Example")) (named (kind part) (name "massVerificationSystem")) (named (kind part) (name "scale")) (anonymous (kind perform-action) (ordinal 0)) (named (kind default-reference) (name "measurement")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/34_verification_case_usage_example.md") (path (named (kind package) (name "Verification Case Usage Example")) (named (kind part) (name "massVerificationSystem")) (named (kind part) (name "scale")) (anonymous (kind perform-action) (ordinal 0)) (named (kind default-reference) (name "measurement")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -361,7 +361,7 @@ package 'Verification Case Usage Example' {
 ~~~sexpr
 (expressions
   (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (path (named (kind package) (name "Verification Case Usage Example")) (named (kind part) (name "massVerificationSystem")) (named (kind part) (name "scale")) (anonymous (kind perform-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "measurement" (target (node (document "memory://snapshot/34_verification_case_usage_example.md") (path (named (kind package) (name "Verification Case Usage Example")) (named (kind part) (name "massVerificationSystem")) (named (kind part) (name "scale")) (anonymous (kind perform-action) (ordinal 0)) (named (kind default-reference) (name "measurement")))))))
-  (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (path (named (kind package) (name "Verification Case Usage Example")) (named (kind part) (name "massVerificationSystem")) (named (kind part) (name "scale")) (anonymous (kind perform-action) (ordinal 0)) (named (kind default-reference) (name "measurement")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/34_verification_case_usage_example.md") (path (named (kind package) (name "Verification Case Usage Example")) (named (kind part) (name "massVerificationSystem")) (named (kind part) (name "scale")) (anonymous (kind perform-action) (ordinal 0)) (named (kind default-reference) (name "measurement")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "testVehicle::mass" (target unresolved)))
 )
 ~~~
 # NAVIGATION

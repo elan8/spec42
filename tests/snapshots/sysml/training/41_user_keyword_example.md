@@ -253,7 +253,7 @@ package 'User Keyword Example' {
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "battery old")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind real) (real 0.01)))
     (evaluated (declaration (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "device shutoff")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
-    (evaluated (declaration (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "power low")) (anonymous (kind constraint) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "power low")) (anonymous (kind constraint) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -324,7 +324,7 @@ package 'User Keyword Example' {
 (expressions
   (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "battery old")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind real) (real 0.01))))
   (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "device shutoff")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "LevelEnum::high" (target unresolved)))
-  (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "power low")) (anonymous (kind constraint) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (named (kind extended-definition) (name "DeviceFailure")) (named (kind extended-usage) (name "power low")) (anonymous (kind constraint) (ordinal 0))))) (outcome resolved) (operator "<" (feature-reference "device::battery::power" (target (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::Device::battery::power")))) (feature-reference "minPower" (target (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example::DeviceFailure::minPower"))))))
 )
 ~~~
 # METADATA ANNOTATIONS

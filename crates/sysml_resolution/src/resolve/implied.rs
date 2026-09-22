@@ -3,6 +3,7 @@
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
+use crate::lower::facts::DerivationEndRoleFact;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::PortionKind;
 use crate::lower::facts::TransitionFeatureRole;
@@ -945,6 +946,7 @@ pub(crate) fn synthesize_implied_relationships(
         synthesize_feature_membership_type_featurings(storage, &storage.references)?.into_vec(),
     );
     implied.extend(synthesize_feature_valuation_specializations(storage)?.into_vec());
+    implied.extend(synthesize_derivation_shorthand(storage)?.into_vec());
     implied.sort_by_key(|relationship| {
         (
             relationship.kind,
@@ -954,6 +956,79 @@ pub(crate) fn synthesize_implied_relationships(
     });
     implied.dedup();
     Ok(implied.into_boxed_slice())
+}
+
+/// A `#derivation` connection specializes `DerivationConnections::Derivation`, and its
+/// `#original` / `#derive` ends redefine that connection definition's standard ends.
+///
+/// The grammar markers are not authored specializations. When the standard library is not
+/// admitted, the anchors are missing and no relationship is invented.
+pub(crate) fn synthesize_derivation_shorthand(
+    storage: &SemanticModelStorage,
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    let LibrarySpecializationAnchor::Resolved(derivation) =
+        resolve_library_specialization_anchor(storage, "DerivationConnections::Derivation")
+    else {
+        return Ok(Box::default());
+    };
+    let original = match resolve_library_specialization_anchor(
+        storage,
+        "DerivationConnections::Derivation::originalRequirement",
+    ) {
+        LibrarySpecializationAnchor::Resolved(anchor) => Some(anchor),
+        _ => None,
+    };
+    let derived = anonymous_requirement_end(storage, derivation)?;
+    let mut implied = Vec::new();
+    for (index, facts) in storage.declaration_facts.iter().enumerate() {
+        let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        if facts.derivation_connection && source != derivation {
+            implied.push(ImpliedRelationship {
+                kind: ReferenceKind::Subclassification,
+                source,
+                target: derivation,
+            });
+        }
+        let target = match facts.derivation_end {
+            Some(DerivationEndRoleFact::Original) => original,
+            Some(DerivationEndRoleFact::Derived) => derived,
+            None => None,
+        };
+        if let Some(target) = target {
+            if source != target {
+                implied.push(ImpliedRelationship {
+                    kind: ReferenceKind::Redefinition,
+                    source,
+                    target,
+                });
+            }
+        }
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(implied.into_boxed_slice())
+}
+
+/// The unnamed requirement end owned by `Derivation`, which is the `:>> derivedRequirements`
+/// feature. More than one such end is ambiguous, so none is chosen.
+fn anonymous_requirement_end(
+    storage: &SemanticModelStorage,
+    owner: DeclarationId,
+) -> Result<Option<DeclarationId>, ResolutionError> {
+    let mut found = None;
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        if declaration.owner != Some(owner)
+            || declaration.name.is_some()
+            || declaration.kind != DeclarationKind::RequirementUsage
+        {
+            continue;
+        }
+        let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        if found.replace(id).is_some() {
+            return Ok(None);
+        }
+    }
+    Ok(found)
 }
 
 /// Synthesizes `checkFeatureValuationSpecialization` (KerML 8.3.3.3.4): a non-default

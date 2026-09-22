@@ -7,6 +7,7 @@ use crate::lower::facts::occurrence_prefix_direction;
 use crate::lower::facts::occurrence_prefix_modifiers;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
+use crate::lower::facts::DerivationEndRoleFact;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::facts::UnsupportedFamily;
@@ -21,12 +22,12 @@ use crate::model::Visibility;
 use sysml_v2_parser::ast::{
     Allocate, AllocationDef, AllocationUsage as ParserAllocationUsage, Bind, BindingConnectorUsage,
     ConnectStmt, ConnectionDef, ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
-    ConnectionUsageMember as ParserConnectionUsage, DefinitionBody, DefinitionBodyElement, EndDecl,
-    EndIdentity, Expression, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement, InterfaceEnd,
-    InterfaceEndTarget, InterfacePart, InterfaceUsage as ParserInterfaceUsage,
-    InterfaceUsageBodyElement, MembershipKind as ParserMembershipKind, Node, PortBody,
-    PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage,
-    QualifiedReferenceId,
+    ConnectionUsageMember as ParserConnectionUsage, DefinitionBody, DefinitionBodyElement,
+    DerivationEndRole, EndDecl, EndIdentity, Expression, InterfaceDef, InterfaceDefBody,
+    InterfaceDefBodyElement, InterfaceEnd, InterfaceEndTarget, InterfacePart,
+    InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
+    MembershipKind as ParserMembershipKind, Node, PortBody, PortBodyElement, PortDef, PortDefBody,
+    PortDefBodyElement, PortUsage as ParserPortUsage, QualifiedReferenceId,
 };
 
 impl SemanticModelBuilder {
@@ -296,6 +297,7 @@ impl SemanticModelBuilder {
                     individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
+                derivation_connection: node.value.derivation_role.is_some(),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -481,24 +483,35 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers an `end` declaration inside a connection/interface def body (BNF `EndDecl`) as its
-    /// own nested declaration: a normal declared label (or an anonymous `#original`/`#derive`
-    /// derivation role), an optional `:` typing relationship, and an optional `::>`/`references`
-    /// reference-subsetting relationship as an authored `ConnectorEnd` reference (resolved
-    /// through the same shared lexical lookup as `AliasBinding`, see `DeclarationDomain::Any` in
-    /// resolver.rs). `redefines`/`crosses`/`nested_usage` -- connector-end referential
-    /// constraints, not the plain reference shape this slice covers -- are explicitly out of
-    /// scope and left unlowered.
+    /// own nested declaration: a normal declared label, a `#original`/`#derive` derivation role,
+    /// or the simple name of a leading `:>>` redefinition when the end has no label of its own.
+    /// An optional `:` typing relationship, a `:>>` redefinition, and an optional `::>`/
+    /// `references` reference-subsetting relationship are authored references. `crosses` and
+    /// nested usage bodies stay unlowered.
     pub(crate) fn lower_end_decl(
         &mut self,
         document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<EndDecl>,
     ) -> Result<(), ConstructionError> {
-        let name = match &node.value.identity {
+        let (name, derivation_end) = match &node.value.identity {
             EndIdentity::Declaration(label) => {
-                self.intern_declaration_name(document, Some(*label))?
+                (self.intern_declaration_name(document, Some(*label))?, None)
             }
-            EndIdentity::Derivation(_) | EndIdentity::Anonymous => None,
+            EndIdentity::Derivation(role) => match role.value {
+                DerivationEndRole::Original => (
+                    self.intern_declared_name("originalRequirement")?,
+                    Some(DerivationEndRoleFact::Original),
+                ),
+                DerivationEndRole::Derive => (
+                    self.intern_declared_name("derivedRequirements")?,
+                    Some(DerivationEndRoleFact::Derived),
+                ),
+            },
+            EndIdentity::Anonymous => (
+                self.redefinition_simple_name(document, node.value.redefines.as_ref())?,
+                None,
+            ),
         };
         let positional_end = self.next_positional_end_ordinal(owner)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
@@ -528,6 +541,7 @@ impl SemanticModelBuilder {
                 direction: direction_node_fact(prefix.direction.as_ref()),
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 positional_end: Some(positional_end),
+                derivation_end,
                 ..DeclarationFacts::none()
             },
         )?;
@@ -559,7 +573,41 @@ impl SemanticModelBuilder {
                 })?;
             }
         }
+        if let Some(relationship) = &node.value.redefines {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
         Ok(())
+    }
+
+    /// The simple name of a `:>>` target, used when an end has no declaration label of its own
+    /// (`end :>> originalRequirement ::> need`).
+    fn redefinition_simple_name(
+        &mut self,
+        document: DocumentIdx,
+        relationship: Option<&Node<sysml_v2_parser::ast::SubsettingRelationship>>,
+    ) -> Result<Option<crate::model::NameId>, ConstructionError> {
+        let Some(relationship) = relationship else {
+            return Ok(None);
+        };
+        let Some(target) = relationship.value.target.first().copied() else {
+            return Ok(None);
+        };
+        let decoded = {
+            let parsed = &self.documents[document.index()].parsed;
+            let reference = parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?;
+            let last = reference
+                .segments
+                .len()
+                .checked_sub(1)
+                .ok_or(ConstructionError::InvalidParserReference)?;
+            reference
+                .segment_decoded_text(last)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .into_owned()
+        };
+        self.intern_declared_name(&decoded)
     }
 
     /// Lowers an inline `connect from to to (, extra)*` statement (BNF `ConnectStmt`) as
