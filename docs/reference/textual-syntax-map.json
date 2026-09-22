@@ -14,11 +14,27 @@
       "status": "supported",
       "notes": "OccurrenceDefinitionPrefix 'part' 'def' Definition; semicolon and brace bodies are both DefinitionBody.",
       "forms": [
-        { "kind": "accept", "path": "tests/snapshots/syntax/part_def_with_and_without_body.md" },
-        { "kind": "accept", "path": "tests/snapshots/sysml_part_def.md" },
-        { "kind": "accept", "path": "tests/snapshots/parse_part_def_with_body.md" },
-        { "kind": "accept", "path": "tests/snapshots/parse_package_with_parts.md" },
-        { "kind": "reject", "path": "tests/snapshots/incomplete_part_unmatched_braces.md", "code": "missing_closing_brace" }
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/part_def_with_and_without_body.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/sysml_part_def.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/parse_part_def_with_body.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/parse_package_with_parts.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/incomplete_part_unmatched_braces.md",
+          "code": "missing_closing_brace"
+        }
       ]
     },
     {
@@ -27,7 +43,10 @@
       "status": "supported",
       "notes": "OccurrenceUsagePrefix 'part' Usage; nested usages parse inside a part definition body.",
       "forms": [
-        { "kind": "accept", "path": "tests/snapshots/syntax/part_def_with_and_without_body.md" }
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/part_def_with_and_without_body.md"
+        }
       ]
     },
     {
@@ -35,7 +54,10 @@
       "production": "Definition",
       "status": "supported",
       "forms": [
-        { "kind": "accept", "path": "tests/snapshots/syntax/part_def_with_and_without_body.md" }
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/part_def_with_and_without_body.md"
+        }
       ]
     },
     {
@@ -44,8 +66,20 @@
       "status": "supported",
       "notes": "';' | '{' DefinitionBodyItem* '}'; declarations with and without a body must both parse.",
       "forms": [
-        { "kind": "accept", "path": "tests/snapshots/syntax/part_def_with_and_without_body.md" },
-        { "kind": "reject", "path": "tests/snapshots/incomplete_part_unmatched_braces.md", "code": "missing_closing_brace" }
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/part_def_with_and_without_body.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/incomplete_part_unmatched_braces.md",
+          "code": "missing_closing_brace"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/port_unmatched_braces.md",
+          "code": "missing_closing_brace"
+        }
       ]
     },
     {
@@ -53,7 +87,10 @@
       "production": "Package",
       "status": "supported",
       "forms": [
-        { "kind": "accept", "path": "tests/snapshots/parse_package_with_parts.md" }
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/parse_package_with_parts.md"
+        }
       ]
     },
     {
@@ -62,7 +99,10 @@
       "status": "supported",
       "notes": "IfNode has no 'then' keyword; ActionBodyParameter is always a braced body (SysML BNF 1123-1138). The shorthand `if <cond> then <a> else <b>;` is not a production.",
       "forms": [
-        { "kind": "accept", "path": "tests/snapshots/validation/sysml_if_action_usage_parameters.md" }
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/sysml_if_action_usage_parameters.md"
+        }
       ]
     },
     {
@@ -70,7 +110,10 @@
       "production": "ActionBodyParameter",
       "status": "supported",
       "forms": [
-        { "kind": "accept", "path": "tests/snapshots/validation/sysml_if_action_usage_parameters.md" }
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/sysml_if_action_usage_parameters.md"
+        }
       ]
     },
     {
@@ -79,7 +122,10 @@
       "status": "supported",
       "notes": "EffectBehaviorMember (`do`) is before TransitionSuccessionMember (`then`).",
       "forms": [
-        { "kind": "accept", "path": "tests/snapshots/validation/sysml_transition_feature_membership_effect_action.md" }
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/sysml_transition_feature_membership_effect_action.md"
+        }
       ]
     },
     {
@@ -87,7 +133,10 @@
       "production": "EffectBehaviorMember",
       "status": "supported",
       "forms": [
-        { "kind": "accept", "path": "tests/snapshots/validation/sysml_transition_feature_membership_effect_action.md" }
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/sysml_transition_feature_membership_effect_action.md"
+        }
       ]
     },
     {
@@ -97,8 +146,15 @@
       "notes": "One exclusive slot: `abstract` | `variation`. Pairing both keywords has no spelling and is recovered rather than parsed as two modifiers.",
       "issue": "abstract-syntax-nonrepresentable-abstract-variation",
       "forms": [
-        { "kind": "accept", "path": "tests/snapshots/validation/sysml_definition_variation_owned_feature_membership.md" },
-        { "kind": "reject", "path": "tests/snapshots/syntax/abstract_variation_is_unrepresentable.md", "code": "recovered_package_body_element" }
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/sysml_definition_variation_owned_feature_membership.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/abstract_variation_is_unrepresentable.md",
+          "code": "recovered_package_body_element"
+        }
       ]
     },
     {
@@ -107,8 +163,15 @@
       "status": "supported",
       "notes": "Variance slot is `abstract` | `variation`; `constant` is a separate optional. SysML has no `var`/`variable` keyword.",
       "forms": [
-        { "kind": "accept", "path": "tests/snapshots/validation/sysml_assignment_action_usage.md" },
-        { "kind": "reject", "path": "tests/snapshots/syntax/abstract_variation_is_unrepresentable.md", "code": "recovered_package_body_element" }
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/sysml_assignment_action_usage.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/abstract_variation_is_unrepresentable.md",
+          "code": "recovered_package_body_element"
+        }
       ]
     },
     {
@@ -117,7 +180,430 @@
       "status": "supported",
       "notes": "Feature typing is `:` / `typed by`. Classifier `specializes` is TypeDeclaration, not FeatureDeclaration.",
       "forms": [
-        { "kind": "accept", "path": "tests/snapshots/validation/kerml_connector_binary_specialization.md" }
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/kerml_connector_binary_specialization.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "PortDefinition",
+      "status": "supported",
+      "notes": "DefinitionPrefix 'port' 'def' Definition; semicolon and brace bodies are both DefinitionBody.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/port_def_with_and_without_body.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/sysml/training/10_port_example.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/port_unmatched_braces.md",
+          "code": "missing_closing_brace"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "PortUsage",
+      "status": "supported",
+      "notes": "OccurrenceUsagePrefix 'port' Usage, including nested ports in a port definition body.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/port_def_with_and_without_body.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/sysml_port_usage_is_reference.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConjugatedPortTyping",
+      "status": "supported",
+      "notes": "`~` QualifiedName; the fixture types a port as ~Power and publishes conjugated typing.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/port_def_with_and_without_body.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/sysml/training/10_port_conjugation_example.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConnectionDefinition",
+      "status": "supported",
+      "notes": "OccurrenceDefinitionPrefix 'connection' 'def' Definition, including end members.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/connect_and_bind.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/sysml/training/09_connections_example.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConnectionUsage",
+      "status": "supported",
+      "notes": "SysML spellings are 'connect' / 'connection \u2026 connect'. KerML 'connector \u2026 from \u2026 to' recovers. The keyword-less n-ary alternative 'connect (e1, e2, e3)' recovers in a part definition body; named 'connection \u2026 connect (\u2026)' parses.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/connect_and_bind.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/sysml/training/09_connections_example.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/connect_missing_to.md",
+          "code": "recovered_part_def_body_element"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/kerml_connector_spelling_in_sysml.md",
+          "code": "unrecognized_declaration_in_scope"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/nary_bare_connect.md",
+          "code": "recovered_part_def_body_element"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConnectorPart",
+      "status": "supported",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/connect_and_bind.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/connect_missing_to.md",
+          "code": "recovered_part_def_body_element"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "BinaryConnectorPart",
+      "status": "supported",
+      "notes": "owned ConnectorEndMember 'to' ConnectorEndMember.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/connect_and_bind.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/connect_missing_to.md",
+          "code": "recovered_part_def_body_element"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "NaryConnectorPart",
+      "status": "supported",
+      "notes": "Parenthesized ends parse on 'connection \u2026 connect (e1, e2, e3)'. The ConnectionUsage alternative 'connect (e1, e2, e3)' recovers in a part definition body because that dispatcher is binary-only.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/connect_and_bind.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/nary_bare_connect.md",
+          "code": "recovered_part_def_body_element"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConnectorEndMember",
+      "status": "supported",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/connect_and_bind.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ConnectorEnd",
+      "status": "supported",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/connect_and_bind.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "BindingConnectorAsUsage",
+      "status": "supported",
+      "notes": "SysML is 'bind' / 'binding' UsageDeclaration 'bind'. KerML 'binding \u2026 of \u2026 =' recovers in a SysML fence.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/connect_and_bind.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/sysml/training/14_action_definition_example.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/kerml_connector_spelling_in_sysml.md",
+          "code": "unrecognized_declaration_in_scope"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceDefinition",
+      "status": "supported",
+      "notes": "'interface' 'def' DefinitionDeclaration InterfaceBody; a connect clause belongs on InterfaceUsage, not the definition.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/interface_connect.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/interface_def_cannot_connect.md",
+          "code": "recovered_part_def_body_element"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceBody",
+      "status": "supported",
+      "notes": "';' | '{' InterfaceBodyItem* '}'; semicolon and brace bodies both parse.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/interface_connect.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/interface_def_cannot_connect.md",
+          "code": "recovered_part_def_body_element"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceUsage",
+      "status": "supported",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/interface_connect.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfaceUsageDeclaration",
+      "status": "supported",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/interface_connect.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "InterfacePart",
+      "status": "supported",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/interface_connect.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "BinaryInterfacePart",
+      "status": "supported",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/interface_connect.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "DefaultInterfaceEnd",
+      "status": "supported",
+      "notes": "isEnd ?= 'end' Usage inside an interface definition body.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/interface_connect.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionDefinition",
+      "status": "supported",
+      "notes": "OccurrenceDefinitionPrefix 'action' 'def' DefinitionDeclaration ActionBody; semicolon and brace bodies both parse.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/action_def_with_and_without_body.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/sysml/training/14_action_definition_example.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/action_missing_terminator.md",
+          "code": "missing_body_or_semicolon"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionUsage",
+      "status": "supported",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/action_def_with_and_without_body.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionBody",
+      "status": "supported",
+      "notes": "';' | '{' ActionBodyItem* '}'; declarations with and without a body must both parse.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/action_def_with_and_without_body.md"
+        },
+        {
+          "kind": "reject",
+          "path": "tests/snapshots/syntax/action_missing_terminator.md",
+          "code": "missing_body_or_semicolon"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionBodyItem",
+      "status": "supported",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/action_def_with_and_without_body.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionUsageDeclaration",
+      "status": "supported",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/action_def_with_and_without_body.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "ActionBehaviorMember",
+      "status": "supported",
+      "notes": "Nested action usages in an action definition body, including SourceSuccessionMember 'then action'.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/action_def_with_and_without_body.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "SuccessionAsUsage",
+      "status": "supported",
+      "notes": "'first' ConnectorEndMember 'then' ConnectorEndMember inside an action body.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/action_def_with_and_without_body.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/sysml/training/14_action_succession_example_1.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "SourceSuccessionMember",
+      "status": "supported",
+      "notes": "'then' before an ActionBehaviorMember.",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/action_def_with_and_without_body.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "PerformActionUsage",
+      "status": "supported",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/action_def_with_and_without_body.md"
+        },
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/validation/sysml_perform_action_usage_reference.md"
+        }
+      ]
+    },
+    {
+      "grammar": "SysML",
+      "production": "PerformActionUsageDeclaration",
+      "status": "supported",
+      "forms": [
+        {
+          "kind": "accept",
+          "path": "tests/snapshots/syntax/action_def_with_and_without_body.md"
+        }
       ]
     }
   ]

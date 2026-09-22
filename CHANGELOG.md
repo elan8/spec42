@@ -12,7 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   parser revision and the bundled 2026-04 kebnf. Several validation fixtures that blamed parser
   gaps were using spellings the grammar does not contain (`if … then`, `then … do`, `abstract
   variation`, SysML `var`, KerML `connector … specializes`); they now author the productions,
-  and dual-keyword `abstract variation` is an explicit grammar exclusion.
+  and dual-keyword `abstract variation` is an explicit grammar exclusion. Ports, connections,
+  interfaces, and actions have dedicated accept/reject snapshots: SysML `connect`/`bind` parse,
+  KerML `connector … from` / `binding … of` in a SysML fence recover, and the keyword-less n-ary
+  `connect (e1, e2, e3)` alternative recovers in a part definition body while named
+  `connection … connect (…)` parses.
 
 - **Workspace dependency hygiene and incremental-vs-full publication parity (#43).** `walkdir`,
   `sha2`, `toml`, and `zip` are declared once in `[workspace.dependencies]` and inherited by

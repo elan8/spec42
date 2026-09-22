@@ -139,6 +139,12 @@ regenerating the lockfile through the normal dependency workflow.
   annotating element with `keyword_span: None`. Keeping trivia out of the AST is a defensible
   design; the entry stays so the ceiling on documentation fidelity is not rediscovered.
 
+- Bare n-ary `connect (e1, e2, e3)` (`NaryConnectorPart` as the ConnectionUsage alternative
+  `'connect' ConnectorPart`) recovers as `recovered_part_def_body_element` in a part definition
+  body. The part-body dispatcher uses binary-only `connect_`, while named
+  `connection … connect (e1, e2, e3)` parses through `connect_ends`. Evidence:
+  `tests/snapshots/syntax/nary_bare_connect.md` and `tests/snapshots/syntax/connect_and_bind.md`.
+
 ### Closed by grammar, not by the parser
 
 Gaps 76, 77, 78 and 52 were recorded as parser gaps because Spec42 fixtures used spellings the

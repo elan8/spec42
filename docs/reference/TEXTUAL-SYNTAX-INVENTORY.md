@@ -2,7 +2,7 @@
 
 Source: `https://github.com/Systems-Modeling/SysML-v2-Release` release `2026-04`, parser `9f00caf353581a3c0ccc13676c5d8829f90708b3`.
 
-Productions: **640** (SysML 350, KerML 290); supported: **12**; recovered: **0**; unsupported: **0**; untested: **628**.
+Productions: **640** (SysML 350, KerML 290); supported: **40**; recovered: **0**; unsupported: **0**; untested: **600**.
 
 Status is Spec42's verified compiler/LSP coverage of the pinned textual BNF, not the parser's L1 classification map. Untested means the production is known in the pin but has no executable accept/reject example in this inventory yet.
 
@@ -11,20 +11,20 @@ Status is Spec42's verified compiler/LSP coverage of the pinned textual BNF, not
 | SysML | `AcceptNode` | untested | — |  |
 | SysML | `AcceptNodeDeclaration` | untested | — |  |
 | SysML | `AcceptParameterPart` | untested | — |  |
-| SysML | `ActionBehaviorMember` | untested | — |  |
-| SysML | `ActionBody` | untested | — |  |
-| SysML | `ActionBodyItem` | untested | — |  |
+| SysML | `ActionBehaviorMember` | supported | `accept` `tests/snapshots/syntax/action_def_with_and_without_body.md` | Nested action usages in an action definition body, including SourceSuccessionMember 'then action'. |
+| SysML | `ActionBody` | supported | `accept` `tests/snapshots/syntax/action_def_with_and_without_body.md`<br>`reject` `tests/snapshots/syntax/action_missing_terminator.md` | ';' \| '{' ActionBodyItem* '}'; declarations with and without a body must both parse. |
+| SysML | `ActionBodyItem` | supported | `accept` `tests/snapshots/syntax/action_def_with_and_without_body.md` |  |
 | SysML | `ActionBodyParameter` | supported | `accept` `tests/snapshots/validation/sysml_if_action_usage_parameters.md` |  |
 | SysML | `ActionBodyParameterMember` | untested | — |  |
-| SysML | `ActionDefinition` | untested | — |  |
+| SysML | `ActionDefinition` | supported | `accept` `tests/snapshots/syntax/action_def_with_and_without_body.md`<br>`accept` `tests/snapshots/sysml/training/14_action_definition_example.md`<br>`reject` `tests/snapshots/syntax/action_missing_terminator.md` | OccurrenceDefinitionPrefix 'action' 'def' DefinitionDeclaration ActionBody; semicolon and brace bodies both parse. |
 | SysML | `ActionNode` | untested | — |  |
 | SysML | `ActionNodeMember` | untested | — |  |
 | SysML | `ActionNodePrefix` | untested | — |  |
 | SysML | `ActionNodeUsageDeclaration` | untested | — |  |
 | SysML | `ActionTargetSuccession` | untested | — |  |
 | SysML | `ActionTargetSuccessionMember` | untested | — |  |
-| SysML | `ActionUsage` | untested | — |  |
-| SysML | `ActionUsageDeclaration` | untested | — |  |
+| SysML | `ActionUsage` | supported | `accept` `tests/snapshots/syntax/action_def_with_and_without_body.md` |  |
+| SysML | `ActionUsageDeclaration` | supported | `accept` `tests/snapshots/syntax/action_def_with_and_without_body.md` |  |
 | SysML | `ActorMember` | untested | — |  |
 | SysML | `ActorUsage` | untested | — |  |
 | SysML | `AliasMember` | untested | — |  |
@@ -54,9 +54,9 @@ Status is Spec42's verified compiler/LSP coverage of the pinned textual BNF, not
 | SysML | `BasicUsagePrefix` | untested | — |  |
 | SysML | `BehaviorUsageElement` | untested | — |  |
 | SysML | `BehaviorUsageMember` | untested | — |  |
-| SysML | `BinaryConnectorPart` | untested | — |  |
-| SysML | `BinaryInterfacePart` | untested | — |  |
-| SysML | `BindingConnectorAsUsage` | untested | — |  |
+| SysML | `BinaryConnectorPart` | supported | `accept` `tests/snapshots/syntax/connect_and_bind.md`<br>`reject` `tests/snapshots/syntax/connect_missing_to.md` | owned ConnectorEndMember 'to' ConnectorEndMember. |
+| SysML | `BinaryInterfacePart` | supported | `accept` `tests/snapshots/syntax/interface_connect.md` |  |
+| SysML | `BindingConnectorAsUsage` | supported | `accept` `tests/snapshots/syntax/connect_and_bind.md`<br>`accept` `tests/snapshots/sysml/training/14_action_definition_example.md`<br>`reject` `tests/snapshots/syntax/kerml_connector_spelling_in_sysml.md` | SysML is 'bind' / 'binding' UsageDeclaration 'bind'. KerML 'binding … of … =' recovers in a SysML fence. |
 | SysML | `CROSSES` | untested | — |  |
 | SysML | `CalculationBody` | untested | — |  |
 | SysML | `CalculationBodyItem` | untested | — |  |
@@ -72,12 +72,12 @@ Status is Spec42's verified compiler/LSP coverage of the pinned textual BNF, not
 | SysML | `ConcernUsage` | untested | — |  |
 | SysML | `ConjugatedPortDefinition` | untested | — |  |
 | SysML | `ConjugatedPortDefinitionMember` | untested | — |  |
-| SysML | `ConjugatedPortTyping` | untested | — |  |
-| SysML | `ConnectionDefinition` | untested | — |  |
-| SysML | `ConnectionUsage` | untested | — |  |
-| SysML | `ConnectorEnd` | untested | — |  |
-| SysML | `ConnectorEndMember` | untested | — |  |
-| SysML | `ConnectorPart` | untested | — |  |
+| SysML | `ConjugatedPortTyping` | supported | `accept` `tests/snapshots/syntax/port_def_with_and_without_body.md`<br>`accept` `tests/snapshots/sysml/training/10_port_conjugation_example.md` | `~` QualifiedName; the fixture types a port as ~Power and publishes conjugated typing. |
+| SysML | `ConnectionDefinition` | supported | `accept` `tests/snapshots/syntax/connect_and_bind.md`<br>`accept` `tests/snapshots/sysml/training/09_connections_example.md` | OccurrenceDefinitionPrefix 'connection' 'def' Definition, including end members. |
+| SysML | `ConnectionUsage` | supported | `accept` `tests/snapshots/syntax/connect_and_bind.md`<br>`accept` `tests/snapshots/sysml/training/09_connections_example.md`<br>`reject` `tests/snapshots/syntax/connect_missing_to.md`<br>`reject` `tests/snapshots/syntax/kerml_connector_spelling_in_sysml.md`<br>`reject` `tests/snapshots/syntax/nary_bare_connect.md` | SysML spellings are 'connect' / 'connection … connect'. KerML 'connector … from … to' recovers. The keyword-less n-ary alternative 'connect (e1, e2, e3)' recovers in a part definition body; named 'connection … connect (…)' parses. |
+| SysML | `ConnectorEnd` | supported | `accept` `tests/snapshots/syntax/connect_and_bind.md` |  |
+| SysML | `ConnectorEndMember` | supported | `accept` `tests/snapshots/syntax/connect_and_bind.md` |  |
+| SysML | `ConnectorPart` | supported | `accept` `tests/snapshots/syntax/connect_and_bind.md`<br>`reject` `tests/snapshots/syntax/connect_missing_to.md` |  |
 | SysML | `ConstraintDefinition` | untested | — |  |
 | SysML | `ConstraintUsage` | untested | — |  |
 | SysML | `ConstraintUsageDeclaration` | untested | — |  |
@@ -86,11 +86,11 @@ Status is Spec42's verified compiler/LSP coverage of the pinned textual BNF, not
 | SysML | `Crosses` | untested | — |  |
 | SysML | `DEFINED_BY` | untested | — |  |
 | SysML | `DecisionNode` | untested | — |  |
-| SysML | `DefaultInterfaceEnd` | untested | — |  |
+| SysML | `DefaultInterfaceEnd` | supported | `accept` `tests/snapshots/syntax/interface_connect.md` | isEnd ?= 'end' Usage inside an interface definition body. |
 | SysML | `DefaultReferenceUsage` | untested | — |  |
 | SysML | `DefaultTargetSuccession` | untested | — |  |
 | SysML | `Definition` | supported | `accept` `tests/snapshots/syntax/part_def_with_and_without_body.md` |  |
-| SysML | `DefinitionBody` | supported | `accept` `tests/snapshots/syntax/part_def_with_and_without_body.md`<br>`reject` `tests/snapshots/incomplete_part_unmatched_braces.md` | ';' \| '{' DefinitionBodyItem* '}'; declarations with and without a body must both parse. |
+| SysML | `DefinitionBody` | supported | `accept` `tests/snapshots/syntax/part_def_with_and_without_body.md`<br>`reject` `tests/snapshots/incomplete_part_unmatched_braces.md`<br>`reject` `tests/snapshots/syntax/port_unmatched_braces.md` | ';' \| '{' DefinitionBodyItem* '}'; declarations with and without a body must both parse. |
 | SysML | `DefinitionBodyItem` | untested | — |  |
 | SysML | `DefinitionDeclaration` | untested | — |  |
 | SysML | `DefinitionElement` | untested | — |  |
@@ -166,18 +166,18 @@ Status is Spec42's verified compiler/LSP coverage of the pinned textual BNF, not
 | SysML | `IndividualDefinition` | untested | — |  |
 | SysML | `IndividualUsage` | untested | — |  |
 | SysML | `InitialNodeMember` | untested | — |  |
-| SysML | `InterfaceBody` | untested | — |  |
+| SysML | `InterfaceBody` | supported | `accept` `tests/snapshots/syntax/interface_connect.md`<br>`reject` `tests/snapshots/syntax/interface_def_cannot_connect.md` | ';' \| '{' InterfaceBodyItem* '}'; semicolon and brace bodies both parse. |
 | SysML | `InterfaceBodyItem` | untested | — |  |
-| SysML | `InterfaceDefinition` | untested | — |  |
+| SysML | `InterfaceDefinition` | supported | `accept` `tests/snapshots/syntax/interface_connect.md`<br>`reject` `tests/snapshots/syntax/interface_def_cannot_connect.md` | 'interface' 'def' DefinitionDeclaration InterfaceBody; a connect clause belongs on InterfaceUsage, not the definition. |
 | SysML | `InterfaceEnd` | untested | — |  |
 | SysML | `InterfaceEndMember` | untested | — |  |
 | SysML | `InterfaceNonOccurrenceUsageElement` | untested | — |  |
 | SysML | `InterfaceNonOccurrenceUsageMember` | untested | — |  |
 | SysML | `InterfaceOccurrenceUsageElement` | untested | — |  |
 | SysML | `InterfaceOccurrenceUsageMember` | untested | — |  |
-| SysML | `InterfacePart` | untested | — |  |
-| SysML | `InterfaceUsage` | untested | — |  |
-| SysML | `InterfaceUsageDeclaration` | untested | — |  |
+| SysML | `InterfacePart` | supported | `accept` `tests/snapshots/syntax/interface_connect.md` |  |
+| SysML | `InterfaceUsage` | supported | `accept` `tests/snapshots/syntax/interface_connect.md` |  |
+| SysML | `InterfaceUsageDeclaration` | supported | `accept` `tests/snapshots/syntax/interface_connect.md` |  |
 | SysML | `ItemDefinition` | untested | — |  |
 | SysML | `ItemUsage` | untested | — |  |
 | SysML | `JoinNode` | untested | — |  |
@@ -201,7 +201,7 @@ Status is Spec42's verified compiler/LSP coverage of the pinned textual BNF, not
 | SysML | `MultiplicityRange` | untested | — |  |
 | SysML | `NamespaceExpose` | untested | — |  |
 | SysML | `NamespaceImport` | untested | — |  |
-| SysML | `NaryConnectorPart` | untested | — |  |
+| SysML | `NaryConnectorPart` | supported | `accept` `tests/snapshots/syntax/connect_and_bind.md`<br>`reject` `tests/snapshots/syntax/nary_bare_connect.md` | Parenthesized ends parse on 'connection … connect (e1, e2, e3)'. The ConnectionUsage alternative 'connect (e1, e2, e3)' recovers in a part definition body because that dispatcher is binary-only. |
 | SysML | `NaryInterfacePart` | untested | — |  |
 | SysML | `NodeParameter` | untested | — |  |
 | SysML | `NodeParameterMember` | untested | — |  |
@@ -242,11 +242,11 @@ Status is Spec42's verified compiler/LSP coverage of the pinned textual BNF, not
 | SysML | `PayloadFeatureSpecializationPart` | untested | — |  |
 | SysML | `PayloadParameter` | untested | — |  |
 | SysML | `PayloadParameterMember` | untested | — |  |
-| SysML | `PerformActionUsage` | untested | — |  |
-| SysML | `PerformActionUsageDeclaration` | untested | — |  |
+| SysML | `PerformActionUsage` | supported | `accept` `tests/snapshots/syntax/action_def_with_and_without_body.md`<br>`accept` `tests/snapshots/validation/sysml_perform_action_usage_reference.md` |  |
+| SysML | `PerformActionUsageDeclaration` | supported | `accept` `tests/snapshots/syntax/action_def_with_and_without_body.md` |  |
 | SysML | `PortConjugation` | untested | — |  |
-| SysML | `PortDefinition` | untested | — |  |
-| SysML | `PortUsage` | untested | — |  |
+| SysML | `PortDefinition` | supported | `accept` `tests/snapshots/syntax/port_def_with_and_without_body.md`<br>`accept` `tests/snapshots/sysml/training/10_port_example.md`<br>`reject` `tests/snapshots/syntax/port_unmatched_braces.md` | DefinitionPrefix 'port' 'def' Definition; semicolon and brace bodies are both DefinitionBody. |
+| SysML | `PortUsage` | supported | `accept` `tests/snapshots/syntax/port_def_with_and_without_body.md`<br>`accept` `tests/snapshots/validation/sysml_port_usage_is_reference.md` | OccurrenceUsagePrefix 'port' Usage, including nested ports in a port definition body. |
 | SysML | `PortionKind` | untested | — |  |
 | SysML | `PortionUsage` | untested | — |  |
 | SysML | `PrefixMetadataAnnotation` | untested | — |  |
@@ -288,7 +288,7 @@ Status is Spec42's verified compiler/LSP coverage of the pinned textual BNF, not
 | SysML | `SourceEnd` | untested | — |  |
 | SysML | `SourceEndMember` | untested | — |  |
 | SysML | `SourceSuccession` | untested | — |  |
-| SysML | `SourceSuccessionMember` | untested | — |  |
+| SysML | `SourceSuccessionMember` | supported | `accept` `tests/snapshots/syntax/action_def_with_and_without_body.md` | 'then' before an ActionBehaviorMember. |
 | SysML | `StakeholderMember` | untested | — |  |
 | SysML | `StakeholderUsage` | untested | — |  |
 | SysML | `StateAcceptActionUsage` | untested | — |  |
@@ -308,7 +308,7 @@ Status is Spec42's verified compiler/LSP coverage of the pinned textual BNF, not
 | SysML | `SubjectUsage` | untested | — |  |
 | SysML | `Subsets` | untested | — |  |
 | SysML | `Subsettings` | untested | — |  |
-| SysML | `SuccessionAsUsage` | untested | — |  |
+| SysML | `SuccessionAsUsage` | supported | `accept` `tests/snapshots/syntax/action_def_with_and_without_body.md`<br>`accept` `tests/snapshots/sysml/training/14_action_succession_example_1.md` | 'first' ConnectorEndMember 'then' ConnectorEndMember inside an action body. |
 | SysML | `SuccessionFlowUsage` | untested | — |  |
 | SysML | `TargetSuccession` | untested | — |  |
 | SysML | `TargetTransitionUsage` | untested | — |  |
