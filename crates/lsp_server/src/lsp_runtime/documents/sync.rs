@@ -213,25 +213,27 @@ pub(crate) async fn did_close(
         .await
         .unwrap_or(false);
     // An unsaved editor buffer ceases to be authoritative on close. Re-admit the on-disk source
-    // through the same watched-file path so dependants and project diagnostics use that revision.
-    let typ = if uri.to_file_path().ok().is_some_and(|path| path.is_file()) {
-        FileChangeType::CHANGED
-    } else {
-        FileChangeType::DELETED
-    };
-    did_change_watched_files(
-        client,
-        handle,
-        config,
-        runtime_config,
-        DidChangeWatchedFilesParams {
-            changes: vec![FileEvent {
-                uri: uri.clone(),
-                typ,
-            }],
-        },
-    )
-    .await;
+    // through the same watched-file path so dependants and project diagnostics use that
+    // revision. A URI with no backing file on disk is not this rule's concern -- it is either an
+    // unsaved buffer the workspace never scanned, or a file a concurrent delete already reported
+    // through the client's own file watcher -- so synthesizing a DELETED event here would remove
+    // it from the index on nothing more than a race with that watcher, or on every close of a
+    // buffer that was never saved at all.
+    if uri.to_file_path().ok().is_some_and(|path| path.is_file()) {
+        did_change_watched_files(
+            client,
+            handle,
+            config,
+            runtime_config,
+            DidChangeWatchedFilesParams {
+                changes: vec![FileEvent {
+                    uri: uri.clone(),
+                    typ: FileChangeType::CHANGED,
+                }],
+            },
+        )
+        .await;
+    }
     // Library diagnostics are only shown while their editor is open.
     if library {
         client.publish_diagnostics(uri, vec![], None).await;
