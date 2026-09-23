@@ -139,11 +139,17 @@ impl ResolvedExpressionIndex {
         let mut member_access: std::collections::BTreeMap<DeclarationId, Vec<AuthoredReferenceId>> =
             std::collections::BTreeMap::new();
         for (index, reference) in inputs.storage.references.iter().enumerate() {
-            let id =
-                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            // `AuthoredReferenceId::from_index` is computed per matched kind, not once up front
+            // for every reference in the model: most references are neither an ExpressionOperand
+            // nor a MemberAccessOperand, and this loop runs once per reference in the whole
+            // workspace, not once per expression.
             if reference.kind == ReferenceKind::ExpressionOperand {
+                let id = AuthoredReferenceId::from_index(index)
+                    .map_err(|_| ResolutionError::Capacity)?;
                 ordered.entry(reference.source).or_default().push(id);
             } else if reference.kind == ReferenceKind::MemberAccessOperand {
+                let id = AuthoredReferenceId::from_index(index)
+                    .map_err(|_| ResolutionError::Capacity)?;
                 member_access.entry(reference.source).or_default().push(id);
             }
         }
@@ -636,12 +642,19 @@ impl TreeBuilder<'_> {
 
     /// Pairs a dotted chain with the `MemberAccessOperand` lowered for the same span.
     ///
-    /// A root expression has no span of its own (`Span::dummy`); the single remaining chain on
-    /// that declaration is the chain. Anything else stays unpaired so the tree is withheld
-    /// rather than attached to a different operand.
+    /// A root expression has no span of its own (`Span::dummy`). `self.member_access` is seeded
+    /// once per declaration, ordinal-sorted (source order), and pendings are walked in that same
+    /// source order (`operand_start`-sorted) with every nested (non-root) chain in an earlier
+    /// pending already matched-and-removed by the time a later pending's root is walked -- so the
+    /// earliest remaining entry is always this root's own chain, even when the declaration
+    /// authors several independent bare dotted-chain expressions (e.g.
+    /// `require constraint { s.enabled; t.ready; }`), not just one. Requiring exactly one
+    /// candidate to *remain* here (rather than taking the earliest) would treat every such
+    /// declaration but the last pending as unpaired, downgrading the whole declaration to
+    /// `Unsupported` instead of resolving each chain.
     fn member_access_feature(&mut self, span: Span) -> Option<u32> {
         let position = if span == Span::dummy() {
-            (self.member_access.len() == 1).then_some(0)
+            (!self.member_access.is_empty()).then_some(0)
         } else {
             self.member_access
                 .iter()

@@ -1674,3 +1674,78 @@ fn interconnection_view_treats_a_dotted_bind_as_a_resolved_connector() {
         .count();
     assert_eq!(connectors, 1, "the delegation bind is one connector edge");
 }
+
+/// `bind inner.nested = boundary;` is the mirror image of the test above: the dotted operand is
+/// `left` (source) instead of `right` (target). The two ends publish as `MemberAccessOperand` and
+/// `BindTarget`, and "bindTarget" sorts before "memberAccessOperand" in the deterministic overall
+/// relationship order -- so composing the edge by array position after that sort, rather than by
+/// each end's original authoring order, silently swaps source and target here even though the
+/// test above (whose ends sort the other way) would still pass.
+#[test]
+fn interconnection_view_orders_a_dotted_bind_source_correctly_when_the_source_is_dotted() {
+    let published = build(
+        BuildRequest::new(
+            vec![
+                SourceInput::new(
+                    "memory://standard-views.sysml",
+                    "standard library package StandardViewDefinitions { view def InterconnectionView; }"
+                        .to_owned(),
+                    SourceKind::StandardLibrary,
+                ),
+                SourceInput::new(
+                    "memory://model.sysml",
+                    concat!(
+                        "package Model { import StandardViewDefinitions::*; ",
+                        "part def Machine { ",
+                        "port boundary; ",
+                        "part inner { port nested; } ",
+                        "bind inner.nested = boundary; ",
+                        "} ",
+                        "view external : InterconnectionView { expose Machine; } }",
+                    )
+                    .to_owned(),
+                    SourceKind::Workspace,
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let catalog = match published.diagram_view_catalog().answer {
+        QueryAnswer::Resolved(catalog) => catalog,
+        other => panic!("expected diagram catalog, got {other:?}"),
+    };
+    let view = catalog
+        .iter()
+        .find(|view| view.kind == DiagramViewKind::Interconnection)
+        .expect("interconnection view");
+    let projection = match published.diagram_view(view.semantic_id).answer {
+        QueryAnswer::Resolved(projection) => projection,
+        other => panic!("expected interconnection projection, got {other:?}"),
+    };
+    let nested = projection
+        .elements
+        .iter()
+        .find(|element| element.name.as_deref() == Some("nested"))
+        .expect("expected port usage nested");
+    let boundary = projection
+        .elements
+        .iter()
+        .find(|element| element.name.as_deref() == Some("boundary"))
+        .expect("expected port usage boundary");
+    let connector = projection
+        .edges
+        .iter()
+        .find(|edge| edge.kind == DiagramEdgeKind::Connector)
+        .expect("the delegation bind is one connector edge");
+    assert_eq!(
+        connector.source, nested.occurrence_id,
+        "bind inner.nested = boundary: the dotted left operand is the source"
+    );
+    assert_eq!(
+        connector.target, boundary.occurrence_id,
+        "bind inner.nested = boundary: the plain right operand is the target"
+    );
+}

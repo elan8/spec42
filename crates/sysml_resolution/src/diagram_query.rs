@@ -832,7 +832,7 @@ impl PublishedResolution {
             if view_entry.kind == DiagramViewKind::Interconnection
                 && is_binding_connector(element.kind)
             {
-                let ends = outgoing
+                let mut ends = outgoing
                     .iter()
                     .filter(|relationship| {
                         matches!(
@@ -844,6 +844,24 @@ impl PublishedResolution {
                     })
                     .copied()
                     .collect::<Vec<_>>();
+                // `relationships` above is sorted by "{source}#{kind_name}:{ordinal}" for
+                // deterministic overall output, which reorders these two ends by kind name
+                // ("bindTarget" < "memberAccessOperand") whenever the dotted side and the plain
+                // side have different kinds -- e.g. `bind inner.nested = boundary;` would then
+                // report `boundary` as the source. `ordinal` does not help: it is each
+                // relationship's position among the *resolved* facts the authority publishes,
+                // which for a dotted chain reflects when member-access resolution finished, not
+                // when `left` was lowered relative to `right` -- empirically the plain `right`
+                // operand's simple reference can resolve (and so get a lower ordinal) before the
+                // dotted `left` operand's chain does. `left` is always textually to the left of
+                // `right` in `bind left = right`, though, so sorting by each end's own authored
+                // source position -- which does not depend on resolution timing -- recovers the
+                // source/target roles reliably regardless of which kind each end ended up as.
+                ends.sort_by_key(|relationship| {
+                    relationship
+                        .source_location
+                        .map(|location| (location.document, location.range.start))
+                });
                 match ends.as_slice() {
                     [first, second] => {
                         match (

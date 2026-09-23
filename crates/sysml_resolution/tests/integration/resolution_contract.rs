@@ -6272,6 +6272,72 @@ fn dotted_constraint_operand_exports_a_resolved_comparison() {
     }
 }
 
+/// Two separate bare dotted-chain boolean expressions on one declaration used to collapse the
+/// whole declaration to `Unsupported`: the root-expression lookup required *exactly one*
+/// remaining `MemberAccessOperand` candidate across the whole declaration, so as soon as a second
+/// bare chain existed anywhere on it, neither pending's root ever matched.
+#[test]
+fn multiple_bare_dotted_chain_operands_on_one_declaration_each_resolve() {
+    let published = build(
+        BuildRequest::new(
+            vec![SourceInput::new(
+                "memory://model.sysml",
+                concat!(
+                    "package Model { ",
+                    "part def Subject { attribute enabled; } ",
+                    "part def Trigger { attribute ready; } ",
+                    "requirement def Check { ",
+                    "subject s : Subject; ",
+                    "ref t : Trigger; ",
+                    "require constraint { s.enabled; t.ready; } ",
+                    "} ",
+                    "}",
+                )
+                .to_owned(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let symbols = settled(published.document_symbols("memory://model.sysml"));
+    let constraint = symbols
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.kind,
+                ElementKind::ConstraintUsage | ElementKind::AssertConstraintUsage
+            )
+        })
+        .expect("require constraint");
+    let expression = settled(published.resolved_expression(constraint.identity));
+    assert_eq!(
+        expression.outcome,
+        ExpressionOutcome::Resolved,
+        "each bare dotted chain should resolve independently, not collapse the declaration"
+    );
+    let root = expression.root.expect("conjoined root");
+    match &expression.nodes[root as usize].kind {
+        ExpressionNodeKind::Operator {
+            operator: ExpressionOperator::And,
+            operands,
+        } => {
+            assert_eq!(operands.len(), 2, "both bare chains are conjoined");
+            for operand in operands.iter() {
+                match &expression.nodes[*operand as usize].kind {
+                    ExpressionNodeKind::FeatureReference {
+                        symbol: Some(_), ..
+                    } => {}
+                    other => panic!("expected a resolved dotted-chain operand, got {other:?}"),
+                }
+            }
+        }
+        other => panic!("expected the two chains conjoined with And, got {other:?}"),
+    }
+}
+
 #[test]
 fn derivation_shorthand_and_redefined_ends_name_the_standard_features() {
     let library = r#"
