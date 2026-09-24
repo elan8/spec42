@@ -175,7 +175,8 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         | K::KermlConnector
         | K::KermlBinding
         | K::KermlInvariant
-        | K::KermlEnd => return None,
+        | K::KermlEnd
+        | K::CommentUsage => return None,
     })
 }
 

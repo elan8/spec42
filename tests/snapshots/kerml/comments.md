@@ -75,6 +75,8 @@ package Comments {
     (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text "\n*AAA\n * BBB")) (comment (text "\n    *\n    *\n    * AAA  ***   \n    *BBB\n    \t\t\t\t\t\t\t\t")) (comment (text "\n *       AAAA\n *       BBBB           ")) (comment (text " AAAA\n \n \n  * BBBB\n *\n * CCCC\n ")) (comment (locale "en_US") (text "\n * AAAA\n * BBBB\n *    CCC DDD    \n ")) (comment (text " comment inside a package ")) (comment (text " Named Comment ")) (comment (text " Other Comment about Comment ")) (comment (text " abc "))))
     (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::A"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::C"))) (kind class-def) (membership (kind owning) (visibility default)) (documentation (doc (locale "en_US") (text " Documentation on Class C ")) (comment (text " Comment in Class C ")) (comment (text " Comment about Package "))))
+    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::cmt"))) (kind comment) (membership (kind feature) (visibility default)) (documentation (comment (text " Named Comment "))))
+    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::cmt_cmt"))) (kind comment) (membership (kind feature) (visibility default)) (documentation (comment (text " Other Comment about Comment "))))
   )
   (references
   )

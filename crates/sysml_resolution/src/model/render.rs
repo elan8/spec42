@@ -2100,6 +2100,7 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::StateUsage => "state",
         DeclarationKind::MetadataDefinition => "metadata-def",
         DeclarationKind::MetadataUsage => "metadata",
+        DeclarationKind::CommentUsage => "comment",
         DeclarationKind::ConnectionDefinition => "connection-def",
         DeclarationKind::InterfaceDefinition => "interface-def",
         DeclarationKind::ConnectionUsage => "connection",

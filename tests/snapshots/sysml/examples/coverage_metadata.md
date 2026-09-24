@@ -54,7 +54,7 @@ package Annotated {
   (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:b6dea6c5b4a157636cd1481ba69322e85512b6e1cdab2e60932d7965b6c5b6c0"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (path (named (kind package) (name "Annotated")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "Classified")) (metadataAnnotationAbout (reference "Annotated")))))
+    (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (path (named (kind package) (name "Annotated")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Classified")) (metadataAnnotation (reference "Classified")) (metadataAnnotationAbout (reference "Annotated")))))
     (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::AnnotatedPart"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::MultiAnnotated"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -64,6 +64,9 @@ package Annotated {
     (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified"))) (kind metadata-def) (membership (kind owning) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/coverage_metadata.md") (path (named (kind package) (name "Annotated")) (anonymous (kind metadata) (ordinal 0))))) (kind featureTyping) (ordinal 0))
+      (authored-target "Classified")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")))))
     (reference (id (source (node (document "memory://snapshot/coverage_metadata.md") (path (named (kind package) (name "Annotated")) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0))
       (authored-target "Classified")
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")))))
@@ -81,6 +84,7 @@ package Annotated {
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::Engine")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/coverage_metadata.md") (path (named (kind package) (name "Annotated")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_metadata.md") (path (named (kind package) (name "Annotated")) (anonymous (kind metadata) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
     (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/coverage_metadata.md") (path (named (kind package) (name "Annotated")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_metadata.md") (path (named (kind package) (name "Annotated")) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0)))
     (relationship (kind metadataAnnotationAbout) (source (node (document "memory://snapshot/coverage_metadata.md") (path (named (kind package) (name "Annotated")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_metadata.md") (path (named (kind package) (name "Annotated")) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotationAbout) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::m"))) (target (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::m"))) (kind featureTyping) (ordinal 0)))
@@ -94,12 +98,18 @@ package Annotated {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (path (named (kind package) (name "Annotated")) (anonymous (kind metadata) (ordinal 0)))))
+      (type (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")) (source direct))
+      (supertype (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::m")))
       (type (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")) (provenance authored))
       (effective-type (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")) (source direct))
       (supertype (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")))
+      (subtype (node (document "memory://snapshot/coverage_metadata.md") (path (named (kind package) (name "Annotated")) (anonymous (kind metadata) (ordinal 0)))) (scopes any))
       (subtype (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Annotated::m")) (scopes any))
     )
 )
@@ -115,6 +125,11 @@ package Annotated {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/coverage_metadata.md") (range (start 4 6) (end 4 16)) (probe (position 4 6))
+    (reference (id (source (node (document "memory://snapshot/coverage_metadata.md") (path (named (kind package) (name "Annotated")) (anonymous (kind metadata) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "Classified")
+      (outcome (status resolved) (target (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")))))
+    )
+  )
   (query (document "memory://snapshot/coverage_metadata.md") (range (start 4 6) (end 4 16)) (probe (position 4 6))
     (reference (id (source (node (document "memory://snapshot/coverage_metadata.md") (path (named (kind package) (name "Annotated")) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0) (authored-target "Classified")
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_metadata.md") (qualified-name "Classified")))))

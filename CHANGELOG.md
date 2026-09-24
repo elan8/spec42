@@ -16,6 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`#144`) and the later stack-overflow probes (`#142`, `#145`). Those probes do not change
   the AST.
 
+- **Three metadata/comment/redefinition export gaps fixed (#201).** A named `comment` (`comment
+  aboutP about p /* ... */`) now mints a real, referenceable declaration, so a later `metadata ...
+  about aboutP;` reference resolves instead of reporting `This reference does not resolve`. A
+  marker `metadata m : Tag;` nested in an `item`/`attribute` body now publishes resolved typing in
+  `model-export`, matching the identical syntax at package/part/action body level (both lowering
+  paths now push a `FeatureTyping` reference). A `MetadataBodyUsage` redefinition (`order = 1;`
+  inside a metadata usage body) now publishes its redefinition token as its own name, instead of an
+  empty name and a qualified name ending in `::`.
+
 - **Native diagram layout pins the elkrs crossings fix.** `crates/diagram_layout` now depends on
   `elan8/elkrs` at `84f95ae55688fe1e0d269d3a5080edf61b218c87` (merge of
   `fix-hierarchy-crossing-port-panic`). That revision no longer panics when a hierarchy-crossing
