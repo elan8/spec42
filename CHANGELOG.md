@@ -12,7 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`use case` usages accept a short name.** `UseCaseUsage` had no `short_name` field at all in
   the parser AST, unlike every sibling usage kind, so `use case <'S-01'> prepareEquipment { ... }`
   fell through to opaque body-element recovery instead of parsing. Pins
-  `elan8/sysml-v2-parser#144`.
+  `elan8/sysml-v2-parser@f60951e` (`main`), which includes the merged short-name support
+  (`#144`) and the later stack-overflow probes (`#142`, `#145`). Those probes do not change
+  the AST.
 
 - **Native diagram layout pins the elkrs crossings fix.** `crates/diagram_layout` now depends on
   `elan8/elkrs` at `84f95ae55688fe1e0d269d3a5080edf61b218c87` (merge of
