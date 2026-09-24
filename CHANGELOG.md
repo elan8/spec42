@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **CLI platform archives include the diagram Wasm plugin.** Each `spec42-<version>-<platform>`
+  archive now ships `generators/diagram.wasm` beside the `spec42` binary, the same plugin the
+  VSIX packages. `spec42 generate generators/diagram.wasm <model>` finds that file next to the
+  executable when it is not in the working directory.
+
 ## [0.53.0] - 2026-09-24
 
 - **`use case` usages accept a short name.** `UseCaseUsage` had no `short_name` field at all in

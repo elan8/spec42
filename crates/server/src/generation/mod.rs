@@ -168,21 +168,44 @@ struct GenerationManifest {
     artifacts: BTreeMap<String, String>,
 }
 
+/// `generators/diagram.wasm` beside the executable is the copy shipped in platform archives.
+/// A relative request for that plugin resolves there when the working directory does not
+/// contain it, so `spec42 generate generators/diagram.wasm <model>` works after the archive
+/// is extracted and `spec42` is on `PATH`.
+fn resolve_generator_path(requested: &Path, bundled: Option<&Path>) -> PathBuf {
+    if requested.is_file() {
+        return requested.to_path_buf();
+    }
+    let bundled_request = requested == Path::new("diagram.wasm")
+        || requested == Path::new("generators").join("diagram.wasm")
+        || requested.ends_with(Path::new("generators").join("diagram.wasm"));
+    if bundled_request {
+        if let Some(bundled) = bundled.filter(|path| path.is_file()) {
+            return bundled.to_path_buf();
+        }
+    }
+    requested.to_path_buf()
+}
+
+fn bundled_diagram_plugin() -> Option<PathBuf> {
+    let executable = std::env::current_exe().ok()?;
+    let candidate = executable.parent()?.join("generators").join("diagram.wasm");
+    candidate.is_file().then_some(candidate)
+}
+
 pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> {
     if !matches!(args.format, OutputFormat::Text | OutputFormat::Json) {
         return Err("generate supports only text and json output".to_owned());
     }
 
-    let module_bytes = match fs::read(&args.generator) {
+    let generator = resolve_generator_path(&args.generator, bundled_diagram_plugin().as_deref());
+    let module_bytes = match fs::read(&generator) {
         Ok(bytes) => bytes,
         Err(error) => {
             emit_simple_failure(
                 args.format,
                 GenerationStatus::ArtifactInvalid,
-                &format!(
-                    "failed to read generator {}: {error}",
-                    args.generator.display()
-                ),
+                &format!("failed to read generator {}: {error}", generator.display()),
             )?;
             return Ok(ExitCode::from(EXIT_API_INCOMPATIBLE));
         }
@@ -864,6 +887,31 @@ fn emit_host_failure(format: OutputFormat, error: &GeneratorHostError) -> Result
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn diagram_plugin_request_uses_the_copy_beside_the_executable() {
+        let dir =
+            std::env::temp_dir().join(format!("spec42-diagram-plugin-{}", std::process::id()));
+        let bundled_dir = dir.join("generators");
+        std::fs::create_dir_all(&bundled_dir).unwrap();
+        let bundled = bundled_dir.join("diagram.wasm");
+        std::fs::write(&bundled, b"wasm").unwrap();
+
+        let resolved = resolve_generator_path(
+            Path::new("generators").join("diagram.wasm").as_path(),
+            Some(&bundled),
+        );
+        assert_eq!(resolved, bundled);
+
+        let other = dir.join("custom.wasm");
+        std::fs::write(&other, b"wasm").unwrap();
+        assert_eq!(
+            resolve_generator_path(&other, Some(&bundled)),
+            other,
+            "an explicit plugin path is not replaced"
+        );
+        std::fs::remove_dir_all(&dir).ok();
+    }
 
     /// Plans, discarding the observed versions the commit path needs.
     fn plan_only(

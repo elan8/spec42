@@ -124,10 +124,37 @@ jobs:
       - name: Rust clippy
         run: cargo clippy --workspace --all-targets -- -W clippy::all
 
+  build-diagram-plugin:
+    name: Build diagram Wasm plugin
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
+          targets: wasm32-unknown-unknown
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build repository diagram plugin
+        run: SPEC42_PACKAGE_REPOSITORY_GENERATORS=0 bash scripts/build-repository-generator-plugins.sh
+
+      - name: Upload diagram plugin
+        uses: actions/upload-artifact@v6
+        with:
+          name: diagram-plugin
+          path: generator-plugins/target/wasm32-unknown-unknown/release/spec42_diagram_generator.wasm
+          if-no-files-found: error
+
   build-server:
     name: Build server (${{ matrix.runner }})
     runs-on: ${{ matrix.runner }}
-    needs: [preflight]
+    needs: [preflight, build-diagram-plugin]
     strategy:
       fail-fast: false
       matrix:
@@ -239,6 +266,12 @@ jobs:
             .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
           key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
 
+      - name: Download diagram plugin
+        uses: actions/download-artifact@v7
+        with:
+          name: diagram-plugin
+          path: diagram-plugin
+
       - name: Build release binary
         run: cargo build --release -p server --target ${{ matrix.target }}
 
@@ -248,9 +281,11 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           BIN="${{ env.BINARY_NAME }}${{ matrix.binary_ext }}"
           ARCHIVE="${{ env.BINARY_NAME }}-${VERSION}-${{ matrix.package_dir }}.${{ matrix.archive_ext }}"
-          mkdir -p staging
+          mkdir -p staging/generators
           cp "target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}" "staging/$BIN"
-          tar czf "$ARCHIVE" -C staging "$BIN"
+          cp diagram-plugin/spec42_diagram_generator.wasm staging/generators/diagram.wasm
+          test -s staging/generators/diagram.wasm
+          tar czf "$ARCHIVE" -C staging "$BIN" generators
           echo "ARCHIVE_NAME=$ARCHIVE" >> $GITHUB_ENV
 
       - name: Prepare archive (Windows)
@@ -259,7 +294,11 @@ jobs:
           $version = "${{ steps.version.outputs.version }}"
           $archive = "${{ env.BINARY_NAME }}-$version-${{ matrix.package_dir }}.zip"
           $releaseDir = "target/${{ matrix.target }}/release"
-          Compress-Archive -Path "$releaseDir/${{ env.BINARY_NAME }}.exe" -DestinationPath $archive
+          New-Item -ItemType Directory -Force -Path staging/generators | Out-Null
+          Copy-Item "$releaseDir/${{ env.BINARY_NAME }}.exe" "staging/${{ env.BINARY_NAME }}.exe"
+          Copy-Item "diagram-plugin/spec42_diagram_generator.wasm" "staging/generators/diagram.wasm"
+          if (-not (Test-Path "staging/generators/diagram.wasm")) { throw "diagram.wasm missing" }
+          Compress-Archive -Path "staging/${{ env.BINARY_NAME }}.exe", "staging/generators" -DestinationPath $archive
           echo "ARCHIVE_NAME=$archive" >> $env:GITHUB_ENV
         shell: pwsh
 
@@ -298,10 +337,10 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           BIN="${{ env.BINARY_NAME }}"
           mkdir -p vscode/server/linux-x64 vscode/server/darwin-x64 vscode/server/darwin-arm64 vscode/server/win32-x64
-          tar -xzf "artifacts/server/server-linux-x64/${BIN}-${VERSION}-linux-x64.tar.gz" -C vscode/server/linux-x64
-          tar -xzf "artifacts/server/server-darwin-x64/${BIN}-${VERSION}-darwin-x64.tar.gz" -C vscode/server/darwin-x64
-          tar -xzf "artifacts/server/server-darwin-arm64/${BIN}-${VERSION}-darwin-arm64.tar.gz" -C vscode/server/darwin-arm64
-          unzip -o -j "artifacts/server/server-win32-x64/${BIN}-${VERSION}-win32-x64.zip" -d vscode/server/win32-x64
+          tar -xzf "artifacts/server/server-linux-x64/${BIN}-${VERSION}-linux-x64.tar.gz" -C vscode/server/linux-x64 "$BIN"
+          tar -xzf "artifacts/server/server-darwin-x64/${BIN}-${VERSION}-darwin-x64.tar.gz" -C vscode/server/darwin-x64 "$BIN"
+          tar -xzf "artifacts/server/server-darwin-arm64/${BIN}-${VERSION}-darwin-arm64.tar.gz" -C vscode/server/darwin-arm64 "$BIN"
+          unzip -o -j "artifacts/server/server-win32-x64/${BIN}-${VERSION}-win32-x64.zip" "${BIN}.exe" -d vscode/server/win32-x64
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -488,7 +527,7 @@ jobs:
 
           ## Included Artifacts
 
-          - Platform archives include \`spec42\`.
+          - Platform archives include \`spec42\` and \`generators/diagram.wasm\` (the diagram generator used by \`spec42 generate\`).
           - The VS Code .vsix includes the matching language server binary.
           - The Zed extension can download the matching server binary automatically when no configured or PATH-installed \`spec42\` binary is found.
           - \`SHA256SUMS.txt\` contains checksums for all attached artifacts.
