@@ -11,7 +11,7 @@ permissions:
 jobs:
   audit:
     name: Dependency audit (full tree)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # The advisory gate: a new RustSec advisory against an existing dependency fails here rather
     # than blocking an unrelated PR. CI's `audit` job still runs on any lockfile change.
     steps:
@@ -27,7 +27,7 @@ jobs:
 
   npm-audit:
     name: npm dependency audit (shipped packages)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # The advisory gate for the npm side: a new advisory against a shipped dependency fails here
     # rather than blocking an unrelated PR. CI's `npm-audit` job still runs on any npm lockfile
     # change.
@@ -44,7 +44,7 @@ jobs:
 
   sysml-release-validation:
     name: SysML release validation (informational)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     continue-on-error: true
     steps:
       - uses: actions/checkout@v6
@@ -64,7 +64,7 @@ jobs:
           echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
 
       - name: Restore SysML stdlib bundle cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         id: stdlib-cache
         with:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
@@ -76,7 +76,7 @@ jobs:
 
       - name: Save SysML stdlib bundle cache
         if: steps.stdlib-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
@@ -91,7 +91,7 @@ jobs:
           echo "SPEC42_KPAR_LIBRARY_BUNDLE_METHOD=${{ github.workspace }}/.cache/elan8-method-libraries-${METHOD_VERSION}.kpar" >> $GITHUB_ENV
 
       - name: Restore KPAR library bundles cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         id: kpar-libraries-cache
         with:
           path: |
@@ -105,7 +105,7 @@ jobs:
 
       - name: Save KPAR library bundles cache
         if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
@@ -135,7 +135,7 @@ jobs:
 
   language-and-generator-exploratory:
     name: Language and generator fuzzing (exploratory)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     # Informational, not a gate. Neither fuzzing nor a mutation score can gate a PR: they are
     # not reproducible from the same inputs twice, and required CI must be. What lasts from a

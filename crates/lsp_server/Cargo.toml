@@ -1,4 +1,4 @@
-﻿[package]
+[package]
 name = "lsp_server"
 version.workspace = true
 edition.workspace = true
