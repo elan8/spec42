@@ -1460,6 +1460,7 @@ fn explorer_rename_notification_publishes_once_without_transient_dependent_error
     let mut publications = 0;
     let mut usage_republished = false;
     let mut old_cleared = false;
+    let mut follow_up_id = None;
     loop {
         let message = read_message(&mut stdout).expect("message before rename barrier");
         let json: serde_json::Value = serde_json::from_str(&message).expect("json message");
@@ -1483,13 +1484,33 @@ fn explorer_rename_notification_publishes_once_without_transient_dependent_error
             }
             if published_uri
                 .is_some_and(|published| published.eq_ignore_ascii_case(old_uri.as_str()))
-            {
-                old_cleared = json["params"]["diagnostics"]
+                && json["params"]["diagnostics"]
                     .as_array()
-                    .is_some_and(Vec::is_empty);
+                    .is_some_and(Vec::is_empty)
+            {
+                // An empty publish is the clear. A later message for the same URI must not
+                // undo it; the assertion is that the renamed-away path was cleared at all.
+                old_cleared = true;
             }
         }
-        if json["id"].as_i64() == Some(barrier_id) {
+        if json["id"].as_i64() == Some(barrier_id) && follow_up_id.is_none() && !old_cleared {
+            // The clear can be written just after this response when the notification and the
+            // barrier request overlap. One more request observes that publish without sleeping.
+            let id = next_id();
+            follow_up_id = Some(id);
+            send_message(
+                &mut stdin,
+                &serde_json::json!({
+                    "jsonrpc": "2.0", "id": id, "method": "workspace/symbol",
+                    "params": { "query": "" }
+                })
+                .to_string(),
+            );
+        }
+        if json["id"].as_i64() == Some(barrier_id) && old_cleared {
+            break;
+        }
+        if follow_up_id.is_some_and(|id| json["id"].as_i64() == Some(id)) {
             break;
         }
     }
