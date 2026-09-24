@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`use case` usages accept a short name.** `UseCaseUsage` had no `short_name` field at all in
+  the parser AST, unlike every sibling usage kind, so `use case <'S-01'> prepareEquipment { ... }`
+  fell through to opaque body-element recovery instead of parsing. Pins
+  `elan8/sysml-v2-parser#144`.
+
 ## [0.53.0] - 2026-09-24
 
 - **Native diagram layout pins the elkrs crossings fix.** `crates/diagram_layout` now depends on

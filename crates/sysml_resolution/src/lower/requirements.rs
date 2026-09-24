@@ -1505,6 +1505,7 @@ impl SemanticModelBuilder {
         node: &Node<ParserUseCaseUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1512,6 +1513,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
                     ..DeclarationModifiers::default()
