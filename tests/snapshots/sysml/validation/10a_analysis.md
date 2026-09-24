@@ -359,8 +359,8 @@ package '10a-Analysis' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::transmission::mass"))) (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::transmission"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))) (state unsupported))
-    (evaluated (declaration (node (document "memory://snapshot/10a_analysis.md") (path (named (kind package) (name "10a-Analysis")) (named (kind package) (name "VehicleDesignModel")) (named (kind part) (name "vehicle")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/10a_analysis.md") (path (named (kind package) (name "10a-Analysis")) (named (kind package) (name "VehicleDesignModel")) (named (kind part) (name "vehicle")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -473,8 +473,8 @@ package '10a-Analysis' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))) (outcome unsupported))
-  (declaration (id (node (document "memory://snapshot/10a_analysis.md") (path (named (kind package) (name "10a-Analysis")) (named (kind package) (name "VehicleDesignModel")) (named (kind part) (name "vehicle")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleAnalysisModel::MassAnalysisCase"))) (outcome resolved) (feature-reference "vehicle::mass" (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::Vehicle::mass")))))
+  (declaration (id (node (document "memory://snapshot/10a_analysis.md") (path (named (kind package) (name "10a-Analysis")) (named (kind package) (name "VehicleDesignModel")) (named (kind part) (name "vehicle")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (unsupported (feature-reference "vehicle::engine::mass" (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::engine::mass")))) (feature-reference "vehicle::transmission::mass" (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::transmission::mass")))) (feature-reference "vehicle::frontAxleAssembly::mass" (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::frontAxleAssembly::mass")))) (feature-reference "vehicle::rearAxleAssembly::mass" (target (node (document "memory://snapshot/10a_analysis.md") (qualified-name "10a-Analysis::VehicleDesignModel::vehicle::rearAxleAssembly::mass")))))))
 )
 ~~~
 # NAVIGATION

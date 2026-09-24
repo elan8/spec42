@@ -221,9 +221,9 @@ package 'Decision Example' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::MonitorBattery::charge"))) (target (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::MonitorBattery"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind if) (ordinal 0))))) (state unsupported))
-    (evaluated (declaration (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind if) (ordinal 1))))) (state unsupported))
-    (evaluated (declaration (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (named (kind action) (name "addCharge")) (named (kind parameter) (name "charge")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind if) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind if) (ordinal 1))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (named (kind action) (name "addCharge")) (named (kind parameter) (name "charge")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -316,9 +316,9 @@ package 'Decision Example' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind if) (ordinal 0))))) (outcome unsupported))
-  (declaration (id (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind if) (ordinal 1))))) (outcome unsupported))
-  (declaration (id (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (named (kind action) (name "addCharge")) (named (kind parameter) (name "charge")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind if) (ordinal 0))))) (outcome resolved) (operator "<" (feature-reference "monitor::batteryCharge" (target (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::ChargeBattery::monitor::batteryCharge")))) (literal (value (kind integer) (integer 100)))))
+  (declaration (id (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind if) (ordinal 1))))) (outcome resolved) (operator ">=" (feature-reference "monitor::batteryCharge" (target (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::ChargeBattery::monitor::batteryCharge")))) (literal (value (kind integer) (integer 100)))))
+  (declaration (id (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (named (kind action-def) (name "ChargeBattery")) (named (kind action) (name "addCharge")) (named (kind parameter) (name "charge")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "monitor::batteryCharge" (target (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example::ChargeBattery::monitor::batteryCharge")))))
 )
 ~~~
 # NAVIGATION

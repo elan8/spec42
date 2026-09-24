@@ -173,7 +173,7 @@ package 'Conditional Succession Example-2' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/16_conditional_succession_example_2.md") (path (named (kind package) (name "Conditional Succession Example-2")) (named (kind action) (name "takePicture")) (named (kind action) (name "shoot")) (named (kind item) (name "picture")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/16_conditional_succession_example_2.md") (path (named (kind package) (name "Conditional Succession Example-2")) (named (kind action) (name "takePicture")) (named (kind action) (name "shoot")) (named (kind item) (name "picture")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/16_conditional_succession_example_2.md") (path (named (kind package) (name "Conditional Succession Example-2")) (named (kind action) (name "takePicture")) (anonymous (kind if) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/16_conditional_succession_example_2.md") (path (named (kind package) (name "Conditional Succession Example-2")) (named (kind action) (name "takePicture")) (anonymous (kind if) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -295,7 +295,7 @@ package 'Conditional Succession Example-2' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_2.md") (path (named (kind package) (name "Conditional Succession Example-2")) (named (kind action) (name "takePicture")) (anonymous (kind if) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/16_conditional_succession_example_2.md") (path (named (kind package) (name "Conditional Succession Example-2")) (named (kind action) (name "takePicture")) (anonymous (kind if) (ordinal 0))))) (outcome resolved) (feature-reference "focus::image::isWellFocused" (target unresolved)))
 )
 ~~~
 # NAVIGATION

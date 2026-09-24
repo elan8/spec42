@@ -170,8 +170,8 @@ package 'Control Structures Example' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::MonitorBattery::charge"))) (target (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example::MonitorBattery"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/17_control_structures_example.md") (path (named (kind package) (name "Control Structures Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind loop) (ordinal 0)) (anonymous (kind if) (ordinal 0))))) (state unsupported))
-    (evaluated (declaration (node (document "memory://snapshot/17_control_structures_example.md") (path (named (kind package) (name "Control Structures Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind loop) (ordinal 0)) (anonymous (kind if) (ordinal 0)) (named (kind action) (name "addCharge")) (named (kind parameter) (name "charge")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/17_control_structures_example.md") (path (named (kind package) (name "Control Structures Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind loop) (ordinal 0)) (anonymous (kind if) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/17_control_structures_example.md") (path (named (kind package) (name "Control Structures Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind loop) (ordinal 0)) (anonymous (kind if) (ordinal 0)) (named (kind action) (name "addCharge")) (named (kind parameter) (name "charge")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -246,8 +246,8 @@ package 'Control Structures Example' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (path (named (kind package) (name "Control Structures Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind loop) (ordinal 0)) (anonymous (kind if) (ordinal 0))))) (outcome unsupported))
-  (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (path (named (kind package) (name "Control Structures Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind loop) (ordinal 0)) (anonymous (kind if) (ordinal 0)) (named (kind action) (name "addCharge")) (named (kind parameter) (name "charge")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (path (named (kind package) (name "Control Structures Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind loop) (ordinal 0)) (anonymous (kind if) (ordinal 0))))) (outcome resolved) (operator "<" (feature-reference "monitor::charge" (target (node (document "memory://snapshot/17_control_structures_example.md") (path (named (kind package) (name "Control Structures Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind loop) (ordinal 0)) (named (kind action) (name "monitor")) (named (kind parameter) (name "charge")))))) (literal (value (kind integer) (integer 100)))))
+  (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (path (named (kind package) (name "Control Structures Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind loop) (ordinal 0)) (anonymous (kind if) (ordinal 0)) (named (kind action) (name "addCharge")) (named (kind parameter) (name "charge")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "monitor::charge" (target (node (document "memory://snapshot/17_control_structures_example.md") (path (named (kind package) (name "Control Structures Example")) (named (kind action-def) (name "ChargeBattery")) (anonymous (kind loop) (ordinal 0)) (named (kind action) (name "monitor")) (named (kind parameter) (name "charge")))))))
 )
 ~~~
 # NAVIGATION

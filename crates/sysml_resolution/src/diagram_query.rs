@@ -826,6 +826,75 @@ impl PublishedResolution {
                 edges.push(edge);
                 continue;
             }
+            // A `bind a = b.c` usage publishes `bindSource` plus one `memberAccessOperand` for the
+            // dotted side. Those are the binding's two ends. Counting only the member-access
+            // operand makes a delegation look like an unresolved `connectorEnd`.
+            if view_entry.kind == DiagramViewKind::Interconnection
+                && is_binding_connector(element.kind)
+            {
+                let mut ends = outgoing
+                    .iter()
+                    .filter(|relationship| {
+                        matches!(
+                            relationship.kind,
+                            DiagramRelationshipKind::BindSource
+                                | DiagramRelationshipKind::BindTarget
+                                | DiagramRelationshipKind::MemberAccessOperand
+                        )
+                    })
+                    .copied()
+                    .collect::<Vec<_>>();
+                // `relationships` above is sorted by "{source}#{kind_name}:{ordinal}" for
+                // deterministic overall output, which reorders these two ends by kind name
+                // ("bindTarget" < "memberAccessOperand") whenever the dotted side and the plain
+                // side have different kinds -- e.g. `bind inner.nested = boundary;` would then
+                // report `boundary` as the source. `ordinal` does not help: it is each
+                // relationship's position among the *resolved* facts the authority publishes,
+                // which for a dotted chain reflects when member-access resolution finished, not
+                // when `left` was lowered relative to `right` -- empirically the plain `right`
+                // operand's simple reference can resolve (and so get a lower ordinal) before the
+                // dotted `left` operand's chain does. `left` is always textually to the left of
+                // `right` in `bind left = right`, though, so sorting by each end's own authored
+                // source position -- which does not depend on resolution timing -- recovers the
+                // source/target roles reliably regardless of which kind each end ended up as.
+                ends.sort_by_key(|relationship| {
+                    relationship
+                        .source_location
+                        .map(|location| (location.document, location.range.start))
+                });
+                match ends.as_slice() {
+                    [first, second] => {
+                        match (
+                            resolved_target(&first.target),
+                            resolved_target(&second.target),
+                        ) {
+                            (Some(source), Some(target)) => {
+                                edges.push(edge_from_relationships(
+                                    origin as u32,
+                                    source,
+                                    target,
+                                    DiagramEdgeKind::Connector,
+                                    &ends,
+                                ));
+                            }
+                            _ => {
+                                for end in &ends {
+                                    if resolved_target(&end.target).is_none() {
+                                        reasons
+                                            .insert(connector_end_incomplete_reason(&end.target));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    [] => {}
+                    _ => {
+                        reasons.insert(DiagramIncompleteReason::RelationshipUnresolved {
+                            relationship: DiagramRelationshipKind::ConnectorEnd,
+                        });
+                    }
+                }
+            }
             // A `connect a to b` usage publishes its two ends as `connectorEnd` relationships; the
             // dotted `connect a.b to c.d` form publishes them as `memberAccessOperand` on the same
             // connection usage. Compose one Connector edge from whichever pair the usage carries so
@@ -834,9 +903,10 @@ impl PublishedResolution {
             {
                 // The dotted `connect a.b to c.d` ends and the typed incomplete reasons are an
                 // Interconnection View concern; other views keep the prior plain-`connectorEnd`
-                // behaviour untouched.
+                // behaviour untouched. Binding connectors are composed above from their own ends.
                 let dotted_ends = view_entry.kind == DiagramViewKind::Interconnection
-                    && is_connector_edge_element(element.kind);
+                    && is_connector_edge_element(element.kind)
+                    && !is_binding_connector(element.kind);
                 let ends = outgoing
                     .iter()
                     .filter(|relationship| {
@@ -1739,6 +1809,13 @@ fn is_interconnection_node(kind: ElementKind) -> bool {
 /// Whether an element is one of the connector usages the Interconnection View draws as an edge
 /// rather than a node. Its `memberAccessOperand` references are its connector ends (the dotted
 /// `connect a.b to c.d` spelling), not expression operands.
+fn is_binding_connector(kind: ElementKind) -> bool {
+    matches!(
+        kind,
+        ElementKind::BindingConnectorAsUsage | ElementKind::BindingConnector
+    )
+}
+
 fn is_connector_edge_element(kind: ElementKind) -> bool {
     matches!(
         kind,

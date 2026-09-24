@@ -118,7 +118,7 @@ class A {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "spaceTimeEnclosedPoints")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "spaceTimeEnclosedPoints")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "portions")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "portions")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "spaceTimeEnclosedPoints")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (state literal) (value (kind integer) (integer 0)))
   )
 )
@@ -164,7 +164,7 @@ class A {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "portions")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "portions")) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "that::portionOfLife" (target unresolved)))
   (declaration (id (node (document "memory://snapshot/bare_redefines_feature.md") (path (named (kind class-def) (name "A")) (named (kind kerml-feature) (name "spaceTimeEnclosedPoints")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 0))))
 )
 ~~~

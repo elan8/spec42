@@ -16,6 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   inside a metadata usage body) now publishes its redefinition token as its own name, instead of an
   empty name and a qualified name ending in `::`.
 
+- **Model export and interconnection views keep derivation, conjugation, constraint
+  equations, and delegation bindings.** A `#derivation` connection specializes
+  `DerivationConnections::Derivation`, and its `#original` / `#derive` ends are named
+  `originalRequirement` and `derivedRequirements` and redefine those library features.
+  An unlabeled `end :>> name` publishes that name and its redefinition. A conjugated port
+  (`port p : ~T`) exports `conjugated: true` beside the original type. Comparison
+  constraints whose operands are dotted feature chains export as resolved operator trees.
+  An interconnection view composes `bind a = b.c` from its two ends instead of reporting
+  the dotted end as an unresolved connector.
+
 - Renaming a `.sysml`/`.kerml` file from the VS Code Explorer now rebuilds the semantic model as
   one atomic publication via `workspace/didRenameFiles`, instead of relying on the filesystem
   watcher's separate delete and create events, which left a window where a dependent's diagnostics

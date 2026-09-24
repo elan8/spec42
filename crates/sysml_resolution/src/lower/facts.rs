@@ -160,6 +160,15 @@ pub(crate) struct DeclarationModifiers {
     pub(crate) nonunique: bool,
 }
 
+/// Which standard derivation-connection end a `#original` or `#derive` role denotes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum DerivationEndRoleFact {
+    /// Redefines `DerivationConnections::Derivation::originalRequirement`.
+    Original,
+    /// Redefines the derived-requirement end of `DerivationConnections::Derivation`.
+    Derived,
+}
+
 /// The authored presentation-adjacent facts of one declaration, recorded at the point its typed
 /// parser node is lowered.
 ///
@@ -231,6 +240,13 @@ pub(crate) struct DeclarationFacts {
     /// that prefix says a feature *is* an end, while this fact says which end of its owner it is.
     /// The two are distinct and both are needed.
     pub(crate) positional_end: Option<u32>,
+    /// `#derivation connection` or `#derivation connection def`. The marker is a grammar role,
+    /// not an authored specialization, so the implied relationship to
+    /// `DerivationConnections::Derivation` is synthesized from this fact.
+    pub(crate) derivation_connection: bool,
+    /// `#original` or `#derive` on a connector end. The role names the standard derivation end
+    /// the declaration redefines; it is not itself a declaration label.
+    pub(crate) derivation_end: Option<DerivationEndRoleFact>,
     /// One-based position among the owner's authored FeatureMemberships.
     pub(crate) owned_feature_position: Option<u32>,
     /// The two independently named endpoints of KerML `Feature::crossFeature` and
