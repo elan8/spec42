@@ -397,6 +397,15 @@ fn every_short_name_carrying_declaration_publishes_it() {
             "Demo::E::red",
             "r",
         ),
+        (
+            "use case usage",
+            // `UseCaseUsage` had no `short_name` field in the parser AST at all until this fix
+            // (sysml-v2-parser#144) -- a different, more severe gap than the other rows here,
+            // whose nodes already carried the field but whose lowering dropped it.
+            "package Demo {\n\tuse case <u> uc;\n}\n",
+            "Demo::uc",
+            "u",
+        ),
     ] {
         let output = build_semantic_sexpr(source);
         let expected = format!("(qualified-name \"{qualified_name}\")");

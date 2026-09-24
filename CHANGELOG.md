@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.53.0] - 2026-09-24
 
+- **`use case` usages accept a short name.** `UseCaseUsage` had no `short_name` field at all in
+  the parser AST, unlike every sibling usage kind, so `use case <'S-01'> prepareEquipment { ... }`
+  fell through to opaque body-element recovery instead of parsing. Pins
+  `elan8/sysml-v2-parser@f60951e` (`main`), which includes the merged short-name support
+  (`#144`) and the later stack-overflow probes (`#142`, `#145`). Those probes do not change
+  the AST.
+
 - **Three metadata/comment/redefinition export gaps fixed (#201).** A named `comment` (`comment
   aboutP about p /* ... */`) now mints a real, referenceable declaration, so a later `metadata ...
   about aboutP;` reference resolves instead of reporting `This reference does not resolve`. A
