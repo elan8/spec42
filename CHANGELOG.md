@@ -40,10 +40,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   An interconnection view composes `bind a = b.c` from its two ends instead of reporting
   the dotted end as an unresolved connector.
 
-- Renaming a `.sysml`/`.kerml` file from the VS Code Explorer now rebuilds the semantic model as
-  one atomic publication via `workspace/didRenameFiles`, instead of relying on the filesystem
-  watcher's separate delete and create events, which left a window where a dependent's diagnostics
-  could observe the file as briefly missing (#190).
+- **Project diagnostics stay attached to the files on disk (#187, #188, #189, #190, #191, #192).**
+  Closing an editor tab replaces an unsaved buffer with the on-disk source when that file exists,
+  and refreshes dependent diagnostics. Watched-file events are grouped by project, so a
+  delete/create rename is one semantic publication with no intermediate "file missing" error;
+  unchanged save echoes are skipped. Renaming a `.sysml`/`.kerml` file from the VS Code Explorer
+  uses `workspace/didRenameFiles` on that same path. A part usage used as the type of another part
+  usage is an error with a related declaration location. The `unconnected_port` information
+  diagnostic is retired.
+
+- **Diagrams are drawn in Rust and served as SVG (#176, #181).** `diagram_draw` prepares and
+  draws General, Interconnection, Sequence, Action-Flow, and State-Transition views, plus Browser,
+  Grid, and Geometry. The webview mounts that SVG over `spec42/draw` and keeps zoom, pan,
+  tooltips, and click-to-source; disclosure toggles ask the server to redraw. Headless
+  `spec42 diagrams export` no longer uses QuickJS or ELK.js. Browser hierarchy collapse is
+  presentation state on the draw request. `SPEC42_LAYOUT_ENGINE=legacy` declines the native draw
+  and layout requests.
+
+- **Interactive diagram relayout runs in the language server (#118, #119).** Disclosure changes
+  send a versioned `spec42/layout` request. The server lays the client-supplied graph out with
+  `elkrs` and echoes the model digest, view handle, and presentation revision so a late response
+  is dropped. A new request cancels the one in flight. `elkrs` is in the default `spec42` binary.
+
+- **Owned feature memberships publish canonical identities (#178).** Type feature-membership
+  derivations return `MembershipId` values, including `deriveTypeOwnedFeatureMembership`.
+
+- **Wrap in package applies to bare root members (#65).** A file whose top-level members or
+  imports have no package, library package, or namespace wrapper offers the action. Applying it
+  wraps the document in `package Generated`.
+
+- **The bundled standard library keeps only upstream diagnostics (#135).** Spec42-owned
+  diagnostics on the 2026-04 bundle are resolved, including SelfLink cycle equivalence,
+  `crosses sameThing.self`, inherited `ref item` / `ref action` members, connector-end
+  `references` in the owning namespace, `satisfy … by that`, and effective typing through
+  `references` / `crosses`. The artifact ratchet admits all 94 standard-library documents. The
+  two remaining errors are the upstream SI `MagneticDipoleMomentUnit` ambiguities.
 
 - **Textual SysML/KerML grammar audit against the pinned BNF (#194).** Spec42 now keeps a
   production-level inventory (`docs/reference/TEXTUAL-SYNTAX-INVENTORY.md`) versioned with the
