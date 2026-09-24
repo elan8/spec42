@@ -257,6 +257,7 @@ pub(crate) async fn did_change_watched_files(
     let mut runtime_warnings = Vec::new();
     let mut changed_or_created_uris = Vec::new();
     let mut deleted_uris = Vec::new();
+    let mut deleted_client_uris = Vec::new();
     let mut changes = Vec::new();
     for event in params.changes {
         let uri_norm = util::normalize_file_uri(&event.uri);
@@ -300,6 +301,7 @@ pub(crate) async fn did_change_watched_files(
         } else if event.typ == FileChangeType::DELETED {
             changes.push((uri_norm.clone(), None));
             deleted_uris.push(uri_norm);
+            deleted_client_uris.push(event.uri);
         }
     }
     let event_uris: Vec<Url> = changed_or_created_uris
@@ -358,7 +360,19 @@ pub(crate) async fn did_change_watched_files(
         .collect::<Vec<_>>();
     drop(current);
     for uri in removed_uris {
-        client.publish_diagnostics(uri, vec![], None).await;
+        client.publish_diagnostics(uri.clone(), vec![], None).await;
+        // `normalize_uri` canonicalizes the path. A file that has already been renamed away
+        // cannot be canonicalized, so the stored key can differ from the URI the client sent.
+        // Publish the clear for that client URI too, or the editor keeps stale diagnostics.
+        if let Some(index) = deleted_client_uris
+            .iter()
+            .position(|client_uri| util::normalize_file_uri(client_uri) == uri)
+        {
+            let client_uri = deleted_client_uris.swap_remove(index);
+            if client_uri != uri {
+                client.publish_diagnostics(client_uri, vec![], None).await;
+            }
+        }
     }
     log_perf(
         client,
