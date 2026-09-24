@@ -4832,7 +4832,10 @@ fn named_comment_resolves_as_a_metadata_about_target() {
         .iter()
         .find(|annotation| annotation.form == MetadataAnnotationForm::Usage)
         .expect("the metadata usage annotation binds to its about target, the named comment");
-    assert_eq!(annotation.about.as_ref(), [RelationshipTarget::Resolved(comment)]);
+    assert_eq!(
+        annotation.about.as_ref(),
+        [RelationshipTarget::Resolved(comment)]
+    );
 }
 
 /// Spec42 issue #201 (L-07): `metadata m : Tag;` nested inside an `item`/`attribute` body parses
@@ -4906,7 +4909,11 @@ fn metadata_body_usage_redefinition_token_names_the_declaration() {
         ConstructionSchedule::Sequential,
     );
 
-    let order = details_of(&published, "memory://order.sysml", "P::pump::section::order");
+    let order = details_of(
+        &published,
+        "memory://order.sysml",
+        "P::pump::section::order",
+    );
     assert_eq!(order.redefinition.outcome, RelationshipOutcome::Resolved);
     assert_eq!(
         published.qualified_name(order.redefinition.targets[0].identity),

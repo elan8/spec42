@@ -595,8 +595,20 @@ impl SemanticModelBuilder {
                 ..DeclarationFacts::none()
             },
         )?;
-        self.push_membership(comment, MembershipKind::Feature, Visibility::Default, node.span)?;
-        self.push_documentation(comment, AnnotationForm::Comment, locale, None, text, node.span)
+        self.push_membership(
+            comment,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.span,
+        )?;
+        self.push_documentation(
+            comment,
+            AnnotationForm::Comment,
+            locale,
+            None,
+            text,
+            node.span,
+        )
     }
 
     /// Records a `rep <language> "..." /* ... */` annotation against the declaration whose body it
