@@ -548,6 +548,14 @@ impl SemanticModelBuilder {
     }
 
     /// Records a `comment /* ... */` annotation against the declaration whose body it heads.
+    ///
+    /// An anonymous comment (no `Identification`) stays exactly as before: a documentation fact
+    /// with no element of its own. A *named* comment (`comment aboutP about p /* ... */`)
+    /// additionally mints a real, named `CommentUsage` declaration owned by `declaration`, so it
+    /// has an identity a later `metadata ... about aboutP;` reference can resolve to through the
+    /// ordinary lexical/membership lookup -- spec42 issue #201 (L-06). Before this, the name was
+    /// read nowhere: only `locale` and `body` were interned, so a named comment was
+    /// indistinguishable from an anonymous one downstream.
     pub(crate) fn record_comment_annotation(
         &mut self,
         document: DocumentIdx,
@@ -563,7 +571,32 @@ impl SemanticModelBuilder {
             None,
             text,
             node.span,
-        )
+        )?;
+        let identification = node.value.identification.as_ref();
+        let name = self.intern_declaration_name(
+            document,
+            identification.and_then(|identification| identification.name),
+        )?;
+        let Some(name) = name else {
+            return Ok(());
+        };
+        let short_name = self.intern_short_name(
+            document,
+            identification.and_then(|identification| identification.short_name),
+        )?;
+        let comment = self.push_typed_declaration(
+            document,
+            Some(declaration),
+            DeclarationKind::CommentUsage,
+            Some(name),
+            node.span,
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(comment, MembershipKind::Feature, Visibility::Default, node.span)?;
+        self.push_documentation(comment, AnnotationForm::Comment, locale, None, text, node.span)
     }
 
     /// Records a `rep <language> "..." /* ... */` annotation against the declaration whose body it

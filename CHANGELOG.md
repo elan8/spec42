@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Three metadata/comment/redefinition export gaps fixed (#201).** A named `comment` (`comment
+  aboutP about p /* ... */`) now mints a real, referenceable declaration, so a later `metadata ...
+  about aboutP;` reference resolves instead of reporting `This reference does not resolve`. A
+  marker `metadata m : Tag;` nested in an `item`/`attribute` body now publishes resolved typing in
+  `model-export`, matching the identical syntax at package/part/action body level (both lowering
+  paths now push a `FeatureTyping` reference). A `MetadataBodyUsage` redefinition (`order = 1;`
+  inside a metadata usage body) now publishes its redefinition token as its own name, instead of an
+  empty name and a qualified name ending in `::`.
+
 - Renaming a `.sysml`/`.kerml` file from the VS Code Explorer now rebuilds the semantic model as
   one atomic publication via `workspace/didRenameFiles`, instead of relying on the filesystem
   watcher's separate delete and create events, which left a window where a dependent's diagnostics

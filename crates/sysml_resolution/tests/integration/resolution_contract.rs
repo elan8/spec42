@@ -4806,6 +4806,114 @@ fn metadata_annotations_publish_form_about_and_body_values() {
     assert_eq!(orphan.form, MetadataAnnotationForm::Usage);
 }
 
+/// Spec42 issue #201 (L-06): a `comment`'s `Identification` used to be read nowhere -- only its
+/// `locale` and body text were interned as a `DocumentationRecord` keyed by the *owner*
+/// declaration -- so a named comment never became a real, referenceable declaration, and a later
+/// `metadata ... about aboutP;` reference had no `aboutP` to resolve to.
+#[test]
+fn named_comment_resolves_as_a_metadata_about_target() {
+    let published = detail_publication(
+        &[(
+            "memory://comment_about.sysml",
+            "package P {\n\
+             \tmetadata def Role;\n\
+             \tpart p {\n\
+             \t\tcomment aboutP about p /* text */\n\
+             \t\tmetadata role : Role about aboutP;\n\
+             \t}\n\
+             }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+
+    let comment = identity_of(&published, "memory://comment_about.sysml", "P::p::aboutP");
+    let annotations = settled(published.metadata_annotations(comment));
+    let annotation = annotations
+        .iter()
+        .find(|annotation| annotation.form == MetadataAnnotationForm::Usage)
+        .expect("the metadata usage annotation binds to its about target, the named comment");
+    assert_eq!(annotation.about.as_ref(), [RelationshipTarget::Resolved(comment)]);
+}
+
+/// Spec42 issue #201 (L-07): `metadata m : Tag;` nested inside an `item`/`attribute` body parses
+/// as `AnnotatingMember::MetadataAnnotation` (`lower_metadata_annotation`), a different lowering
+/// path than the identical syntax at package/part/action body level (`lower_metadata_usage`).
+/// Only the latter pushed a `FeatureTyping` reference, so `family(id, Typing)` -- and so
+/// `relationships.typing` in the export projection -- reported `NotApplicable` for the former,
+/// even though `metadata_annotations()`'s own `definition` field (which reads the
+/// `MetadataAnnotation`-kind reference, not `FeatureTyping`) resolved fine throughout.
+#[test]
+fn metadata_annotation_nested_in_an_item_body_exports_resolved_typing() {
+    let published = detail_publication(
+        &[(
+            "memory://marker.sysml",
+            "package P {\n\
+             \tmetadata def Tag;\n\
+             \titem holder {\n\
+             \t\tmetadata role : Tag;\n\
+             \t}\n\
+             }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+
+    let holder = identity_of(&published, "memory://marker.sysml", "P::holder");
+    let role = settled(published.document_symbols("memory://marker.sysml"))
+        .iter()
+        .find(|entry| published.symbol_name(entry.identity) == Some("role"))
+        .expect("the nested metadata usage")
+        .identity;
+
+    let details = settled(published.element_details(role));
+    assert_eq!(details.typing.outcome, RelationshipOutcome::Resolved);
+    assert_eq!(names(&details.typing.targets), vec!["Tag"]);
+
+    // The pre-existing `metadata_annotations()` consumer must keep working unchanged: it reads
+    // the `MetadataAnnotation`-kind reference this fix leaves untouched, not `FeatureTyping`.
+    let annotations = settled(published.metadata_annotations(holder));
+    let annotation = annotations
+        .iter()
+        .find(|annotation| annotation.form == MetadataAnnotationForm::AnnotatingMember)
+        .expect("the annotation is still published for its owner");
+    assert!(matches!(
+        annotation.definition,
+        RelationshipTarget::Resolved(_)
+    ));
+}
+
+/// Spec42 issue #201 (L-08): a `MetadataBodyUsage` (`order = 1;` inside a metadata usage body)
+/// used to publish with an empty name and a qualified name ending in `::`, even though the
+/// redefinition it authors resolves fine -- the token `order` is both the redefinition target
+/// and, per this fix, the declaration's own name, matching what an export consumer needs to find
+/// it by name at all.
+#[test]
+fn metadata_body_usage_redefinition_token_names_the_declaration() {
+    let published = detail_publication(
+        &[(
+            "memory://order.sysml",
+            "package P {\n\
+             \tmetadata def Section {\n\
+             \t\tattribute order : Integer;\n\
+             \t}\n\
+             \tpart def Component;\n\
+             \tpart pump : Component {\n\
+             \t\tmetadata section : Section {\n\
+             \t\t\torder = 1;\n\
+             \t\t}\n\
+             \t}\n\
+             }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+
+    let order = details_of(&published, "memory://order.sysml", "P::pump::section::order");
+    assert_eq!(order.redefinition.outcome, RelationshipOutcome::Resolved);
+    assert_eq!(
+        published.qualified_name(order.redefinition.targets[0].identity),
+        Some("P::Section::order")
+    );
+}
+
 /// Both directions are published, so an inspector never has to scan the model to find what
 /// points at an element.
 #[test]

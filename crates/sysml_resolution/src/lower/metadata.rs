@@ -199,20 +199,39 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers one `MetadataBodyUsage`: an anonymous feature owned by `owner` that redefines the
-    /// named target (`totalRisk` in `@Risk { totalRisk = 0.3; }`), carries the authored value
-    /// spelling, and owns any nested metadata body.
+    /// Lowers one `MetadataBodyUsage`: a feature owned by `owner` that redefines the named target
+    /// (`totalRisk` in `@Risk { totalRisk = 0.3; }`), carries the authored value spelling, and
+    /// owns any nested metadata body.
+    ///
+    /// The redefinition target token (`totalRisk`) doubles as this feature's own name: nothing
+    /// else in the grammar authors one, but the token is right there in the source, so there is
+    /// no reason to publish this declaration as anonymous (empty `name`, a qualified name ending
+    /// in `::`) the way a target-less `ref requirement :>> unnamed;` legitimately does. Spec42
+    /// issue #201 (L-08): downstream export consumers otherwise cannot locate a metadata body
+    /// attribute like a report section's `order` by name at all.
     pub(crate) fn lower_metadata_body_usage(
         &mut self,
         document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<MetadataBodyUsage>,
     ) -> Result<(), ConstructionError> {
+        let name = self
+            .documents
+            .get(document.index())
+            .and_then(|entry| entry.parsed.qualified_reference(node.value.target))
+            .and_then(|reference| {
+                reference.segment_decoded_text(reference.segments.len().checked_sub(1)?)
+            })
+            .map(|name| name.into_owned());
+        let name = match name {
+            Some(name) => self.intern_declared_name(&name)?,
+            None => None,
+        };
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
             DeclarationKind::AttributeUsage,
-            None,
+            name,
             node.span,
             DeclarationFacts::none(),
         )?;
@@ -303,6 +322,23 @@ impl SemanticModelBuilder {
         self.push_reference(PendingReference {
             source: annotation,
             kind: ReferenceKind::MetadataAnnotation,
+            document,
+            local: node.value.type_reference,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        // Also published as a `FeatureTyping` reference to the same target: `Family::Typing`
+        // (and so `relationships.typing` in the export projection) only ever reads
+        // `ReferenceKind::FeatureTyping`, which `lower_metadata_usage` pushes for the identical
+        // `metadata name : Type` syntax at package/part/action body level. Without this, a marker
+        // metadata usage nested in an item/attribute body (this function's call site) published
+        // no resolved typing at all -- spec42 issue #201 (L-07). The `MetadataAnnotation`
+        // reference above is unchanged and still what
+        // `metadata_annotation_definition_kind(AnnotatingMember)` reads for `metadata_annotations()`.
+        self.push_reference(PendingReference {
+            source: annotation,
+            kind: ReferenceKind::FeatureTyping,
             document,
             local: node.value.type_reference,
             flags: RelationshipFlags::default(),
