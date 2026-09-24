@@ -612,7 +612,7 @@ package '5-State-based Behavior-2' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/5_state_based_behavior_2.md") (path (named (kind package) (name "5-State-based Behavior-2")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle1_c1")) (named (kind part) (name "vehicleController")) (anonymous (kind state) (ordinal 0))))) (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::vehicleController"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/5_state_based_behavior_2.md") (path (named (kind package) (name "5-State-based Behavior-2")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/5_state_based_behavior_2.md") (path (named (kind package) (name "5-State-based Behavior-2")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (state non-constant))
     (evaluated (declaration (node (document "memory://snapshot/5_state_based_behavior_2.md") (path (named (kind package) (name "5-State-based Behavior-2")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle1_c1")) (anonymous (kind perform-action) (ordinal 0)) (anonymous (kind perform-parameter-binding) (ordinal 0))))) (state non-constant))
   )
 )
@@ -857,7 +857,7 @@ package '5-State-based Behavior-2' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (path (named (kind package) (name "5-State-based Behavior-2")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (path (named (kind package) (name "5-State-based Behavior-2")) (named (kind package) (name "Usages")) (named (kind state) (name "vehicle states")) (named (kind state) (name "operational states")) (anonymous (kind transition) (ordinal 0)) (anonymous (kind kerml-boolean-expression) (ordinal 0))))) (outcome resolved) (feature-reference "vehicle1_c1::brake pedal depressed" (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::brake pedal depressed")))))
   (declaration (id (node (document "memory://snapshot/5_state_based_behavior_2.md") (path (named (kind package) (name "5-State-based Behavior-2")) (named (kind package) (name "Usages")) (named (kind part) (name "vehicle1_c1")) (anonymous (kind perform-action) (ordinal 0)) (anonymous (kind perform-parameter-binding) (ordinal 0))))) (outcome resolved) (feature-reference "fuelCmdPort::fuelCmd" (target (node (document "memory://snapshot/5_state_based_behavior_2.md") (qualified-name "5-State-based Behavior-2::Usages::vehicle1_c1::fuelCmdPort::fuelCmd")))))
 )
 ~~~

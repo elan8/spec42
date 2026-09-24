@@ -552,7 +552,7 @@ standard library package Views {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/views.md") (path (named (kind library-package) (name "Views")) (named (kind rendering) (name "asElementTable")) (named (kind view) (name "columnView")) (anonymous (kind rendering) (ordinal 0))))) (target (node (document "memory://snapshot/views.md") (qualified-name "Views::asElementTable::columnView"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/views.md") (path (named (kind library-package) (name "Views")) (named (kind view-def) (name "View")) (named (kind satisfy) (name "viewpointConformance")) (anonymous (kind require-constraint) (ordinal 0)) (named (kind default-reference) (name "ref")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/views.md") (path (named (kind library-package) (name "Views")) (named (kind view-def) (name "View")) (named (kind satisfy) (name "viewpointConformance")) (anonymous (kind require-constraint) (ordinal 0)) (named (kind default-reference) (name "ref")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -761,7 +761,7 @@ standard library package Views {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/views.md") (path (named (kind library-package) (name "Views")) (named (kind view-def) (name "View")) (named (kind satisfy) (name "viewpointConformance")) (anonymous (kind require-constraint) (ordinal 0)) (named (kind default-reference) (name "ref")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/views.md") (path (named (kind library-package) (name "Views")) (named (kind view-def) (name "View")) (named (kind satisfy) (name "viewpointConformance")) (anonymous (kind require-constraint) (ordinal 0)) (named (kind default-reference) (name "ref")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "that::that" (target unresolved)))
 )
 ~~~
 # NAVIGATION

@@ -284,8 +284,8 @@ package 'Time Constraints' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::vehicle"))) (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 0))))) (state unsupported))
-    (evaluated (declaration (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 1))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 0))))) (state non-constant))
+    (evaluated (declaration (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 1))))) (state non-constant))
     (unit (declaration (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 1))))) (ordinal 0) (authored "s") (start 28 70) (end 28 71) (outcome (status catalog-unavailable)))
   )
 )
@@ -343,8 +343,8 @@ package 'Time Constraints' {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome unsupported))
-  (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 1))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 0))))) (outcome resolved) (operator ">" (unsupported (feature-reference "maintenance" (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::maintenance"))))) (feature-reference "vehicle::maintenanceTime" (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::Vehicle::maintenanceTime"))))))
+  (declaration (id (node (document "memory://snapshot/31_time_constraints.md") (path (named (kind package) (name "Time Constraints")) (named (kind state) (name "healthStates")) (named (kind state) (name "maintenance")) (anonymous (kind assert-constraint) (ordinal 1))))) (outcome resolved) (operator "<" (operator "-" (unsupported (feature-reference "maintenance" (target (node (document "memory://snapshot/31_time_constraints.md") (qualified-name "Time Constraints::healthStates::maintenance"))))) (unsupported (feature-reference "normal::done" (target unresolved)))) (literal (value (kind quantity) (magnitude (value (kind integer) (integer 2))) (unit "s")))))
 )
 ~~~
 # NAVIGATION

@@ -6181,3 +6181,314 @@ fn same_named_packages_in_two_documents_do_not_share_an_unqualified_scope() {
     let motor = details_of(&qualified, "memory://usage.sysml", "S::motor");
     assert_eq!(motor.typing.outcome, RelationshipOutcome::Resolved);
 }
+
+#[test]
+fn conjugated_port_usage_exports_a_conjugation_fact_distinct_from_its_type() {
+    let published = build(
+        BuildRequest::new(
+            vec![SourceInput::new(
+                "memory://model.sysml",
+                concat!(
+                    "package Model { ",
+                    "port def Cmd { out item sig; } ",
+                    "part def Box { port plain : Cmd; port flipped : ~Cmd; } ",
+                    "}",
+                )
+                .to_owned(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let plain = details_of(&published, "memory://model.sysml", "Model::Box::plain");
+    let flipped = details_of(&published, "memory://model.sysml", "Model::Box::flipped");
+    assert!(!plain.conjugated);
+    assert!(flipped.conjugated);
+    assert_eq!(plain.typing.outcome, RelationshipOutcome::Resolved);
+    assert_eq!(flipped.typing.outcome, RelationshipOutcome::Resolved);
+    assert_eq!(
+        plain.typing.targets[0].identity, flipped.typing.targets[0].identity,
+        "conjugation does not change the resolved port definition"
+    );
+}
+
+#[test]
+fn dotted_constraint_operand_exports_a_resolved_comparison() {
+    let published = build(
+        BuildRequest::new(
+            vec![SourceInput::new(
+                "memory://model.sysml",
+                concat!(
+                    "package Model { ",
+                    "part def Subject { attribute error; } ",
+                    "requirement def Limit { ",
+                    "subject s : Subject; ",
+                    "attribute maximum; ",
+                    "require constraint { s.error <= maximum } ",
+                    "} ",
+                    "}",
+                )
+                .to_owned(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let symbols = settled(published.document_symbols("memory://model.sysml"));
+    let constraint = symbols
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.kind,
+                ElementKind::ConstraintUsage | ElementKind::AssertConstraintUsage
+            )
+        })
+        .expect("require constraint");
+    let expression = settled(published.resolved_expression(constraint.identity));
+    assert_eq!(expression.outcome, ExpressionOutcome::Resolved);
+    let root = expression.root.expect("comparison root");
+    match &expression.nodes[root as usize].kind {
+        ExpressionNodeKind::Operator {
+            operator: ExpressionOperator::LessOrEqual,
+            operands,
+        } => {
+            assert_eq!(operands.len(), 2);
+            for operand in operands.iter() {
+                match &expression.nodes[*operand as usize].kind {
+                    ExpressionNodeKind::FeatureReference {
+                        symbol: Some(_), ..
+                    } => {}
+                    other => panic!("expected a resolved operand, got {other:?}"),
+                }
+            }
+        }
+        other => panic!("expected a <= operator, got {other:?}"),
+    }
+}
+
+/// Two separate bare dotted-chain boolean expressions on one declaration used to collapse the
+/// whole declaration to `Unsupported`: the root-expression lookup required *exactly one*
+/// remaining `MemberAccessOperand` candidate across the whole declaration, so as soon as a second
+/// bare chain existed anywhere on it, neither pending's root ever matched.
+#[test]
+fn multiple_bare_dotted_chain_operands_on_one_declaration_each_resolve() {
+    let published = build(
+        BuildRequest::new(
+            vec![SourceInput::new(
+                "memory://model.sysml",
+                concat!(
+                    "package Model { ",
+                    "part def Subject { attribute enabled; } ",
+                    "part def Trigger { attribute ready; } ",
+                    "requirement def Check { ",
+                    "subject s : Subject; ",
+                    "ref t : Trigger; ",
+                    "require constraint { s.enabled; t.ready; } ",
+                    "} ",
+                    "}",
+                )
+                .to_owned(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let symbols = settled(published.document_symbols("memory://model.sysml"));
+    let constraint = symbols
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.kind,
+                ElementKind::ConstraintUsage | ElementKind::AssertConstraintUsage
+            )
+        })
+        .expect("require constraint");
+    let expression = settled(published.resolved_expression(constraint.identity));
+    assert_eq!(
+        expression.outcome,
+        ExpressionOutcome::Resolved,
+        "each bare dotted chain should resolve independently, not collapse the declaration"
+    );
+    let root = expression.root.expect("conjoined root");
+    match &expression.nodes[root as usize].kind {
+        ExpressionNodeKind::Operator {
+            operator: ExpressionOperator::And,
+            operands,
+        } => {
+            assert_eq!(operands.len(), 2, "both bare chains are conjoined");
+            for operand in operands.iter() {
+                match &expression.nodes[*operand as usize].kind {
+                    ExpressionNodeKind::FeatureReference {
+                        symbol: Some(_), ..
+                    } => {}
+                    other => panic!("expected a resolved dotted-chain operand, got {other:?}"),
+                }
+            }
+        }
+        other => panic!("expected the two chains conjoined with And, got {other:?}"),
+    }
+}
+
+#[test]
+fn derivation_shorthand_and_redefined_ends_name_the_standard_features() {
+    let library = r#"
+        standard library package DerivationConnections {
+            requirement originalRequirements[*];
+            requirement derivedRequirements[*];
+            abstract connection def Derivation {
+                ref requirement originalRequirement[1] :>> originalRequirements;
+                ref requirement :>> derivedRequirements[1..*];
+            }
+        }
+    "#;
+    let workspace = r#"
+        package Model {
+            private import DerivationConnections::*;
+            requirement def Need;
+            requirement def Child;
+            #derivation connection {
+                end #original ::> Need;
+                end #derive ::> Child;
+            }
+            connection placed : Derivation {
+                end :>> originalRequirement ::> Need;
+                end :>> derivedRequirements ::> Child;
+            }
+        }
+    "#;
+    let published = build(
+        BuildRequest::new(
+            vec![
+                SourceInput::new(
+                    "memory://library.sysml",
+                    library.to_owned(),
+                    SourceKind::StandardLibrary,
+                ),
+                SourceInput::new(
+                    "memory://model.sysml",
+                    workspace.to_owned(),
+                    SourceKind::Workspace,
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let derivation = identity_of(
+        &published,
+        "memory://library.sysml",
+        "DerivationConnections::Derivation",
+    );
+    let original = identity_of(
+        &published,
+        "memory://library.sysml",
+        "DerivationConnections::Derivation::originalRequirement",
+    );
+    let model = settled(published.document_symbols("memory://model.sysml"));
+    let specializes_derivation = model.iter().any(|entry| {
+        settled(published.element_details(entry.identity))
+            .outgoing
+            .iter()
+            .any(|edge| {
+                edge.kind == "specialization"
+                    && edge.provenance == RelationshipProvenance::Implied
+                    && edge.peer.identity == derivation
+            })
+    });
+    assert!(
+        specializes_derivation,
+        "#derivation connection must specialize Derivation"
+    );
+
+    let model_names = model
+        .iter()
+        .map(|entry| {
+            format!(
+                "{} ({}, {})",
+                published.qualified_name(entry.identity).unwrap_or("<none>"),
+                published
+                    .symbol_name(entry.identity)
+                    .unwrap_or("<anonymous>"),
+                entry.kind.as_str()
+            )
+        })
+        .collect::<Vec<_>>();
+    let shorthand_original = model
+        .iter()
+        .find(|entry| {
+            published.symbol_name(entry.identity) == Some("originalRequirement")
+                && !published
+                    .qualified_name(entry.identity)
+                    .unwrap_or("")
+                    .contains("placed")
+        })
+        .unwrap_or_else(|| panic!("shorthand #original end missing from {model_names:?}"));
+    let shorthand_details = settled(published.element_details(shorthand_original.identity));
+    assert!(
+        shorthand_details.outgoing.iter().any(|edge| {
+            edge.kind == "redefinition"
+                && edge.provenance == RelationshipProvenance::Implied
+                && edge.peer.identity == original
+        }),
+        "shorthand #original must redefine Derivation::originalRequirement, got {:?}",
+        shorthand_details.outgoing
+    );
+    let shorthand_derived = model
+        .iter()
+        .find(|entry| {
+            published.symbol_name(entry.identity) == Some("derivedRequirements")
+                && !published
+                    .qualified_name(entry.identity)
+                    .unwrap_or("")
+                    .contains("placed")
+        })
+        .expect("#derive end");
+    let derived_details = settled(published.element_details(shorthand_derived.identity));
+    assert!(
+        derived_details.outgoing.iter().any(|edge| {
+            edge.kind == "redefinition" && edge.provenance == RelationshipProvenance::Implied
+        }),
+        "shorthand #derive must redefine the library derived end, got {:?}",
+        derived_details.outgoing
+    );
+
+    let placed_original = details_of(
+        &published,
+        "memory://model.sysml",
+        "Model::placed::originalRequirement",
+    );
+    assert_eq!(
+        placed_original.redefinition.outcome,
+        RelationshipOutcome::Resolved
+    );
+    assert_eq!(placed_original.redefinition.targets[0].identity, original);
+    let placed_derived = details_of(
+        &published,
+        "memory://model.sysml",
+        "Model::placed::derivedRequirements",
+    );
+    assert_eq!(
+        placed_derived.redefinition.outcome,
+        RelationshipOutcome::Resolved
+    );
+    assert!(
+        placed_derived.redefinition.targets.iter().any(|target| {
+            published.symbol_name(target.identity) == Some("derivedRequirements")
+                || published.qualified_name(target.identity)
+                    == Some("DerivationConnections::Derivation::")
+        }),
+        "redefined derived end target: {:?}",
+        placed_derived.redefinition.targets
+    );
+}

@@ -179,7 +179,7 @@ package UseCaseTest {
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::uc3"))) (state unresolved-operand))
-    (evaluated (declaration (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::uc3"))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::uc3"))) (state unresolved-operand))
   )
 )
 ~~~
@@ -273,7 +273,7 @@ package UseCaseTest {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::uc3"))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::uc3"))) (outcome resolved) (operator "and" (feature-reference "include" (target unresolved)) (feature-reference "system::uc1" (target (node (document "memory://snapshot/use_case_test.md") (qualified-name "UseCaseTest::system::uc1"))))))
 )
 ~~~
 # NAVIGATION

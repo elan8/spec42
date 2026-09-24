@@ -784,7 +784,7 @@ standard library package VectorCalculations {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/vector_calculations.md") (path (named (kind library-package) (name "VectorCalculations")) (named (kind calc-def) (name "vectorScalarQuantityMult")) (anonymous (kind parameter) (ordinal 2))))) (target (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations::vectorScalarQuantityMult"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/vector_calculations.md") (path (named (kind library-package) (name "VectorCalculations")) (named (kind calc-def) (name "[")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/vector_calculations.md") (path (named (kind library-package) (name "VectorCalculations")) (named (kind calc-def) (name "[")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -950,7 +950,7 @@ standard library package VectorCalculations {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/vector_calculations.md") (path (named (kind library-package) (name "VectorCalculations")) (named (kind calc-def) (name "[")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/vector_calculations.md") (path (named (kind library-package) (name "VectorCalculations")) (named (kind calc-def) (name "[")) (named (kind attribute) (name "n")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "mRef::flattenedSize" (target unresolved)))
 )
 ~~~
 # NAVIGATION
