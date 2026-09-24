@@ -7,6 +7,6 @@ license.workspace = true
 description = "Native ELK layout boundary for Spec42 diagram products"
 
 [dependencies]
-elkrs = { git = "https://github.com/elan8/elkrs.git", rev = "8309be8cf614cfe277c572b28e4f79a1703f8e32" }
+elkrs = { git = "https://github.com/elan8/elkrs.git", rev = "84f95ae55688fe1e0d269d3a5080edf61b218c87" }
 serde_json.workspace = true
 thiserror.workspace = true

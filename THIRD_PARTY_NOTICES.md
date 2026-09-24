@@ -15,7 +15,7 @@ The `crates/diagram_layout` native layout boundary, headless export through
 `crates/diagram_draw`, and `crates/lsp_server`'s `spec42/layout` and `spec42/draw`
 requests (#119, #176)
 depend on the public `elan8/elkrs` repository at revision
-`8309be8cf614cfe277c572b28e4f79a1703f8e32`.
+`84f95ae55688fe1e0d269d3a5080edf61b218c87`.
 
 As of #119, `diagram_layout` is a plain (non-feature-gated) `lsp_server` dependency. `crates/server`
 (the single `spec42` binary that is both the CLI/MCP host and, via its own plain, non-optional

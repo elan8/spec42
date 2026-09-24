@@ -588,7 +588,7 @@ dependencies = [
 
 [[package]]
 name = "diagram_draw"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "diagram_layout",
  "serde",
@@ -597,7 +597,7 @@ dependencies = [
 
 [[package]]
 name = "diagram_layout"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "elkrs",
  "serde_json",
@@ -701,7 +701,7 @@ checksum = "9e5e8f6c15a24b9a3ee5efec809ccd006d3b30e8b3bb63c39af737c7f87daa1d"
 [[package]]
 name = "elkrs"
 version = "0.1.1"
-source = "git+https://github.com/elan8/elkrs.git?rev=8309be8cf614cfe277c572b28e4f79a1703f8e32#8309be8cf614cfe277c572b28e4f79a1703f8e32"
+source = "git+https://github.com/elan8/elkrs.git?rev=84f95ae55688fe1e0d269d3a5080edf61b218c87#84f95ae55688fe1e0d269d3a5080edf61b218c87"
 dependencies = [
  "indexmap",
  "serde",
@@ -875,7 +875,7 @@ dependencies = [
 
 [[package]]
 name = "generator_api"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "serde",
  "sha2",
@@ -888,7 +888,7 @@ dependencies = [
 
 [[package]]
 name = "generator_conformance"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "clap",
  "generator_api",
@@ -903,7 +903,7 @@ dependencies = [
 
 [[package]]
 name = "generator_host"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "directories",
  "generator_api",
@@ -1227,7 +1227,7 @@ dependencies = [
 
 [[package]]
 name = "kpar"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "chrono",
  "crc32fast",
@@ -1243,7 +1243,7 @@ dependencies = [
 
 [[package]]
 name = "language_service"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "serde",
  "serde_json",
@@ -1278,7 +1278,7 @@ checksum = "b6d2cec3eae94f9f509c767b45932f1ada8350c4bdb85af2fcab4a3c14807981"
 
 [[package]]
 name = "library_catalog"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "directories",
  "kpar",
@@ -1344,7 +1344,7 @@ dependencies = [
 
 [[package]]
 name = "lsp_server"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "base64",
  "clap",
@@ -1891,7 +1891,7 @@ dependencies = [
 
 [[package]]
 name = "server"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "anyhow",
  "clap",
@@ -1919,7 +1919,7 @@ dependencies = [
 
 [[package]]
 name = "session_actor"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "thiserror 2.0.19",
  "tokio",
@@ -2001,7 +2001,7 @@ dependencies = [
 
 [[package]]
 name = "source_identity"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "blake3",
  "serde",
@@ -2010,7 +2010,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-constraint-manifest"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "clap",
  "quick-xml",
@@ -2023,7 +2023,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-generator-protocol"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "postcard-schema",
  "serde",
@@ -2031,7 +2031,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-generator-sdk"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "postcard",
  "serde",
@@ -2040,7 +2040,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-query-bench"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "blake3",
  "clap",
@@ -2052,7 +2052,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-resolution-benchmark"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "clap",
  "serde",
@@ -2062,7 +2062,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-semantic-benchmark"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "blake3",
  "clap",
@@ -2073,7 +2073,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-snapshot"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "clap",
  "generator_api",
@@ -2170,7 +2170,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_contract"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "serde",
  "source_identity",
@@ -2178,7 +2178,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_diagnostics"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "sysml_query",
  "url",
@@ -2186,7 +2186,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_query"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "proc-macro2",
  "serde_json",
@@ -2198,7 +2198,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_resolution"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "hashbrown 0.17.1",
  "insta",
@@ -2214,7 +2214,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_source"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "ignore",
  "source_identity",
@@ -2225,7 +2225,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_tokens"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "serde",
  "sysml_query",
@@ -3074,7 +3074,7 @@ dependencies = [
 
 [[package]]
 name = "workspace"
-version = "0.52.0"
+version = "0.53.0"
 dependencies = [
  "kpar",
  "language_service",
