@@ -117,6 +117,10 @@ element_kinds! {
     RenderingUsage,
     MetadataDefinition,
     MetadataUsage,
+    /// A named `comment` annotation (`comment aboutP about p /* ... */`). Only minted when the
+    /// author writes an identification on the comment; an anonymous `comment /* ... */` stays a
+    /// documentation fact with no element of its own, exactly as before.
+    Comment,
     /// A definition with no more specific keyword, including the `#keyword def` extended form.
     Definition,
     /// A usage with no more specific keyword: the `#keyword <name>` extended usage form

@@ -140,6 +140,15 @@ pub(crate) enum DeclarationKind {
     /// here -- a distinct annotation-application fact family, not the declaration/typing shape
     /// covered by this slice.
     MetadataUsage,
+    /// A named `comment` annotation (`comment aboutP about p /* ... */`), minted only when the
+    /// author writes an `Identification` on it. Spec42 issue #201 (L-06): before this, a
+    /// `CommentAnnotation`'s name was silently dropped -- lowering recorded only its `locale` and
+    /// body text as a `DocumentationRecord` keyed by the *owner* declaration, so a named comment
+    /// never became a resolvable member and a later `metadata ... about aboutP;` reference had
+    /// nothing to find. This declaration exists purely to give a named comment a real identity in
+    /// the ordinary lexical/membership scope, the same way any other named feature has one; its
+    /// text is still recorded separately as a `DocumentationRecord`, unchanged.
+    CommentUsage,
     /// `connection def` (BNF ConnectionDefinition): a type whose owned members are attribute/
     /// item/port usages, nested `end`/`connect` connector structure, mirroring PortDefinition
     /// lowering. Connector-end referential/multiplicity validation is out of scope here; only

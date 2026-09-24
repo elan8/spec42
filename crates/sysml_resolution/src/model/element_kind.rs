@@ -96,6 +96,7 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::RenderingUsage => ElementKind::RenderingUsage,
         DeclarationKind::MetadataDefinition => ElementKind::MetadataDefinition,
         DeclarationKind::MetadataUsage => ElementKind::MetadataUsage,
+        DeclarationKind::CommentUsage => ElementKind::Comment,
         // `#keyword def X` has no more specific type than `Definition`.
         DeclarationKind::ExtendedDefinition => ElementKind::Definition,
         // `#keyword x` has no more specific type than `Usage`.
@@ -258,6 +259,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::RenderingUsage
         | DeclarationKind::MetadataDefinition
         | DeclarationKind::MetadataUsage
+        | DeclarationKind::CommentUsage
         | DeclarationKind::ExtendedDefinition
         | DeclarationKind::ExtendedUsage
         | DeclarationKind::ReferenceUsage
@@ -360,6 +362,7 @@ mod tests {
         DeclarationKind::StateUsage,
         DeclarationKind::MetadataDefinition,
         DeclarationKind::MetadataUsage,
+        DeclarationKind::CommentUsage,
         DeclarationKind::ConnectionDefinition,
         DeclarationKind::ConnectionUsage,
         DeclarationKind::OccurrenceDefinition,
