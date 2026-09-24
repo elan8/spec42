@@ -23,7 +23,7 @@ env:
 jobs:
   preflight:
     name: Release preflight checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
         with:
@@ -55,7 +55,7 @@ jobs:
           echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
 
       - name: Restore SysML stdlib bundle cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         id: stdlib-cache
         with:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
@@ -67,7 +67,7 @@ jobs:
 
       - name: Save SysML stdlib bundle cache
         if: steps.stdlib-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
@@ -82,7 +82,7 @@ jobs:
           echo "SPEC42_KPAR_LIBRARY_BUNDLE_METHOD=${{ github.workspace }}/.cache/elan8-method-libraries-${METHOD_VERSION}.kpar" >> $GITHUB_ENV
 
       - name: Restore KPAR library bundles cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         id: kpar-libraries-cache
         with:
           path: |
@@ -96,7 +96,7 @@ jobs:
 
       - name: Save KPAR library bundles cache
         if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
@@ -132,7 +132,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - runner: ubuntu-latest
+          - runner: ubuntu-24.04
             os_name: linux
             target: x86_64-unknown-linux-gnu
             package_dir: linux-x64
@@ -188,7 +188,7 @@ jobs:
           echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
 
       - name: Restore SysML stdlib bundle cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         id: stdlib-cache
         with:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
@@ -201,7 +201,7 @@ jobs:
 
       - name: Save SysML stdlib bundle cache
         if: steps.stdlib-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
@@ -217,7 +217,7 @@ jobs:
           echo "SPEC42_KPAR_LIBRARY_BUNDLE_METHOD=${{ github.workspace }}/.cache/elan8-method-libraries-${METHOD_VERSION}.kpar" >> $GITHUB_ENV
 
       - name: Restore KPAR library bundles cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         id: kpar-libraries-cache
         with:
           path: |
@@ -232,7 +232,7 @@ jobs:
 
       - name: Save KPAR library bundles cache
         if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
@@ -271,7 +271,7 @@ jobs:
 
   package-extension-with-server:
     name: Package extension with server (all platforms)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [preflight, build-server]
     steps:
       - name: Resolve tag and version
@@ -348,7 +348,7 @@ jobs:
 
   build-zed-extension:
     name: Build Zed extension
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [preflight]
     steps:
       - name: Resolve tag and version
@@ -404,7 +404,7 @@ jobs:
 
   create-release:
     name: Create GitHub Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [preflight, build-server, package-extension-with-server, build-zed-extension]
     permissions:
       contents: write
@@ -512,7 +512,7 @@ jobs:
   publish-zed-extension:
     name: Bump Zed extension registry
     needs: [create-release]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:

@@ -44,7 +44,7 @@ runs:
         echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
     - name: Restore SysML stdlib bundle cache
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       id: stdlib-cache
       with:
         path: .cache/sysml-stdlib-kpar-${{ steps.stdlib.outputs.version }}
@@ -57,7 +57,7 @@ runs:
 
     - name: Save SysML stdlib bundle cache
       if: steps.stdlib-cache.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: .cache/sysml-stdlib-kpar-${{ steps.stdlib.outputs.version }}
         key: sysml-stdlib-${{ steps.stdlib.outputs.version }}
@@ -76,7 +76,7 @@ runs:
         echo "method=${METHOD_VERSION}" >> "$GITHUB_OUTPUT"
 
     - name: Restore KPAR library bundles cache
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@v5
       id: kpar-libraries-cache
       with:
         path: |
@@ -91,7 +91,7 @@ runs:
 
     - name: Save KPAR library bundles cache
       if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@v5
       with:
         path: |
           .cache/elan8-domain-libraries-${{ steps.kpar.outputs.domain }}.kpar
