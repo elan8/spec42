@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   inside a metadata usage body) now publishes its redefinition token as its own name, instead of an
   empty name and a qualified name ending in `::`.
 
+## [0.53.0] - 2026-09-24
+
+- **Native diagram layout pins the elkrs crossings fix.** `crates/diagram_layout` now depends on
+  `elan8/elkrs` at `84f95ae55688fe1e0d269d3a5080edf61b218c87` (merge of
+  `fix-hierarchy-crossing-port-panic`). That revision no longer panics when a hierarchy-crossing
+  edge uses a container port.
+
 - **Model export and interconnection views keep derivation, conjugation, constraint
   equations, and delegation bindings.** A `#derivation` connection specializes
   `DerivationConnections::Derivation`, and its `#original` / `#derive` ends are named
@@ -40,7 +47,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   interfaces, and actions have dedicated accept/reject snapshots: SysML `connect`/`bind` parse,
   KerML `connector … from` / `binding … of` in a SysML fence recover, and the keyword-less n-ary
   `connect (e1, e2, e3)` alternative recovers in a part definition body while named
-  `connection … connect (…)` parses.
+  `connection … connect (…)` parses. States, requirements, items, and flows have accept/reject
+  snapshots: `entry`/`do`/`exit`, `parallel`, `satisfy`, `flow`/`message`, and `item def` parse;
+  missing terminators recover; `state s initial` is not a StateDefBody production and is
+  `unsupported_state_definition_member`.
 
 - **Workspace dependency hygiene and incremental-vs-full publication parity (#43).** `walkdir`,
   `sha2`, `toml`, and `zip` are declared once in `[workspace.dependencies]` and inherited by

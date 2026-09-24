@@ -4,7 +4,7 @@
   "publisher": "Elan8",
   "icon": "logo/logo.png",
   "description": "Open, local-first SysML v2 and KerML tooling with live editing and the same analysis engine for CI and assistants.",
-  "version": "0.52.0",
+  "version": "0.53.0",
   "license": "MIT",
   "keywords": [
     "sysml",

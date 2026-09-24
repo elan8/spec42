@@ -9,7 +9,7 @@ the interactive webview (`spec42/draw` prepare + layout + draw in `diagram_draw`
 `SPEC42_LAYOUT_ENGINE=legacy` declines `spec42/layout` and `spec42/draw`; there is no client
 drawing fallback for the five shipped views.
 
-Pinned `elan8/elkrs` revision: `8309be8cf614cfe277c572b28e4f79a1703f8e32` (ELK 0.11.0 compatible,
+Pinned `elan8/elkrs` revision: `84f95ae55688fe1e0d269d3a5080edf61b218c87` (ELK 0.11.0 compatible,
 Apache-2.0; see `THIRD_PARTY_NOTICES.md`).
 
 Do not call `elkrs::layout_json` directly: hierarchical graphs need the `diagram_layout` adapter
