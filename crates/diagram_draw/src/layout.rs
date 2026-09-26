@@ -33,7 +33,15 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
             } else {
                 BehaviorMode::Action
             };
-            let behavior_layout = layout_behavior_graph(prepared, horizontal, mode)?;
+            let behavior_layout = if view == "action-flow-view" {
+                if let Some(compact) = layout_simple_action_chain(prepared) {
+                    compact
+                } else {
+                    layout_behavior_graph(prepared, horizontal, mode)?
+                }
+            } else {
+                layout_behavior_graph(prepared, horizontal, mode)?
+            };
             Ok(json!({
                 "prepared": prepared,
                 "behaviorLayout": behavior_layout,
@@ -791,6 +799,154 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
     }
 }
 
+/// A simple authored succession chain is easier to read in short alternating rows than in a
+/// single, very tall ELK column. Other action graphs keep ELK's branching and cycle layout.
+fn layout_simple_action_chain(prepared: &Value) -> Option<Value> {
+    if field(field(prepared, "meta"), "typedProjection") != &json!(true) {
+        return None;
+    }
+    let nodes = as_array(field(prepared, "nodes"));
+    let edges = as_array(field(prepared, "edges"));
+    if nodes.len() < 3 || edges.len() + 1 != nodes.len() {
+        return None;
+    }
+    let mut by_id = HashMap::new();
+    for node in nodes {
+        if !as_string(field(field(node, "attributes"), "swimLane"), "").is_empty() {
+            return None;
+        }
+        let id = as_string(field(node, "id"), "");
+        if id.is_empty() || by_id.insert(id, node).is_some() {
+            return None;
+        }
+    }
+    let mut next: HashMap<String, (String, String)> = HashMap::new();
+    let mut incoming = HashSet::new();
+    for edge in edges {
+        if field(field(edge, "attributes"), "succession") != &json!(true) {
+            return None;
+        }
+        let source = as_string(field(edge, "source"), "");
+        let target = as_string(field(edge, "target"), "");
+        let id = as_string(field(edge, "id"), "");
+        if !by_id.contains_key(&source)
+            || !by_id.contains_key(&target)
+            || id.is_empty()
+            || next.insert(source, (target.clone(), id)).is_some()
+            || !incoming.insert(target)
+        {
+            return None;
+        }
+    }
+    let mut starts = by_id.keys().filter(|id| !incoming.contains(*id));
+    let start = starts.next()?.clone();
+    if starts.next().is_some() {
+        return None;
+    }
+    let mut ordered = Vec::with_capacity(nodes.len());
+    let mut current = start;
+    let mut visited = HashSet::new();
+    loop {
+        if !visited.insert(current.clone()) {
+            return None;
+        }
+        ordered.push(current.clone());
+        let Some((target, _)) = next.get(&current) else {
+            break;
+        };
+        current = target.clone();
+    }
+    if ordered.len() != nodes.len() {
+        return None;
+    }
+
+    let cell_width = nodes
+        .iter()
+        .map(|node| node_dimensions(node, BehaviorMode::Action).0)
+        .fold(0.0_f64, f64::max);
+    let cell_height = nodes
+        .iter()
+        .map(|node| node_dimensions(node, BehaviorMode::Action).1)
+        .fold(0.0_f64, f64::max);
+    if nodes
+        .iter()
+        .any(|node| node_dimensions(node, BehaviorMode::Action) != (cell_width, cell_height))
+    {
+        return None;
+    }
+    let (gap_x, gap_y) = (130.0, 125.0);
+    let columns = (1..=nodes.len()).min_by(|&left, &right| {
+        let score = |columns: usize| {
+            let rows = nodes.len().div_ceil(columns);
+            let width = columns as f64 * cell_width + (columns - 1) as f64 * gap_x;
+            let height = rows as f64 * cell_height + (rows - 1) as f64 * gap_y;
+            (width / height / 1.5).ln().abs()
+        };
+        score(left).total_cmp(&score(right)).then(left.cmp(&right))
+    })?;
+    let mut positions = Map::new();
+    for (index, id) in ordered.iter().enumerate() {
+        let row = index / columns;
+        let offset = index % columns;
+        let column = if row % 2 == 0 {
+            offset
+        } else {
+            columns - 1 - offset
+        };
+        let (width, height) = node_dimensions(by_id[id], BehaviorMode::Action);
+        positions.insert(
+            id.clone(),
+            json!({
+                "x": 80.0 + column as f64 * (cell_width + gap_x) + (cell_width - width) / 2.0,
+                "y": 80.0 + row as f64 * (cell_height + gap_y) + (cell_height - height) / 2.0,
+                "width": width,
+                "height": height,
+            }),
+        );
+    }
+    let mut sections = Map::new();
+    for pair in ordered.windows(2) {
+        let source = field(&positions[&pair[0]], "x").as_f64()?;
+        let target = field(&positions[&pair[1]], "x").as_f64()?;
+        let source_y = field(&positions[&pair[0]], "y").as_f64()?;
+        let target_y = field(&positions[&pair[1]], "y").as_f64()?;
+        let source_width = field(&positions[&pair[0]], "width").as_f64()?;
+        let source_height = field(&positions[&pair[0]], "height").as_f64()?;
+        let target_width = field(&positions[&pair[1]], "width").as_f64()?;
+        let (start, end) = if (source_y - target_y).abs() < 1.0 {
+            if source < target {
+                (
+                    (source + source_width, source_y + source_height / 2.0),
+                    (target, target_y + source_height / 2.0),
+                )
+            } else {
+                (
+                    (source, source_y + source_height / 2.0),
+                    (target + target_width, target_y + source_height / 2.0),
+                )
+            }
+        } else {
+            (
+                (source + source_width / 2.0, source_y + source_height),
+                (target + target_width / 2.0, target_y),
+            )
+        };
+        let edge_id = &next[&pair[0]].1;
+        sections.insert(
+            edge_id.clone(),
+            json!([{
+                "startPoint": {"x": start.0, "y": start.1},
+                "endPoint": {"x": end.0, "y": end.1},
+            }]),
+        );
+    }
+    Some(json!({
+        "positions": positions,
+        "edgeSectionsById": sections,
+        "edgeLabelsById": {},
+    }))
+}
+
 fn transition_display_label(label: &str) -> String {
     let trimmed = label.trim();
     if trimmed.is_empty() || trimmed.eq_ignore_ascii_case("entry") {
@@ -1410,6 +1566,16 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
             node_layout_options
         } else {
             let mut options = as_object(&node_layout_options);
+            // ELK does not inherit the root graph's spacing for nested layered graphs. Without
+            // these options, sibling parts are separated by the default 40 px, leaving only a
+            // 20 px line between two 10 px boundary ports (the office two-monitor case).
+            options.insert("elk.spacing.nodeNode".into(), json!("90"));
+            options.insert(
+                "elk.layered.spacing.nodeNodeBetweenLayers".into(),
+                json!("140"),
+            );
+            options.insert("elk.spacing.edgeNode".into(), json!("50"));
+            options.insert("elk.spacing.edgeEdge".into(), json!("30"));
             options.insert(
                 "elk.padding".into(),
                 Value::String(if is_synthetic_package {
@@ -1510,18 +1676,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         })).collect::<Vec<_>>(),
     });
 
-    let laid_out = match diagram_layout::layout_value(&elk_graph_input) {
-        Ok(value) => value,
-        Err(_) => {
-            return Ok(json!({
-                "title": field(prepared, "title"),
-                "view": field(prepared, "view"),
-                "meta": field(prepared, "meta"),
-                "nodes": [],
-                "edges": [],
-            }));
-        }
-    };
+    let laid_out = diagram_layout::layout_value(&elk_graph_input)?;
 
     let mut laid_out_nodes: HashMap<String, LaidOutNode> = HashMap::new();
     let mut port_centers: HashMap<String, Point> = HashMap::new();

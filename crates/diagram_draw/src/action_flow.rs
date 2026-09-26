@@ -139,6 +139,7 @@ fn draw_action_node(
         }
     };
     let is_perform = kind.contains("perform") || action_type.to_lowercase().contains("perform");
+    let typed_action = !attr_text(&node.attributes, "notationRole").is_empty();
 
     let mut g = Element::new("g")
         .attr(
@@ -264,15 +265,32 @@ fn draw_action_node(
                 .style("stroke-width", "2px")
                 .style("stroke-dasharray", if is_perform { "5,3" } else { "none" }),
         );
-        g = g.child(
-            Element::new("rect")
-                .attr_f("width", layout.width)
-                .attr_f("height", 6.0)
-                .attr("rx", "8")
-                .style("fill", theme.node_border)
-                .style("stroke", "none"),
-        );
-        if is_perform {
+        if typed_action {
+            g = g.child(
+                Element::new("text")
+                    .attr("class", "action-stereotype")
+                    .attr_f("x", layout.width / 2.0)
+                    .attr_f("y", layout.height / 2.0 - 7.0)
+                    .attr("text-anchor", "middle")
+                    .style("font-size", "10px")
+                    .style("fill", theme.text_secondary)
+                    .text(if is_perform {
+                        "«perform action»"
+                    } else {
+                        "«action»"
+                    }),
+            );
+        } else {
+            g = g.child(
+                Element::new("rect")
+                    .attr_f("width", layout.width)
+                    .attr_f("height", 6.0)
+                    .attr("rx", "8")
+                    .style("fill", theme.node_border)
+                    .style("stroke", "none"),
+            );
+        }
+        if is_perform && !typed_action {
             g = g.child(
                 Element::new("text")
                     .attr("class", "perform-action-stereotype")
@@ -289,7 +307,12 @@ fn draw_action_node(
     let label_y = if is_fork(&kind) {
         layout.height + 14.0
     } else {
-        layout.height / 2.0 + if is_perform { 12.0 } else { 4.0 }
+        layout.height / 2.0
+            + if typed_action || is_perform {
+                12.0
+            } else {
+                4.0
+            }
     };
     g = g.child(
         Element::new("text")
@@ -337,6 +360,7 @@ pub fn render_action_flow_view(
         .unwrap_or("")
         .to_lowercase()
         == "horizontal";
+    let typed_projection = prepared.meta.get("typedProjection") == Some(&Value::Bool(true));
 
     let mut root = Element::new("g").attr("class", "viz-root").child(
         Element::new("text")
@@ -472,7 +496,14 @@ pub fn render_action_flow_view(
             .style("stroke", theme.edge_default)
             .style("stroke-width", "2px")
             .style("stroke-dasharray", if succession { "7,4" } else { "none" })
-            .style("marker-end", "url(#action-flow-arrow)");
+            .style(
+                "marker-end",
+                if succession && typed_projection {
+                    "url(#action-succession-arrow)"
+                } else {
+                    "url(#action-flow-arrow)"
+                },
+            );
         flow_layer = flow_layer.child(mark_visible_edge(visible, &edge.id, "2"));
 
         let tooltip_text = tooltip_fallback_text(&behavior_edge_tooltip_descriptor(
@@ -543,18 +574,20 @@ pub fn render_action_flow_view(
 
     let mut min_x = 0.0_f64;
     let mut min_y = 0.0_f64;
-    let mut max_x = width;
-    let mut max_y = height;
+    let mut max_x = if typed_projection { 200.0 } else { width };
+    let mut max_y = if typed_projection { 50.0 } else { height };
     for rect in layout.positions.values() {
         min_x = min_x.min(rect.x);
         min_y = min_y.min(rect.y);
         max_x = max_x.max(rect.x + rect.width);
         max_y = max_y.max(rect.y + rect.height + 20.0);
     }
-    (
-        root,
-        (min_x - 40.0, min_y - 40.0, max_x + 40.0, max_y + 40.0),
-    )
+    let extents = if typed_projection {
+        (40.0, 40.0, max_x + 40.0, max_y + 40.0)
+    } else {
+        (min_x - 40.0, min_y - 40.0, max_x + 40.0, max_y + 40.0)
+    };
+    (root, extents)
 }
 
 /// Port of `addActionFlowMarkers`.
@@ -572,4 +605,24 @@ pub fn action_flow_marker(theme: &Theme) -> Element {
                 .attr("d", "M0,-5L10,0L0,5")
                 .style("fill", theme.edge_default),
         )
+}
+
+pub fn typed_action_flow_markers(theme: &Theme) -> Element {
+    Element::new("g").child(action_flow_marker(theme)).child(
+        Element::new("marker")
+            .attr("id", "action-succession-arrow")
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", "9")
+            .attr("refY", "0")
+            .attr("markerWidth", "7")
+            .attr("markerHeight", "7")
+            .attr("orient", "auto")
+            .child(
+                Element::new("path")
+                    .attr("d", "M0,-5L10,0L0,5")
+                    .style("fill", "none")
+                    .style("stroke", theme.edge_default)
+                    .style("stroke-width", "1.5"),
+            ),
+    )
 }

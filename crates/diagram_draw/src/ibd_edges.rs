@@ -2,7 +2,7 @@
 //! `interconnectionEdgeLabelAnchor` in `render/drawing.ts` (the General-View branches are already
 //! ported in `edges.rs`).
 
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 
 use crate::graph_normalization::normalize_edge_kind;
 use crate::hit_target::{mark_visible_edge, path_edge_hit_target};
@@ -26,7 +26,7 @@ fn marker_url(id: &'static str) -> String {
     format!("url(#{id})")
 }
 
-fn apply_edge_marker_ibd(edge_kind: &str, theme: &Theme) -> MarkerStyle {
+fn apply_edge_marker_ibd(edge_kind: &str, theme: &Theme, typed_projection: bool) -> MarkerStyle {
     let stroke = stroke_color_for_edge(theme);
     match edge_kind {
         "flow" => MarkerStyle {
@@ -59,6 +59,11 @@ fn apply_edge_marker_ibd(edge_kind: &str, theme: &Theme) -> MarkerStyle {
                 ("marker-start", marker_url("ibd-connection-dot")),
                 ("marker-end", marker_url("ibd-connection-dot")),
             ],
+        },
+        "connection" if typed_projection => MarkerStyle {
+            unsupported: false,
+            attrs: vec![("stroke", stroke), ("stroke-width", "2")],
+            styles: vec![],
         },
         "connection" | "relationship" => MarkerStyle {
             unsupported: false,
@@ -133,6 +138,156 @@ struct LabelAnchor {
     y: f64,
     text_anchor: &'static str,
     dy: &'static str,
+}
+
+#[derive(Clone, Copy)]
+struct LabelBox {
+    left: f64,
+    top: f64,
+    right: f64,
+    bottom: f64,
+}
+
+impl LabelBox {
+    fn intersects(self, other: Self, margin: f64) -> bool {
+        self.left < other.right + margin
+            && self.right + margin > other.left
+            && self.top < other.bottom + margin
+            && self.bottom + margin > other.top
+    }
+}
+
+/// Place an authored connector name only in a clear corridor. If every candidate collides,
+/// the name remains available through the connector tooltip rather than obscuring the drawing.
+fn typed_connector_label_anchor(
+    route: &[Point],
+    text: &str,
+    all_routes: &[Vec<Point>],
+    nodes_by_id: &HashMap<&str, &LaidOutNode>,
+    placed: &[LabelBox],
+) -> Option<(LabelAnchor, LabelBox)> {
+    let width = truncate(text, 18).encode_utf16().count() as f64 * 6.5 + 10.0;
+    let height = 16.0;
+    let mut segments: Vec<(usize, Point, Point, f64, bool)> = route
+        .windows(2)
+        .enumerate()
+        .map(|(index, pair)| {
+            let horizontal = (pair[0].y - pair[1].y).abs() < 1.0;
+            (
+                index,
+                pair[0],
+                pair[1],
+                (pair[1].x - pair[0].x).hypot(pair[1].y - pair[0].y),
+                horizontal,
+            )
+        })
+        .collect();
+    segments.sort_by(|left, right| {
+        right
+            .4
+            .cmp(&left.4)
+            .then(right.3.total_cmp(&left.3))
+            .then(left.0.cmp(&right.0))
+    });
+    for (_, start, end, length, horizontal) in segments {
+        if length
+            < if horizontal {
+                width + 12.0
+            } else {
+                height + 12.0
+            }
+        {
+            continue;
+        }
+        for fraction in [0.5, 0.25, 0.75] {
+            let x = start.x + (end.x - start.x) * fraction;
+            let y = start.y + (end.y - start.y) * fraction;
+            for side in [-1.0, 1.0] {
+                let bounds = if horizontal {
+                    let top = if side < 0.0 {
+                        y - height - 10.0
+                    } else {
+                        y + 10.0
+                    };
+                    LabelBox {
+                        left: x - width / 2.0,
+                        top,
+                        right: x + width / 2.0,
+                        bottom: top + height,
+                    }
+                } else {
+                    let left = if side < 0.0 {
+                        x - width - 10.0
+                    } else {
+                        x + 10.0
+                    };
+                    LabelBox {
+                        left,
+                        top: y - height / 2.0,
+                        right: left + width,
+                        bottom: y + height / 2.0,
+                    }
+                };
+                if horizontal
+                    && (bounds.left < start.x.min(end.x) || bounds.right > start.x.max(end.x))
+                {
+                    continue;
+                }
+                if !horizontal
+                    && (bounds.top < start.y.min(end.y) || bounds.bottom > start.y.max(end.y))
+                {
+                    continue;
+                }
+                let hits_node = nodes_by_id.values().any(|node| {
+                    if node.attributes.get("isSyntheticContainer")
+                        == Some(&serde_json::Value::Bool(true))
+                        || node.attributes.get("isSyntheticPackage")
+                            == Some(&serde_json::Value::Bool(true))
+                    {
+                        return false;
+                    }
+                    bounds.intersects(
+                        LabelBox {
+                            left: node.x,
+                            top: node.y,
+                            right: node.x + node.width,
+                            bottom: node.y + node.height,
+                        },
+                        14.0,
+                    )
+                });
+                let hits_route =
+                    all_routes
+                        .iter()
+                        .flat_map(|points| points.windows(2))
+                        .any(|pair| {
+                            bounds.intersects(
+                                LabelBox {
+                                    left: pair[0].x.min(pair[1].x),
+                                    top: pair[0].y.min(pair[1].y),
+                                    right: pair[0].x.max(pair[1].x),
+                                    bottom: pair[0].y.max(pair[1].y),
+                                },
+                                3.0,
+                            )
+                        });
+                if hits_node
+                    || hits_route
+                    || placed.iter().any(|other| bounds.intersects(*other, 5.0))
+                {
+                    continue;
+                }
+                let anchor = LabelAnchor {
+                    x: if horizontal { x } else { bounds.left },
+                    y: bounds.top + 12.0,
+                    text_anchor: if horizontal { "middle" } else { "start" },
+                    dy: "0",
+                };
+                return Some((anchor, bounds));
+            }
+        }
+    }
+    None
 }
 
 /// Port of `interconnectionEdgeLabelAnchor`.
@@ -210,6 +365,13 @@ fn ibd_edge_display_label(edge: &LaidOutEdge, edge_kind: &str) -> String {
         return interface_name;
     }
     let label = edge.label.trim();
+    if matches!(
+        edge.attributes.get("typedProjection"),
+        Some(serde_json::Value::Bool(true))
+    ) && label.eq_ignore_ascii_case("connector")
+    {
+        return String::new();
+    }
     let relation_type = attr_text(&edge.attributes, "relationType");
     const GENERIC: &[&str] = &[
         "",
@@ -254,6 +416,38 @@ pub fn draw_ibd_edges(
 ) -> Vec<Element> {
     let layout_edges_by_id: HashMap<&str, &InterconnectionLayoutEdgeDto> =
         layout_edges.iter().map(|e| (e.id.as_str(), e)).collect();
+    let all_routes: Vec<Vec<Point>> = edges
+        .iter()
+        .map(|edge| route_points_for_edge(edge, &layout_edges_by_id))
+        .collect();
+    let port_types: Vec<String> = edges
+        .iter()
+        .map(|edge| attr_text(&edge.attributes, "portTypeIdentity"))
+        .filter(|identity: &String| !identity.is_empty())
+        .collect::<BTreeSet<_>>()
+        .into_iter()
+        .collect();
+    let mut typed_labels = HashMap::new();
+    let mut placed_labels = Vec::new();
+    for (edge, route) in edges.iter().zip(&all_routes) {
+        if edge.attributes.get("typedProjection") != Some(&serde_json::Value::Bool(true)) {
+            continue;
+        }
+        let kind = edge
+            .edge_kind
+            .clone()
+            .unwrap_or_else(|| normalize_edge_kind(&edge.label));
+        let label = ibd_edge_display_label(edge, &kind);
+        if label.is_empty() {
+            continue;
+        }
+        if let Some((anchor, bounds)) =
+            typed_connector_label_anchor(route, &label, &all_routes, nodes_by_id, &placed_labels)
+        {
+            typed_labels.insert(edge.id.as_str(), anchor);
+            placed_labels.push(bounds);
+        }
+    }
 
     let mut edge_layer = Element::new("g").attr("class", "viz-edges");
     struct PendingLabel {
@@ -279,7 +473,26 @@ pub fn draw_ibd_edges(
             .clone()
             .unwrap_or_else(|| normalize_edge_kind(&edge.label));
         let display_label = ibd_edge_display_label(edge, &edge_kind);
-        let stroke = stroke_color_for_edge(theme);
+        let typed_projection =
+            edge.attributes.get("typedProjection") == Some(&serde_json::Value::Bool(true));
+        let type_identity = attr_text(&edge.attributes, "portTypeIdentity");
+        let palette_index = port_types.binary_search(&type_identity).ok();
+        let palette: &[&str; 6] = if theme.color_scheme == "dark" {
+            &[
+                "#60a5fa", "#fbbf24", "#5eead4", "#c084fc", "#fb7185", "#a3e635",
+            ]
+        } else {
+            &[
+                "#1d4ed8", "#b45309", "#0f766e", "#7e22ce", "#be123c", "#4d7c0f",
+            ]
+        };
+        let stroke = if typed_projection && edge_kind == "connection" {
+            palette_index.map_or(stroke_color_for_edge(theme), |index| {
+                palette[index % palette.len()]
+            })
+        } else {
+            stroke_color_for_edge(theme)
+        };
         let stroke_width = if edge_kind == "hierarchy" { 1.4 } else { 2.0 };
         let data_type = {
             let relation_type = attr_text(&edge.attributes, "relationType");
@@ -305,8 +518,21 @@ pub fn draw_ibd_edges(
             .style("stroke-width", n(stroke_width))
             .style("opacity", "0.9");
         path_el = mark_visible_edge(path_el, &edge.id, &n(stroke_width));
+        if typed_projection && !type_identity.is_empty() {
+            path_el = path_el.attr("data-port-type", type_identity);
+        }
+        if typed_projection && !display_label.is_empty() {
+            path_el = path_el.attr(
+                "data-label-placement",
+                if typed_labels.contains_key(edge.id.as_str()) {
+                    "visible"
+                } else {
+                    "tooltip-only"
+                },
+            );
+        }
 
-        let marker = apply_edge_marker_ibd(&edge_kind, theme);
+        let marker = apply_edge_marker_ibd(&edge_kind, theme, typed_projection);
         if marker.unsupported {
             path_el = path_el.attr("data-notation-status", "unsupported");
         }
@@ -323,7 +549,18 @@ pub fn draw_ibd_edges(
         edge_layer = edge_layer.child(path_edge_hit_target(&path, &edge.id, Some(&tooltip_text)));
 
         if !display_label.is_empty() {
-            if let Some(anchor) = interconnection_edge_label_anchor(edge, &layout_edges_by_id) {
+            if typed_projection {
+                if let Some(anchor) = typed_labels.remove(edge.id.as_str()) {
+                    labels.push(PendingLabel {
+                        edge_id: edge.id.clone(),
+                        edge_kind,
+                        display_label,
+                        anchor,
+                    });
+                }
+            } else if let Some(anchor) =
+                interconnection_edge_label_anchor(edge, &layout_edges_by_id)
+            {
                 labels.push(PendingLabel {
                     edge_id: edge.id.clone(),
                     edge_kind,
@@ -434,5 +671,82 @@ mod tests {
         let text = "🙂🙂";
         let truncated = truncate(text, 3);
         assert_eq!(truncated, "🙂...");
+    }
+
+    #[test]
+    fn typed_connector_label_avoids_parallel_routes() {
+        let route = vec![Point { x: 0.0, y: 0.0 }, Point { x: 200.0, y: 0.0 }];
+        let upper = vec![Point { x: 0.0, y: -15.0 }, Point { x: 200.0, y: -15.0 }];
+        let nodes = HashMap::new();
+        let (anchor, bounds) = typed_connector_label_anchor(
+            &route,
+            "powerLink",
+            &[route.clone(), upper.clone()],
+            &nodes,
+            &[],
+        )
+        .expect("lower corridor remains clear");
+        assert!(anchor.y > 0.0);
+        assert!(bounds.top > 0.0);
+
+        let lower = vec![Point { x: 0.0, y: 15.0 }, Point { x: 200.0, y: 15.0 }];
+        assert!(typed_connector_label_anchor(
+            &route,
+            "powerLink",
+            &[route.clone(), upper, lower],
+            &nodes,
+            &[],
+        )
+        .is_none());
+    }
+
+    #[test]
+    fn typed_connector_label_avoids_part_box() {
+        let route = vec![Point { x: 0.0, y: 0.0 }, Point { x: 200.0, y: 0.0 }];
+        let part = LaidOutNode {
+            id: "part".into(),
+            label: "part".into(),
+            kind: "part".into(),
+            attributes: BTreeMap::new(),
+            x: 40.0,
+            y: -40.0,
+            width: 120.0,
+            height: 30.0,
+            compartments: None,
+        };
+        let mut nodes = HashMap::new();
+        nodes.insert(part.id.as_str(), &part);
+        let (_, bounds) = typed_connector_label_anchor(
+            &route,
+            "videoLink",
+            std::slice::from_ref(&route),
+            &nodes,
+            &[],
+        )
+        .expect("lower corridor remains clear");
+        assert!(bounds.top > 0.0);
+    }
+
+    #[test]
+    fn typed_connector_labels_do_not_stack_on_each_other() {
+        let route = vec![Point { x: 0.0, y: 0.0 }, Point { x: 200.0, y: 0.0 }];
+        let nodes = HashMap::new();
+        let (_, first) = typed_connector_label_anchor(
+            &route,
+            "firstConnector",
+            std::slice::from_ref(&route),
+            &nodes,
+            &[],
+        )
+        .unwrap();
+        let (_, second) = typed_connector_label_anchor(
+            &route,
+            "secondConnector",
+            std::slice::from_ref(&route),
+            &nodes,
+            &[first],
+        )
+        .unwrap();
+        assert!(!first.intersects(second, 5.0));
     }
 }
