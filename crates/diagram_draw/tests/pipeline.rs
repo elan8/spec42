@@ -40,19 +40,26 @@ fn webshop_action_flow_draws_only_actions_and_successions() {
     assert_eq!(svg.matches("data-flow-kind=\"succession\"").count(), 4);
     assert_eq!(svg.matches("class=\"action-stereotype\"").count(), 5);
     assert!(svg.contains("«action»"));
-    let background = svg.split_once("class=\"viz-bg\"").unwrap().1;
-    let background_height: f64 = background
-        .split_once("height=\"")
+    assert_eq!(svg.matches("stroke-dasharray: 7,4").count(), 4);
+    assert_eq!(
+        svg.matches("marker-end: url(#action-succession-arrow)")
+            .count(),
+        4
+    );
+    let view_box = svg
+        .split_once("viewBox=\"")
         .unwrap()
         .1
         .split_once('"')
         .unwrap()
         .0
-        .parse()
-        .unwrap();
+        .split_whitespace()
+        .map(|number| number.parse::<f64>().unwrap())
+        .collect::<Vec<_>>();
+    let aspect = view_box[2] / view_box[3];
     assert!(
-        background_height > 1000.0,
-        "background must cover the full action chain"
+        (0.9..=2.2).contains(&aspect),
+        "action flow aspect: {aspect}"
     );
 }
 
@@ -72,6 +79,27 @@ fn unconnected_second_monitor_preserves_first_monitor_connections() {
         "../../../tests/snapshots/generation/diagram_office_two_monitors.md"
     ));
     let input = draw_input_from_payload(&payload).expect("typed interconnection lays out");
+    let port_types = input["edges"]
+        .as_array()
+        .expect("prepared connectors")
+        .iter()
+        .map(|edge| edge["attributes"]["portTypeIdentity"].as_str().unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(port_types.len(), 3);
+    assert_eq!(
+        port_types
+            .iter()
+            .filter(|key| key.ends_with("PowerPort"))
+            .count(),
+        2
+    );
+    assert_eq!(
+        port_types
+            .iter()
+            .filter(|key| key.ends_with("VideoPort"))
+            .count(),
+        1
+    );
     let edges = input["interconnectionLayout"]["edges"]
         .as_array()
         .expect("laid out connectors");
@@ -95,6 +123,7 @@ fn unconnected_second_monitor_preserves_first_monitor_connections() {
     assert!(svg.contains("data-view-name=\"Workplace\""));
     assert!(!svg.contains("marker-start: url(#ibd-connection-dot)"));
     assert!(!svg.contains("viz-edge-label--connection"));
+    assert_eq!(svg.matches("data-port-type=").count(), 3);
 }
 
 #[test]

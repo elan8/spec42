@@ -275,7 +275,7 @@ fn draw_action_node(
                     .style("font-size", "10px")
                     .style("fill", theme.text_secondary)
                     .text(if is_perform {
-                        "«perform»"
+                        "«perform action»"
                     } else {
                         "«action»"
                     }),
@@ -360,6 +360,7 @@ pub fn render_action_flow_view(
         .unwrap_or("")
         .to_lowercase()
         == "horizontal";
+    let typed_projection = prepared.meta.get("typedProjection") == Some(&Value::Bool(true));
 
     let mut root = Element::new("g").attr("class", "viz-root").child(
         Element::new("text")
@@ -494,20 +495,15 @@ pub fn render_action_flow_view(
             .style("fill", "none")
             .style("stroke", theme.edge_default)
             .style("stroke-width", "2px")
+            .style("stroke-dasharray", if succession { "7,4" } else { "none" })
             .style(
-                "stroke-dasharray",
-                if succession
-                    && !matches!(
-                        edge.attributes.get("typedProjection"),
-                        Some(Value::Bool(true))
-                    )
-                {
-                    "7,4"
+                "marker-end",
+                if succession && typed_projection {
+                    "url(#action-succession-arrow)"
                 } else {
-                    "none"
+                    "url(#action-flow-arrow)"
                 },
-            )
-            .style("marker-end", "url(#action-flow-arrow)");
+            );
         flow_layer = flow_layer.child(mark_visible_edge(visible, &edge.id, "2"));
 
         let tooltip_text = tooltip_fallback_text(&behavior_edge_tooltip_descriptor(
@@ -578,18 +574,20 @@ pub fn render_action_flow_view(
 
     let mut min_x = 0.0_f64;
     let mut min_y = 0.0_f64;
-    let mut max_x = width;
-    let mut max_y = height;
+    let mut max_x = if typed_projection { 200.0 } else { width };
+    let mut max_y = if typed_projection { 50.0 } else { height };
     for rect in layout.positions.values() {
         min_x = min_x.min(rect.x);
         min_y = min_y.min(rect.y);
         max_x = max_x.max(rect.x + rect.width);
         max_y = max_y.max(rect.y + rect.height + 20.0);
     }
-    (
-        root,
-        (min_x - 40.0, min_y - 40.0, max_x + 40.0, max_y + 40.0),
-    )
+    let extents = if typed_projection {
+        (40.0, 40.0, max_x + 40.0, max_y + 40.0)
+    } else {
+        (min_x - 40.0, min_y - 40.0, max_x + 40.0, max_y + 40.0)
+    };
+    (root, extents)
 }
 
 /// Port of `addActionFlowMarkers`.
@@ -607,4 +605,24 @@ pub fn action_flow_marker(theme: &Theme) -> Element {
                 .attr("d", "M0,-5L10,0L0,5")
                 .style("fill", theme.edge_default),
         )
+}
+
+pub fn typed_action_flow_markers(theme: &Theme) -> Element {
+    Element::new("g").child(action_flow_marker(theme)).child(
+        Element::new("marker")
+            .attr("id", "action-succession-arrow")
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", "9")
+            .attr("refY", "0")
+            .attr("markerWidth", "7")
+            .attr("markerHeight", "7")
+            .attr("orient", "auto")
+            .child(
+                Element::new("path")
+                    .attr("d", "M0,-5L10,0L0,5")
+                    .style("fill", "none")
+                    .style("stroke", theme.edge_default)
+                    .style("stroke-width", "1.5"),
+            ),
+    )
 }

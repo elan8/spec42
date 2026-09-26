@@ -1750,9 +1750,43 @@ fn prepare_interconnection_from_typed_projection(
     );
     let mut prepared = prepare_interconnection_scene(&scene, &json!({ "selectedViewName": name }));
     prepared["meta"]["typedProjection"] = json!(true);
+    let port_type_keys: HashMap<String, String> = nodes
+        .iter()
+        .enumerate()
+        .filter_map(|(index, node)| {
+            if !is_port_metaclass(&as_string(field(node, "metaclass"), "")) {
+                return None;
+            }
+            let typing = field(node, "typing");
+            if field(typing, "status") != "resolved" {
+                return None;
+            }
+            let types = as_array(field(typing, "types"));
+            if types.len() != 1 {
+                return None;
+            }
+            let reference = field(&types[0], "reference")
+                .as_u64()
+                .and_then(|index| references.get(index as usize))?;
+            let qualified_name = field(reference, "qualifiedName").as_str()?;
+            Some((format!("n:{index}"), qualified_name.to_string()))
+        })
+        .collect();
     if let Some(edges) = prepared.get_mut("edges").and_then(Value::as_array_mut) {
         for edge in edges {
             edge["attributes"]["typedProjection"] = json!(true);
+            let attributes = &edge["attributes"];
+            let source_type = field(attributes, "sourcePortId")
+                .as_str()
+                .and_then(|id| port_type_keys.get(id));
+            let target_type = field(attributes, "targetPortId")
+                .as_str()
+                .and_then(|id| port_type_keys.get(id));
+            if let (Some(source_type), Some(target_type)) = (source_type, target_type) {
+                if source_type == target_type {
+                    edge["attributes"]["portTypeIdentity"] = json!(source_type);
+                }
+            }
         }
     }
     prepared

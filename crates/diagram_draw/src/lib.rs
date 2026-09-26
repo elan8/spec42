@@ -324,7 +324,11 @@ pub fn render_action_flow_view_svg(
         background_height,
         &prepared.title,
         bounds,
-        Some(action_flow::action_flow_marker(theme)),
+        Some(if typed_projection {
+            action_flow::typed_action_flow_markers(theme)
+        } else {
+            action_flow::action_flow_marker(theme)
+        }),
         root,
     )
 }
