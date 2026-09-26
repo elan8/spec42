@@ -120,6 +120,9 @@ impl SemanticModelBuilder {
                     ViewDefBodyElement::ViewpointUsage(viewpoint_usage) => {
                         self.lower_viewpoint_usage(document, Some(declaration), viewpoint_usage)?;
                     }
+                    ViewDefBodyElement::ViewUsage(view_usage) => {
+                        self.lower_view_usage(document, Some(declaration), view_usage)?;
+                    }
                     ViewDefBodyElement::Satisfy(node) => {
                         self.lower_satisfy(
                             document,
@@ -174,6 +177,7 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
+                    is_abstract: node.value.abstract_span.is_some(),
                     ordered: node.value.multiplicity_modifiers.is_ordered(),
                     nonunique: !node.value.multiplicity_modifiers.is_unique(),
                     ..DeclarationModifiers::default()
@@ -277,6 +281,9 @@ impl SemanticModelBuilder {
                     }
                     ViewBodyElement::Expose(node) => {
                         self.lower_expose(document, declaration, node)?;
+                    }
+                    ViewBodyElement::ViewUsage(view_usage) => {
+                        self.lower_view_usage(document, Some(declaration), view_usage)?;
                     }
                     ViewBodyElement::ViewRendering(_) => self.push_unsupported(
                         document,

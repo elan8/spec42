@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Nested view usages are modelled.** A `view` nested in a view usage or view definition body
+  (`view def D { view intro; }`, `view doc : D { view :>> intro { ... } }`) used to fail to parse
+  (`missing_body_or_semicolon`) and swallow the rest of the body. It now lowers as an owned view
+  declaration, recursively, with its typing, `:>>`/`redefines`/`:>` relationships, multiplicity,
+  and `expose` members, and implicitly subsets `View::subviews`. `abstract` on any view usage is
+  now published as the `abstract` modifier instead of being dropped. Pins
+  `elan8/sysml-v2-parser@aa844cc` (`elan8/sysml-v2-parser#147`, fixing `#146`).
+
 ## [0.53.1] - 2026-09-24
 
 - **CLI platform archives include the diagram Wasm plugin.** Each `spec42-<version>-<platform>`
