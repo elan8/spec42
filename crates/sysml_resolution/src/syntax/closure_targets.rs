@@ -141,10 +141,7 @@ pub(crate) fn walk_package_body_element_type_refs(
             walk_metadata_usage_type_refs(document, &metadata_usage.value, out);
         }
         PackageBodyElement::ViewUsage(view) => {
-            push_optional_type_reference(
-                reference_text(document, view.value.type_name).as_deref(),
-                out,
-            );
+            push_optional_typing_reference(document, view.value.typing.as_deref(), out);
         }
         _ => {}
     }

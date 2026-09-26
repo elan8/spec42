@@ -2,6 +2,9 @@
 
 use crate::lower::facts::definition_prefix_node_modifiers;
 use crate::lower::facts::multiplicity_facts;
+use crate::lower::facts::occurrence_prefix_direction;
+use crate::lower::facts::occurrence_prefix_is_variation;
+use crate::lower::facts::occurrence_prefix_modifiers;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
 use crate::lower::facts::FilterForm;
@@ -155,11 +158,12 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers a package/definition/usage-level `view` feature member (BNF ViewUsage), mirroring
-    /// `lower_analysis_case_usage`: ownership, membership, a `:` typing target, and
-    /// `subsets`/`redefines` subsetting relationships. Resolved upstream in `0757de13`
-    /// (planning/UPSTREAM_PARSER_GAPS.md #8): `ViewUsage` previously had no `subsets` field. Multiplicity
-    /// and view-specific body members (`render`/`filter`) are out of scope for this slice.
+    /// Lowers a `view` feature member (BNF ViewUsage) at package level or nested in a view or view
+    /// definition body, mirroring `lower_part_usage`: ownership, feature membership, the
+    /// `OccurrenceUsagePrefix` modifiers, direction and extension keywords, every typing target,
+    /// the subsets / references / crosses / redefines relationships, multiplicity, and the
+    /// `ValuePart`. View-specific body members (`render`, `rendering`, `alias`) remain unsupported
+    /// in `lower_view_usage_body`.
     pub(crate) fn lower_view_usage(
         &mut self,
         document: DocumentIdx,
@@ -177,11 +181,11 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.abstract_span.is_some(),
                     ordered: node.value.multiplicity_modifiers.is_ordered(),
                     nonunique: !node.value.multiplicity_modifiers.is_unique(),
-                    ..DeclarationModifiers::default()
+                    ..occurrence_prefix_modifiers(&node.value.prefix)
                 },
+                direction: occurrence_prefix_direction(&node.value.prefix),
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
@@ -195,27 +199,30 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span;
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
+        self.lower_occurrence_prefix_members(document, declaration, &node.value.prefix)?;
+        // Constructs the canonical value Expression/result and preserves its authored spelling,
+        // as `lower_part_usage` does.
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(document, declaration, feature_value)?;
+        }
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship_impl(
                 document,
-                local: type_name,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
+                declaration,
+                relationship,
+                occurrence_prefix_is_variation(&node.value.prefix),
+                None,
+            )?;
         }
-        if let Some(relationship) = &node.value.subsets {
-            self.lower_subsetting_relationship(document, declaration, relationship)?;
-        }
-        if let Some(relationship) = &node.value.redefines {
+        for relationship in [
+            &node.value.subsets,
+            &node.value.references,
+            &node.value.crosses,
+            &node.value.redefines,
+        ]
+        .into_iter()
+        .flatten()
+        {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         self.lower_view_usage_body(document, declaration, &node.value.body)
