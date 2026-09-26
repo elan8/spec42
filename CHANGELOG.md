@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   declaration, recursively, with its typing, `:>>`/`redefines`/`:>` relationships, multiplicity,
   and `expose` members, and implicitly subsets `View::subviews`. `abstract` on any view usage is
   now published as the `abstract` modifier instead of being dropped. Pins
-  `elan8/sysml-v2-parser@9dd6680` (`elan8/sysml-v2-parser#147`, fixing `#146`).
+  `elan8/sysml-v2-parser@cecc2a8` (`main`, the merge of `#147`, fixing `#146`).
 
 ## [0.53.1] - 2026-09-24
 
