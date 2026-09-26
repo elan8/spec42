@@ -26,7 +26,7 @@ fn marker_url(id: &'static str) -> String {
     format!("url(#{id})")
 }
 
-fn apply_edge_marker_ibd(edge_kind: &str, theme: &Theme) -> MarkerStyle {
+fn apply_edge_marker_ibd(edge_kind: &str, theme: &Theme, typed_projection: bool) -> MarkerStyle {
     let stroke = stroke_color_for_edge(theme);
     match edge_kind {
         "flow" => MarkerStyle {
@@ -59,6 +59,11 @@ fn apply_edge_marker_ibd(edge_kind: &str, theme: &Theme) -> MarkerStyle {
                 ("marker-start", marker_url("ibd-connection-dot")),
                 ("marker-end", marker_url("ibd-connection-dot")),
             ],
+        },
+        "connection" if typed_projection => MarkerStyle {
+            unsupported: false,
+            attrs: vec![("stroke", stroke), ("stroke-width", "2")],
+            styles: vec![],
         },
         "connection" | "relationship" => MarkerStyle {
             unsupported: false,
@@ -210,6 +215,13 @@ fn ibd_edge_display_label(edge: &LaidOutEdge, edge_kind: &str) -> String {
         return interface_name;
     }
     let label = edge.label.trim();
+    if matches!(
+        edge.attributes.get("typedProjection"),
+        Some(serde_json::Value::Bool(true))
+    ) && label.eq_ignore_ascii_case("connector")
+    {
+        return String::new();
+    }
     let relation_type = attr_text(&edge.attributes, "relationType");
     const GENERIC: &[&str] = &[
         "",
@@ -306,7 +318,14 @@ pub fn draw_ibd_edges(
             .style("opacity", "0.9");
         path_el = mark_visible_edge(path_el, &edge.id, &n(stroke_width));
 
-        let marker = apply_edge_marker_ibd(&edge_kind, theme);
+        let marker = apply_edge_marker_ibd(
+            &edge_kind,
+            theme,
+            matches!(
+                edge.attributes.get("typedProjection"),
+                Some(serde_json::Value::Bool(true))
+            ),
+        );
         if marker.unsupported {
             path_el = path_el.attr("data-notation-status", "unsupported");
         }

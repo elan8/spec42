@@ -7,6 +7,129 @@ use diagram_draw::{
 };
 use serde_json::json;
 
+fn generated_diagram(snapshot: &str) -> serde_json::Value {
+    let json = snapshot
+        .split_once("## diagram.json\n~~~json\n")
+        .or_else(|| snapshot.split_once("## diagram.json\r\n~~~json\r\n"))
+        .expect("snapshot contains diagram.json")
+        .1;
+    let json = json.split_once("\n~~~").expect("closed JSON fence").0;
+    serde_json::from_str(json).expect("valid generated diagram")
+}
+
+#[test]
+fn webshop_action_flow_draws_only_actions_and_successions() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_webshop_action_flow.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("typed action flow lays out");
+    let prepared = &input["prepared"];
+    let nodes = prepared["nodes"].as_array().expect("action nodes");
+    let edges = prepared["edges"].as_array().expect("action edges");
+    assert_eq!(nodes.len(), 5, "only nested action usages are vertices");
+    assert_eq!(edges.len(), 4, "only authored successions connect actions");
+    assert!(edges
+        .iter()
+        .all(|edge| edge["attributes"]["succession"] == true));
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw action flow");
+    assert_eq!(
+        svg.matches("class=\"activity-action action-flow-node")
+            .count(),
+        5
+    );
+    assert_eq!(svg.matches("data-flow-kind=\"succession\"").count(), 4);
+    assert_eq!(svg.matches("class=\"action-stereotype\"").count(), 5);
+    assert!(svg.contains("«action»"));
+    let background = svg.split_once("class=\"viz-bg\"").unwrap().1;
+    let background_height: f64 = background
+        .split_once("height=\"")
+        .unwrap()
+        .1
+        .split_once('"')
+        .unwrap()
+        .0
+        .parse()
+        .unwrap();
+    assert!(
+        background_height > 1000.0,
+        "background must cover the full action chain"
+    );
+}
+
+#[test]
+fn action_flow_rejects_out_of_range_member_index() {
+    let mut payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_webshop_action_flow.md"
+    ));
+    payload["projection"]["metadata"]["actions"] = json!([999]);
+    let error = draw_input_from_payload(&payload).expect_err("invalid member index must fail");
+    assert!(matches!(error, PipelineError::InvalidPayload(_)));
+}
+
+#[test]
+fn unconnected_second_monitor_preserves_first_monitor_connections() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_office_two_monitors.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("typed interconnection lays out");
+    let edges = input["interconnectionLayout"]["edges"]
+        .as_array()
+        .expect("laid out connectors");
+    assert_eq!(edges.len(), 3);
+    assert!(edges.iter().all(|edge| edge["routePoints"]
+        .as_array()
+        .is_some_and(|points| points.len() >= 2)));
+    for edge in edges {
+        let points = edge["routePoints"].as_array().expect("connector route");
+        let first = points.first().expect("source point");
+        let last = points.last().expect("target point");
+        let dx = (first["x"].as_f64().unwrap() - last["x"].as_f64().unwrap()).abs();
+        let dy = (first["y"].as_f64().unwrap() - last["y"].as_f64().unwrap()).abs();
+        assert!(
+            dx + dy >= 80.0,
+            "connector has no readable clearance: {edge}"
+        );
+    }
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw interconnection");
+    assert_eq!(svg.matches("class=\"ibd-connector").count(), 3);
+    assert!(svg.contains("data-view-name=\"Workplace\""));
+    assert!(!svg.contains("marker-start: url(#ibd-connection-dot)"));
+    assert!(!svg.contains("viz-edge-label--connection"));
+}
+
+#[test]
+fn timer_interconnection_example_retains_its_connectors() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_timer_interconnection.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("timer interconnection lays out");
+    let projected_connectors = payload["projection"]["edges"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|edge| edge["kind"] == "connector")
+        .count();
+    let routed = input["interconnectionLayout"]["edges"]
+        .as_array()
+        .expect("routed connectors");
+    assert_eq!(routed.len(), projected_connectors);
+    assert!(routed.iter().all(|edge| edge["routePoints"]
+        .as_array()
+        .is_some_and(|points| points.len() >= 2)));
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw timer");
+    let background = svg.split_once("class=\"viz-bg\"").unwrap().1;
+    let background_width: f64 = background
+        .split_once("width=\"")
+        .unwrap()
+        .1
+        .split_once('"')
+        .unwrap()
+        .0
+        .parse()
+        .unwrap();
+    assert!(background_width > 1280.0, "wide diagram needs full canvas");
+}
+
 fn general_golden_payload() -> serde_json::Value {
     json!({
         "version": 1,

@@ -139,6 +139,7 @@ fn draw_action_node(
         }
     };
     let is_perform = kind.contains("perform") || action_type.to_lowercase().contains("perform");
+    let typed_action = !attr_text(&node.attributes, "notationRole").is_empty();
 
     let mut g = Element::new("g")
         .attr(
@@ -264,15 +265,32 @@ fn draw_action_node(
                 .style("stroke-width", "2px")
                 .style("stroke-dasharray", if is_perform { "5,3" } else { "none" }),
         );
-        g = g.child(
-            Element::new("rect")
-                .attr_f("width", layout.width)
-                .attr_f("height", 6.0)
-                .attr("rx", "8")
-                .style("fill", theme.node_border)
-                .style("stroke", "none"),
-        );
-        if is_perform {
+        if typed_action {
+            g = g.child(
+                Element::new("text")
+                    .attr("class", "action-stereotype")
+                    .attr_f("x", layout.width / 2.0)
+                    .attr_f("y", layout.height / 2.0 - 7.0)
+                    .attr("text-anchor", "middle")
+                    .style("font-size", "10px")
+                    .style("fill", theme.text_secondary)
+                    .text(if is_perform {
+                        "«perform»"
+                    } else {
+                        "«action»"
+                    }),
+            );
+        } else {
+            g = g.child(
+                Element::new("rect")
+                    .attr_f("width", layout.width)
+                    .attr_f("height", 6.0)
+                    .attr("rx", "8")
+                    .style("fill", theme.node_border)
+                    .style("stroke", "none"),
+            );
+        }
+        if is_perform && !typed_action {
             g = g.child(
                 Element::new("text")
                     .attr("class", "perform-action-stereotype")
@@ -289,7 +307,12 @@ fn draw_action_node(
     let label_y = if is_fork(&kind) {
         layout.height + 14.0
     } else {
-        layout.height / 2.0 + if is_perform { 12.0 } else { 4.0 }
+        layout.height / 2.0
+            + if typed_action || is_perform {
+                12.0
+            } else {
+                4.0
+            }
     };
     g = g.child(
         Element::new("text")
@@ -471,7 +494,19 @@ pub fn render_action_flow_view(
             .style("fill", "none")
             .style("stroke", theme.edge_default)
             .style("stroke-width", "2px")
-            .style("stroke-dasharray", if succession { "7,4" } else { "none" })
+            .style(
+                "stroke-dasharray",
+                if succession
+                    && !matches!(
+                        edge.attributes.get("typedProjection"),
+                        Some(Value::Bool(true))
+                    )
+                {
+                    "7,4"
+                } else {
+                    "none"
+                },
+            )
             .style("marker-end", "url(#action-flow-arrow)");
         flow_layer = flow_layer.child(mark_visible_edge(visible, &edge.id, "2"));
 

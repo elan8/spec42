@@ -1748,7 +1748,14 @@ fn prepare_interconnection_from_typed_projection(
         references,
         navigation,
     );
-    prepare_interconnection_scene(&scene, &json!({ "selectedViewName": name }))
+    let mut prepared = prepare_interconnection_scene(&scene, &json!({ "selectedViewName": name }));
+    prepared["meta"]["typedProjection"] = json!(true);
+    if let Some(edges) = prepared.get_mut("edges").and_then(Value::as_array_mut) {
+        for edge in edges {
+            edge["attributes"]["typedProjection"] = json!(true);
+        }
+    }
+    prepared
 }
 
 fn interconnection_scene_from_typed_projection(
@@ -2575,6 +2582,108 @@ fn enrich_typed_catalog_product(selected_kind: &str, product: &mut Value) {
     }
 }
 
+/// The typed projection includes declarations and parameter references for inspection. Only
+/// projected action/control members are activity vertices; containment is not an action flow.
+fn prepare_typed_action_flow(
+    name: &str,
+    raw_nodes: &[Value],
+    raw_edges: &[Value],
+    metadata: &Value,
+    references: &[Value],
+    navigation: &NavigationFn<'_>,
+) -> Result<Value, String> {
+    if !field(metadata, "actions").is_array() || !field(metadata, "controlNodes").is_array() {
+        return Err("action-flow metadata must include actions and controlNodes arrays".into());
+    }
+    let member_indexes: Vec<usize> = as_array(field(metadata, "actions"))
+        .iter()
+        .chain(as_array(field(metadata, "controlNodes")))
+        .map(|value| {
+            let index = value
+                .as_u64()
+                .ok_or_else(|| "action-flow member index must be an integer".to_string())?
+                as usize;
+            if index >= raw_nodes.len() {
+                return Err(format!("action-flow member index {index} is out of range"));
+            }
+            Ok(index)
+        })
+        .collect::<Result<_, String>>()?;
+    let action_indexes: HashSet<usize> = member_indexes.into_iter().collect();
+    let parent_actions: HashSet<usize> = action_indexes
+        .iter()
+        .filter_map(|index| field(&raw_nodes[*index], "owner").as_u64())
+        .map(|index| index as usize)
+        .filter(|index| action_indexes.contains(index))
+        .collect();
+    let visible_indexes: HashSet<usize> = action_indexes
+        .difference(&parent_actions)
+        .copied()
+        .collect();
+    let mut ordered_indexes: Vec<usize> = visible_indexes.iter().copied().collect();
+    ordered_indexes.sort_unstable();
+    let nodes: Vec<Value> = ordered_indexes
+        .iter()
+        .map(|&index| {
+            let element = &raw_nodes[index];
+            let source = navigation(field(element, "source"));
+            let semantic_reference = field(element, "reference")
+                .as_u64()
+                .and_then(|reference| references.get(reference as usize));
+            json!({
+                "id": format!("n:{index}"),
+                "label": as_string(field(element, "name"), &as_string(field(element, "metaclass"), "Action")),
+                "kind": as_string(field(element, "metaclass"), "ActionUsage"),
+                "uri": field(&source, "uri"),
+                "range": field(&source, "range"),
+                "attributes": {
+                    "semanticReference": semantic_reference,
+                    "notationRole": field(element, "notationRole"),
+                    "owner": field(element, "owner"),
+                },
+            })
+        })
+        .collect();
+    let edges: Vec<Value> = raw_edges
+        .iter()
+        .enumerate()
+        .filter_map(|(index, edge)| {
+            let kind = field(edge, "kind").as_str()?;
+            if kind != "succession" && kind != "flow" {
+                return None;
+            }
+            let source = field(edge, "source").as_u64()? as usize;
+            let target = field(edge, "target").as_u64()? as usize;
+            if !visible_indexes.contains(&source) || !visible_indexes.contains(&target) {
+                return None;
+            }
+            Some(json!({
+                "id": format!("e:{index}"),
+                "source": format!("n:{source}"),
+                "target": format!("n:{target}"),
+                "label": "",
+                "attributes": {
+                    "succession": kind == "succession",
+                    "streamingFlow": kind == "flow",
+                    "typedProjection": true,
+                    "provenance": field(edge, "provenance"),
+                    "sourceNavigation": navigation(field(edge, "navigation")),
+                    "semanticReference": field(edge, "reference")
+                        .as_u64()
+                        .and_then(|reference| references.get(reference as usize)),
+                },
+            }))
+        })
+        .collect();
+    Ok(json!({
+        "title": name,
+        "view": "action-flow-view",
+        "nodes": nodes,
+        "edges": edges,
+        "meta": { "sceneKind": "action-flow", "layoutDirection": "vertical", "typedProjection": true },
+    }))
+}
+
 fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>> {
     if field(input, "schemaVersion").as_u64() != Some(5) {
         return None;
@@ -2615,6 +2724,16 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
             },
         })
     });
+    if selected_kind == "action-flow-view" {
+        return Some(prepare_typed_action_flow(
+            selected_name,
+            projection_nodes,
+            projection_edges,
+            field(projection, "metadata"),
+            &references,
+            &navigation,
+        ));
+    }
     if selected_kind == "state-transition-view" {
         let scene = field(projection, "scene");
         if as_string(field(scene, "kind"), "") != "state-transition"

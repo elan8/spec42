@@ -1410,6 +1410,16 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
             node_layout_options
         } else {
             let mut options = as_object(&node_layout_options);
+            // ELK does not inherit the root graph's spacing for nested layered graphs. Without
+            // these options, sibling parts are separated by the default 40 px, leaving only a
+            // 20 px line between two 10 px boundary ports (the office two-monitor case).
+            options.insert("elk.spacing.nodeNode".into(), json!("90"));
+            options.insert(
+                "elk.layered.spacing.nodeNodeBetweenLayers".into(),
+                json!("140"),
+            );
+            options.insert("elk.spacing.edgeNode".into(), json!("50"));
+            options.insert("elk.spacing.edgeEdge".into(), json!("30"));
             options.insert(
                 "elk.padding".into(),
                 Value::String(if is_synthetic_package {
@@ -1510,18 +1520,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         })).collect::<Vec<_>>(),
     });
 
-    let laid_out = match diagram_layout::layout_value(&elk_graph_input) {
-        Ok(value) => value,
-        Err(_) => {
-            return Ok(json!({
-                "title": field(prepared, "title"),
-                "view": field(prepared, "view"),
-                "meta": field(prepared, "meta"),
-                "nodes": [],
-                "edges": [],
-            }));
-        }
-    };
+    let laid_out = diagram_layout::layout_value(&elk_graph_input)?;
 
     let mut laid_out_nodes: HashMap<String, LaidOutNode> = HashMap::new();
     let mut port_centers: HashMap<String, Point> = HashMap::new();
