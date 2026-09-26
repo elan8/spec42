@@ -347,7 +347,7 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &vu_node.span,
                 vu_node.value.name,
-                ctx.type_text(vu_node.value.type_name),
+                ctx.typing_text(vu_node.value.typing.as_deref()),
                 None,
                 out,
             );
