@@ -12,7 +12,8 @@ use sysml_v2_parser::ast::{
     ItemUsage, LibraryPackage, MetadataBody, MetadataBodyElement, MetadataDef, MetadataUsage,
     Package, PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
     PartUsageBody, PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody,
-    PortDefBodyElement, PortUsage, QualifiedIdentification, RefDecl, RootElement,
+    PortDefBodyElement, PortUsage, QualifiedIdentification, RefDecl, RootElement, ViewBody,
+    ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement, ViewUsage,
 };
 use sysml_v2_parser::{Node, ParsedDocument as ParsedRoot};
 
@@ -140,13 +141,33 @@ pub(crate) fn walk_package_body_element_type_refs(
         PackageBodyElement::MetadataUsage(metadata_usage) => {
             walk_metadata_usage_type_refs(document, &metadata_usage.value, out);
         }
+        PackageBodyElement::ViewDef(view) => walk_view_def_type_refs(document, &view.value, out),
         PackageBodyElement::ViewUsage(view) => {
-            push_optional_type_reference(
-                reference_text(document, view.value.type_name).as_deref(),
-                out,
-            );
+            walk_view_usage_type_refs(document, &view.value, out)
         }
         _ => {}
+    }
+}
+
+fn walk_view_def_type_refs(document: &ParsedRoot, view: &ViewDef, out: &mut RefSink) {
+    push_optional_typing_reference(document, view.specializes.as_deref(), out);
+    if let ViewDefBody::Brace { elements, .. } = &view.body {
+        for member in elements {
+            if let ViewDefBodyElement::ViewUsage(nested) = &member.value {
+                walk_view_usage_type_refs(document, &nested.value, out);
+            }
+        }
+    }
+}
+
+fn walk_view_usage_type_refs(document: &ParsedRoot, view: &ViewUsage, out: &mut RefSink) {
+    push_optional_typing_reference(document, view.typing.as_deref(), out);
+    if let ViewBody::Brace { elements, .. } = &view.body {
+        for member in elements {
+            if let ViewBodyElement::ViewUsage(nested) = &member.value {
+                walk_view_usage_type_refs(document, &nested.value, out);
+            }
+        }
     }
 }
 
@@ -195,10 +216,7 @@ pub(crate) fn walk_part_def_body_element_type_refs(
             walk_ref_decl_type_refs(document, &ref_decl.value, out)
         }
         PartDefBodyElement::ExhibitState(exhibit_state) => {
-            push_optional_type_reference(
-                typing_target_display(document, exhibit_state.value.typing.as_deref()).as_deref(),
-                out,
-            );
+            push_optional_typing_reference(document, exhibit_state.value.typing.as_deref(), out);
         }
         PartDefBodyElement::Connection(connection) => {
             push_optional_type_reference(
@@ -223,10 +241,7 @@ pub(crate) fn walk_part_usage_type_refs(
     part_usage: &PartUsage,
     out: &mut RefSink,
 ) {
-    push_optional_type_reference(
-        typing_target_display(document, part_usage.typing.as_deref()).as_deref(),
-        out,
-    );
+    push_optional_typing_reference(document, part_usage.typing.as_deref(), out);
     push_optional_type_reference(
         subsetting_target(document, part_usage.redefines.as_deref()),
         out,
@@ -299,10 +314,7 @@ pub(crate) fn walk_port_usage_type_refs(
     port_usage: &PortUsage,
     out: &mut RefSink,
 ) {
-    push_optional_type_reference(
-        typing_target_display(document, port_usage.typing.as_deref()).as_deref(),
-        out,
-    );
+    push_optional_typing_reference(document, port_usage.typing.as_deref(), out);
     push_optional_type_reference(
         subsetting_target(document, port_usage.redefines.as_deref()),
         out,
@@ -410,10 +422,7 @@ pub(crate) fn walk_ref_decl_type_refs(
     ref_decl: &RefDecl,
     out: &mut RefSink,
 ) {
-    push_optional_type_reference(
-        typing_target_display(document, ref_decl.typing.as_deref()).as_deref(),
-        out,
-    );
+    push_optional_typing_reference(document, ref_decl.typing.as_deref(), out);
 }
 
 pub(crate) fn walk_metadata_def_type_refs(
@@ -466,8 +475,12 @@ fn push_optional_typing_reference(
     relationship: Option<&sysml_v2_parser::ast::TypingRelationship>,
     out: &mut RefSink,
 ) {
-    if let Some(target) = typing_target_display(document, relationship) {
-        push_type_reference(&target, out);
+    if let Some(relationship) = relationship {
+        for target in &relationship.target {
+            if let Some(text) = reference_text(document, Some(*target)) {
+                push_type_reference(&text, out);
+            }
+        }
     }
 }
 
@@ -835,6 +848,50 @@ mod tests {
                 .closure_facts()
                 .type_reference_targets,
             vec!["Domain::Wheel".to_string()]
+        );
+    }
+
+    #[test]
+    fn a_part_usage_with_multiple_typings_seeds_every_package() {
+        assert_eq!(
+            SyntaxAuthority::new()
+                .parse_text("package App { part w : Domain::Wheel, Other::Transport; }")
+                .closure_facts()
+                .type_reference_targets,
+            ["Domain::Wheel", "Other::Transport"]
+        );
+    }
+
+    #[test]
+    fn nested_view_typings_seed_every_authored_package() {
+        let parsed = SyntaxAuthority::new().parse_text(
+            "package App { view document : Domain::Document, Other::Document { \
+             view section : Domain::Section, Other::Section { \
+             view detail : Third::Detail; } } }",
+        );
+        assert!(parsed.is_clean(), "nested views should parse");
+        assert_eq!(
+            parsed.closure_facts().type_reference_targets,
+            [
+                "Domain::Document",
+                "Other::Document",
+                "Domain::Section",
+                "Other::Section",
+                "Third::Detail",
+            ]
+        );
+    }
+
+    #[test]
+    fn view_definition_specialization_and_nested_view_typings_seed_packages() {
+        let parsed = SyntaxAuthority::new().parse_text(
+            "package App { view def Document : Domain::Document { \
+             view section : Third::Section; } }",
+        );
+        assert!(parsed.is_clean(), "view definition should parse");
+        assert_eq!(
+            parsed.closure_facts().type_reference_targets,
+            ["Domain::Document", "Third::Section"]
         );
     }
 
