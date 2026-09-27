@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Interconnection connectors show their name or type (#215).** A connector is labelled with its
+  authored name, else its type (`: PowerLink`); an anonymous, untyped `connect a to b` stays
+  unlabelled instead of reading `connector`. Labels inside a container part are placed again:
+  only the container's name header is an obstacle, not its whole box. A label with no clear place
+  still falls back to the connector tooltip.
+
 - **Formatter layout converges when a protected line ends in extra carriage returns.**
   A line that begins inside an unrestricted name, string, or block comment is copied
   verbatim. The line splitter removed only one trailing `\r`, so the next pass treated

@@ -157,6 +157,9 @@ impl LabelBox {
     }
 }
 
+/// Height of a container part's name header (the layout's root header), which labels avoid.
+const CONTAINER_HEADER_HEIGHT: f64 = 28.0;
+
 /// Place an authored connector name only in a clear corridor. If every candidate collides,
 /// the name remains available through the connector tooltip rather than obscuring the drawing.
 fn typed_connector_label_anchor(
@@ -246,12 +249,20 @@ fn typed_connector_label_anchor(
                     {
                         return false;
                     }
+                    // A container encloses its parts and their connectors, so only its name
+                    // header is in the way; a leaf part's whole box is.
+                    let container = node.attributes.get("_isLayoutContainer")
+                        == Some(&serde_json::Value::Bool(true));
                     bounds.intersects(
                         LabelBox {
                             left: node.x,
                             top: node.y,
                             right: node.x + node.width,
-                            bottom: node.y + node.height,
+                            bottom: if container {
+                                node.y + CONTAINER_HEADER_HEIGHT
+                            } else {
+                                node.y + node.height
+                            },
                         },
                         14.0,
                     )
@@ -725,6 +736,53 @@ mod tests {
         )
         .expect("lower corridor remains clear");
         assert!(bounds.top > 0.0);
+    }
+
+    #[test]
+    fn typed_connector_label_may_sit_inside_its_container_but_not_on_its_header() {
+        // The connector runs inside `system`; only the container's name header is in the way.
+        let route = vec![Point { x: 0.0, y: 100.0 }, Point { x: 200.0, y: 100.0 }];
+        let container = LaidOutNode {
+            id: "system".into(),
+            label: "system".into(),
+            kind: "part".into(),
+            attributes: BTreeMap::from([(
+                "_isLayoutContainer".to_owned(),
+                serde_json::Value::Bool(true),
+            )]),
+            x: -100.0,
+            y: 0.0,
+            width: 400.0,
+            height: 300.0,
+            compartments: None,
+        };
+        let mut nodes = HashMap::new();
+        nodes.insert(container.id.as_str(), &container);
+        let (_, bounds) = typed_connector_label_anchor(
+            &route,
+            "mainPower",
+            std::slice::from_ref(&route),
+            &nodes,
+            &[],
+        )
+        .expect("a label inside its container is placed");
+        assert!(bounds.top > container.y + CONTAINER_HEADER_HEIGHT);
+
+        // A route just below the header: the upper side would cover it, so the label goes below.
+        let high = vec![Point { x: 0.0, y: 50.0 }, Point { x: 200.0, y: 50.0 }];
+        let (_, bounds) = typed_connector_label_anchor(
+            &high,
+            "mainPower",
+            std::slice::from_ref(&high),
+            &nodes,
+            &[],
+        )
+        .expect("the side away from the header is clear");
+        assert!(
+            bounds.top > 50.0,
+            "the label avoids the header: top {}",
+            bounds.top
+        );
     }
 
     #[test]
