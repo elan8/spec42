@@ -139,6 +139,7 @@ fn draw_action_node(
         }
     };
     let is_perform = kind.contains("perform") || action_type.to_lowercase().contains("perform");
+    let typed_action = !attr_text(&node.attributes, "notationRole").is_empty();
 
     let mut g = Element::new("g")
         .attr(
@@ -264,15 +265,28 @@ fn draw_action_node(
                 .style("stroke-width", "2px")
                 .style("stroke-dasharray", if is_perform { "5,3" } else { "none" }),
         );
-        g = g.child(
-            Element::new("rect")
-                .attr_f("width", layout.width)
-                .attr_f("height", 6.0)
-                .attr("rx", "8")
-                .style("fill", theme.node_border)
-                .style("stroke", "none"),
-        );
-        if is_perform {
+        if typed_action {
+            g = g.child(
+                Element::new("text")
+                    .attr("class", "action-stereotype")
+                    .attr_f("x", layout.width / 2.0)
+                    .attr_f("y", layout.height / 2.0 - 7.0)
+                    .attr("text-anchor", "middle")
+                    .style("font-size", "10px")
+                    .style("fill", theme.text_secondary)
+                    .text(action_keyword(node, is_perform)),
+            );
+        } else {
+            g = g.child(
+                Element::new("rect")
+                    .attr_f("width", layout.width)
+                    .attr_f("height", 6.0)
+                    .attr("rx", "8")
+                    .style("fill", theme.node_border)
+                    .style("stroke", "none"),
+            );
+        }
+        if is_perform && !typed_action {
             g = g.child(
                 Element::new("text")
                     .attr("class", "perform-action-stereotype")
@@ -289,7 +303,12 @@ fn draw_action_node(
     let label_y = if is_fork(&kind) {
         layout.height + 14.0
     } else {
-        layout.height / 2.0 + if is_perform { 12.0 } else { 4.0 }
+        layout.height / 2.0
+            + if typed_action || is_perform {
+                12.0
+            } else {
+                4.0
+            }
     };
     g = g.child(
         Element::new("text")
@@ -308,6 +327,81 @@ fn draw_action_node(
     }
 
     g
+}
+
+/// The keyword shown in a typed action's name compartment.
+fn action_keyword(node: &PreparedNode, is_perform: bool) -> &'static str {
+    if is_perform {
+        "«perform action»"
+    } else if attr_text(&node.attributes, "notationRole") == "definition" {
+        "«action def»"
+    } else {
+        "«action»"
+    }
+}
+
+/// An action that owns other actions: its name compartment on top and, below the divider, its own
+/// action flow (drawn by the caller), as in the `action` / `action-def` notation of SysML v2
+/// 8.2.3.17.
+fn draw_action_container(
+    node: &PreparedNode,
+    layout: &crate::behavior_common::LaidOutRect,
+    theme: &Theme,
+) -> Element {
+    let is_perform = activity_node_kind(node).contains("perform");
+    Element::new("g")
+        .attr(
+            "class",
+            "activity-action action-flow-node action-flow-container",
+        )
+        .attr("data-node-id", node.id.clone())
+        .attr(
+            "transform",
+            format!("translate({},{})", n(layout.x), n(layout.y)),
+        )
+        .child(
+            Element::new("rect")
+                .attr("class", "node-background")
+                .attr("data-original-stroke", theme.node_border)
+                .attr("data-original-width", "2px")
+                .attr_f("width", layout.width)
+                .attr_f("height", layout.height)
+                .attr("rx", "12")
+                .style("fill", theme.canvas_background)
+                .style("stroke", theme.node_border)
+                .style("stroke-width", "2px")
+                .style("stroke-dasharray", if is_perform { "5,3" } else { "none" }),
+        )
+        .child(
+            Element::new("text")
+                .attr("class", "action-stereotype")
+                .attr_f("x", layout.width / 2.0)
+                .attr_f("y", 17.0)
+                .attr("text-anchor", "middle")
+                .style("font-size", "10px")
+                .style("fill", theme.text_secondary)
+                .text(action_keyword(node, is_perform)),
+        )
+        .child(
+            Element::new("text")
+                .attr_f("x", layout.width / 2.0)
+                .attr_f("y", 33.0)
+                .attr("text-anchor", "middle")
+                .style("font-size", "12px")
+                .style("font-weight", "600")
+                .style("fill", theme.text_primary)
+                .text(truncate_label(&node.label, 48)),
+        )
+        .child(
+            Element::new("line")
+                .attr("class", "action-flow-compartment-divider")
+                .attr_f("x1", 0.0)
+                .attr_f("y1", crate::layout::ACTION_CONTAINER_HEADER)
+                .attr_f("x2", layout.width)
+                .attr_f("y2", crate::layout::ACTION_CONTAINER_HEADER)
+                .style("stroke", theme.node_border)
+                .style("stroke-width", "1px"),
+        )
 }
 
 struct LaneExtent {
@@ -337,6 +431,7 @@ pub fn render_action_flow_view(
         .unwrap_or("")
         .to_lowercase()
         == "horizontal";
+    let typed_projection = prepared.meta.get("typedProjection") == Some(&Value::Bool(true));
 
     let mut root = Element::new("g").attr("class", "viz-root").child(
         Element::new("text")
@@ -472,7 +567,14 @@ pub fn render_action_flow_view(
             .style("stroke", theme.edge_default)
             .style("stroke-width", "2px")
             .style("stroke-dasharray", if succession { "7,4" } else { "none" })
-            .style("marker-end", "url(#action-flow-arrow)");
+            .style(
+                "marker-end",
+                if succession && typed_projection {
+                    "url(#action-succession-arrow)"
+                } else {
+                    "url(#action-flow-arrow)"
+                },
+            );
         flow_layer = flow_layer.child(mark_visible_edge(visible, &edge.id, "2"));
 
         let tooltip_text = tooltip_fallback_text(&behavior_edge_tooltip_descriptor(
@@ -524,11 +626,47 @@ pub fn render_action_flow_view(
         }
     }
 
+    // Containers are drawn first, outermost first, so the flows and actions inside stay on top.
+    let container_ids: std::collections::HashSet<String> = prepared
+        .nodes
+        .iter()
+        .map(|node| attr_text(&node.attributes, "containerId"))
+        .filter(|id| nodes_by_id.contains_key(id.as_str()))
+        .collect();
+    let depth = |node: &PreparedNode| {
+        let mut depth = 0;
+        let mut current = attr_text(&node.attributes, "containerId");
+        while let Some(parent) = nodes_by_id.get(current.as_str()) {
+            depth += 1;
+            if depth > prepared.nodes.len() {
+                break;
+            }
+            current = attr_text(&parent.attributes, "containerId");
+        }
+        depth
+    };
+    let mut containers: Vec<&PreparedNode> = prepared
+        .nodes
+        .iter()
+        .filter(|node| container_ids.contains(&node.id))
+        .collect();
+    containers.sort_by_key(|node| depth(node));
+    let mut container_layer = Element::new("g").attr("class", "activity-action-containers");
+    for node in containers {
+        if let Some(position) = layout.positions.get(&node.id) {
+            container_layer = container_layer
+                .child(draw_action_container(node, position, theme).style("cursor", ""));
+        }
+    }
+
     let mut node_layer = Element::new("g").attr("class", "activity-actions");
     for node in &prepared.nodes {
         let Some(position) = layout.positions.get(&node.id) else {
             continue;
         };
+        if container_ids.contains(&node.id) {
+            continue;
+        }
         // `attachBehaviorNodeClick` runs unconditionally for every node; in headless export it
         // always resolves to `.style("cursor", "")`, kept as a literal empty declaration.
         let node_group = draw_action_node(node, position, theme).style("cursor", "");
@@ -537,24 +675,29 @@ pub fn render_action_flow_view(
 
     // `ctx.root.insert(".activity-flows")` in the TS source puts swim lanes *before* the
     // `.activity-flows` group that was already appended -- matched via `insert_before_child`.
+    if !container_ids.is_empty() {
+        root = root.child(container_layer);
+    }
     root = root.child(flow_layer);
     root = root.insert_before_child("activity-flows", lane_layer);
     root = root.child(node_layer);
 
     let mut min_x = 0.0_f64;
     let mut min_y = 0.0_f64;
-    let mut max_x = width;
-    let mut max_y = height;
+    let mut max_x = if typed_projection { 200.0 } else { width };
+    let mut max_y = if typed_projection { 50.0 } else { height };
     for rect in layout.positions.values() {
         min_x = min_x.min(rect.x);
         min_y = min_y.min(rect.y);
         max_x = max_x.max(rect.x + rect.width);
         max_y = max_y.max(rect.y + rect.height + 20.0);
     }
-    (
-        root,
-        (min_x - 40.0, min_y - 40.0, max_x + 40.0, max_y + 40.0),
-    )
+    let extents = if typed_projection {
+        (40.0, 40.0, max_x + 40.0, max_y + 40.0)
+    } else {
+        (min_x - 40.0, min_y - 40.0, max_x + 40.0, max_y + 40.0)
+    };
+    (root, extents)
 }
 
 /// Port of `addActionFlowMarkers`.
@@ -572,4 +715,24 @@ pub fn action_flow_marker(theme: &Theme) -> Element {
                 .attr("d", "M0,-5L10,0L0,5")
                 .style("fill", theme.edge_default),
         )
+}
+
+pub fn typed_action_flow_markers(theme: &Theme) -> Element {
+    Element::new("g").child(action_flow_marker(theme)).child(
+        Element::new("marker")
+            .attr("id", "action-succession-arrow")
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", "9")
+            .attr("refY", "0")
+            .attr("markerWidth", "7")
+            .attr("markerHeight", "7")
+            .attr("orient", "auto")
+            .child(
+                Element::new("path")
+                    .attr("d", "M0,-5L10,0L0,5")
+                    .style("fill", "none")
+                    .style("stroke", theme.edge_default)
+                    .style("stroke-width", "1.5"),
+            ),
+    )
 }

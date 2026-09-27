@@ -105,13 +105,13 @@ fn render_svg_document(
     extra_marker: Option<Element>,
     root_content: Element,
 ) -> String {
+    let (bounds_x, bounds_y, bounds_width, bounds_height) = bounds;
     let viz_bg = Element::new("rect")
         .attr("class", "viz-bg")
         .attr_f("width", width)
         .attr_f("height", height)
         .attr("fill", theme.canvas_background);
 
-    let (bounds_x, bounds_y, bounds_width, bounds_height) = bounds;
     let view_box = format!(
         "{} {} {} {}",
         n(bounds_x - 40.0),
@@ -308,13 +308,27 @@ pub fn render_action_flow_view_svg(
         (max_x - min_x).max(1.0),
         (max_y - min_y).max(1.0),
     );
+    let typed_projection =
+        prepared.meta.get("typedProjection") == Some(&serde_json::Value::Bool(true));
+    let (background_width, background_height) = if typed_projection {
+        (
+            width.max(bounds.0 + bounds.2 + 40.0),
+            height.max(bounds.1 + bounds.3 + 40.0),
+        )
+    } else {
+        (width, height)
+    };
     render_svg_document(
         theme,
-        width,
-        height,
+        background_width,
+        background_height,
         &prepared.title,
         bounds,
-        Some(action_flow::action_flow_marker(theme)),
+        Some(if typed_projection {
+            action_flow::typed_action_flow_markers(theme)
+        } else {
+            action_flow::action_flow_marker(theme)
+        }),
         root,
     )
 }
@@ -357,10 +371,18 @@ pub fn render_interconnection_view_svg(
             .get("selectedRoot")
             .and_then(serde_json::Value::as_str)
             .unwrap_or("");
-        let label = if !selected_root.is_empty() {
-            selected_root
-        } else {
+        let label = if graph.meta.get("typedProjection") == Some(&serde_json::Value::Bool(true)) {
+            graph
+                .nodes
+                .iter()
+                .find(|node| node.id == selected_root)
+                .map(|node| node.label.as_str())
+                .filter(|label| !label.is_empty())
+                .unwrap_or(&graph.title)
+        } else if selected_root.is_empty() {
             &graph.title
+        } else {
+            selected_root
         };
         if let Some(frame) = ibd_containers::draw_ibd_view_frame(label, bounds, theme) {
             root = root.child(frame);
@@ -388,7 +410,24 @@ pub fn render_interconnection_view_svg(
         root = root.child(overlay);
     }
 
-    render_svg_document(theme, width, height, &graph.title, bounds, None, root)
+    let (background_width, background_height) =
+        if graph.meta.get("typedProjection") == Some(&serde_json::Value::Bool(true)) {
+            (
+                width.max(bounds.0 + bounds.2 + 40.0),
+                height.max(bounds.1 + bounds.3 + 40.0),
+            )
+        } else {
+            (width, height)
+        };
+    render_svg_document(
+        theme,
+        background_width,
+        background_height,
+        &graph.title,
+        bounds,
+        None,
+        root,
+    )
 }
 
 pub use disclosure::DisclosureState;
