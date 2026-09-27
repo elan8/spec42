@@ -81,6 +81,42 @@ mod tests {
     }
 
     #[test]
+    fn nested_views_have_outline_folding_and_token_roles() {
+        let source = "package App {\n  view def Document {\n    view overview : Domain::Overview, Other::Overview {\n      view detail : Domain::Detail;\n    }\n  }\n  view document {\n    view section;\n  }\n}";
+        let parsed = parse(source);
+        assert!(parsed.is_clean());
+
+        let outline = parsed.outline();
+        let definition = &outline[0].children[0];
+        assert_eq!(definition.name, "Document");
+        let overview = &definition.children[0];
+        assert_eq!(overview.name, "overview");
+        assert_eq!(overview.children[0].name, "detail");
+        assert_eq!(outline[0].children[1].children[0].name, "section");
+        assert!(definition.body_range.is_some());
+        assert!(overview.body_range.is_some());
+        assert_eq!(parsed.declaration_at(3).unwrap().name, "detail");
+        assert!(parsed
+            .folding_regions()
+            .iter()
+            .any(|region| region.start_line == 2));
+
+        let roles = parsed.token_roles();
+        let has_role = |line: u32, text: &str, role: SyntaxRole| {
+            let line_text = source.lines().nth(line as usize).unwrap();
+            let start = line_text.find(text).unwrap() as u32;
+            roles.iter().any(|(range, candidate)| {
+                *candidate == role && range.start_line == line && range.start_character == start
+            })
+        };
+        assert!(has_role(2, "overview", SyntaxRole::Property));
+        assert!(has_role(2, "Domain::Overview", SyntaxRole::Type));
+        assert!(has_role(2, "Other::Overview", SyntaxRole::Type));
+        assert!(has_role(3, "detail", SyntaxRole::Property));
+        assert!(has_role(3, "Domain::Detail", SyntaxRole::Type));
+    }
+
+    #[test]
     fn file_imports_publish_the_literal_and_its_exact_range() {
         let parsed = parse("import 'file:///tmp/model.sysml';\n");
         let imports = parsed.imports();

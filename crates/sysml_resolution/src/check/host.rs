@@ -1399,7 +1399,20 @@ impl<D> SemanticModel<D> {
                 Some(DeclarationKind::ViewUsage) => {
                     // A view with members that exposes nothing renders nothing. Reported as
                     // information: it is legal, and a view under construction passes through it.
-                    let members = self.child_declarations(id);
+                    // The view's own `ValuePart` expression (`view v = w;`) is owned by the view
+                    // but is not a body member, so it does not count.
+                    let members: Vec<_> = self
+                        .child_declarations(id)
+                        .iter()
+                        .copied()
+                        .filter(|child| {
+                            !self
+                                .storage
+                                .feature_values
+                                .iter()
+                                .any(|value| value.declaration == id && value.value == *child)
+                        })
+                        .collect();
                     let owner_is_rendering = self
                         .storage
                         .declaration(id)

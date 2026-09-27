@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Nested view usages are modelled.** A `view` nested in a view usage or view definition body
+  (`view def D { view intro; }`, `view doc : D { view :>> intro { ... } }`) used to fail to parse
+  (`missing_body_or_semicolon`) and swallow the rest of the body. It now lowers as an owned view
+  declaration, recursively, with its typing, `:>>`/`redefines`/`:>` relationships, multiplicity,
+  and `expose` members, and implicitly subsets `View::subviews`.
+
+- **View usages publish their whole declaration.** Every typing target (`view v : A, B;` used to
+  publish only `A`), `::>`/`references` and `=>`/`crosses` relationships, the full
+  `OccurrenceUsagePrefix` (`abstract`, `variation`, `derived`, `constant`, a direction,
+  `individual`, a portion kind, `#Tag` extension keywords), and a value (`view v = w;`) now lower
+  exactly as they do for part usages. Anonymous declarations (`view;`, `view : V;`) and these
+  forms parsed as errors before. Pins `elan8/sysml-v2-parser@6097d83` (`main`: `#147` fixing
+  `#146`, and `#149` fixing `#148`).
+
 - **Diagrams are built natively; the diagram Wasm plugin is gone.** The diagram product (the
   schema-5 `diagram.json` that `diagram_draw` renders) is now the `diagram_product` crate, called
   directly by the LSP, the CLI and the snapshot tool. Output is byte-identical to the former
