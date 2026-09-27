@@ -3,7 +3,7 @@
 description=An unconnected second monitor must not remove the first monitor's interconnections
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=interconnection-view
 viewDocument=model.sysml
 viewQualifiedName=Office::connections

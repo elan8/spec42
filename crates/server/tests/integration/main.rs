@@ -8,7 +8,7 @@ mod robot_vacuum_fixture;
 
 mod cli_ai_tools;
 mod cli_bundle;
-mod diagram_generator_smoke;
+mod diagram_smoke;
 mod examples_are_clean;
 mod generator_cli;
 mod headless_native_draw;

@@ -3,7 +3,7 @@
 description=Diagram node typing is authored FeatureTyping, not the implied library effective-type closure
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=general-view
 viewDocument=diagram_direct_typing.md
 viewQualifiedName=DirectTypingExample::selected

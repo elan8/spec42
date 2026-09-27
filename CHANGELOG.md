@@ -21,6 +21,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   forms parsed as errors before. Pins `elan8/sysml-v2-parser@6097d83` (`main`: `#147` fixing
   `#146`, and `#149` fixing `#148`).
 
+- **Diagrams are built natively; the diagram Wasm plugin is gone.** The diagram product (the
+  schema-5 `diagram.json` that `diagram_draw` renders) is now the `diagram_product` crate, called
+  directly by the LSP, the CLI and the snapshot tool. Output is byte-identical to the former
+  plugin across every diagram snapshot.
+  - New `spec42 diagram <path>` lists the model's diagram views; `--view <qualified name>` renders
+    one as SVG, or as its diagram product with `--format json`. `--kind` and `--document` select
+    among catalog entries that share a qualified name.
+  - New LSP request `spec42/diagram` (`modelUri`, `handle`, optional `expectedModelDigest`) returns
+    the product for a `spec42/diagramViews` handle. The VS Code diagram view uses it instead of
+    sending `diagram.wasm` through `spec42/generate`.
+  - A view typed by several standard view definitions (`view v : GeneralView,
+    InterconnectionView`) renders as each kind. Its catalog entries used to share one handle, so
+    every entry projected the first kind. Catalog handles are now per (view, kind).
+  - A catalog handle stays valid for as long as its publication is current, including after the
+    LSP's model-view cache has evicted and rebuilt that publication's view.
+  - Removed: `generator-plugins/diagram`, `generators/diagram.wasm` in the VSIX and in the CLI
+    platform archives (added in 0.53.1), the bundled-plugin lookup in `spec42 generate`, and the
+    `spec42.diagramViewer.pluginPath` setting. `spec42 generate` and the generator ABI are
+    unchanged for other plugins.
+
 ## [0.53.1] - 2026-09-24
 
 - **CLI platform archives include the diagram Wasm plugin.** Each `spec42-<version>-<platform>`

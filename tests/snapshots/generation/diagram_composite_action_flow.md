@@ -3,7 +3,7 @@
 description=A composite action is drawn as a container holding its own action flow
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=action-flow-view
 viewDocument=model.sysml
 viewQualifiedName=Shop::fulfilment

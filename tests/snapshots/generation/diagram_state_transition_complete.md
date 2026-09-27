@@ -3,7 +3,7 @@
 description=State transition view projects states initial final and transitions
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=state-transition-view
 viewDocument=diagram_state_transition_complete.md
 viewQualifiedName=StateExample::selected

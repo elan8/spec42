@@ -3,7 +3,7 @@
 description=General view keeps unresolved exposure explicit
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=general-view
 viewDocument=diagram_general_unresolved.md
 viewQualifiedName=GeneralNegative::selected

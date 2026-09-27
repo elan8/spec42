@@ -1,11 +1,22 @@
+//! The schema-5 diagram product: a typed diagram view projection
+//! (`DiagramViewProjection`, as served by `GeneratorModelView::diagram_view`) normalized into the
+//! JSON document `diagram_draw` renders -- documents, sources and semantic references interned
+//! once and referenced by index.
+//!
+//! This is the single implementation of the product format. Spec42's LSP (`spec42/diagram`), CLI
+//! (`spec42 diagram`) and snapshot tool call it directly.
+
 use std::collections::BTreeMap;
 
 use serde::Serialize;
 use serde_json::{json, Value};
-use spec42_generator_sdk::{export, model, Artifact, Guest};
+use spec42_generator_protocol as model;
 
-const SCHEMA_VERSION: u32 = 5;
-const ARTIFACT_PATH: &str = "diagram.json";
+/// Version of the product format `diagram_draw` consumes.
+pub const SCHEMA_VERSION: u32 = 5;
+
+/// The file name under which generators publish the product.
+pub const ARTIFACT_PATH: &str = "diagram.json";
 
 type DocumentIndex = usize;
 type SourceIndex = usize;
@@ -30,6 +41,9 @@ struct DiagramProduct {
 struct DocumentRecord {
     uri: String,
     source_domain: &'static str,
+    /// `domain_rank` of the source domain, the second half of the document interning key.
+    #[serde(skip)]
+    domain_rank: u8,
 }
 
 #[derive(Serialize)]
@@ -77,62 +91,50 @@ struct NormalizedProduct {
     node_indexes: BTreeMap<OccurrenceKey, NodeIndex>,
 }
 
-struct DiagramGenerator;
-
-impl Guest for DiagramGenerator {
-    fn generate(args: Vec<String>) -> Result<Vec<Artifact>, String> {
-        let handle = args
-            .first()
-            .ok_or_else(|| "diagram generation requires a typed catalog handle".to_owned())?;
-        let info = model::info()?;
-        let typed = model::diagram_view(handle)?;
-        if typed.model_digest != info.model_digest {
-            return Err("diagram projection does not belong to the active model".to_owned());
-        }
-        let normalized = NormalizedProduct::new(&typed)?;
-        let kind = kind_id(typed.view.kind);
-        let reasons = typed
-            .incomplete_reasons
-            .iter()
-            .map(|reason| normalized.incomplete_reason(reason))
-            .collect::<Result<Vec<_>, _>>()?;
-        let references = normalized
-            .references
-            .iter()
-            .map(|reference| normalized.semantic_reference(reference))
-            .collect::<Result<Vec<_>, _>>()?;
-        let selected_view = SelectedView {
-            reference: normalized.reference(&typed.view.reference)?,
-            kind,
-            name: typed.view.name.clone(),
-            source: normalized.source(&typed.view.source)?,
-        };
-        let projection = normalized.projection(&typed)?;
-        let product = DiagramProduct {
-            schema_version: SCHEMA_VERSION,
-            model_digest: info.model_digest,
-            documents: normalized.documents,
-            sources: normalized.sources,
-            references,
-            selected_view,
-            completeness: Completeness {
-                status: if reasons.is_empty() {
-                    "complete"
-                } else {
-                    "incomplete"
-                },
-                reasons,
+/// The diagram product of `projection` as the bytes of `diagram.json`: pretty-printed JSON with a
+/// trailing newline. The field order is part of the format, so the product is serialized from its
+/// typed form (never through `serde_json::Value`, whose maps sort their keys).
+pub fn diagram_product_json(projection: &model::DiagramViewProjection) -> Result<Vec<u8>, String> {
+    let normalized = NormalizedProduct::new(projection)?;
+    let kind = kind_id(projection.view.kind);
+    let reasons = projection
+        .incomplete_reasons
+        .iter()
+        .map(|reason| normalized.incomplete_reason(reason))
+        .collect::<Result<Vec<_>, _>>()?;
+    let references = normalized
+        .references
+        .iter()
+        .map(|reference| normalized.semantic_reference(reference))
+        .collect::<Result<Vec<_>, _>>()?;
+    let selected_view = SelectedView {
+        reference: normalized.reference(&projection.view.reference)?,
+        kind,
+        name: projection.view.name.clone(),
+        source: normalized.source(&projection.view.source)?,
+    };
+    let projected = normalized.projection(projection)?;
+    let product = DiagramProduct {
+        schema_version: SCHEMA_VERSION,
+        model_digest: projection.model_digest.clone(),
+        documents: normalized.documents,
+        sources: normalized.sources,
+        references,
+        selected_view,
+        completeness: Completeness {
+            status: if reasons.is_empty() {
+                "complete"
+            } else {
+                "incomplete"
             },
-            projection,
-        };
-        let mut contents = serde_json::to_vec_pretty(&product)
-            .map_err(|error| format!("could not serialize diagram product: {error}"))?;
-        contents.push(b'\n');
-        Ok(vec![Artifact {
-            file_path: ARTIFACT_PATH.to_owned(),
-            contents,
-        }])
-    }
+            reasons,
+        },
+        projection: projected,
+    };
+    let mut contents = serde_json::to_vec_pretty(&product)
+        .map_err(|error| format!("could not serialize diagram product: {error}"))?;
+    contents.push(b'\n');
+    Ok(contents)
 }
 
 impl NormalizedProduct {
@@ -246,6 +248,7 @@ impl NormalizedProduct {
             .map(|((uri, _), domain)| DocumentRecord {
                 uri,
                 source_domain: source_domain(domain),
+                domain_rank: domain_rank(domain),
             })
             .collect::<Vec<_>>();
 
@@ -261,7 +264,7 @@ impl NormalizedProduct {
                 let domain = document_records
                     .iter()
                     .find(|document| document.uri == source.uri)
-                    .map(|document| source_domain_rank(document.source_domain))
+                    .map(|document| document.domain_rank)
                     .ok_or_else(|| format!("source document `{}` was not interned", source.uri))?;
                 let document = *document_indexes
                     .get(&(source.uri.clone(), domain))
@@ -983,16 +986,6 @@ fn domain_rank(value: model::DiagramSourceDomain) -> u8 {
     }
 }
 
-fn source_domain_rank(value: &str) -> u8 {
-    match value {
-        "workspace" => 0,
-        "standard-library" => 1,
-        "library" => 2,
-        "external" => 3,
-        _ => unreachable!(),
-    }
-}
-
 fn source_domain(value: model::DiagramSourceDomain) -> &'static str {
     source_domain_name(value)
 }
@@ -1059,7 +1052,8 @@ fn compartment_provenance(value: model::DiagramCompartmentProvenance) -> &'stati
     }
 }
 
-fn kind_id(kind: model::DiagramViewKind) -> &'static str {
+/// The product's id for a view kind (`general-view`, `action-flow-view`, ...).
+pub fn kind_id(kind: model::DiagramViewKind) -> &'static str {
     match kind {
         model::DiagramViewKind::GeneralView => "general-view",
         model::DiagramViewKind::InterconnectionView => "interconnection-view",
@@ -1071,8 +1065,6 @@ fn kind_id(kind: model::DiagramViewKind) -> &'static str {
         model::DiagramViewKind::GeometryView => "geometry-view",
     }
 }
-
-export!(DiagramGenerator);
 
 #[cfg(test)]
 mod tests {
@@ -1269,6 +1261,7 @@ mod tests {
                     target_element: qualified(&format!("P::n{target_index:04}")),
                     source_occurrence: occurrence(&format!("P::n{source_index:04}")),
                     target_occurrence: occurrence(&format!("P::n{target_index:04}")),
+                    origin_occurrence: occurrence(&format!("P::n{source_index:04}")),
                     kind: model::DiagramEdgeKind::Flow,
                     provenance: model::RelationshipProvenance::Authored,
                     source: None,

@@ -1,5 +1,3 @@
-import * as fs from "fs/promises";
-import * as path from "path";
 import * as vscode from "vscode";
 import { State } from "vscode-languageclient/node";
 import type { LspClientHandles } from "../activation/lspClient";
@@ -15,10 +13,9 @@ import {
   isPathInsideWorkspace,
   parseDiagramProduct,
   parseDiagramViewCatalog,
-  parseLspGenerationResult,
+  parseLspDiagramResult,
   parseSourceNavigation,
   reconcileDelayMs,
-  selectSingleDiagramJson,
   visibleSourceColumn,
 } from "./diagramViewerCore";
 
@@ -27,12 +24,7 @@ export const DIAGRAM_VIEW_ID = "spec42DiagramView";
 type RenderedArtifact = {
   product: DiagramProduct;
   productJson: string;
-  modulePrepareMs: number;
-  guestExecutionUs: number;
-  preparedReused: boolean;
-  compilationCacheHits: number;
-  compilationCacheMisses: number;
-  compilationCacheError: string | null;
+  durationUs: number;
 };
 
 /** A payload the webview can draw without any further round trip. */
@@ -47,21 +39,6 @@ type RenderMessage = {
   loading?: boolean;
   error?: string;
 };
-
-export type DiagramViewerDependencies = {
-  resolvePluginPath: (context: vscode.ExtensionContext) => string;
-};
-
-function pluginPath(context: vscode.ExtensionContext): string {
-  const configured = vscode.workspace.getConfiguration("spec42.diagramViewer").get<string>("pluginPath", "").trim();
-  if (configured) {
-    const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? process.cwd();
-    return path.isAbsolute(configured) ? configured : path.resolve(root, configured);
-  }
-  return path.join(context.extensionPath, "generators", "diagram.wasm");
-}
-
-const defaultDependencies: DiagramViewerDependencies = { resolvePluginPath: pluginPath };
 
 const PUBLICATION_DEBOUNCE_MS = 250;
 const DIGEST_MISMATCH_RETRIES = 2;
@@ -118,7 +95,6 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   constructor(
     private readonly context: vscode.ExtensionContext,
     private readonly handles: LspClientHandles,
-    private readonly dependencies: DiagramViewerDependencies = defaultDependencies
   ) {
     this.disposables.push(
       this.handles.client.onNotification("spec42/publicationChanged", (params: unknown) => {
@@ -594,28 +570,19 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     handle: string,
     signal: AbortSignal
   ): Promise<RenderedArtifact> {
-    const plugin = this.dependencies.resolvePluginPath(this.context);
-    let module: Buffer;
-    try { module = await fs.readFile(plugin); }
-    catch { throw new Error(`Compatible diagram plugin not found at ${plugin}. Configure spec42.diagramViewer.pluginPath.`); }
-    if (signal.aborted) throw new Error("generation was cancelled");
-    const result = parseLspGenerationResult(await this.handles.client.sendRequest("spec42/generate", {
-      generatorBase64: module.toString("base64"),
+    const result = parseLspDiagramResult(await this.handles.client.sendRequest("spec42/diagram", {
       modelUri: document.uri.toString(),
-      args: [handle],
+      handle,
       ...(expectedModelDigest ? { expectedModelDigest } : {}),
     }));
     if (signal.aborted) throw new Error("generation was cancelled");
-    const artifactName = selectSingleDiagramJson(result.artifacts.map((artifact) => artifact.path));
-    const selected = result.artifacts.find((artifact) => artifact.path === artifactName);
-    if (!selected) throw new Error("Spec42 omitted the selected diagram artifact.");
-    const productJson = Buffer.from(selected.content).toString("utf8");
+    const productJson = result.productJson;
     const product = parseDiagramProduct(productJson);
     if (product.modelDigest !== result.modelDigest) {
       throw new Error("Generated diagram model digest does not match the current LSP publication.");
     }
     if (product.selectedView.kind !== view) throw new Error("Generated diagram view does not match the requested view.");
-    return { product, productJson, ...result.timings };
+    return { product, productJson, durationUs: result.durationUs };
   }
 
   private async saveExport(format: "svg" | "png", data: string): Promise<void> {

@@ -103,10 +103,10 @@ jobs:
             .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
           key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
 
-      # Rust integration and lib tests execute the real diagram guest; build the
-      # repository generator plugins first, matching scripts/minici.sh.
+      # Generator tests execute the repository example guest; build it first, matching
+      # scripts/minici.sh.
       - name: Build repository generator plugins
-        run: SPEC42_PACKAGE_REPOSITORY_GENERATORS=0 scripts/build-repository-generator-plugins.sh
+        run: scripts/build-repository-generator-plugins.sh
 
       - name: Rust tests
         run: |
@@ -124,37 +124,10 @@ jobs:
       - name: Rust clippy
         run: cargo clippy --workspace --all-targets -- -W clippy::all
 
-  build-diagram-plugin:
-    name: Build diagram Wasm plugin
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          submodules: recursive
-
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: ${{ env.RUST_TOOLCHAIN_VERSION }}
-          targets: wasm32-unknown-unknown
-
-      - name: Cache cargo
-        uses: Swatinem/rust-cache@v2
-
-      - name: Build repository diagram plugin
-        run: SPEC42_PACKAGE_REPOSITORY_GENERATORS=0 bash scripts/build-repository-generator-plugins.sh
-
-      - name: Upload diagram plugin
-        uses: actions/upload-artifact@v6
-        with:
-          name: diagram-plugin
-          path: generator-plugins/target/wasm32-unknown-unknown/release/spec42_diagram_generator.wasm
-          if-no-files-found: error
-
   build-server:
     name: Build server (${{ matrix.runner }})
     runs-on: ${{ matrix.runner }}
-    needs: [preflight, build-diagram-plugin]
+    needs: [preflight]
     strategy:
       fail-fast: false
       matrix:
@@ -266,12 +239,6 @@ jobs:
             .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
           key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
 
-      - name: Download diagram plugin
-        uses: actions/download-artifact@v7
-        with:
-          name: diagram-plugin
-          path: diagram-plugin
-
       - name: Build release binary
         run: cargo build --release -p server --target ${{ matrix.target }}
 
@@ -281,11 +248,9 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           BIN="${{ env.BINARY_NAME }}${{ matrix.binary_ext }}"
           ARCHIVE="${{ env.BINARY_NAME }}-${VERSION}-${{ matrix.package_dir }}.${{ matrix.archive_ext }}"
-          mkdir -p staging/generators
+          mkdir -p staging
           cp "target/${{ matrix.target }}/release/${{ env.BINARY_NAME }}" "staging/$BIN"
-          cp diagram-plugin/spec42_diagram_generator.wasm staging/generators/diagram.wasm
-          test -s staging/generators/diagram.wasm
-          tar czf "$ARCHIVE" -C staging "$BIN" generators
+          tar czf "$ARCHIVE" -C staging "$BIN"
           echo "ARCHIVE_NAME=$ARCHIVE" >> $GITHUB_ENV
 
       - name: Prepare archive (Windows)
@@ -294,11 +259,9 @@ jobs:
           $version = "${{ steps.version.outputs.version }}"
           $archive = "${{ env.BINARY_NAME }}-$version-${{ matrix.package_dir }}.zip"
           $releaseDir = "target/${{ matrix.target }}/release"
-          New-Item -ItemType Directory -Force -Path staging/generators | Out-Null
+          New-Item -ItemType Directory -Force -Path staging | Out-Null
           Copy-Item "$releaseDir/${{ env.BINARY_NAME }}.exe" "staging/${{ env.BINARY_NAME }}.exe"
-          Copy-Item "diagram-plugin/spec42_diagram_generator.wasm" "staging/generators/diagram.wasm"
-          if (-not (Test-Path "staging/generators/diagram.wasm")) { throw "diagram.wasm missing" }
-          Compress-Archive -Path "staging/${{ env.BINARY_NAME }}.exe", "staging/generators" -DestinationPath $archive
+          Compress-Archive -Path "staging/${{ env.BINARY_NAME }}.exe" -DestinationPath $archive
           echo "ARCHIVE_NAME=$archive" >> $env:GITHUB_ENV
         shell: pwsh
 
@@ -527,7 +490,7 @@ jobs:
 
           ## Included Artifacts
 
-          - Platform archives include \`spec42\` and \`generators/diagram.wasm\` (the diagram generator used by \`spec42 generate\`).
+          - Platform archives include \`spec42\`; \`spec42 diagram\` renders diagram views natively.
           - The VS Code .vsix includes the matching language server binary.
           - The Zed extension can download the matching server binary automatically when no configured or PATH-installed \`spec42\` binary is found.
           - \`SHA256SUMS.txt\` contains checksums for all attached artifacts.

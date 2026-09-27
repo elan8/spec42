@@ -1148,6 +1148,7 @@ fn host_crates_keep_their_declared_dependency_sets() {
             "clap",
             "diagram_draw",
             "diagram_layout",
+            "diagram_product",
             "generator_api",
             "generator_host",
             "glob",
@@ -1173,7 +1174,8 @@ fn host_crates_keep_their_declared_dependency_sets() {
         ]),
         "lsp_server is the editor host and owns no batch path: it must not depend on \
          `workspace`; `diagram_layout` is the native layout boundary behind `spec42/layout` \
-         (#119) and `diagram_draw` is the native SVG path behind `spec42/draw` (#176). \
+         (#119), `diagram_draw` is the native SVG path behind `spec42/draw` (#176) and \
+         `diagram_product` builds the diagram product behind `spec42/diagram` (#212). \
          `SPEC42_LAYOUT_ENGINE=legacy` declines those requests; there is no client drawing \
          fallback. `lsp_server` cannot depend on `server` (the launch-only edge runs the other \
          way)"
@@ -1187,6 +1189,7 @@ fn host_crates_keep_their_declared_dependency_sets() {
         set(&[
             "clap",
             "diagram_draw",
+            "diagram_product",
             "directories",
             "generator_api",
             "generator_host",
@@ -1206,7 +1209,8 @@ fn host_crates_keep_their_declared_dependency_sets() {
             "zip",
         ]),
         "server reaches validation through `workspace`; `lsp_server` is the launch-only edge; \
-         `diagram_draw` is the native prepare+layout+SVG path for headless export (#176); \
+         `diagram_draw` is the native prepare+layout+SVG path for headless export (#176) and \
+         `diagram_product` builds the diagram product for `spec42 diagram` (#212); \
          `diagram_layout`/`elkrs` reach the binary through `diagram_draw` and `lsp_server`"
     );
 }

@@ -3,7 +3,7 @@
 description=Qualified selection chooses one of several views distributed across documents
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=general-view
 viewDocument=structure.sysml
 viewQualifiedName=StructureModel::selected

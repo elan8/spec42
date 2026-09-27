@@ -3,7 +3,7 @@
 description=Grid view keeps unresolved exposure explicit
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=grid-view
 viewDocument=diagram_grid_unresolved.md
 viewQualifiedName=GridNegative::selected

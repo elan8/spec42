@@ -38,6 +38,8 @@ pub enum Command {
     Init(InitArgs),
     /// Run a sandboxed WebAssembly plugin against a resolved semantic model.
     Generate(GenerateArgs),
+    /// List the model's diagram views, or render one as SVG or as its diagram product JSON.
+    Diagram(DiagramArgs),
     Doctor(DoctorArgs),
     /// Explain a diagnostic code.
     ExplainDiagnostic(ExplainDiagnosticArgs),
@@ -106,6 +108,39 @@ pub struct GenerateArgs {
     /// Arguments passed verbatim to the guest after `--`.
     #[arg(last = true)]
     pub generator_args: Vec<String>,
+}
+
+#[derive(Debug, Clone, Args)]
+pub struct DiagramArgs {
+    /// SysML/KerML file or workspace directory.
+    pub path: PathBuf,
+    #[arg(long = "workspace-root")]
+    pub workspace_root: Option<PathBuf>,
+    /// Qualified name of the view to render, e.g. `Shop::fulfilment`. Omitted, the diagram views
+    /// of the model are listed.
+    #[arg(long = "view")]
+    pub view: Option<String>,
+    /// With `--view`: the view kind to render (`general-view`, `interconnection-view`, ...), for a
+    /// view typed by more than one view definition. Listed with the views.
+    #[arg(long = "kind", requires = "view")]
+    pub kind: Option<String>,
+    /// With `--view`: the document declaring the view, as listed (its URI) or as a path suffix
+    /// such as `views/Views.sysml`, for a qualified name declared in more than one document.
+    #[arg(long = "document", requires = "view")]
+    pub document: Option<String>,
+    /// `svg` renders the view; `json` writes its diagram product (schema 5), or lists the views
+    /// as JSON when no view is given.
+    #[arg(long = "format", value_enum, default_value_t = DiagramFormat::Svg)]
+    pub format: DiagramFormat,
+    /// Write to this file instead of standard output.
+    #[arg(long = "output", short = 'o')]
+    pub output: Option<PathBuf>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+pub enum DiagramFormat {
+    Svg,
+    Json,
 }
 
 #[derive(Debug, Clone, Args)]
@@ -385,6 +420,47 @@ mod tests {
                 assert_eq!(args.generator_args, ["target=rust", "namespace=vehicle"]);
             }
             other => panic!("expected generate command, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn diagram_command_parses() {
+        let cli = Cli::parse_from([
+            "spec42",
+            "diagram",
+            "model",
+            "--view",
+            "Shop::fulfilment",
+            "--kind",
+            "action-flow-view",
+            "--document",
+            "Views.sysml",
+            "--format",
+            "json",
+            "-o",
+            "out.json",
+        ]);
+        match cli.command {
+            Some(Command::Diagram(args)) => {
+                assert_eq!(args.path, PathBuf::from("model"));
+                assert_eq!(args.view.as_deref(), Some("Shop::fulfilment"));
+                assert_eq!(args.kind.as_deref(), Some("action-flow-view"));
+                assert_eq!(args.document.as_deref(), Some("Views.sysml"));
+                assert_eq!(args.format, DiagramFormat::Json);
+                assert_eq!(args.output, Some(PathBuf::from("out.json")));
+            }
+            other => panic!("expected diagram command, got {other:?}"),
+        }
+        assert!(
+            Cli::try_parse_from(["spec42", "diagram", "model", "--kind", "general-view"]).is_err(),
+            "--kind selects among the views named by --view"
+        );
+        match Cli::parse_from(["spec42", "diagram", "model"]).command {
+            Some(Command::Diagram(args)) => {
+                assert_eq!(args.view, None);
+                assert_eq!(args.format, DiagramFormat::Svg);
+            }
+            other => panic!("expected diagram command, got {other:?}"),
         }
     }
 

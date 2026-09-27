@@ -116,7 +116,7 @@ enum LibrarySelection {
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum GeneratorPlugin {
     Conformance(String),
-    RepositoryDiagram,
+    NativeDiagram,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -6638,15 +6638,6 @@ fn execute_generation(
     request: &GenerationRequest,
     fixture_path: &Path,
 ) -> Result<GeneratedArtifacts, String> {
-    let plugin_path = generator_plugin_path(&request.plugin);
-    let module = fs::read(&plugin_path).map_err(|error| {
-        format!(
-            "{}: failed to read generator plugin `{}` at {}: {error}; run scripts/build-generator-plugins.sh",
-            fixture_path.display(),
-            generator_plugin_label(&request.plugin),
-            plugin_path.display()
-        )
-    })?;
     let model_digest = publication.publication().model_digest();
     let model = Arc::new(
         GeneratorModelView::new(
@@ -6668,6 +6659,22 @@ fn execute_generation(
         "snapshot evidence must record the exact publication completeness"
     );
     let args = generation_arguments(request, &publication, &model, fixture_path)?;
+    let name = match &request.plugin {
+        // The diagram product is built natively, as the LSP and CLI build it.
+        GeneratorPlugin::NativeDiagram => {
+            return native_diagram_artifacts(&model, &args, fixture_path)
+        }
+        GeneratorPlugin::Conformance(name) => name,
+    };
+    let plugin_path = conformance_plugin_path(name);
+    let module = fs::read(&plugin_path).map_err(|error| {
+        format!(
+            "{}: failed to read generator plugin `{}` at {}: {error}; run scripts/build-generator-plugins.sh",
+            fixture_path.display(),
+            generator_plugin_label(&request.plugin),
+            plugin_path.display()
+        )
+    })?;
     let runtime = GeneratorRuntime::new().map_err(|error| {
         format!(
             "{}: generator runtime failed: {error}",
@@ -6707,20 +6714,43 @@ fn execute_generation(
 fn generator_plugin_label(plugin: &GeneratorPlugin) -> String {
     match plugin {
         GeneratorPlugin::Conformance(name) => format!("conformance:{name}"),
-        GeneratorPlugin::RepositoryDiagram => "repository:diagram".to_string(),
+        GeneratorPlugin::NativeDiagram => "native:diagram".to_string(),
     }
 }
 
-fn generator_plugin_path(plugin: &GeneratorPlugin) -> PathBuf {
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
-    match plugin {
-        GeneratorPlugin::Conformance(name) => root
-            .join("generator-tests/plugins/target/wasm32-unknown-unknown/release")
-            .join(format!("spec42_conformance_{name}.wasm")),
-        GeneratorPlugin::RepositoryDiagram => root
-            .join("generator-plugins/target/wasm32-unknown-unknown/release")
-            .join("spec42_diagram_generator.wasm"),
-    }
+fn conformance_plugin_path(name: &str) -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../generator-tests/plugins/target/wasm32-unknown-unknown/release")
+        .join(format!("spec42_conformance_{name}.wasm"))
+}
+
+/// `diagram.json` for the catalog view whose handle is `args[0]`.
+fn native_diagram_artifacts(
+    model: &GeneratorModelView,
+    args: &[String],
+    fixture_path: &Path,
+) -> Result<GeneratedArtifacts, String> {
+    let [handle] = args else {
+        return Err(format!(
+            "{}: diagram generation requires exactly one view selection",
+            fixture_path.display()
+        ));
+    };
+    let projection = model
+        .diagram_view(handle)
+        .map_err(|error| format!("{}: diagram view failed: {error}", fixture_path.display()))?;
+    let product = diagram_product::diagram_product_json(&projection).map_err(|error| {
+        format!(
+            "{}: diagram product failed: {error}",
+            fixture_path.display()
+        )
+    })?;
+    let mut artifacts = GeneratedArtifacts::default();
+    artifacts.insert_utf8(
+        diagram_product::ARTIFACT_PATH,
+        String::from_utf8(product).expect("serde_json writes UTF-8"),
+    )?;
+    Ok(artifacts)
 }
 
 fn generation_arguments(
@@ -7325,9 +7355,9 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
                     ))
                 }
             };
-            if diagram_selection.is_some() && plugin != GeneratorPlugin::RepositoryDiagram {
+            if diagram_selection.is_some() && plugin != GeneratorPlugin::NativeDiagram {
                 return Err(format!(
-                    "{fallback_name}: typed view selection is only valid with plugin=repository:diagram"
+                    "{fallback_name}: typed view selection is only valid with plugin=native:diagram"
                 ));
             }
             Some(GenerationRequest {
@@ -7433,8 +7463,8 @@ fn parse_meta_bool(value: &str, key: &str, fallback_name: &str) -> Result<bool, 
 }
 
 fn parse_generator_plugin(value: &str, fallback_name: &str) -> Result<GeneratorPlugin, String> {
-    if value == "repository:diagram" {
-        return Ok(GeneratorPlugin::RepositoryDiagram);
+    if value == "native:diagram" {
+        return Ok(GeneratorPlugin::NativeDiagram);
     }
     let name = value.strip_prefix("conformance:").unwrap_or(value);
     if name.is_empty()
@@ -9525,13 +9555,13 @@ mod tests {
 
     #[test]
     fn parses_closed_typed_diagram_selection() {
-        let diagram = "# META\n~~~ini\ntype=generate\nplugin=repository:diagram\nviewKind=general-view\nviewDocument=model.sysml\nviewQualifiedName=Example::selected\n~~~\n";
+        let diagram = "# META\n~~~ini\ntype=generate\nplugin=native:diagram\nviewKind=general-view\nviewDocument=model.sysml\nviewQualifiedName=Example::selected\n~~~\n";
         assert_eq!(
             parse_fixture_meta(diagram, "fixture.md")
                 .unwrap()
                 .generation,
             Some(GenerationRequest {
-                plugin: GeneratorPlugin::RepositoryDiagram,
+                plugin: GeneratorPlugin::NativeDiagram,
                 diagram_selection: Some(DiagramSelection {
                     kind: "general-view".to_string(),
                     document: "model.sysml".to_string(),
@@ -9603,12 +9633,12 @@ mod tests {
     fn rejects_invalid_generator_selection_metadata() {
         for (meta, expected) in [
             (
-                "type=generate\nplugin=repository:diagram\nviewKind=general-view",
+                "type=generate\nplugin=native:diagram\nviewKind=general-view",
                 "must be specified together",
             ),
             (
                 "type=generate\nplugin=requirements_csv\nviewKind=general-view\nviewDocument=model.sysml\nviewQualifiedName=Example::selected",
-                "only valid with plugin=repository:diagram",
+                "only valid with plugin=native:diagram",
             ),
             ("type=generate\nplugin=../../escape", "unknown or unsafe"),
             (
@@ -9624,9 +9654,7 @@ mod tests {
 
     #[test]
     fn repository_plugin_paths_are_closed() {
-        assert!(generator_plugin_path(&GeneratorPlugin::RepositoryDiagram)
-            .ends_with("generator-plugins/target/wasm32-unknown-unknown/release/spec42_diagram_generator.wasm"));
-        assert!(generator_plugin_path(&GeneratorPlugin::Conformance("example".to_string()))
+        assert!(conformance_plugin_path("example")
             .ends_with("generator-tests/plugins/target/wasm32-unknown-unknown/release/spec42_conformance_example.wasm"));
     }
 

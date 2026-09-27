@@ -18,7 +18,6 @@ fi
 target_dir="$qa_dir/cargo-target"
 model_dir="$root_dir/examples"
 model_path="$model_dir/timer/Views.sysml"
-plugin_path="$root_dir/vscode/generators/diagram.wasm"
 server_path="$target_dir/release/spec42"
 open_vscode=1
 
@@ -27,7 +26,7 @@ usage() {
 Usage: scripts/setup-macos-vscode-qa.sh [--no-open]
 
 Builds and installs an isolated local VS Code QA environment for the packaged
-Spec42 server, Rust diagram generator, and D3/ELK diagram webview. It does not
+Spec42 server (with its native diagram product) and D3/ELK diagram webview. It does not
 change global VS Code settings or the normal extension directory.
 
 Environment override:
@@ -68,7 +67,6 @@ fi
 
 for required_path in \
 	"$root_dir/Cargo.toml" \
-	"$root_dir/generator-plugins/Cargo.toml" \
 	"$root_dir/vscode/package.json" \
 	"$root_dir/vscode/diagram-renderer/package.json" \
 	"$model_path"; do
@@ -81,7 +79,7 @@ done
 mkdir -p "$qa_dir"
 # VS Code routes another invocation with the same user-data directory to the already-running
 # process. Give every QA launch a fresh process and extension installation so a rebuilt server or
-# packaged plugin cannot be shadowed by the previous extension host. The Cargo target directory
+# extension cannot be shadowed by the previous extension host. The Cargo target directory
 # remains above this per-run directory so repeated QA builds still reuse compiled dependencies.
 run_dir=$(mktemp -d "$qa_dir/run.XXXXXX")
 vsix_path="$run_dir/spec42-local-qa.vsix"
@@ -121,10 +119,6 @@ echo "Installing VS Code extension dependencies and packaging the VSIX..."
 	npm run package -- --out "$vsix_path"
 )
 
-if [[ ! -f "$plugin_path" ]]; then
-	echo "error: extension packaging did not produce $plugin_path" >&2
-	exit 1
-fi
 
 echo "Installing the VSIX into an isolated extension directory..."
 "$code_bin" \
@@ -142,7 +136,6 @@ workspace = {
     "folders": [{"path": model_dir}],
     "settings": {
         "spec42.serverPath": server_path,
-        "spec42.diagramViewer.pluginPath": "",
     },
 }
 with open(workspace_path, "w", encoding="utf-8") as stream:
@@ -154,7 +147,6 @@ echo
 echo "QA environment ready:"
 echo "  VSIX:      $vsix_path"
 echo "  Spec42:    $server_path"
-echo "  Plugin:    $plugin_path"
 echo "  Workspace: $workspace_path"
 echo "  Runtime:   $run_dir"
 echo "  Profile:   $user_data_dir"

@@ -3,7 +3,7 @@
 description=Sequence view keeps unresolved exposure explicit
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=sequence-view
 viewDocument=diagram_sequence_unresolved.md
 viewQualifiedName=SequenceNegative::selected

@@ -3,7 +3,7 @@
 description=Action flow view projects actions and authored succession
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=action-flow-view
 viewDocument=diagram_action_flow_complete.md
 viewQualifiedName=ActionFlowExample::selected

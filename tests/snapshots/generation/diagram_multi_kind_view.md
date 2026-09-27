@@ -1,25 +1,33 @@
 # META
 ~~~ini
-description=Browser view projects canonical membership tree
+description=A view typed by two standard view definitions projects each kind; this selects its second
 type=generate
 libraries=standard
 plugin=native:diagram
-viewKind=browser-view
-viewDocument=diagram_browser_complete.md
-viewQualifiedName=BrowserExample::selected
+viewKind=interconnection-view
+viewDocument=model.sysml
+viewQualifiedName=Garage::both
 ~~~
 # SOURCE
+## model.sysml
 ~~~sysml
-package BrowserExample {
+package Garage {
     private import StandardViewDefinitions::*;
-    part def Root { part branch { part leaf; } }
-    view selected : BrowserView { expose Root; }
+
+    part def Car {
+        part engine;
+        part wheel[4];
+    }
+
+    view both : GeneralView, InterconnectionView {
+        expose Car;
+    }
 }
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
-  (document "memory://snapshot/diagram_browser_complete.md"
+  (document "memory://snapshot/model.sysml"
     (diagnostics
     )
   )
@@ -28,37 +36,41 @@ package BrowserExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b72dc185f0f7dd98f118430fa8e03ce00bfa4a26ae0233813f17c46bb12047a2") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:de5e44eb8deaafd6b15f01996198b2d9c27b941d25bd032fb284dd2da0b6c0f6") (admitted (standard-library 94)))
   (declarations
-    (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
-    (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch"))) (kind part) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch::leaf"))) (kind part) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::selected"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BrowserView")))))
-    (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind expose) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (viewExpose (reference "Root")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Garage"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Garage")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car::engine"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car::wheel"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 4) (upper 4))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::both"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "GeneralView")) (featureTyping (reference "InterconnectionView")))))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Garage")) (named (kind view) (name "both")) (anonymous (kind expose) (ordinal 0))))) (kind expose) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (viewExpose (reference "Car")))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Garage")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
       (authored-target "StandardViewDefinitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions")))))
-    (reference (id (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::selected"))) (kind featureTyping) (ordinal 0))
-      (authored-target "BrowserView")
-      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::BrowserView")))))
-    (reference (id (source (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0))
-      (authored-target "Root")
-      (outcome (status resolved) (target (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root")))))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::both"))) (kind featureTyping) (ordinal 0))
+      (authored-target "GeneralView")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")))))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::both"))) (kind featureTyping) (ordinal 1))
+      (authored-target "InterconnectionView")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")))))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Garage")) (named (kind view) (name "both")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0))
+      (authored-target "Car")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car")))))
   )
   (relationships
-    (relationship (kind typing) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::selected"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::BrowserView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::selected"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind viewExpose) (source (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
-    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch"))) (target (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch::leaf"))) (target (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch::leaf"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::selected"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::selected"))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::both"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::both"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::both"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::both"))) (kind featureTyping) (ordinal 1)))
+    (relationship (kind viewExpose) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Garage")) (named (kind view) (name "both")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Garage")) (named (kind view) (name "both")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car::engine"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car::engine"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car::wheel"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car::wheel"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::both"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Garage")) (named (kind view) (name "both")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::both"))) (provenance implied))
   )
   (evaluation
   )
@@ -67,15 +79,15 @@ package BrowserExample {
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root")))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car")))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
     )
-    (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch")))
-      (featured-by (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root")))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car::engine")))
+      (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
@@ -92,8 +104,8 @@ package BrowserExample {
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
     )
-    (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch::leaf")))
-      (featured-by (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch")))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car::wheel")))
+      (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
@@ -110,14 +122,16 @@ package BrowserExample {
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
     )
-    (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::selected")))
-      (type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::BrowserView")) (provenance authored))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::both")))
+      (type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")) (provenance authored))
+      (type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (provenance authored))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::BrowserView")) (source direct))
+      (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")) (source direct))
+      (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (source inherited) (from (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
@@ -129,31 +143,37 @@ package BrowserExample {
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::BrowserView")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views")) (scopes any feature))
     )
-    (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0)))))
-      (featured-by (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::selected")))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Garage")) (named (kind view) (name "both")) (anonymous (kind expose) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::both")))
     )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/diagram_browser_complete.md") (range (start 1 19) (end 1 45)) (probe (position 1 19))
-    (reference (id (source (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "StandardViewDefinitions")
+  (query (document "memory://snapshot/model.sysml") (range (start 1 19) (end 1 45)) (probe (position 1 19))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Garage")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0) (authored-target "StandardViewDefinitions")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions")))))
     )
   )
-  (query (document "memory://snapshot/diagram_browser_complete.md") (range (start 3 20) (end 3 31)) (probe (position 3 20))
-    (reference (id (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::selected"))) (kind featureTyping) (ordinal 0) (authored-target "BrowserView")
-      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::BrowserView")))))
+  (query (document "memory://snapshot/model.sysml") (range (start 8 16) (end 8 27)) (probe (position 8 16))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::both"))) (kind featureTyping) (ordinal 0) (authored-target "GeneralView")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeneralView")))))
     )
   )
-  (query (document "memory://snapshot/diagram_browser_complete.md") (range (start 3 41) (end 3 45)) (probe (position 3 41))
-    (reference (id (source (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0) (authored-target "Root")
-      (outcome (status resolved) (target (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root")))))
+  (query (document "memory://snapshot/model.sysml") (range (start 8 29) (end 8 48)) (probe (position 8 29))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::both"))) (kind featureTyping) (ordinal 1) (authored-target "InterconnectionView")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")))))
+    )
+  )
+  (query (document "memory://snapshot/model.sysml") (range (start 9 15) (end 9 18)) (probe (position 9 15))
+    (reference (id (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Garage")) (named (kind view) (name "both")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0) (authored-target "Car")
+      (outcome (status resolved) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Garage::Car")))))
     )
   )
 )
@@ -163,10 +183,10 @@ package BrowserExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:558c24f93375a48ba5bcdc66257858d86460e07e37de474a73c8c80c00586272",
+  "modelDigest": "blake3:b8f34bf3e8b207be6f1ea55eafb5687a9220f955ab63d4aec55b294cf41b97cb",
   "documents": [
     {
-      "uri": "memory://snapshot/diagram_browser_complete.md",
+      "uri": "memory://snapshot/model.sysml",
       "sourceDomain": "workspace"
     },
     {
@@ -178,37 +198,37 @@ package BrowserExample {
     {
       "document": 0,
       "range": [
-        2,
+        3,
         13,
-        2,
-        17
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        2,
-        25,
-        2,
-        31
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
-        2,
-        39,
-        2,
-        43
-      ]
-    },
-    {
-      "document": 0,
-      "range": [
         3,
+        16
+      ]
+    },
+    {
+      "document": 0,
+      "range": [
+        4,
+        13,
+        4,
+        19
+      ]
+    },
+    {
+      "document": 0,
+      "range": [
+        5,
+        13,
+        5,
+        18
+      ]
+    },
+    {
+      "document": 0,
+      "range": [
+        8,
         9,
-        3,
-        17
+        8,
+        13
       ]
     }
   ],
@@ -216,22 +236,22 @@ package BrowserExample {
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "BrowserExample::Root"
+      "qualifiedName": "Garage::Car"
     },
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "BrowserExample::Root::branch"
+      "qualifiedName": "Garage::Car::engine"
     },
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "BrowserExample::Root::branch::leaf"
+      "qualifiedName": "Garage::Car::wheel"
     },
     {
       "document": 0,
       "kind": "qualified-name",
-      "qualifiedName": "BrowserExample::selected"
+      "qualifiedName": "Garage::both"
     },
     {
       "document": 1,
@@ -251,15 +271,15 @@ package BrowserExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "specializes",
+      "ordinal": 1,
+      "relationshipKind": "containment",
       "source": 0
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "containment",
-      "source": 1
+      "ordinal": 0,
+      "relationshipKind": "specializes",
+      "source": 0
     },
     {
       "kind": "relationship",
@@ -288,8 +308,8 @@ package BrowserExample {
   ],
   "selectedView": {
     "reference": 3,
-    "kind": "browser-view",
-    "name": "selected",
+    "kind": "interconnection-view",
+    "name": "both",
     "source": 3
   },
   "completeness": {
@@ -301,30 +321,34 @@ package BrowserExample {
       {
         "kind": "containment",
         "navigation": 1,
-        "origin": 1,
+        "origin": 2,
         "provenance": "authored",
         "reference": 6,
         "source": 0,
-        "target": 1
+        "target": 2
       },
       {
         "kind": "containment",
         "navigation": 2,
-        "origin": 2,
+        "origin": 1,
         "provenance": "authored",
-        "reference": 8,
-        "source": 1,
-        "target": 2
+        "reference": 7,
+        "source": 0,
+        "target": 1
       }
     ],
     "exposedRoots": [
       0
     ],
-    "kind": "browser-view",
+    "kind": "interconnection-view",
     "metadata": {
-      "roots": [
-        0
-      ]
+      "connectors": [],
+      "parts": [
+        0,
+        1,
+        2
+      ],
+      "ports": []
     },
     "nodes": [
       {
@@ -332,7 +356,8 @@ package BrowserExample {
           {
             "kind": "parts",
             "members": [
-              1
+              1,
+              2
             ],
             "provenance": "direct"
           }
@@ -340,7 +365,7 @@ package BrowserExample {
         "conjugated": false,
         "direction": null,
         "metaclass": "PartDefinition",
-        "name": "Root",
+        "name": "Car",
         "notationRole": "definition",
         "owner": null,
         "reference": 0,
@@ -350,23 +375,15 @@ package BrowserExample {
         }
       },
       {
-        "compartments": [
-          {
-            "kind": "parts",
-            "members": [
-              2
-            ],
-            "provenance": "direct"
-          }
-        ],
+        "compartments": [],
         "conjugated": false,
         "direction": null,
         "metaclass": "PartUsage",
-        "name": "branch",
+        "name": "wheel",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 1,
-        "source": 1,
+        "reference": 2,
+        "source": 2,
         "typing": {
           "status": "absent"
         }
@@ -376,11 +393,11 @@ package BrowserExample {
         "conjugated": false,
         "direction": null,
         "metaclass": "PartUsage",
-        "name": "leaf",
+        "name": "engine",
         "notationRole": "usage",
-        "owner": 1,
-        "reference": 2,
-        "source": 2,
+        "owner": 0,
+        "reference": 1,
+        "source": 1,
         "typing": {
           "status": "absent"
         }
@@ -391,7 +408,7 @@ package BrowserExample {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 7,
+        "reference": 8,
         "source": 0,
         "target": {
           "reference": 4,
@@ -403,7 +420,7 @@ package BrowserExample {
         "navigation": null,
         "provenance": "implied",
         "reference": 9,
-        "source": 1,
+        "source": 2,
         "target": {
           "reference": 5,
           "status": "resolved"
@@ -414,7 +431,7 @@ package BrowserExample {
         "navigation": null,
         "provenance": "implied",
         "reference": 10,
-        "source": 1,
+        "source": 2,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -425,7 +442,7 @@ package BrowserExample {
         "navigation": null,
         "provenance": "implied",
         "reference": 11,
-        "source": 2,
+        "source": 1,
         "target": {
           "reference": 5,
           "status": "resolved"
@@ -436,15 +453,15 @@ package BrowserExample {
         "navigation": null,
         "provenance": "implied",
         "reference": 12,
-        "source": 2,
+        "source": 1,
         "target": {
-          "node": 1,
+          "node": 0,
           "status": "resolved"
         }
       }
     ],
     "scene": {
-      "kind": "browser"
+      "kind": "interconnection"
     }
   }
 }

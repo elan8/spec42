@@ -17,8 +17,9 @@ keeps zoom, tooltips, and disclosure.
 
 Browser and Grid implement the presentation forms described by SysML v2 §9.2.20. Geometry remains provisional: Spec42 does not yet extract and render model-authored spatial coordinates, shapes, orientation, or 3D viewing parameters. Filtered standard views such as case/requirement-style views are projected through `general-view` with filters preserved by the backend.
 
-The renderer consumes the versioned JSON artifact emitted by `generator-plugins/diagram`. Semantic
-membership and relationships belong to typed generator queries; this package owns interaction on
+The renderer consumes the versioned diagram product that the server builds natively
+(`crates/diagram_product`, served by `spec42/diagram`). Semantic membership and relationships
+belong to the typed view projection; this package owns interaction on
 native SVG. Browser hierarchy collapse is renderer-owned presentation state sent to `spec42/draw`
 the same way General View expansion is.
 

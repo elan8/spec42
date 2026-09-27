@@ -3,7 +3,7 @@
 description=Geometry view keeps unresolved exposure explicit without fabricating coordinates
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=geometry-view
 viewDocument=diagram_geometry_unresolved.md
 viewQualifiedName=GeometryNegative::selected

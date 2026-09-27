@@ -36,6 +36,7 @@ serde = { workspace = true }
 directories = "5"
 # Native prepare + elkrs layout + SVG drawing for headless export (#176).
 diagram_draw = { path = "../diagram_draw" }
+diagram_product = { path = "../diagram_product" }
 toml = { workspace = true }
 zip = { workspace = true }
 tower-lsp = "0.20"
