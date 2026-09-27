@@ -4680,6 +4680,72 @@ fn view_selection_applies_inherited_metadata_disjunctions_and_conjoins_condition
     );
 }
 
+#[test]
+fn view_rendering_resolves_short_inline_and_inherited_memberships() {
+    let document = "memory://renderings.sysml";
+    let published = detail_publication(
+        &[(
+            document,
+            concat!(
+                "package P {\n",
+                "  metadata def Tag;\n",
+                "  rendering def Tree;\n",
+                "  rendering shared : Tree { rendering nested : Tree; }\n",
+                "  view def Base { render shared { @Tag; rendering local : Tree; } }\n",
+                "  view inherited : Base;\n",
+                "  view inline { render rendering own : Tree { @Tag; rendering child : Tree; } }\n",
+                "  view empty;\n",
+                "  view broken { render missing; }\n",
+                "  view duplicate { render shared; render rendering second : Tree; }\n",
+                "}\n",
+            ),
+        )],
+        ConstructionSchedule::Sequential,
+    );
+    let shared = identity_of(&published, document, "P::shared");
+    let inherited = identity_of(&published, document, "P::inherited");
+    let inherited_rendering =
+        settled(published.view_rendering(inherited)).expect("inherited rendering");
+    assert_eq!(inherited_rendering.referenced_rendering, shared);
+    assert_ne!(inherited_rendering.owned_rendering, shared);
+    assert_eq!(inherited_rendering.owned_body_members.len(), 2);
+    assert_eq!(inherited_rendering.body_members.len(), 1);
+    assert_eq!(
+        settled(published.element_details(inherited_rendering.owned_rendering))
+            .metadata
+            .len(),
+        1
+    );
+
+    let inline = identity_of(&published, document, "P::inline");
+    let inline_rendering = settled(published.view_rendering(inline)).expect("inline rendering");
+    assert_eq!(
+        inline_rendering.owned_rendering,
+        inline_rendering.referenced_rendering
+    );
+    assert_eq!(inline_rendering.body_members.len(), 2);
+    assert_eq!(inline_rendering.owned_body_members.len(), 2);
+    assert_eq!(
+        details_of(&published, document, "P::inline::own")
+            .metadata
+            .len(),
+        1
+    );
+
+    let empty = identity_of(&published, document, "P::empty");
+    assert!(settled(published.view_rendering(empty)).is_none());
+    let broken = identity_of(&published, document, "P::broken");
+    assert!(matches!(
+        published.view_rendering(broken).answer,
+        QueryAnswer::Unresolved
+    ));
+    let duplicate = identity_of(&published, document, "P::duplicate");
+    assert!(matches!(
+        published.view_rendering(duplicate).answer,
+        QueryAnswer::Ambiguous(_)
+    ));
+}
+
 /// Inherited features carry the type that declares them, and a redefinition replaces the
 /// feature it redefines even when the redefining feature is anonymous.
 #[test]

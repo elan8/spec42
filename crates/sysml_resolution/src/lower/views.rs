@@ -18,11 +18,12 @@ use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
+use crate::MembershipRole;
 use sysml_v2_parser::ast::{
     MembershipKind as ParserMembershipKind, Node, RenderingDef, RenderingDefBody,
     RenderingDefBodyElement, RenderingUsage as ParserRenderingUsage, RenderingUsageBody,
     RenderingUsageBodyElement, ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement,
-    ViewUsage as ParserViewUsage,
+    ViewRenderingForm, ViewRenderingUsage, ViewUsage as ParserViewUsage,
 };
 
 impl SemanticModelBuilder {
@@ -147,11 +148,9 @@ impl SemanticModelBuilder {
                         UnsupportedFamily::ParserUnsupported,
                         node.span,
                     ),
-                    ViewDefBodyElement::ViewRendering(_) => self.push_unsupported(
-                        document,
-                        UnsupportedFamily::ViewDefinitionMember,
-                        element.span,
-                    ),
+                    ViewDefBodyElement::ViewRendering(node) => {
+                        self.lower_view_rendering_usage(document, declaration, node)?;
+                    }
                 }
             }
         }
@@ -162,7 +161,7 @@ impl SemanticModelBuilder {
     /// definition body, mirroring `lower_part_usage`: ownership, feature membership, the
     /// `OccurrenceUsagePrefix` modifiers, direction and extension keywords, every typing target,
     /// the subsets / references / crosses / redefines relationships, multiplicity, and the
-    /// `ValuePart`. View-specific body members (`render`, `rendering`, `alias`) remain unsupported
+    /// `ValuePart`. Other view-specific body members (`alias`) remain unsupported
     /// in `lower_view_usage_body`.
     pub(crate) fn lower_view_usage(
         &mut self,
@@ -292,11 +291,9 @@ impl SemanticModelBuilder {
                     ViewBodyElement::ViewUsage(view_usage) => {
                         self.lower_view_usage(document, Some(declaration), view_usage)?;
                     }
-                    ViewBodyElement::ViewRendering(_) => self.push_unsupported(
-                        document,
-                        UnsupportedFamily::ViewDefinitionMember,
-                        element.span,
-                    ),
+                    ViewBodyElement::ViewRendering(node) => {
+                        self.lower_view_rendering_usage(document, declaration, node)?;
+                    }
                 }
             }
         }
@@ -371,6 +368,97 @@ impl SemanticModelBuilder {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         self.lower_rendering_usage_body(document, declaration, &node.value.body)
+    }
+
+    /// A `render` member owns a RenderingUsage under a ViewRenderingMembership. The short form
+    /// subsets an existing RenderingUsage; the explicit `render rendering` form declares one.
+    pub(crate) fn lower_view_rendering_usage(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        node: &Node<ViewRenderingUsage>,
+    ) -> Result<(), ConstructionError> {
+        let name = match node.value.form {
+            ViewRenderingForm::Reference(_) => None,
+            ViewRenderingForm::Inline(name) => {
+                self.intern_declaration_name(document, Some(name))?
+            }
+        };
+        let rendering = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::RenderingUsage,
+            name,
+            node.span,
+            DeclarationFacts {
+                modifiers: DeclarationModifiers {
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
+                    ..DeclarationModifiers::default()
+                },
+                multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        let visibility = self.member_visibility(
+            &node.value.membership,
+            ParserMembershipKind::FeatureMembership,
+        )?;
+        if self
+            .next_membership_override
+            .replace((
+                MembershipKind::Feature,
+                visibility,
+                MembershipRole::ViewRendering,
+                node.value.membership.span,
+            ))
+            .is_some()
+        {
+            return Err(ConstructionError::InvalidMembership);
+        }
+        self.push_membership(rendering, MembershipKind::Feature, visibility, node.span)?;
+        if let ViewRenderingForm::Reference(target) = node.value.form {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            let reference = self.push_reference(PendingReference {
+                source: rendering,
+                kind: ReferenceKind::Subsetting,
+                document,
+                local: target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+            self.declaration_facts[rendering.index()].view_rendering_reference = Some(reference);
+        }
+        if let Some(type_name) = node.value.type_name {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(type_name)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: rendering,
+                kind: ReferenceKind::FeatureTyping,
+                document,
+                local: type_name,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        for relationship in [&node.value.subsets, &node.value.redefines]
+            .into_iter()
+            .flatten()
+        {
+            self.lower_subsetting_relationship(document, rendering, relationship)?;
+        }
+        self.lower_rendering_usage_body(document, rendering, &node.value.body)
     }
 
     /// Body walker for `rendering` usage bodies (`RenderingUsageBody`/
@@ -480,11 +568,9 @@ impl SemanticModelBuilder {
                 RenderingDefBodyElement::Unsupported(node) => {
                     self.push_unsupported(document, UnsupportedFamily::ParserUnsupported, node.span)
                 }
-                RenderingDefBodyElement::ViewRendering(_) => self.push_unsupported(
-                    document,
-                    UnsupportedFamily::RenderingDefinitionMember,
-                    element.span,
-                ),
+                RenderingDefBodyElement::ViewRendering(node) => {
+                    self.lower_view_rendering_usage(document, declaration, node)?;
+                }
             }
         }
         Ok(())

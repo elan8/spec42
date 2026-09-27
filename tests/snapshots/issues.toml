@@ -319,12 +319,6 @@ owner = "spec42-semantic"
 summary = "the succession owned by a transition usage is not published as a member, so the accepted side cannot be observed in SMG either"
 
 [[issue]]
-id = "lowering-view-rendering-membership"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "a render member parses but sysml_resolution reports it as unsupported_view_definition_member, so no ViewRenderingMembership reaches semantics"
-
-[[issue]]
 id = "lowering-gap-flow-payload-count"
 kind = "lowering_gap"
 owner = "spec42-semantic"
