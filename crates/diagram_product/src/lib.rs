@@ -41,6 +41,9 @@ struct DiagramProduct {
 struct DocumentRecord {
     uri: String,
     source_domain: &'static str,
+    /// `domain_rank` of the source domain, the second half of the document interning key.
+    #[serde(skip)]
+    domain_rank: u8,
 }
 
 #[derive(Serialize)]
@@ -245,6 +248,7 @@ impl NormalizedProduct {
             .map(|((uri, _), domain)| DocumentRecord {
                 uri,
                 source_domain: source_domain(domain),
+                domain_rank: domain_rank(domain),
             })
             .collect::<Vec<_>>();
 
@@ -260,7 +264,7 @@ impl NormalizedProduct {
                 let domain = document_records
                     .iter()
                     .find(|document| document.uri == source.uri)
-                    .map(|document| source_domain_rank(document.source_domain))
+                    .map(|document| document.domain_rank)
                     .ok_or_else(|| format!("source document `{}` was not interned", source.uri))?;
                 let document = *document_indexes
                     .get(&(source.uri.clone(), domain))
@@ -979,16 +983,6 @@ fn domain_rank(value: model::DiagramSourceDomain) -> u8 {
         model::DiagramSourceDomain::StandardLibrary => 1,
         model::DiagramSourceDomain::Library => 2,
         model::DiagramSourceDomain::External => 3,
-    }
-}
-
-fn source_domain_rank(value: &str) -> u8 {
-    match value {
-        "workspace" => 0,
-        "standard-library" => 1,
-        "library" => 2,
-        "external" => 3,
-        _ => unreachable!(),
     }
 }
 
