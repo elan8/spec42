@@ -2919,7 +2919,29 @@ impl<D> SemanticModel<D> {
     }
 
     pub(crate) fn satisfy_relationships(&self) -> QueryOutcome<Box<[SatisfyRelationship]>> {
-        let endpoint = |reference: Option<AuthoredReferenceId>| match reference
+        // A dotted operand (`by a.b`) is walked hop by hop; with every hop resolved it is
+        // published as the chain, otherwise it reports the chain's status like a plain reference.
+        let feature_chain = |reference: AuthoredReferenceId| -> Option<SatisfyEndpoint> {
+            let authored = self.storage.references.get(reference.index())?;
+            if !authored.flags.dotted {
+                return None;
+            }
+            let path = self
+                .resolution
+                .member_access_paths
+                .get(&reference)?
+                .iter()
+                .map(|status| match status {
+                    ResolutionStatus::Resolved(target) => self.symbol_id(*target),
+                    _ => None,
+                })
+                .collect::<Option<Box<[SymbolId]>>>()?;
+            (!path.is_empty()).then(|| SatisfyEndpoint::FeatureChain {
+                path,
+                authored: self.authored_path(authored.path).into(),
+            })
+        };
+        let plain_endpoint = |reference: Option<AuthoredReferenceId>| match reference
             .as_ref()
             .and_then(|reference| self.resolution.outcome(*reference))
         {
@@ -2939,6 +2961,12 @@ impl<D> SemanticModel<D> {
                 SatisfyEndpoint::Unresolved
             }
             None => SatisfyEndpoint::Unsupported,
+        };
+        let endpoint = |reference: Option<AuthoredReferenceId>| {
+            if let Some(chain) = reference.and_then(feature_chain) {
+                return chain;
+            }
+            plain_endpoint(reference)
         };
         let mut values = self
             .storage
@@ -2972,9 +3000,16 @@ impl<D> SemanticModel<D> {
                     })
                     .and_then(|(index, _)| AuthoredReferenceId::from_index(index).ok());
                 let facts = self.storage.declaration_facts(id)?;
+                let identity = self.symbol_id(id)?;
                 Some(SatisfyRelationship {
-                    identity: self.symbol_id(id)?,
-                    requirement: endpoint(requirement),
+                    identity,
+                    // Only the declaration form (`satisfy requirement r : R by x`) has no
+                    // `SatisfySource`: the reference form always names one. There the satisfy
+                    // usage is itself the satisfied requirement usage (8.4.17.3).
+                    requirement: match requirement {
+                        Some(_) => endpoint(requirement),
+                        None => SatisfyEndpoint::Resolved(identity),
+                    },
                     satisfying_element: endpoint(satisfying),
                     polarity: if facts.negated.unwrap_or(false) {
                         SatisfyPolarity::NotSatisfied

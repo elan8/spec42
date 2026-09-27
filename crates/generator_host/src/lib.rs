@@ -1287,6 +1287,12 @@ fn satisfy_endpoint(value: SatisfyEndpointSummary) -> protocol::SatisfyEndpoint 
         SatisfyEndpointSummary::Resolved(value) => {
             protocol::SatisfyEndpoint::Resolved(summary(value))
         }
+        SatisfyEndpointSummary::FeatureChain { path, authored } => {
+            protocol::SatisfyEndpoint::FeatureChain {
+                path: path.into_iter().map(summary).collect(),
+                authored,
+            }
+        }
         SatisfyEndpointSummary::Ambiguous(values) => {
             protocol::SatisfyEndpoint::Ambiguous(values.into_iter().map(summary).collect())
         }

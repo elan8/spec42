@@ -8,6 +8,17 @@ pub use sysml_contract::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SatisfyEndpoint {
     Resolved(SymbolId),
+    /// A feature chain (`satisfy R by a.b.c`), every hop resolved. In SysML v2 the chain as a
+    /// whole is the satisfying feature (8.3.21.10, `satisfyingFeature`; the `by` operand is an
+    /// `OwnedFeatureChain`, 8.2.2.21.2), which is not the declaration its last hop names.
+    FeatureChain {
+        /// The feature each authored segment resolves to, in order: `path[0]` is the root
+        /// (`a`), the last entry the feature the chain ends at (`c`).
+        path: Box<[SymbolId]>,
+        /// The authored segments, `::`-joined like every published authored path (a connector's
+        /// `ConnectorEndpoint::FeatureChain::authored` too): `a::b::c` for `a.b.c`.
+        authored: Box<str>,
+    },
     Ambiguous(Box<[SymbolId]>),
     Unresolved,
     Unsupported,

@@ -373,7 +373,10 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .then(|| {
                 !(matches!(
                     reference.kind(),
-                    ReferenceKind::FeatureChaining | ReferenceKind::ExplicitRelationshipEndpoint
+                    ReferenceKind::FeatureChaining
+                        | ReferenceKind::ExplicitRelationshipEndpoint
+                        | ReferenceKind::SatisfySource
+                        | ReferenceKind::SatisfyTarget
                 ) && reference.flags().dotted)
             })
             .unwrap_or(false)
@@ -409,6 +412,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                         | ReferenceKind::Redefinition
                         | ReferenceKind::FeatureInverting
                         | ReferenceKind::FeatureChaining
+                        | ReferenceKind::SatisfySource
+                        | ReferenceKind::SatisfyTarget
                 )))
             .then_some(index)
         })
