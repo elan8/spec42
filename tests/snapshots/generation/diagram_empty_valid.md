@@ -3,7 +3,7 @@
 description=An authored view with no exposure produces a valid empty projection
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=browser-view
 viewDocument=diagram_empty_valid.md
 viewQualifiedName=EmptyExample::selected

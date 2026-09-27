@@ -3,7 +3,7 @@
 description=Interconnection view keeps unresolved exposure explicit
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=interconnection-view
 viewDocument=diagram_interconnection_unresolved.md
 viewQualifiedName=InterconnectionNegative::selected

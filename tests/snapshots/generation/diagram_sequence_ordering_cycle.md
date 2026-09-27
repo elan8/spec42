@@ -3,7 +3,7 @@
 description=Sequence view exposes cyclic message ordering as an incomplete typed scene
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=sequence-view
 viewDocument=diagram_sequence_ordering_cycle.md
 viewQualifiedName=SequenceCycle::selected

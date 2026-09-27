@@ -3,7 +3,7 @@
 description=Sequence view projects authoritative participants and flow facts
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=sequence-view
 viewDocument=diagram_sequence_complete.md
 viewQualifiedName=SequenceExample::selected

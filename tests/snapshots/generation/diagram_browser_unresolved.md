@@ -3,7 +3,7 @@
 description=Browser view keeps unresolved exposure explicit
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=browser-view
 viewDocument=diagram_browser_unresolved.md
 viewQualifiedName=BrowserNegative::selected

@@ -3,7 +3,7 @@
 description=Grid view projects typed rows and relationship columns
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=grid-view
 viewDocument=diagram_grid_complete.md
 viewQualifiedName=GridExample::selected

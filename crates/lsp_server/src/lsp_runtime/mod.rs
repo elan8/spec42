@@ -30,8 +30,8 @@ use custom::{
 };
 use draw::{canvas_size, DrawEngine, DrawParams, DrawResult};
 use generation::{
-    DiagramViewsParams, DiagramViewsResult, GenerateParams, GenerateResult, GeneratorService,
-    StateTransitionViewsParams, StateTransitionViewsResult,
+    DiagramParams, DiagramResult, DiagramViewsParams, DiagramViewsResult, GenerateParams,
+    GenerateResult, GeneratorService, StateTransitionViewsParams, StateTransitionViewsResult,
 };
 use layout::{legacy_engine_requested, LayoutEngine, LayoutParams, LayoutResult};
 use project_registry::ProjectRegistry;
@@ -46,7 +46,7 @@ struct Backend {
     /// everywhere else without touching the actor. LSP guarantees
     /// `initialize` precedes every other request.
     runtime_config: Arc<std::sync::OnceLock<RuntimeConfig>>,
-    generator_service: Arc<std::result::Result<GeneratorService, String>>,
+    generator_service: Arc<GeneratorService>,
 }
 
 #[tower_lsp::async_trait]
@@ -650,10 +650,6 @@ impl Backend {
             .map_err(tower_lsp::jsonrpc::Error::invalid_params)?;
         let service = Arc::clone(&self.generator_service);
         tokio::task::spawn_blocking(move || {
-            let service = service
-                .as_ref()
-                .as_ref()
-                .map_err(|message| message.clone())?;
             service.generate(
                 &module_bytes,
                 publication,
@@ -688,20 +684,14 @@ impl Backend {
         }
         let publication = Arc::clone(state.session.current());
         let service = Arc::clone(&self.generator_service);
-        tokio::task::spawn_blocking(move || {
-            let service = service
-                .as_ref()
-                .as_ref()
-                .map_err(|message| message.clone())?;
-            service.state_transition_views(publication)
-        })
-        .await
-        .map_err(|error| {
-            tower_lsp::jsonrpc::Error::invalid_params(format!(
-                "state-transition catalog worker did not complete: {error}"
-            ))
-        })?
-        .map_err(tower_lsp::jsonrpc::Error::invalid_params)
+        tokio::task::spawn_blocking(move || service.state_transition_views(publication))
+            .await
+            .map_err(|error| {
+                tower_lsp::jsonrpc::Error::invalid_params(format!(
+                    "state-transition catalog worker did not complete: {error}"
+                ))
+            })?
+            .map_err(tower_lsp::jsonrpc::Error::invalid_params)
     }
 
     async fn spec42_diagram_views(&self, params: DiagramViewsParams) -> Result<DiagramViewsResult> {
@@ -719,17 +709,42 @@ impl Backend {
         }
         let publication = Arc::clone(state.session.current());
         let service = Arc::clone(&self.generator_service);
+        tokio::task::spawn_blocking(move || service.diagram_views(publication))
+            .await
+            .map_err(|error| {
+                tower_lsp::jsonrpc::Error::invalid_params(format!(
+                    "diagram catalog worker did not complete: {error}"
+                ))
+            })?
+            .map_err(tower_lsp::jsonrpc::Error::invalid_params)
+    }
+
+    async fn spec42_diagram(&self, params: DiagramParams) -> Result<DiagramResult> {
+        let model_uri = Url::parse(&params.model_uri).map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!("invalid model URI: {error}"))
+        })?;
+        let state = self.state_for_uri(&model_uri)?;
+        if !state
+            .index
+            .contains_key(&crate::common::util::normalize_file_uri(&model_uri))
+        {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "model URI is not part of the current workspace publication",
+            ));
+        }
+        let publication = Arc::clone(state.session.current());
+        let service = Arc::clone(&self.generator_service);
         tokio::task::spawn_blocking(move || {
-            let service = service
-                .as_ref()
-                .as_ref()
-                .map_err(|message| message.clone())?;
-            service.diagram_views(publication)
+            service.diagram(
+                publication,
+                &params.handle,
+                params.expected_model_digest.as_deref(),
+            )
         })
         .await
         .map_err(|error| {
             tower_lsp::jsonrpc::Error::invalid_params(format!(
-                "diagram catalog worker did not complete: {error}"
+                "diagram worker did not complete: {error}"
             ))
         })?
         .map_err(tower_lsp::jsonrpc::Error::invalid_params)
@@ -899,6 +914,7 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     .custom_method("sysml/librarySearch", Backend::sysml_library_search)
     .custom_method("spec42/generate", Backend::spec42_generate)
     .custom_method("spec42/diagramViews", Backend::spec42_diagram_views)
+    .custom_method("spec42/diagram", Backend::spec42_diagram)
     .custom_method("spec42/layout", Backend::spec42_layout)
     .custom_method("spec42/draw", Backend::spec42_draw)
     .custom_method(

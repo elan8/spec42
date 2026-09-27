@@ -605,6 +605,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "diagram_product"
+version = "0.53.1"
+dependencies = [
+ "serde",
+ "serde_json",
+ "spec42-generator-protocol",
+]
+
+[[package]]
 name = "digest"
 version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1350,6 +1359,7 @@ dependencies = [
  "clap",
  "diagram_draw",
  "diagram_layout",
+ "diagram_product",
  "generator_api",
  "generator_host",
  "glob",
@@ -1896,6 +1906,7 @@ dependencies = [
  "anyhow",
  "clap",
  "diagram_draw",
+ "diagram_product",
  "directories",
  "generator_api",
  "generator_host",
@@ -2076,6 +2087,7 @@ name = "spec42-snapshot"
 version = "0.53.1"
 dependencies = [
  "clap",
+ "diagram_product",
  "generator_api",
  "generator_host",
  "language_service",

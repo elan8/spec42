@@ -87,9 +87,8 @@ require_path "$SPEC42_KPAR_LIBRARY_BUNDLE_METHOD" "bash scripts/fetch-kpar-libra
 
 build_repository_plugins() {
   step "Repository generator guests"
-  # Rust integration tests execute the real diagram guest. Build repository guests before those
-  # tests, without staging a package-only copy beneath vscode/.
-  SPEC42_PACKAGE_REPOSITORY_GENERATORS=0 scripts/build-repository-generator-plugins.sh
+  # Generator tests execute the repository example guest; build it before those tests.
+  scripts/build-repository-generator-plugins.sh
 }
 
 if wants lint; then
@@ -171,7 +170,7 @@ if wants generator; then
   cargo run -p server --bin spec42 -- --no-stdlib generate \
     generator-plugins/target/wasm32-unknown-unknown/release/spec42_example_generator.wasm \
     vscode/testFixture/workspaces/multi-file/def.sysml --output target/generator-smoke --check -- target=rust
-  cargo test -p server --test integration diagram_generator_smoke
+  cargo test -p server --test integration diagram_smoke
 
   step "Semantic snapshot corpus"
   cargo snapshot check

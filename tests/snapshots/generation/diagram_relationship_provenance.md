@@ -3,7 +3,7 @@
 description=General view distinguishes authored and implied relationship provenance
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=general-view
 viewDocument=diagram_relationship_provenance.md
 viewQualifiedName=ProvenanceExample::selected

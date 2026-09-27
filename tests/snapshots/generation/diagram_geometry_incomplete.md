@@ -3,7 +3,7 @@
 description=Geometry view preserves exposed elements and reports absent geometry facts
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=geometry-view
 viewDocument=diagram_geometry_incomplete.md
 viewQualifiedName=GeometryExample::selected

@@ -3,7 +3,7 @@
 description=Sequence view preserves a resolved message endpoint outside its lifeline set as typed incomplete state
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=sequence-view
 viewDocument=diagram_sequence_outside_lifeline.md
 viewQualifiedName=SequenceOutside::selected

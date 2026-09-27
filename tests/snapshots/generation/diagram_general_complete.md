@@ -3,7 +3,7 @@
 description=General view projects exposed ownership and published relationships
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=general-view
 viewDocument=diagram_general_complete.md
 viewQualifiedName=GeneralExample::selected

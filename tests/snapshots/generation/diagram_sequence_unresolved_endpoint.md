@@ -3,7 +3,7 @@
 description=Sequence view preserves an unresolved message endpoint as typed incomplete state
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=sequence-view
 viewDocument=diagram_sequence_unresolved_endpoint.md
 viewQualifiedName=SequenceUnresolved::selected

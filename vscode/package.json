@@ -539,11 +539,6 @@
           "default": "spec42",
           "description": "Path to the Spec42 server binary (or 'spec42' if on PATH)."
         },
-        "spec42.diagramViewer.pluginPath": {
-          "type": "string",
-          "default": "",
-          "description": "Path to a compatible Spec42 diagram Wasm plugin. When empty, the extension uses its packaged generators/diagram.wasm artifact."
-        },
         "spec42.libraryPaths": {
           "type": "array",
           "items": {
@@ -628,8 +623,7 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run build:diagram-generator && npm run stage:package-content && npm run compile",
-    "build:diagram-generator": "../scripts/build-repository-generator-plugins.sh",
+    "vscode:prepublish": "npm run stage:package-content && npm run compile",
     "stage:package-content": "node scripts/stage-package-content.js",
     "build:extension": "node scripts/build-extension.js",
     "build:diagram-webview": "node scripts/build-diagram-webview.js",

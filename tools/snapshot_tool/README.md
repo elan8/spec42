@@ -416,10 +416,11 @@ sequential/parallel parity.
 
 ## Generator snapshots
 
-A fixture with `type=generate` selects a repository-owned WebAssembly plugin in `META`. Plugin
-selection is closed: fixtures cannot provide filesystem paths. Conformance fixtures use the
-canonical `conformance:<name>` form (the legacy bare name remains accepted), while diagram
-fixtures use `repository:diagram`:
+A fixture with `type=generate` selects a generator in `META`. Selection is closed: fixtures cannot
+provide filesystem paths. Conformance fixtures run a repository-owned WebAssembly plugin, named in
+the canonical `conformance:<name>` form (the legacy bare name remains accepted). Diagram fixtures
+use `native:diagram`, Spec42's built-in diagram product (`crates/diagram_product`), exactly as the
+LSP and `spec42 diagram` produce it:
 
 ```markdown
 # META
@@ -432,11 +433,11 @@ plugin=conformance:requirements_csv
 
 Diagram fixtures select one authored view with its source-document name, KerML qualified name and
 typed view kind. The semantic query owner resolves that readable reference to the canonical opaque
-identity; the runner then finds the identical catalog entry and passes its opaque handle to the
-guest. It never guesses from a display label or embeds the identity encoding in fixture metadata:
+identity; the runner then finds the identical catalog entry and projects its opaque handle. It
+never guesses from a display label or embeds the identity encoding in fixture metadata:
 
 ```ini
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=general-view
 viewDocument=model.sysml
 viewQualifiedName=Example::selected
@@ -447,7 +448,7 @@ name is normalized by the same `SourceDocument` constructor used to admit fixtur
 qualified name is resolved only within that document. Unresolved, wrong-kind and ambiguous
 references are errors rather than fallback selections.
 
-The runner executes that plugin against both the sequential and parallel immutable publications.
+The runner executes that generator against both the sequential and parallel immutable publications.
 Outcome, diagnostics, artifact paths, and exact artifact bytes must agree before the canonical
 result is written. Generated files are captured in memory rather than applied to the filesystem:
 

@@ -1,18 +1,17 @@
-//! The repository diagram generator, driven the way a host drives it: list the typed view
-//! catalog, hand the guest one catalog handle, and read back a complete scene.
+//! Native diagram products, built the way the LSP and `spec42 diagram` build them: list the typed
+//! view catalog, project one catalog handle, and normalize it with `diagram_product`.
 //!
 //! A standard view is typed by `StandardViewDefinitions::…`, so the catalog is only populated
-//! with the standard library loaded -- as every host loads it. The guest takes a *catalog
-//! handle* (`h:<sha256>`), never a view-kind id such as `general-view`, and a handle is minted by
-//! `GeneratorModelView::diagram_views` on the exact model view the guest then runs against: it is
-//! not transferable to another process or another view of the same publication. That is why this
+//! with the standard library loaded -- as every host loads it. A view is selected by its
+//! *catalog handle* (`h:<sha256>`), never a view-kind id such as `general-view`, and a handle is minted by
+//! `GeneratorModelView::diagram_views` on the exact model view it is then projected on: it is not
+//! transferable to another process or another view of the same publication. That is why this
 //! smoke runs in-process against one `GeneratorModelView`, exactly as the LSP host does.
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use generator_api::{ArtifactLimits, DiagramViewKind, GeneratorModelView, QueryLimits};
-use generator_host::{CancellationHandle, GeneratorRuntime, RuntimeLimits};
-use spec42::cli::Cli;
+use generator_api::{DiagramViewKind, GeneratorModelView, QueryLimits};
+use spec42::cli::{Cli, DiagramArgs, DiagramFormat};
 use spec42::host_snapshot::load_snapshot_for_paths;
 
 use crate::common::with_isolated_data_dir;
@@ -21,13 +20,13 @@ fn repo_root() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../..")
 }
 
-/// The plugin as `scripts/build-repository-generator-plugins.sh` leaves it; absent, the test
-/// skips itself the way the conformance CLI tests do, so a bare `cargo test` stays green.
-fn diagram_plugin() -> Option<Vec<u8>> {
-    let path = repo_root().join(
-        "generator-plugins/target/wasm32-unknown-unknown/release/spec42_diagram_generator.wasm",
-    );
-    std::fs::read(path).ok()
+/// `diagram.json` for the catalog view `handle`, as the LSP's `spec42/diagram` builds it.
+fn native_product(model: &GeneratorModelView, handle: &str) -> String {
+    let projection = model
+        .diagram_view(handle)
+        .unwrap_or_else(|error| panic!("the catalog view projects: {error}"));
+    String::from_utf8(diagram_product::diagram_product_json(&projection).expect("product"))
+        .expect("diagram.json is UTF-8")
 }
 
 fn stdlib_cli() -> Cli {
@@ -45,11 +44,7 @@ fn stdlib_cli() -> Cli {
 }
 
 #[test]
-fn an_authored_standard_view_generates_a_complete_scene_from_its_catalog_handle() {
-    let Some(module) = diagram_plugin() else {
-        eprintln!("skipping: run scripts/build-repository-generator-plugins.sh first");
-        return;
-    };
+fn an_authored_standard_view_projects_a_complete_scene_from_its_catalog_handle() {
     with_isolated_data_dir(|| {
         let workspace = repo_root().join("vscode/testFixture/workspaces/state-view");
         let views_document = workspace.join("Views.sysml");
@@ -82,27 +77,7 @@ fn an_authored_standard_view_generates_a_complete_scene_from_its_catalog_handle(
             view.handle
         );
 
-        let runtime = GeneratorRuntime::new().expect("generator runtime");
-        let prepared = runtime
-            .prepare(&module)
-            .expect("the diagram plugin is a valid module");
-        let execution = runtime
-            .execute_prepared(
-                &prepared,
-                Arc::clone(&model),
-                std::slice::from_ref(&view.handle),
-                RuntimeLimits::default(),
-                ArtifactLimits::default(),
-                CancellationHandle::new(),
-            )
-            .unwrap_or_else(|error| panic!("the diagram guest generates: {error}"));
-
-        let diagram = execution
-            .artifacts
-            .entries()
-            .find(|(path, _)| path.as_str() == "diagram.json")
-            .map(|(_, bytes)| String::from_utf8(bytes.to_vec()).expect("diagram.json is UTF-8"))
-            .expect("the guest writes diagram.json");
+        let diagram = native_product(&model, &view.handle);
         let product: serde_json::Value =
             serde_json::from_str(&diagram).expect("diagram.json is JSON");
         assert_eq!(product["selectedView"]["kind"], "state-transition-view");
@@ -124,10 +99,6 @@ fn an_authored_standard_view_generates_a_complete_scene_from_its_catalog_handle(
 
 #[test]
 fn a_sequence_view_projects_lifelines_messages_and_their_order() {
-    let Some(module) = diagram_plugin() else {
-        eprintln!("skipping: run scripts/build-repository-generator-plugins.sh first");
-        return;
-    };
     with_isolated_data_dir(|| {
         let workspace = repo_root().join("vscode/testFixture/workspaces/sequence-view");
         let model_document = workspace.join("Model.sysml");
@@ -152,27 +123,7 @@ fn a_sequence_view_projects_lifelines_messages_and_their_order() {
             .find(|view| view.kind == DiagramViewKind::SequenceView)
             .unwrap_or_else(|| panic!("the fixture authors a SequenceView; catalog: {views:?}"));
 
-        let runtime = GeneratorRuntime::new().expect("generator runtime");
-        let prepared = runtime
-            .prepare(&module)
-            .expect("the diagram plugin is a valid module");
-        let execution = runtime
-            .execute_prepared(
-                &prepared,
-                Arc::clone(&model),
-                std::slice::from_ref(&view.handle),
-                RuntimeLimits::default(),
-                ArtifactLimits::default(),
-                CancellationHandle::new(),
-            )
-            .unwrap_or_else(|error| panic!("the diagram guest generates: {error}"));
-
-        let diagram = execution
-            .artifacts
-            .entries()
-            .find(|(path, _)| path.as_str() == "diagram.json")
-            .map(|(_, bytes)| String::from_utf8(bytes.to_vec()).expect("diagram.json is UTF-8"))
-            .expect("the guest writes diagram.json");
+        let diagram = native_product(&model, &view.handle);
         let product: serde_json::Value =
             serde_json::from_str(&diagram).expect("diagram.json is JSON");
 
@@ -248,5 +199,65 @@ fn a_sequence_view_projects_lifelines_messages_and_their_order() {
             assert!(svg.contains(label), "the SVG contains {label}: {svg}");
         }
         assert!(!svg.contains("NaN"), "the SVG has finite geometry: {svg}");
+    });
+}
+
+#[test]
+fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
+    with_isolated_data_dir(|| {
+        let workspace = repo_root().join("vscode/testFixture/workspaces/state-view");
+        let output = tempfile::tempdir().expect("output directory");
+        let run = |view: Option<&str>, format: DiagramFormat, file: &str| {
+            let path = output.path().join(file);
+            spec42::diagram::run_diagram(
+                &stdlib_cli(),
+                &DiagramArgs {
+                    path: workspace.clone(),
+                    workspace_root: Some(workspace.clone()),
+                    view: view.map(str::to_owned),
+                    format,
+                    output: Some(path.clone()),
+                },
+            )
+            .unwrap_or_else(|error| panic!("spec42 diagram: {error}"));
+            std::fs::read_to_string(path).expect("command output")
+        };
+
+        let listing: serde_json::Value =
+            serde_json::from_str(&run(None, DiagramFormat::Json, "views.json")).expect("JSON");
+        let view = listing
+            .as_array()
+            .expect("view list")
+            .iter()
+            .find(|view| view["kind"] == "state-transition-view")
+            .unwrap_or_else(|| panic!("the fixture lists its StateTransitionView: {listing}"));
+        let name = view["qualifiedName"].as_str().expect("qualified name");
+        assert!(run(None, DiagramFormat::Svg, "views.txt").contains(name));
+
+        let product: serde_json::Value =
+            serde_json::from_str(&run(Some(name), DiagramFormat::Json, "diagram.json"))
+                .expect("product JSON");
+        assert_eq!(product["schemaVersion"], 5);
+        assert_eq!(product["selectedView"]["kind"], "state-transition-view");
+
+        let svg = run(Some(name), DiagramFormat::Svg, "diagram.svg");
+        assert!(svg.starts_with("<svg"), "an SVG document: {svg}");
+        assert!(!svg.contains("NaN"), "the SVG has finite geometry");
+
+        let error = spec42::diagram::run_diagram(
+            &stdlib_cli(),
+            &DiagramArgs {
+                path: workspace.clone(),
+                workspace_root: Some(workspace.clone()),
+                view: Some("No::such".to_owned()),
+                format: DiagramFormat::Svg,
+                output: None,
+            },
+        )
+        .expect_err("an unknown view is an error");
+        assert!(
+            error.contains(name),
+            "the error lists the available views: {error}"
+        );
     });
 }

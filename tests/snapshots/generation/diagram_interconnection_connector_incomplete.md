@@ -3,7 +3,7 @@
 description=Interconnection View records a typed incomplete reason for a connector whose end is unresolved or outside the projection, and never draws a guessed line
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=interconnection-view
 viewDocument=diagram_interconnection_connector_incomplete.md
 viewQualifiedName=ConnectorIncomplete::selected

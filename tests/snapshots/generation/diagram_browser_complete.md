@@ -3,7 +3,7 @@
 description=Browser view projects canonical membership tree
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=browser-view
 viewDocument=diagram_browser_complete.md
 viewQualifiedName=BrowserExample::selected

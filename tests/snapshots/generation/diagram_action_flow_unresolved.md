@@ -3,7 +3,7 @@
 description=Action flow view keeps unresolved exposure explicit
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=action-flow-view
 viewDocument=diagram_action_flow_unresolved.md
 viewQualifiedName=ActionNegative::selected

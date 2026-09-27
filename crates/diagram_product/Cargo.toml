@@ -1,0 +1,11 @@
+[package]
+name = "diagram_product"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "The schema-5 diagram product: a typed diagram view projection normalized for drawing"
+
+[dependencies]
+spec42-generator-protocol = { path = "../generator_protocol" }
+serde = { workspace = true }
+serde_json = { workspace = true }

@@ -3,7 +3,7 @@
 description=Interconnection view publishes each port's authored direction and typing conjugation, resolved facts a renderer places port-l / port-r from rather than a guess
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=interconnection-view
 viewDocument=diagram_interconnection_port_direction.md
 viewQualifiedName=PortDirectionExample::selected

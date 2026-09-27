@@ -3,7 +3,7 @@
 description=Interconnection view projects nested parts and ports
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=interconnection-view
 viewDocument=diagram_interconnection_complete.md
 viewQualifiedName=InterconnectionExample::selected
