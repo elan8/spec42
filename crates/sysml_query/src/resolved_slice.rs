@@ -300,8 +300,20 @@ impl DiagramQueries<'_> {
         self.model.diagram_view_catalog()
     }
 
+    /// The view as its first catalogued kind; see `view_of_kind`.
     pub fn view(&self, identity: SymbolId) -> QueryOutcome<DiagramViewProjection> {
         self.model.diagram_view(identity)
+    }
+
+    /// The view as one of its catalogued kinds. A view typed by several standard view definitions
+    /// (`view v : GeneralView, InterconnectionView`) has a catalog entry, and a projection, per
+    /// kind.
+    pub fn view_of_kind(
+        &self,
+        identity: SymbolId,
+        kind: DiagramViewKind,
+    ) -> QueryOutcome<DiagramViewProjection> {
+        self.model.diagram_view_of_kind(identity, kind)
     }
 
     /// The display name of one catalogued view, borrowed from the publication.

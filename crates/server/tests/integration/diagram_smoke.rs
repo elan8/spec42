@@ -215,6 +215,8 @@ fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
                     path: workspace.clone(),
                     workspace_root: Some(workspace.clone()),
                     view: view.map(str::to_owned),
+                    kind: None,
+                    document: None,
                     format,
                     output: Some(path.clone()),
                 },
@@ -250,6 +252,8 @@ fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
                 path: workspace.clone(),
                 workspace_root: Some(workspace.clone()),
                 view: Some("No::such".to_owned()),
+                kind: None,
+                document: None,
                 format: DiagramFormat::Svg,
                 output: None,
             },
@@ -258,6 +262,73 @@ fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
         assert!(
             error.contains(name),
             "the error lists the available views: {error}"
+        );
+    });
+}
+
+#[test]
+fn the_diagram_command_selects_each_kind_of_a_view_typed_by_several_view_definitions() {
+    with_isolated_data_dir(|| {
+        let workspace = tempfile::tempdir().expect("workspace");
+        std::fs::write(
+            workspace.path().join("model.sysml"),
+            "package Garage {\n\
+             \tprivate import StandardViewDefinitions::*;\n\
+             \tpart def Car { part engine; }\n\
+             \tview both : GeneralView, InterconnectionView { expose Car; }\n\
+             }\n",
+        )
+        .expect("model");
+        let run = |kind: Option<&str>, document: Option<&str>| {
+            let path = workspace.path().join("diagram.json");
+            spec42::diagram::run_diagram(
+                &stdlib_cli(),
+                &DiagramArgs {
+                    path: workspace.path().to_path_buf(),
+                    workspace_root: Some(workspace.path().to_path_buf()),
+                    view: Some("Garage::both".to_owned()),
+                    kind: kind.map(str::to_owned),
+                    document: document.map(str::to_owned),
+                    format: DiagramFormat::Json,
+                    output: Some(path.clone()),
+                },
+            )
+            .map(|_| {
+                let product: serde_json::Value =
+                    serde_json::from_str(&std::fs::read_to_string(path).expect("output"))
+                        .expect("product JSON");
+                product["projection"]["kind"]
+                    .as_str()
+                    .expect("projection kind")
+                    .to_owned()
+            })
+        };
+
+        let ambiguous = run(None, None).expect_err("two kinds of one view need --kind");
+        assert!(
+            ambiguous.contains("general-view") && ambiguous.contains("interconnection-view"),
+            "the error lists both kinds: {ambiguous}"
+        );
+        assert!(
+            ambiguous.contains("--kind"),
+            "the error names the flag: {ambiguous}"
+        );
+        assert!(
+            !ambiguous.contains("--document"),
+            "both entries are in one document: {ambiguous}"
+        );
+
+        assert_eq!(run(Some("general-view"), None).unwrap(), "general-view");
+        assert_eq!(
+            run(Some("interconnection-view"), Some("model.sysml")).unwrap(),
+            "interconnection-view",
+            "the second kind is projected as that kind, not as the first"
+        );
+        let mismatch = run(Some("general-view"), Some("other.sysml"))
+            .expect_err("no view matches that document");
+        assert!(
+            mismatch.contains("no `Garage::both` view matches"),
+            "{mismatch}"
         );
     });
 }

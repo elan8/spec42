@@ -120,6 +120,14 @@ pub struct DiagramArgs {
     /// of the model are listed.
     #[arg(long = "view")]
     pub view: Option<String>,
+    /// With `--view`: the view kind to render (`general-view`, `interconnection-view`, ...), for a
+    /// view typed by more than one view definition. Listed with the views.
+    #[arg(long = "kind", requires = "view")]
+    pub kind: Option<String>,
+    /// With `--view`: the document declaring the view, as listed (its URI) or as a path suffix
+    /// such as `views/Views.sysml`, for a qualified name declared in more than one document.
+    #[arg(long = "document", requires = "view")]
+    pub document: Option<String>,
     /// `svg` renders the view; `json` writes its diagram product (schema 5), or lists the views
     /// as JSON when no view is given.
     #[arg(long = "format", value_enum, default_value_t = DiagramFormat::Svg)]
@@ -423,6 +431,10 @@ mod tests {
             "model",
             "--view",
             "Shop::fulfilment",
+            "--kind",
+            "action-flow-view",
+            "--document",
+            "Views.sysml",
             "--format",
             "json",
             "-o",
@@ -432,11 +444,17 @@ mod tests {
             Some(Command::Diagram(args)) => {
                 assert_eq!(args.path, PathBuf::from("model"));
                 assert_eq!(args.view.as_deref(), Some("Shop::fulfilment"));
+                assert_eq!(args.kind.as_deref(), Some("action-flow-view"));
+                assert_eq!(args.document.as_deref(), Some("Views.sysml"));
                 assert_eq!(args.format, DiagramFormat::Json);
                 assert_eq!(args.output, Some(PathBuf::from("out.json")));
             }
             other => panic!("expected diagram command, got {other:?}"),
         }
+        assert!(
+            Cli::try_parse_from(["spec42", "diagram", "model", "--kind", "general-view"]).is_err(),
+            "--kind selects among the views named by --view"
+        );
         match Cli::parse_from(["spec42", "diagram", "model"]).command {
             Some(Command::Diagram(args)) => {
                 assert_eq!(args.view, None);

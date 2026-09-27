@@ -454,7 +454,28 @@ impl PublishedResolution {
             .query_outcome(QueryAnswer::Resolved(catalog.into_boxed_slice()))
     }
 
+    /// The projection of `view` as its first catalogued kind. A view typed by more than one
+    /// standard view definition has one catalog entry per kind; `diagram_view_of_kind` projects a
+    /// chosen one.
     pub fn diagram_view(&self, view: SymbolId) -> QueryOutcome<DiagramViewProjection> {
+        self.project_diagram_view(view, None)
+    }
+
+    /// The projection of `view` as the catalogued `kind`: `Unresolved` if `view` is not
+    /// catalogued with that kind.
+    pub fn diagram_view_of_kind(
+        &self,
+        view: SymbolId,
+        kind: DiagramViewKind,
+    ) -> QueryOutcome<DiagramViewProjection> {
+        self.project_diagram_view(view, Some(kind))
+    }
+
+    fn project_diagram_view(
+        &self,
+        view: SymbolId,
+        kind: Option<DiagramViewKind>,
+    ) -> QueryOutcome<DiagramViewProjection> {
         let catalog = match self.diagram_view_catalog().answer {
             QueryAnswer::Resolved(value) => value,
             QueryAnswer::Ambiguous(_) => {
@@ -471,7 +492,7 @@ impl PublishedResolution {
         };
         let Some(view_entry) = catalog
             .iter()
-            .find(|entry| entry.semantic_id == view)
+            .find(|entry| entry.semantic_id == view && kind.is_none_or(|kind| entry.kind == kind))
             .cloned()
         else {
             return self.model.query_outcome(QueryAnswer::Unresolved);

@@ -2,6 +2,7 @@
 //! projection normalized by `diagram_product` and drawn by `diagram_draw`, the same path the LSP
 //! serves to the editor.
 
+use std::collections::BTreeSet;
 use std::fs;
 use std::process::ExitCode;
 use std::sync::Arc;
@@ -42,7 +43,14 @@ pub fn run_diagram(cli: &Cli, args: &DiagramArgs) -> Result<ExitCode, String> {
     let output = match &args.view {
         None => list_views(&views, args.format)?,
         Some(view) => {
-            let summary = select_view(&views, view)?;
+            let summary = select_view(
+                &views,
+                &Selection {
+                    qualified_name: view,
+                    kind: args.kind.as_deref(),
+                    document: args.document.as_deref(),
+                },
+            )?;
             let projection = model
                 .diagram_view(&summary.handle)
                 .map_err(|error| format!("`{view}` could not be projected: {error}"))?;
@@ -101,30 +109,88 @@ fn list_views(views: &[DiagramViewSummary], format: DiagramFormat) -> Result<Str
     }
 }
 
+/// What `--view`, `--kind` and `--document` ask for.
+struct Selection<'a> {
+    qualified_name: &'a str,
+    kind: Option<&'a str>,
+    document: Option<&'a str>,
+}
+
+/// Whether `document` (as given on the command line) names the view's document `uri`: the listed
+/// URI itself, or a path suffix of it on a `/` boundary.
+fn document_matches(uri: &str, document: &str) -> bool {
+    let document = document.replace('\\', "/");
+    let document = document.trim_start_matches("./");
+    uri == document || uri.ends_with(&format!("/{document}"))
+}
+
 fn select_view<'a>(
     views: &'a [DiagramViewSummary],
-    requested: &str,
+    selection: &Selection,
 ) -> Result<&'a DiagramViewSummary, String> {
-    let matches: Vec<&DiagramViewSummary> = views
+    let requested = selection.qualified_name;
+    let named: Vec<&DiagramViewSummary> = views
         .iter()
         .filter(|view| qualified_name(view) == requested)
         .collect();
-    match matches.as_slice() {
-        [view] => Ok(view),
-        [] => {
-            let available: Vec<String> = views.iter().map(qualified_name).collect();
-            Err(if available.is_empty() {
-                format!("`{requested}` is not a diagram view: the model has no diagram views")
-            } else {
+    if named.is_empty() {
+        let available: Vec<String> = views.iter().map(qualified_name).collect();
+        return Err(if available.is_empty() {
+            format!("`{requested}` is not a diagram view: the model has no diagram views")
+        } else {
+            format!(
+                "`{requested}` is not a diagram view; available views: {}",
+                available.join(", ")
+            )
+        });
+    }
+    let matches: Vec<&DiagramViewSummary> = named
+        .iter()
+        .copied()
+        .filter(|view| {
+            selection
+                .kind
+                .is_none_or(|kind| diagram_product::kind_id(view.kind) == kind)
+                && selection
+                    .document
+                    .is_none_or(|document| document_matches(&view.source.uri, document))
+        })
+        .collect();
+    let describe = |views: &[&DiagramViewSummary]| {
+        views
+            .iter()
+            .map(|view| {
                 format!(
-                    "`{requested}` is not a diagram view; available views: {}",
-                    available.join(", ")
+                    "{} in {}",
+                    diagram_product::kind_id(view.kind),
+                    view.source.uri
                 )
             })
-        }
-        _ => Err(format!(
-            "`{requested}` names {} diagram views in different documents",
-            matches.len()
+            .collect::<Vec<_>>()
+            .join("; ")
+    };
+    match matches.as_slice() {
+        [view] => Ok(view),
+        [] => Err(format!(
+            "no `{requested}` view matches the given --kind/--document; `{requested}` is: {}",
+            describe(&named)
         )),
+        several => {
+            let kinds: BTreeSet<_> = several
+                .iter()
+                .map(|view| diagram_product::kind_id(view.kind))
+                .collect();
+            let documents: BTreeSet<_> = several.iter().map(|view| &view.source.uri).collect();
+            let hint = match (kinds.len() > 1, documents.len() > 1) {
+                (true, true) => "--kind and --document",
+                (true, false) => "--kind",
+                _ => "--document",
+            };
+            Err(format!(
+                "`{requested}` names {} diagram views ({}); select one with {hint}",
+                several.len(),
+                describe(several)
+            ))
+        }
     }
 }

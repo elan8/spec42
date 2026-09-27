@@ -335,6 +335,14 @@ impl GeneratorService {
             )
             .map_err(|error| error.to_string())?,
         );
+        // A catalog handle is valid only on the model view that minted it, and this cache may
+        // evict and rebuild the view of a publication that is still current. Handles are
+        // deterministic per publication, so minting both catalogs on every view keeps a handle
+        // from `spec42/diagramViews` or `spec42/stateTransitionViews` valid for the whole
+        // publication. A catalog that cannot be listed mints nothing and reports its error when
+        // requested.
+        let _ = model.diagram_views();
+        let _ = model.state_transition_views();
         let mut models = self
             .models
             .lock()
@@ -664,6 +672,44 @@ mod tests {
             .diagram(publication, &view.handle, Some("blake3:stale"))
             .expect_err("a stale catalog selection must not project");
         assert!(stale.contains("publication changed"));
+    }
+
+    #[test]
+    fn a_catalog_handle_survives_eviction_of_its_model_view() {
+        let service = GeneratorService::new();
+        let publication = state_transition_publication();
+        let catalog = service
+            .diagram_views(Arc::clone(&publication))
+            .expect("diagram catalog");
+        let handle = catalog.views[0].handle.clone();
+        // Other publications push the one the handle came from out of the model cache.
+        for ordinal in 0..MAX_MODEL_VIEWS {
+            let other = sysml_query::Services::new()
+                .publication
+                .publish(
+                    &[SourceService::new()
+                        .admit(
+                            &format!("file:///lsp-generator-tests/other{ordinal}.sysml"),
+                            format!("package Other{ordinal};\n"),
+                            SourceKind::Workspace,
+                        )
+                        .expect("uri")],
+                    [],
+                )
+                .expect("published model");
+            service.diagram_views(other).expect("catalog");
+        }
+        let cached = service.models.lock().unwrap();
+        assert!(
+            !cached.contains_key(&publication.publication().model_digest()),
+            "the handle's model view was evicted"
+        );
+        drop(cached);
+
+        let diagram = service
+            .diagram(publication, &handle, Some(&catalog.model_digest))
+            .expect("the handle stays valid for its still-current publication");
+        assert_eq!(diagram.model_digest, catalog.model_digest);
     }
 
     #[test]
