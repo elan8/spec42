@@ -6,7 +6,8 @@
 
 use sysml_v2_parser::ast::{
     PackageBody, PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody,
-    PartUsageBodyElement, PortDefBody, PortDefBodyElement, RootElement,
+    PartUsageBodyElement, PortDefBody, PortDefBodyElement, RootElement, ViewBody, ViewBodyElement,
+    ViewDefBody, ViewDefBodyElement,
 };
 
 fn braced_extent(range: SyntaxRange, braced: bool) -> Option<SyntaxRange> {
@@ -283,6 +284,73 @@ fn sanitize_identifier(s: &str) -> String {
     s.chars()
         .filter(|c| c.is_alphanumeric() || *c == '_')
         .collect()
+}
+
+fn outline_view_def(
+    document: &sysml_v2_parser::ParsedDocument,
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::ViewDef>,
+) -> Option<SyntaxOutlineNode> {
+    let name = identification_name(document, &node.identification);
+    if name.is_empty() {
+        return None;
+    }
+    let range = node_range(document, &node.span);
+    let children = match &node.body {
+        ViewDefBody::Brace { elements, .. } => elements
+            .iter()
+            .filter_map(|member| match &member.value {
+                ViewDefBodyElement::ViewUsage(view) => Some(outline_view_usage(document, view)),
+                _ => None,
+            })
+            .collect(),
+        ViewDefBody::Semicolon { .. } => vec![],
+    };
+    let (head_range, body_range) = split_body(document, &node.body, range);
+    Some(SyntaxOutlineNode {
+        name,
+        short_name: declaration_name_text(document, node.identification.short_name),
+        kind: SyntaxOutlineKind::ViewDef,
+        typed_by: super::closure_targets::typing_target_display(
+            document,
+            node.specializes.as_deref(),
+        ),
+        range,
+        selection_range: range,
+        head_range,
+        body_range,
+        has_case_subject: false,
+        children,
+    })
+}
+
+fn outline_view_usage(
+    document: &sysml_v2_parser::ParsedDocument,
+    node: &sysml_v2_parser::Node<sysml_v2_parser::ast::ViewUsage>,
+) -> SyntaxOutlineNode {
+    let range = node_range(document, &node.span);
+    let children = match &node.body {
+        ViewBody::Brace { elements, .. } => elements
+            .iter()
+            .filter_map(|member| match &member.value {
+                ViewBodyElement::ViewUsage(view) => Some(outline_view_usage(document, view)),
+                _ => None,
+            })
+            .collect(),
+        ViewBody::Semicolon { .. } => vec![],
+    };
+    let (head_range, body_range) = split_body(document, &node.body, range);
+    SyntaxOutlineNode {
+        name: declaration_name_text(document, node.name).unwrap_or_default(),
+        short_name: declaration_name_text(document, node.short_name),
+        kind: SyntaxOutlineKind::ViewUsage,
+        typed_by: super::closure_targets::typing_target_display(document, node.typing.as_deref()),
+        range,
+        selection_range: range,
+        head_range,
+        body_range,
+        has_case_subject: false,
+        children,
+    }
 }
 
 fn outline_symbol_from_element(
@@ -605,21 +673,7 @@ fn outline_symbol_from_element(
             selection_range: range,
             ..SyntaxOutlineNode::bare(range)
         }),
-        PBE::ViewDef(p) => {
-            let name = identification_name(document, &p.identification);
-            if name.is_empty() {
-                return None;
-            }
-            Some(SyntaxOutlineNode {
-                name,
-                short_name: declaration_name_text(document, p.identification.short_name),
-                kind: SyntaxOutlineKind::ViewDef,
-                range,
-                selection_range: range,
-                children: vec![],
-                ..SyntaxOutlineNode::bare(range)
-            })
-        }
+        PBE::ViewDef(p) => outline_view_def(document, p),
         PBE::ViewpointDef(p) => {
             let name = identification_name(document, &p.identification);
             if name.is_empty() {
@@ -650,14 +704,7 @@ fn outline_symbol_from_element(
                 ..SyntaxOutlineNode::bare(range)
             })
         }
-        PBE::ViewUsage(p) => Some(SyntaxOutlineNode {
-            name: declaration_name_text(document, p.name).unwrap_or_default(),
-            kind: SyntaxOutlineKind::ViewUsage,
-            range,
-            selection_range: range,
-            children: vec![],
-            ..SyntaxOutlineNode::bare(range)
-        }),
+        PBE::ViewUsage(p) => Some(outline_view_usage(document, p)),
         PBE::ViewpointUsage(p) => Some(SyntaxOutlineNode {
             name: declaration_name_text(document, Some(p.name)).unwrap_or_default(),
             kind: SyntaxOutlineKind::ViewpointUsage,

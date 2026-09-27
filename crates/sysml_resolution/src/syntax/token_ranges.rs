@@ -15,7 +15,8 @@ use sysml_v2_parser::ast::{
     PackageBodyElement, PartDefBody, PartDefBodyElement, PartUsageBody, PartUsageBodyElement,
     PayloadClause, PortBody, PortBodyElement, PortDefBody, PortDefBodyElement, RequirementDefBody,
     RequirementDefBodyElement, RootElement, StateDefBody, StateDefBodyElement, StateUsage,
-    ThenStmt, Transition, TransitionAccept,
+    ThenStmt, Transition, TransitionAccept, ViewBody, ViewBodyElement, ViewDefBody,
+    ViewDefBodyElement, ViewUsage,
 };
 use sysml_v2_parser::{ParsedDocument, QualifiedReferenceId};
 
@@ -85,6 +86,58 @@ impl<'a> RangeCtx<'a> {
         self.document
             .qualified_reference(reference?)
             .map(|view| view.authored_text())
+    }
+}
+
+/// Mark every authored view typing target at its arena-backed source span.
+fn push_view_typing_ranges(
+    ctx: &RangeCtx<'_>,
+    relationship: Option<&sysml_v2_parser::ast::TypingRelationship>,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    if let Some(relationship) = relationship {
+        for target in &relationship.target {
+            if let Some(reference) = ctx.document.qualified_reference(*target) {
+                out.push((
+                    span_to_source_range(&reference.metadata.span),
+                    SyntaxRole::Type,
+                ));
+            }
+        }
+    }
+}
+
+fn collect_semantic_ranges_view_def(
+    ctx: &RangeCtx<'_>,
+    node: &Node<sysml_v2_parser::ast::ViewDef>,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    push_identification_definition_spans(&node.identification, None, SyntaxRole::Namespace, out);
+    push_view_typing_ranges(ctx, node.specializes.as_deref(), out);
+    if let ViewDefBody::Brace { elements, .. } = &node.body {
+        for member in elements {
+            if let ViewDefBodyElement::ViewUsage(view) = &member.value {
+                collect_semantic_ranges_view_usage(ctx, view, out);
+            }
+        }
+    }
+}
+
+fn collect_semantic_ranges_view_usage(
+    ctx: &RangeCtx<'_>,
+    node: &Node<ViewUsage>,
+    out: &mut Vec<(SyntaxRange, SyntaxRole)>,
+) {
+    if let Some(name) = node.name {
+        out.push((span_to_source_range(name.span()), SyntaxRole::Property));
+    }
+    push_view_typing_ranges(ctx, node.typing.as_deref(), out);
+    if let ViewBody::Brace { elements, .. } = &node.body {
+        for member in elements {
+            if let ViewBodyElement::ViewUsage(view) = &member.value {
+                collect_semantic_ranges_view_usage(ctx, view, out);
+            }
+        }
     }
 }
 
@@ -318,14 +371,7 @@ fn collect_semantic_ranges_package_body_element(
                 out,
             );
         }
-        PBE::ViewDef(vd_node) => {
-            push_identification_definition_spans(
-                &vd_node.value.identification,
-                None,
-                SyntaxRole::Namespace,
-                out,
-            );
-        }
+        PBE::ViewDef(vd_node) => collect_semantic_ranges_view_def(ctx, vd_node, out),
         PBE::ViewpointDef(vpd_node) => {
             push_identification_definition_spans(
                 &vpd_node.value.identification,
@@ -342,16 +388,7 @@ fn collect_semantic_ranges_package_body_element(
                 out,
             );
         }
-        PBE::ViewUsage(vu_node) => {
-            push_usage_name_type_spans(
-                ctx.source,
-                &vu_node.span,
-                vu_node.value.name,
-                ctx.typing_text(vu_node.value.typing.as_deref()),
-                None,
-                out,
-            );
-        }
+        PBE::ViewUsage(vu_node) => collect_semantic_ranges_view_usage(ctx, vu_node, out),
         PBE::ViewpointUsage(vpu_node) => {
             push_usage_name_type_spans(
                 ctx.source,
