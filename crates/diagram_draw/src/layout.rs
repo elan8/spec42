@@ -34,7 +34,9 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
                 BehaviorMode::Action
             };
             let behavior_layout = if view == "action-flow-view" {
-                if let Some(compact) = layout_simple_action_chain(prepared) {
+                if let Some(nested) = layout_nested_action_flow(prepared, horizontal)? {
+                    nested
+                } else if let Some(compact) = layout_simple_action_chain(prepared) {
                     compact
                 } else {
                     layout_behavior_graph(prepared, horizontal, mode)?
@@ -770,6 +772,12 @@ fn node_kind(node: &Value) -> String {
 }
 
 fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
+    // A container sized by the layout of its own content.
+    if let [width, height] = as_array(field(field(node, "attributes"), "layoutSize")) {
+        if let (Some(width), Some(height)) = (width.as_f64(), height.as_f64()) {
+            return (width, height);
+        }
+    }
     let kind = node_kind(node);
     match mode {
         BehaviorMode::State => {
@@ -797,6 +805,224 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
             }
         }
     }
+}
+
+/// Space inside an action container: the name compartment on top, then padding around the flow.
+pub(crate) const ACTION_CONTAINER_HEADER: f64 = 44.0;
+const ACTION_CONTAINER_PADDING: f64 = 28.0;
+
+/// The laid-out content of one action flow level, relative to its own origin.
+struct ActionFlowLevel {
+    positions: Map<String, Value>,
+    sections: Map<String, Value>,
+    labels: Map<String, Value>,
+    /// Extent of the content, `(min_x, min_y, max_x, max_y)`.
+    bounds: (f64, f64, f64, f64),
+}
+
+/// An action flow in which some actions own other actions (`attributes.containerId`). Each such
+/// action is a container holding its own action flow: every level is laid out on its own, innermost
+/// first, and a container is then sized to fit its content. A succession or flow is routed at the
+/// level where both ends are; one that crosses a container boundary gets the renderer's fallback
+/// route. Returns `None` when no action contains another.
+fn layout_nested_action_flow(
+    prepared: &Value,
+    horizontal: bool,
+) -> Result<Option<Value>, diagram_layout::LayoutError> {
+    let nodes = as_array(field(prepared, "nodes"));
+    let ids: HashSet<String> = nodes
+        .iter()
+        .map(|node| as_string(field(node, "id"), ""))
+        .collect();
+    let mut children: BTreeMap<String, Vec<&Value>> = BTreeMap::new();
+    let mut roots = Vec::new();
+    for node in nodes {
+        let container = as_string(field(field(node, "attributes"), "containerId"), "");
+        if !container.is_empty() && ids.contains(&container) {
+            children.entry(container).or_default().push(node);
+        } else {
+            roots.push(node);
+        }
+    }
+    if children.is_empty() {
+        return Ok(None);
+    }
+
+    fn lay_out_level(
+        prepared: &Value,
+        members: &[&Value],
+        children: &BTreeMap<String, Vec<&Value>>,
+        horizontal: bool,
+        levels: &mut BTreeMap<String, ActionFlowLevel>,
+        depth: usize,
+    ) -> Result<ActionFlowLevel, diagram_layout::LayoutError> {
+        let mut level_nodes = Vec::with_capacity(members.len());
+        for member in members {
+            let id = as_string(field(member, "id"), "");
+            let mut node = (*member).clone();
+            // `depth` bounds the recursion should `containerId` ever form a cycle.
+            if let Some(inner) = children.get(&id).filter(|_| depth <= children.len()) {
+                let content =
+                    lay_out_level(prepared, inner, children, horizontal, levels, depth + 1)?;
+                let (min_x, min_y, max_x, max_y) = content.bounds;
+                node["attributes"]["layoutSize"] = json!([
+                    (max_x - min_x) + 2.0 * ACTION_CONTAINER_PADDING,
+                    (max_y - min_y) + ACTION_CONTAINER_HEADER + 2.0 * ACTION_CONTAINER_PADDING,
+                ]);
+                levels.insert(id, content);
+            }
+            level_nodes.push(node);
+        }
+        let member_ids: HashSet<String> = members
+            .iter()
+            .map(|member| as_string(field(member, "id"), ""))
+            .collect();
+        let level_edges: Vec<Value> = as_array(field(prepared, "edges"))
+            .iter()
+            .filter(|edge| {
+                member_ids.contains(&as_string(field(edge, "source"), ""))
+                    && member_ids.contains(&as_string(field(edge, "target"), ""))
+            })
+            .cloned()
+            .collect();
+        let level = json!({
+            "title": field(prepared, "title"),
+            "view": "action-flow-view",
+            "nodes": level_nodes,
+            "edges": level_edges,
+            "meta": field(prepared, "meta"),
+        });
+        let laid_out = match layout_simple_action_chain(&level) {
+            Some(compact) => compact,
+            None if level_nodes.len() == 1 => json!({
+                "positions": {
+                    as_string(field(&level_nodes[0], "id"), ""): {
+                        "x": 0.0, "y": 0.0,
+                        "width": node_dimensions(&level_nodes[0], BehaviorMode::Action).0,
+                        "height": node_dimensions(&level_nodes[0], BehaviorMode::Action).1,
+                    }
+                },
+            }),
+            None => layout_behavior_graph(&level, horizontal, BehaviorMode::Action)?,
+        };
+        let positions = as_object(field(&laid_out, "positions"));
+        let sections = as_object(field(&laid_out, "edgeSectionsById"));
+        let labels = as_object(field(&laid_out, "edgeLabelsById"));
+        let mut bounds = (f64::MAX, f64::MAX, f64::MIN, f64::MIN);
+        let mut include = |x: f64, y: f64| {
+            bounds.0 = bounds.0.min(x);
+            bounds.1 = bounds.1.min(y);
+            bounds.2 = bounds.2.max(x);
+            bounds.3 = bounds.3.max(y);
+        };
+        for rect in positions.values() {
+            let (x, y) = (num(field(rect, "x")), num(field(rect, "y")));
+            include(x, y);
+            include(
+                x + num(field(rect, "width")),
+                y + num(field(rect, "height")),
+            );
+        }
+        for section in sections.values().flat_map(as_array) {
+            for point in [field(section, "startPoint"), field(section, "endPoint")]
+                .into_iter()
+                .chain(as_array(field(section, "bendPoints")))
+            {
+                include(num(field(point, "x")), num(field(point, "y")));
+            }
+        }
+        for label in labels.values().flat_map(as_array) {
+            let (x, y) = (num(field(label, "x")), num(field(label, "y")));
+            include(x, y);
+            include(
+                x + num(field(label, "width")),
+                y + num(field(label, "height")),
+            );
+        }
+        if bounds.0 > bounds.2 {
+            bounds = (0.0, 0.0, 0.0, 0.0);
+        }
+        Ok(ActionFlowLevel {
+            positions,
+            sections,
+            labels,
+            bounds,
+        })
+    }
+
+    /// Moves a level to `(dx, dy)` and each of its containers' content into that container.
+    fn place(
+        level: ActionFlowLevel,
+        dx: f64,
+        dy: f64,
+        levels: &mut BTreeMap<String, ActionFlowLevel>,
+        out: &mut ActionFlowLevel,
+    ) {
+        let shift = |point: &Value| json!({"x": num(field(point, "x")) + dx, "y": num(field(point, "y")) + dy});
+        for (id, sections) in level.sections {
+            let moved: Vec<Value> = as_array(&sections)
+                .iter()
+                .map(|section| {
+                    let mut moved = section.clone();
+                    moved["startPoint"] = shift(field(section, "startPoint"));
+                    moved["endPoint"] = shift(field(section, "endPoint"));
+                    moved["bendPoints"] = Value::Array(
+                        as_array(field(section, "bendPoints"))
+                            .iter()
+                            .map(shift)
+                            .collect(),
+                    );
+                    moved
+                })
+                .collect();
+            out.sections.insert(id, Value::Array(moved));
+        }
+        for (id, labels) in level.labels {
+            let moved: Vec<Value> = as_array(&labels)
+                .iter()
+                .map(|label| {
+                    let mut moved = label.clone();
+                    moved["x"] = json!(num(field(label, "x")) + dx);
+                    moved["y"] = json!(num(field(label, "y")) + dy);
+                    moved
+                })
+                .collect();
+            out.labels.insert(id, Value::Array(moved));
+        }
+        for (id, rect) in level.positions {
+            let (x, y) = (num(field(&rect, "x")) + dx, num(field(&rect, "y")) + dy);
+            if let Some(content) = levels.remove(&id) {
+                let (min_x, min_y, _, _) = content.bounds;
+                place(
+                    content,
+                    x + ACTION_CONTAINER_PADDING - min_x,
+                    y + ACTION_CONTAINER_HEADER + ACTION_CONTAINER_PADDING - min_y,
+                    levels,
+                    out,
+                );
+            }
+            let mut moved = rect;
+            moved["x"] = json!(x);
+            moved["y"] = json!(y);
+            out.positions.insert(id, moved);
+        }
+    }
+
+    let mut levels = BTreeMap::new();
+    let top = lay_out_level(prepared, &roots, &children, horizontal, &mut levels, 0)?;
+    let (min_x, min_y, _, _) = top.bounds;
+    let mut out = ActionFlowLevel {
+        positions: Map::new(),
+        sections: Map::new(),
+        labels: Map::new(),
+        bounds: (0.0, 0.0, 0.0, 0.0),
+    };
+    place(top, 80.0 - min_x, 80.0 - min_y, &mut levels, &mut out);
+    Ok(Some(json!({
+        "positions": out.positions,
+        "edgeSectionsById": out.sections,
+        "edgeLabelsById": out.labels,
+    })))
 }
 
 /// A simple authored succession chain is easier to read in short alternating rows than in a

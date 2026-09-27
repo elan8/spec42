@@ -274,11 +274,7 @@ fn draw_action_node(
                     .attr("text-anchor", "middle")
                     .style("font-size", "10px")
                     .style("fill", theme.text_secondary)
-                    .text(if is_perform {
-                        "«perform action»"
-                    } else {
-                        "«action»"
-                    }),
+                    .text(action_keyword(node, is_perform)),
             );
         } else {
             g = g.child(
@@ -331,6 +327,81 @@ fn draw_action_node(
     }
 
     g
+}
+
+/// The keyword shown in a typed action's name compartment.
+fn action_keyword(node: &PreparedNode, is_perform: bool) -> &'static str {
+    if is_perform {
+        "«perform action»"
+    } else if attr_text(&node.attributes, "notationRole") == "definition" {
+        "«action def»"
+    } else {
+        "«action»"
+    }
+}
+
+/// An action that owns other actions: its name compartment on top and, below the divider, its own
+/// action flow (drawn by the caller), as in the `action` / `action-def` notation of SysML v2
+/// 8.2.3.17.
+fn draw_action_container(
+    node: &PreparedNode,
+    layout: &crate::behavior_common::LaidOutRect,
+    theme: &Theme,
+) -> Element {
+    let is_perform = activity_node_kind(node).contains("perform");
+    Element::new("g")
+        .attr(
+            "class",
+            "activity-action action-flow-node action-flow-container",
+        )
+        .attr("data-node-id", node.id.clone())
+        .attr(
+            "transform",
+            format!("translate({},{})", n(layout.x), n(layout.y)),
+        )
+        .child(
+            Element::new("rect")
+                .attr("class", "node-background")
+                .attr("data-original-stroke", theme.node_border)
+                .attr("data-original-width", "2px")
+                .attr_f("width", layout.width)
+                .attr_f("height", layout.height)
+                .attr("rx", "12")
+                .style("fill", theme.canvas_background)
+                .style("stroke", theme.node_border)
+                .style("stroke-width", "2px")
+                .style("stroke-dasharray", if is_perform { "5,3" } else { "none" }),
+        )
+        .child(
+            Element::new("text")
+                .attr("class", "action-stereotype")
+                .attr_f("x", layout.width / 2.0)
+                .attr_f("y", 17.0)
+                .attr("text-anchor", "middle")
+                .style("font-size", "10px")
+                .style("fill", theme.text_secondary)
+                .text(action_keyword(node, is_perform)),
+        )
+        .child(
+            Element::new("text")
+                .attr_f("x", layout.width / 2.0)
+                .attr_f("y", 33.0)
+                .attr("text-anchor", "middle")
+                .style("font-size", "12px")
+                .style("font-weight", "600")
+                .style("fill", theme.text_primary)
+                .text(truncate_label(&node.label, 48)),
+        )
+        .child(
+            Element::new("line")
+                .attr("class", "action-flow-compartment-divider")
+                .attr_f("x1", 0.0)
+                .attr_f("y1", crate::layout::ACTION_CONTAINER_HEADER)
+                .attr_f("x2", layout.width)
+                .attr_f("y2", crate::layout::ACTION_CONTAINER_HEADER)
+                .style("stroke", theme.node_border)
+                .style("stroke-width", "1px"),
+        )
 }
 
 struct LaneExtent {
@@ -555,11 +626,47 @@ pub fn render_action_flow_view(
         }
     }
 
+    // Containers are drawn first, outermost first, so the flows and actions inside stay on top.
+    let container_ids: std::collections::HashSet<String> = prepared
+        .nodes
+        .iter()
+        .map(|node| attr_text(&node.attributes, "containerId"))
+        .filter(|id| nodes_by_id.contains_key(id.as_str()))
+        .collect();
+    let depth = |node: &PreparedNode| {
+        let mut depth = 0;
+        let mut current = attr_text(&node.attributes, "containerId");
+        while let Some(parent) = nodes_by_id.get(current.as_str()) {
+            depth += 1;
+            if depth > prepared.nodes.len() {
+                break;
+            }
+            current = attr_text(&parent.attributes, "containerId");
+        }
+        depth
+    };
+    let mut containers: Vec<&PreparedNode> = prepared
+        .nodes
+        .iter()
+        .filter(|node| container_ids.contains(&node.id))
+        .collect();
+    containers.sort_by_key(|node| depth(node));
+    let mut container_layer = Element::new("g").attr("class", "activity-action-containers");
+    for node in containers {
+        if let Some(position) = layout.positions.get(&node.id) {
+            container_layer = container_layer
+                .child(draw_action_container(node, position, theme).style("cursor", ""));
+        }
+    }
+
     let mut node_layer = Element::new("g").attr("class", "activity-actions");
     for node in &prepared.nodes {
         let Some(position) = layout.positions.get(&node.id) else {
             continue;
         };
+        if container_ids.contains(&node.id) {
+            continue;
+        }
         // `attachBehaviorNodeClick` runs unconditionally for every node; in headless export it
         // always resolves to `.style("cursor", "")`, kept as a literal empty declaration.
         let node_group = draw_action_node(node, position, theme).style("cursor", "");
@@ -568,6 +675,9 @@ pub fn render_action_flow_view(
 
     // `ctx.root.insert(".activity-flows")` in the TS source puts swim lanes *before* the
     // `.activity-flows` group that was already appended -- matched via `insert_before_child`.
+    if !container_ids.is_empty() {
+        root = root.child(container_layer);
+    }
     root = root.child(flow_layer);
     root = root.insert_before_child("activity-flows", lane_layer);
     root = root.child(node_layer);

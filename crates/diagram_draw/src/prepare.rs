@@ -2643,18 +2643,25 @@ fn prepare_typed_action_flow(
             Ok(index)
         })
         .collect::<Result<_, String>>()?;
+    // Every action is a vertex. An action that owns other actions is drawn as a container holding
+    // its own action flow, as in the SysML v2 graphical notation (8.2.3.17), where the body of an
+    // `action` / `action-def` node is an `action-flow-view`.
     let action_indexes: HashSet<usize> = member_indexes.into_iter().collect();
-    let parent_actions: HashSet<usize> = action_indexes
-        .iter()
-        .filter_map(|index| field(&raw_nodes[*index], "owner").as_u64())
-        .map(|index| index as usize)
-        .filter(|index| action_indexes.contains(index))
-        .collect();
-    let visible_indexes: HashSet<usize> = action_indexes
-        .difference(&parent_actions)
-        .copied()
-        .collect();
-    let mut ordered_indexes: Vec<usize> = visible_indexes.iter().copied().collect();
+    let container_of = |index: usize| -> Option<usize> {
+        let mut current = index;
+        for _ in 0..raw_nodes.len() {
+            let owner = field(&raw_nodes[current], "owner").as_u64()? as usize;
+            if owner >= raw_nodes.len() {
+                return None;
+            }
+            if action_indexes.contains(&owner) {
+                return Some(owner);
+            }
+            current = owner;
+        }
+        None
+    };
+    let mut ordered_indexes: Vec<usize> = action_indexes.iter().copied().collect();
     ordered_indexes.sort_unstable();
     let nodes: Vec<Value> = ordered_indexes
         .iter()
@@ -2674,6 +2681,7 @@ fn prepare_typed_action_flow(
                     "semanticReference": semantic_reference,
                     "notationRole": field(element, "notationRole"),
                     "owner": field(element, "owner"),
+                    "containerId": container_of(index).map(|owner| format!("n:{owner}")),
                 },
             })
         })
@@ -2688,7 +2696,7 @@ fn prepare_typed_action_flow(
             }
             let source = field(edge, "source").as_u64()? as usize;
             let target = field(edge, "target").as_u64()? as usize;
-            if !visible_indexes.contains(&source) || !visible_indexes.contains(&target) {
+            if !action_indexes.contains(&source) || !action_indexes.contains(&target) {
                 return None;
             }
             Some(json!({

@@ -18,7 +18,7 @@ fn generated_diagram(snapshot: &str) -> serde_json::Value {
 }
 
 #[test]
-fn webshop_action_flow_draws_only_actions_and_successions() {
+fn webshop_action_flow_draws_actions_and_successions() {
     let payload = generated_diagram(include_str!(
         "../../../tests/snapshots/generation/diagram_webshop_action_flow.md"
     ));
@@ -26,7 +26,11 @@ fn webshop_action_flow_draws_only_actions_and_successions() {
     let prepared = &input["prepared"];
     let nodes = prepared["nodes"].as_array().expect("action nodes");
     let edges = prepared["edges"].as_array().expect("action edges");
-    assert_eq!(nodes.len(), 5, "only nested action usages are vertices");
+    assert_eq!(
+        nodes.len(),
+        6,
+        "the action definition and its action usages are vertices"
+    );
     assert_eq!(edges.len(), 4, "only authored successions connect actions");
     assert!(edges
         .iter()
@@ -35,11 +39,14 @@ fn webshop_action_flow_draws_only_actions_and_successions() {
     assert_eq!(
         svg.matches("class=\"activity-action action-flow-node")
             .count(),
-        5
+        6
     );
+    // `CheckoutPipeline` is the container holding the flow of its five actions.
+    assert_eq!(svg.matches("action-flow-container\"").count(), 1);
     assert_eq!(svg.matches("data-flow-kind=\"succession\"").count(), 4);
-    assert_eq!(svg.matches("class=\"action-stereotype\"").count(), 5);
-    assert!(svg.contains("«action»"));
+    assert_eq!(svg.matches("class=\"action-stereotype\"").count(), 6);
+    assert_eq!(svg.matches("«action»").count(), 5);
+    assert!(svg.contains("«action def»"));
     assert_eq!(svg.matches("stroke-dasharray: 7,4").count(), 4);
     assert_eq!(
         svg.matches("marker-end: url(#action-succession-arrow)")
@@ -61,6 +68,101 @@ fn webshop_action_flow_draws_only_actions_and_successions() {
         (0.9..=2.2).contains(&aspect),
         "action flow aspect: {aspect}"
     );
+}
+
+#[test]
+fn composite_action_is_a_container_holding_its_own_flow() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_composite_action_flow.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("typed action flow lays out");
+    let prepared = &input["prepared"];
+    let label_of = |id: &serde_json::Value| {
+        prepared["nodes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|node| &node["id"] == id)
+            .map(|node| node["label"].as_str().unwrap().to_string())
+            .unwrap()
+    };
+    let mut containment: Vec<(String, String)> = prepared["nodes"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|node| {
+            let container = &node["attributes"]["containerId"];
+            let container = if container.is_null() {
+                "-".to_string()
+            } else {
+                label_of(container)
+            };
+            (node["label"].as_str().unwrap().to_string(), container)
+        })
+        .collect();
+    containment.sort();
+    assert_eq!(
+        containment,
+        [
+            ("Fulfil", "-"),
+            ("order", "Fulfil"),
+            ("pack", "order"),
+            ("pick", "order"),
+            ("ship", "Fulfil"),
+        ]
+        .map(|(node, container)| (node.to_string(), container.to_string()))
+    );
+    let mut successions: Vec<(String, String)> = prepared["edges"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|edge| (label_of(&edge["source"]), label_of(&edge["target"])))
+        .collect();
+    successions.sort();
+    assert_eq!(
+        successions,
+        [("order", "ship"), ("pick", "pack")]
+            .map(|(source, target)| (source.to_string(), target.to_string()))
+    );
+
+    // Every action lies inside the action that owns it, below that action's name compartment.
+    let positions = &input["behaviorLayout"]["positions"];
+    let id_of = |label: &str| {
+        prepared["nodes"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|node| node["label"] == label)
+            .map(|node| node["id"].as_str().unwrap().to_string())
+            .unwrap()
+    };
+    let rect = |label: &str| {
+        let rect = &positions[id_of(label)];
+        let [x, y, w, h] = ["x", "y", "width", "height"].map(|key| rect[key].as_f64().unwrap());
+        (x, y, x + w, y + h)
+    };
+    for (inner, outer) in [
+        ("order", "Fulfil"),
+        ("ship", "Fulfil"),
+        ("pick", "order"),
+        ("pack", "order"),
+    ] {
+        let (inner, outer) = (rect(inner), rect(outer));
+        assert!(
+            inner.0 > outer.0 && inner.1 > outer.1 + 40.0 && inner.2 < outer.2 && inner.3 < outer.3,
+            "{inner:?} is not inside {outer:?}"
+        );
+    }
+    let (pick, pack, ship) = (rect("pick"), rect("pack"), rect("ship"));
+    assert!(pick.2 <= pack.0 || pack.2 <= pick.0 || pick.3 <= pack.1 || pack.3 <= pick.1);
+    let order = rect("order");
+    assert!(order.2 <= ship.0 || ship.2 <= order.0 || order.3 <= ship.1 || ship.3 <= order.1);
+
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw action flow");
+    assert_eq!(svg.matches("action-flow-container\"").count(), 2);
+    assert_eq!(svg.matches("data-flow-kind=\"succession\"").count(), 2);
+    assert!(svg.contains("«action def»"));
+    assert_eq!(svg.matches("«action»").count(), 4);
 }
 
 #[test]
