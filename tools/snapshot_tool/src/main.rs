@@ -325,6 +325,7 @@ struct SemanticExpectations {
     element_derived_documentation: Vec<ElementDerivedDocumentationExpectation>,
     namespace_derived_elements: Vec<NamespaceDerivedElementExpectation>,
     namespace_import_derived_elements: Vec<NamespaceImportDerivedElementExpectation>,
+    view_exposed_elements: Vec<ViewExposedElementExpectation>,
     binding_connector_checks: Vec<BindingConnectorCheckExpectation>,
     redefinition_checks: Vec<RedefinitionCheckExpectation>,
     specialization_checks: Vec<SpecializationCheckExpectation>,
@@ -937,6 +938,13 @@ struct NamespaceImportDerivedElementExpectation {
     target: Option<String>,
     provenance: Option<RelationshipProvenance>,
     outcome: SemanticRelationshipOutcome,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct ViewExposedElementExpectation {
+    source: String,
+    target: Option<String>,
+    outcome: NamespaceDerivedElementOutcome,
 }
 
 /// An exact named BindingConnector check selected by the manifest-owned query family.
@@ -3270,6 +3278,7 @@ fn parse_expected_semantics_with_manifest(
     let mut element_derived_documentation = Vec::new();
     let mut namespace_derived_elements = Vec::new();
     let mut namespace_import_derived_elements = Vec::new();
+    let mut view_exposed_elements = Vec::new();
     let mut binding_connector_checks = Vec::new();
     let mut redefinition_checks = Vec::new();
     let mut specialization_checks = Vec::new();
@@ -3316,6 +3325,9 @@ fn parse_expected_semantics_with_manifest(
             "namespace-import-derived-element" => namespace_import_derived_elements.push(
                 parse_namespace_import_derived_element_expectation(item, fallback_name, manifest)?,
             ),
+            "view-exposed-element" => view_exposed_elements.push(
+                parse_view_exposed_element_expectation(item, fallback_name, manifest)?,
+            ),
             "binding-connector-check" => binding_connector_checks.push(
                 parse_binding_connector_check_expectation(item, fallback_name, manifest)?,
             ),
@@ -3346,6 +3358,7 @@ fn parse_expected_semantics_with_manifest(
         && element_derived_documentation.is_empty()
         && namespace_derived_elements.is_empty()
         && namespace_import_derived_elements.is_empty()
+        && view_exposed_elements.is_empty()
         && binding_connector_checks.is_empty()
         && redefinition_checks.is_empty()
         && specialization_checks.is_empty()
@@ -3367,6 +3380,7 @@ fn parse_expected_semantics_with_manifest(
         element_derived_documentation,
         namespace_derived_elements,
         namespace_import_derived_elements,
+        view_exposed_elements,
         binding_connector_checks,
         redefinition_checks,
         specialization_checks,
@@ -4264,6 +4278,75 @@ fn parse_namespace_import_derived_element_expectation(
     })
 }
 
+fn parse_view_exposed_element_expectation(
+    expression: &AuthoredSexpr,
+    fallback_name: &str,
+    manifest: Option<&ConstraintManifest>,
+) -> Result<ViewExposedElementExpectation, String> {
+    let AuthoredSexpr::List(items) = expression else {
+        return Err(format!(
+            "{fallback_name}: View exposed-element expectation must be a list"
+        ));
+    };
+    let fields = parse_semantic_assertion_fields(
+        &items[1..],
+        &["rule_id", "source", "target", "outcome"],
+        "semantic View exposed element",
+        fallback_name,
+    )?;
+    let rule_id = fields.get("rule_id").ok_or_else(|| {
+        format!("{fallback_name}: semantic View exposed element requires rule_id")
+    })?;
+    let entry = manifest
+        .ok_or_else(|| {
+            format!("{fallback_name}: semantic View exposed element requires a loaded manifest")
+        })?
+        .find_rule(rule_id)
+        .ok_or_else(|| {
+            format!(
+                "{fallback_name}: semantic View exposed element rule_id {rule_id:?} is absent from the manifest"
+            )
+        })?;
+    if entry.metaclass != "ViewUsage" || entry.constraint != "deriveViewUsageExposedElement" {
+        return Err(format!(
+            "{fallback_name}: semantic View exposed element rule_id {rule_id:?} does not select deriveViewUsageExposedElement"
+        ));
+    }
+    let source = fields
+        .get("source")
+        .filter(|value| !value.is_empty())
+        .cloned()
+        .ok_or_else(|| format!("{fallback_name}: semantic View exposed element requires source"))?;
+    let outcome = NamespaceDerivedElementOutcome::parse(
+        fields.get("outcome").ok_or_else(|| {
+            format!("{fallback_name}: semantic View exposed element requires outcome")
+        })?,
+        fallback_name,
+    )?;
+    let target = fields.get("target").cloned();
+    match outcome {
+        NamespaceDerivedElementOutcome::Resolved if target.as_deref().is_none_or(str::is_empty) => {
+            return Err(format!(
+                "{fallback_name}: resolved semantic View exposed element requires target"
+            ));
+        }
+        NamespaceDerivedElementOutcome::Incomplete
+        | NamespaceDerivedElementOutcome::Unsupported
+            if target.is_some() =>
+        {
+            return Err(format!(
+                "{fallback_name}: {outcome:?} semantic View exposed element must not declare target"
+            ));
+        }
+        _ => {}
+    }
+    Ok(ViewExposedElementExpectation {
+        source,
+        target,
+        outcome,
+    })
+}
+
 fn parse_binding_connector_check_expectation(
     expression: &AuthoredSexpr,
     fallback_name: &str,
@@ -4577,6 +4660,7 @@ struct SemanticExpectationObservations {
     element_derived_documentation: Vec<ElementDerivedDocumentationObservation>,
     namespace_derived_elements: Vec<NamespaceDerivedElementObservation>,
     namespace_import_derived_elements: Vec<SemanticRelationshipObservation>,
+    view_exposed_elements: Vec<NamespaceDerivedElementObservation>,
     binding_connector_checks: Vec<BindingConnectorCheckObservation>,
     redefinition_checks: Vec<RedefinitionCheckObservation>,
     specialization_checks: Vec<SpecializationCheckObservation>,
@@ -4729,6 +4813,11 @@ fn observe_semantic_expectations(
             .namespace_import_derived_elements
             .iter()
             .map(|expectation| observe_namespace_import_derived_element(model, expectation))
+            .collect::<Result<_, _>>()?,
+        view_exposed_elements: expectations
+            .view_exposed_elements
+            .iter()
+            .map(|expectation| observe_view_exposed_element(model, expectation))
             .collect::<Result<_, _>>()?,
         binding_connector_checks: expectations
             .binding_connector_checks
@@ -5246,6 +5335,46 @@ fn observe_namespace_import_derived_element(
     )
 }
 
+fn observe_view_exposed_element(
+    model: &PublishedModel,
+    expectation: &ViewExposedElementExpectation,
+) -> Result<NamespaceDerivedElementObservation, String> {
+    let source = match resolve_semantic_identity(model, &expectation.source) {
+        Ok(source) => source,
+        Err(SemanticIdentityStatus::Incomplete) => {
+            return Ok(NamespaceDerivedElementObservation::Incomplete)
+        }
+        Err(status) => return Err(format!("source reference is {}", status.description())),
+    };
+    let exposed = match snapshot_answer(model.inspection().exposed_elements(source)) {
+        QueryAnswer::Resolved(exposed) => exposed,
+        QueryAnswer::Incomplete => return Ok(NamespaceDerivedElementObservation::Incomplete),
+        QueryAnswer::Unsupported => return Ok(NamespaceDerivedElementObservation::Unsupported),
+        QueryAnswer::Unresolved => {
+            return Err("View exposed-element query is unresolved".to_string())
+        }
+        QueryAnswer::Ambiguous(_) => {
+            return Err("View exposed-element query is ambiguous".to_string())
+        }
+        QueryAnswer::Recovery => return Err("View exposed-element query is recovery".to_string()),
+    };
+    if !exposed.obstacles.is_empty() {
+        return Ok(NamespaceDerivedElementObservation::Incomplete);
+    }
+    let expected = expectation
+        .target
+        .as_deref()
+        .map(|target| {
+            resolve_semantic_identity(model, target)
+                .map_err(|status| format!("target reference is {}", status.description()))
+        })
+        .transpose()?;
+    Ok(NamespaceDerivedElementObservation::Values {
+        values: exposed.elements,
+        expected,
+    })
+}
+
 fn observe_binding_connector_check(
     model: &PublishedModel,
     expectation: &BindingConnectorCheckExpectation,
@@ -5479,6 +5608,13 @@ fn compare_semantic_expectations(
         )?;
     }
     for (expectation, observation) in expectations
+        .view_exposed_elements
+        .iter()
+        .zip(&observations.view_exposed_elements)
+    {
+        compare_view_exposed_element_observation(expectation, observation)?;
+    }
+    for (expectation, observation) in expectations
         .binding_connector_checks
         .iter()
         .zip(&observations.binding_connector_checks)
@@ -5667,6 +5803,47 @@ fn compare_namespace_derived_element_observation(
         ) if values.iter().any(|actual| actual == expected) => Ok(()),
         _ => Err(format!(
             "semantic Namespace element expectation for {} did not match its typed outcome",
+            expectation.source
+        )),
+    }
+}
+
+fn compare_view_exposed_element_observation(
+    expectation: &ViewExposedElementExpectation,
+    observation: &NamespaceDerivedElementObservation,
+) -> Result<(), String> {
+    match (expectation.outcome, observation) {
+        (
+            NamespaceDerivedElementOutcome::Incomplete,
+            NamespaceDerivedElementObservation::Incomplete,
+        )
+        | (
+            NamespaceDerivedElementOutcome::Unsupported,
+            NamespaceDerivedElementObservation::Unsupported,
+        ) => Ok(()),
+        (
+            NamespaceDerivedElementOutcome::Absent,
+            NamespaceDerivedElementObservation::Values {
+                values,
+                expected: None,
+            },
+        ) if values.is_empty() => Ok(()),
+        (
+            NamespaceDerivedElementOutcome::Absent,
+            NamespaceDerivedElementObservation::Values {
+                values,
+                expected: Some(expected),
+            },
+        ) if !values.iter().any(|actual| actual == expected) => Ok(()),
+        (
+            NamespaceDerivedElementOutcome::Resolved,
+            NamespaceDerivedElementObservation::Values {
+                values,
+                expected: Some(expected),
+            },
+        ) if values.iter().any(|actual| actual == expected) => Ok(()),
+        _ => Err(format!(
+            "semantic View exposed-element expectation for {} did not match its typed outcome",
             expectation.source
         )),
     }
@@ -8171,6 +8348,7 @@ mod tests {
                 element_derived_documentation: Vec::new(),
                 namespace_derived_elements: Vec::new(),
                 namespace_import_derived_elements: Vec::new(),
+                view_exposed_elements: Vec::new(),
                 binding_connector_checks: Vec::new(),
                 redefinition_checks: Vec::new(),
                 specialization_checks: Vec::new(),

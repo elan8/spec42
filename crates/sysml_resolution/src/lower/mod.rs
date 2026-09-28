@@ -2039,8 +2039,9 @@ impl SemanticModelBuilder {
     /// Lowers a view body's `expose <target>;` member.
     ///
     /// Mirrors [`Self::lower_import`]'s shape -- the production carries the same `ImportTarget` --
-    /// minus the import facts: an expose selects what a view shows rather than bringing names into
-    /// a scope, so its target is an ordinary authored reference with no import conformance.
+    /// while retaining the shape on the authored reference. An expose selects what a view shows
+    /// rather than bringing names into a scope, so it has no import-conformance facts, but its
+    /// membership / namespace / filtered shape is required by `ViewUsage::exposedElement`.
     pub(crate) fn lower_expose(
         &mut self,
         document: DocumentIdx,
@@ -2061,15 +2062,32 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
-        // The target is an ordinary authored reference. What a `::*` or `::**` suffix would
-        // *expand* to is not a fact this publication holds -- there is no published expose
-        // expansion -- so the reference states what the author named and nothing more.
+        let flags = match &node.value.target.shape {
+            ImportShape::Membership { recursive_suffix } => RelationshipFlags {
+                recursive: recursive_suffix.is_some(),
+                ..RelationshipFlags::default()
+            },
+            ImportShape::Namespace {
+                recursive_suffix, ..
+            } => RelationshipFlags {
+                recursive: recursive_suffix.is_some(),
+                wildcard: true,
+                ..RelationshipFlags::default()
+            },
+            ImportShape::Filter {
+                recursive_suffix, ..
+            } => RelationshipFlags {
+                recursive: recursive_suffix.is_some(),
+                filtered: true,
+                ..RelationshipFlags::default()
+            },
+        };
         self.push_reference(PendingReference {
             source: declaration,
             kind: ReferenceKind::ViewExpose,
             document,
             local: node.value.target.reference,
-            flags: RelationshipFlags::default(),
+            flags,
             span: node.value.target.span,
             import: None,
         })?;

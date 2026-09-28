@@ -3,8 +3,8 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use crate::{
     ElementDetails, ElementKind, ElementSearch, ElementSource, FeatureDirection,
     PublishedResolution, QueryAnswer, QueryOutcome, RelationshipOutcome, RelationshipProvenance,
-    RelationshipTarget, SourceLocation, SymbolEntry, SymbolId, ViewSelectionObstacle,
-    ViewSelectionOutcome,
+    RelationshipTarget, SourceLocation, SymbolEntry, SymbolId, ViewExposureObstacle,
+    ViewSelectionObstacle, ViewSelectionOutcome,
 };
 
 pub use sysml_contract::{
@@ -503,57 +503,41 @@ impl PublishedResolution {
             .diagram_entries_for(ElementSource::Workspace)
             .into_keys()
             .collect::<BTreeSet<_>>();
-        let mut roots = BTreeSet::new();
         let mut reasons = BTreeSet::new();
-        for expose in all
-            .values()
-            .filter(|entry| entry.owner == Some(view) && entry.kind == ElementKind::Expose)
-        {
-            match self.inspect(expose.identity).answer {
-                QueryAnswer::Resolved(inspection) => {
-                    for relationship in inspection
-                        .relationships
-                        .iter()
-                        .filter(|relationship| relationship.kind == "viewExpose")
-                    {
-                        match &relationship.target {
-                            RelationshipTarget::Resolved(target) => {
-                                roots.insert(*target);
-                            }
-                            RelationshipTarget::Ambiguous(_) => {
-                                reasons.insert(DiagramIncompleteReason::ExposureAmbiguous {
-                                    exposure: expose.identity,
-                                });
-                            }
-                            RelationshipTarget::Unresolved => {
-                                reasons.insert(DiagramIncompleteReason::ExposureUnresolved {
-                                    exposure: expose.identity,
-                                });
-                            }
-                            RelationshipTarget::Unsupported => {
-                                reasons.insert(DiagramIncompleteReason::ExposureUnsupported {
-                                    exposure: expose.identity,
-                                });
-                            }
-                        }
-                    }
-                }
-                QueryAnswer::Unresolved => {
-                    reasons.insert(DiagramIncompleteReason::ExposureUnresolved {
-                        exposure: expose.identity,
-                    });
-                }
-                QueryAnswer::Ambiguous(_) => {
-                    reasons.insert(DiagramIncompleteReason::ExposureAmbiguous {
-                        exposure: expose.identity,
-                    });
-                }
-                _ => {
-                    reasons.insert(DiagramIncompleteReason::ExposureUnsupported {
-                        exposure: expose.identity,
-                    });
-                }
+        let exposed = match self.view_exposed_elements(view).answer {
+            QueryAnswer::Resolved(exposed) => exposed,
+            QueryAnswer::Ambiguous(_) => {
+                return self
+                    .model
+                    .query_outcome(QueryAnswer::Ambiguous(Box::new([])));
             }
+            QueryAnswer::Unsupported => return self.model.query_outcome(QueryAnswer::Unsupported),
+            QueryAnswer::Unresolved => return self.model.query_outcome(QueryAnswer::Unresolved),
+            QueryAnswer::Recovery => return self.model.query_outcome(QueryAnswer::Recovery),
+            QueryAnswer::Incomplete => return self.model.query_outcome(QueryAnswer::Incomplete),
+        };
+        let roots = exposed.elements.iter().copied().collect::<BTreeSet<_>>();
+        for obstacle in exposed.obstacles {
+            reasons.insert(match obstacle {
+                ViewExposureObstacle::ExposureUnresolved { exposure } => {
+                    DiagramIncompleteReason::ExposureUnresolved { exposure }
+                }
+                ViewExposureObstacle::ExposureAmbiguous { exposure, .. } => {
+                    DiagramIncompleteReason::ExposureAmbiguous { exposure }
+                }
+                ViewExposureObstacle::ExposureUnsupported { exposure } => {
+                    DiagramIncompleteReason::ExposureUnsupported { exposure }
+                }
+                ViewExposureObstacle::FilterUnresolved { .. } => {
+                    DiagramIncompleteReason::ViewFilterUnresolved
+                }
+                ViewExposureObstacle::FilterAmbiguous { .. } => {
+                    DiagramIncompleteReason::ViewFilterAmbiguous
+                }
+                ViewExposureObstacle::FilterUnsupported { .. } => {
+                    DiagramIncompleteReason::ViewFilterUnsupported
+                }
+            });
         }
 
         let mut direct_children = BTreeMap::<SymbolId, Vec<SymbolId>>::new();
@@ -575,9 +559,6 @@ impl PublishedResolution {
         >::new();
         let mut queue = VecDeque::new();
         for root in &roots {
-            if !self.diagram_candidate_selected(view, *root, &mut reasons) {
-                continue;
-            }
             // The scene id of an occurrence is published text, so the boundary token is taken
             // here, once, where the publication is in hand.
             let Some(token) = self.symbol_token(*root) else {

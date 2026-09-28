@@ -330,6 +330,24 @@ The runner obtains the import identity only from `PublishedModel::namespace_impo
 it never gives an anonymous import a made-up display name. `target` outcome and provenance use the
 same closed relationship contract as other semantic assertions.
 
+`deriveViewUsageExposedElement` uses `view-exposed-element`. The query is available for every view
+usage, including views that are not typed by a standard diagram view definition. A resolved
+assertion requires that the named target occurs in the canonical, filtered exposed-element set;
+an `absent` assertion with a target requires that it does not occur. `absent` without a target
+requires an empty set. `incomplete` asserts that the query retained at least one typed expose or
+filter obstacle:
+
+```sexpr
+(view-exposed-element
+  (rule_id "sysml-2.0:8.3.26.11:deriveViewUsageExposedElement")
+  (source "Model::requirements")
+  (target "Model::Requirements::Mass")
+  (outcome resolved))
+```
+
+Namespace exposes expand public imported memberships. Results are deduplicated and ordered by
+canonical symbol identity before the view's effective filter conditions are applied.
+
 `outcome` is one of `resolved`, `unresolved`, `ambiguous`, `unsupported`, `absent`, or
 `incomplete`; no outcome is inferred from diagnostic text. A typed blocker whose diagnostic or
 semantic expectation starts passing is `stale` and fails, requiring `blocked_by` and eventually

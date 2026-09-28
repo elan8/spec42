@@ -65,6 +65,7 @@ pub use sysml_source as source;
 mod traceability;
 mod type_query;
 mod verification;
+mod view_query;
 
 pub use action_query::{
     ActionArgumentId, ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
@@ -151,6 +152,7 @@ pub use type_query::{
     TypeReference,
 };
 pub use verification::{RequirementVerification, VerificationOutcome, VerificationRequirement};
+pub use view_query::{ViewExposedElements, ViewExposureObstacle};
 
 use model::resolver::ResolvedSemanticModel;
 use pipeline::schedule::BuildSchedule;
@@ -1196,6 +1198,11 @@ impl PublishedResolution {
         candidate: SymbolId,
     ) -> QueryOutcome<ViewSelection> {
         self.model.view_selection(view, candidate)
+    }
+
+    /// The elements exposed by any view usage after namespace expansion and effective filters.
+    pub fn view_exposed_elements(&self, view: SymbolId) -> QueryOutcome<ViewExposedElements> {
+        self.model.view_exposed_elements(view)
     }
 
     /// The types a feature declares.
