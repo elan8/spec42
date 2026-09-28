@@ -9,3 +9,4 @@ description = "The schema-5 diagram product: a typed diagram view projection nor
 spec42-generator-protocol = { path = "../generator_protocol" }
 serde = { workspace = true }
 serde_json = { workspace = true }
+ts-rs = { workspace = true }

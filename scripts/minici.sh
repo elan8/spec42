@@ -110,6 +110,7 @@ if wants lint; then
   node scripts/generate-textual-syntax-inventory.mjs --check
   node scripts/sync-generator-abi.mjs --check
   node scripts/sync-docs-meta.mjs --check
+  cargo run -p diagram_product --bin diagram_bindings -- --check
 
   abi_manifest="$(mktemp "${TMPDIR:-/tmp}/spec42-generator-abi.XXXXXX")"
   trap 'rm -f "$abi_manifest"' EXIT

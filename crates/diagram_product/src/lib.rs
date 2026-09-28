@@ -6,6 +6,8 @@
 //! This is the single implementation of the product format. Spec42's LSP (`spec42/diagram`), CLI
 //! (`spec42 diagram`) and snapshot tool call it directly.
 
+pub mod wire;
+
 use std::collections::BTreeMap;
 
 use serde::Serialize;
@@ -134,6 +136,11 @@ pub fn diagram_product_json(projection: &model::DiagramViewProjection) -> Result
     let mut contents = serde_json::to_vec_pretty(&product)
         .map_err(|error| format!("could not serialize diagram product: {error}"))?;
     contents.push(b'\n');
+    let published: wire::DiagramProduct = serde_json::from_slice(&contents)
+        .map_err(|error| format!("diagram product violates schema-5 wire contract: {error}"))?;
+    if published.schema_version != SCHEMA_VERSION {
+        return Err("diagram product has an unexpected schema version".to_owned());
+    }
     Ok(contents)
 }
 
