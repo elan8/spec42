@@ -401,4 +401,46 @@ mod tests {
             .fold(0.0_f64, f64::max);
         assert!(longest_overlap <= 1e-6);
     }
+
+    #[test]
+    fn leaves_routes_without_coincident_segments_unchanged() {
+        let mut routes = vec![
+            ConnectorRoute {
+                id: "horizontal".into(),
+                source_port_id: "shared.p".into(),
+                target_port_id: "right.p".into(),
+                points: vec![Point { x: 0.0, y: 0.0 }, Point { x: 80.0, y: 0.0 }],
+            },
+            ConnectorRoute {
+                id: "vertical".into(),
+                source_port_id: "shared.p".into(),
+                target_port_id: "bottom.p".into(),
+                points: vec![Point { x: 0.0, y: 0.0 }, Point { x: 0.0, y: 80.0 }],
+            },
+        ];
+        let original: Vec<Vec<(f64, f64)>> = routes
+            .iter()
+            .map(|route| {
+                route
+                    .points
+                    .iter()
+                    .map(|point| (point.x, point.y))
+                    .collect()
+            })
+            .collect();
+
+        separate_shared_connector_routes(&mut routes);
+
+        let actual: Vec<Vec<(f64, f64)>> = routes
+            .iter()
+            .map(|route| {
+                route
+                    .points
+                    .iter()
+                    .map(|point| (point.x, point.y))
+                    .collect()
+            })
+            .collect();
+        assert_eq!(actual, original);
+    }
 }
