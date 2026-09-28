@@ -301,6 +301,91 @@ fn interconnection_golden_payload() -> serde_json::Value {
     })
 }
 
+fn shared_port_interconnection_payload() -> serde_json::Value {
+    json!({
+        "version": 1,
+        "view": "interconnection-view",
+        "selectedViewName": "Shared ports",
+        "interconnectionScene": {
+            "schemaVersion": 3,
+            "view": { "id": "v", "name": "Shared ports", "type": "InterconnectionView", "rootIds": ["a", "b", "c"] },
+            "nodes": [
+                { "id": "a", "name": "a", "kind": "part", "qualifiedName": "a", "semanticId": "a", "definitionId": "Box", "typeName": "Box" },
+                { "id": "b", "name": "b", "kind": "part", "qualifiedName": "b", "semanticId": "b", "definitionId": "Box", "typeName": "Box" },
+                { "id": "c", "name": "c", "kind": "part", "qualifiedName": "c", "semanticId": "c", "definitionId": "Box", "typeName": "Box" }
+            ],
+            "ports": [
+                { "id": "a.p", "ownerNodeId": "a", "name": "p", "direction": "inout", "typeName": "Data", "sideHint": "east" },
+                { "id": "b.p", "ownerNodeId": "b", "name": "p", "direction": "inout", "typeName": "Data", "sideHint": "west" },
+                { "id": "c.p", "ownerNodeId": "c", "name": "p", "direction": "inout", "typeName": "Data", "sideHint": "west" }
+            ],
+            "edges": [
+                { "id": "a-b", "sourceNodeId": "a", "targetNodeId": "b", "sourcePortId": "a.p", "targetPortId": "b.p", "kind": "connection", "label": "", "semanticId": "a-b" },
+                { "id": "a-c", "sourceNodeId": "a", "targetNodeId": "c", "sourcePortId": "a.p", "targetPortId": "c.p", "kind": "connection", "label": "namedUntyped", "semanticId": "a-c" },
+                { "id": "b-c", "sourceNodeId": "b", "targetNodeId": "c", "sourcePortId": "b.p", "targetPortId": "c.p", "kind": "interface", "label": "DataLink", "semanticId": "b-c" }
+            ],
+            "containers": [],
+            "diagnostics": []
+        }
+    })
+}
+
+fn collinear_overlap(
+    a: (&serde_json::Value, &serde_json::Value),
+    b: (&serde_json::Value, &serde_json::Value),
+) -> f64 {
+    let point =
+        |value: &serde_json::Value| (value["x"].as_f64().unwrap(), value["y"].as_f64().unwrap());
+    let (a0, a1, b0, b1) = (point(a.0), point(a.1), point(b.0), point(b.1));
+    if a0.1 == a1.1 && b0.1 == b1.1 && a0.1 == b0.1 {
+        return a0.0.max(a1.0).min(b0.0.max(b1.0)) - a0.0.min(a1.0).max(b0.0.min(b1.0));
+    }
+    if a0.0 == a1.0 && b0.0 == b1.0 && a0.0 == b0.0 {
+        return a0.1.max(a1.1).min(b0.1.max(b1.1)) - a0.1.min(a1.1).max(b0.1.min(b1.1));
+    }
+    0.0
+}
+
+#[test]
+fn connectors_sharing_ports_keep_individual_nonterminal_routes() {
+    let input = draw_input_from_payload(&shared_port_interconnection_payload())
+        .expect("shared-port interconnection lays out");
+    let edges = input["interconnectionLayout"]["edges"]
+        .as_array()
+        .expect("laid out connectors");
+    assert_eq!(edges.len(), 3);
+
+    for (left_index, left) in edges.iter().enumerate() {
+        let left_points = left["routePoints"].as_array().expect("left route");
+        for right in edges.iter().skip(left_index + 1) {
+            let right_points = right["routePoints"].as_array().expect("right route");
+            for (left_segment, left_pair) in left_points.windows(2).enumerate() {
+                for (right_segment, right_pair) in right_points.windows(2).enumerate() {
+                    let overlap = collinear_overlap(
+                        (&left_pair[0], &left_pair[1]),
+                        (&right_pair[0], &right_pair[1]),
+                    );
+                    let left_terminal = left_segment == 0 || left_segment + 2 == left_points.len();
+                    let right_terminal =
+                        right_segment == 0 || right_segment + 2 == right_points.len();
+                    assert!(
+                        overlap <= 16.001,
+                        "connectors {} and {} share more than the short port stub ({overlap}): {left_points:?} / {right_points:?}",
+                        left["id"],
+                        right["id"]
+                    );
+                    assert!(
+                        overlap <= 0.001 || (left_terminal && right_terminal),
+                        "connectors {} and {} overlap away from a port: {left_points:?} / {right_points:?}",
+                        left["id"],
+                        right["id"]
+                    );
+                }
+            }
+        }
+    }
+}
+
 fn schema5_sequence_payload() -> serde_json::Value {
     json!({
         "schemaVersion": 5,

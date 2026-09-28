@@ -4,6 +4,18 @@ use std::collections::HashMap;
 
 use crate::types::{attr_str, EdgeSection, LaidOutEdge, LaidOutNode, Point};
 
+const CONNECTOR_LANE_SPACING: f64 = 4.0;
+const CONNECTOR_PORT_STUB: f64 = 16.0;
+
+/// A resolved connector route ready for the presentation-only lane separation pass.
+#[derive(Debug, Clone)]
+pub struct ConnectorRoute {
+    pub id: String,
+    pub source_port_id: String,
+    pub target_port_id: String,
+    pub points: Vec<Point>,
+}
+
 /// Port of `pruneRoutePoints`: dedupes adjacent points and collapses runs of 3+ collinear
 /// (axis-aligned) points down to their endpoints.
 pub fn prune_route_points(points: &[Point]) -> Vec<Point> {
@@ -28,6 +40,156 @@ pub fn prune_route_points(points: &[Point]) -> Vec<Point> {
         }
     }
     pruned
+}
+
+fn segment_overlap(a0: Point, a1: Point, b0: Point, b1: Point) -> f64 {
+    if (a0.y - a1.y).abs() < 1e-6 && (b0.y - b1.y).abs() < 1e-6 && (a0.y - b0.y).abs() < 1e-6 {
+        return a0.x.max(a1.x).min(b0.x.max(b1.x)) - a0.x.min(a1.x).max(b0.x.min(b1.x));
+    }
+    if (a0.x - a1.x).abs() < 1e-6 && (b0.x - b1.x).abs() < 1e-6 && (a0.x - b0.x).abs() < 1e-6 {
+        return a0.y.max(a1.y).min(b0.y.max(b1.y)) - a0.y.min(a1.y).max(b0.y.min(b1.y));
+    }
+    0.0
+}
+
+fn routes_share_segment(left: &[Point], right: &[Point]) -> bool {
+    left.windows(2).any(|a| {
+        right
+            .windows(2)
+            .any(|b| segment_overlap(a[0], a[1], b[0], b[1]) > 1e-6)
+    })
+}
+
+fn routes_share_port(left: &ConnectorRoute, right: &ConnectorRoute) -> bool {
+    let left_ports = [&left.source_port_id, &left.target_port_id];
+    let right_ports = [&right.source_port_id, &right.target_port_id];
+    left_ports
+        .iter()
+        .any(|port| !port.is_empty() && right_ports.contains(port))
+}
+
+fn shifted(point: Point, horizontal: bool, offset: f64) -> Point {
+    if horizontal {
+        Point {
+            x: point.x,
+            y: point.y + offset,
+        }
+    } else {
+        Point {
+            x: point.x + offset,
+            y: point.y,
+        }
+    }
+}
+
+fn point_towards(start: Point, end: Point, distance: f64) -> Point {
+    let length = (end.x - start.x).abs() + (end.y - start.y).abs();
+    if length < 1e-6 {
+        return start;
+    }
+    let ratio = distance.min(length) / length;
+    Point {
+        x: start.x + (end.x - start.x) * ratio,
+        y: start.y + (end.y - start.y) * ratio,
+    }
+}
+
+fn offset_orthogonal_route(points: &[Point], offset: f64) -> Vec<Point> {
+    let points = prune_route_points(points);
+    if points.len() < 2 || offset.abs() < 1e-6 {
+        return points;
+    }
+    if points
+        .windows(2)
+        .any(|segment| !is_orthogonal_segment(segment[0], segment[1]))
+    {
+        return points;
+    }
+
+    let first_length = (points[1].x - points[0].x).abs() + (points[1].y - points[0].y).abs();
+    let last = points.len() - 1;
+    let last_length =
+        (points[last].x - points[last - 1].x).abs() + (points[last].y - points[last - 1].y).abs();
+    let source_stub_length = CONNECTOR_PORT_STUB.min(if points.len() == 2 {
+        first_length / 3.0
+    } else {
+        first_length / 2.0
+    });
+    let target_stub_length = CONNECTOR_PORT_STUB.min(if points.len() == 2 {
+        last_length / 3.0
+    } else {
+        last_length / 2.0
+    });
+    let source_stub = point_towards(points[0], points[1], source_stub_length);
+    let target_stub = point_towards(points[last], points[last - 1], target_stub_length);
+    let first_horizontal = (points[0].y - points[1].y).abs() < 1e-6;
+    let last_horizontal = (points[last - 1].y - points[last].y).abs() < 1e-6;
+
+    let mut routed = vec![
+        points[0],
+        source_stub,
+        shifted(source_stub, first_horizontal, offset),
+    ];
+    for vertex in 1..last {
+        let previous_horizontal = (points[vertex - 1].y - points[vertex].y).abs() < 1e-6;
+        let next_horizontal = (points[vertex].y - points[vertex + 1].y).abs() < 1e-6;
+        let corner = match (previous_horizontal, next_horizontal) {
+            (true, false) => Point {
+                x: points[vertex].x + offset,
+                y: points[vertex].y + offset,
+            },
+            (false, true) => Point {
+                x: points[vertex].x + offset,
+                y: points[vertex].y + offset,
+            },
+            _ => shifted(points[vertex], previous_horizontal, offset),
+        };
+        routed.push(corner);
+    }
+    routed.extend([
+        shifted(target_stub, last_horizontal, offset),
+        target_stub,
+        points[last],
+    ]);
+    prune_route_points(&routed)
+}
+
+fn find_root(parents: &mut [usize], index: usize) -> usize {
+    if parents[index] != index {
+        parents[index] = find_root(parents, parents[index]);
+    }
+    parents[index]
+}
+
+/// Turns ELK's shared hyperedge centerlines into stable parallel connector lanes while keeping
+/// the exact port endpoints and a short common stub at each port.
+pub fn separate_shared_connector_routes(routes: &mut [ConnectorRoute]) {
+    let mut parents: Vec<usize> = (0..routes.len()).collect();
+    for left in 0..routes.len() {
+        for right in (left + 1)..routes.len() {
+            if routes_share_port(&routes[left], &routes[right])
+                || routes_share_segment(&routes[left].points, &routes[right].points)
+            {
+                let left_root = find_root(&mut parents, left);
+                let right_root = find_root(&mut parents, right);
+                parents[right_root] = left_root;
+            }
+        }
+    }
+
+    let mut groups: HashMap<usize, Vec<usize>> = HashMap::new();
+    for index in 0..routes.len() {
+        let root = find_root(&mut parents, index);
+        groups.entry(root).or_default().push(index);
+    }
+    for mut group in groups.into_values().filter(|group| group.len() > 1) {
+        group.sort_by(|left, right| routes[*left].id.cmp(&routes[*right].id));
+        let center = (group.len() - 1) as f64 / 2.0;
+        for (rank, index) in group.into_iter().enumerate() {
+            let offset = (rank as f64 - center) * CONNECTOR_LANE_SPACING;
+            routes[index].points = offset_orthogonal_route(&routes[index].points, offset);
+        }
+    }
 }
 
 fn container_chain(node: &LaidOutNode, nodes_by_id: &HashMap<String, LaidOutNode>) -> Vec<String> {
@@ -233,4 +395,56 @@ pub fn resolve_ibd_route_points(edge: &LaidOutEdge) -> Option<Vec<Point>> {
 
     let best_points = best_points?;
     Some(snap_route_endpoints(best_points, source_port, target_port))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn route(id: &str) -> ConnectorRoute {
+        ConnectorRoute {
+            id: id.into(),
+            source_port_id: "source.p".into(),
+            target_port_id: format!("{id}.p"),
+            points: vec![
+                Point { x: 0.0, y: 0.0 },
+                Point { x: 60.0, y: 0.0 },
+                Point { x: 60.0, y: 40.0 },
+                Point { x: 120.0, y: 40.0 },
+            ],
+        }
+    }
+
+    #[test]
+    fn separates_shared_routes_into_deterministic_parallel_lanes() {
+        let mut routes = vec![route("b"), route("a")];
+        separate_shared_connector_routes(&mut routes);
+
+        for route in &routes {
+            assert!(same_point(route.points[0], Point { x: 0.0, y: 0.0 }));
+            assert!(same_point(
+                *route.points.last().unwrap(),
+                Point { x: 120.0, y: 40.0 }
+            ));
+            assert!(route
+                .points
+                .windows(2)
+                .all(|segment| is_orthogonal_segment(segment[0], segment[1])));
+        }
+
+        let a = routes.iter().find(|route| route.id == "a").unwrap();
+        let b = routes.iter().find(|route| route.id == "b").unwrap();
+        assert!(a.points.iter().any(|point| (point.y + 2.0).abs() < 1e-6));
+        assert!(b.points.iter().any(|point| (point.y - 2.0).abs() < 1e-6));
+        let longest_overlap = a
+            .points
+            .windows(2)
+            .flat_map(|left| {
+                b.points
+                    .windows(2)
+                    .map(move |right| segment_overlap(left[0], left[1], right[0], right[1]))
+            })
+            .fold(0.0_f64, f64::max);
+        assert!(longest_overlap <= CONNECTOR_PORT_STUB + 1e-6);
+    }
 }

@@ -9,7 +9,10 @@ use crate::graph_normalization::{
     is_connector_usage_element_type, is_overview_visual_element_type, normalize_edge_kind,
 };
 use crate::ibd_ports::{ibd_port_label_text, ibd_port_label_width};
-use crate::ibd_route::{lca_offset_for_nodes, resolve_ibd_route_points};
+use crate::ibd_route::{
+    lca_offset_for_nodes, resolve_ibd_route_points, separate_shared_connector_routes,
+    ConnectorRoute,
+};
 use crate::json_util::{as_array, as_object, as_string, field};
 use crate::sysml_node::{
     collect_compartments, compartments_to_value, compute_node_height, compute_node_width,
@@ -2194,7 +2197,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         out_edges.push(out);
     }
 
-    let layout_edges: Vec<Value> = out_edges
+    let mut connector_routes: Vec<ConnectorRoute> = out_edges
         .iter()
         .map(|edge| {
             let laid = LaidOutEdge {
@@ -2209,11 +2212,24 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
                     .unwrap_or_default(),
                 layout: serde_json::from_value(field(edge, "layout").clone()).ok(),
             };
+            let points = resolve_ibd_route_points(&laid).unwrap_or_default();
+            ConnectorRoute {
+                id: laid.id,
+                points,
+                source_port_id: attr_str(&laid.attributes, "sourcePortId").unwrap_or_default(),
+                target_port_id: attr_str(&laid.attributes, "targetPortId").unwrap_or_default(),
+            }
+        })
+        .collect();
+    separate_shared_connector_routes(&mut connector_routes);
+    let layout_edges: Vec<Value> = connector_routes
+        .into_iter()
+        .map(|route| {
             json!({
-                "id": laid.id,
-                "routePoints": resolve_ibd_route_points(&laid).unwrap_or_default(),
-                "sourcePortId": attr_str(&laid.attributes, "sourcePortId").unwrap_or_default(),
-                "targetPortId": attr_str(&laid.attributes, "targetPortId").unwrap_or_default(),
+                "id": route.id,
+                "routePoints": route.points,
+                "sourcePortId": route.source_port_id,
+                "targetPortId": route.target_port_id,
             })
         })
         .collect();
