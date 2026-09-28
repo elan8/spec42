@@ -347,7 +347,7 @@ fn collinear_overlap(
 }
 
 #[test]
-fn connectors_sharing_ports_keep_individual_nonterminal_routes() {
+fn coincident_hyperedge_routes_render_as_individual_lanes() {
     let input = draw_input_from_payload(&shared_port_interconnection_payload())
         .expect("shared-port interconnection lays out");
     let edges = input["interconnectionLayout"]["edges"]
@@ -359,24 +359,15 @@ fn connectors_sharing_ports_keep_individual_nonterminal_routes() {
         let left_points = left["routePoints"].as_array().expect("left route");
         for right in edges.iter().skip(left_index + 1) {
             let right_points = right["routePoints"].as_array().expect("right route");
-            for (left_segment, left_pair) in left_points.windows(2).enumerate() {
-                for (right_segment, right_pair) in right_points.windows(2).enumerate() {
+            for left_pair in left_points.windows(2) {
+                for right_pair in right_points.windows(2) {
                     let overlap = collinear_overlap(
                         (&left_pair[0], &left_pair[1]),
                         (&right_pair[0], &right_pair[1]),
                     );
-                    let left_terminal = left_segment == 0 || left_segment + 2 == left_points.len();
-                    let right_terminal =
-                        right_segment == 0 || right_segment + 2 == right_points.len();
                     assert!(
-                        overlap <= 16.001,
-                        "connectors {} and {} share more than the short port stub ({overlap}): {left_points:?} / {right_points:?}",
-                        left["id"],
-                        right["id"]
-                    );
-                    assert!(
-                        overlap <= 0.001 || (left_terminal && right_terminal),
-                        "connectors {} and {} overlap away from a port: {left_points:?} / {right_points:?}",
+                        overlap <= 0.001,
+                        "connectors {} and {} share a visible route segment ({overlap}): {left_points:?} / {right_points:?}",
                         left["id"],
                         right["id"]
                     );
