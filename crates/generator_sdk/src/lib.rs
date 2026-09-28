@@ -134,18 +134,19 @@ fn call_query<T: DeserializeOwned>(operation: i32, request: &impl Serialize) -> 
 
 pub mod model {
     pub use spec42_generator_protocol::{
-        DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge,
-        DiagramEdgeKind, DiagramElement, DiagramElementType, DiagramElementTyping,
-        DiagramEndpointOccurrence, DiagramIncompleteReason, DiagramNotationRole,
-        DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
-        DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference, DiagramSourceDomain,
-        DiagramViewKind, DiagramViewMetadata, DiagramViewProjection, DiagramViewSummary,
-        ElementDetail, ElementIdentity, ElementSummary, Metaclass, ModelInfo, Multiplicity,
-        ProjectionCompleteness, ProjectionFeature, Relationship, RelationshipKind,
-        RelationshipProvenance, RequirementUsageTyping, RequirementVerification, SatisfyEndpoint,
-        SatisfyPolarity, SatisfyRelationship, SequenceEndpoint, SequenceMessage, SequenceOrder,
-        SequenceScene, SourceRange, SourceReference, StateMachineIdentity, StateMachineSummary,
-        StateTransitionEdge, StateTransitionNode, StateTransitionNodeKind, StateTransitionScene,
+        DerivationEndpoint, DerivationRelationship, DiagramCompartment, DiagramCompartmentKind,
+        DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind, DiagramElement,
+        DiagramElementType, DiagramElementTyping, DiagramEndpointOccurrence,
+        DiagramIncompleteReason, DiagramNotationRole, DiagramOccurrenceIdentity,
+        DiagramRelationship, DiagramRelationshipEndpoint, DiagramRelationshipTarget, DiagramScene,
+        DiagramSemanticReference, DiagramSourceDomain, DiagramViewKind, DiagramViewMetadata,
+        DiagramViewProjection, DiagramViewSummary, ElementDetail, ElementIdentity, ElementSummary,
+        Metaclass, ModelInfo, Multiplicity, ProjectionCompleteness, ProjectionFeature,
+        Relationship, RelationshipKind, RelationshipProvenance, RequirementUsageTyping,
+        RequirementVerification, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship,
+        SequenceEndpoint, SequenceMessage, SequenceOrder, SequenceScene, SourceRange,
+        SourceReference, StateMachineIdentity, StateMachineSummary, StateTransitionEdge,
+        StateTransitionNode, StateTransitionNodeKind, StateTransitionScene,
         StateTransitionViewProjection, StateTransitionViewSummary, TransitionTrigger,
         TypingProvenance, UnsupportedReason, VerificationOutcome, VerificationRequirement,
     };
@@ -179,6 +180,10 @@ pub mod model {
 
     pub fn requirement_usage_typing(usage: &str) -> Result<RequirementUsageTyping, String> {
         call::<query::RequirementTyping>(&usage.to_owned())
+    }
+
+    pub fn derivation_relationships() -> Result<Vec<DerivationRelationship>, String> {
+        call::<query::DerivationRelationships>(&())
     }
 
     pub fn satisfy_relationships() -> Result<Vec<SatisfyRelationship>, String> {

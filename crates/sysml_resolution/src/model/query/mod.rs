@@ -93,6 +93,7 @@ use crate::traceability::BindingEndpoint;
 use crate::traceability::SatisfyEndpoint;
 use crate::traceability::SatisfyPolarity;
 use crate::traceability::SatisfyRelationship;
+use crate::traceability::{DerivationEndpoint, DerivationRelationship};
 use crate::type_query::Conformance;
 use crate::type_query::ConformanceObstacle;
 use crate::type_query::EffectiveType;
@@ -3018,6 +3019,108 @@ impl<D> SemanticModel<D> {
                     },
                     provenance: RelationshipProvenance::Authored,
                     location: self.source_location(id)?,
+                })
+            })
+            .collect::<Vec<_>>();
+        values.sort_by(|left, right| {
+            self.document_order(left.location.document, right.location.document)
+                .then_with(|| left.location.range.cmp(&right.location.range))
+                .then_with(|| left.identity.cmp(&right.identity))
+        });
+        self.resolved_outcome(values.into_boxed_slice())
+    }
+
+    /// Every workspace requirement derivation (the `RequirementDerivation` domain library): a
+    /// connection usage conforming to `DerivationConnections::Derivation` -- by `#derivation`
+    /// metadata (its `SemanticMetadata` `baseType`) or by typing -- with its ends classified by
+    /// what they specialize. Without the library in the publication there are no derivations.
+    pub(crate) fn derivation_relationships(&self) -> QueryOutcome<Box<[DerivationRelationship]>> {
+        let anchor = |name: &str| -> Option<DeclarationId> {
+            match self.resolve_qualifier_scopes(None, name).ok()?.as_slice() {
+                [declaration] => Some(*declaration),
+                _ => None,
+            }
+        };
+        let (Some(derivation), Some(original), Some(derived)) = (
+            anchor("DerivationConnections::Derivation"),
+            anchor("DerivationConnections::originalRequirements"),
+            anchor("DerivationConnections::derivedRequirements"),
+        ) else {
+            return self.resolved_outcome(Box::default());
+        };
+        let conforms = |specific: DeclarationId, general: DeclarationId| {
+            self.conformance(specific, general, SpecializationScope::AnySpecialization)
+                == Conformance::Conforms
+        };
+        let target = |target: &RelationshipTarget| match target {
+            RelationshipTarget::Resolved(symbol) => DerivationEndpoint::Resolved(*symbol),
+            RelationshipTarget::Ambiguous(candidates) => {
+                DerivationEndpoint::Ambiguous(candidates.clone())
+            }
+            RelationshipTarget::Unresolved => DerivationEndpoint::Unresolved,
+            RelationshipTarget::Unsupported => DerivationEndpoint::Unsupported,
+        };
+        let endpoint = |endpoint: &ConnectorEndpoint| match endpoint {
+            ConnectorEndpoint::Feature(value) => target(value),
+            ConnectorEndpoint::FeatureChain {
+                terminal,
+                authored,
+                path,
+                ..
+            } => path
+                .iter()
+                .map(|hop| match hop {
+                    RelationshipTarget::Resolved(symbol) => Some(*symbol),
+                    _ => None,
+                })
+                .collect::<Option<Box<[SymbolId]>>>()
+                .filter(|path| !path.is_empty())
+                .map(|path| DerivationEndpoint::FeatureChain {
+                    path,
+                    authored: authored.clone(),
+                })
+                .unwrap_or_else(|| match target(terminal) {
+                    // A chain with a failed interior hop has no settled terminal either.
+                    DerivationEndpoint::Resolved(_) => DerivationEndpoint::Unresolved,
+                    other => other,
+                }),
+            ConnectorEndpoint::Unconnected => DerivationEndpoint::Unresolved,
+        };
+        let mut values = self
+            .storage
+            .declarations
+            .iter()
+            .enumerate()
+            .filter_map(|(index, declaration)| {
+                if declaration.kind != DeclarationKind::ConnectionUsage {
+                    return None;
+                }
+                let id = DeclarationId::from_index(index).ok()?;
+                if !conforms(id, derivation) {
+                    return None;
+                }
+                let kind = connector_kind(declaration.kind)?;
+                let connector = self.project_connector(id, declaration, kind)?;
+                let (mut originals, mut deriveds, mut unclassified) =
+                    (Vec::new(), Vec::new(), Vec::new());
+                for end in connector.ends.iter() {
+                    let role = end
+                        .declaration
+                        .and_then(|symbol| self.declaration_of(symbol));
+                    let value = endpoint(&end.endpoint);
+                    match role {
+                        Some(end) if conforms(end, original) => originals.push(value),
+                        Some(end) if conforms(end, derived) => deriveds.push(value),
+                        _ => unclassified.push(value),
+                    }
+                }
+                Some(DerivationRelationship {
+                    identity: connector.identity,
+                    original: originals.into_boxed_slice(),
+                    derived: deriveds.into_boxed_slice(),
+                    unclassified: unclassified.into_boxed_slice(),
+                    provenance: RelationshipProvenance::Authored,
+                    location: connector.location,
                 })
             })
             .collect::<Vec<_>>();

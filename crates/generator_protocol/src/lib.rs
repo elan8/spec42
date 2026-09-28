@@ -650,6 +650,37 @@ pub enum SatisfyEndpoint {
     Unsupported,
 }
 
+/// The target of one end of a requirement derivation connection; the same outcome shape as
+/// [`SatisfyEndpoint`], kept distinct so a derivation end is never read as a satisfy claim.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DerivationEndpoint {
+    Resolved(ElementSummary),
+    /// A feature chain end, every hop resolved, and the authored segments `::`-joined.
+    FeatureChain {
+        path: Vec<ElementSummary>,
+        authored: String,
+    },
+    Ambiguous(Vec<ElementSummary>),
+    Unresolved,
+    Unsupported,
+}
+
+/// One requirement derivation (`RequirementDerivation` library): a connection usage that is a
+/// `DerivationConnections::Derivation`, with its ends classified by what they specialize.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DerivationRelationship {
+    pub semantic_id: String,
+    /// Original requirement ends; `Derivation` requires exactly one.
+    pub original: Vec<DerivationEndpoint>,
+    /// Derived requirement ends, in authored order.
+    pub derived: Vec<DerivationEndpoint>,
+    /// Ends that specialize neither.
+    pub unclassified: Vec<DerivationEndpoint>,
+    pub provenance: RelationshipProvenance,
+    /// Whether the publication this relationship came from is incomplete.
+    pub recovered: bool,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub enum SatisfyPolarity {
     Satisfied,
@@ -1254,7 +1285,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x70fe_02c0_7dfa_c729,
+            COMPATIBILITY_TOKEN, 0x4cfe_9910_666f_2f3c,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

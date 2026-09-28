@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Requirement derivation, and `#` prefix metadata on connections (#221, #222, #223).** Pins
+  `elan8/sysml-v2-parser` to the `ConnectionUsage` prefix migration (elan8/sysml-v2-parser#152).
+  - `#derivation`, `#original`, `#derive` (and `#multicausation`, `#cause`, `#effect`, ...) are
+    lowered as ordinary prefix metadata, whose `SemanticMetadata` `baseType` specializes the
+    annotated connection or end (a `#derivation connection def` specializes `Derivation`; an
+    `#original` end subsets `originalRequirements`). The hard-coded derivation shorthand
+    (`synthesize_derivation_shorthand`) is gone, so the metadata now resolves through
+    `RequirementDerivation` like any other: a model that uses it without importing the library
+    reports `unresolved_reference`, and ends keep their authored name (`end #original r1 : Req1`).
+  - A `#derivation connection` (or any prefixed connection) inside a part usage body is modelled
+    instead of reported as `unsupported_part_usage_member` (#221).
+  - A `def`-less `connection d { end … }` is a `ConnectionUsage`, not a `ConnectionDefinition`
+    (#222). Connection usages carry their full prefix, typing, multiplicity, `nonunique` and
+    specialization clauses; standard-library connection features (`Connections::connections`,
+    `DerivationConnections::derivations`, ...) are usages too, so a connector now implicitly
+    *subsets* `connections` instead of being typed by it.
+  - New `derivation_relationships()` query (`sysml_query`, `generator_api`, generator protocol
+    operation `DerivationRelationships`): each `DerivationConnections::Derivation` connection
+    usage with its `original`, `derived` and `unclassified` ends, with the same outcome shape as
+    satisfy ends, including feature chains (#223). The generator compatibility token moves.
+
 - **A feature-chain satisfying element resolves (#213).** `satisfy R by a.b` names a feature chain
   (SysML v2 8.2.2.21.2), and the chain as a whole is the satisfying feature (8.3.21.10). It used to
   publish `SatisfyEndpoint::Unsupported`; it now publishes `SatisfyEndpoint::FeatureChain` with the

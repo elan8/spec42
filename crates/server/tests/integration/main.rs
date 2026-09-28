@@ -8,6 +8,7 @@ mod robot_vacuum_fixture;
 
 mod cli_ai_tools;
 mod cli_bundle;
+mod derivation_relationships;
 mod diagram_smoke;
 mod examples_are_clean;
 mod generator_cli;

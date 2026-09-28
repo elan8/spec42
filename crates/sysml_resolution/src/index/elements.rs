@@ -317,18 +317,9 @@ impl<D> SemanticModel<D> {
         // The settled identifier range, not a text scan: the publication no longer owns the source
         // this used to re-read. A named declaration whose identifier the barrier could not settle
         // has no location, exactly as the failed search had none; only an unnamed one falls back to
-        // its whole span. A `#original` / `#derive` end is named for the standard feature it
-        // redefines, and that name is not an authored identifier, so its span is the location.
+        // its whole span.
         let range = match declaration.name {
-            Some(_) => self.documents.declaration_identifier(id).or_else(|| {
-                self.storage
-                    .declaration_facts(id)
-                    .is_some_and(|facts| facts.derivation_end.is_some())
-                    .then(|| {
-                        document_range(&self.storage, declaration.document, &declaration.span).ok()
-                    })
-                    .flatten()
-            })?,
+            Some(_) => self.documents.declaration_identifier(id)?,
             None => document_range(&self.storage, declaration.document, &declaration.span).ok()?,
         };
         Some(SourceLocation {

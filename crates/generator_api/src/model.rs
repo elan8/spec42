@@ -140,6 +140,31 @@ pub enum SatisfyEndpointSummary {
     Unsupported,
 }
 
+/// The target of one requirement derivation end; see
+/// `sysml_query::resolved_slice::DerivationEndpoint`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DerivationEndpointSummary {
+    Resolved(ElementSummary),
+    FeatureChain {
+        path: Vec<ElementSummary>,
+        authored: String,
+    },
+    Ambiguous(Vec<ElementSummary>),
+    Unresolved,
+    Unsupported,
+}
+
+/// One requirement derivation connection with its classified ends.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DerivationRelationshipSummary {
+    pub semantic_id: String,
+    pub original: Vec<DerivationEndpointSummary>,
+    pub derived: Vec<DerivationEndpointSummary>,
+    pub unclassified: Vec<DerivationEndpointSummary>,
+    pub provenance: TypingProvenanceSummary,
+    pub recovered: bool,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum SatisfyPolaritySummary {
     Satisfied,
@@ -519,6 +544,86 @@ impl GeneratorModelView {
                 .cmp(b.kind.as_str())
                 .then_with(|| summary_order(&a.target, &b.target))
         });
+        self.enforce_limit(values.len())?;
+        Ok(values)
+    }
+
+    /// Workspace requirement derivations (`RequirementDerivation` library) with their ends
+    /// classified as original, derived or unclassified.
+    pub fn derivation_relationships(
+        &self,
+    ) -> Result<Vec<DerivationRelationshipSummary>, ModelQueryError> {
+        use sysml_query::resolved_slice::{DerivationEndpoint as OwnedEndpoint, QueryAnswer};
+        let query = self.model.inspection().derivation_relationships();
+        let recovered = !query.completeness.is_complete();
+        let relationships = match query.answer {
+            QueryAnswer::Resolved(values) => values,
+            QueryAnswer::Unsupported => {
+                return Err(ModelQueryError::Unsupported(
+                    "derivation relationships".into(),
+                ))
+            }
+            QueryAnswer::Unresolved => {
+                return Err(ModelQueryError::Unresolved(
+                    "derivation relationships".into(),
+                ))
+            }
+            QueryAnswer::Ambiguous(_) => {
+                return Err(ModelQueryError::Ambiguous(
+                    "derivation relationships".into(),
+                ))
+            }
+            QueryAnswer::Recovery => {
+                return Err(ModelQueryError::Unresolved(
+                    "derivation relationships are in parser recovery".into(),
+                ))
+            }
+            QueryAnswer::Incomplete => return Err(ModelQueryError::Incomplete),
+        };
+        let endpoint =
+            |value: &OwnedEndpoint| -> Result<DerivationEndpointSummary, ModelQueryError> {
+                Ok(match value {
+                    OwnedEndpoint::Resolved(identity) => {
+                        DerivationEndpointSummary::Resolved(self.summary(identity)?)
+                    }
+                    OwnedEndpoint::FeatureChain { path, authored } => {
+                        DerivationEndpointSummary::FeatureChain {
+                            path: path
+                                .iter()
+                                .map(|hop| self.summary(hop))
+                                .collect::<Result<Vec<_>, _>>()?,
+                            authored: authored.to_string(),
+                        }
+                    }
+                    OwnedEndpoint::Ambiguous(values) => DerivationEndpointSummary::Ambiguous(
+                        values
+                            .iter()
+                            .map(|value| self.summary(value))
+                            .collect::<Result<Vec<_>, _>>()?,
+                    ),
+                    OwnedEndpoint::Unresolved => DerivationEndpointSummary::Unresolved,
+                    OwnedEndpoint::Unsupported => DerivationEndpointSummary::Unsupported,
+                })
+            };
+        let ends = |values: &[OwnedEndpoint]| -> Result<Vec<_>, ModelQueryError> {
+            values.iter().map(endpoint).collect()
+        };
+        let values = relationships
+            .iter()
+            .map(|relationship| {
+                Ok(DerivationRelationshipSummary {
+                    semantic_id: self.token(relationship.identity),
+                    original: ends(&relationship.original)?,
+                    derived: ends(&relationship.derived)?,
+                    unclassified: ends(&relationship.unclassified)?,
+                    provenance: match relationship.provenance {
+                        RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
+                        RelationshipProvenance::Implied => TypingProvenanceSummary::Implied,
+                    },
+                    recovered,
+                })
+            })
+            .collect::<Result<Vec<_>, ModelQueryError>>()?;
         self.enforce_limit(values.len())?;
         Ok(values)
     }

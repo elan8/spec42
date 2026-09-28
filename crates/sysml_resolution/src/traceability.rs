@@ -38,6 +38,43 @@ pub struct SatisfyRelationship {
     pub location: SourceLocation,
 }
 
+/// The settled target of one end of a requirement derivation connection.
+///
+/// The same outcome shape as [`SatisfyEndpoint`], kept a distinct type (as [`BindingEndpoint`]
+/// is) so a derivation end cannot be mistaken for a satisfy claim.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DerivationEndpoint {
+    Resolved(SymbolId),
+    /// A feature chain end (`end #derive ::> spec.engineMass`), every hop resolved, in order.
+    FeatureChain {
+        path: Box<[SymbolId]>,
+        /// The authored segments, `::`-joined like every published authored path.
+        authored: Box<str>,
+    },
+    Ambiguous(Box<[SymbolId]>),
+    Unresolved,
+    Unsupported,
+}
+
+/// One requirement derivation (the `RequirementDerivation` domain library): a connection usage
+/// that is a `DerivationConnections::Derivation`, whether by `#derivation` metadata or by
+/// typing. Its ends are classified by what they specialize: `original` ends conform to
+/// `DerivationConnections::originalRequirements`, `derived` ends to `derivedRequirements`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DerivationRelationship {
+    /// The derivation connection usage. Distinct connections stay distinct.
+    pub identity: SymbolId,
+    /// The original requirement ends. `Derivation` requires exactly one; more or none is a
+    /// modelling error the consumer can see here.
+    pub original: Box<[DerivationEndpoint]>,
+    /// The derived requirement ends, in authored order (`Derivation` requires at least one).
+    pub derived: Box<[DerivationEndpoint]>,
+    /// Ends that specialize neither, e.g. a bare positional end: reported, not dropped.
+    pub unclassified: Box<[DerivationEndpoint]>,
+    pub provenance: RelationshipProvenance,
+    pub location: SourceLocation,
+}
+
 /// The settled target of one directional end of an authored binding connector.
 ///
 /// This is deliberately separate from [`SatisfyEndpoint`]. A binding connector is an equality
