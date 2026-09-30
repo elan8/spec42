@@ -4380,7 +4380,7 @@
       "images": [
         "subsetting.svg"
       ],
-      "status": "unsupported",
+      "status": "supported",
       "syntax": "subsetting =",
       "occurrences": 1
     },

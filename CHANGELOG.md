@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Formatter layout converges when a protected line ends in extra carriage returns.**
+  A line that begins inside an unrestricted name, string, or block comment is copied
+  verbatim. The line splitter removed only one trailing `\r`, so the next pass treated
+  another as a CRLF ending and `format(format(text))` never settled. Nightly
+  `sysml_formatter` fuzzing failed on that input
+  ([run 36654784316](https://github.com/elan8/spec42/actions/runs/36654784316)).
+
+- **Wasmtime 48.0.3.** `generator_host` was on 47.0.4, which is affected by
+  [RUSTSEC-2026-0315](https://rustsec.org/advisories/RUSTSEC-2026-0315) and
+  [RUSTSEC-2026-0316](https://rustsec.org/advisories/RUSTSEC-2026-0316). 48.0.3 is in
+  the patched range for both, so the nightly full-tree `cargo audit` passes again.
+
+- **Graphical notation inventory matches the `2026-04` release tip.** The coverage JSON
+  now records `subsetting` as supported, the same status the markdown inventory and the
+  generator already used.
+
 - **Nested view usages are modelled.** A `view` nested in a view usage or view definition body
   (`view def D { view intro; }`, `view doc : D { view :>> intro { ... } }`) used to fail to parse
   (`missing_body_or_semicolon`) and swallow the rest of the body. It now lowers as an owned view

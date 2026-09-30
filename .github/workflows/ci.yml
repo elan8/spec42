@@ -106,14 +106,14 @@ jobs:
 
       - name: Upload semantic evidence coverage report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: semantic-evidence-coverage
           path: target/snapshot-report.json
 
       - name: Upload repository generator plugins
         if: always() && steps.repository-plugins.outcome == 'success'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: repository-generator-plugins
           path: generator-plugins/target/wasm32-unknown-unknown/release/*.wasm
@@ -289,7 +289,7 @@ jobs:
 
       - name: Upload frontend failure artifacts
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: frontend-unit-artifacts
           if-no-files-found: ignore
@@ -419,7 +419,7 @@ jobs:
 
       - name: Upload VS Code smoke failure artifacts
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: vscode-smoke-artifacts
           if-no-files-found: ignore
@@ -550,7 +550,7 @@ jobs:
 
       - name: Upload package smoke failure artifacts
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: package-smoke-artifacts
           if-no-files-found: ignore

@@ -124,7 +124,10 @@ fn analyze(source: &str) -> Option<Vec<LineAnalysis<'_>>> {
     let mut lines = Vec::new();
 
     for raw_line in source.split('\n') {
-        let line = raw_line.strip_suffix('\r').unwrap_or(raw_line);
+        // Drop every trailing CR, not just one. A protected-region line is copied
+        // verbatim, so leaving leftover CRs makes the next pass treat one of them
+        // as a CRLF ending and the layout never converges.
+        let line = raw_line.trim_end_matches('\r');
         let starts_in_protected_region = state != LexState::Code;
         let mut opens = 0;
         let mut closes = 0;
@@ -342,6 +345,26 @@ part x;
             format_document_text(source, default_options()),
             "package P {\n\n    part x;\n\n}\n"
         );
+    }
+
+    #[test]
+    fn format_document_converges_when_a_protected_line_keeps_extra_carriage_returns() {
+        // Nightly cargo-fuzz artifact
+        // fuzz/artifacts/sysml_formatter/crash-2220860f754fd99aeab9e4dc9943a2200b1d5419.
+        let source = "package\nP {\n P {\n aP framee'55\0\02\n\n\n\n\0\0\0\0\0\"'5\0\0\0port\r\r\r\r\nP \n{ d;d;/rd;d;/rt ";
+        for options in [
+            FormatOptions {
+                tab_size: 4,
+                insert_spaces: true,
+            },
+            FormatOptions {
+                tab_size: 1,
+                insert_spaces: false,
+            },
+        ] {
+            let once = format_document_text(source, options);
+            assert_eq!(format_document_text(&once, options), once);
+        }
     }
 
     #[test]
