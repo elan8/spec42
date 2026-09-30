@@ -351,7 +351,7 @@ part x;
     fn format_document_converges_when_a_protected_line_keeps_extra_carriage_returns() {
         // Nightly cargo-fuzz artifact
         // fuzz/artifacts/sysml_formatter/crash-2220860f754fd99aeab9e4dc9943a2200b1d5419.
-        let source = "package\nP {\n P {\n aP framee'55\0\02\n\n\n\n\0\0\0\0\0\"'5\0\0\0port\r\r\r\r\nP \n{ d;d;/rd;d;/rt ";
+        let source = "package\nP {\n P {\n aP framee'55\u{0}\u{0}2\n\n\n\n\u{0}\u{0}\u{0}\u{0}\u{0}\"'5\u{0}\u{0}\u{0}port\r\r\r\r\nP \n{ d;d;/rd;d;/rt ";
         for options in [
             FormatOptions {
                 tab_size: 4,
