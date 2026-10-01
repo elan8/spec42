@@ -205,12 +205,6 @@ owner = "spec42-semantic"
 summary = "These authored specialization forms either lower to a broader declaration kind or do not publish a stable declaration identity, so their generated implied-library specialization fact cannot yet be observed through the semantic query facade."
 
 [[issue]]
-id = "lowering-gap-kerml-binary-end-collections"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "KerML association and association-structure end members lower as end-modified features but do not publish the positional end collection needed to evaluate the exact associationEnd/endFeature cardinality predicates."
-
-[[issue]]
 id = "lowering-gap-kerml-connector-positional-end-collection"
 kind = "lowering_gap"
 owner = "spec42-semantic"
@@ -323,12 +317,6 @@ id = "lowering-gap-binding-body-end-count"
 kind = "lowering_gap"
 owner = "spec42-semantic"
 summary = "binding connector body end features now parse and lower as owned features, but the binding's canonical connectorEnd count does not include them"
-
-[[issue]]
-id = "lowering-gap-connector-body-end-count"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "KerML connector body end features lower as owned features, but the connector's canonical connectorEnd count and conditional BinaryLink specialization do not include them"
 
 [[issue]]
 id = "semantic-requirement-constraint-owner"

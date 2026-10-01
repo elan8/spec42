@@ -308,6 +308,29 @@ pub(crate) struct CrossFeatureProjection {
     pub(crate) owned_cross_feature: DeclarationId,
 }
 
+/// One member of a Type's ordered KerML `ownedEndFeature` collection (KerML 8.3.3.1.10), which
+/// is also the owned part of `Connector::connectorEnd` and `Association::associationEnd`.
+///
+/// KerML gives every connector end an end Feature. The lowering represents an end in one of two
+/// shapes, and the collection keeps the shape as provenance rather than flattening it:
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum OwnedEndFeature {
+    /// An owned end Feature that is its own declaration: an `end`-prefixed feature, a positional
+    /// `EndDecl`, or a named (`references`) connector end.
+    Declared(DeclarationId),
+    /// A bare connector end (`connector c from a to b`, `binding a = b`): its implicit end
+    /// Feature is not minted as a declaration, so the end is represented by the authored
+    /// ReferenceSubsetting reference its owner carries for it.
+    Bare(AuthoredReferenceId),
+}
+
+/// An [`OwnedEndFeature`] together with the Type owning it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct OwnedEndRecord {
+    pub(crate) owner: DeclarationId,
+    pub(crate) end: OwnedEndFeature,
+}
+
 impl DeclarationFacts {
     /// Facts for a declaration with no authored modifier, multiplicity, direction, or short name.
     ///

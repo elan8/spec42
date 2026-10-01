@@ -18,6 +18,7 @@ use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::MetadataAnnotationRecord;
 use crate::lower::facts::OperatorExpressionRecord;
+use crate::lower::facts::OwnedEndRecord;
 use crate::lower::facts::PendingEvaluationFact;
 use crate::lower::facts::RecoveryRecord;
 use crate::lower::facts::UnsupportedRecord;
@@ -53,6 +54,17 @@ pub(crate) struct SemanticModelStorage {
     pub(crate) unit_tokens: Box<[AuthoredUnitToken]>,
     pub(crate) filter_conditions: Box<[AuthoredFilterCondition]>,
     pub(crate) invocations: Box<[AuthoredInvocation]>,
+    /// Every Type's owned end Features, grouped by owner and in authored order within an owner.
+    ///
+    /// The one canonical representation of KerML `Type::ownedEndFeature` (and so of the owned
+    /// `connectorEnd` / `associationEnd`): every end-count, end-position and related-feature
+    /// consumer reads it through [`Self::owned_end_features`]. Declared ends of every form are
+    /// recorded for every owner. Bare ends are recorded for every connector whose ends lower
+    /// through the KerML connector-end shape (KerML `connector` / `binding` / `succession` and
+    /// `flow ... from ... to`). The SysML `connect` / `bind` / `first ... then` / transition /
+    /// `allocate` forms keep their bare ends as references only, so a consumer must scope itself
+    /// to the metaclasses whose collection is complete.
+    pub(crate) owned_end_features: Box<[OwnedEndRecord]>,
 }
 
 /// The parse product of every admitted document, held alongside the storage until the publication
@@ -111,5 +123,16 @@ impl SemanticModelStorage {
 
     pub(crate) fn symbol(&self, id: NameId) -> Option<&str> {
         self.symbols.get(id)
+    }
+
+    /// `owner`'s owned end Features in authored order (KerML `Type::ownedEndFeature`).
+    pub(crate) fn owned_end_features(&self, owner: DeclarationId) -> &[OwnedEndRecord] {
+        let start = self
+            .owned_end_features
+            .partition_point(|record| record.owner < owner);
+        let end = self
+            .owned_end_features
+            .partition_point(|record| record.owner <= owner);
+        &self.owned_end_features[start..end]
     }
 }

@@ -32,6 +32,8 @@ use crate::lower::facts::MetadataAnnotationForm;
 use crate::lower::facts::MetadataAnnotationRecord;
 use crate::lower::facts::OperatorExpressionKind;
 use crate::lower::facts::OperatorExpressionRecord;
+use crate::lower::facts::OwnedEndFeature;
+use crate::lower::facts::OwnedEndRecord;
 use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::ParserReferenceId;
 use crate::lower::facts::PendingEvaluationFact;
@@ -135,6 +137,8 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) unit_tokens: Vec<AuthoredUnitToken>,
     pub(crate) filter_conditions: Vec<AuthoredFilterCondition>,
     pub(crate) invocations: Vec<AuthoredInvocation>,
+    /// Owned end Features in lowering order; sorted stably by owner at the freeze barrier.
+    pub(crate) owned_end_features: Vec<OwnedEndRecord>,
     pub(crate) symbols: SymbolTableBuilder,
     pub(crate) paths: SymbolPathArenaBuilder,
     pub(crate) path_scratch: Vec<NameId>,
@@ -298,6 +302,12 @@ impl SemanticModelBuilder {
             span,
         });
         self.declaration_facts.push(facts);
+        if let (true, Some(owner)) = (contributes_owned_end, owner) {
+            self.owned_end_features.push(OwnedEndRecord {
+                owner,
+                end: OwnedEndFeature::Declared(id),
+            });
+        }
         if contributes_owned_end {
             if let Some(count) = owner
                 .and_then(|owner| self.declaration_facts.get_mut(owner.index()))
@@ -1459,6 +1469,13 @@ impl SemanticModelBuilder {
             unit_tokens: self.unit_tokens.into_boxed_slice(),
             filter_conditions: self.filter_conditions.into_boxed_slice(),
             invocations: self.invocations.into_boxed_slice(),
+            owned_end_features: {
+                let mut ends = self.owned_end_features;
+                // Lowering walks each owner's body once in source order, so a stable sort by
+                // owner keeps the authored order of every owner's ends.
+                ends.sort_by_key(|record| record.owner);
+                ends.into_boxed_slice()
+            },
         };
         (storage, ParsedSources::new(documents))
     }

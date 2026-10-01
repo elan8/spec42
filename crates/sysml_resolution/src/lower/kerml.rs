@@ -10,6 +10,8 @@ use crate::lower::facts::AuthoredRelationshipDeclaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
 use crate::lower::facts::MultiplicityRecord;
+use crate::lower::facts::OwnedEndFeature;
+use crate::lower::facts::OwnedEndRecord;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::facts::SuccessionEndMultiplicities;
@@ -578,7 +580,7 @@ impl SemanticModelBuilder {
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
             .span;
-        self.push_reference(PendingReference {
+        let reference = self.push_reference(PendingReference {
             source,
             kind,
             document,
@@ -587,6 +589,13 @@ impl SemanticModelBuilder {
             span,
             import: None,
         })?;
+        if source == owner {
+            // A bare end mints no end Feature declaration; its reference is the end.
+            self.owned_end_features.push(OwnedEndRecord {
+                owner,
+                end: OwnedEndFeature::Bare(reference),
+            });
+        }
         Ok(())
     }
 

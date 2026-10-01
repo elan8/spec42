@@ -288,6 +288,8 @@ mod tests {
     use crate::lower::facts::AuthoredExpression;
     use crate::lower::facts::CanonicalDocument;
     use crate::lower::facts::ExpressionGrammar;
+    use crate::lower::facts::OwnedEndFeature;
+    use crate::lower::facts::OwnedEndRecord;
     use source_identity::SourceRole;
     use sysml_v2_parser::ast::{Expression, QualifiedReferenceArena, RootNamespace, SourceStorage};
     use sysml_v2_parser::ParsedDocument;
@@ -669,6 +671,7 @@ mod tests {
             unit_tokens: Box::new([]),
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
+            owned_end_features: Box::new([]),
         };
         let rule = GENERATED_CONDITIONAL_LIBRARY_SPECIALIZATION_RULES
             .iter()
@@ -783,6 +786,12 @@ mod tests {
             unit_tokens: Box::new([]),
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
+            owned_end_features: [(1, 2), (1, 3), (4, 5)]
+                .map(|(owner, end)| OwnedEndRecord {
+                    owner: id(owner),
+                    end: OwnedEndFeature::Declared(id(end)),
+                })
+                .into(),
         };
         let rule = |rule_id| {
             GENERATED_CONDITIONAL_LIBRARY_SPECIALIZATION_RULES
@@ -961,6 +970,7 @@ mod tests {
                 predicate: FilterPredicate::Unsupported,
             }]),
             invocations: Box::new([]),
+            owned_end_features: Box::new([]),
         }
     }
 
@@ -1050,6 +1060,7 @@ mod tests {
             unit_tokens: Box::new([]),
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
+            owned_end_features: Box::new([]),
         }
     }
 
@@ -1137,6 +1148,7 @@ mod tests {
             unit_tokens: Box::new([]),
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
+            owned_end_features: Box::new([]),
         }
     }
 

@@ -37,6 +37,8 @@ use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::MetadataAnnotationRecord;
 use crate::lower::facts::OperatorExpressionRecord;
+use crate::lower::facts::OwnedEndFeature;
+use crate::lower::facts::OwnedEndRecord;
 use crate::lower::facts::PendingEvaluationFact;
 use crate::lower::facts::RecoveryRecord;
 use crate::lower::facts::UnsupportedRecord;
@@ -77,6 +79,7 @@ pub(crate) struct LoweredDocument {
     pub(crate) unit_tokens: Box<[AuthoredUnitToken]>,
     pub(crate) filter_conditions: Box<[AuthoredFilterCondition]>,
     pub(crate) invocations: Box<[AuthoredInvocation]>,
+    pub(crate) owned_end_features: Box<[OwnedEndRecord]>,
     /// The names this document interned, in the order the walk first interned them.
     pub(crate) symbols: SymbolTable,
     /// The qualified paths this document interned, in the order the walk first interned them.
@@ -122,6 +125,7 @@ pub(crate) fn lower_document(
         unit_tokens: builder.unit_tokens.into_boxed_slice(),
         filter_conditions: builder.filter_conditions.into_boxed_slice(),
         invocations: builder.invocations.into_boxed_slice(),
+        owned_end_features: builder.owned_end_features.into_boxed_slice(),
         symbols: builder.symbols.freeze(),
         paths: builder.paths.freeze(),
     })
@@ -486,6 +490,24 @@ impl SemanticModelBuilder {
                 callee: relocation.reference(invocation.callee)?,
                 argument_count: invocation.argument_count,
                 span: invocation.span,
+            });
+        }
+
+        reserve(
+            &mut self.owned_end_features,
+            lowered.owned_end_features.len(),
+        )?;
+        for record in lowered.owned_end_features.iter() {
+            self.owned_end_features.push(OwnedEndRecord {
+                owner: relocation.declaration(record.owner)?,
+                end: match record.end {
+                    OwnedEndFeature::Declared(end) => {
+                        OwnedEndFeature::Declared(relocation.declaration(end)?)
+                    }
+                    OwnedEndFeature::Bare(reference) => {
+                        OwnedEndFeature::Bare(relocation.reference(reference)?)
+                    }
+                },
             });
         }
 

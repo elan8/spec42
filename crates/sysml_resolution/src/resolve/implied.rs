@@ -2786,23 +2786,14 @@ pub(crate) fn conditional_library_specialization_anchor_branch(
     }
 }
 
-/// The canonical structural representation for the exact XMI end collections is each child
-/// declaration's owned positional-end fact. The generated rule's metaclass and closed predicate
-/// still distinguish `connectorEnd`, `associationEnd`, `endFeature`, and `ownedEndFeature`; this
-/// helper only owns their shared storage projection.
+/// The size of `owner`'s owned end collection, read from the canonical
+/// [`SemanticModelStorage::owned_end_features`]. The generated rule's metaclass and closed
+/// predicate still distinguish `connectorEnd`, `associationEnd`, `endFeature`, and
+/// `ownedEndFeature`; each is evaluated on the owned ends, which redefine any inherited ends
+/// positionally, so the owned collection is the one this resolution phase can state before the
+/// specialization closure it feeds exists.
 pub(crate) fn positional_end_count(storage: &SemanticModelStorage, owner: DeclarationId) -> usize {
-    storage
-        .declarations
-        .iter()
-        .enumerate()
-        .filter(|(index, declaration)| {
-            declaration.owner == Some(owner)
-                && DeclarationId::from_index(*index)
-                    .ok()
-                    .and_then(|member| storage.declaration_facts(member))
-                    .is_some_and(|facts| facts.positional_end.is_some())
-        })
-        .count()
+    storage.owned_end_features(owner).len()
 }
 
 /// Applies exact unconditional `redefinesFromLibrary` rules after authored references have
