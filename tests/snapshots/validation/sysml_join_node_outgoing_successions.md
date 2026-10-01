@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.11:validateJoinNodeOutgoingSuccessions
-blocked_by=semantic-join-node-multiple-outgoing
 type=file
 ~~~
 # SOURCE
@@ -39,6 +38,12 @@ package Actions {
         (code "join_node_multiple_outgoing")
         (source "semantic")
         (range (start 12 8) (end 12 37))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_join_node_outgoing_successions.md")
+            (range (start 10 8) (end 10 17))
+          )
+        )
       )
     )
   )
@@ -49,6 +54,18 @@ package Actions {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_join_node_outgoing_successions.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "join_node_multiple_outgoing")
+        (source "semantic")
+        (range (start 12 8) (end 12 37))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_join_node_outgoing_successions.md")
+            (range (start 10 8) (end 10 17))
+          )
+        )
+      )
     )
   )
 )

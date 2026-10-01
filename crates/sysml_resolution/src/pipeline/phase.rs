@@ -422,6 +422,7 @@ impl Lowered {
                 synthesis.projections,
                 synthesis.decision_status,
                 synthesis.merge_status,
+                synthesis.control_node_successions,
             )
         };
         let mut completeness = PublicationCompleteness::Complete;

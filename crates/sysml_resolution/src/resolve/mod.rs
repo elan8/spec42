@@ -1248,6 +1248,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             succession_endpoint_subsetting_projections: Box::default(),
             decision_outgoing_subsetting_status: Default::default(),
             merge_incoming_subsetting_status: Default::default(),
+            control_node_successions: Box::default(),
             transition_payload_subsetting_projections: Box::default(),
             transition_payload_subsetting_status: Default::default(),
             transition_succession_source_projections: Box::default(),

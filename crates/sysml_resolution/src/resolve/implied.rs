@@ -23,6 +23,8 @@ use crate::resolve::names::NameIndex;
 use crate::resolve::results::ConstructorExpressionProjection;
 use crate::resolve::results::ConstructorExpressionProjectionStatus;
 use crate::resolve::results::ConstructorExpressionSpecializationStatus;
+use crate::resolve::results::ControlNodeSuccession;
+use crate::resolve::results::ControlNodeSuccessionEnd;
 use crate::resolve::results::ExpressionArgumentProjectionStatus;
 use crate::resolve::results::FeatureChainExpressionProjection;
 use crate::resolve::results::FeatureChainExpressionSpecializationStatus;
@@ -1298,6 +1300,7 @@ pub(crate) struct SuccessionEndpointSubsettingSynthesis {
     pub(crate) projections: Box<[SuccessionEndpointSubsettingProjection]>,
     pub(crate) decision_status: SuccessionEndpointSubsettingStatus,
     pub(crate) merge_status: SuccessionEndpointSubsettingStatus,
+    pub(crate) control_node_successions: Box<[ControlNodeSuccession]>,
 }
 
 pub(crate) struct TransitionPayloadSubsettingSynthesis {
@@ -1614,6 +1617,9 @@ pub(crate) fn synthesize_transition_payload_subsettings(
 /// Publishes the SysML 8.3.17.7/13 contextual `subsetsChain` facts in one linear pass over
 /// declarations and references. The projection retains the selected endpoint (`self`) while the
 /// ordinary implied Subsetting relationship targets the canonical library feature.
+///
+/// The same pass publishes [`ControlNodeSuccession`], the canonical incidence of Successions on
+/// ControlNodes that the 8.3.17.6-13 succession validations consume.
 pub(crate) fn synthesize_succession_endpoint_subsettings(
     storage: &SemanticModelStorage,
     resolution: &ResolutionResults,
@@ -1646,12 +1652,31 @@ pub(crate) fn synthesize_succession_endpoint_subsettings(
     );
     let mut implied = Vec::new();
     let mut projections = Vec::new();
+    let mut control_node_successions = Vec::new();
     for (index, declaration) in storage.declarations.iter().enumerate() {
         if declaration.kind != DeclarationKind::Succession {
             continue;
         }
         let succession = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
         let [source, target] = endpoints[index];
+        for (endpoint, end) in [
+            (target, ControlNodeSuccessionEnd::Incoming),
+            (source, ControlNodeSuccessionEnd::Outgoing),
+        ] {
+            let Some(ResolutionStatus::Resolved(node)) = endpoint else {
+                continue;
+            };
+            if storage
+                .declaration(node)
+                .is_some_and(|declaration| is_control_node_kind(declaration.kind))
+            {
+                control_node_successions.push(ControlNodeSuccession {
+                    node,
+                    end,
+                    succession,
+                });
+            }
+        }
         match source {
             Some(ResolutionStatus::Resolved(endpoint))
                 if storage
@@ -1706,12 +1731,26 @@ pub(crate) fn synthesize_succession_endpoint_subsettings(
     implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
     implied.dedup();
     projections.sort_by_key(|projection| (projection.succession.0, projection.kind as u8));
+    control_node_successions
+        .sort_by_key(|incidence| (incidence.node.0, incidence.end, incidence.succession.0));
     Ok(SuccessionEndpointSubsettingSynthesis {
         implied_relationships: implied.into_boxed_slice(),
         projections: projections.into_boxed_slice(),
         decision_status,
         merge_status,
+        control_node_successions: control_node_successions.into_boxed_slice(),
     })
+}
+
+/// The SysML ControlNode metaclasses (`DecisionNode`, `MergeNode`, `ForkNode`, `JoinNode`).
+pub(crate) fn is_control_node_kind(kind: DeclarationKind) -> bool {
+    matches!(
+        kind,
+        DeclarationKind::Decide
+            | DeclarationKind::Merge
+            | DeclarationKind::Fork
+            | DeclarationKind::Join
+    )
 }
 
 /// Publishes the InvocationExpression's instantiated type, its own specialization, result

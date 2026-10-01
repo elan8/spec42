@@ -1114,6 +1114,7 @@ pub(crate) fn write_declaration_facts(
         && facts.portion_kind.is_none()
         && facts.direction.is_none()
         && facts.multiplicity.is_none()
+        && facts.succession_end_multiplicities.is_none()
         && facts.positional_end.is_none()
         && facts.cross_feature_projection.is_none()
         && facts.expression_result.is_none()
@@ -1144,6 +1145,18 @@ pub(crate) fn write_declaration_facts(
         output.write_str(") (upper ")?;
         write_multiplicity_bound(multiplicity.upper, output)?;
         output.write_str("))")?;
+    }
+    if let Some(ends) = &facts.succession_end_multiplicities {
+        for (end, multiplicity) in [("source", &ends.source), ("target", &ends.target)] {
+            let Some(multiplicity) = multiplicity else {
+                continue;
+            };
+            write!(output, " (end-multiplicity (end {end}) (lower ")?;
+            write_multiplicity_bound(multiplicity.lower, output)?;
+            output.write_str(") (upper ")?;
+            write_multiplicity_bound(multiplicity.upper, output)?;
+            output.write_str("))")?;
+        }
     }
     if let Some(position) = facts.positional_end {
         write!(output, " (positional-end {position})")?;

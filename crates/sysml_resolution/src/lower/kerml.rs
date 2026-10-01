@@ -9,8 +9,10 @@ use crate::lower::facts::multiplicity_facts;
 use crate::lower::facts::AuthoredRelationshipDeclaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
+use crate::lower::facts::MultiplicityRecord;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
+use crate::lower::facts::SuccessionEndMultiplicities;
 use crate::lower::facts::UnsupportedFamily;
 use crate::lower::SemanticModelBuilder;
 use crate::model::ConstructionError;
@@ -595,10 +597,9 @@ impl SemanticModelBuilder {
     /// shape difference from `KermlConnectorMember`) -- reuses `lower_kerml_connector_end`
     /// verbatim for both ends, tagged `ReferenceKind::Succession` (the same kind
     /// `lower_first_stmt`'s `FirstStmt` uses for its own `first`/`then` operands) rather than
-    /// `BindSource`/`BindTarget`, since this is a succession relationship, not a binding. `is_all`
-    /// (`all` sufficiency) and the succession's own `multiplicity` are not modeled as distinct
-    /// facts here, mirroring `KermlConnectorMember`/`KermlBindingMember`'s own unmodeled
-    /// end-level `multiplicity`/`references`.
+    /// `BindSource`/`BindTarget`, since this is a succession relationship, not a binding. A bare
+    /// end's `[n]` multiplicity is published as the succession's end fact
+    /// (`succession_end_multiplicities`).
     pub(crate) fn lower_kerml_succession_member(
         &mut self,
         document: DocumentIdx,
@@ -618,6 +619,10 @@ impl SemanticModelBuilder {
                     ..DeclarationModifiers::default()
                 },
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                succession_end_multiplicities: SuccessionEndMultiplicities::authored(
+                    kerml_bare_end_multiplicity(&node.value.first),
+                    kerml_bare_end_multiplicity(&node.value.then),
+                ),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -730,4 +735,16 @@ impl SemanticModelBuilder {
             });
         Ok(())
     }
+}
+
+/// The multiplicity of a bare (`references`-free) KerML connector end, which has no end-feature
+/// declaration of its own and so is recorded as its connector's end fact. A `references` end is
+/// lowered as its own end feature carrying the multiplicity, so it contributes nothing here.
+pub(crate) fn kerml_bare_end_multiplicity(
+    end: &Node<KermlConnectorEnd>,
+) -> Option<MultiplicityRecord> {
+    if end.value.references.is_some() {
+        return None;
+    }
+    multiplicity_facts(end.value.multiplicity.as_ref())
 }

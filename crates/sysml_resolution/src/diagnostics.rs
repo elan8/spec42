@@ -538,6 +538,30 @@ semantic_diagnostic_codes! {
     /// A succession relates endpoints that are not actions.
     SuccessionEndpointInvalid => "succession_endpoint_invalid",
         "A succession must relate action definitions or usages.";
+    /// SysML 8.3.17 `validateControlNodeIncomingSuccessions`.
+    ControlNodeIncomingMultiplicity => "control_node_incoming_multiplicity",
+        "An incoming succession to a control node must have a target multiplicity of 1..1.";
+    /// SysML 8.3.17 `validateControlNodeOutgoingSuccessions`.
+    ControlNodeOutgoingMultiplicity => "control_node_outgoing_multiplicity",
+        "An outgoing succession from a control node must have a source multiplicity of 1..1.";
+    /// SysML 8.3.17 `validateDecisionNodeIncomingSuccessions`.
+    DecisionNodeMultipleIncoming => "decision_node_multiple_incoming",
+        "A decision node may have at most one incoming succession.";
+    /// SysML 8.3.17 `validateDecisionNodeOutgoingSuccessions`.
+    DecisionNodeOutgoingMultiplicity => "decision_node_outgoing_multiplicity",
+        "An outgoing succession from a decision node must have a target multiplicity of 0..1.";
+    /// SysML 8.3.17 `validateForkNodeIncomingSuccessions`.
+    ForkNodeMultipleIncoming => "fork_node_multiple_incoming",
+        "A fork node may have at most one incoming succession.";
+    /// SysML 8.3.17 `validateJoinNodeOutgoingSuccessions`.
+    JoinNodeMultipleOutgoing => "join_node_multiple_outgoing",
+        "A join node may have at most one outgoing succession.";
+    /// SysML 8.3.17 `validateMergeNodeIncomingSuccessions`.
+    MergeNodeIncomingMultiplicity => "merge_node_incoming_multiplicity",
+        "An incoming succession to a merge node must have a source multiplicity of 0..1.";
+    /// SysML 8.3.17 `validateMergeNodeOutgoingSuccessions`.
+    MergeNodeMultipleOutgoing => "merge_node_multiple_outgoing",
+        "A merge node may have at most one outgoing succession.";
     /// A transition guard settles to a non-Boolean constant.
     TransitionGuardNonBoolean => "transition_guard_non_boolean",
         "A transition guard must evaluate to a Boolean.";

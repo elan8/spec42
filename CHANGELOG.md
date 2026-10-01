@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Control-node succession validations.** Successions attached to `decide` / `merge` / `fork` /
+  `join` nodes are now checked against SysML 8.3.17.6-13: authored end multiplicities
+  (`control_node_incoming_multiplicity`, `control_node_outgoing_multiplicity`,
+  `decision_node_outgoing_multiplicity`, `merge_node_incoming_multiplicity`) and at-most-one
+  incoming/outgoing successions (`decision_node_multiple_incoming`, `fork_node_multiple_incoming`,
+  `join_node_multiple_outgoing`, `merge_node_multiple_outgoing`). Succession end multiplicities
+  (`first [m] a then [n] b`) are now published facts.
+
 - **Semantic tokens use parser name spans and can be traced from the editor (#35).** Definition
   names come from `Identification` rather than a first-line text search; transition /
   satisfy / dependency members keep source, accept, and target spans instead of painting the

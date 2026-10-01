@@ -160,7 +160,7 @@ summary = "Pinned KerML XMI body for checkInvocationExpressionDefaultValueBindin
 id = "library-gap-join-node-specialization-anchor"
 kind = "library_gap"
 owner = "spec42-libraries"
-summary = "The canonical standard library does not publish the Actions::Action::join anchor required by checkJoinNodeSpecialization (clause 8.3.17.11). The two viewpoint anchors this issue also covered are corrected to Views::ViewpointCheck / Views::viewpointChecks via SYSML21-301 (specifications/constraint_manifest.toml)."
+summary = "checkJoinNodeSpecialization (clause 8.3.17.11) carries the OCL anchor Actions::Action::join, which the standard library does not publish; the constraint's own normative prose, the library (Actions::Action::joins), and the Pilot ImplicitGeneralizationMap all use Actions::Action::joins. Applying that correction needs an official OMG issue for library_anchor_corrections (specifications/README.md), and none is recorded yet."
 
 [[issue]]
 id = "library-gap-flow-end-specialization-anchors"
@@ -457,30 +457,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule detects two constructor initialisers redefining the same feature; the canonical code constructor_duplicate_feature_redefinition does not exist yet"
 
 [[issue]]
-id = "semantic-control-node-incoming-multiplicity"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code control_node_incoming_multiplicity does not exist yet"
-
-[[issue]]
-id = "semantic-control-node-outgoing-multiplicity"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code control_node_outgoing_multiplicity does not exist yet"
-
-[[issue]]
-id = "semantic-decision-node-multiple-incoming"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code decision_node_multiple_incoming does not exist yet"
-
-[[issue]]
-id = "semantic-decision-node-outgoing-multiplicity"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code decision_node_outgoing_multiplicity does not exist yet"
-
-[[issue]]
 id = "semantic-directed-usage-not-referential"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
@@ -529,12 +505,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule checks that a filter condition is model-level evaluable; the canonical code filter_condition_not_model_level_evaluable does not exist yet"
 
 [[issue]]
-id = "semantic-fork-node-multiple-incoming"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code fork_node_multiple_incoming does not exist yet"
-
-[[issue]]
 id = "semantic-function-result-parameter-count"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
@@ -575,24 +545,6 @@ id = "semantic-invocation-instantiated-type-not-behavior"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
 summary = "no semantic rule checks the metaclass family of an invocation expression instantiated type; the canonical code invocation_instantiated_type_not_behavior does not exist yet"
-
-[[issue]]
-id = "semantic-join-node-multiple-outgoing"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code join_node_multiple_outgoing does not exist yet"
-
-[[issue]]
-id = "semantic-merge-node-incoming-multiplicity"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code merge_node_incoming_multiplicity does not exist yet"
-
-[[issue]]
-id = "semantic-merge-node-multiple-outgoing"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "control nodes now publish as named declarations, but no semantic rule inspects the successions attached to one, so the canonical code merge_node_multiple_outgoing does not exist yet"
 
 [[issue]]
 id = "semantic-metadata-metaclass-abstract"

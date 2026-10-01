@@ -8,7 +8,9 @@ use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
+use crate::lower::facts::SuccessionEndMultiplicities;
 use crate::lower::facts::UnsupportedFamily;
+use crate::lower::kerml::kerml_bare_end_multiplicity;
 use crate::lower::SemanticModelBuilder;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
@@ -782,9 +784,13 @@ impl SemanticModelBuilder {
             node.span,
             DeclarationFacts {
                 // The succession feature's own multiplicity (`succession [n] first ... then ...`).
-                // The per-end `first_multiplicity`/`then_multiplicity` belong to the ends, which
-                // are lowered as references rather than declarations, so they are not facts here.
                 multiplicity: multiplicity_facts(node.value.succession_multiplicity.as_ref()),
+                // The per-end `first [m]`/`then [n]` multiplicities belong to the connector ends,
+                // which are lowered as references, so they are the succession's end facts.
+                succession_end_multiplicities: SuccessionEndMultiplicities::authored(
+                    multiplicity_facts(node.value.first_multiplicity.as_ref()),
+                    multiplicity_facts(node.value.then_multiplicity.as_ref()),
+                ),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -855,6 +861,13 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 multiplicity: multiplicity_facts(
                     succession.and_then(|decl| decl.declaration.value.multiplicity.as_ref()),
+                ),
+                // The `first` source of a guarded succession is a bare member reference with no
+                // multiplicity slot; only the `then` target end can author one.
+                // A `references` end owns its multiplicity on its own end feature instead.
+                succession_end_multiplicities: SuccessionEndMultiplicities::authored(
+                    None,
+                    kerml_bare_end_multiplicity(&node.value.target),
                 ),
                 ..DeclarationFacts::none()
             },
@@ -1665,6 +1678,10 @@ impl SemanticModelBuilder {
             node.span,
             DeclarationFacts {
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                succession_end_multiplicities: SuccessionEndMultiplicities::authored(
+                    multiplicity_facts(node.value.source_multiplicity.as_ref()),
+                    multiplicity_facts(node.value.target_multiplicity.as_ref()),
+                ),
                 ..DeclarationFacts::none()
             },
         )?;

@@ -344,6 +344,7 @@ impl<D> SemanticModel<D> {
         self.collect_declaration_structure(declared, diagnostics)?;
         self.collect_structural_reference_rules(document, diagnostics)?;
         self.collect_implied_structural_rules(document, diagnostics)?;
+        self.collect_control_node_succession_rules(document, diagnostics)?;
         Ok(())
     }
 

@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.13:validateMergeNodeIncomingSuccessions
-blocked_by=semantic-merge-node-incoming-multiplicity
 type=file
 ~~~
 # SOURCE
@@ -36,6 +35,12 @@ package Actions {
         (code "merge_node_incoming_multiplicity")
         (source "semantic")
         (range (start 9 8) (end 9 42))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_merge_node_incoming_successions.md")
+            (range (start 3 8) (end 3 16))
+          )
+        )
       )
     )
   )
@@ -46,6 +51,18 @@ package Actions {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_merge_node_incoming_successions.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "merge_node_incoming_multiplicity")
+        (source "semantic")
+        (range (start 9 8) (end 9 42))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_merge_node_incoming_successions.md")
+            (range (start 3 8) (end 3 16))
+          )
+        )
+      )
     )
   )
 )
@@ -57,8 +74,8 @@ package Actions {
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_merge_node_incoming_successions.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_merge_node_incoming_successions.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_merge_node_incoming_successions.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "a1")) (succession (reference "m")))))
-    (declaration (id (node (document "memory://snapshot/sysml_merge_node_incoming_successions.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind succession) (ordinal 1))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "a1")) (succession (reference "m")))))
+    (declaration (id (node (document "memory://snapshot/sysml_merge_node_incoming_successions.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (facts (end-multiplicity (end source) (lower 0) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "a1")) (succession (reference "m")))))
+    (declaration (id (node (document "memory://snapshot/sysml_merge_node_incoming_successions.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind succession) (ordinal 1))))) (kind succession) (membership (kind feature) (visibility default)) (facts (end-multiplicity (end source) (lower 0) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "a1")) (succession (reference "m")))))
     (declaration (id (node (document "memory://snapshot/sysml_merge_node_incoming_successions.md") (qualified-name "Actions::Act::a1"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/sysml_merge_node_incoming_successions.md") (qualified-name "Actions::Act::m"))) (kind merge) (membership (kind feature) (visibility default)))
   )

@@ -83,6 +83,24 @@ pub(crate) enum MultiplicityBound {
     Expression,
 }
 
+/// The authored end multiplicities of one Succession, indexed by connector-end position: the
+/// source (`first`, `connectorEnd->at(1)`) and the target (`then`, `connectorEnd->at(2)`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct SuccessionEndMultiplicities {
+    pub(crate) source: Option<MultiplicityRecord>,
+    pub(crate) target: Option<MultiplicityRecord>,
+}
+
+impl SuccessionEndMultiplicities {
+    /// The fact for a succession's authored end multiplicities, or `None` when neither end has one.
+    pub(crate) fn authored(
+        source: Option<MultiplicityRecord>,
+        target: Option<MultiplicityRecord>,
+    ) -> Option<Box<Self>> {
+        (source.is_some() || target.is_some()).then(|| Box::new(Self { source, target }))
+    }
+}
+
 /// The authored multiplicity of one declaration (BNF `MultiplicityBounds`).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct MultiplicityRecord {
@@ -207,6 +225,13 @@ pub(crate) struct DeclarationFacts {
     pub(crate) is_trigger_payload_parameter: bool,
     /// This Succession is the one owned member synthesized by a TransitionUsage's `then` clause.
     pub(crate) is_transition_succession: bool,
+    /// The authored multiplicities of a Succession's two connector ends (`first [m] a then [n]
+    /// b`), present only on a `DeclarationKind::Succession` that authors at least one of them.
+    ///
+    /// A succession's ends are lowered as `Succession` references rather than as end-feature
+    /// declarations, so their multiplicities have no declaration of their own to live on; this is
+    /// their single owning fact. An absent end is "not authored", never a defaulted `1..1`.
+    pub(crate) succession_end_multiplicities: Option<Box<SuccessionEndMultiplicities>>,
     /// The exact `TransitionFeatureMembership::kind` through which this child is owned.
     pub(crate) transition_feature_role: Option<TransitionFeatureRole>,
     /// The number of directly owned end Features when the owning construct's complete authored

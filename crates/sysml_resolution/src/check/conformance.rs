@@ -26,6 +26,7 @@
 
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::MultiplicityBound;
+use crate::lower::facts::MultiplicityRecord;
 use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
 use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
@@ -769,11 +770,18 @@ impl<D> SemanticModel<D> {
         &self,
         declaration: DeclarationId,
     ) -> Option<(i64, Option<i64>)> {
-        let multiplicity = self
-            .storage
-            .declaration_facts(declaration)?
-            .multiplicity
-            .as_ref()?;
+        Self::literal_bounds(
+            self.storage
+                .declaration_facts(declaration)?
+                .multiplicity
+                .as_ref()?,
+        )
+    }
+
+    /// The `[lower..upper]` of one authored multiplicity when both bounds fold to literals, with
+    /// `None` as the upper bound standing for unbounded. `None` when a bound is an expression or
+    /// the literal bounds admit nothing, so the question stays unanswered rather than guessed.
+    pub(crate) fn literal_bounds(multiplicity: &MultiplicityRecord) -> Option<(i64, Option<i64>)> {
         // The single-bound spelling `[3]` reaches this fact family already expanded to `[3..3]`,
         // so an `Unbounded` upper here is always an authored `*`, never an omitted bound.
         let (lower, upper) = match (multiplicity.lower, multiplicity.upper) {

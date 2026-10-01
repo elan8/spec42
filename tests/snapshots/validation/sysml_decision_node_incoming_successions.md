@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.7:validateDecisionNodeIncomingSuccessions
-blocked_by=semantic-decision-node-multiple-incoming
 type=file
 ~~~
 # SOURCE
@@ -39,6 +38,12 @@ package Actions {
         (code "decision_node_multiple_incoming")
         (source "semantic")
         (range (start 12 8) (end 12 37))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_decision_node_incoming_successions.md")
+            (range (start 10 8) (end 10 19))
+          )
+        )
       )
     )
   )
@@ -49,6 +54,18 @@ package Actions {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_decision_node_incoming_successions.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "decision_node_multiple_incoming")
+        (source "semantic")
+        (range (start 12 8) (end 12 37))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_decision_node_incoming_successions.md")
+            (range (start 10 8) (end 10 19))
+          )
+        )
+      )
     )
   )
 )
