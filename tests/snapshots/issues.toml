@@ -139,12 +139,6 @@ owner = "spec42-libraries"
 summary = "checkJoinNodeSpecialization (clause 8.3.17.11) carries the OCL anchor Actions::Action::join, which the standard library does not publish; the constraint's own normative prose, the library (Actions::Action::joins), and the Pilot ImplicitGeneralizationMap all use Actions::Action::joins. Applying that correction needs an official OMG issue for library_anchor_corrections (specifications/README.md), and none is recorded yet."
 
 [[issue]]
-id = "library-gap-flow-end-specialization-anchors"
-kind = "library_gap"
-owner = "spec42-libraries"
-summary = "The canonical standard library does not publish the exact Flows::flows and Transfers::flowTransfers declarations required by the pinned FlowUsage and Flow owned-end specialization rules."
-
-[[issue]]
 id = "lowering-gap-feature-category-metaclass-predicates"
 kind = "lowering_gap"
 owner = "spec42-semantic"

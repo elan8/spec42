@@ -8,7 +8,6 @@ rule_family=check
 expectation=semantics
 rule_id=sysml-2.0:8.3.16.3:checkFlowUsageFlowSpecialization
 rule_id=kerml-1.0:8.3.4.9.2:checkFlowWithEndsSpecialization
-blocked_by=library-gap-flow-end-specialization-anchors
 type=file
 libraries=standard
 ~~~
@@ -25,8 +24,8 @@ package FlowUsageEndSpecializations {
 # EXPECTED SEMANTICS
 ~~~sexpr
 (fixture-semantics
-  (relationship (kind specialization) (source "FlowUsageEndSpecializations::Owner::<anonymous>") (target "Flows::flows") (provenance implied) (outcome resolved))
-  (relationship (kind specialization) (source "FlowUsageEndSpecializations::Owner::<anonymous>") (target "Transfers::flowTransfers") (provenance implied) (outcome resolved)))
+  (relationship (kind subsetting) (source (anonymous (owner "FlowUsageEndSpecializations::Owner") (kind FlowConnectionUsage) (ordinal 0))) (target "Flows::flows") (provenance implied) (outcome resolved))
+  (relationship (kind subsetting) (source (anonymous (owner "FlowUsageEndSpecializations::Owner") (kind FlowConnectionUsage) (ordinal 0))) (target "Transfers::flowTransfers") (provenance implied) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
