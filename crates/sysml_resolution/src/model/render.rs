@@ -1109,8 +1109,10 @@ pub(crate) fn write_declaration_facts(
         return Ok(());
     };
     let modifiers = declaration_modifier_names(&facts.modifiers);
+    let implied_abstract = facts.modifiers.implied_abstract();
     if facts.short_name.is_none()
         && modifiers.is_empty()
+        && !implied_abstract
         && facts.portion_kind.is_none()
         && facts.direction.is_none()
         && facts.multiplicity.is_none()
@@ -1132,6 +1134,9 @@ pub(crate) fn write_declaration_facts(
             write!(output, " {name}")?;
         }
         output.write_char(')')?;
+    }
+    if implied_abstract {
+        output.write_str(" (implied-modifiers abstract)")?;
     }
     if let Some(portion_kind) = facts.portion_kind {
         write!(output, " (portion {})", portion_kind_name(portion_kind))?;

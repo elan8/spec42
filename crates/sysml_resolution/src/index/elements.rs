@@ -721,6 +721,11 @@ impl<D> SemanticModel<D> {
             documentation: self.documentation(id),
             multiplicity: self.multiplicity(id),
             modifiers: self.modifiers(id),
+            implied_modifiers: if facts.modifiers.implied_abstract() {
+                Box::from([ElementModifier::Abstract])
+            } else {
+                Box::default()
+            },
             portion_kind: facts.portion_kind.map(|kind| match kind {
                 crate::lower::facts::PortionKind::Snapshot => PortionKind::Snapshot,
                 crate::lower::facts::PortionKind::Timeslice => PortionKind::Timeslice,

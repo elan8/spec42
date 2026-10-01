@@ -330,6 +330,20 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "variation_owns_feature_membership",
+        severity: "warning",
+        meaning: "A variation definition or usage owns an ordinary feature; its owned members must all be variants (SysML validateDefinitionVariationOwnedFeatureMembership, validateUsageVariationOwnedFeatureMembership).",
+        typical_fix: "Declare the member with `variant`, or move it out of the variation.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "variation_specializes_variation",
+        severity: "warning",
+        meaning: "A variation definition or usage specializes (types, subclassifies, subsets or redefines) another variation (SysML validateDefinitionVariationSpecialization, validateUsageVariationSpecialization).",
+        typical_fix: "Specialize a non-variation definition or usage, or remove the `variation` prefix.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "redefinition_featuring_type_incompatible",
         severity: "error",
         meaning: "A feature redefines another feature from an unrelated featuring type.",

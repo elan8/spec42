@@ -441,6 +441,14 @@ semantic_diagnostic_codes! {
     /// A variant member's metaclass family is not the variation's.
     InvalidVariationMemberKind => "invalid_variation_member_kind",
         "A variant member must use the variation's own kind.";
+    /// SysML 8.3.6.2/8.3.6.4 `validateDefinitionVariationOwnedFeatureMembership` and
+    /// `validateUsageVariationOwnedFeatureMembership`.
+    VariationOwnsFeatureMembership => "variation_owns_feature_membership",
+        "A variation may own only variant members, not ordinary features.";
+    /// SysML 8.3.6.2/8.3.6.4 `validateDefinitionVariationSpecialization` and
+    /// `validateUsageVariationSpecialization`.
+    VariationSpecializesVariation => "variation_specializes_variation",
+        "A variation must not specialize another variation.";
     /// A redefining feature is featured by a type unrelated to the redefined feature's.
     RedefinitionFeaturingTypeIncompatible => "redefinition_featuring_type_incompatible",
         "A redefinition must be introduced by the redefined feature's featuring type or a \

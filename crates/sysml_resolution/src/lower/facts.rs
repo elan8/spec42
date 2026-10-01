@@ -178,6 +178,25 @@ pub(crate) struct DeclarationModifiers {
     pub(crate) nonunique: bool,
 }
 
+impl DeclarationModifiers {
+    /// Whether `isAbstract` holds only because it is implied, not authored.
+    ///
+    /// SysML requires a variation Definition or Usage to be abstract
+    /// (`validateDefinitionVariationIsAbstract`, `validateUsageVariationIsAbstract`), and the
+    /// grammar makes `abstract` and `variation` mutually exclusive alternatives of one prefix
+    /// slot. The Pilot's `DefinitionAdapter`/`UsageAdapter.postProcess` therefore set
+    /// `isAbstract` for every variation. The authored `is_abstract` fact is kept unchanged so the
+    /// implied value stays distinguishable from a written `abstract`.
+    pub(crate) fn implied_abstract(&self) -> bool {
+        self.variation && !self.is_abstract
+    }
+
+    /// The effective `Type::isAbstract`: authored `abstract` or implied by `variation`.
+    pub(crate) fn effectively_abstract(&self) -> bool {
+        self.is_abstract || self.implied_abstract()
+    }
+}
+
 /// The authored presentation-adjacent facts of one declaration, recorded at the point its typed
 /// parser node is lowered.
 ///

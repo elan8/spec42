@@ -8,17 +8,18 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.6.2:validateDefinitionVariationIsAbstract
-blocked_by=parser-gap-78-variation-forms
 type=file
 ~~~
 # SOURCE
 ~~~sysml
+// The violating side has no textual counterpart: the grammar cannot spell a non-abstract
+// variation, since `variation` itself implies isAbstract (SysML 8.3.6.2/8.3.6.4; the Pilot's
+// DefinitionAdapter/UsageAdapter.postProcess set isAbstract for every variation).
 package Variations {
-    // Conforming: a variation definition declared abstract.
-    abstract variation part def Good;
-
-    // Invalid: a variation definition must be abstract.
-    variation part def Bad;
+    // Conforming: a variation definition is abstract. `abstract` and `variation` are exclusive
+    // alternatives of one BasicDefinitionPrefix slot, so isAbstract is implied by `variation`
+    // rather than authored (the SMG publishes it under implied-modifiers).
+    variation part def Good;
 }
 ~~~
 # EXPECTED DIAGNOSTICS
@@ -26,12 +27,6 @@ package Variations {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_definition_variation_is_abstract.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "variation_not_abstract")
-        (source "semantic")
-        (range (start 5 4) (end 5 27))
-      )
     )
   )
 )
@@ -41,12 +36,6 @@ package Variations {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_definition_variation_is_abstract.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "parser")
-        (range (start 2 4) (end 5 4))
-      )
     )
   )
 )
@@ -54,10 +43,10 @@ package Variations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:339ed252a4fc80dda78aeb5615047122ab1f1d4582be1ed829ca961ec36cbce9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a8fe1860f0307efabadb328324d18e4198a67c7228e4572fd0a6972cbde99b9f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_definition_variation_is_abstract.md") (qualified-name "Variations"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_is_abstract.md") (qualified-name "Variations::Bad"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation)))
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_is_abstract.md") (qualified-name "Variations::Good"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)))
   )
   (references
   )

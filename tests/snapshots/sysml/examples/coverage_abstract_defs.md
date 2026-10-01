@@ -80,7 +80,7 @@ abstract part def Container {
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerPort"))) (kind port-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerWeight"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerWidget"))) (kind item-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation)))
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::fourCyl"))) (kind part) (membership (kind owning) (visibility default) (role variant)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::sixCyl"))) (kind part) (membership (kind owning) (visibility default) (role variant)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Weight"))) (kind attribute-def) (membership (kind owning) (visibility default)))

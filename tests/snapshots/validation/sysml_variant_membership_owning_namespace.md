@@ -38,7 +38,7 @@ package Variations {
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Good"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation)))
+    (declaration (id (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Good"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/sysml_variant_membership_owning_namespace.md") (qualified-name "Variations::Good::small"))) (kind part) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (featureTyping (reference "Base")))))
   )
   (references

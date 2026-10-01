@@ -207,7 +207,9 @@ impl<D> SemanticModel<D> {
             };
             if !matches!(
                 self.types.feature_is_variable(&self.storage, target),
-                Some(crate::index::types::UsageTimeVariationOutcome::Resolved(false))
+                Some(crate::index::types::UsageTimeVariationOutcome::Resolved(
+                    false
+                ))
             ) {
                 continue;
             }

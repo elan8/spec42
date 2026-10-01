@@ -40,7 +40,7 @@ package Model {
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4808e182982ce313eaa4dcafac63b6eb00ca3769fb976a2d6dc20b762659c1b9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_definition_specialization_unresolved.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_definition_specialization_unresolved.md") (qualified-name "Model::Choice"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation)))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_definition_specialization_unresolved.md") (qualified-name "Model::Choice"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_definition_specialization_unresolved.md") (qualified-name "Model::Choice::option"))) (kind part) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (featureTyping (reference "Missing")))))
   )
   (references

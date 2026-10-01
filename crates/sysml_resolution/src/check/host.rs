@@ -1203,7 +1203,7 @@ impl<D> SemanticModel<D> {
             if self
                 .storage
                 .declaration_facts(id)
-                .is_some_and(|facts| facts.modifiers.is_abstract)
+                .is_some_and(|facts| facts.modifiers.effectively_abstract())
             {
                 continue;
             }

@@ -34,7 +34,7 @@ package Model {
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3027d9717dacea9fa3d408407f403e89a0af8c1395308228f4b290bb1626422c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_definition_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_definition_specialization.md") (qualified-name "Model::Choice"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation)))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_definition_specialization.md") (qualified-name "Model::Choice"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_definition_specialization.md") (qualified-name "Model::Choice::option"))) (kind part) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (featureTyping (reference "Option")))))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_definition_specialization.md") (qualified-name "Model::Option"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Choice")))))
   )

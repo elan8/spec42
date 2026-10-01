@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.6.2:validateDefinitionVariationOwnedFeatureMembership
-blocked_by=parser-gap-78-variation-forms
 type=file
 ~~~
 # SOURCE
@@ -17,13 +16,13 @@ package Variations {
     part def Base;
 
     // Conforming: the variation owns only variant memberships.
-    abstract variation part def Good {
+    variation part def Good {
         variant part small : Base;
         variant part large : Base;
     }
 
     // Invalid: the variation owns a plain feature membership.
-    abstract variation part def Bad {
+    variation part def Bad {
         variant part small : Base;
         part extra : Base;
     }
@@ -50,16 +49,10 @@ package Variations {
   (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md"
     (diagnostics
       (diagnostic
-        (severity error)
-        (code "recovered_package_body_element")
-        (source "parser")
-        (range (start 4 4) (end 10 4))
-      )
-      (diagnostic
         (severity warning)
-        (code "recovery_cascade_suppressed")
-        (source "parser")
-        (range (start 4 4) (end 10 4))
+        (code "variation_owns_feature_membership")
+        (source "semantic")
+        (range (start 12 8) (end 12 26))
       )
     )
   )
@@ -68,14 +61,37 @@ package Variations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:116e8c8ab0ab6ae98f9fe2882831b1990ce8c19361193d40cdba560e9451dbc2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:39183e848d39c74989813de50b6e6b6dda4029891eb2577e35f41bbf4cdd944c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)))
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::extra"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base")))))
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::small"))) (kind part) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (featureTyping (reference "Base")))))
     (declaration (id (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)))
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good::large"))) (kind part) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (featureTyping (reference "Base")))))
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good::small"))) (kind part) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (featureTyping (reference "Base")))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::extra"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::small"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good::large"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good::small"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::extra"))) (target (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::extra"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::small"))) (target (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::small"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good::large"))) (target (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good::large"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good::small"))) (target (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good::small"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::extra"))) (target (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad"))) (provenance implied))
   )
   (evaluation
   )
@@ -84,10 +100,57 @@ package Variations {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::extra")))
+      (featured-by (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad")))
+      (type (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::small")))
+      (type (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")))
+      (subtype (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::extra")) (scopes any))
+      (subtype (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::small")) (scopes any))
+      (subtype (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good::large")) (scopes any))
+      (subtype (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good::small")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good::large")))
+      (type (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good::small")))
+      (type (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")) (scopes any))
+    )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (range (start 12 21) (end 12 25)) (probe (position 12 21))
+    (reference (id (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::extra"))) (kind featureTyping) (ordinal 0) (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (range (start 11 29) (end 11 33)) (probe (position 11 29))
+    (reference (id (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Bad::small"))) (kind featureTyping) (ordinal 0) (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (range (start 6 29) (end 6 33)) (probe (position 6 29))
+    (reference (id (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good::large"))) (kind featureTyping) (ordinal 0) (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (range (start 5 29) (end 5 33)) (probe (position 5 29))
+    (reference (id (source (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Good::small"))) (kind featureTyping) (ordinal 0) (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_definition_variation_owned_feature_membership.md") (qualified-name "Variations::Base")))))
+    )
+  )
 )
 ~~~

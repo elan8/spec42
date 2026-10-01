@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Variation rules.** A `variation` definition or usage is now effectively abstract (published as
+  an implied modifier, distinct from an authored `abstract`), and new diagnostics report a
+  variation that owns non-variant features (`variation_owns_feature_membership`) or specializes
+  another variation (`variation_specializes_variation`).
+
 - **Assignment targets must be variable.** `assign x := v;` now reports
   `assignment_target_not_time_varying` when `x` cannot have time-varying values (SysML
   `validateAssignmentActionUsage`), e.g. a package-owned attribute or a composite action.

@@ -8,19 +8,20 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.6.4:validateUsageVariationIsAbstract
-blocked_by=parser-gap-78-variation-forms
 type=file
 ~~~
 # SOURCE
 ~~~sysml
+// The violating side has no textual counterpart: the grammar cannot spell a non-abstract
+// variation, since `variation` itself implies isAbstract (SysML 8.3.6.2/8.3.6.4; the Pilot's
+// DefinitionAdapter/UsageAdapter.postProcess set isAbstract for every variation).
 package Variations {
     part def Base;
     part def Holder {
-        // Conforming: a variation usage declared abstract.
-        abstract variation part good : Base;
-
-        // Invalid: a variation usage must be abstract.
-        variation part bad : Base;
+        // Conforming: a variation usage is abstract. `abstract` and `variation` are exclusive
+        // alternatives of one BasicUsagePrefix slot, so isAbstract is implied by `variation`
+        // rather than authored (the SMG publishes it under implied-modifiers).
+        variation part good : Base;
     }
 }
 ~~~
@@ -29,12 +30,6 @@ package Variations {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_usage_variation_is_abstract.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "variation_not_abstract")
-        (source "semantic")
-        (range (start 7 8) (end 7 34))
-      )
     )
   )
 )
@@ -44,12 +39,6 @@ package Variations {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_usage_variation_is_abstract.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_part_def_body_element")
-        (source "parser")
-        (range (start 4 8) (end 7 8))
-      )
     )
   )
 )
@@ -57,21 +46,21 @@ package Variations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:529deda5cf591fdbd4c074ec1b4f06d7af48a42104cc1afa6ca36f89721af6b3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c521acf6c61dec4e66f747e37f3db5120ff5bd43fa5170cfd72f19e8b93318e4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::bad"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base") (variation true)))))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::good"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base") (variation true)))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::bad"))) (kind featureTyping) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::good"))) (kind featureTyping) (ordinal 0))
       (authored-target "Base")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Base")))))
   )
   (relationships
-    (relationship (kind typing) (variation true) (source (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::bad"))) (target (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::bad"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::bad"))) (target (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder"))) (provenance implied))
+    (relationship (kind typing) (variation true) (source (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::good"))) (target (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::good"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::good"))) (target (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder"))) (provenance implied))
   )
   (evaluation
   )
@@ -81,9 +70,9 @@ package Variations {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Base")))
-      (subtype (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::bad")) (scopes any))
+      (subtype (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::good")) (scopes any))
     )
-    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::bad")))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::good")))
       (featured-by (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder")))
       (type (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Base")) (provenance authored))
       (effective-type (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Base")) (source direct))
@@ -94,8 +83,8 @@ package Variations {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (range (start 7 29) (end 7 33)) (probe (position 7 29))
-    (reference (id (source (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::bad"))) (kind featureTyping) (ordinal 0) (authored-target "Base")
+  (query (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (range (start 9 30) (end 9 34)) (probe (position 9 30))
+    (reference (id (source (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Holder::good"))) (kind featureTyping) (ordinal 0) (authored-target "Base")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_usage_variation_is_abstract.md") (qualified-name "Variations::Base")))))
     )
   )

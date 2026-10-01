@@ -702,22 +702,11 @@ impl TypeIndex {
         storage: &SemanticModelStorage,
         feature: DeclarationId,
     ) -> Option<UsageTimeVariationOutcome> {
-        use crate::model::DeclarationKind;
         let declaration = storage.declaration(feature)?;
         if crate::resolve::is_usage_declaration(declaration.kind) {
             return Some(self.usage_may_time_vary(storage, feature));
         }
-        if !matches!(
-            declaration.kind,
-            DeclarationKind::KermlFeature
-                | DeclarationKind::KermlStep
-                | DeclarationKind::KermlExpression
-                | DeclarationKind::KermlBooleanExpression
-                | DeclarationKind::KermlConnector
-                | DeclarationKind::KermlBinding
-                | DeclarationKind::KermlInvariant
-                | DeclarationKind::KermlEnd
-        ) {
+        if !crate::resolve::is_feature_declaration(declaration.kind) {
             return None;
         }
         let Some(facts) = storage.declaration_facts(feature) else {

@@ -370,7 +370,7 @@ impl<D> SemanticModel<D> {
             // lowered by `lower_end_decl` with the same modifier facts.
             if self.is_end_feature(id)
                 && (facts.modifiers.derived
-                    || facts.modifiers.is_abstract
+                    || facts.modifiers.effectively_abstract()
                     || facts.modifiers.composite
                     || facts.modifiers.portion)
             {
@@ -392,9 +392,10 @@ impl<D> SemanticModel<D> {
             self.collect_metadata_body_features(id, declaration.kind, diagnostics)?;
             self.collect_port_member_composition(id, declaration.kind, diagnostics)?;
             self.collect_parallel_state_subactions(id, declaration.kind, facts, diagnostics)?;
+            self.collect_variation_owned_features(id, facts, diagnostics)?;
 
             // An abstract declaration is deliberately incomplete, so its end count states nothing.
-            if !is_connection_like(declaration.kind) || facts.modifiers.is_abstract {
+            if !is_connection_like(declaration.kind) || facts.modifiers.effectively_abstract() {
                 continue;
             }
             // The abstract guard above now fires for all four connection-like kinds:
@@ -450,6 +451,22 @@ impl<D> SemanticModel<D> {
             let Some(ResolutionStatus::Resolved(target)) = self.resolution.outcome(index) else {
                 continue;
             };
+            // SysML 8.3.6.2/8.3.6.4 `validate{Definition,Usage}VariationSpecialization`. The
+            // normative OCL reads `ownedSpecialization.specific`, which is always the variation
+            // itself; the Pilot's validator checks `general`, the only reading that is not
+            // vacuous, and so does this rule. Every authored Specialization subkind applies:
+            // `edge_scopes` is the canonical table of them.
+            if crate::index::types::edge_scopes(reference.kind).is_some()
+                && self.is_variation(reference.source)
+                && self.is_variation(target)
+            {
+                diagnostics.push(self.reference_diagnostic(
+                    reference,
+                    DiagnosticCode::VariationSpecializesVariation,
+                    DiagnosticSeverity::Warning,
+                    Some(target),
+                )?);
+            }
             match reference.kind {
                 // SysML 8.4.4: a flow payload carries an occurrence, not a value. The occurrence
                 // families are exactly those descending from `Occurrence` in the metamodel, so this
@@ -651,5 +668,38 @@ impl<D> SemanticModel<D> {
             }
             Conformance::Conforms | Conformance::Indeterminate(_) => None,
         }
+    }
+
+    /// Whether a declaration carries the authored `variation` fact.
+    fn is_variation(&self, id: DeclarationId) -> bool {
+        self.storage
+            .declaration_facts(id)
+            .is_some_and(|facts| facts.modifiers.variation)
+    }
+
+    /// SysML 8.3.6.2/8.3.6.4 `validate{Definition,Usage}VariationOwnedFeatureMembership`:
+    /// `isVariation implies ownedFeatureMembership->isEmpty()`. A variant is owned through a
+    /// VariantMembership, which is not a FeatureMembership, so every other canonical
+    /// Feature-membership member of a variation is reported at that member.
+    fn collect_variation_owned_features(
+        &self,
+        id: DeclarationId,
+        facts: &DeclarationFacts,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        if !facts.modifiers.variation {
+            return Ok(());
+        }
+        for member in self.owned_feature_members(id) {
+            if self.effective_membership_role(member) == Some(crate::MembershipRole::Variant) {
+                continue;
+            }
+            diagnostics.push(self.declaration_diagnostic(
+                member,
+                DiagnosticCode::VariationOwnsFeatureMembership,
+                DiagnosticSeverity::Warning,
+            )?);
+        }
+        Ok(())
     }
 }

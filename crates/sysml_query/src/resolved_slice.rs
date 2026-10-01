@@ -1409,6 +1409,13 @@ fn write_element(
         }
         writeln!(output, ")")?;
     }
+    if !inspection.implied_modifiers.is_empty() {
+        write!(output, "{indent}  (implied-modifiers")?;
+        for modifier in inspection.implied_modifiers.iter() {
+            write!(output, " {:?}", modifier.as_str())?;
+        }
+        writeln!(output, ")")?;
+    }
     if let Some(portion) = inspection.portion_kind {
         writeln!(output, "{indent}  (portion {})", portion_name(portion))?;
     }

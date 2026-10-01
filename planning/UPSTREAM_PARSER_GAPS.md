@@ -94,7 +94,6 @@ rerun against the exact replacement revision when fixed.
 | Gap | Information unavailable to consumers | Minimum upstream acceptance evidence |
 | --- | --- | --- |
 | 61 | `message` has no member variant in a calc-shaped body | Give `message` a typed member variant in the calc-shaped body grammar; prove `message m of T;` produces one node whose keyword never reaches the AST as a feature reference |
-| 78 | `abstract` paired with `variation`, in either order | Accept the modifier pair on definition and usage declarations; prove `abstract variation part def Good;` and `abstract variation part good : Base;` parse, as the bare `variation` spellings already do |
 | 41 | Lexically distinguished implicit `that` self-reference | Produce a dedicated typed form that cannot collide with a user declaration; cover bare, cast, and member-access expressions |
 | 55 | `//` and `/** ... */` comment fidelity, and `DocComment` text normalization | Decide and test whether doc-style trivia is syntax; if syntax, preserve kind, raw span, and one normalized-text policy centrally |
 
@@ -125,11 +124,6 @@ regenerating the lockfile through the normal dependency workflow.
   `unexpected_keyword_in_scope` at `695b2b44`, while `flow a.y to b.x1;` and `redefines
   predecessors [0];` reach typed nodes. The KerML message declaration cannot be authored in a
   `classifier`, `struct`, `class` or `behavior` body.
-
-- Gap 78. Unchanged. Probed one spelling per document at `695b2b44`: `abstract variation part def
-  Good;` is `recovered_package_body_element`, `abstract variation part good : Base;` is
-  `recovered_part_def_body_element`, and `attribute def X { abstract variation attribute a; }` is
-  `unsupported_grammar_form`; the bare `variation` spellings parse. Seven fixtures stay blocked.
 
 - Gap 41. KerML's implicit self-reference identifier `that` has no lexically-distinguished status
   in the parser: `SYSML_RESERVED_KEYWORDS` (`src/parser/lex.rs`) does not contain `"that"`, so it

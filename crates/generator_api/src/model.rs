@@ -370,7 +370,11 @@ impl GeneratorModelView {
             }),
             derived: has(ElementModifier::Derived),
             constant: has(ElementModifier::Constant),
-            abstract_: has(ElementModifier::Abstract),
+            // Effective abstractness: authored, or implied by `variation`.
+            abstract_: has(ElementModifier::Abstract)
+                || inspection
+                    .implied_modifiers
+                    .contains(&ElementModifier::Abstract),
             variation: has(ElementModifier::Variation),
             individual: has(ElementModifier::Individual),
             conjugated: false,
