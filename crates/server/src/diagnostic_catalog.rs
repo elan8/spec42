@@ -442,6 +442,27 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "invocation_argument_redefines_no_parameter",
+        severity: "warning",
+        meaning: "A named invocation argument names a feature of the invoked behavior that is not one of its input parameters (KerML validateInvocationExpressionParameterRedefinition).",
+        typical_fix: "Name an `in` or `inout` parameter of the invoked behavior.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "invocation_duplicate_parameter_redefinition",
+        severity: "warning",
+        meaning: "Two arguments of one invocation bind the same parameter (KerML validateInvocationExpressionNoDuplicateParameterRedefinition).",
+        typical_fix: "Bind each parameter at most once.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "constructor_duplicate_feature_redefinition",
+        severity: "warning",
+        meaning: "Two arguments of one `new T(...)` initialise the same feature of T (KerML validateConstructorExpressionNoDuplicateFeatureRedefinition).",
+        typical_fix: "Initialise each feature at most once.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "invocation_instantiated_type_not_behavior",
         severity: "warning",
         meaning: "An invocation `F(...)` invokes something that is neither a behavior nor a feature typed by a behavior (KerML validateInvocationExpressionInstantiatedType).",

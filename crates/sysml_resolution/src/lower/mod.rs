@@ -101,6 +101,23 @@ pub(crate) struct FeatureValueEndpoints {
     pub(crate) result: DeclarationId,
 }
 
+/// The top-level instantiation expression of a FeatureValue, awaiting its callee reference.
+///
+/// `record_feature_value` mints the value Expression and knows its top-level syntax node; the
+/// expression walker that later lowers that node pushes the callee reference. The argument
+/// Features are minted there, where the callee reference that scopes a named argument exists, and
+/// only for the node recorded here -- a nested invocation shares its enclosing expression
+/// declaration and owns no argument Features.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct PendingInstantiation {
+    pub(crate) expression: DeclarationId,
+    /// The expression for an invocation, its result for a constructor.
+    pub(crate) container: DeclarationId,
+    pub(crate) form: crate::lower::facts::InstantiationForm,
+    /// The top-level expression node's span, identifying the node within `expression`.
+    pub(crate) span: Span,
+}
+
 /// One buffered body-less `#tag` prefix metadata keyword awaiting binding to the member it
 /// precedes. Both fields are arena/source identities copied out of the parser node, so the buffer
 /// does not borrow the parsed document.
@@ -128,6 +145,7 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) operator_expressions: Vec<OperatorExpressionRecord>,
     pub(crate) expression_arguments: Vec<ExpressionArgumentRecord>,
     pub(crate) constructor_expressions: Vec<ConstructorExpressionRecord>,
+    pub(crate) pending_instantiations: Vec<PendingInstantiation>,
     pub(crate) feature_chain_expressions: Vec<FeatureChainExpressionRecord>,
     pub(crate) feature_reference_expressions: Vec<FeatureReferenceExpressionRecord>,
     pub(crate) metadata_annotations: Vec<MetadataAnnotationRecord>,
@@ -680,6 +698,28 @@ impl SemanticModelBuilder {
             self.constructor_expressions
                 .push(ConstructorExpressionRecord { expression, result });
         }
+        let instantiation = match &value.value.expression.value {
+            Expression::Invocation { callee, .. }
+                if matches!(
+                    callee.value,
+                    Expression::FeatureRef(_) | Expression::FeatureChainRef(_)
+                ) =>
+            {
+                Some((expression, crate::lower::facts::InstantiationForm::Invocation))
+            }
+            Expression::Constructor { .. } => {
+                Some((result, crate::lower::facts::InstantiationForm::Constructor))
+            }
+            _ => None,
+        };
+        if let Some((container, form)) = instantiation {
+            self.pending_instantiations.push(PendingInstantiation {
+                expression,
+                container,
+                form,
+                span: value.value.expression.span,
+            });
+        }
         let endpoints = FeatureValueEndpoints { expression, result };
         self.push_feature_value(
             declaration,
@@ -1192,19 +1232,100 @@ impl SemanticModelBuilder {
         callee: &Node<Expression>,
         argument_count: usize,
         span: Span,
-    ) -> Result<(), ConstructionError> {
+    ) -> Result<Option<AuthoredReferenceId>, ConstructionError> {
         match &callee.value {
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let reference =
                     self.push_invocation_callee_reference(document, declaration, *target)?;
-                self.push_invocation(declaration, document, reference, argument_count, span)
+                self.push_invocation(declaration, document, reference, argument_count, span)?;
+                Ok(Some(reference))
             }
             Expression::MemberAccess { .. } => {
                 self.push_member_access_expression(declaration, document, callee)?;
-                Ok(())
+                Ok(None)
             }
-            _ => Ok(()),
+            _ => Ok(None),
         }
+    }
+
+    /// Mints the argument Features of the instantiation expression `node` when it is the recorded
+    /// top-level expression of `declaration` (see [`PendingInstantiation`]).
+    ///
+    /// Each argument becomes an anonymous `in` Feature of the container at its authored position.
+    /// A named argument's parameter is an authored Redefinition resolved among the members of the
+    /// settled `callee` (a lookup that starts from the callee reference's target, recorded as a
+    /// root [`MemberAccessNarrowing`]).
+    pub(crate) fn lower_instantiation_arguments(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        node: &Node<Expression>,
+        callee: AuthoredReferenceId,
+        args: &[sysml_v2_parser::ast::Argument],
+    ) -> Result<(), ConstructionError> {
+        let Some(index) = self.pending_instantiations.iter().position(|pending| {
+            pending.expression == declaration && pending.span == node.span
+        }) else {
+            return Ok(());
+        };
+        let pending = self.pending_instantiations.swap_remove(index);
+        for (position, argument) in args.iter().enumerate() {
+            // A named argument spans its parameter name through its value.
+            let parameter_span = argument
+                .parameter
+                .map(|parameter| {
+                    self.documents[document.index()]
+                        .parsed
+                        .qualified_reference(parameter)
+                        .map(|reference| reference.metadata.span)
+                        .ok_or(ConstructionError::InvalidParserReference)
+                })
+                .transpose()?;
+            let span = match parameter_span {
+                Some(start) => Span {
+                    len: (argument.value.span.offset + argument.value.span.len)
+                        .checked_sub(start.offset)
+                        .ok_or(ConstructionError::InvalidParserReference)?,
+                    ..start
+                },
+                None => argument.value.span,
+            };
+            let feature = self.push_typed_declaration(
+                document,
+                Some(pending.container),
+                DeclarationKind::KermlFeature,
+                None,
+                span,
+                DeclarationFacts {
+                    direction: Some(ParameterDirection::In),
+                    instantiation_argument: Some(crate::lower::facts::InstantiationArgument {
+                        form: pending.form,
+                        position: u32::try_from(position)
+                            .map_err(|_| ConstructionError::Capacity)?,
+                        named: argument.parameter.is_some(),
+                    }),
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            self.push_membership(feature, MembershipKind::Feature, Visibility::Default, span)?;
+            if let (Some(parameter), Some(span)) = (argument.parameter, parameter_span) {
+                let reference = self.push_reference(PendingReference {
+                    source: feature,
+                    kind: ReferenceKind::Redefinition,
+                    document,
+                    local: parameter,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+                self.references[reference.index()].member_access_narrowings =
+                    Box::new([MemberAccessNarrowing {
+                        segment_count: 0,
+                        target: callee,
+                    }]);
+            }
+        }
+        Ok(())
     }
 
     /// Pushes one `ReferenceKind::InvocationCallee` reference for a callee/`Constructor` type name

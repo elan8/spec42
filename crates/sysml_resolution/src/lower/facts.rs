@@ -292,6 +292,11 @@ pub(crate) struct DeclarationFacts {
     /// This ReferenceUsage is the TransitionUsage's `transitionLink` feature, which
     /// `checkTransitionUsageSuccessionBindingConnector` binds to the transition's succession.
     pub(crate) is_transition_link: bool,
+    /// This Feature is the argument at `position` of an instantiation expression (KerML
+    /// `InvocationExpression` input parameter, or `ConstructorExpression` result feature), minted
+    /// for each argument the author wrote. A named argument owns the authored Redefinition of
+    /// the parameter it names.
+    pub(crate) instantiation_argument: Option<InstantiationArgument>,
     /// This ParameterUsage is the TransitionUsage's synthesized second input parameter.
     pub(crate) is_transition_payload_parameter: bool,
     /// This ParameterUsage is the payload parameter of a transition's trigger AcceptActionUsage.
@@ -1164,4 +1169,24 @@ pub(crate) struct AuthoredInvocation {
     pub(crate) argument_count: u32,
     /// The invocation expression's own range.
     pub(crate) span: Span,
+}
+
+/// Which instantiation expression an argument Feature belongs to.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum InstantiationForm {
+    /// An `InvocationExpression`: the argument is an `in` parameter of the expression.
+    Invocation,
+    /// A `ConstructorExpression`: the argument is an `in` feature of the expression's result.
+    Constructor,
+}
+
+/// The lowering role of an instantiation-expression argument Feature.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct InstantiationArgument {
+    pub(crate) form: InstantiationForm,
+    /// Zero-based authored argument position.
+    pub(crate) position: u32,
+    /// The author named the parameter (`f(x = a)`); a positional argument's redefinition is
+    /// implied by its position instead.
+    pub(crate) named: bool,
 }

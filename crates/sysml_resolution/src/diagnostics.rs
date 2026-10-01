@@ -517,6 +517,15 @@ semantic_diagnostic_codes! {
     /// KerML 8.3.4.8.5 `validateFeatureReferenceExpressionReferentIsFeature`.
     FeatureReferenceReferentNotFeature => "feature_reference_referent_not_feature",
         "A feature reference expression must reference a feature.";
+    /// KerML 8.3.4.8.8 `validateInvocationExpressionParameterRedefinition`.
+    InvocationArgumentRedefinesNoParameter => "invocation_argument_redefines_no_parameter",
+        "An invocation argument must redefine one input parameter of the invoked type.";
+    /// KerML 8.3.4.8.8 `validateInvocationExpressionNoDuplicateParameterRedefinition`.
+    InvocationDuplicateParameterRedefinition => "invocation_duplicate_parameter_redefinition",
+        "Two arguments of an invocation must not bind the same parameter.";
+    /// KerML 8.3.4.8.3 `validateConstructorExpressionNoDuplicateFeatureRedefinition`.
+    ConstructorDuplicateFeatureRedefinition => "constructor_duplicate_feature_redefinition",
+        "Two arguments of a constructor must not initialise the same feature.";
     /// KerML 8.3.4.8.8 `validateInvocationExpressionInstantiatedType`.
     InvocationInstantiatedTypeNotBehavior => "invocation_instantiated_type_not_behavior",
         "An invocation must invoke a behavior or a feature typed by a behavior.";

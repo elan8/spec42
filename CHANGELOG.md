@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Instantiation argument validation.** Each argument of a feature value's top-level invocation
+  or `new T(...)` is now an argument feature, and a named argument redefines the parameter it
+  names, resolved among the invoked type's members. New diagnostics check KerML
+  `validateInvocationExpressionParameterRedefinition` (`invocation_argument_redefines_no_parameter`),
+  `validateInvocationExpressionNoDuplicateParameterRedefinition`
+  (`invocation_duplicate_parameter_redefinition`) and
+  `validateConstructorExpressionNoDuplicateFeatureRedefinition`
+  (`constructor_duplicate_feature_redefinition`) over named arguments. A named argument that
+  names no member of the invoked type is now reported unresolved.
+
 - **Feature reference referent validation.** KerML 8.3.4.8.5
   `validateFeatureReferenceExpressionReferentIsFeature` (`feature_reference_referent_not_feature`)
   reports a name used as a value that references a type or other non-feature. The operand of

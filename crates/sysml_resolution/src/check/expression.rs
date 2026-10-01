@@ -28,6 +28,7 @@ use crate::index::expressions::RequiredMeasurement;
 use crate::index::expressions::UnitOutcome;
 use crate::index::types::TypeIndex;
 use crate::lower::facts::ExpressionOperandRole;
+use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::FilterForm;
 use crate::model::element_kind::element_kind;
 use crate::model::render as writer;
@@ -87,6 +88,7 @@ impl<D> SemanticModel<D> {
         self.collect_invocation_arity(document, diagnostics)?;
         self.collect_invocation_instantiated_types(document, diagnostics)?;
         self.collect_feature_reference_referents(document, diagnostics)?;
+        self.collect_instantiation_argument_redefinitions(document, diagnostics)?;
         Ok(())
     }
 
@@ -431,6 +433,93 @@ impl<D> SemanticModel<D> {
                     range: document_range(&self.storage, document, &filter.span)?,
                 },
                 related: Box::default(),
+            });
+        }
+        Ok(())
+    }
+
+    /// KerML 8.3.4.8.8 `validateInvocationExpressionParameterRedefinition` /
+    /// `validateInvocationExpressionNoDuplicateParameterRedefinition` and KerML 8.3.4.8.3
+    /// `validateConstructorExpressionNoDuplicateFeatureRedefinition` over named arguments.
+    ///
+    /// A named argument's Feature owns the authored Redefinition of the parameter it names, which
+    /// resolves among the members of the instantiated type. For an invocation that target must be
+    /// an input (`in`/`inout`) parameter; two arguments of one container must not redefine the
+    /// same target. A positional argument's redefinition is implied by its position
+    /// (`checkFeatureParameterRedefinition`), which this publication does not derive, so it is
+    /// left unanswered, as is a named argument whose parameter did not settle.
+    pub(crate) fn collect_instantiation_argument_redefinitions(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        use crate::lower::facts::InstantiationForm;
+        let mut parameters = std::collections::BTreeMap::new();
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            if reference.kind == ReferenceKind::Redefinition
+                && crate::resolve::root_narrowing(reference).is_some()
+            {
+                let id = AuthoredReferenceId::from_index(index)
+                    .map_err(|_| ResolutionError::Capacity)?;
+                parameters.insert(reference.source, id);
+            }
+        }
+        let mut bound: std::collections::BTreeSet<(DeclarationId, DeclarationId)> =
+            std::collections::BTreeSet::new();
+        for (index, declaration) in self.storage.declarations.iter().enumerate() {
+            if declaration.document != document {
+                continue;
+            }
+            let Some(argument) = self.storage.declaration_facts[index].instantiation_argument
+            else {
+                continue;
+            };
+            if !argument.named {
+                continue;
+            }
+            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let (Some(container), Some(reference)) = (declaration.owner, parameters.get(&id))
+            else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            let Some(ResolutionStatus::Resolved(parameter)) = self.resolution.outcome(*reference)
+            else {
+                continue;
+            };
+            let code = if argument.form == InstantiationForm::Invocation
+                && !self.storage.declaration_facts(parameter).is_some_and(|facts| {
+                    matches!(
+                        facts.direction,
+                        Some(ParameterDirection::In) | Some(ParameterDirection::InOut)
+                    )
+                }) {
+                DiagnosticCode::InvocationArgumentRedefinesNoParameter
+            } else if !bound.insert((container, parameter)) {
+                match argument.form {
+                    InstantiationForm::Invocation => {
+                        DiagnosticCode::InvocationDuplicateParameterRedefinition
+                    }
+                    InstantiationForm::Constructor => {
+                        DiagnosticCode::ConstructorDuplicateFeatureRedefinition
+                    }
+                }
+            } else {
+                continue;
+            };
+            diagnostics.push(Diagnostic {
+                payload: None,
+                message: code.describe().into(),
+                code,
+                severity: DiagnosticSeverity::Warning,
+                origin: DiagnosticOrigin::Semantic,
+                subject: self.symbol_id(id),
+                location: DiagnosticLocation {
+                    document: writer::document_identity(self, document).into(),
+                    range: document_range(&self.storage, document, &declaration.span)?,
+                },
+                related: Box::from([
+                    self.related_declaration(parameter, conformance::RELATED_DECLARED)?
+                ]),
             });
         }
         Ok(())

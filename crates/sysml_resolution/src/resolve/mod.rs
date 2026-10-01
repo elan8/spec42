@@ -350,8 +350,10 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         .enumerate()
         .filter(|(index, _)| *index >= settled)
         .filter_map(|(index, reference)| {
-            (reference.kind() == ReferenceKind::Redefinition && !reference.flags().dotted)
-                .then_some(index)
+            (reference.kind() == ReferenceKind::Redefinition
+                && !reference.flags().dotted
+                && root_narrowing(reference).is_none())
+            .then_some(index)
         })
         .collect();
     // An alias target can be any element (not just a Type), so `AliasBinding` resolves against
@@ -469,13 +471,17 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             // A dotted subsetting-family target (`subsets a.b`, `crosses a.b`, `inverse of
             // a.b`, `chains a.b`) is a KerML `FeatureChain`, walked hop by hop exactly like a
             // member access; its `ReferenceKind` stays the authored relationship.
+            // A named argument's parameter Redefinition is looked up among the members of the
+            // invocation's settled callee, which is its root narrowing.
             (matches!(
                 reference.kind(),
                 ReferenceKind::MemberAccessOperand
                     | ReferenceKind::ExplicitRelationshipEndpoint
                     | ReferenceKind::AllocateSource
                     | ReferenceKind::AllocateTarget
-            ) || (reference.flags().dotted
+            ) || (reference.kind() == ReferenceKind::Redefinition
+                && root_narrowing(reference).is_some())
+                || (reference.flags().dotted
                 && matches!(
                     reference.kind(),
                     ReferenceKind::Subsetting
@@ -2439,6 +2445,22 @@ pub(crate) fn resolve_member_access_reference_with_path<R: ResolutionReferenceFa
         .ok_or(ResolutionError::InvalidStorage)?;
     scratch.candidates.clear();
     scratch.next_candidates.clear();
+    // A root narrowing replaces the lexical lookup of a first segment: every segment is then a
+    // member of the narrowing target.
+    let first_member_segment = if let Some(root) = root_narrowing(reference) {
+        match outcomes.get(root.target.index()) {
+            Some(ResolutionStatus::Resolved(target)) => scratch.candidates.push(*target),
+            Some(ResolutionStatus::Ambiguous(range)) => {
+                return Ok(ResolutionStatus::Ambiguous(*range));
+            }
+            Some(ResolutionStatus::NonConverged) => return Ok(ResolutionStatus::NonConverged),
+            Some(ResolutionStatus::Unsupported) => return Ok(ResolutionStatus::Unsupported),
+            Some(ResolutionStatus::Unresolved) | None => return Ok(ResolutionStatus::Unresolved),
+        }
+        0
+    } else {
+        1
+    };
     // `interface lesConnection : LESInterface connect commandServiceModule.commandModule.
     // lesInterfacePort to launchEscapeSystem.cmInterfacePort;`: a dotted `ConnectorEnd` endpoint
     // is authored directly against the named interface/connection usage (`reference.source()` is
@@ -2490,31 +2512,35 @@ pub(crate) fn resolve_member_access_reference_with_path<R: ResolutionReferenceFa
     } else {
         Some(reference.source())
     };
-    lookup_lexical_into(
-        declarations,
-        &indexes,
-        lexical_scope,
-        segments[0],
-        // A member-access chain is never a Redefinition reference.
-        LookupTarget {
-            domain: DeclarationDomain::Any,
-            excluded: None,
-            first_scope: FirstScopePolicy::OwnedThenInherited,
-        },
-        scratch.candidates,
-        scratch.work,
-    )?;
-    if let Some(path) = path.as_mut() {
-        path.push(status_from_candidates(
+    if first_member_segment == 1 {
+        lookup_lexical_into(
+            declarations,
+            &indexes,
+            lexical_scope,
+            segments[0],
+            // A member-access chain is never a Redefinition reference.
+            LookupTarget {
+                domain: DeclarationDomain::Any,
+                excluded: None,
+                first_scope: FirstScopePolicy::OwnedThenInherited,
+            },
             scratch.candidates,
-            scratch.ambiguous_candidates,
-        )?);
+            scratch.work,
+        )?;
+        if let Some(path) = path.as_mut() {
+            path.push(status_from_candidates(
+                scratch.candidates,
+                scratch.ambiguous_candidates,
+            )?);
+        }
     }
-    for (segment_index, segment) in segments.iter().enumerate().skip(1) {
+    for (segment_index, segment) in segments.iter().enumerate().skip(first_member_segment) {
         for narrowing in reference
             .member_access_narrowings()
             .iter()
-            .filter(|narrowing| narrowing.segment_count as usize == segment_index)
+            .filter(|narrowing| {
+                narrowing.segment_count != 0 && narrowing.segment_count as usize == segment_index
+            })
         {
             scratch.candidates.clear();
             match outcomes.get(narrowing.target.index()) {
@@ -2587,4 +2613,15 @@ pub(crate) fn status_from_candidates(
             )?))
         }
     }
+}
+
+/// The narrowing that roots a reference's lookup at another reference's settled target, if any.
+pub(crate) fn root_narrowing<R: ResolutionReferenceFact>(
+    reference: &R,
+) -> Option<crate::lower::facts::MemberAccessNarrowing> {
+    reference
+        .member_access_narrowings()
+        .iter()
+        .find(|narrowing| narrowing.segment_count == 0)
+        .copied()
 }

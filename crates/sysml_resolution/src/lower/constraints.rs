@@ -145,14 +145,24 @@ impl SemanticModelBuilder {
                 self.lower_constraint_expression(document, declaration, family, right)
             }
             Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(document, declaration, callee, args.len(), node.span)?;
+                if let Some(reference) = self.lower_invocation_callee(
+                    document,
+                    declaration,
+                    callee,
+                    args.len(),
+                    node.span,
+                )? {
+                    self.lower_instantiation_arguments(document, declaration, node, reference, args)?;
+                }
                 for arg in args {
                     self.lower_constraint_expression(document, declaration, family, &arg.value)?;
                 }
                 Ok(())
             }
             Expression::Constructor { type_name, args } => {
-                self.push_invocation_callee_reference(document, declaration, *type_name)?;
+                let reference =
+                    self.push_invocation_callee_reference(document, declaration, *type_name)?;
+                self.lower_instantiation_arguments(document, declaration, node, reference, args)?;
                 for arg in args {
                     self.lower_constraint_expression(document, declaration, family, &arg.value)?;
                 }
@@ -315,14 +325,24 @@ impl SemanticModelBuilder {
                 self.lower_calc_expression(document, declaration, family, right)
             }
             Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(document, declaration, callee, args.len(), node.span)?;
+                if let Some(reference) = self.lower_invocation_callee(
+                    document,
+                    declaration,
+                    callee,
+                    args.len(),
+                    node.span,
+                )? {
+                    self.lower_instantiation_arguments(document, declaration, node, reference, args)?;
+                }
                 for arg in args {
                     self.lower_calc_expression(document, declaration, family, &arg.value)?;
                 }
                 Ok(())
             }
             Expression::Constructor { type_name, args } => {
-                self.push_invocation_callee_reference(document, declaration, *type_name)?;
+                let reference =
+                    self.push_invocation_callee_reference(document, declaration, *type_name)?;
+                self.lower_instantiation_arguments(document, declaration, node, reference, args)?;
                 for arg in args {
                     self.lower_calc_expression(document, declaration, family, &arg.value)?;
                 }
@@ -532,14 +552,24 @@ impl SemanticModelBuilder {
                 self.lower_filter_expression(document, declaration, right)
             }
             Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(document, declaration, callee, args.len(), node.span)?;
+                if let Some(reference) = self.lower_invocation_callee(
+                    document,
+                    declaration,
+                    callee,
+                    args.len(),
+                    node.span,
+                )? {
+                    self.lower_instantiation_arguments(document, declaration, node, reference, args)?;
+                }
                 for arg in args {
                     self.lower_filter_expression(document, declaration, &arg.value)?;
                 }
                 Ok(())
             }
             Expression::Constructor { type_name, args } => {
-                self.push_invocation_callee_reference(document, declaration, *type_name)?;
+                let reference =
+                    self.push_invocation_callee_reference(document, declaration, *type_name)?;
+                self.lower_instantiation_arguments(document, declaration, node, reference, args)?;
                 for arg in args {
                     self.lower_filter_expression(document, declaration, &arg.value)?;
                 }
