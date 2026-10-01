@@ -1252,9 +1252,8 @@ fn parse_redefinition_check_prerequisite(
         "flow_end_ordinal_and_library_anchors" => {
             Ok(RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors)
         }
-        "parameter_direction_and_inherited_position" => {
-            Ok(RedefinitionCheckPrerequisite::ParameterDirectionAndInheritedPosition)
-        }
+        "grammar_parameters" => Ok(RedefinitionCheckPrerequisite::GrammarParameters),
+        "expression_elements" => Ok(RedefinitionCheckPrerequisite::ExpressionElements),
         "constructor_result_and_instantiated_type_features" => {
             Ok(RedefinitionCheckPrerequisite::ConstructorResultAndInstantiatedTypeFeatures)
         }
@@ -8303,7 +8302,7 @@ mod tests {
 
     #[test]
     fn parses_manifest_scoped_redefinition_check_expectations_strictly() {
-        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (redefinition-check\n    (rule_id \"kerml-1.0:8.3.3.3.4:checkFeatureParameterRedefinition\")\n    (outcome unsupported)\n    (prerequisite parameter_direction_and_inherited_position))\n  (redefinition-check\n    (rule_id \"sysml-2.0:8.3.26.6:checkRenderingUsageRedefinition\")\n    (outcome unsupported)\n    (prerequisite view_rendering_membership)))\n~~~\n";
+        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (redefinition-check\n    (rule_id \"kerml-1.0:8.3.3.3.4:checkFeatureParameterRedefinition\")\n    (outcome unsupported)\n    (prerequisite grammar_parameters))\n  (redefinition-check\n    (rule_id \"sysml-2.0:8.3.26.6:checkRenderingUsageRedefinition\")\n    (outcome unsupported)\n    (prerequisite view_rendering_membership)))\n~~~\n";
         let parsed = parse_expected_semantics(fixture, "fixture.md")
             .unwrap()
             .expect("semantic expectations");
@@ -8313,7 +8312,7 @@ mod tests {
                 RedefinitionCheckExpectation {
                     rule: RedefinitionCheckKind::FeatureParameter,
                     outcome: RedefinitionCheckExpectationOutcome::Unsupported(
-                        RedefinitionCheckPrerequisite::ParameterDirectionAndInheritedPosition,
+                        RedefinitionCheckPrerequisite::GrammarParameters,
                     ),
                 },
                 RedefinitionCheckExpectation {

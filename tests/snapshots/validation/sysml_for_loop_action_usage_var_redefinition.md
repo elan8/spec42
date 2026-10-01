@@ -119,6 +119,7 @@ package Redefinition {
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::ForLoopAction::seq")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::ForLoopAction::var"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::ForLoopAction::seq")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::ForLoopAction::var")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::LoopAction::iterator")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_usage_var_redefinition.md") (path (named (kind package) (name "Redefinition")) (named (kind action-def) (name "Work")) (anonymous (kind for-loop) (ordinal 0)) (named (kind action) (name "step")))))
       (featured-by (node (document "memory://snapshot/sysml_for_loop_action_usage_var_redefinition.md") (path (named (kind package) (name "Redefinition")) (named (kind action-def) (name "Work")) (anonymous (kind for-loop) (ordinal 0)))))

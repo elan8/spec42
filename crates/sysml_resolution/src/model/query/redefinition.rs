@@ -95,9 +95,7 @@ impl<D> SemanticModel<D> {
             RedefinitionCheckKind::FeatureOwnedCrossFeatureSpecialization => {
                 self.owned_cross_feature_redefinition_check()
             }
-            RedefinitionCheckKind::FeatureParameter => RedefinitionCheckOutcome::Unsupported {
-                prerequisite: RedefinitionCheckPrerequisite::ParameterDirectionAndInheritedPosition,
-            },
+            RedefinitionCheckKind::FeatureParameter => self.feature_parameter_check(),
             RedefinitionCheckKind::FeatureResult => self.feature_result_check(),
             RedefinitionCheckKind::ConstructorExpressionResultFeature => {
                 RedefinitionCheckOutcome::Unsupported {
@@ -374,11 +372,59 @@ impl<D> SemanticModel<D> {
         generals
     }
 
+    /// KerML `checkFeatureParameterRedefinition`: each parameter of a Behavior or Step redefines
+    /// the parameter at its position of every Behavior or Step its owner directly specializes.
+    ///
+    /// Obligations come from the same derivation the synthesis uses, over the published direct
+    /// supertypes. A publication with a grammar-defined parameter lowering does not mint has
+    /// obligations that are not facts, which is reported as the unsupported prerequisite; an
+    /// owner whose specializations did not all settle may have supertypes this publication does
+    /// not know, and answers unresolved.
+    fn feature_parameter_check(&self) -> RedefinitionCheckOutcome {
+        use crate::resolve::parameter_positions::grammar_parameters_are_unlowered;
+        use crate::resolve::parameter_positions::is_behavior_or_step;
+        use crate::resolve::parameter_positions::owned_parameters;
+        use crate::resolve::parameter_positions::parameter_obligations;
+        if grammar_parameters_are_unlowered(&self.storage) {
+            return RedefinitionCheckOutcome::Unsupported {
+                prerequisite: RedefinitionCheckPrerequisite::GrammarParameters,
+            };
+        }
+        let generals = |declaration: DeclarationId| self.direct_generals(declaration);
+        let (Ok(owned), Ok(obligations)) = (
+            owned_parameters(&self.storage),
+            parameter_obligations(&self.storage, generals),
+        ) else {
+            return RedefinitionCheckOutcome::Unresolved;
+        };
+        let mut tally = CheckTally::default();
+        for (index, parameters) in owned.iter().enumerate() {
+            let Ok(owner) = DeclarationId::from_index(index) else {
+                return RedefinitionCheckOutcome::Unresolved;
+            };
+            if !parameters.is_empty()
+                && self
+                    .storage
+                    .declaration(owner)
+                    .is_some_and(|declaration| is_behavior_or_step(declaration.kind))
+                && self.specialization_hierarchy_is_unsettled(owner)
+            {
+                tally.require(None);
+            }
+        }
+        for obligation in obligations {
+            tally.require(Some(self.redefines(obligation.source, obligation.target)));
+        }
+        tally.outcome()
+    }
+
     /// KerML `checkFeatureResultRedefinition`: the result of a Function or Expression redefines
     /// the result of every Function or Expression its owner directly specializes.
     ///
     /// Obligations come from the same derivation the synthesis uses, over the published direct
-    /// supertypes. An owner whose specializations did not all settle -- including an
+    /// supertypes. A publication with an expression lowering does not represent as an Expression
+    /// element has results that are not facts, which is reported as the unsupported
+    /// prerequisite. An owner whose specializations did not all settle -- including an
     /// instantiation Expression whose callee, and so its typing, did not settle -- may have
     /// supertypes this publication does not know, and an owner with several results, or a
     /// supertype whose inherited result is ambiguous, has no single result to pair, so each
@@ -388,6 +434,13 @@ impl<D> SemanticModel<D> {
         use crate::resolve::result_parameters::is_function_or_expression;
         use crate::resolve::result_parameters::owned_result_parameters;
         use crate::resolve::result_parameters::result_obligations;
+        if self.storage.unlowered_expressions.iter().any(|site| {
+            site.kind == crate::lower::facts::UnloweredExpression::Element
+        }) {
+            return RedefinitionCheckOutcome::Unsupported {
+                prerequisite: RedefinitionCheckPrerequisite::ExpressionElements,
+            };
+        }
         let generals = |declaration: DeclarationId| self.direct_generals(declaration);
         let authored = self.authored_redefinition_pairs();
         let (Ok(owned), Ok(obligations)) = (

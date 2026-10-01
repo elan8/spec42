@@ -56,6 +56,9 @@ pub(crate) struct SemanticModelStorage {
     pub(crate) invocations: Box<[AuthoredInvocation]>,
     /// Every `assign` and the Features of its target parameter, in lowering order.
     pub(crate) assignments: Box<[crate::lower::facts::AssignmentRecord]>,
+    /// Every evaluation site whose authored expression lowering does not fully represent as
+    /// Expression elements, sorted and deduplicated.
+    pub(crate) unlowered_expressions: Box<[crate::lower::facts::UnloweredExpressionSite]>,
     /// Every Type's owned end Features, grouped by owner and in authored order within an owner.
     ///
     /// The one canonical representation of KerML `Type::ownedEndFeature` (and so of the owned

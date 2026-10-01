@@ -672,6 +672,7 @@ mod tests {
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
             assignments: Box::new([]),
+            unlowered_expressions: Box::new([]),
             owned_end_features: Box::new([]),
         };
         let rule = GENERATED_CONDITIONAL_LIBRARY_SPECIALIZATION_RULES
@@ -788,6 +789,7 @@ mod tests {
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
             assignments: Box::new([]),
+            unlowered_expressions: Box::new([]),
             owned_end_features: [(1, 2), (1, 3), (4, 5)]
                 .map(|(owner, end)| OwnedEndRecord {
                     owner: id(owner),
@@ -973,6 +975,7 @@ mod tests {
             }]),
             invocations: Box::new([]),
             assignments: Box::new([]),
+            unlowered_expressions: Box::new([]),
             owned_end_features: Box::new([]),
         }
     }
@@ -1064,6 +1067,7 @@ mod tests {
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
             assignments: Box::new([]),
+            unlowered_expressions: Box::new([]),
             owned_end_features: Box::new([]),
         }
     }
@@ -1153,6 +1157,7 @@ mod tests {
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
             assignments: Box::new([]),
+            unlowered_expressions: Box::new([]),
             owned_end_features: Box::new([]),
         }
     }

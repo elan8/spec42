@@ -65,6 +65,7 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
+        self.note_expression_node(declaration, node);
         match &node.value {
             Expression::LiteralInteger(_)
             | Expression::LiteralReal(_)
@@ -239,6 +240,7 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
+        self.note_expression_node(declaration, node);
         match &node.value {
             Expression::LiteralInteger(_)
             | Expression::LiteralReal(_)
@@ -446,6 +448,7 @@ impl SemanticModelBuilder {
         declaration: DeclarationId,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
+        self.note_expression_node(declaration, node);
         match &node.value {
             Expression::LiteralInteger(_)
             | Expression::LiteralReal(_)

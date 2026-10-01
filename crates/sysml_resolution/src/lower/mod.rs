@@ -167,6 +167,7 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) filter_conditions: Vec<AuthoredFilterCondition>,
     pub(crate) invocations: Vec<AuthoredInvocation>,
     pub(crate) assignments: Vec<crate::lower::facts::AssignmentRecord>,
+    pub(crate) unlowered_expressions: Vec<crate::lower::facts::UnloweredExpressionSite>,
     /// Owned end Features in lowering order; sorted stably by owner at the freeze barrier.
     pub(crate) owned_end_features: Vec<OwnedEndRecord>,
     pub(crate) symbols: SymbolTableBuilder,
@@ -1373,6 +1374,47 @@ impl SemanticModelBuilder {
         Ok(true)
     }
 
+    /// Records what the expression node `node`, written at the evaluation site `site`, leaves out
+    /// of the publication (see [`crate::lower::facts::UnloweredExpression`]). Every expression
+    /// walker calls this once per node it visits.
+    ///
+    /// A literal (whose `LiteralExpression` owns neither parameters nor its own result), an
+    /// invocation or constructor (each its own element, see [`Self::enter_instantiation`]) and a
+    /// one-operand grouping are fully represented. The top-level node of a FeatureValue is its
+    /// value Expression: a feature reference, feature chain or body is represented with its
+    /// result (and a chain's input parameter), while an operator's operand parameters are not.
+    /// Every other node is no element at all.
+    pub(crate) fn note_expression_node(&mut self, site: DeclarationId, node: &Node<Expression>) {
+        use crate::lower::facts::UnloweredExpression;
+        match &node.value {
+            Expression::LiteralInteger(_)
+            | Expression::LiteralReal(_)
+            | Expression::LiteralBoolean(_)
+            | Expression::LiteralString(_)
+            | Expression::Null
+            | Expression::Invocation { .. }
+            | Expression::Constructor { .. } => return,
+            Expression::Sequence { operands, .. } if operands.value.elements.len() == 1 => return,
+            _ => {}
+        }
+        let top_level = self.declarations.get(site.index()).is_some_and(|declaration| {
+            declaration.kind == DeclarationKind::KermlExpression && declaration.span == node.span
+        });
+        let kind = match (top_level, &node.value) {
+            (
+                true,
+                Expression::FeatureRef(_)
+                | Expression::FeatureChainRef(_)
+                | Expression::MemberAccess { .. }
+                | Expression::BodyExpr(_),
+            ) => return,
+            (true, _) => UnloweredExpression::Parameters,
+            (false, _) => UnloweredExpression::Element,
+        };
+        self.unlowered_expressions
+            .push(crate::lower::facts::UnloweredExpressionSite { site, kind });
+    }
+
     /// Closes the instantiation scope [`Self::enter_instantiation`] opened, if it opened one.
     pub(crate) fn leave_instantiation(&mut self, entered: bool) {
         if entered {
@@ -1760,6 +1802,12 @@ impl SemanticModelBuilder {
             filter_conditions: self.filter_conditions.into_boxed_slice(),
             invocations: self.invocations.into_boxed_slice(),
             assignments: self.assignments.into_boxed_slice(),
+            unlowered_expressions: {
+                let mut sites = self.unlowered_expressions;
+                sites.sort_unstable();
+                sites.dedup();
+                sites.into_boxed_slice()
+            },
             owned_end_features: {
                 let mut ends = self.owned_end_features;
                 // Lowering walks each owner's body once in source order, so a stable sort by

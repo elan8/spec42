@@ -402,10 +402,12 @@ impl Lowered {
                 synthesis.status,
             )
         };
-        // `checkFeatureResultRedefinition`: a result redefines the result of every Function or
-        // Expression its owner directly specializes, which includes the FeatureTyping of an
-        // invocation by its Function settled just above, so it runs once every specialization of
-        // a Function or Expression is known.
+        // `checkFeatureParameterRedefinition` then `checkFeatureResultRedefinition`: a parameter
+        // redefines the parameter at its position, and a result the result, of every Behavior or
+        // Step (Function or Expression) its owner directly specializes. That includes the
+        // FeatureTyping of an invocation by its callee settled just above, so both run once every
+        // specialization of a Behavior or Step is known; a positional parameter redefinition is
+        // itself a specialization of a parameter that may own a result, so results run last.
         let resolution = if !matches!(resolution.solver_status, SolverStatus::Converged) {
             resolution
         } else {
@@ -414,11 +416,27 @@ impl Lowered {
                 &resolution.outcomes,
                 &resolution.implied_relationships,
             )?;
-            let synthesized = crate::resolve::result_parameters::synthesize_result_redefinitions(
-                &storage,
-                settled.edges,
-                &settled.authored_redefinitions,
+            let parameters =
+                crate::resolve::parameter_positions::synthesize_parameter_redefinitions(
+                    &storage,
+                    settled.edges,
+                    &settled.authored_redefinitions,
+                )?;
+            let mut with_parameters = resolution.implied_relationships.to_vec();
+            with_parameters.extend(parameters.iter().copied());
+            let settled = crate::resolve::SettledTypeEdges::collect(
+                &storage.references,
+                &resolution.outcomes,
+                &with_parameters,
             )?;
+            let mut synthesized = parameters;
+            synthesized.extend(
+                crate::resolve::result_parameters::synthesize_result_redefinitions(
+                    &storage,
+                    settled.edges,
+                    &settled.authored_redefinitions,
+                )?,
+            );
             if synthesized.is_empty() {
                 resolution
             } else {

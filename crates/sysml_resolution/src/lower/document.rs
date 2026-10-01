@@ -80,6 +80,7 @@ pub(crate) struct LoweredDocument {
     pub(crate) filter_conditions: Box<[AuthoredFilterCondition]>,
     pub(crate) invocations: Box<[AuthoredInvocation]>,
     pub(crate) assignments: Box<[crate::lower::facts::AssignmentRecord]>,
+    pub(crate) unlowered_expressions: Box<[crate::lower::facts::UnloweredExpressionSite]>,
     pub(crate) owned_end_features: Box<[OwnedEndRecord]>,
     /// The names this document interned, in the order the walk first interned them.
     pub(crate) symbols: SymbolTable,
@@ -127,6 +128,7 @@ pub(crate) fn lower_document(
         filter_conditions: builder.filter_conditions.into_boxed_slice(),
         invocations: builder.invocations.into_boxed_slice(),
         assignments: builder.assignments.into_boxed_slice(),
+        unlowered_expressions: builder.unlowered_expressions.into_boxed_slice(),
         owned_end_features: builder.owned_end_features.into_boxed_slice(),
         symbols: builder.symbols.freeze(),
         paths: builder.paths.freeze(),
@@ -494,6 +496,18 @@ impl SemanticModelBuilder {
                 argument_count: invocation.argument_count,
                 span: invocation.span,
             });
+        }
+
+        reserve(
+            &mut self.unlowered_expressions,
+            lowered.unlowered_expressions.len(),
+        )?;
+        for record in lowered.unlowered_expressions.iter() {
+            self.unlowered_expressions
+                .push(crate::lower::facts::UnloweredExpressionSite {
+                    site: relocation.declaration(record.site)?,
+                    kind: record.kind,
+                });
         }
 
         reserve(&mut self.assignments, lowered.assignments.len())?;

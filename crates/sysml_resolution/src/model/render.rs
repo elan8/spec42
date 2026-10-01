@@ -2423,6 +2423,7 @@ mod tests {
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
             assignments: Box::new([]),
+            unlowered_expressions: Box::new([]),
             owned_end_features: Box::new([]),
         };
         let (model, _) = crate::pipeline::phase::build_model(

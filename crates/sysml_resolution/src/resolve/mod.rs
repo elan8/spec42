@@ -7,6 +7,7 @@ pub(crate) mod inherited_members;
 pub(crate) mod library_seed;
 pub(crate) mod names;
 pub(crate) mod objective_redefinitions;
+pub(crate) mod parameter_positions;
 pub(crate) mod result_parameters;
 pub(crate) mod results;
 pub(crate) mod role_redefinitions;

@@ -175,7 +175,13 @@ pub enum SpecializationCheckOutcome {
 pub enum RedefinitionCheckPrerequisite {
     RuleNotPublished,
     FlowEndOrdinalAndLibraryAnchors,
-    ParameterDirectionAndInheritedPosition,
+    /// Some grammar-defined parameter -- of an operator expression, or of a `send`, `accept`,
+    /// `assign`, `if`, loop, transition or `terminate` usage -- is not lowered, so the positional
+    /// obligations it carries are not facts of the publication.
+    GrammarParameters,
+    /// Some expression the source writes is not lowered as its own Expression element, so its
+    /// result is not a fact of the publication.
+    ExpressionElements,
     ConstructorResultAndInstantiatedTypeFeatures,
     StateSubactionMembershipAndKind,
     ViewRenderingMembership,

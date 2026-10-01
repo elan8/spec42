@@ -1196,6 +1196,26 @@ pub(crate) struct AssignmentRecord {
     pub(crate) referent: Option<AuthoredReferenceId>,
 }
 
+/// What an expression the source writes leaves out of the publication when lowering does not
+/// represent it as its own Expression element with its grammar-defined parameters.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum UnloweredExpression {
+    /// The expression is not an element at all (an operator, a feature reference or a feature
+    /// chain nested in another expression, or written directly in a constraint, calculation,
+    /// guard or other body), so neither it, its `result` nor its parameters exist.
+    Element,
+    /// The expression is the value Expression of a FeatureValue, with its `result`, but its
+    /// operand parameters (an OperatorExpression's `ArgumentMember`s) are not lowered.
+    Parameters,
+}
+
+/// One evaluation site whose authored expression includes an [`UnloweredExpression`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct UnloweredExpressionSite {
+    pub(crate) site: DeclarationId,
+    pub(crate) kind: UnloweredExpression,
+}
+
 /// Which instantiation expression an argument Feature belongs to.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum InstantiationForm {

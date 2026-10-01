@@ -102,14 +102,8 @@ pub(crate) fn owned_ends_of(owned: &[OwnedEndRecord], owner: DeclarationId) -> &
     &owned[start..end]
 }
 
-/// Derives every declaration's KerML `Type::endFeature`, indexed by declaration.
-///
-/// A row is the declaration's owned ends in authored order, then, for each direct supertype in
-/// the order `generals` yields them, that supertype's end features past the owned count: the owned
-/// ends redefine the supertype's ends at the same positions, so only the rest are inherited. An
-/// end inherited along two paths is listed once. A supertype still being derived is on a
-/// specialization cycle with the declaration and contributes nothing, so the derivation is one
-/// deterministic pass rather than a fixed point.
+/// Derives every declaration's KerML `Type::endFeature`, indexed by declaration: the shared
+/// positional derivation ([`derive_positional_features`]) over the owned end collection.
 pub(crate) fn derive_end_features<F, I>(
     count: usize,
     owned: &[OwnedEndRecord],
@@ -119,11 +113,44 @@ where
     F: Fn(DeclarationId) -> I,
     I: DoubleEndedIterator<Item = DeclarationId>,
 {
+    derive_positional_features(
+        count,
+        |declaration| {
+            owned_ends_of(owned, declaration)
+                .iter()
+                .map(|record| record.end)
+                .collect()
+        },
+        generals,
+    )
+}
+
+/// Derives, for every declaration, an ordered positional Feature collection of a Type -- KerML
+/// `Type::endFeature`, or the directed parameters a Behavior or Step has -- indexed by
+/// declaration.
+///
+/// A row is the declaration's owned members in authored order (`owned`), then, for each direct
+/// supertype in the order `generals` yields them, that supertype's row past the owned count: the
+/// owned members redefine the supertype's members at the same positions, so only the rest are
+/// inherited. A member inherited along two paths is listed once. A supertype still being derived is
+/// on a specialization cycle with the declaration and contributes nothing, so the derivation is
+/// one deterministic pass rather than a fixed point.
+pub(crate) fn derive_positional_features<T, O, F, I>(
+    count: usize,
+    owned: O,
+    generals: F,
+) -> Result<Vec<Vec<T>>, ResolutionError>
+where
+    T: Copy + PartialEq,
+    O: Fn(DeclarationId) -> Vec<T>,
+    F: Fn(DeclarationId) -> I,
+    I: DoubleEndedIterator<Item = DeclarationId>,
+{
     const UNVISITED: u8 = 0;
     const IN_PROGRESS: u8 = 1;
     const DONE: u8 = 2;
     let mut state = vec![UNVISITED; count];
-    let mut ends: Vec<Vec<OwnedEndFeature>> = vec![Vec::new(); count];
+    let mut rows: Vec<Vec<T>> = (0..count).map(|_| Vec::new()).collect();
     let mut stack = Vec::new();
     for root in 0..count {
         if state[root] != UNVISITED {
@@ -146,29 +173,26 @@ where
                 }
                 continue;
             }
-            let mut row = owned_ends_of(owned, declaration)
-                .iter()
-                .map(|record| record.end)
-                .collect::<Vec<_>>();
+            let mut row = owned(declaration);
             let owned_count = row.len();
             for general in generals(declaration) {
                 if state.get(general.index()) != Some(&DONE) {
                     continue;
                 }
-                let inherited = ends
+                let inherited = rows
                     .get(general.index())
                     .ok_or(ResolutionError::InvalidStorage)?;
-                for end in inherited.iter().skip(owned_count) {
-                    if !row.contains(end) {
-                        row.push(*end);
+                for member in inherited.iter().skip(owned_count) {
+                    if !row.contains(member) {
+                        row.push(*member);
                     }
                 }
             }
-            ends[node] = row;
+            rows[node] = row;
             state[node] = DONE;
         }
     }
-    Ok(ends)
+    Ok(rows)
 }
 
 /// One `checkFeatureEndRedefinition` obligation: the owned end at `position` of `owner` must

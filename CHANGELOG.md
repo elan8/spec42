@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Positional parameter redefinitions.** A parameter of a behavior, step, calculation or action
+  now redefines the parameter at its position of every behavior or step its owner specializes
+  (KerML `checkFeatureParameterRedefinition`), and a positional invocation argument redefines the
+  callee's parameter at its position. The parameter and result redefinition checks report an
+  unsupported prerequisite, rather than a verdict, while the publication has expressions or
+  action parameters lowering does not represent.
+
 - **Assignment target parameters.** An `assign` now owns its `target` parameter, whose
   `startingAt` feature owns the `accessedFeature`. They redefine the library's
   `startingAt`/`accessedFeature`, and the accessed feature redefines the assignment's referent, so
