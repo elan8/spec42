@@ -1604,6 +1604,9 @@ impl SemanticModelBuilder {
                 // KerML's `ownedEndFeatures` are the two typed `from`/`to` endpoints; a declared
                 // flow without them owns no end features of its own.
                 owned_end_feature_count: endpoints.map(|_| 2),
+                payload_feature_count: Some(
+                    u32::try_from(payloads.len()).map_err(|_| ConstructionError::Capacity)?,
+                ),
                 ..DeclarationFacts::none()
             },
         )?;

@@ -276,6 +276,12 @@ pub(crate) struct DeclarationFacts {
     /// intentionally absent when recovery makes the authored collection incomplete, so generated
     /// specialization predicates cannot turn a partial lowering into a positive result.
     pub(crate) owned_end_feature_count: Option<u32>,
+    /// The number of PayloadFeatures a Flow owns: one per authored `of ...` payload clause,
+    /// present on every `DeclarationKind::Flow` and absent elsewhere. Payload features are not
+    /// minted as declarations, so this is the single owning fact for KerML
+    /// `ownedFeature->selectByKind(PayloadFeature)`; a payload's type is its `FlowPayloadType`
+    /// reference, which an untyped payload does not have, so the reference count is not it.
+    pub(crate) payload_feature_count: Option<u32>,
     /// This declaration's position among its owner's authored connector ends (BNF `EndDecl`).
     ///
     /// Present only on a declaration lowered from an `end` member of a connection/interface/

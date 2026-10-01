@@ -659,6 +659,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "flow_multiple_payload_features",
+        severity: "warning",
+        meaning: "A flow authors more than one `of` payload clause, so it owns more than one PayloadFeature (KerML validateFlowPayloadFeature).",
+        typical_fix: "Keep a single payload clause, e.g. `flow of Thing from a to b;`.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "end_feature_has_direction",
         severity: "warning",
         meaning: "An end feature declares an in/out/inout direction (KerML validateFeatureEndNoDirection).",

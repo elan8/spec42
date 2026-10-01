@@ -7,14 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- **KerML association, connector and end-feature validations.** New diagnostics check KerML 1.0
-  8.3.3.3.4 / 8.3.4.4.2 / 8.3.4.5.2-3: an end feature with a non-1..1 multiplicity
+- **KerML association, connector, flow and end-feature validations.** New diagnostics check KerML
+  1.0 8.3.3.3.4 / 8.3.4.4.2 / 8.3.4.5.2-3 / 8.3.4.9.2: an end feature with a non-1..1 multiplicity
   (`end_feature_multiplicity_not_one`), an association end without exactly one type
   (`association_end_type_not_one`), a concrete association or connector relating fewer than two
   types or features (`association_related_types_insufficient`,
-  `connector_related_features_insufficient`), a non-binary binding (`binding_connector_not_binary`)
-  and a more-than-binary association or connector specializing `Links::BinaryLink`
-  (`binary_association_end_count`, `binary_connector_end_count`). KerML `end feature` and bare
+  `connector_related_features_insufficient`), a non-binary binding (`binding_connector_not_binary`),
+  a more-than-binary association or connector specializing `Links::BinaryLink`
+  (`binary_association_end_count`, `binary_connector_end_count`), and a flow with more than one
+  `of` payload (`flow_multiple_payload_features`). KerML `end feature` and bare
   connector ends now count toward the implied `BinaryLink` / `BinaryLinkObject` / `binaryLinks`
   specializations.
 

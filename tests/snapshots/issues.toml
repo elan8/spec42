@@ -307,12 +307,6 @@ owner = "spec42-semantic"
 summary = "a render member parses but sysml_resolution reports it as unsupported_view_definition_member, so no ViewRenderingMembership reaches semantics"
 
 [[issue]]
-id = "lowering-gap-flow-payload-count"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "the parser now retains every authored flow payload clause, but semantic Flow facts do not publish the owned PayloadFeature count required by validateFlowPayloadFeature"
-
-[[issue]]
 id = "semantic-requirement-constraint-owner"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"

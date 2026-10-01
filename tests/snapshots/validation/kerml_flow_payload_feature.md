@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.9.2:validateFlowPayloadFeature
-blocked_by=lowering-gap-flow-payload-count
 type=file
 ~~~
 # SOURCE
@@ -47,6 +46,12 @@ package Flows {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_flow_payload_feature.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "flow_multiple_payload_features")
+        (source "semantic")
+        (range (start 10 8) (end 10 53))
+      )
     )
   )
 )

@@ -1,10 +1,11 @@
-//! KerML end-feature, Association and Connector validations, settled at the publication barrier.
+//! KerML end-feature, Association, Connector and Flow validations, settled at the publication
+//! barrier.
 //!
 //! Every rule reads owned facts and nothing else: the canonical owned end collection
 //! ([`crate::lower::storage::SemanticModelStorage::owned_end_features`]), the derived KerML
 //! `Type::endFeature` and `Feature::type` ([`crate::index::types::TypeIndex`]), the
 //! `relatedFeature` member each end contributes ([`SemanticModel::end_related_feature`]) and the
-//! authored multiplicity of an end feature.
+//! authored multiplicity of an end feature, and the PayloadFeature count of a Flow.
 //!
 //! # Scope and unanswered cases
 //!
@@ -60,6 +61,15 @@ impl<D> SemanticModel<D> {
                 diagnostics.push(self.declaration_diagnostic(
                     id,
                     DiagnosticCode::EndFeatureMultiplicityNotOne,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
+
+            // KerML 8.3.4.9.2 `validateFlowPayloadFeature`.
+            if facts.payload_feature_count.is_some_and(|count| count > 1) {
+                diagnostics.push(self.declaration_diagnostic(
+                    id,
+                    DiagnosticCode::FlowMultiplePayloadFeatures,
                     DiagnosticSeverity::Warning,
                 )?);
             }

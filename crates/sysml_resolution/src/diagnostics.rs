@@ -438,6 +438,9 @@ semantic_diagnostic_codes! {
     /// KerML 8.3.4.5.3 `validateConnectorRelatedFeatures`.
     ConnectorRelatedFeaturesInsufficient => "connector_related_features_insufficient",
         "A concrete connector must relate at least two features.";
+    /// KerML 8.3.4.9.2 `validateFlowPayloadFeature`.
+    FlowMultiplePayloadFeatures => "flow_multiple_payload_features",
+        "A flow may own at most one payload feature.";
     /// KerML 8.3.4.5.3 `validateConnectorBinarySpecialization`.
     BinaryConnectorEndCount => "binary_connector_end_count",
         "A connector with more than two ends must not specialize Links::BinaryLink.";
