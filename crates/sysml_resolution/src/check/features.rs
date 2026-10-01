@@ -22,112 +22,15 @@ use crate::DiagnosticSeverity;
 use sysml_contract::ElementKind;
 
 /// Which side of the SysML occurrence family a metaclass is on, or `None` when it is neither an
-/// `OccurrenceDefinition` nor an `OccurrenceUsage` (directly or through a subclass).
-///
-/// Exhaustive over the published metaclass vocabulary so that a new kind cannot silently fall
-/// outside (or inside) the family.
+/// `OccurrenceDefinition` nor an `OccurrenceUsage` (directly or through a subclass), read from the
+/// canonical metaclass hierarchy [`ElementKind::conforms_to`].
 pub(crate) fn occurrence_metaclass_role(kind: ElementKind) -> Option<OccurrenceRole> {
-    use ElementKind as K;
-    use OccurrenceRole::{Definition, Usage};
-    match kind {
-        K::OccurrenceDefinition
-        | K::IndividualDefinition
-        | K::ItemDefinition
-        | K::PartDefinition
-        | K::PortDefinition
-        | K::ConnectionDefinition
-        | K::InterfaceDefinition
-        | K::AllocationDefinition
-        | K::FlowConnectionDefinition
-        | K::ActionDefinition
-        | K::StateDefinition
-        | K::CalculationDefinition
-        | K::ConstraintDefinition
-        | K::RequirementDefinition
-        | K::ConcernDefinition
-        | K::CaseDefinition
-        | K::AnalysisCaseDefinition
-        | K::VerificationCaseDefinition
-        | K::UseCaseDefinition
-        | K::ViewDefinition
-        | K::ViewpointDefinition
-        | K::RenderingDefinition
-        | K::MetadataDefinition => Some(Definition),
-        K::OccurrenceUsage
-        | K::ItemUsage
-        | K::PartUsage
-        | K::PortUsage
-        | K::ConnectionUsage
-        | K::InterfaceUsage
-        | K::AllocationUsage
-        | K::FlowConnectionUsage
-        | K::ActionUsage
-        | K::AcceptActionUsage
-        | K::SendActionUsage
-        | K::TerminateActionUsage
-        | K::StateUsage
-        | K::CalculationUsage
-        | K::ConstraintUsage
-        | K::AssertConstraintUsage
-        | K::RequirementUsage
-        | K::ConcernUsage
-        | K::CaseUsage
-        | K::AnalysisCaseUsage
-        | K::VerificationCaseUsage
-        | K::UseCaseUsage
-        | K::ViewUsage
-        | K::ViewpointUsage
-        | K::RenderingUsage
-        | K::MetadataUsage
-        | K::PerformActionUsage
-        | K::TransitionUsage
-        | K::AssignmentActionUsage
-        | K::IfActionUsage
-        | K::WhileLoopActionUsage
-        | K::ForLoopActionUsage
-        | K::DecisionNode
-        | K::MergeNode
-        | K::ForkNode
-        | K::JoinNode
-        | K::FinalState
-        | K::SatisfyRequirementUsage => Some(Usage),
-        K::Namespace
-        | K::Package
-        | K::LibraryPackage
-        | K::AttributeDefinition
-        | K::AttributeUsage
-        | K::EnumerationDefinition
-        | K::EnumerationUsage
-        | K::Definition
-        | K::Usage
-        | K::ReferenceUsage
-        | K::ForLoopVariable
-        | K::SuccessionAsUsage
-        | K::BindingConnectorAsUsage
-        | K::Import
-        | K::Expose
-        | K::Alias
-        | K::Dependency
-        | K::Type
-        | K::Classifier
-        | K::Class
-        | K::Structure
-        | K::Association
-        | K::AssociationStructure
-        | K::DataType
-        | K::Metaclass
-        | K::Behavior
-        | K::Function
-        | K::Predicate
-        | K::Interaction
-        | K::Multiplicity
-        | K::Feature
-        | K::Step
-        | K::Expression
-        | K::BooleanExpression
-        | K::Connector
-        | K::BindingConnector
-        | K::Invariant => None,
+    if kind.conforms_to(ElementKind::OccurrenceDefinition) {
+        Some(OccurrenceRole::Definition)
+    } else if kind.conforms_to(ElementKind::OccurrenceUsage) {
+        Some(OccurrenceRole::Usage)
+    } else {
+        None
     }
 }
 

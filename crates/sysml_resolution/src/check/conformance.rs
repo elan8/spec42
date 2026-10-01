@@ -234,9 +234,10 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
 }
 
 /// Which of the KerML classifier metaclasses the specialization rules distinguish a metaclass
-/// conforms to. A SysML definition is its KerML generalization: an attribute definition is a
-/// DataType, an occurrence definition a Class, an item or part definition a Structure, an action
-/// definition a Behavior, a connection definition an AssociationStructure, and so on.
+/// conforms to, read from the canonical metaclass hierarchy [`ElementKind::conforms_to`]: an
+/// attribute definition is a DataType, an occurrence definition a Class, an item or part
+/// definition a Structure, an action definition a Behavior, a connection definition an
+/// AssociationStructure, and so on.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub(crate) struct ClassifierMetaclass {
     pub(crate) data_type: bool,
@@ -246,145 +247,16 @@ pub(crate) struct ClassifierMetaclass {
     pub(crate) behavior: bool,
 }
 
-/// The classifier metaclasses `kind` conforms to, or `None` when it is not a Classifier (or its
-/// metaclass is not known precisely, as for an extended `Definition`). Exhaustive by construction.
+/// The classifier metaclasses `kind` conforms to, or `None` when it is not a Classifier.
 pub(crate) fn classifier_metaclass(kind: ElementKind) -> Option<ClassifierMetaclass> {
-    use ElementKind as K;
-    const NONE: ClassifierMetaclass = ClassifierMetaclass {
-        data_type: false,
-        class: false,
-        association: false,
-        structure: false,
-        behavior: false,
-    };
-    const DATA_TYPE: ClassifierMetaclass = ClassifierMetaclass {
-        data_type: true,
-        ..NONE
-    };
-    const CLASS: ClassifierMetaclass = ClassifierMetaclass {
-        class: true,
-        ..NONE
-    };
-    const STRUCTURE: ClassifierMetaclass = ClassifierMetaclass {
-        class: true,
-        structure: true,
-        ..NONE
-    };
-    const ASSOCIATION_STRUCTURE: ClassifierMetaclass = ClassifierMetaclass {
-        class: true,
-        structure: true,
-        association: true,
-        ..NONE
-    };
-    const BEHAVIOR: ClassifierMetaclass = ClassifierMetaclass {
-        class: true,
-        behavior: true,
-        ..NONE
-    };
-    const INTERACTION: ClassifierMetaclass = ClassifierMetaclass {
-        class: true,
-        behavior: true,
-        association: true,
-        ..NONE
-    };
-    Some(match kind {
-        K::Classifier => NONE,
-        K::DataType | K::AttributeDefinition | K::EnumerationDefinition => DATA_TYPE,
-        K::Class | K::OccurrenceDefinition | K::IndividualDefinition => CLASS,
-        K::Association => ClassifierMetaclass {
-            association: true,
-            ..NONE
-        },
-        K::Structure
-        | K::Metaclass
-        | K::ItemDefinition
-        | K::PartDefinition
-        | K::PortDefinition
-        | K::ViewDefinition
-        | K::RenderingDefinition
-        | K::MetadataDefinition => STRUCTURE,
-        K::AssociationStructure
-        | K::ConnectionDefinition
-        | K::InterfaceDefinition
-        | K::AllocationDefinition => ASSOCIATION_STRUCTURE,
-        K::Behavior
-        | K::Function
-        | K::Predicate
-        | K::ActionDefinition
-        | K::StateDefinition
-        | K::CalculationDefinition
-        | K::ConstraintDefinition
-        | K::RequirementDefinition
-        | K::ConcernDefinition
-        | K::CaseDefinition
-        | K::AnalysisCaseDefinition
-        | K::VerificationCaseDefinition
-        | K::UseCaseDefinition
-        | K::ViewpointDefinition => BEHAVIOR,
-        K::Interaction | K::FlowConnectionDefinition => INTERACTION,
-        K::Namespace
-        | K::Package
-        | K::LibraryPackage
-        | K::Definition
-        | K::Type
-        | K::Multiplicity
-        | K::PartUsage
-        | K::AttributeUsage
-        | K::EnumerationUsage
-        | K::ItemUsage
-        | K::PortUsage
-        | K::OccurrenceUsage
-        | K::ConnectionUsage
-        | K::InterfaceUsage
-        | K::AllocationUsage
-        | K::FlowConnectionUsage
-        | K::ActionUsage
-        | K::AcceptActionUsage
-        | K::SendActionUsage
-        | K::TerminateActionUsage
-        | K::StateUsage
-        | K::CalculationUsage
-        | K::ConstraintUsage
-        | K::AssertConstraintUsage
-        | K::RequirementUsage
-        | K::ConcernUsage
-        | K::CaseUsage
-        | K::AnalysisCaseUsage
-        | K::VerificationCaseUsage
-        | K::UseCaseUsage
-        | K::ViewUsage
-        | K::ViewpointUsage
-        | K::RenderingUsage
-        | K::MetadataUsage
-        | K::Usage
-        | K::ReferenceUsage
-        | K::PerformActionUsage
-        | K::TransitionUsage
-        | K::AssignmentActionUsage
-        | K::IfActionUsage
-        | K::WhileLoopActionUsage
-        | K::ForLoopActionUsage
-        | K::ForLoopVariable
-        | K::DecisionNode
-        | K::MergeNode
-        | K::ForkNode
-        | K::JoinNode
-        | K::SuccessionAsUsage
-        | K::FinalState
-        | K::SatisfyRequirementUsage
-        | K::BindingConnectorAsUsage
-        | K::Import
-        | K::Expose
-        | K::Alias
-        | K::Dependency
-        | K::Feature
-        | K::Step
-        | K::Expression
-        | K::BooleanExpression
-        | K::Connector
-        | K::BindingConnector
-        | K::Invariant => return None,
-    })
+    kind.conforms_to(ElementKind::Classifier)
+        .then(|| ClassifierMetaclass {
+            data_type: kind.conforms_to(ElementKind::DataType),
+            class: kind.conforms_to(ElementKind::Class),
+            association: kind.conforms_to(ElementKind::Association),
+            structure: kind.conforms_to(ElementKind::Structure),
+            behavior: kind.conforms_to(ElementKind::Behavior),
+        })
 }
 
 /// The family a family specialises in the SysML metamodel, or `None` at a root.

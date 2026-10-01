@@ -205,6 +205,115 @@ impl ElementKind {
     pub fn parse(text: &str) -> Option<Self> {
         Self::ALL.iter().copied().find(|kind| kind.as_str() == text)
     }
+
+    /// The direct metaclass generalizations of this kind in the KerML/SysML abstract syntax,
+    /// restricted to the metaclasses this vocabulary publishes.
+    ///
+    /// This is the language's own static metamodel (for instance `PartUsage :> ItemUsage`,
+    /// `ConnectionDefinition :> PartDefinition, AssociationStructure`), not a fact about any
+    /// admitted library. Relationship metaclasses (`Import`, `Expose`, `Dependency`) and the
+    /// `Alias` membership generalize no published element metaclass.
+    pub fn direct_generals(self) -> &'static [ElementKind] {
+        use ElementKind as K;
+        match self {
+            K::Namespace | K::Import | K::Expose | K::Alias | K::Dependency => &[],
+            K::Package => &[K::Namespace],
+            K::LibraryPackage => &[K::Package],
+
+            // KerML Core and Kernel.
+            K::Type => &[K::Namespace],
+            K::Classifier => &[K::Type],
+            K::Class | K::DataType => &[K::Classifier],
+            K::Structure => &[K::Class],
+            K::Association => &[K::Classifier],
+            K::AssociationStructure => &[K::Association, K::Structure],
+            K::Metaclass => &[K::Structure],
+            K::Behavior => &[K::Class],
+            K::Function => &[K::Behavior],
+            K::Predicate => &[K::Function],
+            K::Interaction => &[K::Association, K::Behavior],
+            K::Feature => &[K::Type],
+            K::Multiplicity | K::Step | K::Connector => &[K::Feature],
+            K::Expression => &[K::Step],
+            K::BooleanExpression => &[K::Expression],
+            K::Invariant => &[K::BooleanExpression],
+            K::BindingConnector => &[K::Connector],
+
+            // SysML definitions.
+            K::Definition => &[K::Classifier],
+            K::AttributeDefinition => &[K::Definition, K::DataType],
+            K::EnumerationDefinition => &[K::AttributeDefinition],
+            K::OccurrenceDefinition => &[K::Definition, K::Class],
+            K::IndividualDefinition => &[K::OccurrenceDefinition],
+            K::ItemDefinition => &[K::OccurrenceDefinition, K::Structure],
+            K::PartDefinition => &[K::ItemDefinition],
+            K::PortDefinition => &[K::OccurrenceDefinition, K::Structure],
+            K::ConnectionDefinition => &[K::PartDefinition, K::AssociationStructure],
+            K::InterfaceDefinition | K::AllocationDefinition => &[K::ConnectionDefinition],
+            K::ActionDefinition => &[K::OccurrenceDefinition, K::Behavior],
+            K::FlowConnectionDefinition => &[K::ActionDefinition, K::Interaction],
+            K::StateDefinition => &[K::ActionDefinition],
+            K::CalculationDefinition => &[K::ActionDefinition, K::Function],
+            K::ConstraintDefinition => &[K::OccurrenceDefinition, K::Predicate],
+            K::RequirementDefinition => &[K::ConstraintDefinition],
+            K::ConcernDefinition | K::ViewpointDefinition => &[K::RequirementDefinition],
+            K::CaseDefinition => &[K::CalculationDefinition],
+            K::AnalysisCaseDefinition | K::VerificationCaseDefinition | K::UseCaseDefinition => {
+                &[K::CaseDefinition]
+            }
+            K::ViewDefinition | K::RenderingDefinition => &[K::PartDefinition],
+            K::MetadataDefinition => &[K::ItemDefinition, K::Metaclass],
+
+            // SysML usages.
+            K::Usage => &[K::Feature],
+            K::ReferenceUsage | K::AttributeUsage | K::OccurrenceUsage => &[K::Usage],
+            K::ForLoopVariable => &[K::ReferenceUsage],
+            K::EnumerationUsage => &[K::AttributeUsage],
+            K::ItemUsage | K::PortUsage => &[K::OccurrenceUsage],
+            K::PartUsage => &[K::ItemUsage],
+            K::ConnectionUsage => &[K::PartUsage, K::Connector],
+            K::InterfaceUsage | K::AllocationUsage => &[K::ConnectionUsage],
+            K::ActionUsage => &[K::OccurrenceUsage, K::Step],
+            K::FlowConnectionUsage => &[K::ActionUsage, K::Connector],
+            K::AcceptActionUsage
+            | K::SendActionUsage
+            | K::TerminateActionUsage
+            | K::PerformActionUsage
+            | K::TransitionUsage
+            | K::AssignmentActionUsage
+            | K::IfActionUsage
+            | K::WhileLoopActionUsage
+            | K::ForLoopActionUsage
+            | K::DecisionNode
+            | K::MergeNode
+            | K::ForkNode
+            | K::JoinNode
+            | K::StateUsage => &[K::ActionUsage],
+            K::FinalState => &[K::StateUsage],
+            K::CalculationUsage => &[K::ActionUsage, K::Expression],
+            K::ConstraintUsage => &[K::OccurrenceUsage, K::BooleanExpression],
+            K::AssertConstraintUsage => &[K::ConstraintUsage, K::Invariant],
+            K::RequirementUsage => &[K::ConstraintUsage],
+            K::ConcernUsage | K::ViewpointUsage => &[K::RequirementUsage],
+            K::SatisfyRequirementUsage => &[K::RequirementUsage, K::AssertConstraintUsage],
+            K::CaseUsage => &[K::CalculationUsage],
+            K::AnalysisCaseUsage | K::VerificationCaseUsage | K::UseCaseUsage => &[K::CaseUsage],
+            K::ViewUsage | K::RenderingUsage => &[K::PartUsage],
+            K::MetadataUsage => &[K::ItemUsage],
+            K::SuccessionAsUsage => &[K::Usage, K::Connector],
+            K::BindingConnectorAsUsage => &[K::Usage, K::BindingConnector],
+        }
+    }
+
+    /// Whether this metaclass is `general` or (transitively) specializes it: OCL
+    /// `oclIsKindOf(general)` over the published metaclass vocabulary.
+    pub fn conforms_to(self, general: ElementKind) -> bool {
+        self == general
+            || self
+                .direct_generals()
+                .iter()
+                .any(|direct| direct.conforms_to(general))
+    }
 }
 
 impl fmt::Display for ElementKind {
@@ -306,6 +415,33 @@ impl fmt::Display for MembershipRole {
 mod tests {
     use super::*;
     use std::collections::BTreeSet;
+
+    #[test]
+    fn metaclass_generalization_is_acyclic_and_rooted() {
+        for kind in ElementKind::ALL.iter().copied() {
+            // Every chain terminates (recursion would overflow on a cycle) and no kind lists
+            // itself or a duplicate as a direct general.
+            let generals = kind.direct_generals();
+            assert!(!generals.contains(&kind), "{kind} generalizes itself");
+            let unique = generals.iter().collect::<BTreeSet<_>>();
+            assert_eq!(unique.len(), generals.len(), "{kind} repeats a general");
+            for general in generals {
+                assert!(!general.conforms_to(kind), "{kind} and {general} form a cycle");
+            }
+        }
+    }
+
+    #[test]
+    fn metaclass_conformance_follows_the_metamodel() {
+        assert!(ElementKind::PartDefinition.conforms_to(ElementKind::Structure));
+        assert!(ElementKind::ConnectionDefinition.conforms_to(ElementKind::Association));
+        assert!(ElementKind::AttributeDefinition.conforms_to(ElementKind::DataType));
+        assert!(ElementKind::CaseUsage.conforms_to(ElementKind::Expression));
+        assert!(ElementKind::DataType.conforms_to(ElementKind::Classifier));
+        assert!(!ElementKind::Classifier.conforms_to(ElementKind::DataType));
+        assert!(!ElementKind::PartUsage.conforms_to(ElementKind::AttributeUsage));
+        assert!(!ElementKind::ActionDefinition.conforms_to(ElementKind::Structure));
+    }
 
     #[test]
     fn every_kind_round_trips_through_its_name() {
