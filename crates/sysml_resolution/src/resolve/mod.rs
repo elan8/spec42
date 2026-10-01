@@ -12,6 +12,8 @@ pub(crate) mod parameter_positions;
 pub(crate) mod result_parameters;
 pub(crate) mod results;
 pub(crate) mod role_redefinitions;
+pub(crate) mod role_specializations;
+pub(crate) mod usage_composition;
 
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::Declaration;

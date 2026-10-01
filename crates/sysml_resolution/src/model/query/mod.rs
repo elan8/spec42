@@ -2466,6 +2466,15 @@ impl<D> SemanticModel<D> {
         }
         if matches!(
             kind,
+            SpecializationCheckKind::StateUsageExclusiveState
+                | SpecializationCheckKind::StateUsageSubstate
+                | SpecializationCheckKind::TransitionUsageAction
+                | SpecializationCheckKind::TransitionUsageState
+        ) {
+            return self.resolved_outcome(self.library_role_specialization_check(kind));
+        }
+        if matches!(
+            kind,
             SpecializationCheckKind::UsageVariationDefinition
                 | SpecializationCheckKind::UsageVariationUsage
         ) {
@@ -2549,13 +2558,9 @@ impl<D> SemanticModel<D> {
                 unreachable!("handled above")
             }
             SpecializationCheckKind::StateUsageExclusiveState
-            | SpecializationCheckKind::StateUsageSubstate => {
-                SpecializationCheckPrerequisite::StateSubactionKindAndLibraryAnchor
-            }
-            SpecializationCheckKind::TransitionUsageAction
-            | SpecializationCheckKind::TransitionUsageState => {
-                SpecializationCheckPrerequisite::TransitionOwnerSourceAndLibraryAnchor
-            }
+            | SpecializationCheckKind::StateUsageSubstate
+            | SpecializationCheckKind::TransitionUsageAction
+            | SpecializationCheckKind::TransitionUsageState => unreachable!("handled above"),
             SpecializationCheckKind::TransitionUsagePayload => unreachable!("handled above"),
             SpecializationCheckKind::TransitionUsageSuccessionSource => {
                 unreachable!("handled above")
@@ -2576,6 +2581,58 @@ impl<D> SemanticModel<D> {
             }
         };
         self.resolved_outcome(SpecializationCheckOutcome::Unsupported { prerequisite })
+    }
+
+    /// `specializesFromLibrary(anchor)` for every occupant of the roles `kind` constrains, read
+    /// from the same occupant derivation that synthesized the implied edges.
+    fn library_role_specialization_check(
+        &self,
+        kind: SpecializationCheckKind,
+    ) -> SpecializationCheckOutcome {
+        use crate::resolve::role_specializations::library_specialization_role_occupants;
+
+        let Ok(occupants) =
+            library_specialization_role_occupants(&self.storage, &self.resolution.outcomes)
+        else {
+            return SpecializationCheckOutcome::Unresolved;
+        };
+        if occupants.transitions_unsettled
+            && matches!(
+                kind,
+                SpecializationCheckKind::TransitionUsageAction
+                    | SpecializationCheckKind::TransitionUsageState
+            )
+        {
+            return SpecializationCheckOutcome::Unresolved;
+        }
+        let anchors = &self
+            .resolution
+            .library_specialization_anchors
+            .specialization_roles;
+        let mut outcome = SpecializationCheckOutcome::Satisfied;
+        for occupant in occupants
+            .occupants
+            .iter()
+            .filter(|occupant| occupant.role.check() == kind)
+        {
+            let LibrarySpecializationAnchor::Resolved(anchor) = anchors.anchor(occupant.role)
+            else {
+                return SpecializationCheckOutcome::Unresolved;
+            };
+            if occupant.source == *anchor {
+                continue;
+            }
+            match self.conformance(
+                occupant.source,
+                *anchor,
+                SpecializationScope::FeatureSpecialization,
+            ) {
+                Conformance::Conforms => {}
+                Conformance::DoesNotConform => outcome = SpecializationCheckOutcome::Violated,
+                Conformance::Indeterminate(_) => return SpecializationCheckOutcome::Unresolved,
+            }
+        }
+        outcome
     }
 
     /// Projects the exact `deriveElementOwner` result from the canonical declaration ownership

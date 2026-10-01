@@ -572,6 +572,7 @@ pub(crate) fn library_anchor_packages() -> Vec<&'static str> {
         )
         .filter_map(|anchor| anchor.split("::").next())
         .chain(LibraryRedefinitionRole::anchor_packages())
+        .chain(crate::resolve::role_specializations::LibrarySpecializationRole::anchor_packages())
         .collect::<Vec<_>>();
     packages.sort_unstable();
     packages.dedup();
@@ -628,6 +629,10 @@ pub(crate) struct LibrarySpecializationAnchorFacts {
     /// The library feature of every library-anchored redefinition role, settled at the same
     /// barrier.
     pub(crate) roles: LibraryRoleAnchors,
+    /// The library feature of every library-anchored specialization role, settled at the same
+    /// barrier.
+    pub(crate) specialization_roles:
+        crate::resolve::role_specializations::LibrarySpecializationRoleAnchors,
 }
 
 impl LibrarySpecializationAnchorFacts {
@@ -980,6 +985,13 @@ pub(crate) fn synthesize_implied_relationships(
         resolution,
         &anchors.roles,
     )?);
+    implied.extend(
+        crate::resolve::role_specializations::synthesize_library_role_specializations(
+            storage,
+            &resolution.outcomes,
+            &anchors.specialization_roles,
+        )?,
+    );
     implied.extend(
         crate::resolve::role_redefinitions::synthesize_assignment_referent_redefinitions(
             storage, resolution,
@@ -2297,6 +2309,8 @@ pub(crate) fn library_specialization_anchors(
     LibrarySpecializationAnchorFacts {
         by_rule: anchors,
         roles: LibraryRoleAnchors::resolve(storage),
+        specialization_roles:
+            crate::resolve::role_specializations::LibrarySpecializationRoleAnchors::resolve(storage),
     }
 }
 

@@ -95,9 +95,11 @@ package StateExample {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::done"))) (target (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::done"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::done"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::finish"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::finish"))) (target (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::finish"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
@@ -106,9 +108,11 @@ package StateExample {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::finish"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::finish"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::idle"))) (target (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::idle"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::idle"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Start"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::selected"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
@@ -149,41 +153,73 @@ package StateExample {
     )
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::done")))
       (featured-by (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::substates"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))))
       (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance::middle")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (path (named (kind library-package) (name "States")) (named (kind state-def) (name "StateAction")) (anonymous (kind action) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::substates")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::finish")))
       (featured-by (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind succession) (ordinal 0)))))
@@ -255,12 +291,28 @@ package StateExample {
     )
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind parameter) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::finish")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))))
       (supertype (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance::payload")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0)))))
@@ -273,22 +325,38 @@ package StateExample {
     )
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::idle")))
       (featured-by (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::substates"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))))
       (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance::middle")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (path (named (kind library-package) (name "States")) (named (kind state-def) (name "StateAction")) (anonymous (kind action) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::substates")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Start")))
@@ -584,6 +652,21 @@ package StateExample {
     {
       "document": 3,
       "kind": "qualified-name",
+      "qualifiedName": "States::StateAction::exclusiveStates"
+    },
+    {
+      "document": 3,
+      "kind": "qualified-name",
+      "qualifiedName": "States::StateAction::stateTransitions"
+    },
+    {
+      "document": 3,
+      "kind": "qualified-name",
+      "qualifiedName": "States::StateTransitionAction::transitionLinkSource"
+    },
+    {
+      "document": 3,
+      "kind": "qualified-name",
       "qualifiedName": "States::stateActions"
     },
     {
@@ -666,31 +749,37 @@ package StateExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "ordinal": 4,
       "relationshipKind": "initialState",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "subsetting",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 5,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "subsetting",
       "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 6,
+      "relationshipKind": "typeFeaturing",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
       "relationshipKind": "subsetting",
       "source": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
+      "ordinal": 8,
+      "relationshipKind": "subsetting",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
       "relationshipKind": "typeFeaturing",
       "source": 2
     },
@@ -722,35 +811,41 @@ package StateExample {
       "kind": "relationship",
       "ordinal": 11,
       "relationshipKind": "containment",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "transitionSource",
       "source": 3
     },
     {
       "kind": "relationship",
       "ordinal": 10,
-      "relationshipKind": "transitionTarget",
+      "relationshipKind": "subsetting",
       "source": 3
     },
     {
       "kind": "relationship",
       "ordinal": 11,
-      "relationshipKind": "transitionTrigger",
+      "relationshipKind": "subsetting",
       "source": 3
     },
     {
       "kind": "relationship",
       "ordinal": 12,
+      "relationshipKind": "transitionSource",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 13,
+      "relationshipKind": "transitionTarget",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
+      "relationshipKind": "transitionTrigger",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
       "relationshipKind": "typeFeaturing",
       "source": 3
     },
@@ -762,79 +857,91 @@ package StateExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "ordinal": 17,
       "relationshipKind": "redefinition",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "subsetting",
       "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 19,
-      "relationshipKind": "succession",
+      "relationshipKind": "redefinition",
       "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 20,
-      "relationshipKind": "succession",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "subsetting",
       "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 22,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "subsetting",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 25,
+      "relationshipKind": "subsetting",
       "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 23,
+      "relationshipKind": "succession",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "succession",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "typeFeaturing",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "typeFeaturing",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 21,
+      "relationshipKind": "typeFeaturing",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
+      "relationshipKind": "typeFeaturing",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
       "relationshipKind": "redefinition",
       "source": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 24,
+      "ordinal": 28,
       "relationshipKind": "typeFeaturing",
       "source": 5
     },
     {
       "kind": "relationship",
       "ordinal": 1,
+      "relationshipKind": "subsetting",
+      "source": 6
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
       "relationshipKind": "subsetting",
       "source": 6
     },
@@ -852,7 +959,7 @@ package StateExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "ordinal": 3,
       "relationshipKind": "typeFeaturing",
       "source": 6
     }
@@ -874,7 +981,7 @@ package StateExample {
         "navigation": 3,
         "origin": 10,
         "provenance": "authored",
-        "reference": 21,
+        "reference": 24,
         "source": 0,
         "target": 10
       },
@@ -883,7 +990,7 @@ package StateExample {
         "navigation": 1,
         "origin": 9,
         "provenance": "authored",
-        "reference": 22,
+        "reference": 25,
         "source": 0,
         "target": 9
       },
@@ -892,7 +999,7 @@ package StateExample {
         "navigation": 2,
         "origin": 9,
         "provenance": "authored",
-        "reference": 26,
+        "reference": 29,
         "source": 9,
         "target": 10
       },
@@ -901,7 +1008,7 @@ package StateExample {
         "navigation": 4,
         "origin": 8,
         "provenance": "authored",
-        "reference": 23,
+        "reference": 26,
         "source": 0,
         "target": 8
       },
@@ -910,7 +1017,7 @@ package StateExample {
         "navigation": 6,
         "origin": 1,
         "provenance": "authored",
-        "reference": 24,
+        "reference": 27,
         "source": 0,
         "target": 1
       },
@@ -919,7 +1026,7 @@ package StateExample {
         "navigation": 7,
         "origin": 1,
         "provenance": "implied",
-        "reference": 57,
+        "reference": 64,
         "source": 10,
         "target": 8
       },
@@ -928,7 +1035,7 @@ package StateExample {
         "navigation": 5,
         "origin": 7,
         "provenance": "authored",
-        "reference": 32,
+        "reference": 36,
         "source": 1,
         "target": 7
       },
@@ -937,7 +1044,7 @@ package StateExample {
         "navigation": 5,
         "origin": 7,
         "provenance": "authored",
-        "reference": 33,
+        "reference": 37,
         "source": 1,
         "target": 7
       },
@@ -946,7 +1053,7 @@ package StateExample {
         "navigation": 5,
         "origin": 7,
         "provenance": "authored",
-        "reference": 34,
+        "reference": 38,
         "source": 1,
         "target": 7
       },
@@ -955,7 +1062,7 @@ package StateExample {
         "navigation": 5,
         "origin": 2,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 39,
         "source": 1,
         "target": 2
       },
@@ -964,7 +1071,7 @@ package StateExample {
         "navigation": 7,
         "origin": 2,
         "provenance": "implied",
-        "reference": 56,
+        "reference": 63,
         "source": 10,
         "target": 8
       },
@@ -973,7 +1080,7 @@ package StateExample {
         "navigation": 5,
         "origin": 3,
         "provenance": "authored",
-        "reference": 36,
+        "reference": 40,
         "source": 1,
         "target": 3
       },
@@ -982,7 +1089,7 @@ package StateExample {
         "navigation": 5,
         "origin": 4,
         "provenance": "authored",
-        "reference": 42,
+        "reference": 47,
         "source": 3,
         "target": 4
       }
@@ -1066,7 +1173,7 @@ package StateExample {
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 18,
+        "reference": 21,
         "source": 5,
         "typing": {
           "status": "absent"
@@ -1088,20 +1195,6 @@ package StateExample {
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 16,
-        "source": 5,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "metaclass": "ReferenceUsage",
-        "name": null,
-        "notationRole": "reference-usage",
-        "owner": 3,
         "reference": 19,
         "source": 5,
         "typing": {
@@ -1115,8 +1208,8 @@ package StateExample {
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
-        "owner": 1,
-        "reference": 17,
+        "owner": 3,
+        "reference": 22,
         "source": 5,
         "typing": {
           "status": "absent"
@@ -1130,7 +1223,7 @@ package StateExample {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 17,
+        "reference": 20,
         "source": 5,
         "typing": {
           "status": "absent"
@@ -1144,7 +1237,21 @@ package StateExample {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 17,
+        "reference": 20,
+        "source": 5,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 1,
+        "reference": 20,
         "source": 5,
         "typing": {
           "status": "absent"
@@ -1172,7 +1279,7 @@ package StateExample {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 15,
+        "reference": 18,
         "source": 1,
         "typing": {
           "status": "absent"
@@ -1198,7 +1305,7 @@ package StateExample {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 25,
+        "reference": 28,
         "source": 0,
         "target": {
           "reference": 13,
@@ -1209,7 +1316,7 @@ package StateExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 55,
+        "reference": 61,
         "source": 10,
         "target": {
           "reference": 14,
@@ -1217,10 +1324,21 @@ package StateExample {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 62,
+        "source": 10,
+        "target": {
+          "reference": 17,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 58,
+        "reference": 65,
         "source": 10,
         "target": {
           "node": 0,
@@ -1231,7 +1349,7 @@ package StateExample {
         "kind": "initialState",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 27,
+        "reference": 30,
         "source": 9,
         "target": {
           "node": 10,
@@ -1242,7 +1360,7 @@ package StateExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 28,
+        "reference": 31,
         "source": 9,
         "target": {
           "reference": 12,
@@ -1253,7 +1371,7 @@ package StateExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 29,
+        "reference": 32,
         "source": 9,
         "target": {
           "node": 0,
@@ -1264,7 +1382,7 @@ package StateExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 30,
+        "reference": 33,
         "source": 8,
         "target": {
           "reference": 14,
@@ -1272,10 +1390,21 @@ package StateExample {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 34,
+        "source": 8,
+        "target": {
+          "reference": 17,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 31,
+        "reference": 35,
         "source": 8,
         "target": {
           "node": 0,
@@ -1286,7 +1415,7 @@ package StateExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 37,
+        "reference": 41,
         "source": 1,
         "target": {
           "reference": 11,
@@ -1294,10 +1423,21 @@ package StateExample {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 42,
+        "source": 1,
+        "target": {
+          "reference": 15,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "transitionSource",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 38,
+        "reference": 43,
         "source": 1,
         "target": {
           "node": 10,
@@ -1308,7 +1448,7 @@ package StateExample {
         "kind": "transitionTarget",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 39,
+        "reference": 44,
         "source": 1,
         "target": {
           "node": 8,
@@ -1319,7 +1459,7 @@ package StateExample {
         "kind": "transitionTrigger",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 40,
+        "reference": 45,
         "source": 1,
         "target": {
           "reference": 7,
@@ -1330,7 +1470,7 @@ package StateExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 41,
+        "reference": 46,
         "source": 1,
         "target": {
           "node": 0,
@@ -1341,7 +1481,7 @@ package StateExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 49,
+        "reference": 55,
         "source": 7,
         "target": {
           "node": 1,
@@ -1352,7 +1492,7 @@ package StateExample {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 43,
+        "reference": 48,
         "source": 7,
         "target": {
           "reference": 10,
@@ -1363,7 +1503,7 @@ package StateExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 50,
+        "reference": 56,
         "source": 7,
         "target": {
           "node": 1,
@@ -1371,10 +1511,21 @@ package StateExample {
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 49,
+        "source": 7,
+        "target": {
+          "reference": 16,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 44,
+        "reference": 50,
         "source": 7,
         "target": {
           "node": 4,
@@ -1385,7 +1536,7 @@ package StateExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 51,
+        "reference": 57,
         "source": 7,
         "target": {
           "node": 1,
@@ -1396,7 +1547,7 @@ package StateExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 45,
+        "reference": 51,
         "source": 2,
         "target": {
           "reference": 12,
@@ -1407,7 +1558,7 @@ package StateExample {
         "kind": "succession",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 47,
+        "reference": 53,
         "source": 2,
         "target": {
           "node": 10,
@@ -1418,7 +1569,7 @@ package StateExample {
         "kind": "succession",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 48,
+        "reference": 54,
         "source": 2,
         "target": {
           "node": 8,
@@ -1429,7 +1580,7 @@ package StateExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 46,
+        "reference": 52,
         "source": 3,
         "target": {
           "reference": 9,
@@ -1440,7 +1591,7 @@ package StateExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 52,
+        "reference": 58,
         "source": 3,
         "target": {
           "node": 1,
@@ -1451,10 +1602,10 @@ package StateExample {
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 53,
+        "reference": 59,
         "source": 4,
         "target": {
-          "reference": 20,
+          "reference": 23,
           "status": "resolved"
         }
       },
@@ -1462,7 +1613,7 @@ package StateExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 54,
+        "reference": 60,
         "source": 4,
         "target": {
           "node": 3,

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **State and transition role specializations.** A composite substate now subsets
+  `States::StateAction::exclusiveStates` (or `substates` in a parallel state), a composite
+  transition from a state in a state subsets `States::StateAction::stateTransitions`, and one in
+  an action whose source is not a state subsets `Actions::Action::decisionTransitions`, so SysML
+  `checkStateUsageExclusiveStateSpecialization`, `checkStateUsageSubstateSpecialization`,
+  `checkTransitionUsageStateSpecialization` and `checkTransitionUsageActionSpecialization` are
+  evaluated.
+
 - **Trigger argument validation.** `accept when|at|after <argument>` now lowers its
   TriggerInvocationExpression with its kind. New diagnostics check SysML
   `validateTriggerInvocationExpressionWhenArgument` (`trigger_when_argument_not_boolean`),

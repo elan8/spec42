@@ -1117,6 +1117,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (provenance implied))
@@ -1125,14 +1126,18 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::expired"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::expired"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::expired"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::idle"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::idle"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::idle"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (provenance implied))
@@ -1141,14 +1146,18 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::paused"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::paused"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::paused"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::running"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::running"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::running"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (provenance implied))
@@ -1157,10 +1166,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (provenance implied))
@@ -1169,10 +1180,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (provenance implied))
@@ -1181,10 +1194,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (provenance implied))
@@ -1193,10 +1208,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (provenance implied))
@@ -1205,10 +1222,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (provenance implied))
@@ -1217,6 +1236,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))) (provenance implied))
     (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
@@ -1847,21 +1867,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind succession) (ordinal 0)))))
@@ -1933,12 +1969,28 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind parameter) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance::payload")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0)))))
@@ -1953,65 +2005,113 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Expired")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Expired")) (source direct))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::substates"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))))
       (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Expired")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance::middle")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (path (named (kind library-package) (name "States")) (named (kind state-def) (name "StateAction")) (anonymous (kind action) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::substates")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::idle")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Idle")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Idle")) (source direct))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::substates"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))))
       (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Idle")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance::middle")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (path (named (kind library-package) (name "States")) (named (kind state-def) (name "StateAction")) (anonymous (kind action) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::substates")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind succession) (ordinal 0)))))
@@ -2083,12 +2183,28 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind parameter) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance::payload")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0)))))
@@ -2103,65 +2219,113 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Paused")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Paused")) (source direct))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::substates"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))))
       (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Paused")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance::middle")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (path (named (kind library-package) (name "States")) (named (kind state-def) (name "StateAction")) (anonymous (kind action) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::substates")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::running")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
       (type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Running")) (provenance authored))
       (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Running")) (source direct))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::substates"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates"))))
       (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::Running")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance::middle")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (path (named (kind library-package) (name "States")) (named (kind state-def) (name "StateAction")) (anonymous (kind action) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::exclusiveStates")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::substates")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind succession) (ordinal 0)))))
@@ -2233,12 +2397,28 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind parameter) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance::payload")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0)))))
@@ -2251,21 +2431,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind succession) (ordinal 0)))))
@@ -2337,12 +2533,28 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind parameter) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance::payload")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0)))))
@@ -2355,21 +2567,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind succession) (ordinal 0)))))
@@ -2441,12 +2669,28 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind parameter) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance::payload")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0)))))
@@ -2459,21 +2703,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind succession) (ordinal 0)))))
@@ -2545,12 +2805,28 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind parameter) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance::payload")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0)))))
@@ -2563,21 +2839,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind succession) (ordinal 0)))))
@@ -2649,12 +2941,28 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind parameter) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance::payload")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0)))))
@@ -2667,21 +2975,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::transitions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::enclosedPerformances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance::subperformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction::stateTransitions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind succession) (ordinal 0)))))
@@ -2753,12 +3077,28 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind parameter) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource"))))
       (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (path (named (kind library-package) (name "Actions")) (named (kind action-def) (name "AcceptMessageAction")) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StateTransitionPerformance::transitionLinkSource")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateTransitionAction::transitionLinkSource")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance::payload")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::transitionLinkSource")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0)))))
@@ -6861,6 +7201,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 4,
       "kind": "qualified-name",
+      "qualifiedName": "States::StateAction::exclusiveStates"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
+      "qualifiedName": "States::StateAction::stateTransitions"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
+      "qualifiedName": "States::StateTransitionAction::transitionLinkSource"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
       "qualifiedName": "States::stateActions"
     },
     {
@@ -7193,19 +7548,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
+      "ordinal": 9,
       "relationshipKind": "initialState",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
+      "ordinal": 10,
       "relationshipKind": "subsetting",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
+      "ordinal": 11,
       "relationshipKind": "typeFeaturing",
       "source": 11
     },
@@ -7241,31 +7596,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 67,
+      "ordinal": 77,
       "relationshipKind": "subsetting",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 68,
+      "ordinal": 78,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 79,
       "relationshipKind": "transitionSource",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 69,
+      "ordinal": 80,
       "relationshipKind": "transitionTarget",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 70,
+      "ordinal": 81,
       "relationshipKind": "transitionTrigger",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 71,
+      "ordinal": 82,
       "relationshipKind": "typeFeaturing",
       "source": 12
     },
@@ -7277,79 +7638,91 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 73,
+      "ordinal": 84,
       "relationshipKind": "redefinition",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 75,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 77,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 80,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 78,
-      "relationshipKind": "succession",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 79,
-      "relationshipKind": "succession",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 72,
-      "relationshipKind": "typeFeaturing",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 74,
-      "relationshipKind": "typeFeaturing",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "typeFeaturing",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 81,
-      "relationshipKind": "typeFeaturing",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 82,
+      "ordinal": 86,
       "relationshipKind": "redefinition",
-      "source": 14
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 87,
+      "relationshipKind": "subsetting",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 89,
+      "relationshipKind": "subsetting",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 92,
+      "relationshipKind": "subsetting",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 90,
+      "relationshipKind": "succession",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 91,
+      "relationshipKind": "succession",
+      "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 83,
       "relationshipKind": "typeFeaturing",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 85,
+      "relationshipKind": "typeFeaturing",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 88,
+      "relationshipKind": "typeFeaturing",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 93,
+      "relationshipKind": "typeFeaturing",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 94,
+      "relationshipKind": "redefinition",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
+      "ordinal": 95,
+      "relationshipKind": "typeFeaturing",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 13,
+      "relationshipKind": "subsetting",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
       "relationshipKind": "subsetting",
       "source": 15
     },
@@ -7367,19 +7740,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 12,
+      "ordinal": 15,
       "relationshipKind": "typeFeaturing",
       "source": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 10,
+      "ordinal": 12,
       "relationshipKind": "typing",
       "source": 15
     },
     {
       "kind": "relationship",
       "ordinal": 2,
+      "relationshipKind": "subsetting",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
       "relationshipKind": "subsetting",
       "source": 16
     },
@@ -7421,7 +7800,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "ordinal": 4,
       "relationshipKind": "typeFeaturing",
       "source": 16
     },
@@ -7463,31 +7842,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 84,
+      "ordinal": 96,
       "relationshipKind": "subsetting",
       "source": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 85,
+      "ordinal": 97,
+      "relationshipKind": "subsetting",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 98,
       "relationshipKind": "transitionSource",
       "source": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 86,
+      "ordinal": 99,
       "relationshipKind": "transitionTarget",
       "source": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 87,
+      "ordinal": 100,
       "relationshipKind": "transitionTrigger",
       "source": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 88,
+      "ordinal": 101,
       "relationshipKind": "typeFeaturing",
       "source": 17
     },
@@ -7499,79 +7884,91 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 90,
+      "ordinal": 103,
       "relationshipKind": "redefinition",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 92,
+      "ordinal": 105,
+      "relationshipKind": "redefinition",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 106,
       "relationshipKind": "subsetting",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 94,
+      "ordinal": 108,
       "relationshipKind": "subsetting",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 97,
+      "ordinal": 111,
       "relationshipKind": "subsetting",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 95,
+      "ordinal": 109,
       "relationshipKind": "succession",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 96,
+      "ordinal": 110,
       "relationshipKind": "succession",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 89,
+      "ordinal": 102,
       "relationshipKind": "typeFeaturing",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 91,
+      "ordinal": 104,
       "relationshipKind": "typeFeaturing",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 93,
+      "ordinal": 107,
       "relationshipKind": "typeFeaturing",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 98,
+      "ordinal": 112,
       "relationshipKind": "typeFeaturing",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 99,
+      "ordinal": 113,
       "relationshipKind": "redefinition",
       "source": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 100,
+      "ordinal": 114,
       "relationshipKind": "typeFeaturing",
       "source": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "ordinal": 6,
+      "relationshipKind": "subsetting",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
       "relationshipKind": "subsetting",
       "source": 20
     },
@@ -7601,19 +7998,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
+      "ordinal": 8,
       "relationshipKind": "typeFeaturing",
       "source": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
+      "ordinal": 5,
       "relationshipKind": "typing",
       "source": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "ordinal": 17,
+      "relationshipKind": "subsetting",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
       "relationshipKind": "subsetting",
       "source": 21
     },
@@ -7643,13 +8046,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "ordinal": 19,
       "relationshipKind": "typeFeaturing",
       "source": 21
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
+      "ordinal": 16,
       "relationshipKind": "typing",
       "source": 21
     },
@@ -7685,31 +8088,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 33,
+      "ordinal": 39,
       "relationshipKind": "subsetting",
       "source": 22
     },
     {
       "kind": "relationship",
-      "ordinal": 34,
+      "ordinal": 40,
+      "relationshipKind": "subsetting",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 41,
       "relationshipKind": "transitionSource",
       "source": 22
     },
     {
       "kind": "relationship",
-      "ordinal": 35,
+      "ordinal": 42,
       "relationshipKind": "transitionTarget",
       "source": 22
     },
     {
       "kind": "relationship",
-      "ordinal": 36,
+      "ordinal": 43,
       "relationshipKind": "transitionTrigger",
       "source": 22
     },
     {
       "kind": "relationship",
-      "ordinal": 37,
+      "ordinal": 44,
       "relationshipKind": "typeFeaturing",
       "source": 22
     },
@@ -7721,55 +8130,49 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 39,
+      "ordinal": 46,
       "relationshipKind": "redefinition",
       "source": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 41,
+      "ordinal": 48,
+      "relationshipKind": "redefinition",
+      "source": 23
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 49,
       "relationshipKind": "subsetting",
       "source": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 43,
+      "ordinal": 51,
       "relationshipKind": "subsetting",
       "source": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 46,
+      "ordinal": 54,
       "relationshipKind": "subsetting",
       "source": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 44,
+      "ordinal": 52,
+      "relationshipKind": "succession",
+      "source": 23
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 53,
       "relationshipKind": "succession",
       "source": 23
     },
     {
       "kind": "relationship",
       "ordinal": 45,
-      "relationshipKind": "succession",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "typeFeaturing",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 40,
-      "relationshipKind": "typeFeaturing",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 42,
       "relationshipKind": "typeFeaturing",
       "source": 23
     },
@@ -7781,13 +8184,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 48,
+      "ordinal": 50,
+      "relationshipKind": "typeFeaturing",
+      "source": 23
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "typeFeaturing",
+      "source": 23
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 56,
       "relationshipKind": "redefinition",
       "source": 24
     },
     {
       "kind": "relationship",
-      "ordinal": 49,
+      "ordinal": 57,
       "relationshipKind": "typeFeaturing",
       "source": 24
     },
@@ -7823,31 +8238,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 135,
+      "ordinal": 153,
       "relationshipKind": "subsetting",
       "source": 25
     },
     {
       "kind": "relationship",
-      "ordinal": 136,
+      "ordinal": 154,
+      "relationshipKind": "subsetting",
+      "source": 25
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 155,
       "relationshipKind": "transitionSource",
       "source": 25
     },
     {
       "kind": "relationship",
-      "ordinal": 137,
+      "ordinal": 156,
       "relationshipKind": "transitionTarget",
       "source": 25
     },
     {
       "kind": "relationship",
-      "ordinal": 138,
+      "ordinal": 157,
       "relationshipKind": "transitionTrigger",
       "source": 25
     },
     {
       "kind": "relationship",
-      "ordinal": 139,
+      "ordinal": 158,
       "relationshipKind": "typeFeaturing",
       "source": 25
     },
@@ -7859,73 +8280,79 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 141,
+      "ordinal": 160,
       "relationshipKind": "redefinition",
       "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 143,
+      "ordinal": 162,
+      "relationshipKind": "redefinition",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 163,
       "relationshipKind": "subsetting",
       "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 145,
+      "ordinal": 165,
       "relationshipKind": "subsetting",
       "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 148,
+      "ordinal": 168,
       "relationshipKind": "subsetting",
       "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 146,
+      "ordinal": 166,
       "relationshipKind": "succession",
       "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 147,
+      "ordinal": 167,
       "relationshipKind": "succession",
       "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 140,
+      "ordinal": 159,
       "relationshipKind": "typeFeaturing",
       "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 142,
+      "ordinal": 161,
       "relationshipKind": "typeFeaturing",
       "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 144,
+      "ordinal": 164,
       "relationshipKind": "typeFeaturing",
       "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 149,
+      "ordinal": 169,
       "relationshipKind": "typeFeaturing",
       "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 150,
+      "ordinal": 170,
       "relationshipKind": "redefinition",
       "source": 27
     },
     {
       "kind": "relationship",
-      "ordinal": 151,
+      "ordinal": 171,
       "relationshipKind": "typeFeaturing",
       "source": 27
     },
@@ -7961,31 +8388,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 118,
+      "ordinal": 134,
       "relationshipKind": "subsetting",
       "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 119,
+      "ordinal": 135,
+      "relationshipKind": "subsetting",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 136,
       "relationshipKind": "transitionSource",
       "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 120,
+      "ordinal": 137,
       "relationshipKind": "transitionTarget",
       "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 121,
+      "ordinal": 138,
       "relationshipKind": "transitionTrigger",
       "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 122,
+      "ordinal": 139,
       "relationshipKind": "typeFeaturing",
       "source": 28
     },
@@ -7997,73 +8430,79 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 124,
+      "ordinal": 141,
       "relationshipKind": "redefinition",
       "source": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 126,
+      "ordinal": 143,
+      "relationshipKind": "redefinition",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 144,
       "relationshipKind": "subsetting",
       "source": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 128,
+      "ordinal": 146,
       "relationshipKind": "subsetting",
       "source": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 131,
+      "ordinal": 149,
       "relationshipKind": "subsetting",
       "source": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 129,
+      "ordinal": 147,
       "relationshipKind": "succession",
       "source": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 130,
+      "ordinal": 148,
       "relationshipKind": "succession",
       "source": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 123,
+      "ordinal": 140,
       "relationshipKind": "typeFeaturing",
       "source": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 125,
+      "ordinal": 142,
       "relationshipKind": "typeFeaturing",
       "source": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 127,
+      "ordinal": 145,
       "relationshipKind": "typeFeaturing",
       "source": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 132,
+      "ordinal": 150,
       "relationshipKind": "typeFeaturing",
       "source": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 133,
+      "ordinal": 151,
       "relationshipKind": "redefinition",
       "source": 30
     },
     {
       "kind": "relationship",
-      "ordinal": 134,
+      "ordinal": 152,
       "relationshipKind": "typeFeaturing",
       "source": 30
     },
@@ -8099,31 +8538,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 16,
+      "ordinal": 20,
       "relationshipKind": "subsetting",
       "source": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
+      "ordinal": 21,
+      "relationshipKind": "subsetting",
+      "source": 31
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
       "relationshipKind": "transitionSource",
       "source": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
+      "ordinal": 23,
       "relationshipKind": "transitionTarget",
       "source": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
+      "ordinal": 24,
       "relationshipKind": "transitionTrigger",
       "source": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 20,
+      "ordinal": 25,
       "relationshipKind": "typeFeaturing",
       "source": 31
     },
@@ -8135,73 +8580,79 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 22,
+      "ordinal": 27,
       "relationshipKind": "redefinition",
       "source": 32
     },
     {
       "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "subsetting",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "subsetting",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
       "ordinal": 29,
-      "relationshipKind": "subsetting",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "succession",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "succession",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "typeFeaturing",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "typeFeaturing",
-      "source": 32
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "redefinition",
       "source": 32
     },
     {
       "kind": "relationship",
       "ordinal": 30,
+      "relationshipKind": "subsetting",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 32,
+      "relationshipKind": "subsetting",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 35,
+      "relationshipKind": "subsetting",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 33,
+      "relationshipKind": "succession",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 34,
+      "relationshipKind": "succession",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
+      "relationshipKind": "typeFeaturing",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
       "relationshipKind": "typeFeaturing",
       "source": 32
     },
     {
       "kind": "relationship",
       "ordinal": 31,
+      "relationshipKind": "typeFeaturing",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 36,
+      "relationshipKind": "typeFeaturing",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 37,
       "relationshipKind": "redefinition",
       "source": 33
     },
     {
       "kind": "relationship",
-      "ordinal": 32,
+      "ordinal": 38,
       "relationshipKind": "typeFeaturing",
       "source": 33
     },
@@ -8237,31 +8688,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 50,
+      "ordinal": 58,
       "relationshipKind": "subsetting",
       "source": 34
     },
     {
       "kind": "relationship",
-      "ordinal": 51,
+      "ordinal": 59,
+      "relationshipKind": "subsetting",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 60,
       "relationshipKind": "transitionSource",
       "source": 34
     },
     {
       "kind": "relationship",
-      "ordinal": 52,
+      "ordinal": 61,
       "relationshipKind": "transitionTarget",
       "source": 34
     },
     {
       "kind": "relationship",
-      "ordinal": 53,
+      "ordinal": 62,
       "relationshipKind": "transitionTrigger",
       "source": 34
     },
     {
       "kind": "relationship",
-      "ordinal": 54,
+      "ordinal": 63,
       "relationshipKind": "typeFeaturing",
       "source": 34
     },
@@ -8273,56 +8730,44 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 56,
+      "ordinal": 65,
       "relationshipKind": "redefinition",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 58,
+      "ordinal": 67,
+      "relationshipKind": "redefinition",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 68,
       "relationshipKind": "subsetting",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 60,
+      "ordinal": 70,
       "relationshipKind": "subsetting",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 63,
+      "ordinal": 73,
       "relationshipKind": "subsetting",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 61,
+      "ordinal": 71,
       "relationshipKind": "succession",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 62,
+      "ordinal": 72,
       "relationshipKind": "succession",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "typeFeaturing",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 57,
-      "relationshipKind": "typeFeaturing",
-      "source": 35
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 59,
-      "relationshipKind": "typeFeaturing",
       "source": 35
     },
     {
@@ -8333,13 +8778,31 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 65,
+      "ordinal": 66,
+      "relationshipKind": "typeFeaturing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 69,
+      "relationshipKind": "typeFeaturing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 74,
+      "relationshipKind": "typeFeaturing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 75,
       "relationshipKind": "redefinition",
       "source": 36
     },
     {
       "kind": "relationship",
-      "ordinal": 66,
+      "ordinal": 76,
       "relationshipKind": "typeFeaturing",
       "source": 36
     },
@@ -8375,31 +8838,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 101,
+      "ordinal": 115,
       "relationshipKind": "subsetting",
       "source": 37
     },
     {
       "kind": "relationship",
-      "ordinal": 102,
+      "ordinal": 116,
+      "relationshipKind": "subsetting",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 117,
       "relationshipKind": "transitionSource",
       "source": 37
     },
     {
       "kind": "relationship",
-      "ordinal": 103,
+      "ordinal": 118,
       "relationshipKind": "transitionTarget",
       "source": 37
     },
     {
       "kind": "relationship",
-      "ordinal": 104,
+      "ordinal": 119,
       "relationshipKind": "transitionTrigger",
       "source": 37
     },
     {
       "kind": "relationship",
-      "ordinal": 105,
+      "ordinal": 120,
       "relationshipKind": "typeFeaturing",
       "source": 37
     },
@@ -8411,73 +8880,79 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 107,
+      "ordinal": 122,
       "relationshipKind": "redefinition",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 109,
+      "ordinal": 124,
+      "relationshipKind": "redefinition",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 125,
       "relationshipKind": "subsetting",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 111,
+      "ordinal": 127,
       "relationshipKind": "subsetting",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 114,
+      "ordinal": 130,
       "relationshipKind": "subsetting",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 112,
+      "ordinal": 128,
       "relationshipKind": "succession",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 113,
+      "ordinal": 129,
       "relationshipKind": "succession",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 106,
+      "ordinal": 121,
       "relationshipKind": "typeFeaturing",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 108,
+      "ordinal": 123,
       "relationshipKind": "typeFeaturing",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 110,
+      "ordinal": 126,
       "relationshipKind": "typeFeaturing",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 115,
+      "ordinal": 131,
       "relationshipKind": "typeFeaturing",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 116,
+      "ordinal": 132,
       "relationshipKind": "redefinition",
       "source": 39
     },
     {
       "kind": "relationship",
-      "ordinal": 117,
+      "ordinal": 133,
       "relationshipKind": "typeFeaturing",
       "source": 39
     }
@@ -8499,7 +8974,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 3,
         "origin": 58,
         "provenance": "authored",
-        "reference": 81,
+        "reference": 84,
         "source": 0,
         "target": 58
       },
@@ -8508,7 +8983,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 7,
         "origin": 59,
         "provenance": "authored",
-        "reference": 82,
+        "reference": 85,
         "source": 0,
         "target": 59
       },
@@ -8517,7 +8992,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 1,
         "origin": 57,
         "provenance": "authored",
-        "reference": 83,
+        "reference": 86,
         "source": 0,
         "target": 57
       },
@@ -8526,7 +9001,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 2,
         "origin": 57,
         "provenance": "authored",
-        "reference": 95,
+        "reference": 98,
         "source": 57,
         "target": 58
       },
@@ -8535,7 +9010,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 9,
         "origin": 60,
         "provenance": "authored",
-        "reference": 84,
+        "reference": 87,
         "source": 0,
         "target": 60
       },
@@ -8544,7 +9019,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 5,
         "origin": 61,
         "provenance": "authored",
-        "reference": 85,
+        "reference": 88,
         "source": 0,
         "target": 61
       },
@@ -8553,7 +9028,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 27,
         "origin": 50,
         "provenance": "authored",
-        "reference": 86,
+        "reference": 89,
         "source": 0,
         "target": 50
       },
@@ -8562,7 +9037,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 28,
         "origin": 50,
         "provenance": "implied",
-        "reference": 169,
+        "reference": 180,
         "source": 61,
         "target": 59
       },
@@ -8571,7 +9046,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 26,
         "origin": 56,
         "provenance": "authored",
-        "reference": 242,
+        "reference": 259,
         "source": 50,
         "target": 56
       },
@@ -8580,7 +9055,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 26,
         "origin": 56,
         "provenance": "authored",
-        "reference": 243,
+        "reference": 260,
         "source": 50,
         "target": 56
       },
@@ -8589,7 +9064,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 26,
         "origin": 56,
         "provenance": "authored",
-        "reference": 244,
+        "reference": 261,
         "source": 50,
         "target": 56
       },
@@ -8598,7 +9073,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 26,
         "origin": 51,
         "provenance": "authored",
-        "reference": 245,
+        "reference": 262,
         "source": 50,
         "target": 51
       },
@@ -8607,7 +9082,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 28,
         "origin": 51,
         "provenance": "implied",
-        "reference": 167,
+        "reference": 178,
         "source": 61,
         "target": 59
       },
@@ -8616,7 +9091,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 26,
         "origin": 52,
         "provenance": "authored",
-        "reference": 246,
+        "reference": 263,
         "source": 50,
         "target": 52
       },
@@ -8625,7 +9100,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 26,
         "origin": 53,
         "provenance": "authored",
-        "reference": 252,
+        "reference": 270,
         "source": 52,
         "target": 53
       },
@@ -8634,7 +9109,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 32,
         "origin": 1,
         "provenance": "authored",
-        "reference": 87,
+        "reference": 90,
         "source": 0,
         "target": 1
       },
@@ -8643,7 +9118,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 33,
         "origin": 1,
         "provenance": "implied",
-        "reference": 170,
+        "reference": 181,
         "source": 61,
         "target": 60
       },
@@ -8652,7 +9127,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 31,
         "origin": 7,
         "provenance": "authored",
-        "reference": 173,
+        "reference": 184,
         "source": 1,
         "target": 7
       },
@@ -8661,7 +9136,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 31,
         "origin": 7,
         "provenance": "authored",
-        "reference": 174,
+        "reference": 185,
         "source": 1,
         "target": 7
       },
@@ -8670,7 +9145,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 31,
         "origin": 7,
         "provenance": "authored",
-        "reference": 175,
+        "reference": 186,
         "source": 1,
         "target": 7
       },
@@ -8679,7 +9154,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 31,
         "origin": 2,
         "provenance": "authored",
-        "reference": 176,
+        "reference": 187,
         "source": 1,
         "target": 2
       },
@@ -8688,7 +9163,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 33,
         "origin": 2,
         "provenance": "implied",
-        "reference": 168,
+        "reference": 179,
         "source": 61,
         "target": 60
       },
@@ -8697,7 +9172,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 31,
         "origin": 3,
         "provenance": "authored",
-        "reference": 177,
+        "reference": 188,
         "source": 1,
         "target": 3
       },
@@ -8706,7 +9181,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 31,
         "origin": 4,
         "provenance": "authored",
-        "reference": 183,
+        "reference": 195,
         "source": 3,
         "target": 4
       },
@@ -8715,7 +9190,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 12,
         "origin": 8,
         "provenance": "authored",
-        "reference": 88,
+        "reference": 91,
         "source": 0,
         "target": 8
       },
@@ -8724,7 +9199,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 13,
         "origin": 8,
         "provenance": "implied",
-        "reference": 131,
+        "reference": 138,
         "source": 58,
         "target": 61
       },
@@ -8733,7 +9208,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 11,
         "origin": 14,
         "provenance": "authored",
-        "reference": 265,
+        "reference": 284,
         "source": 8,
         "target": 14
       },
@@ -8742,7 +9217,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 11,
         "origin": 14,
         "provenance": "authored",
-        "reference": 266,
+        "reference": 285,
         "source": 8,
         "target": 14
       },
@@ -8751,7 +9226,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 11,
         "origin": 14,
         "provenance": "authored",
-        "reference": 267,
+        "reference": 286,
         "source": 8,
         "target": 14
       },
@@ -8760,7 +9235,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 11,
         "origin": 9,
         "provenance": "authored",
-        "reference": 268,
+        "reference": 287,
         "source": 8,
         "target": 9
       },
@@ -8769,7 +9244,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 13,
         "origin": 9,
         "provenance": "implied",
-        "reference": 128,
+        "reference": 135,
         "source": 58,
         "target": 61
       },
@@ -8778,7 +9253,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 11,
         "origin": 10,
         "provenance": "authored",
-        "reference": 269,
+        "reference": 288,
         "source": 8,
         "target": 10
       },
@@ -8787,7 +9262,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 11,
         "origin": 11,
         "provenance": "authored",
-        "reference": 275,
+        "reference": 295,
         "source": 10,
         "target": 11
       },
@@ -8796,7 +9271,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 22,
         "origin": 15,
         "provenance": "authored",
-        "reference": 89,
+        "reference": 92,
         "source": 0,
         "target": 15
       },
@@ -8805,7 +9280,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 23,
         "origin": 15,
         "provenance": "implied",
-        "reference": 132,
+        "reference": 139,
         "source": 58,
         "target": 58
       },
@@ -8814,7 +9289,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 21,
         "origin": 21,
         "provenance": "authored",
-        "reference": 99,
+        "reference": 102,
         "source": 15,
         "target": 21
       },
@@ -8823,7 +9298,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 21,
         "origin": 21,
         "provenance": "authored",
-        "reference": 100,
+        "reference": 103,
         "source": 15,
         "target": 21
       },
@@ -8832,7 +9307,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 21,
         "origin": 21,
         "provenance": "authored",
-        "reference": 101,
+        "reference": 104,
         "source": 15,
         "target": 21
       },
@@ -8841,7 +9316,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 21,
         "origin": 16,
         "provenance": "authored",
-        "reference": 102,
+        "reference": 105,
         "source": 15,
         "target": 16
       },
@@ -8850,7 +9325,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 23,
         "origin": 16,
         "provenance": "implied",
-        "reference": 129,
+        "reference": 136,
         "source": 58,
         "target": 58
       },
@@ -8859,7 +9334,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 21,
         "origin": 17,
         "provenance": "authored",
-        "reference": 103,
+        "reference": 106,
         "source": 15,
         "target": 17
       },
@@ -8868,7 +9343,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 21,
         "origin": 18,
         "provenance": "authored",
-        "reference": 109,
+        "reference": 113,
         "source": 17,
         "target": 18
       },
@@ -8877,7 +9352,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 17,
         "origin": 22,
         "provenance": "authored",
-        "reference": 90,
+        "reference": 93,
         "source": 0,
         "target": 22
       },
@@ -8886,7 +9361,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 18,
         "origin": 22,
         "provenance": "implied",
-        "reference": 133,
+        "reference": 140,
         "source": 58,
         "target": 58
       },
@@ -8895,7 +9370,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 16,
         "origin": 28,
         "provenance": "authored",
-        "reference": 136,
+        "reference": 143,
         "source": 22,
         "target": 28
       },
@@ -8904,7 +9379,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 16,
         "origin": 28,
         "provenance": "authored",
-        "reference": 137,
+        "reference": 144,
         "source": 22,
         "target": 28
       },
@@ -8913,7 +9388,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 16,
         "origin": 28,
         "provenance": "authored",
-        "reference": 138,
+        "reference": 145,
         "source": 22,
         "target": 28
       },
@@ -8922,7 +9397,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 16,
         "origin": 23,
         "provenance": "authored",
-        "reference": 139,
+        "reference": 146,
         "source": 22,
         "target": 23
       },
@@ -8931,7 +9406,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 18,
         "origin": 23,
         "provenance": "implied",
-        "reference": 130,
+        "reference": 137,
         "source": 58,
         "target": 58
       },
@@ -8940,7 +9415,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 16,
         "origin": 24,
         "provenance": "authored",
-        "reference": 140,
+        "reference": 147,
         "source": 22,
         "target": 24
       },
@@ -8949,7 +9424,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 16,
         "origin": 25,
         "provenance": "authored",
-        "reference": 146,
+        "reference": 154,
         "source": 24,
         "target": 25
       },
@@ -8958,7 +9433,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 37,
         "origin": 29,
         "provenance": "authored",
-        "reference": 91,
+        "reference": 94,
         "source": 0,
         "target": 29
       },
@@ -8967,7 +9442,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 38,
         "origin": 29,
         "provenance": "implied",
-        "reference": 162,
+        "reference": 172,
         "source": 59,
         "target": 61
       },
@@ -8976,7 +9451,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 36,
         "origin": 35,
         "provenance": "authored",
-        "reference": 288,
+        "reference": 309,
         "source": 29,
         "target": 35
       },
@@ -8985,7 +9460,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 36,
         "origin": 35,
         "provenance": "authored",
-        "reference": 289,
+        "reference": 310,
         "source": 29,
         "target": 35
       },
@@ -8994,7 +9469,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 36,
         "origin": 35,
         "provenance": "authored",
-        "reference": 290,
+        "reference": 311,
         "source": 29,
         "target": 35
       },
@@ -9003,7 +9478,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 36,
         "origin": 30,
         "provenance": "authored",
-        "reference": 291,
+        "reference": 312,
         "source": 29,
         "target": 30
       },
@@ -9012,7 +9487,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 38,
         "origin": 30,
         "provenance": "implied",
-        "reference": 160,
+        "reference": 170,
         "source": 59,
         "target": 61
       },
@@ -9021,7 +9496,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 36,
         "origin": 31,
         "provenance": "authored",
-        "reference": 292,
+        "reference": 313,
         "source": 29,
         "target": 31
       },
@@ -9030,7 +9505,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 36,
         "origin": 32,
         "provenance": "authored",
-        "reference": 298,
+        "reference": 320,
         "source": 31,
         "target": 32
       },
@@ -9039,7 +9514,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 42,
         "origin": 36,
         "provenance": "authored",
-        "reference": 92,
+        "reference": 95,
         "source": 0,
         "target": 36
       },
@@ -9048,7 +9523,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 43,
         "origin": 36,
         "provenance": "implied",
-        "reference": 163,
+        "reference": 173,
         "source": 59,
         "target": 58
       },
@@ -9057,7 +9532,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 41,
         "origin": 42,
         "provenance": "authored",
-        "reference": 219,
+        "reference": 234,
         "source": 36,
         "target": 42
       },
@@ -9066,7 +9541,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 41,
         "origin": 42,
         "provenance": "authored",
-        "reference": 220,
+        "reference": 235,
         "source": 36,
         "target": 42
       },
@@ -9075,7 +9550,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 41,
         "origin": 42,
         "provenance": "authored",
-        "reference": 221,
+        "reference": 236,
         "source": 36,
         "target": 42
       },
@@ -9084,7 +9559,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 41,
         "origin": 37,
         "provenance": "authored",
-        "reference": 222,
+        "reference": 237,
         "source": 36,
         "target": 37
       },
@@ -9093,7 +9568,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 43,
         "origin": 37,
         "provenance": "implied",
-        "reference": 161,
+        "reference": 171,
         "source": 59,
         "target": 58
       },
@@ -9102,7 +9577,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 41,
         "origin": 38,
         "provenance": "authored",
-        "reference": 223,
+        "reference": 238,
         "source": 36,
         "target": 38
       },
@@ -9111,7 +9586,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 41,
         "origin": 39,
         "provenance": "authored",
-        "reference": 229,
+        "reference": 245,
         "source": 38,
         "target": 39
       },
@@ -9120,7 +9595,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 47,
         "origin": 43,
         "provenance": "authored",
-        "reference": 93,
+        "reference": 96,
         "source": 0,
         "target": 43
       },
@@ -9129,7 +9604,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 48,
         "origin": 43,
         "provenance": "implied",
-        "reference": 124,
+        "reference": 130,
         "source": 60,
         "target": 58
       },
@@ -9138,7 +9613,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 46,
         "origin": 49,
         "provenance": "authored",
-        "reference": 196,
+        "reference": 209,
         "source": 43,
         "target": 49
       },
@@ -9147,7 +9622,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 46,
         "origin": 49,
         "provenance": "authored",
-        "reference": 197,
+        "reference": 210,
         "source": 43,
         "target": 49
       },
@@ -9156,7 +9631,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 46,
         "origin": 49,
         "provenance": "authored",
-        "reference": 198,
+        "reference": 211,
         "source": 43,
         "target": 49
       },
@@ -9165,7 +9640,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 46,
         "origin": 44,
         "provenance": "authored",
-        "reference": 199,
+        "reference": 212,
         "source": 43,
         "target": 44
       },
@@ -9174,7 +9649,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 48,
         "origin": 44,
         "provenance": "implied",
-        "reference": 123,
+        "reference": 129,
         "source": 60,
         "target": 58
       },
@@ -9183,7 +9658,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 46,
         "origin": 45,
         "provenance": "authored",
-        "reference": 200,
+        "reference": 213,
         "source": 43,
         "target": 45
       },
@@ -9192,7 +9667,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 46,
         "origin": 46,
         "provenance": "authored",
-        "reference": 206,
+        "reference": 220,
         "source": 45,
         "target": 46
       }
@@ -9279,7 +9754,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 58,
+        "reference": 61,
         "source": 31,
         "typing": {
           "status": "absent"
@@ -9301,20 +9776,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 56,
-        "source": 31,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "metaclass": "ReferenceUsage",
-        "name": null,
-        "notationRole": "reference-usage",
-        "owner": 3,
         "reference": 59,
         "source": 31,
         "typing": {
@@ -9328,8 +9789,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
-        "owner": 1,
-        "reference": 57,
+        "owner": 3,
+        "reference": 62,
         "source": 31,
         "typing": {
           "status": "absent"
@@ -9343,7 +9804,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 57,
+        "reference": 60,
         "source": 31,
         "typing": {
           "status": "absent"
@@ -9357,7 +9818,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 57,
+        "reference": 60,
+        "source": 31,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 1,
+        "reference": 60,
         "source": 31,
         "typing": {
           "status": "absent"
@@ -9402,7 +9877,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 8,
-        "reference": 74,
+        "reference": 77,
         "source": 11,
         "typing": {
           "status": "absent"
@@ -9424,20 +9899,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 8,
-        "reference": 72,
-        "source": 11,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "metaclass": "ReferenceUsage",
-        "name": null,
-        "notationRole": "reference-usage",
-        "owner": 10,
         "reference": 75,
         "source": 11,
         "typing": {
@@ -9451,8 +9912,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
-        "owner": 8,
-        "reference": 73,
+        "owner": 10,
+        "reference": 78,
         "source": 11,
         "typing": {
           "status": "absent"
@@ -9466,7 +9927,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 8,
-        "reference": 73,
+        "reference": 76,
         "source": 11,
         "typing": {
           "status": "absent"
@@ -9480,7 +9941,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 8,
-        "reference": 73,
+        "reference": 76,
+        "source": 11,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 8,
+        "reference": 76,
         "source": 11,
         "typing": {
           "status": "absent"
@@ -9525,7 +10000,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 15,
-        "reference": 50,
+        "reference": 53,
         "source": 21,
         "typing": {
           "status": "absent"
@@ -9547,20 +10022,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 15,
-        "reference": 48,
-        "source": 21,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "metaclass": "ReferenceUsage",
-        "name": null,
-        "notationRole": "reference-usage",
-        "owner": 17,
         "reference": 51,
         "source": 21,
         "typing": {
@@ -9574,8 +10035,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
-        "owner": 15,
-        "reference": 49,
+        "owner": 17,
+        "reference": 54,
         "source": 21,
         "typing": {
           "status": "absent"
@@ -9589,7 +10050,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 15,
-        "reference": 49,
+        "reference": 52,
         "source": 21,
         "typing": {
           "status": "absent"
@@ -9603,7 +10064,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 15,
-        "reference": 49,
+        "reference": 52,
+        "source": 21,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 15,
+        "reference": 52,
         "source": 21,
         "typing": {
           "status": "absent"
@@ -9648,7 +10123,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 22,
-        "reference": 54,
+        "reference": 57,
         "source": 16,
         "typing": {
           "status": "absent"
@@ -9670,20 +10145,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 22,
-        "reference": 52,
-        "source": 16,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "metaclass": "ReferenceUsage",
-        "name": null,
-        "notationRole": "reference-usage",
-        "owner": 24,
         "reference": 55,
         "source": 16,
         "typing": {
@@ -9697,8 +10158,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
-        "owner": 22,
-        "reference": 53,
+        "owner": 24,
+        "reference": 58,
         "source": 16,
         "typing": {
           "status": "absent"
@@ -9712,7 +10173,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 22,
-        "reference": 53,
+        "reference": 56,
         "source": 16,
         "typing": {
           "status": "absent"
@@ -9726,7 +10187,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 22,
-        "reference": 53,
+        "reference": 56,
+        "source": 16,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 22,
+        "reference": 56,
         "source": 16,
         "typing": {
           "status": "absent"
@@ -9771,7 +10246,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 29,
-        "reference": 78,
+        "reference": 81,
         "source": 36,
         "typing": {
           "status": "absent"
@@ -9793,20 +10268,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 29,
-        "reference": 76,
-        "source": 36,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "metaclass": "ReferenceUsage",
-        "name": null,
-        "notationRole": "reference-usage",
-        "owner": 31,
         "reference": 79,
         "source": 36,
         "typing": {
@@ -9820,8 +10281,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
-        "owner": 29,
-        "reference": 77,
+        "owner": 31,
+        "reference": 82,
         "source": 36,
         "typing": {
           "status": "absent"
@@ -9835,7 +10296,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 29,
-        "reference": 77,
+        "reference": 80,
         "source": 36,
         "typing": {
           "status": "absent"
@@ -9849,7 +10310,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 29,
-        "reference": 77,
+        "reference": 80,
+        "source": 36,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 29,
+        "reference": 80,
         "source": 36,
         "typing": {
           "status": "absent"
@@ -9894,7 +10369,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 36,
-        "reference": 66,
+        "reference": 69,
         "source": 41,
         "typing": {
           "status": "absent"
@@ -9916,20 +10391,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 36,
-        "reference": 64,
-        "source": 41,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "metaclass": "ReferenceUsage",
-        "name": null,
-        "notationRole": "reference-usage",
-        "owner": 38,
         "reference": 67,
         "source": 41,
         "typing": {
@@ -9943,8 +10404,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
-        "owner": 36,
-        "reference": 65,
+        "owner": 38,
+        "reference": 70,
         "source": 41,
         "typing": {
           "status": "absent"
@@ -9958,7 +10419,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 36,
-        "reference": 65,
+        "reference": 68,
         "source": 41,
         "typing": {
           "status": "absent"
@@ -9972,7 +10433,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 36,
-        "reference": 65,
+        "reference": 68,
+        "source": 41,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 36,
+        "reference": 68,
         "source": 41,
         "typing": {
           "status": "absent"
@@ -10017,7 +10492,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 43,
-        "reference": 62,
+        "reference": 65,
         "source": 46,
         "typing": {
           "status": "absent"
@@ -10039,20 +10514,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 43,
-        "reference": 60,
-        "source": 46,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "metaclass": "ReferenceUsage",
-        "name": null,
-        "notationRole": "reference-usage",
-        "owner": 45,
         "reference": 63,
         "source": 46,
         "typing": {
@@ -10066,8 +10527,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
-        "owner": 43,
-        "reference": 61,
+        "owner": 45,
+        "reference": 66,
         "source": 46,
         "typing": {
           "status": "absent"
@@ -10081,7 +10542,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 43,
-        "reference": 61,
+        "reference": 64,
         "source": 46,
         "typing": {
           "status": "absent"
@@ -10095,7 +10556,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 43,
-        "reference": 61,
+        "reference": 64,
+        "source": 46,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 43,
+        "reference": 64,
         "source": 46,
         "typing": {
           "status": "absent"
@@ -10140,7 +10615,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 50,
-        "reference": 70,
+        "reference": 73,
         "source": 26,
         "typing": {
           "status": "absent"
@@ -10162,20 +10637,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 50,
-        "reference": 68,
-        "source": 26,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "metaclass": "ReferenceUsage",
-        "name": null,
-        "notationRole": "reference-usage",
-        "owner": 52,
         "reference": 71,
         "source": 26,
         "typing": {
@@ -10189,8 +10650,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "ReferenceUsage",
         "name": null,
         "notationRole": "reference-usage",
-        "owner": 50,
-        "reference": 69,
+        "owner": 52,
+        "reference": 74,
         "source": 26,
         "typing": {
           "status": "absent"
@@ -10204,7 +10665,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 50,
-        "reference": 69,
+        "reference": 72,
         "source": 26,
         "typing": {
           "status": "absent"
@@ -10218,7 +10679,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "reference-usage",
         "owner": 50,
-        "reference": 69,
+        "reference": 72,
+        "source": 26,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 50,
+        "reference": 72,
         "source": 26,
         "typing": {
           "status": "absent"
@@ -10232,7 +10707,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 47,
+        "reference": 50,
         "source": 1,
         "typing": {
           "status": "absent"
@@ -10324,7 +10799,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 94,
+        "reference": 97,
         "source": 0,
         "target": {
           "reference": 45,
@@ -10335,7 +10810,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 135,
+        "reference": 142,
         "source": 58,
         "target": {
           "reference": 3,
@@ -10346,7 +10821,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 127,
+        "reference": 133,
         "source": 58,
         "target": {
           "reference": 46,
@@ -10354,10 +10829,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
-        "kind": "typeFeaturing",
+        "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
         "reference": 134,
+        "source": 58,
+        "target": {
+          "reference": 49,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 141,
         "source": 58,
         "target": {
           "node": 0,
@@ -10368,7 +10854,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 165,
+        "reference": 175,
         "source": 59,
         "target": {
           "reference": 5,
@@ -10379,7 +10865,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 159,
+        "reference": 168,
         "source": 59,
         "target": {
           "reference": 46,
@@ -10387,10 +10873,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 169,
+        "source": 59,
+        "target": {
+          "reference": 49,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 164,
+        "reference": 174,
         "source": 59,
         "target": {
           "node": 0,
@@ -10401,7 +10898,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "initialState",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 96,
+        "reference": 99,
         "source": 57,
         "target": {
           "node": 58,
@@ -10412,7 +10909,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 97,
+        "reference": 100,
         "source": 57,
         "target": {
           "reference": 44,
@@ -10423,7 +10920,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 98,
+        "reference": 101,
         "source": 57,
         "target": {
           "node": 0,
@@ -10434,7 +10931,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 126,
+        "reference": 132,
         "source": 60,
         "target": {
           "reference": 2,
@@ -10445,7 +10942,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 122,
+        "reference": 127,
         "source": 60,
         "target": {
           "reference": 46,
@@ -10453,10 +10950,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 128,
+        "source": 60,
+        "target": {
+          "reference": 49,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 125,
+        "reference": 131,
         "source": 60,
         "target": {
           "node": 0,
@@ -10467,7 +10975,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 172,
+        "reference": 183,
         "source": 61,
         "target": {
           "reference": 7,
@@ -10478,7 +10986,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 166,
+        "reference": 176,
         "source": 61,
         "target": {
           "reference": 46,
@@ -10486,10 +10994,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 177,
+        "source": 61,
+        "target": {
+          "reference": 49,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 171,
+        "reference": 182,
         "source": 61,
         "target": {
           "node": 0,
@@ -10500,7 +11019,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 247,
+        "reference": 264,
         "source": 50,
         "target": {
           "reference": 43,
@@ -10508,10 +11027,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 265,
+        "source": 50,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "transitionSource",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 248,
+        "reference": 266,
         "source": 50,
         "target": {
           "node": 61,
@@ -10522,7 +11052,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 30,
         "provenance": "authored",
-        "reference": 249,
+        "reference": 267,
         "source": 50,
         "target": {
           "node": 59,
@@ -10533,7 +11063,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 29,
         "provenance": "authored",
-        "reference": 250,
+        "reference": 268,
         "source": 50,
         "target": {
           "reference": 9,
@@ -10544,7 +11074,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 251,
+        "reference": 269,
         "source": 50,
         "target": {
           "node": 0,
@@ -10555,7 +11085,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 259,
+        "reference": 278,
         "source": 56,
         "target": {
           "node": 50,
@@ -10566,7 +11096,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 253,
+        "reference": 271,
         "source": 56,
         "target": {
           "reference": 42,
@@ -10577,7 +11107,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 260,
+        "reference": 279,
         "source": 56,
         "target": {
           "node": 50,
@@ -10585,10 +11115,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 272,
+        "source": 56,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 254,
+        "reference": 273,
         "source": 56,
         "target": {
           "node": 53,
@@ -10599,7 +11140,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 261,
+        "reference": 280,
         "source": 56,
         "target": {
           "node": 50,
@@ -10610,7 +11151,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 255,
+        "reference": 274,
         "source": 51,
         "target": {
           "reference": 44,
@@ -10621,7 +11162,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 257,
+        "reference": 276,
         "source": 51,
         "target": {
           "node": 61,
@@ -10632,7 +11173,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 30,
         "provenance": "authored",
-        "reference": 258,
+        "reference": 277,
         "source": 51,
         "target": {
           "node": 59,
@@ -10643,7 +11184,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 256,
+        "reference": 275,
         "source": 52,
         "target": {
           "reference": 41,
@@ -10654,7 +11195,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 262,
+        "reference": 281,
         "source": 52,
         "target": {
           "node": 50,
@@ -10665,10 +11206,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 263,
+        "reference": 282,
         "source": 53,
         "target": {
-          "reference": 80,
+          "reference": 83,
           "status": "resolved"
         }
       },
@@ -10676,7 +11217,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 264,
+        "reference": 283,
         "source": 53,
         "target": {
           "node": 52,
@@ -10687,7 +11228,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 178,
+        "reference": 189,
         "source": 1,
         "target": {
           "reference": 43,
@@ -10695,10 +11236,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 190,
+        "source": 1,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "transitionSource",
         "navigation": 33,
         "provenance": "authored",
-        "reference": 179,
+        "reference": 191,
         "source": 1,
         "target": {
           "node": 61,
@@ -10709,7 +11261,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 35,
         "provenance": "authored",
-        "reference": 180,
+        "reference": 192,
         "source": 1,
         "target": {
           "node": 60,
@@ -10720,7 +11272,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 34,
         "provenance": "authored",
-        "reference": 181,
+        "reference": 193,
         "source": 1,
         "target": {
           "reference": 0,
@@ -10731,7 +11283,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 182,
+        "reference": 194,
         "source": 1,
         "target": {
           "node": 0,
@@ -10742,7 +11294,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 190,
+        "reference": 203,
         "source": 7,
         "target": {
           "node": 1,
@@ -10753,7 +11305,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 184,
+        "reference": 196,
         "source": 7,
         "target": {
           "reference": 42,
@@ -10764,7 +11316,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 191,
+        "reference": 204,
         "source": 7,
         "target": {
           "node": 1,
@@ -10772,10 +11324,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 197,
+        "source": 7,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 185,
+        "reference": 198,
         "source": 7,
         "target": {
           "node": 4,
@@ -10786,7 +11349,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 192,
+        "reference": 205,
         "source": 7,
         "target": {
           "node": 1,
@@ -10797,7 +11360,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 186,
+        "reference": 199,
         "source": 2,
         "target": {
           "reference": 44,
@@ -10808,7 +11371,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 33,
         "provenance": "authored",
-        "reference": 188,
+        "reference": 201,
         "source": 2,
         "target": {
           "node": 61,
@@ -10819,7 +11382,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 35,
         "provenance": "authored",
-        "reference": 189,
+        "reference": 202,
         "source": 2,
         "target": {
           "node": 60,
@@ -10830,7 +11393,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 187,
+        "reference": 200,
         "source": 3,
         "target": {
           "reference": 41,
@@ -10841,7 +11404,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 193,
+        "reference": 206,
         "source": 3,
         "target": {
           "node": 1,
@@ -10852,10 +11415,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 194,
+        "reference": 207,
         "source": 4,
         "target": {
-          "reference": 80,
+          "reference": 83,
           "status": "resolved"
         }
       },
@@ -10863,7 +11426,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 195,
+        "reference": 208,
         "source": 4,
         "target": {
           "node": 3,
@@ -10874,7 +11437,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 270,
+        "reference": 289,
         "source": 8,
         "target": {
           "reference": 43,
@@ -10882,10 +11445,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 290,
+        "source": 8,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "transitionSource",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 271,
+        "reference": 291,
         "source": 8,
         "target": {
           "node": 58,
@@ -10896,7 +11470,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 15,
         "provenance": "authored",
-        "reference": 272,
+        "reference": 292,
         "source": 8,
         "target": {
           "node": 61,
@@ -10907,7 +11481,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 14,
         "provenance": "authored",
-        "reference": 273,
+        "reference": 293,
         "source": 8,
         "target": {
           "reference": 8,
@@ -10918,7 +11492,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 274,
+        "reference": 294,
         "source": 8,
         "target": {
           "node": 0,
@@ -10929,7 +11503,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 282,
+        "reference": 303,
         "source": 14,
         "target": {
           "node": 8,
@@ -10940,7 +11514,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 276,
+        "reference": 296,
         "source": 14,
         "target": {
           "reference": 42,
@@ -10951,7 +11525,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 283,
+        "reference": 304,
         "source": 14,
         "target": {
           "node": 8,
@@ -10959,10 +11533,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 297,
+        "source": 14,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 277,
+        "reference": 298,
         "source": 14,
         "target": {
           "node": 11,
@@ -10973,7 +11558,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 284,
+        "reference": 305,
         "source": 14,
         "target": {
           "node": 8,
@@ -10984,7 +11569,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 278,
+        "reference": 299,
         "source": 9,
         "target": {
           "reference": 44,
@@ -10995,7 +11580,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 280,
+        "reference": 301,
         "source": 9,
         "target": {
           "node": 58,
@@ -11006,7 +11591,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 15,
         "provenance": "authored",
-        "reference": 281,
+        "reference": 302,
         "source": 9,
         "target": {
           "node": 61,
@@ -11017,7 +11602,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 279,
+        "reference": 300,
         "source": 10,
         "target": {
           "reference": 41,
@@ -11028,7 +11613,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 285,
+        "reference": 306,
         "source": 10,
         "target": {
           "node": 8,
@@ -11039,10 +11624,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 286,
+        "reference": 307,
         "source": 11,
         "target": {
-          "reference": 80,
+          "reference": 83,
           "status": "resolved"
         }
       },
@@ -11050,7 +11635,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 287,
+        "reference": 308,
         "source": 11,
         "target": {
           "node": 10,
@@ -11061,7 +11646,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 104,
+        "reference": 107,
         "source": 15,
         "target": {
           "reference": 43,
@@ -11069,10 +11654,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 108,
+        "source": 15,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "transitionSource",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 105,
+        "reference": 109,
         "source": 15,
         "target": {
           "node": 58,
@@ -11083,7 +11679,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 25,
         "provenance": "authored",
-        "reference": 106,
+        "reference": 110,
         "source": 15,
         "target": {
           "node": 58,
@@ -11094,7 +11690,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 24,
         "provenance": "authored",
-        "reference": 107,
+        "reference": 111,
         "source": 15,
         "target": {
           "reference": 1,
@@ -11105,7 +11701,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 108,
+        "reference": 112,
         "source": 15,
         "target": {
           "node": 0,
@@ -11116,7 +11712,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 116,
+        "reference": 121,
         "source": 21,
         "target": {
           "node": 15,
@@ -11127,7 +11723,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 110,
+        "reference": 114,
         "source": 21,
         "target": {
           "reference": 42,
@@ -11138,7 +11734,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 117,
+        "reference": 122,
         "source": 21,
         "target": {
           "node": 15,
@@ -11146,10 +11742,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 115,
+        "source": 21,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 111,
+        "reference": 116,
         "source": 21,
         "target": {
           "node": 18,
@@ -11160,7 +11767,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 118,
+        "reference": 123,
         "source": 21,
         "target": {
           "node": 15,
@@ -11171,7 +11778,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 112,
+        "reference": 117,
         "source": 16,
         "target": {
           "reference": 44,
@@ -11182,7 +11789,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 114,
+        "reference": 119,
         "source": 16,
         "target": {
           "node": 58,
@@ -11193,7 +11800,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 25,
         "provenance": "authored",
-        "reference": 115,
+        "reference": 120,
         "source": 16,
         "target": {
           "node": 58,
@@ -11204,7 +11811,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 113,
+        "reference": 118,
         "source": 17,
         "target": {
           "reference": 41,
@@ -11215,7 +11822,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 119,
+        "reference": 124,
         "source": 17,
         "target": {
           "node": 15,
@@ -11226,10 +11833,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 120,
+        "reference": 125,
         "source": 18,
         "target": {
-          "reference": 80,
+          "reference": 83,
           "status": "resolved"
         }
       },
@@ -11237,7 +11844,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 121,
+        "reference": 126,
         "source": 18,
         "target": {
           "node": 17,
@@ -11248,7 +11855,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 141,
+        "reference": 148,
         "source": 22,
         "target": {
           "reference": 43,
@@ -11256,10 +11863,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 149,
+        "source": 22,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "transitionSource",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 142,
+        "reference": 150,
         "source": 22,
         "target": {
           "node": 58,
@@ -11270,7 +11888,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 20,
         "provenance": "authored",
-        "reference": 143,
+        "reference": 151,
         "source": 22,
         "target": {
           "node": 58,
@@ -11281,7 +11899,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 19,
         "provenance": "authored",
-        "reference": 144,
+        "reference": 152,
         "source": 22,
         "target": {
           "reference": 4,
@@ -11292,7 +11910,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 145,
+        "reference": 153,
         "source": 22,
         "target": {
           "node": 0,
@@ -11303,7 +11921,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 153,
+        "reference": 162,
         "source": 28,
         "target": {
           "node": 22,
@@ -11314,7 +11932,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 147,
+        "reference": 155,
         "source": 28,
         "target": {
           "reference": 42,
@@ -11325,7 +11943,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 154,
+        "reference": 163,
         "source": 28,
         "target": {
           "node": 22,
@@ -11333,10 +11951,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 156,
+        "source": 28,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 148,
+        "reference": 157,
         "source": 28,
         "target": {
           "node": 25,
@@ -11347,7 +11976,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 155,
+        "reference": 164,
         "source": 28,
         "target": {
           "node": 22,
@@ -11358,7 +11987,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 149,
+        "reference": 158,
         "source": 23,
         "target": {
           "reference": 44,
@@ -11369,7 +11998,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 18,
         "provenance": "authored",
-        "reference": 151,
+        "reference": 160,
         "source": 23,
         "target": {
           "node": 58,
@@ -11380,7 +12009,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 20,
         "provenance": "authored",
-        "reference": 152,
+        "reference": 161,
         "source": 23,
         "target": {
           "node": 58,
@@ -11391,7 +12020,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 150,
+        "reference": 159,
         "source": 24,
         "target": {
           "reference": 41,
@@ -11402,7 +12031,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 156,
+        "reference": 165,
         "source": 24,
         "target": {
           "node": 22,
@@ -11413,10 +12042,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 157,
+        "reference": 166,
         "source": 25,
         "target": {
-          "reference": 80,
+          "reference": 83,
           "status": "resolved"
         }
       },
@@ -11424,7 +12053,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 158,
+        "reference": 167,
         "source": 25,
         "target": {
           "node": 24,
@@ -11435,7 +12064,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 293,
+        "reference": 314,
         "source": 29,
         "target": {
           "reference": 43,
@@ -11443,10 +12072,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 315,
+        "source": 29,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "transitionSource",
         "navigation": 38,
         "provenance": "authored",
-        "reference": 294,
+        "reference": 316,
         "source": 29,
         "target": {
           "node": 59,
@@ -11457,7 +12097,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 40,
         "provenance": "authored",
-        "reference": 295,
+        "reference": 317,
         "source": 29,
         "target": {
           "node": 61,
@@ -11468,7 +12108,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 39,
         "provenance": "authored",
-        "reference": 296,
+        "reference": 318,
         "source": 29,
         "target": {
           "reference": 8,
@@ -11479,7 +12119,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 297,
+        "reference": 319,
         "source": 29,
         "target": {
           "node": 0,
@@ -11490,7 +12130,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 305,
+        "reference": 328,
         "source": 35,
         "target": {
           "node": 29,
@@ -11501,7 +12141,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 299,
+        "reference": 321,
         "source": 35,
         "target": {
           "reference": 42,
@@ -11512,7 +12152,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 306,
+        "reference": 329,
         "source": 35,
         "target": {
           "node": 29,
@@ -11520,10 +12160,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 322,
+        "source": 35,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 300,
+        "reference": 323,
         "source": 35,
         "target": {
           "node": 32,
@@ -11534,7 +12185,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 307,
+        "reference": 330,
         "source": 35,
         "target": {
           "node": 29,
@@ -11545,7 +12196,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 301,
+        "reference": 324,
         "source": 30,
         "target": {
           "reference": 44,
@@ -11556,7 +12207,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 38,
         "provenance": "authored",
-        "reference": 303,
+        "reference": 326,
         "source": 30,
         "target": {
           "node": 59,
@@ -11567,7 +12218,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 40,
         "provenance": "authored",
-        "reference": 304,
+        "reference": 327,
         "source": 30,
         "target": {
           "node": 61,
@@ -11578,7 +12229,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 302,
+        "reference": 325,
         "source": 31,
         "target": {
           "reference": 41,
@@ -11589,7 +12240,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 308,
+        "reference": 331,
         "source": 31,
         "target": {
           "node": 29,
@@ -11600,10 +12251,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 309,
+        "reference": 332,
         "source": 32,
         "target": {
-          "reference": 80,
+          "reference": 83,
           "status": "resolved"
         }
       },
@@ -11611,7 +12262,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 310,
+        "reference": 333,
         "source": 32,
         "target": {
           "node": 31,
@@ -11622,7 +12273,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 224,
+        "reference": 239,
         "source": 36,
         "target": {
           "reference": 43,
@@ -11630,10 +12281,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 240,
+        "source": 36,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "transitionSource",
         "navigation": 43,
         "provenance": "authored",
-        "reference": 225,
+        "reference": 241,
         "source": 36,
         "target": {
           "node": 59,
@@ -11644,7 +12306,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 45,
         "provenance": "authored",
-        "reference": 226,
+        "reference": 242,
         "source": 36,
         "target": {
           "node": 58,
@@ -11655,7 +12317,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 44,
         "provenance": "authored",
-        "reference": 227,
+        "reference": 243,
         "source": 36,
         "target": {
           "reference": 6,
@@ -11666,7 +12328,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 228,
+        "reference": 244,
         "source": 36,
         "target": {
           "node": 0,
@@ -11677,7 +12339,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 236,
+        "reference": 253,
         "source": 42,
         "target": {
           "node": 36,
@@ -11688,7 +12350,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 230,
+        "reference": 246,
         "source": 42,
         "target": {
           "reference": 42,
@@ -11699,7 +12361,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 237,
+        "reference": 254,
         "source": 42,
         "target": {
           "node": 36,
@@ -11707,10 +12369,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 247,
+        "source": 42,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 231,
+        "reference": 248,
         "source": 42,
         "target": {
           "node": 39,
@@ -11721,7 +12394,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 238,
+        "reference": 255,
         "source": 42,
         "target": {
           "node": 36,
@@ -11732,7 +12405,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 232,
+        "reference": 249,
         "source": 37,
         "target": {
           "reference": 44,
@@ -11743,7 +12416,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 43,
         "provenance": "authored",
-        "reference": 234,
+        "reference": 251,
         "source": 37,
         "target": {
           "node": 59,
@@ -11754,7 +12427,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 45,
         "provenance": "authored",
-        "reference": 235,
+        "reference": 252,
         "source": 37,
         "target": {
           "node": 58,
@@ -11765,7 +12438,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 233,
+        "reference": 250,
         "source": 38,
         "target": {
           "reference": 41,
@@ -11776,7 +12449,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 239,
+        "reference": 256,
         "source": 38,
         "target": {
           "node": 36,
@@ -11787,10 +12460,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 240,
+        "reference": 257,
         "source": 39,
         "target": {
-          "reference": 80,
+          "reference": 83,
           "status": "resolved"
         }
       },
@@ -11798,7 +12471,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 241,
+        "reference": 258,
         "source": 39,
         "target": {
           "node": 38,
@@ -11809,7 +12482,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 201,
+        "reference": 214,
         "source": 43,
         "target": {
           "reference": 43,
@@ -11817,10 +12490,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 215,
+        "source": 43,
+        "target": {
+          "reference": 47,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "transitionSource",
         "navigation": 48,
         "provenance": "authored",
-        "reference": 202,
+        "reference": 216,
         "source": 43,
         "target": {
           "node": 60,
@@ -11831,7 +12515,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 50,
         "provenance": "authored",
-        "reference": 203,
+        "reference": 217,
         "source": 43,
         "target": {
           "node": 58,
@@ -11842,7 +12526,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 49,
         "provenance": "authored",
-        "reference": 204,
+        "reference": 218,
         "source": 43,
         "target": {
           "reference": 6,
@@ -11853,7 +12537,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 205,
+        "reference": 219,
         "source": 43,
         "target": {
           "node": 0,
@@ -11864,7 +12548,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 213,
+        "reference": 228,
         "source": 49,
         "target": {
           "node": 43,
@@ -11875,7 +12559,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 207,
+        "reference": 221,
         "source": 49,
         "target": {
           "reference": 42,
@@ -11886,7 +12570,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 214,
+        "reference": 229,
         "source": 49,
         "target": {
           "node": 43,
@@ -11894,10 +12578,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 222,
+        "source": 49,
+        "target": {
+          "reference": 48,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 208,
+        "reference": 223,
         "source": 49,
         "target": {
           "node": 46,
@@ -11908,7 +12603,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 215,
+        "reference": 230,
         "source": 49,
         "target": {
           "node": 43,
@@ -11919,7 +12614,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 209,
+        "reference": 224,
         "source": 44,
         "target": {
           "reference": 44,
@@ -11930,7 +12625,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 48,
         "provenance": "authored",
-        "reference": 211,
+        "reference": 226,
         "source": 44,
         "target": {
           "node": 60,
@@ -11941,7 +12636,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 50,
         "provenance": "authored",
-        "reference": 212,
+        "reference": 227,
         "source": 44,
         "target": {
           "node": 58,
@@ -11952,7 +12647,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 210,
+        "reference": 225,
         "source": 45,
         "target": {
           "reference": 41,
@@ -11963,7 +12658,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 216,
+        "reference": 231,
         "source": 45,
         "target": {
           "node": 43,
@@ -11974,10 +12669,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 217,
+        "reference": 232,
         "source": 46,
         "target": {
-          "reference": 80,
+          "reference": 83,
           "status": "resolved"
         }
       },
@@ -11985,7 +12680,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 218,
+        "reference": 233,
         "source": 46,
         "target": {
           "node": 45,
