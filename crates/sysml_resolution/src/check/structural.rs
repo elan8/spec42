@@ -391,6 +391,21 @@ impl<D> SemanticModel<D> {
                     DiagnosticSeverity::Warning,
                 )?);
             }
+            // KerML 8.3.2.4.2 `validateImportTopLevelVisibility`: an Import whose owning
+            // namespace is a root namespace (no owner) must be private. The effective visibility
+            // is the canonical membership fact, which defaults an Import to private.
+            if declaration.kind == DeclarationKind::Import
+                && declaration.owner.is_none()
+                && self.memberships.get(id).is_some_and(|membership| {
+                    membership.visibility != crate::resolve::names::EffectiveVisibility::Private
+                })
+            {
+                diagnostics.push(self.declaration_diagnostic(
+                    id,
+                    DiagnosticCode::TopLevelImportNotPrivate,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
             self.collect_metadata_body_features(id, declaration.kind, diagnostics)?;
             self.collect_port_member_composition(id, declaration.kind, diagnostics)?;
             self.collect_parallel_state_subactions(id, declaration.kind, facts, diagnostics)?;
@@ -535,6 +550,14 @@ impl<D> SemanticModel<D> {
                     }
                 }
                 ReferenceKind::Redefinition => {
+                    if self.subsetting_constant_mismatch(reference.source, target) {
+                        diagnostics.push(self.reference_diagnostic(
+                            reference,
+                            DiagnosticCode::SubsettingConstantMismatch,
+                            DiagnosticSeverity::Warning,
+                            Some(target),
+                        )?);
+                    }
                     for code in self.redefinition_structure(reference.source, target) {
                         diagnostics.push(self.reference_diagnostic(
                             reference,
@@ -551,6 +574,16 @@ impl<D> SemanticModel<D> {
                             Some(target),
                         )?);
                     }
+                }
+                ReferenceKind::Subsetting | ReferenceKind::References | ReferenceKind::Crosses
+                    if self.subsetting_constant_mismatch(reference.source, target) =>
+                {
+                    diagnostics.push(self.reference_diagnostic(
+                        reference,
+                        DiagnosticCode::SubsettingConstantMismatch,
+                        DiagnosticSeverity::Warning,
+                        Some(target),
+                    )?);
                 }
                 // KerML 8.3.3.3.10: a non-unique feature cannot subset a unique one, since it would
                 // admit repeated values the subsetted feature excludes.
@@ -580,7 +613,10 @@ impl<D> SemanticModel<D> {
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         for relationship in self.resolution.implied_relationships.iter() {
-            if relationship.kind != ReferenceKind::Redefinition {
+            if !matches!(
+                relationship.kind,
+                ReferenceKind::Redefinition | ReferenceKind::Subsetting
+            ) {
                 continue;
             }
             if self
@@ -590,6 +626,16 @@ impl<D> SemanticModel<D> {
                 .document
                 != document
             {
+                continue;
+            }
+            if self.subsetting_constant_mismatch(relationship.source, relationship.target) {
+                diagnostics.push(self.declaration_diagnostic(
+                    relationship.source,
+                    DiagnosticCode::SubsettingConstantMismatch,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
+            if relationship.kind != ReferenceKind::Redefinition {
                 continue;
             }
             for code in self.redefinition_structure(relationship.source, relationship.target) {
@@ -608,6 +654,29 @@ impl<D> SemanticModel<D> {
             }
         }
         Ok(())
+    }
+
+    /// KerML 8.3.3.3.10 `validateSubsettingConstantConformance`: `subsettedFeature.isConstant
+    /// and subsettingFeature.isVariable implies subsettingFeature.isConstant`. A Redefinition is
+    /// a Subsetting, so it applies to both. `isVariable` is the canonical
+    /// [`crate::index::types::TypeIndex::feature_is_variable`] fact; an unsettled answer is not
+    /// a violation.
+    pub(crate) fn subsetting_constant_mismatch(
+        &self,
+        subsetting: DeclarationId,
+        subsetted: DeclarationId,
+    ) -> bool {
+        let is_constant = |declaration: DeclarationId| {
+            self.storage
+                .declaration_facts(declaration)
+                .is_some_and(|facts| facts.modifiers.constant)
+        };
+        is_constant(subsetted)
+            && !is_constant(subsetting)
+            && matches!(
+                self.types.feature_is_variable(&self.storage, subsetting),
+                Some(crate::index::types::UsageTimeVariationOutcome::Resolved(true))
+            )
     }
 
     /// The end and direction rules of one redefinition.

@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.3.10:validateSubsettingConstantConformance
-blocked_by=semantic-subsetting-constant-mismatch
 type=file
 ~~~
 # SOURCE
@@ -35,7 +34,13 @@ package Subsettings {
         (severity warning)
         (code "subsetting_constant_mismatch")
         (source "semantic")
-        (range (start 9 8) (end 9 47))
+        (range (start 9 42) (end 9 46))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_subsetting_constant_conformance.md")
+            (range (start 3 8) (end 3 35))
+          )
+        )
       )
     )
   )
@@ -46,6 +51,18 @@ package Subsettings {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_subsetting_constant_conformance.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "subsetting_constant_mismatch")
+        (source "semantic")
+        (range (start 9 42) (end 9 46))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_subsetting_constant_conformance.md")
+            (range (start 3 8) (end 3 35))
+          )
+        )
+      )
     )
   )
 )

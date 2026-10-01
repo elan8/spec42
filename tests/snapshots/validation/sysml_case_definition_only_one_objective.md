@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.22.2:validateCaseDefinitionOnlyOneObjective
-blocked_by=semantic-duplicate-role-member
 type=file
 ~~~
 # SOURCE
@@ -40,6 +39,12 @@ package Roles {
         (code "duplicate_role_member")
         (source "semantic")
         (range (start 13 8) (end 13 25))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_case_definition_only_one_objective.md")
+            (range (start 12 8) (end 12 24))
+          )
+        )
       )
     )
   )
@@ -50,6 +55,18 @@ package Roles {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_case_definition_only_one_objective.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_role_member")
+        (source "semantic")
+        (range (start 13 8) (end 13 25))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_case_definition_only_one_objective.md")
+            (range (start 12 8) (end 12 24))
+          )
+        )
+      )
     )
   )
 )

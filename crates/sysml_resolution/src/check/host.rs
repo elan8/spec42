@@ -1281,6 +1281,7 @@ impl<D> SemanticModel<D> {
             let kind = self.kind_of(id).ok_or(ResolutionError::InvalidStorage)?;
             if supports_subject_role(kind) {
                 self.collect_subject_roles(id, diagnostics)?;
+                self.collect_objective_roles(id, diagnostics)?;
             }
             match kind {
                 DeclarationKind::Satisfy => self.collect_satisfy(id, diagnostics)?,
@@ -1340,6 +1341,44 @@ impl<D> SemanticModel<D> {
                 ),
                 Some((target, RELATED_TARGET)),
             )?);
+        }
+        Ok(())
+    }
+
+    /// SysML 8.3.22.2/8.3.22.3 `validateCase{Definition,Usage}OnlyOneObjective`: at most one
+    /// featureMembership is an ObjectiveMembership. Each owned objective after the first, in
+    /// source order, is reported with the first as related information, as the Pilot's
+    /// `checkAtMostOne` does.
+    pub(crate) fn collect_objective_roles(
+        &self,
+        id: DeclarationId,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        let mut objectives = self
+            .child_declarations(id)
+            .iter()
+            .copied()
+            .filter(|child| {
+                self.effective_membership_role(*child) == Some(crate::MembershipRole::Objective)
+            })
+            .collect::<Vec<_>>();
+        objectives.sort_by_key(|child| self.declaration_range(*child));
+        let Some((first, rest)) = objectives.split_first() else {
+            return Ok(());
+        };
+        for objective in rest {
+            let mut diagnostic = self.declaration_message_diagnostic(
+                *objective,
+                DiagnosticCode::DuplicateRoleMember,
+                DiagnosticSeverity::Warning,
+                Some(format!(
+                    "'{}' declares more than one objective member.",
+                    self.display_name(id)
+                )),
+            )?;
+            diagnostic.related =
+                Box::from([self.related_declaration(*first, RELATED_FIRST_DECLARATION)?]);
+            diagnostics.push(diagnostic);
         }
         Ok(())
     }

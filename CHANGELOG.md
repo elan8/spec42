@@ -19,6 +19,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`individual_usage_without_individual_definition`) are now checked over each occurrence usage's
   effective types.
 
+- **Namespace, type-relationship, subsetting and objective validations.** New diagnostics check
+  KerML 8.3.2.4.2 `validateImportTopLevelVisibility` (`top_level_import_not_private`), KerML
+  8.3.3.1.10 `validateType{Unioning,Intersecting,Differencing}TypesNotSelf`
+  (`type_relationship_operand_is_self`) and KerML 8.3.3.3.10
+  `validateSubsettingConstantConformance` (`subsetting_constant_mismatch`, for authored and
+  implied subsettings and redefinitions); `duplicate_role_member` now also reports a second
+  objective of a case definition or usage (SysML `validateCase{Definition,Usage}OnlyOneObjective`).
+
 - **Case objectives redefine the objectives they specialize.** An `objective` is now published as
   an `objective-requirement` (a `RequirementUsage` under an `ObjectiveMembership`, membership role
   `objective`) and implicitly redefines the objective of every case definition or case usage its

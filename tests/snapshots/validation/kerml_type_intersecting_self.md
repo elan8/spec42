@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.1.10:validateTypeIntersectingTypesNotSelf
-blocked_by=semantic-type-relationship-operand-is-self
 type=file
 ~~~
 # SOURCE
@@ -44,6 +43,12 @@ package Intersections {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_type_intersecting_self.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "type_relationship_operand_is_self")
+        (source "semantic")
+        (range (start 8 33) (end 8 36))
+      )
     )
   )
 )

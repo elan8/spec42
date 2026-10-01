@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.2.4.2:validateImportTopLevelVisibility
-blocked_by=semantic-top-level-import-not-private
 type=file
 ~~~
 # SOURCE
@@ -44,6 +43,12 @@ public import Lib::Gadget;
 (fixture-diagnostics
   (document "memory://snapshot/kerml_import_top_level_visibility.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "top_level_import_not_private")
+        (source "semantic")
+        (range (start 9 0) (end 9 26))
+      )
     )
   )
 )

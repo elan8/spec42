@@ -618,6 +618,20 @@ impl<D> SemanticModel<D> {
             let Some(ResolutionStatus::Resolved(target)) = self.resolution.outcome(id) else {
                 continue;
             };
+            // KerML 8.3.3.1.10 `validateType{Unioning,Intersecting,Differencing}TypesNotSelf`:
+            // a type-relationship operand is never the declaring type itself.
+            if matches!(
+                reference.kind,
+                ReferenceKind::Unioning | ReferenceKind::Intersecting | ReferenceKind::Differencing
+            ) && target == reference.source
+            {
+                diagnostics.push(self.reference_diagnostic(
+                    reference,
+                    DiagnosticCode::TypeRelationshipOperandIsSelf,
+                    DiagnosticSeverity::Error,
+                    None,
+                )?);
+            }
             self.check_reference_kind(reference, target, diagnostics)?;
             self.check_reference_conformance(reference, target, diagnostics)?;
         }

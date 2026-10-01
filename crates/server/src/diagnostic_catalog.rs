@@ -407,6 +407,27 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "subsetting_constant_mismatch",
+        severity: "warning",
+        meaning: "A variable feature that is not constant subsets or redefines a constant feature, so it could change values the subsetted feature fixes (KerML validateSubsettingConstantConformance).",
+        typical_fix: "Declare the subsetting feature constant as well, or subset a feature that is not constant.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "type_relationship_operand_is_self",
+        severity: "error",
+        meaning: "A type names itself as an operand of its own `unions`, `intersects` or `differences` relationship (KerML validateTypeUnioningTypesNotSelf, validateTypeIntersectingTypesNotSelf, validateTypeDifferencingTypesNotSelf).",
+        typical_fix: "Remove the type from its own operand list.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "top_level_import_not_private",
+        severity: "warning",
+        meaning: "An import directly in a root namespace (outside every package) is declared public or protected; such imports must be private (KerML validateImportTopLevelVisibility).",
+        typical_fix: "Declare the import `private`, drop the visibility keyword (imports default to private), or move it into a package.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "variable_feature_owner_not_occurrence",
         severity: "warning",
         meaning: "A KerML feature declared `var` (or `const`, which implies variable) has no owning type, or its owning type does not specialize Occurrences::Occurrence (KerML validateFeatureIsVariable).",

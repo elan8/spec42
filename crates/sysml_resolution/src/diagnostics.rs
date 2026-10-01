@@ -489,6 +489,15 @@ semantic_diagnostic_codes! {
     /// A non-unique feature subsets a unique one.
     SubsettingUniquenessMismatch => "subsetting_uniqueness_mismatch",
         "A non-unique feature cannot subset a unique one.";
+    /// KerML 8.3.3.3.10 `validateSubsettingConstantConformance`.
+    SubsettingConstantMismatch => "subsetting_constant_mismatch",
+        "A variable feature that subsets a constant feature must itself be constant.";
+    /// KerML 8.3.3.1.10 `validateType{Unioning,Intersecting,Differencing}TypesNotSelf`.
+    TypeRelationshipOperandIsSelf => "type_relationship_operand_is_self",
+        "A type cannot be an operand of its own union, intersection or difference.";
+    /// KerML 8.3.2.4.2 `validateImportTopLevelVisibility`.
+    TopLevelImportNotPrivate => "top_level_import_not_private",
+        "An import owned by a root namespace must be private.";
     /// A type owns exactly one `unions`, `intersects` or `differences` operand.
     ///
     /// KerML requires zero or at least two: a union, intersection or difference of one type is
