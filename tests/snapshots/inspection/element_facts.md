@@ -48,6 +48,12 @@ probe element_facts.md 24 32
 (fixture-diagnostics
   (document "memory://snapshot/element_facts.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "initial_value_feature_not_variable")
+        (source "semantic")
+        (range (start 24 4) (end 24 44))
+      )
     )
   )
 )

@@ -331,12 +331,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule requires an individual occurrence usage to have an individual definition; the canonical code individual_usage_without_individual_definition does not exist yet"
 
 [[issue]]
-id = "semantic-initial-value-feature-not-variable"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule pairs an initial feature value with the variability of the feature it initialises; the canonical code initial_value_feature_not_variable does not exist yet"
-
-[[issue]]
 id = "semantic-instantiation-expression-validation"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
@@ -397,18 +391,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule requires a part usage to have a part definition among its types; the canonical code part_usage_without_part_definition does not exist yet"
 
 [[issue]]
-id = "semantic-portion-feature-is-variable"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule rejects a portion feature that is also variable; the canonical code portion_feature_is_variable does not exist yet"
-
-[[issue]]
-id = "semantic-portion-owner-not-occurrence"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule checks the owningType of a portion occurrence usage; the canonical code portion_owner_not_occurrence does not exist yet"
-
-[[issue]]
 id = "semantic-redefinition-featuring-type-compatibility"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
@@ -455,12 +437,6 @@ id = "semantic-type-relationship-operand-is-self"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
 summary = "no semantic rule rejects a type-relationship operand that is the declaring type itself; the canonical code type_relationship_operand_is_self does not exist yet"
-
-[[issue]]
-id = "semantic-variable-feature-owner-not-occurrence"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule checks the owningType of a variable feature against Occurrences::Occurrence; the canonical code variable_feature_owner_not_occurrence does not exist yet"
 
 [[issue]]
 id = "abstract-syntax-nonrepresentable-second-conjugation"

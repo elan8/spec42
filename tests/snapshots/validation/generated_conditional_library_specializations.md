@@ -37,6 +37,18 @@ package ConditionalSpecializations {
 (fixture-diagnostics
   (document "memory://snapshot/generated_conditional_library_specializations.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "portion_owner_not_occurrence")
+        (source "semantic")
+        (range (start 4 4) (end 4 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "portion_owner_not_occurrence")
+        (source "semantic")
+        (range (start 5 4) (end 5 35))
+      )
     )
   )
 )

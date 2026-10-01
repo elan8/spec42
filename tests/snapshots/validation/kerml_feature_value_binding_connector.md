@@ -37,6 +37,12 @@ package Values {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_value_binding_connector.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "initial_value_feature_not_variable")
+        (source "semantic")
+        (range (start 7 8) (end 7 42))
+      )
     )
   )
 )

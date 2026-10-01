@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.3.4:validateFeaturePortionNotVariable
-blocked_by=semantic-portion-feature-is-variable
 type=file
 ~~~
 # SOURCE
@@ -44,6 +43,12 @@ package Portions {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_portion_not_variable.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "portion_feature_is_variable")
+        (source "semantic")
+        (range (start 7 8) (end 7 45))
+      )
     )
   )
 )

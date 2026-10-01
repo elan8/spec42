@@ -505,6 +505,18 @@ semantic_diagnostic_codes! {
     /// SysML 8.3.17.5 `validateAssignmentActionUsage`: the assigned feature is not variable.
     AssignmentTargetNotTimeVarying => "assignment_target_not_time_varying",
         "An assignment's target feature must be able to have time-varying values.";
+    /// KerML 8.3.3.3.4 `validateFeatureIsVariable`.
+    VariableFeatureOwnerNotOccurrence => "variable_feature_owner_not_occurrence",
+        "A variable feature must be owned by a type that specializes Occurrences::Occurrence.";
+    /// KerML 8.3.3.3.4 `validateFeaturePortionNotVariable`.
+    PortionFeatureIsVariable => "portion_feature_is_variable",
+        "A portion feature must not be variable.";
+    /// SysML 8.3.9.4 `validateOccurrenceUsagePortionKind`.
+    PortionOwnerNotOccurrence => "portion_owner_not_occurrence",
+        "A snapshot or timeslice must be owned by an occurrence definition or usage.";
+    /// KerML 8.3.4.10.2 `validateFeatureValueIsInitial`.
+    InitialValueFeatureNotVariable => "initial_value_feature_not_variable",
+        "An initial value (`:=`) requires a variable feature.";
     /// A unit token names no unit in the admitted measurement catalog.
     UnknownUnitSymbol => "unknown_unit_symbol",
         "This unit token names no unit in the admitted measurement catalog.";

@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.9.4:validateOccurrenceUsagePortionKind
-blocked_by=semantic-portion-owner-not-occurrence
 type=file
 ~~~
 # SOURCE
@@ -36,7 +35,7 @@ package Occurrences {
         (severity warning)
         (code "portion_owner_not_occurrence")
         (source "semantic")
-        (range (start 5 8) (end 5 33))
+        (range (start 10 8) (end 10 33))
       )
     )
   )
@@ -47,6 +46,12 @@ package Occurrences {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "portion_owner_not_occurrence")
+        (source "semantic")
+        (range (start 10 8) (end 10 33))
+      )
     )
   )
 )

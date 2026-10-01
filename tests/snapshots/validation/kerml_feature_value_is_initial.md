@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.10.2:validateFeatureValueIsInitial
-blocked_by=semantic-initial-value-feature-not-variable
 type=file
 ~~~
 # SOURCE
@@ -46,6 +45,12 @@ package Values {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_value_is_initial.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "initial_value_feature_not_variable")
+        (source "semantic")
+        (range (start 9 8) (end 9 40))
+      )
     )
   )
 )

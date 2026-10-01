@@ -28,6 +28,18 @@ package FeatureSubDeclCoverage {
     (diagnostics
       (diagnostic
         (severity warning)
+        (code "initial_value_feature_not_variable")
+        (source "semantic")
+        (range (start 4 4) (end 4 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "initial_value_feature_not_variable")
+        (source "semantic")
+        (range (start 6 4) (end 6 27))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 7 26) (end 7 27))

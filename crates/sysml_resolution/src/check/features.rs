@@ -1,0 +1,252 @@
+//! Feature variability, portion, composition and individuality rules.
+//!
+//! Each rule consumes one canonical owner's fact: `isVariable` from
+//! [`crate::index::types::TypeIndex::feature_is_variable`], the owning type from
+//! [`crate::index::types::TypeIndex::owning_type`], `Occurrences::Occurrence` conformance from the
+//! source-role-verified library anchor, `isComposite` from the effective composition fact, and a
+//! Usage's types from the canonical effective-type collection. A prerequisite that is unresolved
+//! or ambiguous (a missing library anchor, for instance) leaves the rule unanswered rather than
+//! reported.
+
+use crate::index::types::TypeIndex;
+use crate::index::types::UsageTimeVariationOutcome;
+use crate::lower::facts::FeatureValueKind;
+use crate::model::element_kind::element_kind;
+use crate::model::resolver::SemanticModel;
+use crate::model::DeclarationId;
+use crate::model::DocumentIdx;
+use crate::resolve::results::ResolutionError;
+use crate::Diagnostic;
+use crate::DiagnosticCode;
+use crate::DiagnosticSeverity;
+use sysml_contract::ElementKind;
+
+/// Which side of the SysML occurrence family a metaclass is on, or `None` when it is neither an
+/// `OccurrenceDefinition` nor an `OccurrenceUsage` (directly or through a subclass).
+///
+/// Exhaustive over the published metaclass vocabulary so that a new kind cannot silently fall
+/// outside (or inside) the family.
+pub(crate) fn occurrence_metaclass_role(kind: ElementKind) -> Option<OccurrenceRole> {
+    use ElementKind as K;
+    use OccurrenceRole::{Definition, Usage};
+    match kind {
+        K::OccurrenceDefinition
+        | K::IndividualDefinition
+        | K::ItemDefinition
+        | K::PartDefinition
+        | K::PortDefinition
+        | K::ConnectionDefinition
+        | K::InterfaceDefinition
+        | K::AllocationDefinition
+        | K::FlowConnectionDefinition
+        | K::ActionDefinition
+        | K::StateDefinition
+        | K::CalculationDefinition
+        | K::ConstraintDefinition
+        | K::RequirementDefinition
+        | K::ConcernDefinition
+        | K::CaseDefinition
+        | K::AnalysisCaseDefinition
+        | K::VerificationCaseDefinition
+        | K::UseCaseDefinition
+        | K::ViewDefinition
+        | K::ViewpointDefinition
+        | K::RenderingDefinition
+        | K::MetadataDefinition => Some(Definition),
+        K::OccurrenceUsage
+        | K::ItemUsage
+        | K::PartUsage
+        | K::PortUsage
+        | K::ConnectionUsage
+        | K::InterfaceUsage
+        | K::AllocationUsage
+        | K::FlowConnectionUsage
+        | K::ActionUsage
+        | K::AcceptActionUsage
+        | K::SendActionUsage
+        | K::TerminateActionUsage
+        | K::StateUsage
+        | K::CalculationUsage
+        | K::ConstraintUsage
+        | K::AssertConstraintUsage
+        | K::RequirementUsage
+        | K::ConcernUsage
+        | K::CaseUsage
+        | K::AnalysisCaseUsage
+        | K::VerificationCaseUsage
+        | K::UseCaseUsage
+        | K::ViewUsage
+        | K::ViewpointUsage
+        | K::RenderingUsage
+        | K::MetadataUsage
+        | K::PerformActionUsage
+        | K::TransitionUsage
+        | K::AssignmentActionUsage
+        | K::IfActionUsage
+        | K::WhileLoopActionUsage
+        | K::ForLoopActionUsage
+        | K::DecisionNode
+        | K::MergeNode
+        | K::ForkNode
+        | K::JoinNode
+        | K::FinalState
+        | K::SatisfyRequirementUsage => Some(Usage),
+        K::Namespace
+        | K::Package
+        | K::LibraryPackage
+        | K::AttributeDefinition
+        | K::AttributeUsage
+        | K::EnumerationDefinition
+        | K::EnumerationUsage
+        | K::Definition
+        | K::Usage
+        | K::ReferenceUsage
+        | K::ForLoopVariable
+        | K::SuccessionAsUsage
+        | K::BindingConnectorAsUsage
+        | K::Import
+        | K::Expose
+        | K::Alias
+        | K::Dependency
+        | K::Type
+        | K::Classifier
+        | K::Class
+        | K::Structure
+        | K::Association
+        | K::AssociationStructure
+        | K::DataType
+        | K::Metaclass
+        | K::Behavior
+        | K::Function
+        | K::Predicate
+        | K::Interaction
+        | K::Multiplicity
+        | K::Feature
+        | K::Step
+        | K::Expression
+        | K::BooleanExpression
+        | K::Connector
+        | K::BindingConnector
+        | K::Invariant => None,
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum OccurrenceRole {
+    Definition,
+    Usage,
+}
+
+impl<D> SemanticModel<D> {
+    /// Appends every feature variability, portion, composition and individuality diagnostic for
+    /// the declarations and feature values authored in `document`.
+    pub(crate) fn collect_feature_rules(
+        &self,
+        document: DocumentIdx,
+        declared: &[DeclarationId],
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        for id in declared.iter().copied() {
+            let declaration = self
+                .storage
+                .declaration(id)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let facts = self
+                .storage
+                .declaration_facts(id)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let is_variable = self.types.feature_is_variable(&self.storage, id);
+
+            // KerML 8.3.3.3.4 `validateFeatureIsVariable`: `isVariable implies owningType <> null
+            // and owningType.specializes('Occurrences::Occurrence')`. A Usage's `isVariable` is
+            // `mayTimeVary`, whose derivation already requires exactly that owning type, so only
+            // a KerML Feature's authored variability can violate it.
+            if !crate::resolve::is_usage_declaration(declaration.kind)
+                && matches!(is_variable, Some(UsageTimeVariationOutcome::Resolved(true)))
+            {
+                let owner_is_occurrence = match TypeIndex::owning_type(&self.storage, id) {
+                    None => Some(false),
+                    Some(owner) => match self.types.specializes_occurrence(owner) {
+                        UsageTimeVariationOutcome::Resolved(value) => Some(value),
+                        UsageTimeVariationOutcome::Unresolved
+                        | UsageTimeVariationOutcome::Ambiguous => None,
+                    },
+                };
+                if owner_is_occurrence == Some(false) {
+                    diagnostics.push(self.declaration_diagnostic(
+                        id,
+                        DiagnosticCode::VariableFeatureOwnerNotOccurrence,
+                        DiagnosticSeverity::Warning,
+                    )?);
+                }
+            }
+
+            // KerML 8.3.3.3.4 `validateFeaturePortionNotVariable`: `isPortion implies not
+            // isVariable`. Only KerML spells `portion` together with `var`/`const`; a SysML
+            // snapshot or timeslice is never time-varying by the `mayTimeVary` derivation.
+            if facts.modifiers.portion
+                && matches!(is_variable, Some(UsageTimeVariationOutcome::Resolved(true)))
+            {
+                diagnostics.push(self.declaration_diagnostic(
+                    id,
+                    DiagnosticCode::PortionFeatureIsVariable,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
+
+            // SysML 8.3.9.4 `validateOccurrenceUsagePortionKind`: `portionKind <> null implies
+            // owningType <> null and (owningType.oclIsKindOf(OccurrenceDefinition) or
+            // owningType.oclIsKindOf(OccurrenceUsage))`. This is a metaclass test, not a
+            // library-specialization one.
+            if facts.portion_kind.is_some()
+                && !TypeIndex::owning_type(&self.storage, id).is_some_and(|owner| {
+                    self.storage.declaration(owner).is_some_and(|owner| {
+                        occurrence_metaclass_role(element_kind(owner.kind)).is_some()
+                    })
+                })
+            {
+                diagnostics.push(self.declaration_diagnostic(
+                    id,
+                    DiagnosticCode::PortionOwnerNotOccurrence,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
+        }
+        self.collect_initial_feature_values(document, diagnostics)
+    }
+
+    /// KerML 8.3.4.10.2 `validateFeatureValueIsInitial`: `isInitial implies
+    /// featureWithValue.isVariable`, reported at the feature that owns the value. `:=` is the
+    /// initial form whether or not it is also a default.
+    fn collect_initial_feature_values(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        for value in self.storage.feature_values.iter() {
+            if value.kind != FeatureValueKind::Assign {
+                continue;
+            }
+            let feature = self
+                .storage
+                .declaration(value.declaration)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            if feature.document != document {
+                continue;
+            }
+            if !matches!(
+                self.types
+                    .feature_is_variable(&self.storage, value.declaration),
+                Some(UsageTimeVariationOutcome::Resolved(false))
+            ) {
+                continue;
+            }
+            diagnostics.push(self.declaration_diagnostic(
+                value.declaration,
+                DiagnosticCode::InitialValueFeatureNotVariable,
+                DiagnosticSeverity::Warning,
+            )?);
+        }
+        Ok(())
+    }
+}

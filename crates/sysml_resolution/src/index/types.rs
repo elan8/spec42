@@ -657,26 +657,13 @@ impl TypeIndex {
         storage: &SemanticModelStorage,
         usage: DeclarationId,
     ) -> UsageTimeVariationOutcome {
-        let Some(declaration) = storage.declaration(usage) else {
+        if storage.declaration(usage).is_none() {
             return UsageTimeVariationOutcome::Unresolved;
-        };
-        let Some(owning_type) = declaration.owner.filter(|owner| {
-            storage.declaration(*owner).is_some_and(|owner| {
-                !matches!(
-                    owner.kind,
-                    crate::model::DeclarationKind::Namespace
-                        | crate::model::DeclarationKind::Package
-                        | crate::model::DeclarationKind::LibraryPackage
-                        | crate::model::DeclarationKind::Import
-                        | crate::model::DeclarationKind::Alias
-                )
-            })
-        }) else {
+        }
+        let Some(owning_type) = Self::owning_type(storage, usage) else {
             return UsageTimeVariationOutcome::Resolved(false);
         };
-        match self
-            .specializes_library_anchor(owning_type, &self.usage_time_variation_anchors.occurrence)
-        {
+        match self.specializes_occurrence(owning_type) {
             UsageTimeVariationOutcome::Resolved(true) => {}
             UsageTimeVariationOutcome::Resolved(false) => {
                 return UsageTimeVariationOutcome::Resolved(false)
@@ -715,6 +702,35 @@ impl TypeIndex {
             }
         }
         UsageTimeVariationOutcome::Resolved(true)
+    }
+
+    /// KerML `Feature::owningType`: the owner of `feature` when that owner is a Type rather than
+    /// a package-like namespace (a package-owned feature has no owning type).
+    pub(crate) fn owning_type(
+        storage: &SemanticModelStorage,
+        feature: DeclarationId,
+    ) -> Option<DeclarationId> {
+        storage.declaration(feature)?.owner.filter(|owner| {
+            storage.declaration(*owner).is_some_and(|owner| {
+                !matches!(
+                    owner.kind,
+                    crate::model::DeclarationKind::Namespace
+                        | crate::model::DeclarationKind::Package
+                        | crate::model::DeclarationKind::LibraryPackage
+                        | crate::model::DeclarationKind::Import
+                        | crate::model::DeclarationKind::Alias
+                )
+            })
+        })
+    }
+
+    /// Whether `declaration` is or specializes the source-role-verified `Occurrences::Occurrence`
+    /// anchor, or why that cannot be settled.
+    pub(crate) fn specializes_occurrence(
+        &self,
+        declaration: DeclarationId,
+    ) -> UsageTimeVariationOutcome {
+        self.specializes_library_anchor(declaration, &self.usage_time_variation_anchors.occurrence)
     }
 
     /// KerML `Feature::isVariable` for one Feature, or `None` when the declaration is not a

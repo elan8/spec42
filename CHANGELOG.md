@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Feature variability and portion validations.** New diagnostics check KerML 1.0 8.3.3.3.4
+  `validateFeatureIsVariable` (`variable_feature_owner_not_occurrence`), KerML
+  `validateFeaturePortionNotVariable` (`portion_feature_is_variable`), KerML 8.3.4.10.2
+  `validateFeatureValueIsInitial` (`initial_value_feature_not_variable`, an `:=` value on a
+  feature that is not variable) and SysML 8.3.9.4 `validateOccurrenceUsagePortionKind`
+  (`portion_owner_not_occurrence`).
+
 - **Case objectives redefine the objectives they specialize.** An `objective` is now published as
   an `objective-requirement` (a `RequirementUsage` under an `ObjectiveMembership`, membership role
   `objective`) and implicitly redefines the objective of every case definition or case usage its
