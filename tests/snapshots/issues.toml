@@ -343,12 +343,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule checks the owningType of a parameter membership; the canonical code parameter_membership_invalid_owner does not exist yet"
 
 [[issue]]
-id = "semantic-part-usage-without-part-definition"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule requires a part usage to have a part definition among its types; the canonical code part_usage_without_part_definition does not exist yet"
-
-[[issue]]
 id = "semantic-return-parameter-membership-invalid-owner"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
