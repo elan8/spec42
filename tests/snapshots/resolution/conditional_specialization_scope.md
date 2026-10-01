@@ -60,6 +60,7 @@ package Demo {
   (relationships
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/conditional_specialization_scope.md") (qualified-name "Demo::Bounded::range"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things::that"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/conditional_specialization_scope.md") (qualified-name "Demo::Bounded::range"))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/conditional_specialization_scope.md") (qualified-name "Demo::Bounded::range"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things::that"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/conditional_specialization_scope.md") (qualified-name "Demo::Bounded::range"))) (kind expressionOperand) (ordinal 1)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/conditional_specialization_scope.md") (qualified-name "Demo::Bounded"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/conditional_specialization_scope.md") (qualified-name "Demo::Bounded::range"))) (target (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::assertedConstraintChecks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/conditional_specialization_scope.md") (qualified-name "Demo::Bounded::range"))) (target (node (document "memory://snapshot/conditional_specialization_scope.md") (qualified-name "Demo::Bounded"))) (provenance implied))
   )
@@ -71,6 +72,10 @@ package Demo {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/conditional_specialization_scope.md") (qualified-name "Demo::Bounded")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/conditional_specialization_scope.md") (qualified-name "Demo::Bounded::range")))
       (featured-by (node (document "memory://snapshot/conditional_specialization_scope.md") (qualified-name "Demo::Bounded")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))

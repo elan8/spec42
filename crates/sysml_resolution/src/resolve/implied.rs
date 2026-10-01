@@ -471,19 +471,60 @@ pub(crate) fn type_derived_relationship_kinds(
 
 /// Metaclasses whose generated `specializesFromLibrary` rules apply to `kind`.
 ///
-/// Exact generated rules run first. `SatisfyRequirementUsage` is a Feature, so it also receives
-/// `checkFeatureSpecialization` (`Feature` specializes `Base::things`) and inherits
-/// `things::that` for `satisfy … by that`. Applying that kernel rule to every Feature is
-/// deferred: it currently adds `Anything` to effective types and fails subsetting conformance.
+/// A `specializesFromLibrary` constraint holds for every instance of its metaclass, including
+/// instances of its metaclass specializations. As the Pilot's `ImplicitGeneralizationMap` does
+/// (its lookup walks from the element's metaclass up to the nearest one carrying a default
+/// supertype), the rules applied are those of the nearest metaclass along each generalization
+/// path ([`sysml_contract::ElementKind::direct_generals`]) that declares any generated rule: a
+/// metaclass with its own rule shadows its generals, whose anchors its own anchor already
+/// specializes in the library (`Actions::Action::forks :> controls`). So a `SuccessionAsUsage`,
+/// which declares none, takes `checkSuccessionSpecialization` from `Succession`, and a
+/// `BindingConnectorAsUsage` takes `checkBindingConnectorSpecialization`.
+///
+/// The walk does not enter the KerML root metaclasses `Type`, `Classifier` and `Feature`:
+/// applying `checkFeatureSpecialization` (`Base::things`) to every Feature is deferred, since it
+/// currently adds `Anything` to effective types and fails subsetting conformance. The one
+/// exception is `SatisfyRequirementUsage`, which inherits `things::that` for `satisfy … by that`.
 /// `Flow` keeps its extra generated alias.
-fn library_specialization_metaclasses(
+pub(crate) fn library_specialization_metaclasses(
     kind: crate::model::DeclarationKind,
-) -> impl Iterator<Item = &'static str> {
+) -> Vec<&'static str> {
+    use sysml_contract::ElementKind;
+    let declares_rules = |metaclass: &str| {
+        library_specialization_rules(metaclass).next().is_some()
+            || conditional_library_specialization_rules(metaclass)
+                .next()
+                .is_some()
+    };
     let primary = library_rule_metaclass(kind);
-    let feature = (kind == crate::model::DeclarationKind::Satisfy && primary != "Feature")
-        .then_some("Feature");
-    let flow = (kind == crate::model::DeclarationKind::Flow).then_some("Flow");
-    std::iter::once(primary).chain(feature).chain(flow)
+    let mut metaclasses = vec![primary];
+    if !declares_rules(primary) {
+        let mut pending = element_kind::element_kind(kind).direct_generals().to_vec();
+        let mut visited = std::collections::BTreeSet::new();
+        while let Some(general) = pending.pop() {
+            if matches!(
+                general,
+                ElementKind::Type | ElementKind::Classifier | ElementKind::Feature
+            ) || !visited.insert(general)
+            {
+                continue;
+            }
+            if declares_rules(general.as_str()) {
+                metaclasses.push(general.as_str());
+            } else {
+                pending.extend_from_slice(general.direct_generals());
+            }
+        }
+    }
+    if kind == crate::model::DeclarationKind::Satisfy && primary != "Feature" {
+        metaclasses.push("Feature");
+    }
+    if kind == crate::model::DeclarationKind::Flow {
+        metaclasses.push("Flow");
+    }
+    metaclasses.sort_unstable();
+    metaclasses.dedup();
+    metaclasses
 }
 
 pub(crate) fn library_specialization_rules(
@@ -2985,10 +3026,4 @@ pub(crate) fn library_rule_metaclass(kind: DeclarationKind) -> &'static str {
         DeclarationKind::CalcUsage => "CalculationUsage",
         _ => element_kind::element_kind(kind).as_str(),
     }
-}
-
-/// Compatibility spelling for specialization-only consumers. New generated-rule owners use
-/// `library_rule_metaclass`, which is the single normalization boundary for both exact families.
-pub(crate) fn library_specialization_metaclass(kind: DeclarationKind) -> &'static str {
-    library_rule_metaclass(kind)
 }

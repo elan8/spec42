@@ -40,7 +40,7 @@ use crate::model::ReferenceKind;
 use crate::resolve::implied::conditional_library_specialization_anchor_branch;
 use crate::resolve::implied::conditional_library_specialization_predicate_holds;
 use crate::resolve::implied::conditional_library_specialization_rules;
-use crate::resolve::implied::library_specialization_metaclass;
+use crate::resolve::implied::library_specialization_metaclasses;
 use crate::resolve::implied::library_specialization_rules;
 use crate::resolve::implied::LibrarySpecializationAnchor;
 use crate::resolve::implied::LibrarySpecializationDiagnosticKey;
@@ -406,9 +406,11 @@ impl<D> SemanticModel<D> {
             let Some(declaration_record) = self.storage.declaration(declaration) else {
                 return Err(ResolutionError::InvalidStorage);
             };
-            for rule in library_specialization_rules(library_specialization_metaclass(
-                declaration_record.kind,
-            )) {
+            let metaclasses = library_specialization_metaclasses(declaration_record.kind);
+            for rule in metaclasses
+                .iter()
+                .flat_map(|metaclass| library_specialization_rules(metaclass))
+            {
                 let Some(outcome) = self.resolution.library_specialization_anchor(rule.rule_id)
                 else {
                     return Err(ResolutionError::InvalidStorage);
@@ -427,9 +429,10 @@ impl<D> SemanticModel<D> {
                         crate::LibrarySpecializationAnchorBranch::Default,
                     ));
             }
-            for rule in conditional_library_specialization_rules(library_specialization_metaclass(
-                declaration_record.kind,
-            )) {
+            for rule in metaclasses
+                .iter()
+                .flat_map(|metaclass| conditional_library_specialization_rules(metaclass))
+            {
                 if !conditional_library_specialization_predicate_holds(
                     &self.storage,
                     declaration,

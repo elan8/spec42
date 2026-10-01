@@ -547,7 +547,10 @@ mod tests {
         ),
     ];
 
-    /// No public kind may be unreachable: a variant nothing projects onto is dead contract.
+    /// No public kind may be unreachable: a variant nothing projects onto, and that no produced
+    /// kind specializes, is dead contract. An abstract metaclass such as `Succession` or
+    /// `ControlNode` is reachable through the generalization hierarchy of the kinds that are
+    /// produced.
     #[test]
     fn every_public_kind_is_produced_by_some_declaration_kind() {
         let produced = ALL_DECLARATION_KINDS
@@ -556,7 +559,10 @@ mod tests {
             .map(element_kind)
             .collect::<BTreeSet<_>>();
         let declared = ElementKind::ALL.iter().copied().collect::<BTreeSet<_>>();
-        let unreachable = declared.difference(&produced).collect::<Vec<_>>();
+        let unreachable = declared
+            .iter()
+            .filter(|general| !produced.iter().any(|kind| kind.conforms_to(**general)))
+            .collect::<Vec<_>>();
         assert!(
             unreachable.is_empty(),
             "these public kinds are never produced, so they are dead contract: {unreachable:?}"

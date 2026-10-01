@@ -63,6 +63,7 @@ package ActionFlowExample {
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind action-def) (name "Process")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind action-def) (name "Process")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::execute"))) (target (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::execute"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::execute"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
@@ -87,6 +88,20 @@ package ActionFlowExample {
     )
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (path (named (kind package) (name "ActionFlowExample")) (named (kind action-def) (name "Process")) (anonymous (kind succession) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process::execute")))
       (featured-by (node (document "memory://snapshot/diagram_action_flow_complete.md") (qualified-name "ActionFlowExample::Process")))
@@ -211,6 +226,10 @@ package ActionFlowExample {
     {
       "uri": "memory://snapshot/sysml.library/actions.md",
       "sourceDomain": "standard-library"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/occurrences.md",
+      "sourceDomain": "standard-library"
     }
   ],
   "sources": [
@@ -320,6 +339,11 @@ package ActionFlowExample {
       "qualifiedName": "Actions::actions"
     },
     {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "Occurrences::happensBeforeLinks"
+    },
+    {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "ActionFlowExample::Process",
@@ -353,7 +377,7 @@ package ActionFlowExample {
     {
       "kind": "relationship",
       "ordinal": 1,
-      "relationshipKind": "succession",
+      "relationshipKind": "subsetting",
       "source": 1
     },
     {
@@ -365,14 +389,14 @@ package ActionFlowExample {
     {
       "kind": "relationship",
       "ordinal": 3,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "succession",
       "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 4,
-      "relationshipKind": "subsetting",
-      "source": 2
+      "relationshipKind": "typeFeaturing",
+      "source": 1
     },
     {
       "kind": "relationship",
@@ -383,18 +407,24 @@ package ActionFlowExample {
     {
       "kind": "relationship",
       "ordinal": 6,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "subsetting",
       "source": 2
     },
     {
       "kind": "relationship",
       "ordinal": 7,
+      "relationshipKind": "typeFeaturing",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
       "relationshipKind": "subsetting",
       "source": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
+      "ordinal": 9,
       "relationshipKind": "subsetting",
       "source": 3
     },
@@ -406,7 +436,7 @@ package ActionFlowExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
+      "ordinal": 10,
       "relationshipKind": "typeFeaturing",
       "source": 3
     }
@@ -428,7 +458,7 @@ package ActionFlowExample {
         "navigation": 3,
         "origin": 1,
         "provenance": "authored",
-        "reference": 9,
+        "reference": 10,
         "source": 0,
         "target": 1
       },
@@ -437,7 +467,7 @@ package ActionFlowExample {
         "navigation": 4,
         "origin": 1,
         "provenance": "implied",
-        "reference": 21,
+        "reference": 23,
         "source": 3,
         "target": 2
       },
@@ -446,7 +476,7 @@ package ActionFlowExample {
         "navigation": 2,
         "origin": 2,
         "provenance": "authored",
-        "reference": 10,
+        "reference": 11,
         "source": 0,
         "target": 2
       },
@@ -455,7 +485,7 @@ package ActionFlowExample {
         "navigation": 1,
         "origin": 3,
         "provenance": "authored",
-        "reference": 11,
+        "reference": 12,
         "source": 0,
         "target": 3
       }
@@ -504,7 +534,7 @@ package ActionFlowExample {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 8,
+        "reference": 9,
         "source": 3,
         "typing": {
           "status": "absent"
@@ -544,7 +574,7 @@ package ActionFlowExample {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 12,
+        "reference": 13,
         "source": 0,
         "target": {
           "reference": 5,
@@ -552,10 +582,21 @@ package ActionFlowExample {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 14,
+        "source": 1,
+        "target": {
+          "reference": 8,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 13,
+        "reference": 15,
         "source": 1,
         "target": {
           "node": 3,
@@ -566,7 +607,7 @@ package ActionFlowExample {
         "kind": "succession",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 14,
+        "reference": 16,
         "source": 1,
         "target": {
           "node": 2,
@@ -577,7 +618,7 @@ package ActionFlowExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 15,
+        "reference": 17,
         "source": 1,
         "target": {
           "node": 0,
@@ -588,7 +629,7 @@ package ActionFlowExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 16,
+        "reference": 18,
         "source": 2,
         "target": {
           "reference": 6,
@@ -599,7 +640,7 @@ package ActionFlowExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 17,
+        "reference": 19,
         "source": 2,
         "target": {
           "reference": 7,
@@ -610,7 +651,7 @@ package ActionFlowExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 18,
+        "reference": 20,
         "source": 2,
         "target": {
           "node": 0,
@@ -621,7 +662,7 @@ package ActionFlowExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 19,
+        "reference": 21,
         "source": 3,
         "target": {
           "reference": 6,
@@ -632,7 +673,7 @@ package ActionFlowExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 20,
+        "reference": 22,
         "source": 3,
         "target": {
           "reference": 7,
@@ -643,7 +684,7 @@ package ActionFlowExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 22,
+        "reference": 24,
         "source": 3,
         "target": {
           "node": 0,

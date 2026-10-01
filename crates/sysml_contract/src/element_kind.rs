@@ -147,6 +147,10 @@ element_kinds! {
     /// the variable and the loop body's own members share an owner *and* a membership kind here,
     /// so nothing else would tell them apart.
     ForLoopVariable,
+    /// The abstract `ControlNode` metaclass every decision, merge, fork and join node
+    /// specializes. No declaration is published with this kind; it exists so the metaclass
+    /// generalization hierarchy states `ForkNode :> ControlNode :> ActionUsage`.
+    ControlNode,
     DecisionNode,
     MergeNode,
     ForkNode,
@@ -197,6 +201,9 @@ element_kinds! {
     BooleanExpression,
     Connector,
     BindingConnector,
+    /// The KerML `Succession` metaclass. Every published succession is a SysML
+    /// `SuccessionAsUsage`, which specializes it; no declaration is published with this kind.
+    Succession,
     Invariant,
 }
 
@@ -237,7 +244,7 @@ impl ElementKind {
             K::Expression => &[K::Step],
             K::BooleanExpression => &[K::Expression],
             K::Invariant => &[K::BooleanExpression],
-            K::BindingConnector => &[K::Connector],
+            K::BindingConnector | K::Succession => &[K::Connector],
 
             // SysML definitions.
             K::Definition => &[K::Classifier],
@@ -284,11 +291,9 @@ impl ElementKind {
             | K::IfActionUsage
             | K::WhileLoopActionUsage
             | K::ForLoopActionUsage
-            | K::DecisionNode
-            | K::MergeNode
-            | K::ForkNode
-            | K::JoinNode
+            | K::ControlNode
             | K::StateUsage => &[K::ActionUsage],
+            K::DecisionNode | K::MergeNode | K::ForkNode | K::JoinNode => &[K::ControlNode],
             K::FinalState => &[K::StateUsage],
             K::CalculationUsage => &[K::ActionUsage, K::Expression],
             K::ConstraintUsage => &[K::OccurrenceUsage, K::BooleanExpression],
@@ -300,7 +305,7 @@ impl ElementKind {
             K::AnalysisCaseUsage | K::VerificationCaseUsage | K::UseCaseUsage => &[K::CaseUsage],
             K::ViewUsage | K::RenderingUsage => &[K::PartUsage],
             K::MetadataUsage => &[K::ItemUsage],
-            K::SuccessionAsUsage => &[K::Usage, K::Connector],
+            K::SuccessionAsUsage => &[K::Usage, K::Succession],
             K::BindingConnectorAsUsage => &[K::Usage, K::BindingConnector],
         }
     }
@@ -445,6 +450,10 @@ mod tests {
         assert!(ElementKind::AttributeDefinition.conforms_to(ElementKind::DataType));
         assert!(ElementKind::CaseUsage.conforms_to(ElementKind::Expression));
         assert!(ElementKind::DataType.conforms_to(ElementKind::Classifier));
+        assert!(ElementKind::SuccessionAsUsage.conforms_to(ElementKind::Succession));
+        assert!(ElementKind::Succession.conforms_to(ElementKind::Connector));
+        assert!(ElementKind::ForkNode.conforms_to(ElementKind::ControlNode));
+        assert!(ElementKind::ControlNode.conforms_to(ElementKind::ActionUsage));
         assert!(!ElementKind::Classifier.conforms_to(ElementKind::DataType));
         assert!(!ElementKind::PartUsage.conforms_to(ElementKind::AttributeUsage));
         assert!(!ElementKind::ActionDefinition.conforms_to(ElementKind::Structure));

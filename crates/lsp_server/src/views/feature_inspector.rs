@@ -145,7 +145,8 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::Alias
         | ElementKind::Dependency
         | ElementKind::Connector
-        | ElementKind::BindingConnector => "relationship",
+        | ElementKind::BindingConnector
+        | ElementKind::Succession => "relationship",
 
         ElementKind::PartUsage
         | ElementKind::AttributeUsage
@@ -179,6 +180,7 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::WhileLoopActionUsage
         | ElementKind::ForLoopActionUsage
         | ElementKind::ForLoopVariable
+        | ElementKind::ControlNode
         | ElementKind::DecisionNode
         | ElementKind::MergeNode
         | ElementKind::ForkNode

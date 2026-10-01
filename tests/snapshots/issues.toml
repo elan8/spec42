@@ -289,13 +289,13 @@ owner = "spec42-semantic"
 summary = "feature_chaining_not_featured_within_previous does not exist: the member-access resolver looks each `.` hop up only among the owned and inherited members of the previous hop's types, so a chaining feature not featured within the previous one is reported unresolved_reference instead of resolving; a settled violation needs a hop visible through the previous hop's imports, which that resolver does not consult"
 
 [[issue]]
-id = "semantic-library-specialization-metaclass-generalization"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "generated specializesFromLibrary rules match the exact metaclass only, so rules declared on Succession, BindingConnector, SuccessionFlow and ControlNode never reach SuccessionAsUsage, BindingConnectorAsUsage, SuccessionFlowUsage or ForkNode (the Pilot ImplicitGeneralizationMap applies them); widening only Succession to SuccessionAsUsage made standard-library construction fail, `succession flow` lowers to the same declaration kind as `flow`, and the XMI anchor for checkControlNodeSpecialization is spelled Action::Action::controls with no recorded OMG correction"
-
-[[issue]]
 id = "lowering-gap-binding-connector-transition-link-endpoints"
 kind = "lowering_gap"
 owner = "spec42-semantic"
 summary = "The transition succession is lowered, but the anonymous ReferenceUsage TransitionUsageAdapter.computeTransitionLinkConnectors adds to a TransitionUsage (its transitionLink feature) is not, so checkTransitionUsageSuccessionBindingConnector has no endpoint to bind the succession to and stays Unsupported(TransitionUsageSuccessionEndpointFacts)."
+
+[[issue]]
+id = "lowering-gap-succession-flow-usage"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "The parser types `succession flow` as FlowUsageKind::SuccessionFlow, but lowering publishes it as the same Flow declaration kind as `flow` and the published metaclass vocabulary has no SuccessionFlowUsage or KerML Flow/SuccessionFlow, so checkSuccessionFlowUsageSpecialization (Flows::successionFlows) and checkSuccessionFlowSpecialization never apply."

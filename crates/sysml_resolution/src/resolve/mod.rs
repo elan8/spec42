@@ -1896,6 +1896,7 @@ pub(crate) fn is_usage_declaration(kind: DeclarationKind) -> bool {
             | DeclarationKind::Merge
             | DeclarationKind::Fork
             | DeclarationKind::Join
+            | DeclarationKind::Succession
             | DeclarationKind::ThenContinuation
             | DeclarationKind::Flow
             | DeclarationKind::StakeholderUsage
@@ -2466,6 +2467,22 @@ pub(crate) fn resolve_member_access_reference_with_path<R: ResolutionReferenceFa
         // sibling root, e.g. a typed redefining `vertices` can hide the sibling `that` intended
         // by `subsets that.vertices`.
         source.owner
+    } else if reference.kind() == ReferenceKind::Succession {
+        // A succession's end is resolved like a connector end, in the owning namespace of the
+        // Succession (KerML 8.2.3.5.2), never inside the Succession, whose own inherited
+        // `HappensBefore` features (`self`, `earlierOccurrence`, ...) would otherwise shadow the
+        // root of a chain such as `then self.endShot`. A TransitionUsage's succession resolves in
+        // the transition's owning namespace, as its undotted ends do.
+        source
+            .owner
+            .and_then(|owner| match declarations.get(owner.index()) {
+                Some(owner_declaration)
+                    if owner_declaration.kind == DeclarationKind::Transition =>
+                {
+                    owner_declaration.owner
+                }
+                _ => Some(owner),
+            })
     } else {
         Some(reference.source())
     };

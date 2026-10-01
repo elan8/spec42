@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Implied library specializations follow the metaclass hierarchy.** A generated
+  `specializesFromLibrary` rule now applies to the specializations of its metaclass through the
+  nearest rule-carrying metaclass, as the Pilot's `ImplicitGeneralizationMap` does: successions
+  subset `Occurrences::happensBeforeLinks`, `bind` connectors `Links::selfLinks`, enumeration
+  definitions specialize `Base::DataValue` and their literals subset `Base::dataValues`. The
+  published metaclass vocabulary gains the abstract `Succession` and `ControlNode`. Dotted
+  succession ends now resolve in the succession's owning namespace.
+
 - **Cross subsetting validation.** New diagnostics check KerML 8.3.3.3.2
   `validateCrossSubsettingCrossingFeature` (`cross_subsetting_crossing_feature_invalid`) and
   `validateCrossSubsettingCrossedFeature` (`cross_subsetting_crossed_feature_invalid`).

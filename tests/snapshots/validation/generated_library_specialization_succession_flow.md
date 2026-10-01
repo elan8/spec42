@@ -1,0 +1,209 @@
+# META
+~~~ini
+description=Generated library specializations of SuccessionFlow (KerML) and SuccessionFlowUsage (SysML) apply to an authored `succession flow`
+specification=OMG SysML 2.0 and KerML 1.0 (formal/26-03)
+specification_url=https://www.omg.org/spec/KerML/1.0/PDF
+source_expectation=accepted
+rule_family=check
+expectation=semantics
+rule_id=kerml-1.0:8.3.4.9.6:checkSuccessionFlowSpecialization
+rule_id=sysml-2.0:8.3.16.4:checkSuccessionFlowUsageSpecialization
+blocked_by=lowering-gap-succession-flow-usage
+type=file
+libraries=standard
+~~~
+# SOURCE
+~~~sysml
+package SuccessionFlows {
+    part def Holder {
+        part x { out item o; }
+        part y { in item i; }
+        succession flow sf from x.o to y.i;
+    }
+}
+~~~
+# EXPECTED SEMANTICS
+~~~sexpr
+(fixture-semantics
+  (relationship (kind subsetting) (source "SuccessionFlows::Holder::sf") (target "Flows::successionFlows") (provenance implied) (outcome resolved)))
+~~~
+# DIAGNOSTICS
+~~~sexpr
+(fixture-diagnostics
+  (document "memory://snapshot/generated_library_specialization_succession_flow.md"
+    (diagnostics
+    )
+  )
+)
+~~~
+# SMG
+~~~sexpr
+(semantic-model
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:7b8f21084478d543cf4cc8022ceacab49c1d1ba88a2a7edc6628d70d4fa96a33") (admitted (standard-library 94)))
+  (declarations
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf"))) (kind flow) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (flowSource (reference "x::o")) (flowTarget (reference "y::i")))))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::x"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::x::o"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction out)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::y"))) (kind part) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::y::i"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction in)))
+  )
+  (references
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf"))) (kind flowSource) (ordinal 0))
+      (authored-target "x::o")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::x::o")))))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf"))) (kind flowTarget) (ordinal 0))
+      (authored-target "y::i")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::y::i")))))
+  )
+  (relationships
+    (relationship (kind flowSource) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf"))) (target (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::x::o"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf"))) (kind flowSource) (ordinal 0)))
+    (relationship (kind flowTarget) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf"))) (target (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::y::i"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf"))) (kind flowTarget) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf"))) (target (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::flows"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf"))) (target (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::messages"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf"))) (target (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf"))) (target (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::flowTransfers"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf"))) (target (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::transfers"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::x"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::x"))) (target (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::x::o"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::x::o"))) (target (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::x"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::y"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::y"))) (target (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::y::i"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::y::i"))) (target (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::y"))) (provenance implied))
+  )
+  (evaluation
+  )
+)
+~~~
+# TYPES
+~~~sexpr
+(types
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf")))
+      (positional-ends (authored 0) (effective 2))
+      (featured-by (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::Flow")) (source inherited) (from (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::flows"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::Message")) (source inherited) (from (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::messages"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::FlowTransfer")) (source inherited) (from (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::flowTransfers"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::Transfer")) (source inherited) (from (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::transfers"))))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::Flow")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::Message")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::MessageAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::flows")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::messages")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::FlowTransfer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::Transfer")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::flowTransfers")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::transfers")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::x")))
+      (featured-by (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::x::o")))
+      (featured-by (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::x")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::y")))
+      (featured-by (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::y::i")))
+      (featured-by (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::y")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+    )
+)
+~~~
+# NAVIGATION
+~~~sexpr
+(navigation
+  (query (document "memory://snapshot/generated_library_specialization_succession_flow.md") (range (start 4 32) (end 4 35)) (probe (position 4 32))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf"))) (kind flowSource) (ordinal 0) (authored-target "x::o")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::x::o")))))
+    )
+  )
+  (query (document "memory://snapshot/generated_library_specialization_succession_flow.md") (range (start 4 39) (end 4 42)) (probe (position 4 39))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::sf"))) (kind flowTarget) (ordinal 0) (authored-target "y::i")
+      (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder::y::i")))))
+    )
+  )
+)
+~~~
