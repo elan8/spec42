@@ -236,9 +236,9 @@ summary = "validateAttributeDefinitionFeatures/validateAttributeUsageFeatures (f
 
 [[issue]]
 id = "semantic-constructor-duplicate-feature-redefinition"
-kind = "semantic_not_implemented"
+kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "no semantic rule detects two constructor initialisers redefining the same feature; the canonical code constructor_duplicate_feature_redefinition does not exist yet"
+summary = "a ConstructorExpression's named initialisers (`new Point(x = a, x = b)`) are not lowered as owned features of its result with Redefinitions of the instantiated type's features: ast::Argument::parameter is dropped and only the argument values become ExpressionOperand references on the enclosing expression declaration, so there are no redefinitions to compare"
 
 [[issue]]
 id = "semantic-feature-reference-referent-not-feature"
@@ -254,15 +254,15 @@ summary = "no canonical Expression::modelLevelEvaluable fact exists: deciding it
 
 [[issue]]
 id = "semantic-invocation-argument-redefines-no-parameter"
-kind = "semantic_not_implemented"
+kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "no semantic rule matches an invocation argument against the instantiated type input parameters; the canonical code invocation_argument_redefines_no_parameter does not exist yet"
+summary = "an InvocationExpression's arguments are not lowered as owned `in` features redefining the instantiated type's input parameters: a named argument's parameter (ast::Argument::parameter, `Identity(missing = source)`) is dropped, positional arguments have no position fact, and nested invocations share their enclosing expression declaration, so there is no per-invocation argument-to-parameter redefinition to check"
 
 [[issue]]
 id = "semantic-invocation-duplicate-parameter-redefinition"
-kind = "semantic_not_implemented"
+kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "no semantic rule detects two invocation arguments redefining the same input parameter; the canonical code invocation_duplicate_parameter_redefinition does not exist yet"
+summary = "an InvocationExpression's arguments are not lowered as owned `in` features redefining the instantiated type's input parameters (ast::Argument::parameter is dropped and nested invocations share their enclosing expression declaration), so two arguments redefining one parameter (`Pair(left = a, left = b)`) cannot be detected"
 
 [[issue]]
 id = "semantic-multiplicity-bound-result-type"
@@ -296,9 +296,9 @@ summary = "checkAcceptActionUsageReceiverBindingConnector binds the AcceptAction
 
 [[issue]]
 id = "semantic-trigger-invocation-argument-typing"
-kind = "semantic_not_implemented"
+kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "no semantic rule classifies a TriggerInvocationExpression argument as Boolean, ISQBase::DurationValue or Time::TimeInstantValue; the `accept when`/`accept at`/`accept after` triggers parse and lower, but the canonical codes trigger_when_argument_not_boolean, trigger_at_argument_not_time_instant and trigger_after_argument_not_duration do not exist yet"
+summary = "a TriggerInvocationExpression is not lowered: the `when`/`at`/`after` kind (TransitionAccept::TimeTrigger's kind) is dropped, and its argument is lowered only as operand references on the transition or accept action, with no evaluation site or result type of its own, so trigger_when_argument_not_boolean, trigger_at_argument_not_time_instant and trigger_after_argument_not_duration have no argument type to classify"
 
 [[issue]]
 id = "lowering-gap-state-usage-specialization-facts"
