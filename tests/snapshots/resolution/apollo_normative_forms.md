@@ -95,6 +95,30 @@ package ApolloNormativeForms {
 (fixture-diagnostics
   (document "memory://snapshot/apollo_normative_forms.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "subsetting_target_not_accessible")
+        (source "semantic")
+        (range (start 38 30) (end 38 49))
+        (related-information
+          (related
+            (uri "memory://snapshot/apollo_normative_forms.md")
+            (range (start 34 8) (end 34 25))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "subsetting_target_not_accessible")
+        (source "semantic")
+        (range (start 53 18) (end 53 37))
+        (related-information
+          (related
+            (uri "memory://snapshot/apollo_normative_forms.md")
+            (range (start 34 8) (end 34 25))
+          )
+        )
+      )
     )
   )
 )
@@ -104,6 +128,30 @@ package ApolloNormativeForms {
 (fixture-diagnostics
   (document "memory://snapshot/apollo_normative_forms.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "subsetting_target_not_accessible")
+        (source "semantic")
+        (range (start 38 30) (end 38 49))
+        (related-information
+          (related
+            (uri "memory://snapshot/apollo_normative_forms.md")
+            (range (start 34 8) (end 34 25))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "subsetting_target_not_accessible")
+        (source "semantic")
+        (range (start 53 18) (end 53 37))
+        (related-information
+          (related
+            (uri "memory://snapshot/apollo_normative_forms.md")
+            (range (start 34 8) (end 34 25))
+          )
+        )
+      )
     )
   )
 )

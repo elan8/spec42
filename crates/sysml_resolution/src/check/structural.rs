@@ -499,6 +499,22 @@ impl<D> SemanticModel<D> {
                     Some(target),
                 )?);
             }
+            // A dotted target (`subsets a.b`) subsets the implicit feature chain, whose featuring
+            // types are its first chaining feature's; the settled target is only the chain's last
+            // feature, so it is not the subsetted feature this rule compares.
+            if matches!(
+                reference.kind,
+                ReferenceKind::Subsetting | ReferenceKind::References
+            ) && !reference.flags.dotted
+                && self.subsetting_target_not_accessible(reference.source, target)
+            {
+                diagnostics.push(self.reference_diagnostic(
+                    reference,
+                    DiagnosticCode::SubsettingTargetNotAccessible,
+                    DiagnosticSeverity::Warning,
+                    Some(target),
+                )?);
+            }
             match reference.kind {
                 // SysML 8.4.4: a flow payload carries an occurrence, not a value. The occurrence
                 // families are exactly those descending from `Occurrence` in the metamodel, so this
@@ -679,6 +695,97 @@ impl<D> SemanticModel<D> {
             )
     }
 
+    /// Whether `feature`'s canonical effective featuring-type row is complete enough to compare.
+    ///
+    /// A variable feature is featured by its owner's snapshots and a feature nested in another is
+    /// featured through that enclosing feature; neither effective featuring type is a published
+    /// fact yet, and an unresolved `featured by` or `chains` target leaves the row incomplete, so
+    /// such (possibly empty) rows are not settled.
+    pub(crate) fn featuring_row_is_settled(&self, feature: DeclarationId) -> bool {
+        !self.types.featuring_requires_snapshots(feature)
+            && self
+                .outgoing_reference_ids(feature)
+                .iter()
+                .all(|reference_id| {
+                    !matches!(
+                        self.storage.references[reference_id.index()].kind,
+                        ReferenceKind::TypeFeaturing | ReferenceKind::FeatureChaining
+                    ) || matches!(
+                        self.resolution.outcome(*reference_id),
+                        Some(ResolutionStatus::Resolved(_))
+                    )
+                })
+            && !self
+                .types
+                .featuring_types(feature)
+                .iter()
+                .any(|(featuring_type, _)| self.is_feature_member(*featuring_type))
+    }
+
+    /// KerML 8.3.3.3.10 `validateSubsettingFeaturingTypes`: a subsetted feature with featuring
+    /// types must be accessible by the subsetting feature (the Pilot's `FeatureUtil.canAccess`).
+    ///
+    /// Over settled type-valued featuring rows this is: some featuring type of the subsetting
+    /// feature specializes every featuring type of the subsetted feature, or the subsetted feature
+    /// is variable and that featuring type specializes its owning type. A feature-valued
+    /// featuring type (the recursive `canAccess` case) is not a published row, so such a pair is
+    /// left unanswered, as is any indeterminate conformance.
+    pub(crate) fn subsetting_target_not_accessible(
+        &self,
+        subsetting: DeclarationId,
+        subsetted: DeclarationId,
+    ) -> bool {
+        if !self.featuring_row_is_settled(subsetting) || !self.featuring_row_is_settled(subsetted) {
+            return false;
+        }
+        let subsetted_featuring = self.types.featuring_types(subsetted);
+        let subsetting_featuring = self.types.featuring_types(subsetting);
+        if subsetted_featuring.is_empty() || subsetting_featuring.is_empty() {
+            return false;
+        }
+        let subsetted_is_variable = matches!(
+            self.types.feature_is_variable(&self.storage, subsetted),
+            Some(crate::index::types::UsageTimeVariationOutcome::Resolved(true))
+        );
+        let subsetted_owner =
+            crate::index::types::TypeIndex::owning_type(&self.storage, subsetted);
+        let mut indeterminate = false;
+        for (featuring_type, _) in subsetting_featuring {
+            let mut within = true;
+            for (required, _) in subsetted_featuring {
+                match self.conformance(
+                    *featuring_type,
+                    *required,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => within = false,
+                    Conformance::Indeterminate(_) => {
+                        indeterminate = true;
+                        within = false;
+                    }
+                }
+            }
+            if within {
+                return false;
+            }
+            if subsetted_is_variable {
+                if let Some(owner) = subsetted_owner {
+                    match self.conformance(
+                        *featuring_type,
+                        owner,
+                        SpecializationScope::AnySpecialization,
+                    ) {
+                        Conformance::Conforms => return false,
+                        Conformance::DoesNotConform => {}
+                        Conformance::Indeterminate(_) => indeterminate = true,
+                    }
+                }
+            }
+        }
+        !indeterminate
+    }
+
     /// The end and direction rules of one redefinition.
     pub(crate) fn redefinition_structure(
         &self,
@@ -746,31 +853,10 @@ impl<D> SemanticModel<D> {
                 .map(|(featuring_type, _)| *featuring_type)
                 .collect::<std::collections::BTreeSet<_>>()
         };
-        // A variable feature is featured by its owner's snapshots and a feature nested in another
-        // is featured through that enclosing feature; neither effective featuring type is a
-        // published fact yet, and an unresolved `featured by` or `chains` target leaves the row
-        // incomplete, so such (possibly empty) rows cannot be compared.
-        let settled = |feature: DeclarationId| {
-            !self.types.featuring_requires_snapshots(feature)
-                && self
-                    .outgoing_reference_ids(feature)
-                    .iter()
-                    .all(|reference_id| {
-                        !matches!(
-                            self.storage.references[reference_id.index()].kind,
-                            ReferenceKind::TypeFeaturing | ReferenceKind::FeatureChaining
-                        ) || matches!(
-                            self.resolution.outcome(*reference_id),
-                            Some(ResolutionStatus::Resolved(_))
-                        )
-                    })
-                && !self
-                    .types
-                    .featuring_types(feature)
-                    .iter()
-                    .any(|(featuring_type, _)| self.is_feature_member(*featuring_type))
-        };
-        if settled(source) && settled(target) && featuring(source) == featuring(target) {
+        if self.featuring_row_is_settled(source)
+            && self.featuring_row_is_settled(target)
+            && featuring(source) == featuring(target)
+        {
             return Some(DiagnosticCode::RedefinitionFeaturingTypeIncompatible);
         }
         let redefining = self.types.featuring_type(source)?;

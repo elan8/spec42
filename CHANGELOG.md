@@ -45,6 +45,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   redefined features have the same effective featuring types, such as a feature redefining a
   sibling (KerML `validateRedefinitionFeaturingTypes`).
 
+- **Subsetted feature accessibility.** `subsetting_target_not_accessible` reports a subsetting or
+  reference subsetting whose subsetted feature is featured by types none of the subsetting
+  feature's featuring types specialize (KerML `validateSubsettingFeaturingTypes`).
+
 - **Case objectives redefine the objectives they specialize.** An `objective` is now published as
   an `objective-requirement` (a `RequirementUsage` under an `ObjectiveMembership`, membership role
   `objective`) and implicitly redefines the objective of every case definition or case usage its

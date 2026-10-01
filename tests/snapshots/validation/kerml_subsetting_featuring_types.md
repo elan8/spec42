@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.3.10:validateSubsettingFeaturingTypes
-blocked_by=semantic-subsetting-target-not-accessible
 type=file
 ~~~
 # SOURCE
@@ -38,6 +37,12 @@ package Subsettings {
         (code "subsetting_target_not_accessible")
         (source "semantic")
         (range (start 11 40) (end 11 55))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_subsetting_featuring_types.md")
+            (range (start 3 8) (end 3 34))
+          )
+        )
       )
     )
   )
@@ -48,6 +53,18 @@ package Subsettings {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_subsetting_featuring_types.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "subsetting_target_not_accessible")
+        (source "semantic")
+        (range (start 11 40) (end 11 55))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_subsetting_featuring_types.md")
+            (range (start 3 8) (end 3 34))
+          )
+        )
+      )
     )
   )
 )

@@ -379,12 +379,6 @@ owner = "spec42-semantic"
 summary = "subject_member_not_first is not reported when a directed reference usage precedes the subject membership, so this manifestation of the rule is unenforced"
 
 [[issue]]
-id = "semantic-subsetting-target-not-accessible"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule checks that a subsetted feature is accessible from the subsetting feature; the canonical code subsetting_target_not_accessible does not exist yet"
-
-[[issue]]
 id = "abstract-syntax-nonrepresentable-second-conjugation"
 kind = "abstract_syntax_coverage_gap"
 owner = "spec42-snapshot"

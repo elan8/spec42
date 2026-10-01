@@ -493,6 +493,9 @@ semantic_diagnostic_codes! {
     /// KerML 8.3.3.3.10 `validateSubsettingConstantConformance`.
     SubsettingConstantMismatch => "subsetting_constant_mismatch",
         "A variable feature that subsets a constant feature must itself be constant.";
+    /// KerML 8.3.3.3.10 `validateSubsettingFeaturingTypes`.
+    SubsettingTargetNotAccessible => "subsetting_target_not_accessible",
+        "A subsetted feature must be accessible from the featuring types of the subsetting feature.";
     /// KerML 8.3.3.1.10 `validateType{Unioning,Intersecting,Differencing}TypesNotSelf`.
     TypeRelationshipOperandIsSelf => "type_relationship_operand_is_self",
         "A type cannot be an operand of its own union, intersection or difference.";

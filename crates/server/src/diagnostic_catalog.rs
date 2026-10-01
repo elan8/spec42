@@ -414,6 +414,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "subsetting_target_not_accessible",
+        severity: "warning",
+        meaning: "A feature subsets (or references) a feature whose featuring types none of the subsetting feature's featuring types specialize, so the subsetted feature has no values in the subsetting feature's context (KerML validateSubsettingFeaturingTypes).",
+        typical_fix: "Subset a feature of the owning type or one of its supertypes, or specialize the type that features the subsetted feature.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "type_relationship_operand_is_self",
         severity: "error",
         meaning: "A type names itself as an operand of its own `unions`, `intersects` or `differences` relationship (KerML validateTypeUnioningTypesNotSelf, validateTypeIntersectingTypesNotSelf, validateTypeDifferencingTypesNotSelf).",
