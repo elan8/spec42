@@ -668,8 +668,14 @@ impl<D> SemanticModel<D> {
                 .declaration_facts(declaration)
                 .is_some_and(|facts| facts.modifiers.constant)
         };
+        // An end feature is excluded: validateFeatureEndIsConstant already requires a variable
+        // end to be constant, and the corpus treats a variable non-constant end as having no
+        // spelling, yet `Usage::mayTimeVary` answers true for SysML connection ends (the
+        // standard library's `end occurrence theCause :> causes :>> source` subsets a constant
+        // feature). Reporting it here would restate that unresolved end-variability question.
         is_constant(subsetted)
             && !is_constant(subsetting)
+            && !self.is_end_feature(subsetting)
             && matches!(
                 self.types.feature_is_variable(&self.storage, subsetting),
                 Some(crate::index::types::UsageTimeVariationOutcome::Resolved(
