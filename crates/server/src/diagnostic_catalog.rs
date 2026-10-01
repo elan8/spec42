@@ -428,6 +428,20 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "occurrence_multiple_individual_definitions",
+        severity: "warning",
+        meaning: "An occurrence usage has more than one individual occurrence definition among its types, including types inherited through subsetting or redefinition (SysML validateOccurrenceUsageIndividualDefinition).",
+        typical_fix: "Type the usage by at most one `individual` occurrence definition.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "individual_usage_without_individual_definition",
+        severity: "warning",
+        meaning: "An `individual` occurrence usage has no individual occurrence definition among its settled types (SysML validateOccurrenceUsageIndividualUsage).",
+        typical_fix: "Type the usage by an `individual` occurrence definition, or drop the `individual` prefix.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "initial_value_feature_not_variable",
         severity: "warning",
         meaning: "A feature has an initial value (`:=`) but is not variable, so it has no initial time to bind the value at (KerML validateFeatureValueIsInitial).",

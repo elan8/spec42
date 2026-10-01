@@ -1,9 +1,9 @@
-//! Feature variability, portion, composition and individuality rules.
+//! Feature variability, portion and individuality rules.
 //!
 //! Each rule consumes one canonical owner's fact: `isVariable` from
 //! [`crate::index::types::TypeIndex::feature_is_variable`], the owning type from
 //! [`crate::index::types::TypeIndex::owning_type`], `Occurrences::Occurrence` conformance from the
-//! source-role-verified library anchor, `isComposite` from the effective composition fact, and a
+//! source-role-verified library anchor, and a
 //! Usage's types from the canonical effective-type collection. A prerequisite that is unresolved
 //! or ambiguous (a missing library anchor, for instance) leaves the rule unanswered rather than
 //! reported.
@@ -138,7 +138,7 @@ pub(crate) enum OccurrenceRole {
 }
 
 impl<D> SemanticModel<D> {
-    /// Appends every feature variability, portion, composition and individuality diagnostic for
+    /// Appends every feature variability, portion and individuality diagnostic for
     /// the declarations and feature values authored in `document`.
     pub(crate) fn collect_feature_rules(
         &self,
@@ -211,8 +211,75 @@ impl<D> SemanticModel<D> {
                     DiagnosticSeverity::Warning,
                 )?);
             }
+
+            self.collect_individual_definitions(id, declaration.kind, facts, diagnostics)?;
         }
         self.collect_initial_feature_values(document, diagnostics)
+    }
+
+    /// Whether `declaration` is an `OccurrenceDefinition` with `isIndividual = true`.
+    fn is_individual_occurrence_definition(&self, declaration: DeclarationId) -> bool {
+        let (Some(record), Some(facts)) = (
+            self.storage.declaration(declaration),
+            self.storage.declaration_facts(declaration),
+        ) else {
+            return false;
+        };
+        occurrence_metaclass_role(element_kind(record.kind)) == Some(OccurrenceRole::Definition)
+            && facts.modifiers.individual
+    }
+
+    /// SysML 8.3.9.4 `validateOccurrenceUsageIndividualDefinition`
+    /// (`occurrenceDefinition->select(isIndividual)->size() <= 1`) and
+    /// `validateOccurrenceUsageIndividualUsage` (`isIndividual implies individualDefinition <>
+    /// null`), over the canonical effective types (`Feature::type`, which includes the types a
+    /// usage inherits through subsetting and redefinition).
+    ///
+    /// Two individual definitions are a violation whatever else is unknown, since further types
+    /// can only add to the count. The absence of one is only settled when the usage's whole
+    /// specialization hierarchy is resolved and its implied `Occurrences::Occurrence` lineage is
+    /// anchored, so a missing library or an unresolved typing leaves the rule unanswered.
+    fn collect_individual_definitions(
+        &self,
+        id: DeclarationId,
+        kind: crate::model::DeclarationKind,
+        facts: &crate::lower::facts::DeclarationFacts,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        if occurrence_metaclass_role(element_kind(kind)) != Some(OccurrenceRole::Usage) {
+            return Ok(());
+        }
+        // One effective type may be both direct and inherited; it is one occurrenceDefinition.
+        let individual_definitions = self
+            .types
+            .effective_types(id)
+            .iter()
+            .map(|(definition, _)| *definition)
+            .collect::<std::collections::BTreeSet<_>>()
+            .into_iter()
+            .filter(|definition| self.is_individual_occurrence_definition(*definition))
+            .count();
+        if individual_definitions > 1 {
+            diagnostics.push(self.declaration_diagnostic(
+                id,
+                DiagnosticCode::OccurrenceMultipleIndividualDefinitions,
+                DiagnosticSeverity::Warning,
+            )?);
+        } else if facts.modifiers.individual
+            && individual_definitions == 0
+            && matches!(
+                self.types.specializes_occurrence(id),
+                UsageTimeVariationOutcome::Resolved(true)
+            )
+            && !self.specialization_hierarchy_is_unsettled(id)
+        {
+            diagnostics.push(self.declaration_diagnostic(
+                id,
+                DiagnosticCode::IndividualUsageWithoutIndividualDefinition,
+                DiagnosticSeverity::Warning,
+            )?);
+        }
+        Ok(())
     }
 
     /// KerML 8.3.4.10.2 `validateFeatureValueIsInitial`: `isInitial implies

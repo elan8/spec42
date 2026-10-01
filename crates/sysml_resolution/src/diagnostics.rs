@@ -517,6 +517,12 @@ semantic_diagnostic_codes! {
     /// KerML 8.3.4.10.2 `validateFeatureValueIsInitial`.
     InitialValueFeatureNotVariable => "initial_value_feature_not_variable",
         "An initial value (`:=`) requires a variable feature.";
+    /// SysML 8.3.9.4 `validateOccurrenceUsageIndividualDefinition`.
+    OccurrenceMultipleIndividualDefinitions => "occurrence_multiple_individual_definitions",
+        "An occurrence usage may have at most one individual occurrence definition.";
+    /// SysML 8.3.9.4 `validateOccurrenceUsageIndividualUsage`.
+    IndividualUsageWithoutIndividualDefinition => "individual_usage_without_individual_definition",
+        "An individual occurrence usage must be typed by an individual occurrence definition.";
     /// A unit token names no unit in the admitted measurement catalog.
     UnknownUnitSymbol => "unknown_unit_symbol",
         "This unit token names no unit in the admitted measurement catalog.";

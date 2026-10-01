@@ -268,7 +268,7 @@ summary = "the parser now preserves ordered feature specialization clauses, but 
 id = "semantic-attribute-feature-composite"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
-summary = "no semantic rule rejects a composite feature of an attribute definition; the canonical code attribute_feature_composite does not exist yet"
+summary = "validateAttributeDefinitionFeatures/validateAttributeUsageFeatures (feature->forAll(not isComposite)) conflicts with the standard library, whose attribute definitions own composite assert-constraint and calc usages (MeasurementReferences, Time, Quantities); the Pilot disables both checks pending KERML-4 composite semantics, so attribute_feature_composite is not reported until that OMG resolution settles which composite features the rule admits"
 
 [[issue]]
 id = "semantic-constructor-duplicate-feature-redefinition"
@@ -325,12 +325,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule counts the result parameter memberships of a function; the canonical code function_result_parameter_count does not exist yet"
 
 [[issue]]
-id = "semantic-individual-usage-without-individual-definition"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule requires an individual occurrence usage to have an individual definition; the canonical code individual_usage_without_individual_definition does not exist yet"
-
-[[issue]]
 id = "semantic-instantiation-expression-validation"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
@@ -371,12 +365,6 @@ id = "semantic-multiplicity-bound-invalid"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
 summary = "no semantic rule checks the result type or sign of a multiplicity bound expression; the canonical code multiplicity_bound_invalid does not exist yet"
-
-[[issue]]
-id = "semantic-occurrence-multiple-individual-definitions"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule counts the individual occurrence definitions of an occurrence usage; the canonical code occurrence_multiple_individual_definitions does not exist yet"
 
 [[issue]]
 id = "semantic-parameter-membership-invalid-owner"

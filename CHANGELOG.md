@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   feature that is not variable) and SysML 8.3.9.4 `validateOccurrenceUsagePortionKind`
   (`portion_owner_not_occurrence`).
 
+- **Individual occurrence validations.** SysML 8.3.9.4 `validateOccurrenceUsageIndividualDefinition`
+  (`occurrence_multiple_individual_definitions`) and `validateOccurrenceUsageIndividualUsage`
+  (`individual_usage_without_individual_definition`) are now checked over each occurrence usage's
+  effective types.
+
 - **Case objectives redefine the objectives they specialize.** An `objective` is now published as
   an `objective-requirement` (a `RequirementUsage` under an `ObjectiveMembership`, membership role
   `objective`) and implicitly redefines the objective of every case definition or case usage its
