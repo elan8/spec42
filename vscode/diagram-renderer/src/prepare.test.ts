@@ -84,6 +84,7 @@ describe("shared prepareViewData", () => {
   it("adapts a typed interconnection projection into nested parts with boundary ports", () => {
     const prepared = prepareViewData({
       schemaVersion: 5,
+      modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml" }],
       sources: [
         { document: 0, range: [0, 0, 0, 8] },
@@ -203,6 +204,7 @@ describe("shared prepareViewData", () => {
     });
     const prepared = prepareViewData({
       schemaVersion: 5,
+      modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml" }],
       sources: [0, 1, 2, 3].map((line) => ({ document: 0, range: [line, 0, line, 4] })),
       references: [{ kind: "qualified-name", document: 0, qualifiedName: "P::selected" }],
@@ -247,6 +249,7 @@ describe("shared prepareViewData", () => {
   it("uses typed grid metadata for relationship-valued columns", () => {
     const prepared = prepareViewData({
       schemaVersion: 5,
+      modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],
       references: [{ kind: "qualified-name" }, { kind: "qualified-name" }, { kind: "relationship" }],
@@ -908,6 +911,7 @@ describe("shared prepareViewData", () => {
     });
     const prepared = prepareViewData({
       schemaVersion: 5,
+      modelDigest: "blake3:model",
       documents: [{ uri: "file:///model.sysml" }],
       sources: [{ document: 0, range: [0, 0, 0, 1] }],
       references: [{ kind: "qualified-name" }],

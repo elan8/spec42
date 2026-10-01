@@ -1,5 +1,9 @@
 import { resolveNodeChrome } from "../node-notation";
 import { normalizeEdgeKind } from "../graph-normalization";
+import type { DiagramProduct } from "../../../src/generated/diagram-product/DiagramProduct";
+import type { ProjectionFeature } from "../../../src/generated/diagram-product/ProjectionFeature";
+import type { SequenceScene } from "../../../src/generated/diagram-product/SequenceScene";
+import type { TransitionTrigger } from "../../../src/generated/diagram-product/TransitionTrigger";
 import { prepareActivity, prepareSequence, prepareState } from "./behavior";
 import { normalizeVisualizationPayload } from "./normalize-payload";
 import { prepareGraph } from "./graph";
@@ -7,7 +11,7 @@ import { prepareInterconnection } from "./interconnection";
 import { prepareInterconnectionFromTypedProjection } from "./interconnection-typed";
 import { prepareBrowser, prepareGeometry, prepareGrid } from "./standard-views";
 import type { PreparedEdge, PreparedNode, PreparedView, VisualizationPayload } from "./types";
-import { asArray, asRecord, asString } from "./util";
+import { asRecord } from "./util";
 
 export type {
   InterconnectionLayoutDto,
@@ -85,12 +89,11 @@ export function prepareViewData(visualizationInput: unknown): PreparedView {
 function sequenceDiagramFromScene(
   name: string,
   nodes: PreparedNode[],
-  scene: Record<string, unknown>,
+  scene: SequenceScene,
 ): Record<string, unknown> | undefined {
   const asIndex = (value: unknown): number | undefined =>
     typeof value === "number" && nodes[value] !== undefined ? value : undefined;
-  if (asString(scene.kind) !== "sequence") return undefined;
-  const participantIdx = asArray(scene.lifelines)
+  const participantIdx = scene.lifelines
     .map(asIndex)
     .filter((value): value is number => value !== undefined);
 
@@ -98,20 +101,17 @@ function sequenceDiagramFromScene(
     id: nodes[index].id,
     name: nodes[index].label || nodes[index].kind,
   }));
-  const messages = asArray(scene.messages).map(asRecord).map((message) => {
+  const messages = scene.messages.map((message) => {
     const index = asIndex(message.node);
-    const source = asRecord(message.source);
-    const target = asRecord(message.target);
-    const order = asRecord(message.order);
-    const sourceIndex = source.status === "resolved" ? asIndex(source.lifeline) : undefined;
-    const targetIndex = target.status === "resolved" ? asIndex(target.lifeline) : undefined;
+    const sourceIndex = message.source.status === "resolved" ? asIndex(message.source.lifeline) : undefined;
+    const targetIndex = message.target.status === "resolved" ? asIndex(message.target.lifeline) : undefined;
     return {
       id: index === undefined ? undefined : nodes[index].id,
-      name: typeof message.label === "string" ? message.label : index === undefined ? "" : nodes[index].label,
+      name: message.label,
       source: sourceIndex === undefined ? undefined : nodes[sourceIndex].id,
       target: targetIndex === undefined ? undefined : nodes[targetIndex].id,
       kind: index === undefined ? "FlowUsage" : nodes[index].kind,
-      order: order.status === "resolved" && typeof order.value === "number" ? order.value : undefined,
+      order: message.order.status === "resolved" ? message.order.value : undefined,
     };
   }).filter((message) => message.id !== undefined && message.source !== undefined &&
     message.target !== undefined && message.order !== undefined);
@@ -119,58 +119,56 @@ function sequenceDiagramFromScene(
   return { name, lifelines, messages, activations: [], fragments: [] };
 }
 
-function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
+function isDiagramProduct(input: unknown): input is DiagramProduct {
   const product = asRecord(input);
-  if (product.schemaVersion !== 5) return null;
   const selected = asRecord(product.selectedView);
   const projection = asRecord(product.projection);
-  const documents = Array.isArray(product.documents) ? product.documents.map(asRecord) : [];
-  const sources = Array.isArray(product.sources) ? product.sources.map(asRecord) : [];
-  const references = Array.isArray(product.references) ? product.references : [];
-  if (typeof selected.kind !== "string" || projection.kind !== selected.kind ||
-      typeof selected.name !== "string" || !Array.isArray(projection.nodes) ||
-      !Array.isArray(projection.edges)) return null;
+  return product.schemaVersion === 5 && typeof product.modelDigest === "string" &&
+    Array.isArray(product.documents) && Array.isArray(product.sources) && Array.isArray(product.references) &&
+    typeof selected.kind === "string" && typeof selected.name === "string" &&
+    projection.kind === selected.kind && Array.isArray(projection.exposedRoots) &&
+    Array.isArray(projection.nodes) && Array.isArray(projection.relationships) &&
+    Array.isArray(projection.edges) && typeof projection.metadata === "object" &&
+    typeof projection.scene === "object";
+}
+
+function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
+  if (!isDiagramProduct(input)) return null;
+  const { selectedView: selected, projection, documents, sources, references } = input;
   const navigation = (index: unknown) => {
     const source = typeof index === "number" ? sources[index] : undefined;
-    const document = source && typeof source.document === "number" ? documents[source.document] : undefined;
-    const range = source && Array.isArray(source.range) ? source.range : [];
+    const document = source ? documents[source.document] : undefined;
+    const range = source?.range;
     return {
-      uri: document && typeof document.uri === "string" ? document.uri : null,
-      range: range.length === 4 ? {
+      uri: document?.uri ?? null,
+      range: range ? {
         start: { line: range[0], character: range[1] },
         end: { line: range[2], character: range[3] },
       } : {},
     };
   };
-  if (selected.kind === "state-transition-view") {
-    const scene = asRecord(projection.scene);
-    if (scene.kind !== "state-transition" || !Array.isArray(scene.vertices) || !Array.isArray(scene.transitions)) return null;
-    const frame = asRecord(scene.frame);
-    const nodes = scene.vertices.map((raw, index): PreparedNode => {
-      const vertex = asRecord(raw);
+  if (projection.kind === "state-transition-view") {
+    const { scene } = projection;
+    const frame = scene.frame;
+    const nodes = scene.vertices.map((vertex, index): PreparedNode => {
       const source = navigation(vertex.navigation);
-      const semanticId = typeof vertex.id === "string" && vertex.id ? vertex.id : String(index);
+      const semanticId = vertex.id || String(index);
       return {
         id: `state:${semanticId}`,
-        label: typeof vertex.label === "string" ? vertex.label : "",
-        kind: String(vertex.kind ?? "state"),
+        label: vertex.label,
+        kind: vertex.kind,
         uri: source.uri,
         range: source.range as PreparedNode["range"],
         attributes: { semanticSceneId: vertex.id },
       };
     });
-    const featureLabel = (value: unknown): string => {
-      const feature = asRecord(value);
-      return feature.status === "supported" && typeof feature.label === "string" ? feature.label : "";
-    };
-    const triggerLabel = (value: unknown): string => {
-      const trigger = asRecord(value);
-      return trigger.status === "accept" && typeof trigger.label === "string" ? trigger.label : "";
-    };
-    const edges = scene.transitions.map((raw, index): PreparedEdge => {
-      const transition = asRecord(raw);
-      const sourceIndex = transition.source as number;
-      const targetIndex = transition.target as number;
+    const featureLabel = (feature: ProjectionFeature): string =>
+      feature.status === "supported" ? feature.label : "";
+    const triggerLabel = (trigger: TransitionTrigger): string =>
+      trigger.status === "accept" ? trigger.label : "";
+    const edges = scene.transitions.map((transition, index): PreparedEdge => {
+      const sourceIndex = transition.source;
+      const targetIndex = transition.target;
       const trigger = triggerLabel(transition.trigger);
       const guard = featureLabel(transition.guard);
       const effect = featureLabel(transition.effect);
@@ -179,7 +177,7 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
         id: `transition:${index}`,
         source: nodes[sourceIndex].id,
         target: nodes[targetIndex].id,
-        label: [trigger, guard ? `[${guard}]` : "", effect].filter(Boolean).join(" / ") || String(transition.label ?? ""),
+        label: [trigger, guard ? `[${guard}]` : "", effect].filter(Boolean).join(" / ") || transition.label || "",
         edgeKind: "transition",
         attributes: {
           semanticSceneId: transition.id,
@@ -194,7 +192,7 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
       };
     });
     return {
-      title: typeof frame.label === "string" ? frame.label : selected.name,
+      title: frame?.label ?? selected.name,
       view: selected.kind,
       nodes,
       edges,
@@ -205,33 +203,32 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
       },
     };
   }
-  if (selected.kind === "interconnection-view") {
+  if (projection.kind === "interconnection-view") {
     return prepareInterconnectionFromTypedProjection({
       name: selected.name,
       nodes: projection.nodes,
       edges: projection.edges,
       exposedRoots: projection.exposedRoots,
-      metadata: asRecord(projection.metadata),
+      metadata: projection.metadata,
       references,
       navigation,
     });
   }
-  const nodes = projection.nodes.map((raw, index): PreparedNode => {
-    const element = asRecord(raw);
+  const nodes = projection.nodes.map((element, index): PreparedNode => {
     const source = navigation(element.source);
-    const typing = asRecord(element.typing);
-    const typeLabels = Array.isArray(typing.types)
-      ? typing.types.map(asRecord).map((type) => type.label).filter((label): label is string => typeof label === "string")
+    const typing = element.typing;
+    const typeLabels = typing.status === "resolved" || typing.status === "partial"
+      ? typing.types.map((type) => type.label)
       : [];
     return {
       id: `n:${index}`,
-      label: typeof element.name === "string" ? element.name : String(element.metaclass ?? ""),
-      kind: String(element.metaclass ?? "Unrecognized"),
+      label: element.name ?? element.metaclass,
+      kind: element.metaclass,
       uri: source.uri,
       range: source.range as PreparedNode["range"],
       attributes: {
         notationRole: element.notationRole,
-        semanticReference: typeof element.reference === "number" ? references[element.reference] : undefined,
+        semanticReference: references[element.reference],
         owner: element.owner,
         typingStatus: typing.status,
         typedByName: (typing.status === "resolved" || typing.status === "partial") && typeLabels.length > 0
@@ -240,16 +237,15 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
       },
     };
   });
-  for (const [ownerIndex, raw] of projection.nodes.entries()) {
-    const element = asRecord(raw);
-    const compartments = Array.isArray(element.compartments) ? element.compartments.map(asRecord) : [];
+  for (const [ownerIndex, element] of projection.nodes.entries()) {
+    const compartments = element.compartments;
     nodes[ownerIndex].attributes = {
       ...nodes[ownerIndex].attributes,
       typedCompartments: compartments.map((compartment) => ({
-        kind: String(compartment.kind ?? "members"),
-        provenance: String(compartment.provenance ?? "direct"),
-        members: (Array.isArray(compartment.members) ? compartment.members : [])
-          .filter((member): member is number => typeof member === "number" && nodes[member] !== undefined)
+        kind: compartment.kind,
+        provenance: compartment.provenance,
+        members: compartment.members
+          .filter((member) => nodes[member] !== undefined)
           .map((member) => ({
             id: nodes[member].id,
             name: nodes[member].label,
@@ -261,35 +257,31 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
       })),
     };
   }
-  const edges = projection.edges.map((raw, index): PreparedEdge => {
-    const edge = asRecord(raw);
-    const origin = typeof edge.origin === "number" ? `n:${edge.origin}` : undefined;
+  const edges = projection.edges.map((edge, index): PreparedEdge => {
+    const origin = `n:${edge.origin}`;
     return {
       id: `e:${index}`,
-      source: `n:${String(edge.source ?? "")}`,
-      target: `n:${String(edge.target ?? "")}`,
+      source: `n:${edge.source}`,
+      target: `n:${edge.target}`,
       label: "",
       edgeKind: normalizeEdgeKind(String(edge.kind ?? "relationship")),
       attributes: {
         originNodeId: origin,
-        semanticReference: typeof edge.reference === "number" ? references[edge.reference] : undefined,
+        semanticReference: references[edge.reference],
         provenance: edge.provenance,
         sourceNavigation: edge.navigation === null ? null : navigation(edge.navigation),
       },
     };
   });
-  const metadata = asRecord(projection.metadata);
-  const sequenceDiagram = selected.kind === "sequence-view"
-    ? sequenceDiagramFromScene(selected.name, nodes, asRecord(projection.scene))
+  const sequenceDiagram = projection.kind === "sequence-view"
+    ? sequenceDiagramFromScene(selected.name, nodes, projection.scene)
     : undefined;
-  const gridRows = Array.isArray(metadata.rows)
-    ? metadata.rows.filter((value): value is number => typeof value === "number" && nodes[value] !== undefined)
+  const gridRows = projection.kind === "grid-view"
+    ? projection.metadata.rows.filter((value) => nodes[value] !== undefined)
     : [];
-  const gridColumns = Array.isArray(metadata.columns)
-    ? metadata.columns.filter((value): value is string => typeof value === "string")
-    : [];
-  const gridRelationships = Array.isArray(metadata.cells) ? metadata.cells.map(asRecord) : [];
-  const gridCells = selected.kind === "grid-view"
+  const gridColumns = projection.kind === "grid-view" ? projection.metadata.columns : [];
+  const gridRelationships = projection.kind === "grid-view" ? projection.metadata.cells : [];
+  const gridCells = projection.kind === "grid-view"
     ? gridRows.map((nodeIndex) => {
         const node = nodes[nodeIndex];
         const values = Object.fromEntries(gridColumns.map((column) => [
@@ -305,13 +297,11 @@ function prepareTypedDiagramProduct(input: unknown): PreparedView | null {
     nodes,
     edges,
     meta: {
-      selectedDiagramReference: typeof selected.reference === "number" ? references[selected.reference] : undefined,
-      exposedRoots: Array.isArray(projection.exposedRoots)
-        ? projection.exposedRoots.map((index) => `n:${String(index)}`)
-        : [],
+      selectedDiagramReference: references[selected.reference],
+      exposedRoots: projection.exposedRoots.map((index) => `n:${index}`),
       viewMetadata: projection.metadata,
       ...(sequenceDiagram ? { sequenceDiagram } : {}),
-      ...(selected.kind === "grid-view" ? {
+      ...(projection.kind === "grid-view" ? {
         cells: gridCells,
         columns: [
           { key: "name", label: "Element", notationStatus: "normative" },

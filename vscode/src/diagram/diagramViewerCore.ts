@@ -1,4 +1,7 @@
 import * as path from "path";
+import type { DiagramProduct } from "../generated/diagram-product/DiagramProduct";
+
+export type { DiagramProduct } from "../generated/diagram-product/DiagramProduct";
 
 export type SourceNavigation = {
   uri: string;
@@ -33,53 +36,6 @@ export type DiagramSemanticReference =
   | { kind: "tooling-element-id"; elementId: string; sourceDomain: string }
   | { kind: "source-anchor"; document: string; ownerQualifiedName: string | null; metaclass: string; sourceDomain: string; range: unknown }
   | { kind: "relationship"; document: string; sourceQualifiedName: string; relationshipKind: string; ordinal: number; sourceDomain: string };
-
-export type DiagramScene =
-  | { kind: "general" }
-  | { kind: "interconnection" }
-  | { kind: "action-flow" }
-  | { kind: "sequence" }
-  | { kind: "browser" }
-  | { kind: "grid" }
-  | { kind: "geometry" }
-  | {
-      kind: "state-transition";
-      frame: { id: string; label: string; navigation: number } | null;
-      vertices: Array<{ id: string; label: string; kind: "initial" | "state" | "final"; navigation: number }>;
-      transitions: Array<{
-        id: string;
-        label: string | null;
-        source: number;
-        target: number;
-        trigger: Record<string, unknown>;
-        guard: Record<string, unknown>;
-        effect: Record<string, unknown>;
-        provenance: "authored" | "implied";
-        navigation: number;
-      }>;
-    };
-
-export type DiagramProduct = {
-  schemaVersion: 5;
-  modelDigest: string;
-  documents: Array<{ uri: string; sourceDomain: string }>;
-  sources: Array<{ document: number; range: [number, number, number, number] }>;
-  references: Array<Record<string, unknown>>;
-  selectedView: { reference: number; kind: DiagramViewId; name: string; source: number };
-  completeness: {
-    status: "complete" | "incomplete";
-    reasons: Array<{ code: string; [key: string]: unknown }>;
-  };
-  projection: {
-    kind: DiagramViewId;
-    exposedRoots: number[];
-    nodes: unknown[];
-    relationships: unknown[];
-    edges: unknown[];
-    metadata: Record<string, unknown>;
-    scene: DiagramScene;
-  };
-};
 
 const NOTATION_ROLES = new Set([
   "definition", "usage", "reference-usage", "namespace", "annotation", "unsupported",

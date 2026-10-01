@@ -1,4 +1,8 @@
 import { normalizeEdgeKind } from "../graph-normalization";
+import type { DiagramEdge } from "../../../src/generated/diagram-product/DiagramEdge";
+import type { DiagramNode } from "../../../src/generated/diagram-product/DiagramNode";
+import type { InterconnectionMetadata } from "../../../src/generated/diagram-product/InterconnectionMetadata";
+import type { SemanticReference } from "../../../src/generated/diagram-product/SemanticReference";
 import { prepareInterconnectionScene } from "./interconnection-scene";
 import type {
   InterconnectionSceneDto,
@@ -6,9 +10,7 @@ import type {
   InterconnectionSceneNodeDto,
   InterconnectionScenePortDto,
   PreparedView,
-  UnknownRecord,
 } from "./types";
-import { asArray, asRecord, asString } from "./util";
 
 type Navigation = (index: unknown) => {
   uri: string | null;
@@ -27,11 +29,11 @@ type Navigation = (index: unknown) => {
  */
 export function prepareInterconnectionFromTypedProjection(input: {
   name: string;
-  nodes: unknown[];
-  edges: unknown[];
-  exposedRoots: unknown;
-  metadata: UnknownRecord;
-  references: unknown[];
+  nodes: DiagramNode[];
+  edges: DiagramEdge[];
+  exposedRoots: number[];
+  metadata: InterconnectionMetadata;
+  references: SemanticReference[];
   navigation: Navigation;
 }): PreparedView {
   const scene = interconnectionSceneFromTypedProjection(input);
@@ -40,50 +42,43 @@ export function prepareInterconnectionFromTypedProjection(input: {
 
 function interconnectionSceneFromTypedProjection(input: {
   name: string;
-  nodes: unknown[];
-  edges: unknown[];
-  exposedRoots: unknown;
-  metadata: UnknownRecord;
-  references: unknown[];
+  nodes: DiagramNode[];
+  edges: DiagramEdge[];
+  exposedRoots: number[];
+  metadata: InterconnectionMetadata;
+  references: SemanticReference[];
   navigation: Navigation;
 }): InterconnectionSceneDto {
-  const rawNodes = input.nodes.map(asRecord);
-  const indexSet = (value: unknown): Set<number> =>
-    new Set(
-      asArray(value).filter((index): index is number =>
-        typeof index === "number" && rawNodes[index] !== undefined,
-      ),
-    );
+  const rawNodes = input.nodes;
+  const indexSet = (value: number[]): Set<number> =>
+    new Set(value.filter((index) => rawNodes[index] !== undefined));
   const partIndexes = indexSet(input.metadata.parts);
   const portIndexes = indexSet(input.metadata.ports);
   if (partIndexes.size === 0) {
     rawNodes.forEach((element, index) => {
-      if (isPartMetaclass(asString(element.metaclass))) partIndexes.add(index);
+      if (isPartMetaclass(element.metaclass)) partIndexes.add(index);
     });
   }
   if (portIndexes.size === 0) {
     rawNodes.forEach((element, index) => {
-      if (isPortMetaclass(asString(element.metaclass))) portIndexes.add(index);
+      if (isPortMetaclass(element.metaclass)) portIndexes.add(index);
     });
   }
 
   const idFor = (index: number) => `n:${index}`;
   const qualifiedName = (index: number): string => {
     const element = rawNodes[index];
-    const reference = typeof element.reference === "number" ? input.references[element.reference] : undefined;
-    const qualified = asString(asRecord(reference).qualifiedName);
-    if (qualified) return qualified;
-    return asString(element.name, idFor(index));
+    const reference = input.references[element.reference];
+    if (reference?.kind === "qualified-name" && reference.qualifiedName) return reference.qualifiedName;
+    return element.name ?? idFor(index);
   };
-  const typeName = (element: UnknownRecord): string | undefined => {
-    const typing = asRecord(element.typing);
-    const labels = asArray(typing.types)
-      .map(asRecord)
-      .map((type) => type.label)
-      .filter((label): label is string => typeof label === "string");
+  const typeName = (element: DiagramNode): string | undefined => {
+    const labels = element.typing.status === "resolved" || element.typing.status === "partial"
+      ? element.typing.types.map((type) => type.label)
+      : [];
     return labels.length > 0 ? labels.join(" & ") : undefined;
   };
-  const location = (element: UnknownRecord) => {
+  const location = (element: DiagramNode) => {
     const source = input.navigation(element.source);
     const range = source.range;
     const start = range.start;
@@ -102,8 +97,8 @@ function interconnectionSceneFromTypedProjection(input: {
           : undefined,
     };
   };
-  const sceneKind = (element: UnknownRecord): string => {
-    const role = asString(element.notationRole);
+  const sceneKind = (element: DiagramNode): string => {
+    const role = element.notationRole;
     if (role === "reference-usage") return "ref";
     if (role === "definition") return "def";
     return "part";
@@ -113,14 +108,14 @@ function interconnectionSceneFromTypedProjection(input: {
     .sort((left, right) => left - right)
     .map((index) => {
       const element = rawNodes[index];
-      const owner = typeof element.owner === "number" ? element.owner : undefined;
+      const owner = element.owner ?? undefined;
       const parentId = owner !== undefined && partIndexes.has(owner) ? idFor(owner) : undefined;
       const placed = location(element);
       return {
         id: idFor(index),
         semanticId: qualifiedName(index),
         qualifiedName: qualifiedName(index),
-        name: asString(element.name, idFor(index)),
+        name: element.name ?? idFor(index),
         kind: sceneKind(element),
         typeName: typeName(element),
         parentId,
@@ -133,7 +128,7 @@ function interconnectionSceneFromTypedProjection(input: {
     .sort((left, right) => left - right)
     .flatMap((index) => {
       const element = rawNodes[index];
-      const owner = typeof element.owner === "number" ? element.owner : undefined;
+      const owner = element.owner ?? undefined;
       if (owner === undefined || !partIndexes.has(owner)) return [];
       const placed = location(element);
       return [
@@ -141,12 +136,12 @@ function interconnectionSceneFromTypedProjection(input: {
           id: idFor(index),
           semanticId: qualifiedName(index),
           ownerNodeId: idFor(owner),
-          name: asString(element.name, idFor(index)),
+          name: element.name ?? idFor(index),
           typeName: typeName(element),
           // Authored, resolved facts (never derived from `name` or `typeName`): the query
           // reports `direction: null` / `conjugated: false` rather than omitting them, so an
           // absent authored direction is a fact this adapter forwards, not a gap it fills in.
-          direction: typeof element.direction === "string" ? element.direction : undefined,
+          direction: element.direction ?? undefined,
           conjugated: element.conjugated === true,
           sideHint: "",
           uri: placed.uri,
@@ -166,10 +161,9 @@ function interconnectionSceneFromTypedProjection(input: {
     return undefined;
   };
 
-  const edges: InterconnectionSceneEdgeDto[] = asArray(input.edges)
-    .map(asRecord)
+  const edges: InterconnectionSceneEdgeDto[] = input.edges
     .flatMap((edge, index) => {
-      const kind = asString(edge.kind);
+      const kind = edge.kind;
       if (!isInterconnectionEdgeKind(kind)) return [];
       const source = endpoint(edge.source);
       const target = endpoint(edge.target);
@@ -186,8 +180,8 @@ function interconnectionSceneFromTypedProjection(input: {
       ];
     });
 
-  const rootIds = asArray(input.exposedRoots)
-    .filter((index): index is number => typeof index === "number" && partIndexes.has(index))
+  const rootIds = input.exposedRoots
+    .filter((index) => partIndexes.has(index))
     .map(idFor);
 
   return {
