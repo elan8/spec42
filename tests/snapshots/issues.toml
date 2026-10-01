@@ -184,7 +184,7 @@ summary = "the crosses clause now lowers to a crossSubsetting relationship, but 
 id = "lowering-metadata-expressions"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "a metadata access expression parses but sysml_resolution reports it as unsupported_calc_definition_member, so no MetadataAccessExpression reaches semantics; only the accepted side is authored here"
+summary = "a metadata access expression (`Thing.metadata`, ast::Expression::MetadataAccess) parses but lowering reports it as unsupported_calc_definition_member, so no MetadataAccessExpression reaches semantics. Its referencedElement must resolve through a reference kind of its own -- not ExpressionOperand, whose target must be a Feature -- and a new reference kind is a relationship kind of the diagram and generator-protocol contracts"
 
 [[issue]]
 id = "lowering-metadata-feature-facts"
