@@ -157,6 +157,7 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::OccurrenceUsage
         | ElementKind::ActionUsage
         | ElementKind::StateUsage
+        | ElementKind::ExhibitStateUsage
         | ElementKind::CalculationUsage
         | ElementKind::ConstraintUsage
         | ElementKind::AssertConstraintUsage

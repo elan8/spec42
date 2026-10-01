@@ -488,7 +488,7 @@ pub(crate) fn type_derived_relationship_kinds(
 /// `Flow` keeps its extra generated alias.
 pub(crate) fn library_specialization_metaclasses(
     kind: crate::model::DeclarationKind,
-) -> Vec<&'static str> {
+) -> Vec<ApplicableRuleMetaclass> {
     use sysml_contract::ElementKind;
     let declares_rules = |metaclass: &str| {
         library_specialization_rules(metaclass).next().is_some()
@@ -496,37 +496,171 @@ pub(crate) fn library_specialization_metaclasses(
                 .next()
                 .is_some()
     };
+    let is_root = |general: ElementKind| {
+        matches!(
+            general,
+            ElementKind::Type | ElementKind::Classifier | ElementKind::Feature
+        )
+    };
     let primary = library_rule_metaclass(kind);
-    let mut metaclasses = vec![primary];
+    let mut metaclasses = vec![ApplicableRuleMetaclass::all(primary)];
     if !declares_rules(primary) {
         let mut pending = element_kind::element_kind(kind).direct_generals().to_vec();
         let mut visited = std::collections::BTreeSet::new();
         while let Some(general) = pending.pop() {
-            if matches!(
-                general,
-                ElementKind::Type | ElementKind::Classifier | ElementKind::Feature
-            ) || !visited.insert(general)
-            {
+            if is_root(general) || !visited.insert(general) {
                 continue;
             }
             if declares_rules(general.as_str()) {
-                metaclasses.push(general.as_str());
+                metaclasses.push(ApplicableRuleMetaclass::all(general.as_str()));
             } else {
                 pending.extend_from_slice(general.direct_generals());
             }
         }
     }
+    // The default ("base") supertype is its own key: a metaclass whose rules are all
+    // non-default conditional keys (`ExhibitStateUsage`'s `performedAction`,
+    // `PerformActionUsage`'s, `EventOccurrenceUsage`'s `suboccurrence`, `OccurrenceDefinition`'s
+    // `life`) does not shadow the nearest general's default, exactly as the Pilot's
+    // `ImplicitGeneralizationMap.getDefaultSupertypeFor(class, "base")` walks past it. Of the
+    // defaults so found, one whose metaclass another found metaclass specializes is shadowed by
+    // it (`ExhibitStateUsage` takes `StateUsage`'s `stateActions`, not `ActionUsage`'s `actions`
+    // through `PerformActionUsage`).
+    let mut defaults = Vec::<ElementKind>::new();
+    if !metaclasses
+        .iter()
+        .any(|metaclass| metaclass_declares_default_rule(metaclass.metaclass))
+    {
+        let mut pending = element_kind::element_kind(kind).direct_generals().to_vec();
+        let mut visited = std::collections::BTreeSet::new();
+        while let Some(general) = pending.pop() {
+            if is_root(general) || !visited.insert(general) {
+                continue;
+            }
+            if metaclass_declares_default_rule(general.as_str()) {
+                defaults.push(general);
+            } else {
+                pending.extend_from_slice(general.direct_generals());
+            }
+        }
+    }
+    let shadowed = defaults
+        .iter()
+        .filter(|general| {
+            defaults
+                .iter()
+                .any(|other| other != *general && other.conforms_to(**general))
+        })
+        .copied()
+        .collect::<Vec<_>>();
+    metaclasses.extend(
+        defaults
+            .into_iter()
+            .filter(|general| !shadowed.contains(general))
+            .map(|general| ApplicableRuleMetaclass {
+                metaclass: general.as_str(),
+                default_only: true,
+            }),
+    );
     if kind == crate::model::DeclarationKind::Satisfy && primary != "Feature" {
-        metaclasses.push("Feature");
+        metaclasses.push(ApplicableRuleMetaclass::all("Feature"));
     }
     match kind {
-        crate::model::DeclarationKind::Flow => metaclasses.push("Flow"),
-        crate::model::DeclarationKind::SuccessionFlow => metaclasses.push("SuccessionFlow"),
+        crate::model::DeclarationKind::Flow => {
+            metaclasses.push(ApplicableRuleMetaclass::all("Flow"))
+        }
+        crate::model::DeclarationKind::SuccessionFlow => {
+            metaclasses.push(ApplicableRuleMetaclass::all("SuccessionFlow"))
+        }
         _ => {}
     }
     metaclasses.sort_unstable();
     metaclasses.dedup();
     metaclasses
+}
+
+/// One metaclass whose generated library rules apply to a declaration, and which of them.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct ApplicableRuleMetaclass {
+    pub(crate) metaclass: &'static str,
+    /// Only the rules selecting the metaclass's default supertype apply: the declaration's own
+    /// metaclass declares no default and its other keys shadow this general's.
+    pub(crate) default_only: bool,
+}
+
+impl ApplicableRuleMetaclass {
+    fn all(metaclass: &'static str) -> Self {
+        Self {
+            metaclass,
+            default_only: false,
+        }
+    }
+
+    /// The unconditional rules that apply; every one selects the default supertype.
+    pub(crate) fn rules(self) -> impl Iterator<Item = &'static LibrarySpecializationRule> {
+        library_specialization_rules(self.metaclass)
+    }
+
+    /// The conditional rules that apply.
+    pub(crate) fn conditional_rules(
+        self,
+    ) -> impl Iterator<Item = &'static ConditionalLibrarySpecializationRule> {
+        library_specialization_rules_conditional_filtered(self)
+    }
+}
+
+fn library_specialization_rules_conditional_filtered(
+    applicable: ApplicableRuleMetaclass,
+) -> impl Iterator<Item = &'static ConditionalLibrarySpecializationRule> {
+    GENERATED_CONDITIONAL_LIBRARY_SPECIALIZATION_RULES
+        .iter()
+        .filter(move |rule| {
+            rule.metaclass == applicable.metaclass
+                && (!applicable.default_only || predicate_selects_default_supertype(rule.predicate))
+        })
+}
+
+/// Whether a metaclass declares a rule for its default ("base") supertype.
+fn metaclass_declares_default_rule(metaclass: &str) -> bool {
+    library_specialization_rules(metaclass).next().is_some()
+        || conditional_library_specialization_rules(metaclass)
+            .any(|rule| predicate_selects_default_supertype(rule.predicate))
+}
+
+/// Whether a conditional rule chooses between branches of the default supertype, as the Pilot's
+/// adapters replace the `base` key (`AssertConstraintUsage` negated, `IfActionUsage`
+/// `ifThenElse`, `AcceptActionUsage` trigger), rather than adding a further supertype under a
+/// key of its own.
+fn predicate_selects_default_supertype(predicate: LibrarySpecializationPredicate) -> bool {
+    use LibrarySpecializationPredicate as P;
+    match predicate {
+        P::PolarityBranch | P::HasElseActionBranch | P::IsNotTriggerAction | P::IsTriggerAction => {
+            true
+        }
+        P::IsIndividual
+        | P::PortionKindSnapshot
+        | P::PortionKindTimeslice
+        | P::CompositeOwnedBy
+        | P::OwnedEndFeatureCountIsTwo
+        | P::ConnectorEndCountIsTwo
+        | P::AssociationEndCountIsTwo
+        | P::EndFeatureCountIsTwo
+        | P::FlowEndCountIsTwo
+        | P::OwnedEndFeaturesNotEmpty
+        | P::OwnedTypingDataType
+        | P::OwnedTypingClass
+        | P::OwnedTypingStructure
+        | P::EndOwnedByAssociationOrConnector
+        | P::ConnectorAssociationStructure
+        | P::OwnedBy
+        | P::IsSubactionUsage
+        | P::IsSubactionUsageAndNotTriggerAction
+        | P::FramedConcernMembership
+        | P::RequirementConstraintMembershipKind
+        | P::ActorMembershipOwningRequirement
+        | P::StakeholderMembership
+        | P::RequirementVerificationMembership => false,
+    }
 }
 
 pub(crate) fn library_specialization_rules(
@@ -2398,7 +2532,7 @@ pub(crate) fn synthesize_generated_library_specializations(
     for (index, declaration) in storage.declarations.iter().enumerate() {
         let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
         for metaclass in library_specialization_metaclasses(declaration.kind) {
-            for rule in library_specialization_rules(metaclass) {
+            for rule in metaclass.rules() {
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
                     anchor_facts.generated_outcome(rule.rule_id)
                 else {
@@ -2418,7 +2552,7 @@ pub(crate) fn synthesize_generated_library_specializations(
                     target: *anchor,
                 });
             }
-            for rule in conditional_library_specialization_rules(metaclass) {
+            for rule in metaclass.conditional_rules() {
                 if !conditional_library_specialization_predicate_holds_with_resolution(
                     storage, source, rule, references, outcomes,
                 ) {
@@ -2469,7 +2603,7 @@ pub(crate) fn provisional_library_specializations(
     for (index, declaration) in storage.declarations.iter().enumerate() {
         let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
         for metaclass in library_specialization_metaclasses(declaration.kind) {
-            for rule in library_specialization_rules(metaclass) {
+            for rule in metaclass.rules() {
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
                     anchor_facts.generated_outcome(rule.rule_id)
                 else {
@@ -2484,7 +2618,7 @@ pub(crate) fn provisional_library_specializations(
                     target: *anchor,
                 });
             }
-            for rule in conditional_library_specialization_rules(metaclass) {
+            for rule in metaclass.conditional_rules() {
                 if !conditional_library_specialization_predicate_holds(storage, source, rule) {
                     continue;
                 }

@@ -778,6 +778,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "exhibit_target_invalid_kind",
+        severity: "warning",
+        meaning: "An exhibit state usage references a feature that is not a state usage (SysML validateExhibitStateUsageReference).",
+        typical_fix: "Point exhibit at a state usage in scope.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "transition_endpoint_invalid_state",
         severity: "warning",
         meaning: "A transition source or target does not resolve to a state usage.",

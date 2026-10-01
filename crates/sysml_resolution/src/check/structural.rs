@@ -274,7 +274,9 @@ impl<D> SemanticModel<D> {
     ) -> Result<(), ResolutionError> {
         if !matches!(
             kind,
-            DeclarationKind::StateDefinition | DeclarationKind::StateUsage
+            DeclarationKind::StateDefinition
+                | DeclarationKind::StateUsage
+                | DeclarationKind::ExhibitStateUsage
         ) || !facts.modifiers.parallel
         {
             return Ok(());

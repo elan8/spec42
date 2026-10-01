@@ -72,6 +72,7 @@ package SequenceUnresolved {
     (relationship (kind flowSource) (source (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved::Interaction::delivery"))) (target (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved::Interaction::sender::sent"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved::Interaction::delivery"))) (kind flowSource) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved::selected"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::SequenceView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved::selected"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (path (named (kind package) (name "SequenceUnresolved")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved::Interaction"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (path (named (kind package) (name "SequenceUnresolved")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved::Interaction"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved::Interaction::delivery"))) (target (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::flows"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved::Interaction::delivery"))) (target (node (document "memory://snapshot/sysml.library/flows.md") (qualified-name "Flows::messages"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved::Interaction::delivery"))) (target (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved::Interaction"))) (provenance implied))
@@ -95,6 +96,10 @@ package SequenceUnresolved {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved::Interaction")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved::Interaction::delivery")))
       (positional-ends (authored 0) (effective 2))
       (featured-by (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved::Interaction")))
@@ -402,6 +407,11 @@ package SequenceUnresolved {
     {
       "document": 2,
       "kind": "qualified-name",
+      "qualifiedName": "Occurrences::Occurrence"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
       "qualifiedName": "Occurrences::occurrences"
     },
     {
@@ -439,20 +449,20 @@ package SequenceUnresolved {
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
+      "ordinal": 0,
+      "relationshipKind": "specializes",
+      "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
       "relationshipKind": "flowSource",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "flowTarget",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
       "ordinal": 6,
-      "relationshipKind": "subsetting",
+      "relationshipKind": "flowTarget",
       "source": 1
     },
     {
@@ -476,6 +486,12 @@ package SequenceUnresolved {
     {
       "kind": "relationship",
       "ordinal": 10,
+      "relationshipKind": "subsetting",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
       "relationshipKind": "typeFeaturing",
       "source": 1
     },
@@ -487,25 +503,25 @@ package SequenceUnresolved {
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
       "ordinal": 12,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "subsetting",
       "source": 2
     },
     {
       "kind": "relationship",
       "ordinal": 13,
+      "relationshipKind": "typeFeaturing",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
       "relationshipKind": "subsetting",
       "source": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "ordinal": 15,
       "relationshipKind": "typeFeaturing",
       "source": 3
     },
@@ -517,25 +533,25 @@ package SequenceUnresolved {
     },
     {
       "kind": "relationship",
-      "ordinal": 0,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
       "ordinal": 1,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "subsetting",
       "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 2,
+      "relationshipKind": "typeFeaturing",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
       "relationshipKind": "subsetting",
       "source": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "ordinal": 4,
       "relationshipKind": "typeFeaturing",
       "source": 5
     }
@@ -562,7 +578,7 @@ package SequenceUnresolved {
         "navigation": 1,
         "origin": 2,
         "provenance": "authored",
-        "reference": 13,
+        "reference": 14,
         "source": 0,
         "target": 2
       },
@@ -571,7 +587,7 @@ package SequenceUnresolved {
         "navigation": 2,
         "origin": 3,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 30,
         "source": 2,
         "target": 3
       },
@@ -580,7 +596,7 @@ package SequenceUnresolved {
         "navigation": 5,
         "origin": 1,
         "provenance": "authored",
-        "reference": 14,
+        "reference": 15,
         "source": 0,
         "target": 1
       },
@@ -589,7 +605,7 @@ package SequenceUnresolved {
         "navigation": 3,
         "origin": 4,
         "provenance": "authored",
-        "reference": 15,
+        "reference": 16,
         "source": 0,
         "target": 4
       },
@@ -598,7 +614,7 @@ package SequenceUnresolved {
         "navigation": 4,
         "origin": 5,
         "provenance": "authored",
-        "reference": 23,
+        "reference": 25,
         "source": 4,
         "target": 5
       }
@@ -736,13 +752,24 @@ package SequenceUnresolved {
     ],
     "relationships": [
       {
+        "kind": "specializes",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 17,
+        "source": 0,
+        "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 29,
+        "reference": 31,
         "source": 2,
         "target": {
-          "reference": 10,
+          "reference": 11,
           "status": "resolved"
         }
       },
@@ -750,7 +777,7 @@ package SequenceUnresolved {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 30,
+        "reference": 32,
         "source": 2,
         "target": {
           "node": 0,
@@ -761,10 +788,10 @@ package SequenceUnresolved {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 31,
+        "reference": 33,
         "source": 3,
         "target": {
-          "reference": 9,
+          "reference": 10,
           "status": "resolved"
         }
       },
@@ -772,7 +799,7 @@ package SequenceUnresolved {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 32,
+        "reference": 34,
         "source": 3,
         "target": {
           "node": 2,
@@ -783,7 +810,7 @@ package SequenceUnresolved {
         "kind": "flowSource",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 16,
+        "reference": 18,
         "source": 1,
         "target": {
           "node": 3,
@@ -794,7 +821,7 @@ package SequenceUnresolved {
         "kind": "flowTarget",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 17,
+        "reference": 19,
         "source": 1,
         "target": {
           "status": "unresolved"
@@ -804,7 +831,7 @@ package SequenceUnresolved {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 18,
+        "reference": 20,
         "source": 1,
         "target": {
           "reference": 8,
@@ -815,7 +842,7 @@ package SequenceUnresolved {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 19,
+        "reference": 21,
         "source": 1,
         "target": {
           "reference": 7,
@@ -826,7 +853,18 @@ package SequenceUnresolved {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 20,
+        "reference": 22,
+        "source": 1,
+        "target": {
+          "reference": 13,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 23,
         "source": 1,
         "target": {
           "reference": 12,
@@ -834,44 +872,11 @@ package SequenceUnresolved {
         }
       },
       {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 21,
-        "source": 1,
-        "target": {
-          "reference": 11,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 22,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
         "reference": 24,
-        "source": 4,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 25,
-        "source": 4,
+        "source": 1,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -882,9 +887,9 @@ package SequenceUnresolved {
         "navigation": null,
         "provenance": "implied",
         "reference": 26,
-        "source": 5,
+        "source": 4,
         "target": {
-          "reference": 9,
+          "reference": 11,
           "status": "resolved"
         }
       },
@@ -893,6 +898,28 @@ package SequenceUnresolved {
         "navigation": null,
         "provenance": "implied",
         "reference": 27,
+        "source": 4,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 28,
+        "source": 5,
+        "target": {
+          "reference": 10,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 29,
         "source": 5,
         "target": {
           "node": 4,

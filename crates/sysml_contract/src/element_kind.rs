@@ -97,6 +97,8 @@ element_kinds! {
     TerminateActionUsage,
     StateDefinition,
     StateUsage,
+    /// An `exhibit` state: a StateUsage that is also a PerformActionUsage, never composite.
+    ExhibitStateUsage,
     CalculationDefinition,
     CalculationUsage,
     ConstraintDefinition,
@@ -301,6 +303,7 @@ impl ElementKind {
             | K::StateUsage => &[K::ActionUsage],
             K::DecisionNode | K::MergeNode | K::ForkNode | K::JoinNode => &[K::ControlNode],
             K::FinalState => &[K::StateUsage],
+            K::ExhibitStateUsage => &[K::StateUsage, K::PerformActionUsage],
             K::CalculationUsage => &[K::ActionUsage, K::Expression],
             K::ConstraintUsage => &[K::OccurrenceUsage, K::BooleanExpression],
             K::AssertConstraintUsage => &[K::ConstraintUsage, K::Invariant],
@@ -459,6 +462,8 @@ mod tests {
         assert!(ElementKind::SuccessionAsUsage.conforms_to(ElementKind::Succession));
         assert!(ElementKind::Succession.conforms_to(ElementKind::Connector));
         assert!(ElementKind::ForkNode.conforms_to(ElementKind::ControlNode));
+        assert!(ElementKind::ExhibitStateUsage.conforms_to(ElementKind::StateUsage));
+        assert!(ElementKind::ExhibitStateUsage.conforms_to(ElementKind::PerformActionUsage));
         assert!(ElementKind::ControlNode.conforms_to(ElementKind::ActionUsage));
         assert!(!ElementKind::Classifier.conforms_to(ElementKind::DataType));
         assert!(!ElementKind::PartUsage.conforms_to(ElementKind::AttributeUsage));

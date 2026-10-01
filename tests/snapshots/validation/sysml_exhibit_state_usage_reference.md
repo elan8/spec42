@@ -8,24 +8,21 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.18.2:validateExhibitStateUsageReference
-blocked_by=lowering-part-definition-members
 type=file
 ~~~
 # SOURCE
 ~~~sysml
 package States {
-    state def Machine {
+    part def Base {
         state operating;
+        action inner;
     }
-    part def Component {
-        part inner;
-    }
-    part def Holder {
+    part def Holder :> Base {
         // Conforming: the exhibited feature is a state usage.
-        exhibit Machine::operating;
+        exhibit Base::operating;
 
-        // Invalid: the exhibited feature is a part usage, not a state usage.
-        exhibit Component::inner;
+        // Invalid: the exhibited feature is an action usage, not a state usage.
+        exhibit Base::inner;
     }
 }
 ~~~
@@ -38,7 +35,13 @@ package States {
         (severity warning)
         (code "exhibit_target_invalid_kind")
         (source "semantic")
-        (range (start 12 8) (end 12 33))
+        (range (start 10 16) (end 10 27))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_exhibit_state_usage_reference.md")
+            (range (start 3 8) (end 3 21))
+          )
+        )
       )
     )
   )
@@ -50,34 +53,16 @@ package States {
   (document "memory://snapshot/sysml_exhibit_state_usage_reference.md"
     (diagnostics
       (diagnostic
-        (severity information)
-        (code "missing_final_state")
-        (source "semantic")
-        (range (start 1 4) (end 3 5))
-      )
-      (diagnostic
-        (severity information)
-        (code "missing_initial_state")
-        (source "semantic")
-        (range (start 1 4) (end 3 5))
-      )
-      (diagnostic
-        (severity information)
-        (code "untyped_part_usage")
-        (source "semantic")
-        (range (start 5 8) (end 5 19))
-      )
-      (diagnostic
         (severity warning)
-        (code "unsupported_part_definition_member")
+        (code "exhibit_target_invalid_kind")
         (source "semantic")
-        (range (start 9 8) (end 9 35))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unsupported_part_definition_member")
-        (source "semantic")
-        (range (start 12 8) (end 12 33))
+        (range (start 10 16) (end 10 27))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_exhibit_state_usage_reference.md")
+            (range (start 3 8) (end 3 21))
+          )
+        )
       )
     )
   )
@@ -86,20 +71,35 @@ package States {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:8e16bb5396457a78d73f640d5429aed396e61b327a48a124314b12bca753d17d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:87681988ac3975d5bb389b4a3bf595d8c8ec261a5edaa42e221f7d0bfbee0042"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Component::inner"))) (kind part) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Machine"))) (kind state-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Machine::operating"))) (kind state) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base::inner"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base::operating"))) (kind state) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Holder"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base")))))
+    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 0))))) (kind exhibit-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "Base::operating")))))
+    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 1))))) (kind exhibit-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "Base::inner")))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Holder"))) (kind specialization) (ordinal 0))
+      (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0))
+      (authored-target "Base::operating")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base::operating")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 1))))) (kind referenceSubsetting) (ordinal 0))
+      (authored-target "Base::inner")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base::inner")))))
   )
   (relationships
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Component::inner"))) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Component"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Machine::operating"))) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Machine"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Holder"))) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Holder"))) (kind specialization) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base::operating"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base::inner"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 1))))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base::inner"))) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base::operating"))) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Holder"))) (provenance implied))
   )
   (evaluation
   )
@@ -108,16 +108,47 @@ package States {
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Component::inner")))
-      (featured-by (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Component")))
+    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base")))
+      (subtype (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Holder")) (scopes any subclassification))
     )
-    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Machine::operating")))
-      (featured-by (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Machine")))
+    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base::inner")))
+      (featured-by (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base")))
+      (subtype (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 1)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base::operating")))
+      (featured-by (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base")))
+      (subtype (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Holder")))
+      (supertype (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Holder")))
+      (supertype (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base::operating")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Holder")))
+      (supertype (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base::inner")) (scopes any feature))
     )
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (range (start 5 23) (end 5 27)) (probe (position 5 23))
+    (reference (id (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Holder"))) (kind specialization) (ordinal 0) (authored-target "Base")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (range (start 7 16) (end 7 31)) (probe (position 7 16))
+    (reference (id (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0) (authored-target "Base::operating")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base::operating")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (range (start 10 16) (end 10 27)) (probe (position 10 16))
+    (reference (id (source (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (path (named (kind package) (name "States")) (named (kind part-def) (name "Holder")) (anonymous (kind exhibit-state) (ordinal 1))))) (kind referenceSubsetting) (ordinal 0) (authored-target "Base::inner")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_exhibit_state_usage_reference.md") (qualified-name "States::Base::inner")))))
+    )
+  )
 )
 ~~~

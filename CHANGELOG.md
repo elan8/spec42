@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Exhibit states.** `exhibit state s;` and `exhibit <path>;` now publish an ExhibitStateUsage
+  (`exhibit-state`), a state usage that is also a perform action usage; the path form references
+  the exhibited state, and the new `exhibit_target_invalid_kind` diagnostic checks SysML
+  `validateExhibitStateUsageReference`. An exhibited state of a part specializes
+  `Parts::Part::exhibitedStates` and keeps the `States::stateActions` default. A generated
+  library rule set with no default-supertype rule (exhibit and perform usages, occurrence
+  definitions) no longer hides the nearest general's default, so `occurrence def` now
+  specializes `Occurrences::Occurrence` and `perform` usages `Actions::actions`.
+
 - **State and transition role specializations.** A composite substate now subsets
   `States::StateAction::exclusiveStates` (or `substates` in a parallel state), a composite
   transition from a state in a state subsets `States::StateAction::stateTransitions`, and one in

@@ -128,6 +128,11 @@ pub(crate) enum DeclarationKind {
     /// `state s;` or `state s : SomeState;`. Mirrors ActionUsage lowering. `StateUsage`'s typing
     /// is a structured `TypingRelationship` (not a bare `QualifiedReferenceId`).
     StateUsage,
+    /// An `exhibit` member of a part def/usage (BNF `ExhibitStateUsage`): either the declared
+    /// `exhibit state name : Type` form or the `exhibit <path>;` form, whose exhibited state is
+    /// an owned ReferenceSubsetting (`ReferenceKind::References`). It is a StateUsage and a
+    /// PerformActionUsage, and never composite.
+    ExhibitStateUsage,
     /// `metadata def` (BNF MetadataDefinition): a type whose owned members are attribute/nested
     /// usages, mirroring ItemDefinition lowering: ownership, membership, an optional `:>`
     /// specialization relationship, and owned-member structure through the shared
@@ -906,6 +911,7 @@ impl DeclarationKind {
                 | Self::SendActionUsage
                 | Self::TerminateActionUsage
                 | Self::StateUsage
+                | Self::ExhibitStateUsage
                 | Self::CaseUsage
                 | Self::AnalysisCaseUsage
                 | Self::VerificationCaseUsage

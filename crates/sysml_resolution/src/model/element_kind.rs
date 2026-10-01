@@ -63,6 +63,7 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         | DeclarationKind::ExitActionBinding => ElementKind::ActionUsage,
         DeclarationKind::StateDefinition => ElementKind::StateDefinition,
         DeclarationKind::StateUsage => ElementKind::StateUsage,
+        DeclarationKind::ExhibitStateUsage => ElementKind::ExhibitStateUsage,
         DeclarationKind::CalcDefinition => ElementKind::CalculationDefinition,
         DeclarationKind::CalcUsage => ElementKind::CalculationUsage,
         DeclarationKind::ConstraintDefinition => ElementKind::ConstraintDefinition,
@@ -240,6 +241,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::TerminateActionUsage
         | DeclarationKind::StateDefinition
         | DeclarationKind::StateUsage
+        | DeclarationKind::ExhibitStateUsage
         | DeclarationKind::CalcDefinition
         | DeclarationKind::CalcUsage
         | DeclarationKind::ConstraintDefinition
@@ -386,6 +388,7 @@ mod tests {
         DeclarationKind::Succession,
         DeclarationKind::StateDefinition,
         DeclarationKind::StateUsage,
+        DeclarationKind::ExhibitStateUsage,
         DeclarationKind::MetadataDefinition,
         DeclarationKind::MetadataUsage,
         DeclarationKind::ConnectionDefinition,

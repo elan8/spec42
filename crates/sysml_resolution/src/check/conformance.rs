@@ -39,9 +39,7 @@ use crate::model::DocumentIdx;
 use crate::model::ReferenceKind;
 use crate::resolve::implied::conditional_library_specialization_anchor_branch;
 use crate::resolve::implied::conditional_library_specialization_predicate_holds;
-use crate::resolve::implied::conditional_library_specialization_rules;
 use crate::resolve::implied::library_specialization_metaclasses;
-use crate::resolve::implied::library_specialization_rules;
 use crate::resolve::implied::LibrarySpecializationAnchor;
 use crate::resolve::implied::LibrarySpecializationDiagnosticKey;
 use crate::resolve::results::ResolutionError;
@@ -118,7 +116,7 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         K::ActionUsage => (F::Action, Usage),
         K::AcceptActionUsage | K::SendActionUsage | K::TerminateActionUsage => (F::Action, Usage),
         K::StateDefinition => (F::State, Definition),
-        K::StateUsage => (F::State, Usage),
+        K::StateUsage | K::ExhibitStateUsage => (F::State, Usage),
         K::PortDefinition => (F::Port, Definition),
         K::PortUsage => (F::Port, Usage),
         K::RequirementDefinition => (F::Requirement, Definition),
@@ -407,10 +405,7 @@ impl<D> SemanticModel<D> {
                 return Err(ResolutionError::InvalidStorage);
             };
             let metaclasses = library_specialization_metaclasses(declaration_record.kind);
-            for rule in metaclasses
-                .iter()
-                .flat_map(|metaclass| library_specialization_rules(metaclass))
-            {
+            for rule in metaclasses.iter().flat_map(|metaclass| metaclass.rules()) {
                 let Some(outcome) = self.resolution.library_specialization_anchor(rule.rule_id)
                 else {
                     return Err(ResolutionError::InvalidStorage);
@@ -431,7 +426,7 @@ impl<D> SemanticModel<D> {
             }
             for rule in metaclasses
                 .iter()
-                .flat_map(|metaclass| conditional_library_specialization_rules(metaclass))
+                .flat_map(|metaclass| metaclass.conditional_rules())
             {
                 if !conditional_library_specialization_predicate_holds(
                     &self.storage,

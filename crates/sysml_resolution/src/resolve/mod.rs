@@ -1871,6 +1871,7 @@ pub(crate) fn is_usage_declaration(kind: DeclarationKind) -> bool {
             | DeclarationKind::SendActionUsage
             | DeclarationKind::TerminateActionUsage
             | DeclarationKind::StateUsage
+            | DeclarationKind::ExhibitStateUsage
             | DeclarationKind::MetadataUsage
             | DeclarationKind::ConnectionUsage
             | DeclarationKind::OccurrenceUsage
@@ -2065,7 +2066,9 @@ pub(crate) fn definition_usage_candidate_matches(
         Collection::DefinitionOwnedState | Collection::UsageNestedState => {
             matches!(
                 kind,
-                DeclarationKind::StateUsage | DeclarationKind::FinalState
+                DeclarationKind::StateUsage
+                    | DeclarationKind::ExhibitStateUsage
+                    | DeclarationKind::FinalState
             )
         }
         Collection::DefinitionOwnedTransition | Collection::UsageNestedTransition => {

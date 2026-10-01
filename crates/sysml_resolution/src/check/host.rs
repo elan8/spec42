@@ -102,7 +102,9 @@ pub(crate) fn is_namespace_kind(kind: DeclarationKind) -> bool {
 pub(crate) fn is_state_kind(kind: DeclarationKind) -> bool {
     matches!(
         kind,
-        DeclarationKind::StateDefinition | DeclarationKind::StateUsage
+        DeclarationKind::StateDefinition
+            | DeclarationKind::StateUsage
+            | DeclarationKind::ExhibitStateUsage
     )
 }
 
@@ -1010,6 +1012,35 @@ impl<D> SemanticModel<D> {
                         )?);
                     }
                 }
+                DeclarationKind::ExhibitStateUsage => {
+                    // SysML 8.3.18.2 `validateExhibitStateUsageReference`: the referenced
+                    // feature of an owned ReferenceSubsetting is a StateUsage.
+                    for (reference_id, reference) in
+                        self.authored_references(id, &[ReferenceKind::References])
+                    {
+                        let Some(target) = self.settled_target(reference_id) else {
+                            continue;
+                        };
+                        let Some(target_kind) = self.kind_of(target) else {
+                            continue;
+                        };
+                        if crate::model::element_kind::element_kind(target_kind)
+                            .conforms_to(sysml_contract::ElementKind::StateUsage)
+                        {
+                            continue;
+                        }
+                        diagnostics.push(self.reference_message_diagnostic(
+                            reference,
+                            DiagnosticCode::ExhibitTargetInvalidKind,
+                            DiagnosticSeverity::Warning,
+                            format!(
+                                "Exhibited state '{}' does not resolve to a state usage.",
+                                self.display_name(target)
+                            ),
+                            Some((target, RELATED_TARGET)),
+                        )?);
+                    }
+                }
                 DeclarationKind::Transition => {
                     self.collect_transition(id, diagnostics)?;
                 }
@@ -1189,12 +1220,8 @@ impl<D> SemanticModel<D> {
             diagnostics.push(diagnostic);
             return Ok(());
         }
-        let source_context = self.enclosing(*source, |kind| {
-            kind == DeclarationKind::StateDefinition || kind == DeclarationKind::StateUsage
-        });
-        let target_context = self.enclosing(*target, |kind| {
-            kind == DeclarationKind::StateDefinition || kind == DeclarationKind::StateUsage
-        });
+        let source_context = self.enclosing(*source, |kind| is_state_kind(kind));
+        let target_context = self.enclosing(*target, |kind| is_state_kind(kind));
         if let (Some(source_context), Some(target_context)) = (source_context, target_context) {
             if source_context != target_context {
                 let mut diagnostic = self.declaration_diagnostic(
@@ -1263,7 +1290,12 @@ impl<D> SemanticModel<D> {
             let states = self
                 .child_declarations(id)
                 .iter()
-                .filter(|child| self.kind_of(**child) == Some(DeclarationKind::StateUsage))
+                .filter(|child| {
+                    matches!(
+                        self.kind_of(**child),
+                        Some(DeclarationKind::StateUsage | DeclarationKind::ExhibitStateUsage)
+                    )
+                })
                 .count();
             if states == 0 {
                 continue;

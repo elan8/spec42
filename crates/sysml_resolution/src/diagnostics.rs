@@ -677,6 +677,10 @@ semantic_diagnostic_codes! {
     /// A `perform` names something that is not an action.
     PerformTargetInvalidKind => "perform_target_invalid_kind",
         "A performed behavior must resolve to an action definition or usage.";
+    /// SysML 8.3.18.2 `validateExhibitStateUsageReference`: an `exhibit` names something that is
+    /// not a state usage.
+    ExhibitTargetInvalidKind => "exhibit_target_invalid_kind",
+        "An exhibited state must resolve to a state usage.";
     /// A transition endpoint resolves to something that is not a state.
     TransitionEndpointInvalidState => "transition_endpoint_invalid_state",
         "A transition endpoint must resolve to a state.";

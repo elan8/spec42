@@ -2140,6 +2140,7 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::Succession => "succession",
         DeclarationKind::StateDefinition => "state-def",
         DeclarationKind::StateUsage => "state",
+        DeclarationKind::ExhibitStateUsage => "exhibit-state",
         DeclarationKind::MetadataDefinition => "metadata-def",
         DeclarationKind::MetadataUsage => "metadata",
         DeclarationKind::ConnectionDefinition => "connection-def",

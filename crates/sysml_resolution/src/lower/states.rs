@@ -1122,10 +1122,12 @@ impl SemanticModelBuilder {
         self.lower_state_def_body(document, declaration, &node.value.body)
     }
 
-    /// Lowers the declaration-shaped `exhibit state name : Type` form using the parser's typed
-    /// state-usage facts. The reference-only `exhibit qualified::state` form denotes a distinct
-    /// exhibit relationship which this publication does not yet own, so it remains explicitly
-    /// unsupported rather than being misrepresented as feature typing.
+    /// Lowers an `exhibit` member (BNF `ExhibitStateUsage`) as an ExhibitStateUsage: the
+    /// declared `exhibit state name : Type` form with its typed state-usage facts, or the
+    /// `exhibit <path>;` form, whose exhibited state is the `OwnedReferenceSubsetting`
+    /// alternative (SysML BNF `ExhibitStateUsage`, as `perform <path>;` is for a
+    /// PerformActionUsage) and so a `::>` reference-subsetting target --
+    /// the reference `validateExhibitStateUsageReference` reads.
     pub(crate) fn lower_exhibit_state(
         &mut self,
         document: DocumentIdx,
@@ -1133,15 +1135,11 @@ impl SemanticModelBuilder {
         unsupported_family: UnsupportedFamily,
         node: &Node<ParserExhibitState>,
     ) -> Result<(), ConstructionError> {
-        if node.value.state_reference.is_some() {
-            self.push_unsupported(document, unsupported_family, node.span);
-            return Ok(());
-        }
         let name = self.intern_declaration_name(document, node.value.name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
-            DeclarationKind::StateUsage,
+            DeclarationKind::ExhibitStateUsage,
             name,
             node.span,
             DeclarationFacts {
@@ -1150,6 +1148,7 @@ impl SemanticModelBuilder {
                     individual: node.value.is_individual,
                     derived: node.value.is_derived,
                     reference: node.value.is_reference,
+                    parallel: state_body_is_parallel(node.value.body_modifier.as_ref()),
                     ..DeclarationModifiers::default()
                 },
                 direction: direction_fact(node.value.direction.as_ref()),
@@ -1157,6 +1156,11 @@ impl SemanticModelBuilder {
                 ..DeclarationFacts::none()
             },
         )?;
+        self.lower_state_body_modifier(
+            document,
+            unsupported_family,
+            node.value.body_modifier.as_ref(),
+        );
         self.push_membership(
             declaration,
             MembershipKind::Feature,
@@ -1166,6 +1170,23 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
+        if let Some(state) = node.value.state_reference {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(state)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::References,
+                document,
+                local: state,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }

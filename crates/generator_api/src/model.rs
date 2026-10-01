@@ -1268,23 +1268,23 @@ impl GeneratorModelView {
         for child in &children {
             let inspection = self.inspection(child.entry.identity, "state-machine member")?;
             match child.entry.kind {
-                ElementKind::StateUsage | ElementKind::FinalState => {
-                    nodes.push(StateTransitionNode {
-                        semantic_id: self.token(child.entry.identity),
-                        label: display_label(&self.model, &child.entry),
-                        kind: if child.entry.kind == ElementKind::FinalState {
-                            StateTransitionNodeKind::Final
-                        } else {
-                            StateTransitionNodeKind::State
-                        },
-                        source: inspection_source(
-                            &inspection,
-                            self.model
-                                .document_identity(inspection.location.document)
-                                .unwrap_or_default(),
-                        ),
-                    })
-                }
+                ElementKind::StateUsage
+                | ElementKind::ExhibitStateUsage
+                | ElementKind::FinalState => nodes.push(StateTransitionNode {
+                    semantic_id: self.token(child.entry.identity),
+                    label: display_label(&self.model, &child.entry),
+                    kind: if child.entry.kind == ElementKind::FinalState {
+                        StateTransitionNodeKind::Final
+                    } else {
+                        StateTransitionNodeKind::State
+                    },
+                    source: inspection_source(
+                        &inspection,
+                        self.model
+                            .document_identity(inspection.location.document)
+                            .unwrap_or_default(),
+                    ),
+                }),
                 ElementKind::SuccessionAsUsage => {
                     if let Some(target) = resolved_relationship(&inspection, "initialState")? {
                         let initial_id = format!("{}#initial", self.token(child.entry.identity));
