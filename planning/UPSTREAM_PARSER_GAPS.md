@@ -94,6 +94,8 @@ rerun against the exact replacement revision when fixed.
 | Gap | Information unavailable to consumers | Minimum upstream acceptance evidence |
 | --- | --- | --- |
 | 61 | `message` has no member variant in a calc-shaped body | Give `message` a typed member variant in the calc-shaped body grammar; prove `message m of T;` produces one node whose keyword never reaches the AST as a feature reference |
+| directed-control-node | A directed control node (`in fork g;`) | Accept SysML `ControlNodePrefix` (`RefPrefix`, including `FeatureDirection`) before `fork`/`join`/`decide`/`merge`; prove `in fork g;` in an action body reaches one control-node member with its direction |
+| kerml-multiplicity-member | A `multiplicity` member in a KerML type body | Parse `multiplicity extra [2];` in a classifier body as a Multiplicity `NonFeatureMember` rather than a result expression; prove it produces one Multiplicity member with its bounds |
 | 41 | Lexically distinguished implicit `that` self-reference | Produce a dedicated typed form that cannot collide with a user declaration; cover bare, cast, and member-access expressions |
 | 55 | `//` and `/** ... */` comment fidelity, and `DocComment` text normalization | Decide and test whether doc-style trivia is syntax; if syntax, preserve kind, raw span, and one normalized-text policy centrally |
 
