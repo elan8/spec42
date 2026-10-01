@@ -226,7 +226,7 @@ summary = "LiteralExpression, LiteralBoolean, LiteralInteger, LiteralRational, L
 id = "abstract-syntax-annotation-identity"
 kind = "abstract_syntax_coverage_gap"
 owner = "spec42-snapshot"
-summary = "Annotation ownership identities have no executable violating concrete-syntax form."
+summary = "KerML concrete syntax cannot author an Annotation with neither or both of ownedAnnotatingElement and owningAnnotatingElement, but no evidence can be cited: lowering publishes documentation/comment text as DocumentationRecord rows on a declaration, not as Annotation relationships with annotatingElement/annotatedElement identities, and `comment about Thing` is recorded against the owning package rather than Thing"
 
 [[issue]]
 id = "parser-gap-directed-control-node"
@@ -592,13 +592,13 @@ summary = "no semantic rule checks the owningType of a variable feature against 
 id = "abstract-syntax-nonrepresentable-second-conjugation"
 kind = "abstract_syntax_coverage_gap"
 owner = "spec42-snapshot"
-summary = "KerML `ConjugationPart = ( 'conjugates' | '~' ) OwnedConjugation` (BNF 462) admits one owned Conjugation per type declaration, so a second `conjugates` clause has no concrete-syntax spelling; the pinned parser reports `classifier Two conjugates A conjugates B;` as unsupported_grammar_form and the violating Type never reaches semantics"
+summary = "KerML `ConjugationPart = ( 'conjugates' | '~' ) OwnedConjugation` (BNF 462) admits one owned Conjugation per type declaration, and a Conjugation declared as a body member is owned through an OwningMembership rather than the type's ownedRelationship, so a second owned Conjugation has no concrete-syntax spelling; no executable evidence can be cited yet because the pinned parser reports `classifier Two conjugates A conjugates B;` as unsupported_grammar_form (the unsupported_syntax category, i.e. valid-but-unimplemented) rather than malformed_syntax, so a rejection fixture would misstate the source intent"
 
 [[issue]]
 id = "abstract-syntax-nonrepresentable-variable-end"
 kind = "abstract_syntax_coverage_gap"
 owner = "spec42-snapshot"
-summary = "KerML's `EndFeaturePrefix` spells only `const? end` and `var` lives in the exclusive `BasicFeaturePrefix` alternative, while SysML's `RefPrefix` has no `var`/`variable` slot, so a variable end feature has no concrete-syntax spelling; the pinned parser reports `var end feature` as end_feature_invalid_prefix and the violating Feature never reaches semantics"
+summary = "KerML `EndFeaturePrefix` spells only `const? end` and `var` lives in the exclusive BasicFeaturePrefix alternative, so a KerML variable non-constant end feature has no spelling (the parser reports `var end feature` as end_feature_invalid_prefix). SysML is not covered by that argument: an end Usage's isVariable is the derived mayTimeVary, which is true for an end of an occurrence-typed owner such as a connection definition, and EndUsagePrefix has no `constant` slot, so the literal OCL would reject every such end; the Pilot does not enforce validateFeatureEndIsConstant, and the SysML case needs an OMG decision before a violating fixture can be authored"
 
 [[issue]]
 id = "lowering-gap-kerml-relationship-declarations"
