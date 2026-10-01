@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.54.0] - 2026-10-01
+
 - **Requirement derivation, and `#` prefix metadata on connections (#221, #222, #223).** Pins
   `elan8/sysml-v2-parser` to the `ConnectionUsage` prefix migration (elan8/sysml-v2-parser#152).
   - `#derivation`, `#original`, `#derive` (and `#multicausation`, `#cause`, `#effect`, ...) are
