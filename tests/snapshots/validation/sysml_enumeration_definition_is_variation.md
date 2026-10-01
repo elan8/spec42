@@ -49,7 +49,7 @@ package Enumerations {
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8e7f3b13a559796098c3ee17654f13d7d9c2a3e4e1579c3cf203eb2487fea68d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level"))) (kind enum-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level"))) (kind enum-def) (membership (kind owning) (visibility default)) (facts (implied-modifiers abstract variation)))
     (declaration (id (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level::high"))) (kind enum-literal) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_enumeration_definition_is_variation.md") (qualified-name "Enumerations::Level::low"))) (kind enum-literal) (membership (kind feature) (visibility default)))
   )

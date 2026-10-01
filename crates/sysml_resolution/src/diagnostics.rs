@@ -449,6 +449,9 @@ semantic_diagnostic_codes! {
     /// `validateUsageVariationSpecialization`.
     VariationSpecializesVariation => "variation_specializes_variation",
         "A variation must not specialize another variation.";
+    /// SysML 8.3.6.5 `validateVariantMembershipOwningNamespace`.
+    VariantOutsideVariation => "variant_outside_variation",
+        "A variant must be an owned member of a variation definition or usage.";
     /// A redefining feature is featured by a type unrelated to the redefined feature's.
     RedefinitionFeaturingTypeIncompatible => "redefinition_featuring_type_incompatible",
         "A redefinition must be introduced by the redefined feature's featuring type or a \

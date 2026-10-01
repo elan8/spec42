@@ -38,7 +38,7 @@ package Values {
   (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:de9e4049c9c42b9d57c9f71bf2eed1bde301ff34e2575d8837fa5d3be3be8196") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status"))) (kind enum-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status"))) (kind enum-def) (membership (kind owning) (visibility default)) (facts (implied-modifiers abstract variation)))
     (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status::approved"))) (kind enum-literal) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status::draft"))) (kind enum-literal) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))

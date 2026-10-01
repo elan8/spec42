@@ -1200,11 +1200,11 @@ impl<D> SemanticModel<D> {
             if self.kind_of(id) != Some(DeclarationKind::StateDefinition) {
                 continue;
             }
-            if self
-                .storage
-                .declaration_facts(id)
-                .is_some_and(|facts| facts.modifiers.effectively_abstract())
-            {
+            if self.storage.declaration_facts(id).is_some_and(|facts| {
+                facts
+                    .modifiers
+                    .effectively_abstract(DeclarationKind::StateDefinition)
+            }) {
                 continue;
             }
             let states = self

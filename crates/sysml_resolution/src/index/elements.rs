@@ -721,11 +721,19 @@ impl<D> SemanticModel<D> {
             documentation: self.documentation(id),
             multiplicity: self.multiplicity(id),
             modifiers: self.modifiers(id),
-            implied_modifiers: if facts.modifiers.implied_abstract() {
-                Box::from([ElementModifier::Abstract])
-            } else {
-                Box::default()
-            },
+            implied_modifiers: [
+                (
+                    facts.modifiers.implied_abstract(declaration.kind),
+                    ElementModifier::Abstract,
+                ),
+                (
+                    facts.modifiers.implied_variation(declaration.kind),
+                    ElementModifier::Variation,
+                ),
+            ]
+            .into_iter()
+            .filter_map(|(implied, modifier)| implied.then_some(modifier))
+            .collect(),
             portion_kind: facts.portion_kind.map(|kind| match kind {
                 crate::lower::facts::PortionKind::Snapshot => PortionKind::Snapshot,
                 crate::lower::facts::PortionKind::Timeslice => PortionKind::Timeslice,

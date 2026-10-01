@@ -256,7 +256,7 @@ package Kinds {
     (declaration (id (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Braking"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Cargo"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Chassis"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Colour"))) (kind enum-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Colour"))) (kind enum-def) (membership (kind owning) (visibility default)) (facts (implied-modifiers abstract variation)))
     (declaration (id (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Colour::blue"))) (kind enum-literal) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::Colour::red"))) (kind enum-literal) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kind_compatibility.md") (qualified-name "Kinds::ConformingRetype"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Fleet")))))

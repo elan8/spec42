@@ -1109,10 +1109,17 @@ pub(crate) fn write_declaration_facts(
         return Ok(());
     };
     let modifiers = declaration_modifier_names(&facts.modifiers);
-    let implied_abstract = facts.modifiers.implied_abstract();
+    let kind = model
+        .storage
+        .declaration(declaration)
+        .ok_or(fmt::Error)?
+        .kind;
+    let implied_abstract = facts.modifiers.implied_abstract(kind);
+    let implied_variation = facts.modifiers.implied_variation(kind);
     if facts.short_name.is_none()
         && modifiers.is_empty()
         && !implied_abstract
+        && !implied_variation
         && facts.portion_kind.is_none()
         && facts.direction.is_none()
         && facts.multiplicity.is_none()
@@ -1135,8 +1142,15 @@ pub(crate) fn write_declaration_facts(
         }
         output.write_char(')')?;
     }
-    if implied_abstract {
-        output.write_str(" (implied-modifiers abstract)")?;
+    if implied_abstract || implied_variation {
+        output.write_str(" (implied-modifiers")?;
+        if implied_abstract {
+            output.write_str(" abstract")?;
+        }
+        if implied_variation {
+            output.write_str(" variation")?;
+        }
+        output.write_char(')')?;
     }
     if let Some(portion_kind) = facts.portion_kind {
         write!(output, " (portion {})", portion_kind_name(portion_kind))?;

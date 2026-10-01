@@ -2556,10 +2556,7 @@ impl<D> SemanticModel<D> {
                     break;
                 };
                 if is_usage_declaration(owner_declaration.kind) != owner_is_usage
-                    || !self
-                        .storage
-                        .declaration_facts(owner)
-                        .is_some_and(|facts| facts.modifiers.variation)
+                    || !self.is_variation(owner)
                 {
                     continue;
                 }

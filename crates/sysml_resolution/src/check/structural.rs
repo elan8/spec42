@@ -370,7 +370,7 @@ impl<D> SemanticModel<D> {
             // lowered by `lower_end_decl` with the same modifier facts.
             if self.is_end_feature(id)
                 && (facts.modifiers.derived
-                    || facts.modifiers.effectively_abstract()
+                    || facts.modifiers.effectively_abstract(declaration.kind)
                     || facts.modifiers.composite
                     || facts.modifiers.portion)
             {
@@ -392,10 +392,25 @@ impl<D> SemanticModel<D> {
             self.collect_metadata_body_features(id, declaration.kind, diagnostics)?;
             self.collect_port_member_composition(id, declaration.kind, diagnostics)?;
             self.collect_parallel_state_subactions(id, declaration.kind, facts, diagnostics)?;
-            self.collect_variation_owned_features(id, facts, diagnostics)?;
+            self.collect_variation_owned_features(id, diagnostics)?;
+            // SysML 8.3.6.5 `validateVariantMembershipOwningNamespace`: every definition and
+            // usage body admits `variant` members, so the owner is checked here.
+            if self.effective_membership_role(id) == Some(crate::MembershipRole::Variant)
+                && !declaration
+                    .owner
+                    .is_some_and(|owner| self.is_variation(owner))
+            {
+                diagnostics.push(self.declaration_diagnostic(
+                    id,
+                    DiagnosticCode::VariantOutsideVariation,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
 
             // An abstract declaration is deliberately incomplete, so its end count states nothing.
-            if !is_connection_like(declaration.kind) || facts.modifiers.effectively_abstract() {
+            if !is_connection_like(declaration.kind)
+                || facts.modifiers.effectively_abstract(declaration.kind)
+            {
                 continue;
             }
             // The abstract guard above now fires for all four connection-like kinds:
@@ -499,11 +514,7 @@ impl<D> SemanticModel<D> {
                     else {
                         continue;
                     };
-                    if !self
-                        .storage
-                        .declaration_facts(variation_source)
-                        .is_some_and(|facts| facts.modifiers.variation)
-                    {
+                    if !self.is_variation(variation_source) {
                         continue;
                     }
                     let (Some((variation, _)), Some((variant, _))) = (
@@ -670,11 +681,15 @@ impl<D> SemanticModel<D> {
         }
     }
 
-    /// Whether a declaration carries the authored `variation` fact.
-    fn is_variation(&self, id: DeclarationId) -> bool {
-        self.storage
-            .declaration_facts(id)
-            .is_some_and(|facts| facts.modifiers.variation)
+    /// The effective `isVariation` of a declaration (authored, or implied by its metaclass).
+    pub(crate) fn is_variation(&self, id: DeclarationId) -> bool {
+        let (Some(declaration), Some(facts)) = (
+            self.storage.declaration(id),
+            self.storage.declaration_facts(id),
+        ) else {
+            return false;
+        };
+        facts.modifiers.effectively_variation(declaration.kind)
     }
 
     /// SysML 8.3.6.2/8.3.6.4 `validate{Definition,Usage}VariationOwnedFeatureMembership`:
@@ -684,10 +699,9 @@ impl<D> SemanticModel<D> {
     fn collect_variation_owned_features(
         &self,
         id: DeclarationId,
-        facts: &DeclarationFacts,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        if !facts.modifiers.variation {
+        if !self.is_variation(id) {
             return Ok(());
         }
         for member in self.owned_feature_members(id) {

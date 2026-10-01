@@ -375,7 +375,10 @@ impl GeneratorModelView {
                 || inspection
                     .implied_modifiers
                     .contains(&ElementModifier::Abstract),
-            variation: has(ElementModifier::Variation),
+            variation: has(ElementModifier::Variation)
+                || inspection
+                    .implied_modifiers
+                    .contains(&ElementModifier::Variation),
             individual: has(ElementModifier::Individual),
             conjugated: false,
             composite: has(ElementModifier::Composite).then_some(true),

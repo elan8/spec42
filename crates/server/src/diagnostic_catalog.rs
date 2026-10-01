@@ -344,6 +344,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "variant_outside_variation",
+        severity: "warning",
+        meaning: "A `variant` member is owned by a definition or usage that is not a variation (SysML validateVariantMembershipOwningNamespace).",
+        typical_fix: "Add the `variation` prefix to the owning definition or usage, or declare the member without `variant`.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "redefinition_featuring_type_incompatible",
         severity: "error",
         meaning: "A feature redefines another feature from an unrelated featuring type.",

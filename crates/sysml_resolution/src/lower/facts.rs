@@ -179,6 +179,20 @@ pub(crate) struct DeclarationModifiers {
 }
 
 impl DeclarationModifiers {
+    /// Whether `isVariation` holds only because it is implied, not authored.
+    ///
+    /// An `EnumerationDefinition` is always a variation (`validateEnumerationDefinitionIsVariation`;
+    /// the Pilot's `EnumerationDefinitionImpl.isVariation` is constantly true), and its grammar has
+    /// no `variation` keyword slot.
+    pub(crate) fn implied_variation(&self, kind: crate::model::DeclarationKind) -> bool {
+        kind == crate::model::DeclarationKind::EnumerationDefinition && !self.variation
+    }
+
+    /// The effective `isVariation`: authored `variation` or implied by the metaclass.
+    pub(crate) fn effectively_variation(&self, kind: crate::model::DeclarationKind) -> bool {
+        self.variation || self.implied_variation(kind)
+    }
+
     /// Whether `isAbstract` holds only because it is implied, not authored.
     ///
     /// SysML requires a variation Definition or Usage to be abstract
@@ -187,13 +201,13 @@ impl DeclarationModifiers {
     /// slot. The Pilot's `DefinitionAdapter`/`UsageAdapter.postProcess` therefore set
     /// `isAbstract` for every variation. The authored `is_abstract` fact is kept unchanged so the
     /// implied value stays distinguishable from a written `abstract`.
-    pub(crate) fn implied_abstract(&self) -> bool {
-        self.variation && !self.is_abstract
+    pub(crate) fn implied_abstract(&self, kind: crate::model::DeclarationKind) -> bool {
+        self.effectively_variation(kind) && !self.is_abstract
     }
 
-    /// The effective `Type::isAbstract`: authored `abstract` or implied by `variation`.
-    pub(crate) fn effectively_abstract(&self) -> bool {
-        self.is_abstract || self.implied_abstract()
+    /// The effective `Type::isAbstract`: authored `abstract` or implied by a variation.
+    pub(crate) fn effectively_abstract(&self, kind: crate::model::DeclarationKind) -> bool {
+        self.is_abstract || self.implied_abstract(kind)
     }
 }
 

@@ -253,12 +253,6 @@ owner = "spec42-snapshot"
 summary = "the pinned parser has no production for an entry subaction outside a state, so the invalid owner is reported as unexpected_keyword_in_scope and never reaches semantics"
 
 [[issue]]
-id = "abstract-syntax-invalid-variant-owner"
-kind = "abstract_syntax_coverage_gap"
-owner = "spec42-snapshot"
-summary = "the pinned parser rejects a `variant` member inside a non-variation part def, reporting recovered_package_body_element, so no VariantMembership reaches semantics on the violating side"
-
-[[issue]]
 id = "abstract-syntax-nonrepresentable-multiplicity"
 kind = "abstract_syntax_coverage_gap"
 owner = "spec42-snapshot"
