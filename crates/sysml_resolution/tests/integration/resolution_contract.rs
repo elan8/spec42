@@ -3531,10 +3531,6 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
             RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors,
         ),
         (
-            RedefinitionCheckKind::ConstructorExpressionResultFeature,
-            RedefinitionCheckPrerequisite::ConstructorResultAndInstantiatedTypeFeatures,
-        ),
-        (
             RedefinitionCheckKind::ActionUsageStateAction,
             RedefinitionCheckPrerequisite::StateSubactionMembershipAndKind,
         ),
@@ -3556,13 +3552,14 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
     }
     // Checks whose role facts are published are evaluated, never reported as unsupported. This
     // model has no end feature, for loop, feature chain expression, case objective, parameter,
-    // result or assignment, so each holds vacuously; the snapshot
+    // result, constructor or assignment, so each holds vacuously; the snapshot
     // corpus carries the occupied cases.
     for rule in [
         RedefinitionCheckKind::FeatureEnd,
         RedefinitionCheckKind::FeatureOwnedCrossFeatureSpecialization,
         RedefinitionCheckKind::FeatureParameter,
         RedefinitionCheckKind::FeatureResult,
+        RedefinitionCheckKind::ConstructorExpressionResultFeature,
         RedefinitionCheckKind::AssignmentActionUsageAccessedFeature,
         RedefinitionCheckKind::AssignmentActionUsageReferent,
         RedefinitionCheckKind::AssignmentActionUsageStartingAt,

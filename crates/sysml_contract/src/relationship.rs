@@ -182,7 +182,6 @@ pub enum RedefinitionCheckPrerequisite {
     /// Some expression the source writes is not lowered as its own Expression element, so its
     /// result is not a fact of the publication.
     ExpressionElements,
-    ConstructorResultAndInstantiatedTypeFeatures,
     StateSubactionMembershipAndKind,
     ViewRenderingMembership,
 }

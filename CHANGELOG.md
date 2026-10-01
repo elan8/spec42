@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Constructor argument redefinitions.** A positional `new T(...)` argument now redefines the
+  public feature of `T` at its position (owned features first, then inherited ones), and KerML
+  `checkConstructorExpressionResultFeatureRedefinition` checks that every argument redefines
+  exactly one public feature of the instantiated type.
+
 - **Positional parameter redefinitions.** A parameter of a behavior, step, calculation or action
   now redefines the parameter at its position of every behavior or step its owner specializes
   (KerML `checkFeatureParameterRedefinition`), and a positional invocation argument redefines the

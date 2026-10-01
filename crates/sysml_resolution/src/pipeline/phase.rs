@@ -433,8 +433,28 @@ impl Lowered {
             synthesized.extend(
                 crate::resolve::result_parameters::synthesize_result_redefinitions(
                     &storage,
-                    settled.edges,
+                    settled.edges.iter().copied(),
                     &settled.authored_redefinitions,
+                )?,
+            );
+            // `checkConstructorExpressionResultFeatureRedefinition`: a positional constructor
+            // argument redefines the public feature of the instantiated type at its position.
+            // Which features a type has excludes the ones its members redefine, so this reads
+            // every redefinition settled so far, the ones just synthesized included.
+            let mut redefinitions = settled.authored_redefinitions.clone();
+            redefinitions.extend(
+                with_parameters
+                    .iter()
+                    .chain(synthesized.iter())
+                    .filter(|relationship| relationship.kind == crate::model::ReferenceKind::Redefinition)
+                    .map(|relationship| (relationship.source, relationship.target)),
+            );
+            synthesized.extend(
+                crate::resolve::constructor_features::synthesize_constructor_argument_redefinitions(
+                    &storage,
+                    &resolution.constructor_expression_projections,
+                    settled.edges,
+                    &redefinitions,
                 )?,
             );
             if synthesized.is_empty() {

@@ -1254,9 +1254,6 @@ fn parse_redefinition_check_prerequisite(
         }
         "grammar_parameters" => Ok(RedefinitionCheckPrerequisite::GrammarParameters),
         "expression_elements" => Ok(RedefinitionCheckPrerequisite::ExpressionElements),
-        "constructor_result_and_instantiated_type_features" => {
-            Ok(RedefinitionCheckPrerequisite::ConstructorResultAndInstantiatedTypeFeatures)
-        }
         "state_subaction_membership_and_kind" => {
             Ok(RedefinitionCheckPrerequisite::StateSubactionMembershipAndKind)
         }

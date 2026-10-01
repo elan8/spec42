@@ -25,12 +25,6 @@ owner = "spec42-semantic"
 summary = "Flow endpoints (`flow from a.x to b.y`, KerML `flow ... from ... to`) lower as bare FlowSource/FlowTarget references: neither the two FlowEnd Features nor the Feature each owns (the one redefining x / y) is minted, so no declaration can carry the implied Transfers::Transfer::source::sourceOutput / target::targetInput redefinition checkFeatureFlowFeatureRedefinition reads."
 
 [[issue]]
-id = "lowering-gap-redefinition-constructor-result-instantiated-features"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "A FeatureValue's top-level ConstructorExpression now owns one `in` argument Feature per argument on its result, and a named argument (`new P(x = a)`) owns the authored Redefinition of the feature it names; but a positional argument's implied redefinition of the instantiatedType's public feature at its position (FeatureAdapter.getConstructorRelevantFeatures) is not derived, and a nested constructor shares its enclosing expression declaration and owns no argument Features, so checkConstructorExpressionResultFeatureRedefinition cannot be evaluated over every result feature."
-
-[[issue]]
 id = "lowering-gap-redefinition-state-subaction-membership"
 kind = "lowering_gap"
 owner = "spec42-semantic"

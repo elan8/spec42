@@ -98,10 +98,7 @@ impl<D> SemanticModel<D> {
             RedefinitionCheckKind::FeatureParameter => self.feature_parameter_check(),
             RedefinitionCheckKind::FeatureResult => self.feature_result_check(),
             RedefinitionCheckKind::ConstructorExpressionResultFeature => {
-                RedefinitionCheckOutcome::Unsupported {
-                    prerequisite:
-                        RedefinitionCheckPrerequisite::ConstructorResultAndInstantiatedTypeFeatures,
-                }
+                self.constructor_result_feature_check()
             }
             RedefinitionCheckKind::AssignmentActionUsageAccessedFeature
             | RedefinitionCheckKind::AssignmentActionUsageStartingAt => {
@@ -370,6 +367,73 @@ impl<D> SemanticModel<D> {
         generals.sort();
         generals.dedup();
         generals
+    }
+
+    /// KerML `checkConstructorExpressionResultFeatureRedefinition`: each owned Feature of a
+    /// constructor result redefines exactly one public feature of the instantiated type.
+    ///
+    /// The public features come from the same derivation the synthesis uses, over the published
+    /// supertypes and redefinitions. A constructor whose instantiated type did not settle, an
+    /// instantiated type whose specializations did not all settle, and a named argument whose
+    /// feature did not settle answer unresolved.
+    fn constructor_result_feature_check(&self) -> RedefinitionCheckOutcome {
+        use crate::resolve::constructor_features::constructor_arguments;
+        use crate::resolve::constructor_features::public_features;
+        use crate::resolve::results::ConstructorExpressionProjectionStatus;
+        let mut tally = CheckTally::default();
+        if !self.storage.constructor_expressions.is_empty()
+            && self.resolution.constructor_expression_projection_status
+                == ConstructorExpressionProjectionStatus::Unresolved
+        {
+            tally.require(None);
+        }
+        let projections = &self.resolution.constructor_expression_projections;
+        let redefined = |feature: DeclarationId| {
+            let mut redefined = BTreeSet::new();
+            self.collect_redefined_members(feature, &mut redefined);
+            redefined
+        };
+        let (Ok(features), Ok(arguments)) = (
+            public_features(
+                &self.storage,
+                projections
+                    .iter()
+                    .map(|projection| projection.instantiated_type),
+                |declaration| self.direct_generals(declaration),
+                |feature| redefined(feature).into_iter().collect(),
+            ),
+            constructor_arguments(&self.storage, projections),
+        ) else {
+            return RedefinitionCheckOutcome::Unresolved;
+        };
+        for projection in projections.iter() {
+            let Some(arguments) = arguments.get(&projection.result) else {
+                continue;
+            };
+            if self.specialization_hierarchy_is_unsettled(projection.instantiated_type) {
+                tally.require(None);
+                continue;
+            }
+            let features = features
+                .get(&projection.instantiated_type)
+                .map(|features| features.iter().copied().collect::<BTreeSet<_>>())
+                .unwrap_or_default();
+            for argument in arguments.iter().copied() {
+                let named_unsettled = self.outgoing_reference_ids(argument).iter().any(|reference| {
+                    self.storage.references[reference.index()].kind == ReferenceKind::Redefinition
+                        && !matches!(
+                            self.resolution.outcome(*reference),
+                            Some(ResolutionStatus::Resolved(_))
+                        )
+                });
+                tally.require(if named_unsettled {
+                    None
+                } else {
+                    Some(redefined(argument).intersection(&features).count() == 1)
+                });
+            }
+        }
+        tally.outcome()
     }
 
     /// KerML `checkFeatureParameterRedefinition`: each parameter of a Behavior or Step redefines

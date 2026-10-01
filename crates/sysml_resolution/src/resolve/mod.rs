@@ -1,5 +1,6 @@
 //! Phase 3: name resolution, run to convergence under an explicit bound.
 
+pub(crate) mod constructor_features;
 pub(crate) mod effective_types;
 pub(crate) mod end_features;
 pub(crate) mod implied;
