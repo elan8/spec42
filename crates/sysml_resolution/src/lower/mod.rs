@@ -1882,12 +1882,9 @@ impl SemanticModelBuilder {
                 node,
             )?,
             PackageBodyElement::AssertConstraint(node) => match owner {
-                Some(declaration) => self.lower_assert_constraint_member(
-                    document,
-                    declaration,
-                    UnsupportedFamily::PackageMember,
-                    node,
-                )?,
+                Some(declaration) => {
+                    self.lower_assert_constraint_member(document, declaration, node)?
+                }
                 None => {
                     self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
                 }

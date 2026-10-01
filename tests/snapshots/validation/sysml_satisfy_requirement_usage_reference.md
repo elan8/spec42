@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.21.10:validateSatisfyRequirementUsageReference
-blocked_by=lowering-part-definition-members
 type=file
 ~~~
 # SOURCE
@@ -37,7 +36,13 @@ package Requirements {
         (severity warning)
         (code "satisfy_invalid_endpoint_kind")
         (source "semantic")
-        (range (start 11 8) (end 11 31))
+        (range (start 11 16) (end 11 30))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_satisfy_requirement_usage_reference.md")
+            (range (start 4 8) (end 4 31))
+          )
+        )
       )
     )
   )

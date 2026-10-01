@@ -490,6 +490,9 @@ semantic_diagnostic_codes! {
     /// `validateStateUsageStateSubactionKind`.
     StateDuplicateSubactionKind => "state_duplicate_subaction_kind",
         "A state may have at most one entry, one do and one exit action.";
+    /// SysML 8.3.20.2 `validateAssertConstraintUsageReference`.
+    AssertTargetInvalidKind => "assert_target_invalid_kind",
+        "An asserted constraint reference must name a constraint usage.";
     /// SysML 8.3.18.9 `validateTransitionUsageTriggerActions`.
     TransitionTriggerSourceNotState => "transition_trigger_source_not_state",
         "A transition with a trigger must have a state usage as its source.";

@@ -457,13 +457,9 @@ impl SemanticModelBuilder {
                     ConnectionDefBodyElement::OccurrenceUsage(occurrence_usage) => {
                         self.lower_occurrence_usage(document, Some(declaration), occurrence_usage)?;
                     }
-                    ConnectionDefBodyElement::AssertConstraint(node) => self
-                        .lower_assert_constraint_member(
-                            document,
-                            declaration,
-                            UnsupportedFamily::ConnectionDefinitionMember,
-                            node,
-                        )?,
+                    ConnectionDefBodyElement::AssertConstraint(node) => {
+                        self.lower_assert_constraint_member(document, declaration, node)?
+                    }
                     ConnectionDefBodyElement::RefDecl(node) => {
                         self.lower_ref_decl(document, Some(declaration), node)?;
                     }

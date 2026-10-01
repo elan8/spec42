@@ -379,6 +379,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "assert_target_invalid_kind",
+        severity: "warning",
+        meaning: "An `assert <name>;` member references a feature that is not a constraint usage (SysML validateAssertConstraintUsageReference).",
+        typical_fix: "Reference a `constraint` usage, or declare the asserted constraint inline with `assert constraint { ... }`.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "transition_trigger_source_not_state",
         severity: "warning",
         meaning: "A transition with an `accept` trigger has a source that is not a state usage (SysML validateTransitionUsageTriggerActions).",

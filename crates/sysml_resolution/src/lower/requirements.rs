@@ -1787,7 +1787,7 @@ impl SemanticModelBuilder {
                     self.lower_annotating_member(document, Some(owner), unsupported, member)?;
                 }
                 UseCaseDefBodyElement::AssertConstraint(node) => {
-                    self.lower_assert_constraint_member(document, owner, unsupported, node)?
+                    self.lower_assert_constraint_member(document, owner, node)?
                 }
                 UseCaseDefBodyElement::IncludeUseCase(node) => {
                     self.lower_include_use_case(document, owner, node)?;

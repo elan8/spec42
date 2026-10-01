@@ -340,13 +340,9 @@ impl SemanticModelBuilder {
                             node,
                         )?;
                     }
-                    PartDefBodyElement::AssertConstraint(node) => self
-                        .lower_assert_constraint_member(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?,
+                    PartDefBodyElement::AssertConstraint(node) => {
+                        self.lower_assert_constraint_member(document, declaration, node)?
+                    }
                     PartDefBodyElement::Ref(node) => {
                         self.lower_ref_decl(document, Some(declaration), node)?;
                     }
@@ -611,7 +607,7 @@ impl SemanticModelBuilder {
                 self.lower_bind(document, owner, family, node)?;
             }
             PartUsageBodyElement::AssertConstraint(node) => {
-                self.lower_assert_constraint_member(document, owner, family, node)?
+                self.lower_assert_constraint_member(document, owner, node)?
             }
             PartUsageBodyElement::Ref(node) => {
                 self.lower_ref_decl(document, Some(owner), node)?;
@@ -1130,12 +1126,9 @@ impl SemanticModelBuilder {
             AttributeBodyElement::ItemUsage(item_usage) => {
                 self.lower_item_usage(document, Some(owner), item_usage)?;
             }
-            AttributeBodyElement::AssertConstraint(node) => self.lower_assert_constraint_member(
-                document,
-                owner,
-                UnsupportedFamily::AttributeMember,
-                node,
-            )?,
+            AttributeBodyElement::AssertConstraint(node) => {
+                self.lower_assert_constraint_member(document, owner, node)?
+            }
             AttributeBodyElement::RefDecl(node) => {
                 self.lower_ref_decl(document, Some(owner), node)?;
             }
@@ -1977,12 +1970,9 @@ impl SemanticModelBuilder {
                     node,
                 )?;
             }
-            OccurrenceBodyElement::AssertConstraint(node) => self.lower_assert_constraint_member(
-                document,
-                owner,
-                UnsupportedFamily::OccurrenceDefinitionMember,
-                node,
-            )?,
+            OccurrenceBodyElement::AssertConstraint(node) => {
+                self.lower_assert_constraint_member(document, owner, node)?
+            }
             OccurrenceBodyElement::FlowUsage(node) => {
                 self.lower_flow_usage(document, owner, node)?
             }

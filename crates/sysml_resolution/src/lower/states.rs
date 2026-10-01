@@ -187,13 +187,9 @@ impl SemanticModelBuilder {
                 StateDefBodyElement::ActionUsage(node) => {
                     self.lower_action_usage(document, Some(owner), node)?;
                 }
-                StateDefBodyElement::AssertConstraint(node) => self
-                    .lower_assert_constraint_member(
-                        document,
-                        owner,
-                        UnsupportedFamily::StateDefinitionMember,
-                        node,
-                    )?,
+                StateDefBodyElement::AssertConstraint(node) => {
+                    self.lower_assert_constraint_member(document, owner, node)?
+                }
                 StateDefBodyElement::SuccessionUsage(node) => self.lower_succession_usage(
                     document,
                     owner,

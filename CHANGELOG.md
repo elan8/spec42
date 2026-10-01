@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Asserted constraint references.** `assert <name>;` now lowers as an `AssertConstraintUsage`
+  reference-subsetting the named feature instead of an unsupported member, and the new
+  `assert_target_invalid_kind` diagnostic checks SysML 8.3.20.2
+  `validateAssertConstraintUsageReference`.
+
 - **State subaction kind validation.** New diagnostic `state_duplicate_subaction_kind` checks SysML
   8.3.18.5 `validateStateDefinitionStateSubactionKind` and 8.3.18.6
   `validateStateUsageStateSubactionKind`: a state owns at most one `entry`, `do` and `exit` action.

@@ -771,14 +771,16 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentIdx,
         owner: DeclarationId,
-        family: UnsupportedFamily,
         node: &Node<AssertConstraintMember>,
     ) -> Result<(), ConstructionError> {
-        if node.value.target.is_some() {
-            self.push_unsupported(document, family, node.span);
-            return Ok(());
-        }
-        let name = self.intern_declaration_name(document, node.value.declaration_name)?;
+        // `assert <path>;` is `AssertConstraintUsage`'s `OwnedReferenceSubsetting` alternative
+        // (SysML BNF `AssertConstraintUsage`, Pilot `SysML.xtext`): an anonymous usage whose
+        // asserted constraint is a `::>` reference-subsetting target, the relationship
+        // `validateAssertConstraintUsageReference` reads. A shorthand declares no name.
+        let name = match node.value.target {
+            Some(_) => None,
+            None => self.intern_declaration_name(document, node.value.declaration_name)?,
+        };
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -799,6 +801,23 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
+        if let Some(target) = node.value.target {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::References,
+                document,
+                local: target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
         if let Some(type_name) = node.value.type_name {
             let span = self.documents[document.index()]
                 .parsed
@@ -1071,12 +1090,7 @@ impl SemanticModelBuilder {
                         self.lower_import(document, Some(declaration), node)?;
                     }
                     CalcDefBodyElement::AssertConstraint(node) => {
-                        self.lower_assert_constraint_member(
-                            document,
-                            declaration,
-                            UnsupportedFamily::CalcDefinitionMember,
-                            node,
-                        )?;
+                        self.lower_assert_constraint_member(document, declaration, node)?;
                     }
                 }
             }

@@ -194,8 +194,45 @@ impl<D> SemanticModel<D> {
                 }
             }
         }
+        // SysML 8.3.20.2 `validateAssertConstraintUsageReference`: the feature an
+        // `assert <path>;` reference-subsets is a ConstraintUsage.
+        if self.metaclass_conforms(id, ElementKind::AssertConstraintUsage) {
+            self.collect_reference_subsetting_type(
+                id,
+                ElementKind::ConstraintUsage,
+                DiagnosticCode::AssertTargetInvalidKind,
+                diagnostics,
+            )?;
+        }
         if kind == DeclarationKind::MetadataUsage {
             self.collect_metadata_feature_typing(id, diagnostics)?;
+        }
+        Ok(())
+    }
+
+    /// The Pilot's `checkReferenceType`: when a usage owns a ReferenceSubsetting, its referenced
+    /// feature conforms to `required`. Reported at the reference subsetting; an unsettled target
+    /// leaves the rule unanswered, since resolution already reports it.
+    fn collect_reference_subsetting_type(
+        &self,
+        id: DeclarationId,
+        required: ElementKind,
+        code: DiagnosticCode,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        for (reference_id, reference) in self.authored_references(id, &[ReferenceKind::References])
+        {
+            let Some(target) = self.settled_target(reference_id) else {
+                continue;
+            };
+            if !self.metaclass_conforms(target, required) {
+                diagnostics.push(self.reference_diagnostic(
+                    reference,
+                    code.clone(),
+                    DiagnosticSeverity::Warning,
+                    Some(target),
+                )?);
+            }
         }
         Ok(())
     }

@@ -215,12 +215,9 @@ impl SemanticModelBuilder {
                     node,
                 )?;
             }
-            ActionDefBodyElement::AssertConstraint(node) => self.lower_assert_constraint_member(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                node,
-            )?,
+            ActionDefBodyElement::AssertConstraint(node) => {
+                self.lower_assert_constraint_member(document, owner, node)?
+            }
             ActionDefBodyElement::RefDecl(node) => {
                 self.lower_ref_decl(document, Some(owner), node)?;
             }
@@ -620,12 +617,9 @@ impl SemanticModelBuilder {
             ActionUsageBodyElement::Bind(node) => {
                 self.lower_bind(document, owner, UnsupportedFamily::ActionUsageMember, node)?;
             }
-            ActionUsageBodyElement::AssertConstraint(node) => self.lower_assert_constraint_member(
-                document,
-                owner,
-                UnsupportedFamily::ActionUsageMember,
-                node,
-            )?,
+            ActionUsageBodyElement::AssertConstraint(node) => {
+                self.lower_assert_constraint_member(document, owner, node)?
+            }
             ActionUsageBodyElement::RefDecl(node) => {
                 self.lower_ref_decl(document, Some(owner), node)?;
             }
