@@ -190,7 +190,7 @@ summary = "a metadata access expression parses but sysml_resolution reports it a
 id = "lowering-metadata-feature-facts"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "the metaclass annotatedElement declaration that would restrict the admissible annotated elements is not published for a KerML metaclass, so metadata_annotated_element_incompatible never fires here"
+summary = "validateMetadataFeatureAnnotatedElement compares each annotated element's abstract-syntax metaclass with the types of the metaclass's annotatedElement redefinitions (KerML::Classifier, SysML::PartUsage, ...), but no canonical mapping relates a published ElementKind to its reflective KerML/SysML library metaclass declaration, so metadata_annotated_element_incompatible cannot be decided"
 
 [[issue]]
 id = "lowering-part-definition-members"
