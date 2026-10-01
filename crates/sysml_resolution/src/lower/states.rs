@@ -646,6 +646,22 @@ impl SemanticModelBuilder {
                 self.lower_transition_trigger_action(document, declaration, node.span, accept)
             })
             .transpose()?;
+        // `TransitionUsage` authors an `EmptyParameterMember` payload parameter before every
+        // `TriggerActionMember`, and the trigger's `AcceptParameterPart` always owns a payload
+        // parameter, whatever the trigger form; only the `accept x : T` form names and types them.
+        if let Some(trigger_action) = trigger_action {
+            let clause = match &node.value.accept {
+                Some(TransitionAccept::Payload(clause, _)) => Some(clause),
+                _ => None,
+            };
+            self.lower_transition_payload_chain(
+                document,
+                declaration,
+                trigger_action,
+                clause,
+                node.span,
+            )?;
+        }
         match &node.value.accept {
             None => {}
             Some(TransitionAccept::Shorthand(expression, _via)) => {
@@ -671,16 +687,9 @@ impl SemanticModelBuilder {
                     expression,
                 )?;
             }
-            Some(TransitionAccept::Payload(clause, via)) => {
+            Some(TransitionAccept::Payload(_clause, via)) => {
                 let trigger_action =
                     trigger_action.expect("an authored accept always creates its trigger action");
-                self.lower_transition_payload_chain(
-                    document,
-                    declaration,
-                    trigger_action,
-                    clause,
-                    node.span,
-                )?;
                 if let Some(via) = via {
                     self.lower_satisfy_operand(
                         document,
@@ -905,9 +914,10 @@ impl SemanticModelBuilder {
         Ok(action)
     }
 
-    /// Lowers the two distinct parameters represented by `accept signal : Signal` on a
-    /// TransitionUsage: the trigger AcceptActionUsage's payload parameter and the transition's
-    /// second input parameter. Explicit role facts let resolution publish
+    /// Lowers the two distinct parameters every triggered TransitionUsage owns: the trigger
+    /// AcceptActionUsage's payload parameter and the transition's second input parameter
+    /// (`accept signal : Signal` names and types them; `accept when c`, `accept at t` and
+    /// `accept S` leave them anonymous and untyped). Explicit role facts let resolution publish
     /// `subsetsChain(triggerAction, triggerPayloadParameter())` without rediscovering either
     /// endpoint from syntax, names, or child order.
     fn lower_transition_payload_chain(
@@ -915,7 +925,7 @@ impl SemanticModelBuilder {
         document: DocumentIdx,
         transition: DeclarationId,
         trigger_action: DeclarationId,
-        clause: &sysml_v2_parser::ast::PayloadClause,
+        clause: Option<&sysml_v2_parser::ast::PayloadClause>,
         span: Span,
     ) -> Result<(), ConstructionError> {
         let trigger_payload_parameter = self.push_typed_declaration(
@@ -936,7 +946,7 @@ impl SemanticModelBuilder {
             Visibility::Default,
             span,
         )?;
-        if let Some(type_name) = clause.type_name {
+        if let Some(type_name) = clause.and_then(|clause| clause.type_name) {
             let type_span = self.documents[document.index()]
                 .parsed
                 .qualified_reference(type_name)
@@ -957,7 +967,7 @@ impl SemanticModelBuilder {
             })?;
         }
 
-        let name = self.intern_declaration_name(document, Some(clause.name))?;
+        let name = self.intern_declaration_name(document, clause.map(|clause| clause.name))?;
         let transition_payload_parameter = self.push_typed_declaration(
             document,
             Some(transition),

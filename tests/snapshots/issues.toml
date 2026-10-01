@@ -163,12 +163,6 @@ owner = "sysml-v2-parser"
 summary = "KerML TypeBody admits a NonFeatureMember whose element is a Multiplicity (`multiplicity extra [2];`), giving a type a second owned Multiplicity, but the pinned parser reads that member in a classifier body as a result expression with two unresolved operands instead of a Multiplicity; once it parses, spec42 needs an owned-Multiplicity count over the classifier's multiplicity fact plus Multiplicity members and a type_multiple_multiplicities rule"
 
 [[issue]]
-id = "lowering-action-parameter-facts"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "the implied input parameters of this action form are not published, so the rule has no parameter list to count; only the accepted side is authored here"
-
-[[issue]]
 id = "lowering-conjugated-port-definition"
 kind = "lowering_gap"
 owner = "spec42-semantic"

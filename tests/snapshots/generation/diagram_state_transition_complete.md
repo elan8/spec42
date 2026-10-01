@@ -45,6 +45,8 @@ package StateExample {
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "idle")) (succession (reference "done")))))
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::idle"))) (kind state) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Start"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::selected"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "StateTransitionView")))))
@@ -96,6 +98,9 @@ package StateExample {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::finish"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::finish"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::finish"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::idle"))) (target (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::idle"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Start"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
@@ -178,6 +183,14 @@ package StateExample {
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::finish")))
+      (supertype (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/diagram_state_transition_complete.md") (path (named (kind package) (name "StateExample")) (named (kind state-def) (name "Machine")) (named (kind transition) (name "finish")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine::idle")))
       (featured-by (node (document "memory://snapshot/diagram_state_transition_complete.md") (qualified-name "StateExample::Machine")))
@@ -434,6 +447,11 @@ package StateExample {
     {
       "document": 0,
       "kind": "qualified-name",
+      "qualifiedName": "StateExample::Machine::finish::::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "StateExample::Machine::idle"
     },
     {
@@ -491,6 +509,13 @@ package StateExample {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "StateExample::Machine::finish",
+      "source": 5,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "StateExample::Machine::finish::",
       "source": 5,
       "sourceDomain": "workspace"
     },
@@ -562,7 +587,13 @@ package StateExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
+      "ordinal": 8,
+      "relationshipKind": "containment",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
       "relationshipKind": "containment",
       "source": 3
     },
@@ -598,19 +629,31 @@ package StateExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "subsetting",
+      "ordinal": 11,
+      "relationshipKind": "containment",
       "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 12,
+      "relationshipKind": "subsetting",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "subsetting",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
       "relationshipKind": "succession",
       "source": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
+      "ordinal": 15,
       "relationshipKind": "succession",
       "source": 4
     },
@@ -622,37 +665,49 @@ package StateExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "ordinal": 13,
       "relationshipKind": "typeFeaturing",
       "source": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "subsetting",
+      "ordinal": 17,
+      "relationshipKind": "typeFeaturing",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "typeFeaturing",
       "source": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
+      "ordinal": 1,
+      "relationshipKind": "subsetting",
+      "source": 6
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
       "relationshipKind": "succession",
-      "source": 5
+      "source": 6
     },
     {
       "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "transition",
-      "source": 5
+      "source": 6
     },
     {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "typeFeaturing",
-      "source": 5
+      "source": 6
     }
   ],
   "selectedView": {
-    "reference": 7,
+    "reference": 8,
     "kind": "state-transition-view",
     "name": "selected",
     "source": 10
@@ -666,45 +721,45 @@ package StateExample {
       {
         "kind": "containment",
         "navigation": 3,
-        "origin": 7,
+        "origin": 9,
         "provenance": "authored",
-        "reference": 16,
+        "reference": 18,
         "source": 0,
-        "target": 7
+        "target": 9
       },
       {
         "kind": "containment",
         "navigation": 1,
-        "origin": 6,
+        "origin": 8,
         "provenance": "authored",
-        "reference": 17,
+        "reference": 19,
         "source": 0,
-        "target": 6
+        "target": 8
       },
       {
         "kind": "initial-state",
         "navigation": 2,
-        "origin": 6,
+        "origin": 8,
         "provenance": "authored",
-        "reference": 21,
-        "source": 6,
-        "target": 7
+        "reference": 23,
+        "source": 8,
+        "target": 9
       },
       {
         "kind": "containment",
         "navigation": 4,
-        "origin": 5,
+        "origin": 7,
         "provenance": "authored",
-        "reference": 18,
+        "reference": 20,
         "source": 0,
-        "target": 5
+        "target": 7
       },
       {
         "kind": "containment",
         "navigation": 6,
         "origin": 1,
         "provenance": "authored",
-        "reference": 19,
+        "reference": 21,
         "source": 0,
         "target": 1
       },
@@ -713,25 +768,34 @@ package StateExample {
         "navigation": 7,
         "origin": 1,
         "provenance": "implied",
-        "reference": 40,
-        "source": 7,
-        "target": 5
+        "reference": 47,
+        "source": 9,
+        "target": 7
       },
       {
         "kind": "containment",
         "navigation": 5,
-        "origin": 4,
+        "origin": 6,
         "provenance": "authored",
-        "reference": 25,
+        "reference": 27,
         "source": 1,
-        "target": 4
+        "target": 6
+      },
+      {
+        "kind": "containment",
+        "navigation": 5,
+        "origin": 6,
+        "provenance": "authored",
+        "reference": 28,
+        "source": 1,
+        "target": 6
       },
       {
         "kind": "containment",
         "navigation": 5,
         "origin": 2,
         "provenance": "authored",
-        "reference": 26,
+        "reference": 29,
         "source": 1,
         "target": 2
       },
@@ -740,18 +804,27 @@ package StateExample {
         "navigation": 7,
         "origin": 2,
         "provenance": "authored",
-        "reference": 39,
-        "source": 7,
-        "target": 5
+        "reference": 46,
+        "source": 9,
+        "target": 7
       },
       {
         "kind": "containment",
         "navigation": 5,
         "origin": 3,
         "provenance": "authored",
-        "reference": 27,
+        "reference": 30,
         "source": 1,
         "target": 3
+      },
+      {
+        "kind": "containment",
+        "navigation": 5,
+        "origin": 4,
+        "provenance": "authored",
+        "reference": 36,
+        "source": 3,
+        "target": 4
       }
     ],
     "exposedRoots": [
@@ -760,14 +833,14 @@ package StateExample {
     "kind": "state-transition-view",
     "metadata": {
       "finalNodes": [
-        5
+        7
       ],
       "initialNodes": [
-        6
+        8
       ],
       "states": [
         0,
-        7
+        9
       ]
     },
     "nodes": [
@@ -776,8 +849,8 @@ package StateExample {
           {
             "kind": "states",
             "members": [
-              5,
-              7
+              7,
+              9
             ],
             "provenance": "direct"
           }
@@ -799,7 +872,8 @@ package StateExample {
           {
             "kind": "attributes",
             "members": [
-              4
+              6,
+              6
             ],
             "provenance": "direct"
           },
@@ -831,7 +905,29 @@ package StateExample {
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 15,
+        "reference": 16,
+        "source": 5,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              4
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 1,
+        "reference": 14,
         "source": 5,
         "typing": {
           "status": "absent"
@@ -841,11 +937,11 @@ package StateExample {
         "compartments": [],
         "conjugated": false,
         "direction": null,
-        "metaclass": "AcceptActionUsage",
+        "metaclass": "ReferenceUsage",
         "name": null,
-        "notationRole": "unsupported",
-        "owner": 1,
-        "reference": 13,
+        "notationRole": "reference-usage",
+        "owner": 3,
+        "reference": 17,
         "source": 5,
         "typing": {
           "status": "absent"
@@ -859,7 +955,21 @@ package StateExample {
         "name": null,
         "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 14,
+        "reference": 15,
+        "source": 5,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 1,
+        "reference": 15,
         "source": 5,
         "typing": {
           "status": "absent"
@@ -887,7 +997,7 @@ package StateExample {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 12,
+        "reference": 13,
         "source": 1,
         "typing": {
           "status": "absent"
@@ -901,7 +1011,7 @@ package StateExample {
         "name": "idle",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 5,
+        "reference": 6,
         "source": 3,
         "typing": {
           "status": "absent"
@@ -913,10 +1023,10 @@ package StateExample {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 20,
+        "reference": 22,
         "source": 0,
         "target": {
-          "reference": 10,
+          "reference": 11,
           "status": "resolved"
         }
       },
@@ -924,10 +1034,10 @@ package StateExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 38,
-        "source": 7,
+        "reference": 45,
+        "source": 9,
         "target": {
-          "reference": 11,
+          "reference": 12,
           "status": "resolved"
         }
       },
@@ -935,8 +1045,8 @@ package StateExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 41,
-        "source": 7,
+        "reference": 48,
+        "source": 9,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -946,10 +1056,10 @@ package StateExample {
         "kind": "initialState",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 22,
-        "source": 6,
+        "reference": 24,
+        "source": 8,
         "target": {
-          "node": 7,
+          "node": 9,
           "status": "resolved"
         }
       },
@@ -957,8 +1067,8 @@ package StateExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 23,
-        "source": 6,
+        "reference": 25,
+        "source": 8,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -968,8 +1078,8 @@ package StateExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 24,
-        "source": 5,
+        "reference": 26,
+        "source": 7,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -979,10 +1089,10 @@ package StateExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 28,
+        "reference": 31,
         "source": 1,
         "target": {
-          "reference": 9,
+          "reference": 10,
           "status": "resolved"
         }
       },
@@ -990,10 +1100,10 @@ package StateExample {
         "kind": "transitionSource",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 29,
+        "reference": 32,
         "source": 1,
         "target": {
-          "node": 7,
+          "node": 9,
           "status": "resolved"
         }
       },
@@ -1001,10 +1111,10 @@ package StateExample {
         "kind": "transitionTarget",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 30,
+        "reference": 33,
         "source": 1,
         "target": {
-          "node": 5,
+          "node": 7,
           "status": "resolved"
         }
       },
@@ -1012,10 +1122,10 @@ package StateExample {
         "kind": "transitionTrigger",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 31,
+        "reference": 34,
         "source": 1,
         "target": {
-          "reference": 6,
+          "reference": 7,
           "status": "resolved"
         }
       },
@@ -1023,7 +1133,7 @@ package StateExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 32,
+        "reference": 35,
         "source": 1,
         "target": {
           "node": 0,
@@ -1034,8 +1144,30 @@ package StateExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 36,
-        "source": 4,
+        "reference": 41,
+        "source": 6,
+        "target": {
+          "node": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 37,
+        "source": 6,
+        "target": {
+          "node": 4,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 42,
+        "source": 6,
         "target": {
           "node": 1,
           "status": "resolved"
@@ -1045,10 +1177,10 @@ package StateExample {
         "kind": "succession",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 34,
+        "reference": 39,
         "source": 2,
         "target": {
-          "node": 7,
+          "node": 9,
           "status": "resolved"
         }
       },
@@ -1056,10 +1188,10 @@ package StateExample {
         "kind": "succession",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 40,
         "source": 2,
         "target": {
-          "node": 5,
+          "node": 7,
           "status": "resolved"
         }
       },
@@ -1067,10 +1199,10 @@ package StateExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 33,
+        "reference": 38,
         "source": 3,
         "target": {
-          "reference": 8,
+          "reference": 9,
           "status": "resolved"
         }
       },
@@ -1078,10 +1210,21 @@ package StateExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 37,
+        "reference": 43,
         "source": 3,
         "target": {
           "node": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 44,
+        "source": 4,
+        "target": {
+          "node": 3,
           "status": "resolved"
         }
       }
