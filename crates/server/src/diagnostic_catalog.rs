@@ -778,6 +778,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "specialization_specific_conjugated",
+        severity: "error",
+        meaning: "A conjugated type is the specific type of a specialization (KerML validateSpecializationSpecificNotConjugated).",
+        typical_fix: "Remove the specialization, or specialize the original type instead of its conjugate.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "exhibit_target_invalid_kind",
         severity: "warning",
         meaning: "An exhibit state usage references a feature that is not a state usage (SysML validateExhibitStateUsageReference).",

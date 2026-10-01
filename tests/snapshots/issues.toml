@@ -193,12 +193,6 @@ owner = "spec42-snapshot"
 summary = "KerML `EndFeaturePrefix` spells only `const? end` and `var` lives in the exclusive BasicFeaturePrefix alternative, so a KerML variable non-constant end feature has no spelling (the parser reports `var end feature` as end_feature_invalid_prefix). SysML is not covered by that argument: an end Usage's isVariable is the derived mayTimeVary, which is true for an end of an occurrence-typed owner such as a connection definition, and EndUsagePrefix has no `constant` slot, so the literal OCL would reject every such end; the Pilot does not enforce validateFeatureEndIsConstant, and the SysML case needs an OMG decision before a violating fixture can be authored"
 
 [[issue]]
-id = "lowering-gap-kerml-relationship-declarations"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "the standalone KerML relationship declarations (`specialization`/`subclassifier`/`subtype`/`typing`/`subset`/`redefinition`/`disjoining`/`inverting`/`featuring`/`conjugation`, ast::KermlRelationshipDecl) are typed upstream but lower_package_element reports them as unsupported_package_member, so a Specialization whose specific type is conjugated never reaches validateSpecializationSpecificNotConjugated"
-
-[[issue]]
 id = "lowering-gap-binding-connector-accept-receiver-endpoints"
 kind = "lowering_gap"
 owner = "spec42-semantic"

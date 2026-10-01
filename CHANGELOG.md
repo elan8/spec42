@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Conjugated specific types.** The new `specialization_specific_conjugated` error checks KerML
+  `validateSpecializationSpecificNotConjugated` for owned specializations and standalone KerML
+  relationship declarations (`subclassifier C specializes B;` where `C` conjugates a type).
+
 - **Every state action form is a state subaction.** A bare `entry;` and the effect forms
   (`entry assign ...;`, `do send ...;`, `do accept ...;`) now publish the action that occupies the
   state's entry/do/exit membership and redefines `States::StateAction::entryAction`/`doAction`/

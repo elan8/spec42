@@ -23,8 +23,10 @@ use crate::check::conformance;
 use crate::index::expressions::conforms;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::ParameterDirection;
+use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
 use crate::model::span::document_range;
+use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;
@@ -38,6 +40,8 @@ use crate::type_query::Conformance;
 use crate::type_query::SpecializationScope;
 use crate::Diagnostic;
 use crate::DiagnosticCode;
+use crate::DiagnosticLocation;
+use crate::DiagnosticOrigin;
 use crate::DiagnosticSeverity;
 
 /// Whether a declaration is a connection-like definition: one whose members include connector
@@ -326,6 +330,7 @@ impl<D> SemanticModel<D> {
     ) -> Result<(), ResolutionError> {
         self.collect_declaration_structure(declared, diagnostics)?;
         self.collect_structural_reference_rules(document, diagnostics)?;
+        self.collect_specialization_specific_not_conjugated(document, diagnostics)?;
         self.collect_implied_structural_rules(document, diagnostics)?;
         self.collect_control_node_succession_rules(document, diagnostics)?;
         self.collect_end_feature_rules(declared, diagnostics)?;
@@ -451,6 +456,109 @@ impl<D> SemanticModel<D> {
     }
 
     /// The rules whose operands are an authored reference and its settled target.
+    /// KerML 8.3.3.1.8 `validateSpecializationSpecificNotConjugated`: the specific Type of every
+    /// Specialization -- an owned specialization clause or a standalone KerML relationship
+    /// declaration of any Specialization subkind -- is not conjugated, that is, owns no
+    /// Conjugation. A conjugation or specialization whose endpoints do not settle answers
+    /// nothing. Implied library specializations are not Specializations a source authors.
+    pub(crate) fn collect_specialization_specific_not_conjugated(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        let mut conjugated = std::collections::BTreeSet::new();
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            if reference.kind != ReferenceKind::Conjugation {
+                continue;
+            }
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            if matches!(
+                self.resolution.outcome(id),
+                Some(ResolutionStatus::Resolved(_))
+            ) {
+                conjugated.insert(reference.source);
+            }
+        }
+        conjugated.extend(
+            self.resolution
+                .authored_relationships
+                .iter()
+                .filter(|relationship| relationship.kind == ReferenceKind::Conjugation)
+                .map(|relationship| relationship.source),
+        );
+        if conjugated.is_empty() {
+            return Ok(());
+        }
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            if !reference.kind.is_specialization() || !conjugated.contains(&reference.source) {
+                continue;
+            }
+            let source = self
+                .storage
+                .declaration(reference.source)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            if source.document != document
+                || !matches!(
+                    self.resolution.outcome(id),
+                    Some(ResolutionStatus::Resolved(_))
+                )
+            {
+                continue;
+            }
+            diagnostics.push(self.reference_diagnostic(
+                reference,
+                DiagnosticCode::SpecializationSpecificConjugated,
+                DiagnosticSeverity::Error,
+                None,
+            )?);
+        }
+        for relationship in self.resolution.authored_relationships.iter() {
+            if !relationship.kind.is_specialization() || !conjugated.contains(&relationship.source)
+            {
+                continue;
+            }
+            let Some(declaration) = self
+                .storage
+                .relationship_declarations
+                .iter()
+                .find(|declaration| declaration.source == relationship.declaration)
+            else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            let endpoint = self
+                .storage
+                .references
+                .get(declaration.source.index())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let owner = self
+                .storage
+                .declaration(endpoint.source)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            if owner.document != document {
+                continue;
+            }
+            diagnostics.push(Diagnostic {
+                payload: None,
+                message: DiagnosticCode::SpecializationSpecificConjugated
+                    .describe()
+                    .into(),
+                code: DiagnosticCode::SpecializationSpecificConjugated,
+                severity: DiagnosticSeverity::Error,
+                origin: DiagnosticOrigin::Semantic,
+                subject: self.symbol_id(relationship.source),
+                location: DiagnosticLocation {
+                    document: writer::document_identity(self, owner.document).into(),
+                    range: document_range(&self.storage, owner.document, &declaration.span)?,
+                },
+                related: Box::default(),
+            });
+        }
+        Ok(())
+    }
+
     pub(crate) fn collect_structural_reference_rules(
         &self,
         document: DocumentIdx,

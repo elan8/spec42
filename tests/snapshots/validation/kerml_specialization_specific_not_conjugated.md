@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.1.8:validateSpecificationSpecificNotConjugated
-blocked_by=lowering-gap-kerml-relationship-declarations
 type=file
 ~~~
 # SOURCE
@@ -36,7 +35,7 @@ package Conjugations {
         (severity error)
         (code "specialization_specific_conjugated")
         (source "semantic")
-        (range (start 8 4) (end 8 53))
+        (range (start 11 4) (end 11 43))
       )
     )
   )
@@ -47,6 +46,12 @@ package Conjugations {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_specialization_specific_not_conjugated.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "specialization_specific_conjugated")
+        (source "semantic")
+        (range (start 11 4) (end 11 43))
+      )
     )
   )
 )
