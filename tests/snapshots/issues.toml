@@ -361,12 +361,6 @@ owner = "spec42-semantic"
 summary = "KerML connector body end features lower as owned features, but the connector's canonical connectorEnd count and conditional BinaryLink specialization do not include them"
 
 [[issue]]
-id = "parser-gap-kerml-connector-specialization"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "at pinned 695b2b44 a KerML `connector name specializes Type { ... }` declaration is rejected, so explicit BinaryLink specialization cannot reach semantic validation"
-
-[[issue]]
 id = "semantic-requirement-constraint-owner"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
@@ -665,3 +659,9 @@ id = "semantic-feature-chaining-rules"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
 summary = "a `chains` clause lowers and resolves as a featureChaining relationship, but no semantic rule counts chaining features, checks that each is featured within the previous, or rejects a self-chain; the canonical codes feature_chaining_single_operand, feature_chaining_not_featured_within_previous and feature_chaining_includes_self do not exist yet"
+
+[[issue]]
+id = "semantic-connector-binary-specialization"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "validateConnectorBinarySpecialization (connectorEnd->size() > 2 implies not specializesFromLibrary('Links::BinaryLink')) has no rule: the connector parses (KerML spells connector specialization with `:` typing; `specializes` is classifier-only), but KerML `end feature` members of a connector body publish no positional_end fact, so there is no canonical Connector::connectorEnd count, and no Links::BinaryLink specialization anchor is resolved for the check"
