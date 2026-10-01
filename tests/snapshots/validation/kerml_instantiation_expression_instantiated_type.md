@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.8.7:validateInstantiationExpressionInstantiatedType
-blocked_by=semantic-instantiation-expression-validation
 type=file
 ~~~
 # SOURCE
@@ -25,7 +24,8 @@ package Expressions {
         // Conforming: the invocation names a resolvable instantiated type.
         feature copied = Identity(input = source);
 
-        // Invalid: the instantiated type does not resolve, so the expression has none.
+        // Invalid: the instantiated type does not resolve, so the expression has none. Reference
+        // resolution owns that defect: it reports the unresolved instantiatedType name itself.
         feature wrong = Missing(input = source);
     }
 }
@@ -39,7 +39,7 @@ package Expressions {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 13 8) (end 13 48))
+        (range (start 14 24) (end 14 31))
       )
     )
   )
@@ -54,7 +54,7 @@ package Expressions {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 13 24) (end 13 31))
+        (range (start 14 24) (end 14 31))
       )
     )
   )
@@ -63,7 +63,7 @@ package Expressions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:157b680144984afa0c68fff9d452381fe2a7e5a132a5f0352f854d979eda76fb"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5f7e12547052d543bb92dd5457872cfbeedc2c8f7bd4f02bc6844ca6e331af2f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -210,12 +210,12 @@ package Expressions {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (range (start 13 40) (end 13 46)) (probe (position 13 40))
+  (query (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (range (start 14 40) (end 14 46)) (probe (position 14 40))
     (reference (id (source (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "wrong")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "source")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (qualified-name "Expressions::Holder::source")))))
     )
   )
-  (query (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (range (start 13 24) (end 13 31)) (probe (position 13 24))
+  (query (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (range (start 14 24) (end 14 31)) (probe (position 14 24))
     (reference (id (source (node (document "memory://snapshot/kerml_instantiation_expression_instantiated_type.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "wrong")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind invocationCallee) (ordinal 0) (authored-target "Missing")
       (outcome (status unresolved)))
     )

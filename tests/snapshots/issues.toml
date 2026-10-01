@@ -259,12 +259,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule checks that a filter condition is model-level evaluable; the canonical code filter_condition_not_model_level_evaluable does not exist yet"
 
 [[issue]]
-id = "semantic-instantiation-expression-validation"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "the unresolved instantiated type is reported by reference resolution rather than by an instantiation-expression rule, and its range covers the reference token rather than the owning expression"
-
-[[issue]]
 id = "semantic-invocation-argument-redefines-no-parameter"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
