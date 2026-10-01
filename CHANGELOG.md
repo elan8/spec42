@@ -14,7 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `transition`, directed parameters (`in`/`out`/`inout`), `stakeholder` and `dependency` it made
   the declaration fail to parse (`unsupported_grammar_form`, or an `unexpected keyword` error
   inside a body), so the element dropped out of the model. Each of these now publishes its short
-  name, which also resolves as a name. Pins sysml-v2-parser elan8/sysml-v2-parser#157.
+  name, which also resolves as a name. Short-name-only (`verification <'V1'> : V;`) and
+  anonymous declarations are accepted too, and `concern`/`case` usages are modelled inside part
+  bodies. Pins sysml-v2-parser with elan8/sysml-v2-parser#157 and #160.
   - A named `binding b bind x = y;` member now publishes its declared name as well; it was
     lowered as an anonymous binding.
 

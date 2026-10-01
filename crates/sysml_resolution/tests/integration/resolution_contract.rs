@@ -527,6 +527,30 @@ fn every_short_name_carrying_declaration_publishes_it() {
             "s",
         ),
         (
+            "concern usage in a part definition body",
+            "package Demo {\n\tconcern def C;\n\tpart def P {\n\t\tconcern <c> conc : C;\n\t}\n}\n",
+            "Demo::P::conc",
+            "c",
+        ),
+        (
+            "concern usage in a part usage body",
+            "package Demo {\n\tconcern def C;\n\tpart p {\n\t\tconcern <c> conc : C;\n\t}\n}\n",
+            "Demo::p::conc",
+            "c",
+        ),
+        (
+            "case usage in a part usage body",
+            "package Demo {\n\tcase def K;\n\tpart p {\n\t\tcase <k> cs : K;\n\t}\n}\n",
+            "Demo::p::cs",
+            "k",
+        ),
+        (
+            "return ref",
+            "package Demo {\n\tuse case def U {\n\t\treturn ref <r> res { }\n\t}\n}\n",
+            "Demo::U::res",
+            "r",
+        ),
+        (
             "dependency",
             "package Demo {\n\tpart def A;\n\tpart def B;\n\tdependency <d> dep from A to B;\n}\n",
             "Demo::dep",

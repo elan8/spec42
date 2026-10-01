@@ -40,7 +40,8 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<ReturnRef>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -48,6 +49,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     reference: true,
                     ..DeclarationModifiers::default()
@@ -1142,7 +1144,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserViewpointUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
@@ -1227,7 +1229,7 @@ impl SemanticModelBuilder {
         } else {
             (DeclarationKind::ConcernUsage, MembershipKind::Feature)
         };
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         // `ast::ConcernUsage` carries no direction or short name.
         let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
@@ -1421,7 +1423,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserAnalysisCaseUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
@@ -1485,7 +1487,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserCaseUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
@@ -1554,7 +1556,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserUseCaseUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
@@ -1620,7 +1622,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserVerificationCaseUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,

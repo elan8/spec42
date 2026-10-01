@@ -77,7 +77,7 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserMetadataUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
