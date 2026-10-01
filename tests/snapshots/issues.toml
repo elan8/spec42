@@ -10,13 +10,13 @@ summary = "OccurrenceDefinition individual modifier, multiplicity element, and z
 id = "lowering-gap-type-feature-membership-identity"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "FeatureMembership is compact declaration-aligned storage, not an independently addressable canonical relationship identity, so deriveTypeOwnedFeatureMembership cannot publish its normative relationship result."
+summary = "FeatureMembership is compact declaration-aligned storage (one membership row per member), not an independently addressable relationship identity, so deriveTypeOwnedFeatureMembership cannot publish its normative relationship result. Publishing Membership relationships as identities is a storage representation change that design.md admits only with the standard-library benchmark set."
 
 [[issue]]
 id = "lowering-gap-type-multiplicity-identity"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "Multiplicity remains a fact attached to its owning declaration rather than an independently addressable canonical Multiplicity element required by deriveTypeMultiplicity."
+summary = "Multiplicity remains an authored fact on its owning declaration; only an explicit `multiplicity` member lowers as a KermlMultiplicity declaration. deriveTypeMultiplicity needs every `[m..n]` lowered as an owned anonymous Multiplicity(Range) element (owningMembership, bounds) while the declaration keeps its authored fact; that adds an owned member to every multiplicity in the corpus, so it is a representation change needing the standard-library benchmark and an audit of owned-member consumers."
 
 [[issue]]
 id = "lowering-gap-redefinition-flow-end-library-anchors"
@@ -64,31 +64,31 @@ summary = "The pinned parser's ViewRenderingUsage AST drops whether the `renderi
 id = "lowering-gap-type-featuring-multiplicity-owner"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "Multiplicity is currently retained only as facts on its owning declaration; no independently addressable Multiplicity with canonical owningType and featuringTypes is published for checkMultiplicityTypeFeaturing."
+summary = "No owned Multiplicity element exists for a `[m..n]` (see lowering-gap-type-multiplicity-identity), so checkMultiplicityTypeFeaturing has no source. Once lowered, the implied featuring is the owning Feature's featuringTypes (Pilot MultiplicityAdapter), derivable like synthesize_feature_value_expression_type_featurings."
 
 [[issue]]
 id = "lowering-gap-type-featuring-multiplicity-range-bounds"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "MultiplicityRange bound expressions and their canonical featuringTypes are not published as addressable semantic facts, so checkMultiplicityRangeExpressionTypeFeaturing cannot compare them to the range."
+summary = "MultiplicityRange bound expressions are not lowered as owned Expressions of an owned MultiplicityRange (see lowering-gap-type-multiplicity-identity), so checkMultiplicityRangeExpressionTypeFeaturing has no source; the Pilot (ExpressionAdapter.addImplicitFeaturingTypesIfNecessary) features a bound with the range's owning Feature's featuringTypes, or the owning end's for an owned cross feature."
 
 [[issue]]
 id = "lowering-gap-binding-connector-satisfy-requirement-endpoints"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "SatisfyRequirementUsage subjectParameter and counterpart related-element facts are not published for evaluation with the canonical BindingConnector collection."
+summary = "checkSatisfyRequirementUsageBindingConnector requires exactly one owned BindingConnector relating subjectParameter to another element even when `by` is omitted, but neither the spec nor the Pilot defines it then: the Pilot binds only through the `by` SatisfactionParameter's FeatureValue (UsageAdapter.computeValueConnector), as a member of that parameter rather than of the SatisfyRequirementUsage, and creates none without `by`. spec42 also does not lower the SatisfactionSubjectMember as the usage's subject parameter."
 
 [[issue]]
 id = "normative-specification-gap-constructor-expression-result-default-value-binding-connector"
 kind = "normative_specification_gap"
 owner = "omg-specification"
-summary = "Pinned KerML XMI body for checkConstructorExpressionResultDefaultValueBindingConnector is exactly TBD (SHA-256 036265965ea6cd2b1d3d5c8d44f9e719188af11d63d0b6ef158a5d77dfb26e30); OMG must publish an evaluable normative predicate."
+summary = "Pinned KerML XMI body for checkConstructorExpressionResultDefaultValueBindingConnector is exactly TBD (SHA-256 036265965ea6cd2b1d3d5c8d44f9e719188af11d63d0b6ef158a5d77dfb26e30), and the Pilot implements no counterpart (no adapter satisfies it); OMG must publish an evaluable normative predicate."
 
 [[issue]]
 id = "normative-specification-gap-invocation-expression-default-value-binding-connector"
 kind = "normative_specification_gap"
 owner = "omg-specification"
-summary = "Pinned KerML XMI body for checkInvocationExpressionDefaultValueBindingConnector is exactly TBD (SHA-256 036265965ea6cd2b1d3d5c8d44f9e719188af11d63d0b6ef158a5d77dfb26e30); OMG must publish an evaluable normative predicate."
+summary = "Pinned KerML XMI body for checkInvocationExpressionDefaultValueBindingConnector is exactly TBD (SHA-256 036265965ea6cd2b1d3d5c8d44f9e719188af11d63d0b6ef158a5d77dfb26e30), and the Pilot implements no counterpart (no adapter satisfies it); OMG must publish an evaluable normative predicate."
 
 [[issue]]
 id = "library-gap-join-node-specialization-anchor"
@@ -484,7 +484,7 @@ summary = "the standalone KerML relationship declarations (`specialization`/`sub
 id = "lowering-gap-binding-connector-accept-receiver-endpoints"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "AcceptActionUsage receiver-argument and receiver-parameter endpoint facts are not jointly published with canonical BindingConnector pairs, preventing checkAcceptActionUsageReceiverBindingConnector; the `accept when`/`accept at` triggers themselves now parse and lower"
+summary = "checkAcceptActionUsageReceiverBindingConnector binds the AcceptActionUsage's second parameter to the second parameter of its TriggerInvocationExpression payload argument (Pilot TriggerInvocationExpressionAdapter.addReceiverBinding). Lowering publishes neither: an accept action owns no payload/receiver parameters, and `accept when`/`at`/`after` lowers its trigger expression without a TriggerInvocationExpression element or its parameters."
 
 [[issue]]
 id = "semantic-trigger-invocation-argument-typing"
