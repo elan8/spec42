@@ -486,6 +486,10 @@ semantic_diagnostic_codes! {
     /// SysML 8.3.21.7 `validateRequirementConstraintMembershipOwningType`.
     RequirementConstraintInvalidOwner => "requirement_constraint_invalid_owner",
         "An assumed or required constraint must be owned by a requirement definition or usage.";
+    /// SysML 8.3.18.5 `validateStateDefinitionStateSubactionKind` and 8.3.18.6
+    /// `validateStateUsageStateSubactionKind`.
+    StateDuplicateSubactionKind => "state_duplicate_subaction_kind",
+        "A state may have at most one entry, one do and one exit action.";
     /// SysML 8.3.18.9 `validateTransitionUsageTriggerActions`.
     TransitionTriggerSourceNotState => "transition_trigger_source_not_state",
         "A transition with a trigger must have a state usage as its source.";

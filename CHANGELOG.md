@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **State subaction kind validation.** New diagnostic `state_duplicate_subaction_kind` checks SysML
+  8.3.18.5 `validateStateDefinitionStateSubactionKind` and 8.3.18.6
+  `validateStateUsageStateSubactionKind`: a state owns at most one `entry`, `do` and `exit` action.
+
 - **Invocation instantiated type validation.** KerML 8.3.4.8.8
   `validateInvocationExpressionInstantiatedType` (`invocation_instantiated_type_not_behavior`)
   reports an invocation `F(...)` whose callee is neither a behavior nor a feature typed by one;

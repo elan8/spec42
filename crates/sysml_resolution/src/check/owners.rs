@@ -16,6 +16,7 @@ use crate::Diagnostic;
 use crate::DiagnosticCode;
 use crate::DiagnosticSeverity;
 use crate::MembershipRole;
+use crate::StateSubactionKind;
 use sysml_contract::ElementKind;
 
 /// Which result-owning metaclass a type conforms to.
@@ -161,6 +162,36 @@ impl<D> SemanticModel<D> {
                     },
                     DiagnosticSeverity::Warning,
                 )?);
+            }
+        }
+        // SysML 8.3.18.5 `validateStateDefinitionStateSubactionKind` and 8.3.18.6
+        // `validateStateUsageStateSubactionKind`: a state owns at most one StateSubactionMembership
+        // of each kind. As the Pilot reports it, every membership after the first of a kind is
+        // reported.
+        if self.metaclass_conforms(id, ElementKind::StateDefinition)
+            || self.metaclass_conforms(id, ElementKind::StateUsage)
+        {
+            for subaction_kind in [
+                StateSubactionKind::Entry,
+                StateSubactionKind::Do,
+                StateSubactionKind::Exit,
+            ] {
+                for member in self
+                    .child_declarations(id)
+                    .iter()
+                    .copied()
+                    .filter(|member| {
+                        self.effective_membership_role(*member)
+                            == Some(MembershipRole::StateSubaction(subaction_kind))
+                    })
+                    .skip(1)
+                {
+                    diagnostics.push(self.declaration_diagnostic(
+                        member,
+                        DiagnosticCode::StateDuplicateSubactionKind,
+                        DiagnosticSeverity::Warning,
+                    )?);
+                }
             }
         }
         if kind == DeclarationKind::MetadataUsage {

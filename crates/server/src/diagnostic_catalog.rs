@@ -372,6 +372,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "state_duplicate_subaction_kind",
+        severity: "warning",
+        meaning: "A state definition or usage owns more than one `entry`, `do` or `exit` action (SysML validateStateDefinitionStateSubactionKind, validateStateUsageStateSubactionKind).",
+        typical_fix: "Keep a single `entry`, `do` and `exit` action per state; combine their behavior into one action.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "transition_trigger_source_not_state",
         severity: "warning",
         meaning: "A transition with an `accept` trigger has a source that is not a state usage (SysML validateTransitionUsageTriggerActions).",
