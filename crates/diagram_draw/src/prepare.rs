@@ -1975,9 +1975,26 @@ fn interconnection_scene_from_typed_projection(
             }
             let source = endpoint(field(edge, "source"))?;
             let target = endpoint(field(edge, "target"))?;
+            // A connector is labelled with its authored name, else its type (`: PowerLink`);
+            // an anonymous, untyped `connect a to b` has no label.
+            let label = if normalize_edge_kind(&kind) == "connection" {
+                field(edge, "origin")
+                    .as_u64()
+                    .and_then(|origin| raw_nodes.get(origin as usize))
+                    .and_then(|origin| {
+                        field(origin, "name")
+                            .as_str()
+                            .filter(|name| !name.trim().is_empty())
+                            .map(str::to_owned)
+                            .or_else(|| type_name(origin).map(|types| format!(": {types}")))
+                    })
+            } else {
+                None
+            };
             Some(json!({
                 "id": format!("e:{index}"),
                 "kind": kind,
+                "label": label,
                 "sourcePortId": source.1,
                 "targetPortId": target.1,
                 "sourceNodeId": source.0,

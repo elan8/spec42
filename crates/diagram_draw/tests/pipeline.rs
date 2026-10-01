@@ -166,6 +166,34 @@ fn composite_action_is_a_container_holding_its_own_flow() {
 }
 
 #[test]
+fn connectors_are_labelled_by_authored_name_else_type() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_connector_labels.md"
+    ));
+    let svg = render_svg_from_payload(&payload, 1280.0, 900.0).expect("draw interconnection");
+    let mut labels: Vec<&str> = svg
+        .split("<text class=\"viz-edge-label ")
+        .skip(1)
+        .filter_map(|rest| {
+            rest.split_once('>')
+                .and_then(|(_, text)| text.split_once('<'))
+        })
+        .map(|(text, _)| text)
+        .collect();
+    labels.sort_unstable();
+    // `connect a.p to b.p` is anonymous and untyped, so it has no label (not "connector").
+    assert_eq!(
+        labels,
+        [": DataLink", ": PowerLink", "mainPower", "namedUntyped"]
+    );
+    assert!(svg.matches("data-connector-id=").count() >= 5);
+    assert!(
+        !svg.contains("data-label-placement=\"tooltip-only\""),
+        "every label found a clear place inside the `system` container"
+    );
+}
+
+#[test]
 fn action_flow_rejects_out_of_range_member_index() {
     let mut payload = generated_diagram(include_str!(
         "../../../tests/snapshots/generation/diagram_webshop_action_flow.md"
