@@ -43,15 +43,23 @@ fn truncate(value: &str, max: usize) -> String {
     }
 }
 
+/// Height of a container part's name header.
+pub(crate) const IBD_CONTAINER_HEADER_HEIGHT: f64 = 28.0;
+
+/// Whether an Interconnection View node is drawn as a container enclosing other parts.
+pub(crate) fn is_ibd_container(node: &LaidOutNode) -> bool {
+    attr_bool(&node.attributes, "isSyntheticContainer")
+        || attr_bool(&node.attributes, "isPackageContainer")
+        || attr_bool(&node.attributes, "_isLayoutContainer")
+}
+
 pub fn render_ibd_node(
     node: &LaidOutNode,
     selected: bool,
     theme: &Theme,
     layout_node: Option<&InterconnectionLayoutNodeDto>,
 ) -> IbdNodeRender {
-    let is_container = attr_bool(&node.attributes, "isSyntheticContainer")
-        || attr_bool(&node.attributes, "isPackageContainer")
-        || attr_bool(&node.attributes, "_isLayoutContainer");
+    let is_container = is_ibd_container(node);
     let width = if node.width > 0.0 {
         node.width
     } else {
@@ -85,7 +93,7 @@ pub fn render_ibd_node(
         theme.node_border
     };
     let header_height = if is_container {
-        28.0
+        IBD_CONTAINER_HEADER_HEIGHT
     } else {
         let part_type = attr_text(&node.attributes, "partType");
         if !part_type.is_empty() {
