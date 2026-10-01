@@ -516,7 +516,23 @@ impl PublishedResolution {
             QueryAnswer::Recovery => return self.model.query_outcome(QueryAnswer::Recovery),
             QueryAnswer::Incomplete => return self.model.query_outcome(QueryAnswer::Incomplete),
         };
-        let roots = exposed.elements.iter().copied().collect::<BTreeSet<_>>();
+        let exposed_set = exposed.elements.iter().copied().collect::<BTreeSet<_>>();
+        // A recursive expose also exposes everything nested in its target. Those elements are
+        // drawn inside their exposed owner, so only an element with no exposed ancestor is a root.
+        let roots = exposed_set
+            .iter()
+            .copied()
+            .filter(|element| {
+                let mut owner = all.get(element).and_then(|entry| entry.owner);
+                while let Some(current) = owner {
+                    if exposed_set.contains(&current) {
+                        return false;
+                    }
+                    owner = all.get(&current).and_then(|entry| entry.owner);
+                }
+                true
+            })
+            .collect::<BTreeSet<_>>();
         for obstacle in exposed.obstacles {
             reasons.insert(match obstacle {
                 ViewExposureObstacle::ExposureUnresolved { exposure } => {

@@ -74,6 +74,7 @@ use crate::resolve::implied::GENERATED_LIBRARY_REDEFINITION_RULES;
 use crate::resolve::is_action_usage_declaration;
 use crate::resolve::is_usage_declaration;
 use crate::resolve::names::lookup_lexical_into;
+use crate::resolve::names::EffectiveVisibility;
 use crate::resolve::names::FirstScopePolicy;
 use crate::resolve::names::LookupTarget;
 use crate::resolve::requirement_derived_membership_role;
@@ -2867,17 +2868,20 @@ impl<D> SemanticModel<D> {
                 continue;
             }
             match self.resolution.outcome(*reference_id) {
-                Some(ResolutionStatus::Resolved(target)) if reference.flags.wildcard => {
+                // Every Type is a Namespace, so `vehicle::*` on a part usage exposes its members
+                // just as `Catalog::*` does on a package. An alias target is not expanded here.
+                Some(ResolutionStatus::Resolved(target))
                     if self
                         .storage
                         .declaration(target)
-                        .is_none_or(|value| !DeclarationDomain::Namespace.accepts(value.kind))
-                    {
-                        obstacles.insert(ViewExposureObstacle::ExposureUnsupported {
-                            exposure: exposure_symbol,
-                        });
-                        continue;
-                    }
+                        .is_none_or(|value| value.kind == DeclarationKind::Alias)
+                        && (reference.flags.wildcard || reference.flags.recursive) =>
+                {
+                    obstacles.insert(ViewExposureObstacle::ExposureUnsupported {
+                        exposure: exposure_symbol,
+                    });
+                }
+                Some(ResolutionStatus::Resolved(target)) if reference.flags.wildcard => {
                     self.collect_exposed_namespace_members(
                         target,
                         reference.flags.recursive,
@@ -2886,12 +2890,7 @@ impl<D> SemanticModel<D> {
                 }
                 Some(ResolutionStatus::Resolved(target)) => {
                     candidates.insert(target);
-                    if reference.flags.recursive
-                        && self
-                            .storage
-                            .declaration(target)
-                            .is_some_and(|value| DeclarationDomain::Namespace.accepts(value.kind))
-                    {
+                    if reference.flags.recursive {
                         self.collect_exposed_namespace_members(target, true, &mut candidates);
                     }
                 }
@@ -2975,37 +2974,40 @@ impl<D> SemanticModel<D> {
         })
     }
 
+    /// The visible members of a Namespace: its owned members that are public or carry no
+    /// authored visibility, plus its public imports. Every Type is a Namespace, so this covers
+    /// `vehicle::*` on a part usage as well as `Catalog::*` on a package. A recursive expose
+    /// descends into each such member. Inherited memberships are not expanded: through the
+    /// library specialization chain they would expose every standard feature of `Part`.
     fn collect_exposed_namespace_members(
         &self,
         target: DeclarationId,
         recursive: bool,
         into: &mut std::collections::BTreeSet<DeclarationId>,
     ) {
+        // The name index treats a default-visibility member of a non-package owner as private
+        // for name lookup; for exposure only an authored `private`/`protected` hides a member.
+        let exposable = |member: DeclarationId| {
+            self.memberships.get(member).is_some_and(|membership| {
+                membership.visibility == EffectiveVisibility::Public || !membership.authored
+            })
+        };
         let mut pending = vec![target];
         let mut visited = std::collections::BTreeSet::new();
         while let Some(namespace) = pending.pop() {
             if !visited.insert(namespace) {
                 continue;
             }
-            for (_, members) in self.direct_names.entries_for_owner(Some(namespace)) {
-                for member in members.iter().copied() {
-                    if self.memberships.is_public(member) {
-                        into.insert(member);
+            for (_, imported) in self.exported_imports.entries_for_owner(Some(namespace)) {
+                into.extend(imported.iter().copied());
+            }
+            for (_, named) in self.direct_names.entries_for_owner(Some(namespace)) {
+                for member in named.iter().copied().filter(|member| exposable(*member)) {
+                    into.insert(member);
+                    if recursive {
+                        pending.push(member);
                     }
                 }
-            }
-            for (_, members) in self.exported_imports.entries_for_owner(Some(namespace)) {
-                into.extend(members.iter().copied());
-            }
-            if recursive {
-                pending.extend(self.child_declarations(namespace).iter().copied().filter(
-                    |child| {
-                        self.memberships.is_public(*child)
-                            && self.storage.declaration(*child).is_some_and(|value| {
-                                DeclarationDomain::Namespace.accepts(value.kind)
-                            })
-                    },
-                ));
             }
         }
     }

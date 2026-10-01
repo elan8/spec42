@@ -345,8 +345,11 @@ filter obstacle:
   (outcome resolved))
 ```
 
-Namespace exposes expand public imported memberships. Results are deduplicated and ordered by
-canonical symbol identity before the view's effective filter conditions are applied.
+Namespace exposes expand the target's owned members and public imported memberships; the target
+may be any Namespace, so `expose vehicle::*` on a part usage exposes its features. Only an authored
+`private` or `protected` visibility hides a member. A recursive expose descends into every exposed
+member. Inherited memberships are not expanded. Results are deduplicated and ordered by canonical
+symbol identity before the view's effective filter conditions are applied.
 
 `outcome` is one of `resolved`, `unresolved`, `ambiguous`, `unsupported`, `absent`, or
 `incomplete`; no outcome is inferred from diagnostic text. A typed blocker whose diagnostic or
