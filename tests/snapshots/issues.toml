@@ -190,7 +190,7 @@ summary = "validateMetadataFeatureAnnotatedElement compares each annotated eleme
 id = "lowering-part-definition-members"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "an `exhibit <path>;` member parses (ExhibitState.state_reference) but sysml_resolution reports it as unsupported_part_definition_member, and the declared `exhibit state` form lowers as a plain StateUsage, so no ExhibitStateUsage with an owned ReferenceSubsetting reaches validateExhibitStateUsageReference"
+summary = "an `exhibit <path>;` member parses (ExhibitState.state_reference) but sysml_resolution reports it as unsupported_part_definition_member, and the declared `exhibit state` form lowers as a plain StateUsage, so no ExhibitStateUsage with an owned ReferenceSubsetting reaches validateExhibitStateUsageReference. Publishing ExhibitStateUsage as its own metaclass also needs the generated library rules keyed by default-supertype kind (the Pilot keys ExhibitStateUsage only for `performedAction` and inherits StateUsage `base` = States::stateActions); nearest-metaclass application without that key would drop stateActions."
 
 [[issue]]
 id = "lowering-result-expression-memberships"
