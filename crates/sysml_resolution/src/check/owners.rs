@@ -18,6 +18,13 @@ use crate::DiagnosticSeverity;
 use crate::MembershipRole;
 use sysml_contract::ElementKind;
 
+/// Which result-owning metaclass a type conforms to.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ResultOwner {
+    Function,
+    Expression,
+}
+
 impl<D> SemanticModel<D> {
     /// The published metaclass of a declaration, when it exists.
     fn metaclass_of(&self, id: DeclarationId) -> Option<ElementKind> {
@@ -129,14 +136,14 @@ impl<D> SemanticModel<D> {
         // `validateExpressionResultParameterMembership`, as the Pilot checks them: at most one
         // owned ReturnParameterMembership, every one after the first reported. A Function or
         // Expression that owns none inherits its result from its general type.
-        let result_count_code = if self.metaclass_conforms(id, ElementKind::Function) {
-            Some(DiagnosticCode::FunctionResultParameterCount)
+        let result_owner = if self.metaclass_conforms(id, ElementKind::Function) {
+            Some(ResultOwner::Function)
         } else if self.metaclass_conforms(id, ElementKind::Expression) {
-            Some(DiagnosticCode::ExpressionResultParameterCount)
+            Some(ResultOwner::Expression)
         } else {
             None
         };
-        if let Some(code) = result_count_code {
+        if let Some(result_owner) = result_owner {
             for member in self
                 .child_declarations(id)
                 .iter()
@@ -148,7 +155,10 @@ impl<D> SemanticModel<D> {
             {
                 diagnostics.push(self.declaration_diagnostic(
                     member,
-                    code.clone(),
+                    match result_owner {
+                        ResultOwner::Function => DiagnosticCode::FunctionResultParameterCount,
+                        ResultOwner::Expression => DiagnosticCode::ExpressionResultParameterCount,
+                    },
                     DiagnosticSeverity::Warning,
                 )?);
             }

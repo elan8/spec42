@@ -208,7 +208,7 @@ summary = "an assert constraint member parses but sysml_resolution reports it as
 id = "lowering-result-expression-memberships"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "the publication does not record a ResultExpressionMembership -- a function or expression body result expression produces no member in SMG -- so the rule has nothing to count"
+summary = "the publication does not record a ResultExpressionMembership -- a body result expression is only an evaluation site of its owner -- and it cannot count them from the parser's Expression body elements, which also carry members the pinned parser shreds into stray expressions (planning/UPSTREAM_PARSER_GAPS.md body-member-expression-shredding: `attribute a : T;` in a constraint def body, `protected in c : C;` in a KerML class body); counting them reports multiple_result_expressions on conforming corpus models"
 
 [[issue]]
 id = "lowering-state-subaction-memberships"
