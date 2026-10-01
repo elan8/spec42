@@ -27,10 +27,10 @@
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::MultiplicityBound;
 use crate::lower::facts::MultiplicityRecord;
+use crate::model::element_kind::element_kind;
 use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
 use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
-use crate::model::element_kind::element_kind;
 use crate::model::span::document_range;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
@@ -756,9 +756,10 @@ impl<D> SemanticModel<D> {
         specific: DeclarationId,
         general: DeclarationId,
     ) -> bool {
-        let (Some(specific), Some(general)) =
-            (self.storage.declaration(specific), self.storage.declaration(general))
-        else {
+        let (Some(specific), Some(general)) = (
+            self.storage.declaration(specific),
+            self.storage.declaration(general),
+        ) else {
             return false;
         };
         let (Some(specific), Some(general)) = (

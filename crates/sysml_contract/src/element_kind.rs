@@ -426,7 +426,10 @@ mod tests {
             let unique = generals.iter().collect::<BTreeSet<_>>();
             assert_eq!(unique.len(), generals.len(), "{kind} repeats a general");
             for general in generals {
-                assert!(!general.conforms_to(kind), "{kind} and {general} form a cycle");
+                assert!(
+                    !general.conforms_to(kind),
+                    "{kind} and {general} form a cycle"
+                );
             }
         }
     }

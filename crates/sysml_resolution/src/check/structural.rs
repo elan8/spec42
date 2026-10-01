@@ -672,7 +672,9 @@ impl<D> SemanticModel<D> {
             && !is_constant(subsetting)
             && matches!(
                 self.types.feature_is_variable(&self.storage, subsetting),
-                Some(crate::index::types::UsageTimeVariationOutcome::Resolved(true))
+                Some(crate::index::types::UsageTimeVariationOutcome::Resolved(
+                    true
+                ))
             )
     }
 
@@ -726,10 +728,11 @@ impl<D> SemanticModel<D> {
         }
         let subsetted_is_variable = matches!(
             self.types.feature_is_variable(&self.storage, subsetted),
-            Some(crate::index::types::UsageTimeVariationOutcome::Resolved(true))
+            Some(crate::index::types::UsageTimeVariationOutcome::Resolved(
+                true
+            ))
         );
-        let subsetted_owner =
-            crate::index::types::TypeIndex::owning_type(&self.storage, subsetted);
+        let subsetted_owner = crate::index::types::TypeIndex::owning_type(&self.storage, subsetted);
         let mut indeterminate = false;
         for (featuring_type, _) in subsetting_featuring {
             let mut within = true;

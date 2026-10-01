@@ -863,11 +863,18 @@ impl TypeIndex {
         // Each step moves to a strictly enclosing owner, so the walk is bounded by nesting depth.
         loop {
             let owner = Self::owning_type(storage, current)?;
-            if !self.variant_members.get(current.index()).copied().unwrap_or(false) {
+            if !self
+                .variant_members
+                .get(current.index())
+                .copied()
+                .unwrap_or(false)
+            {
                 return Some(owner);
             }
-            let (owner_declaration, owner_facts) =
-                (storage.declaration(owner)?, storage.declaration_facts(owner)?);
+            let (owner_declaration, owner_facts) = (
+                storage.declaration(owner)?,
+                storage.declaration_facts(owner)?,
+            );
             if !crate::resolve::is_usage_declaration(owner_declaration.kind)
                 || !owner_facts
                     .modifiers

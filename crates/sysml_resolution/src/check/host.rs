@@ -1675,13 +1675,13 @@ impl<D> SemanticModel<D> {
                 .into_iter()
                 .flatten()
             {
-                let negative = |bound: MultiplicityBound| {
-                    matches!(bound, MultiplicityBound::Literal(value) if value < 0)
-                };
+                let negative = |bound: MultiplicityBound| matches!(bound, MultiplicityBound::Literal(value) if value < 0);
                 let code = if negative(multiplicity.lower) || negative(multiplicity.upper) {
                     DiagnosticCode::MultiplicityBoundInvalid
-                } else if let (MultiplicityBound::Literal(lower), MultiplicityBound::Literal(upper)) =
-                    (multiplicity.lower, multiplicity.upper)
+                } else if let (
+                    MultiplicityBound::Literal(lower),
+                    MultiplicityBound::Literal(upper),
+                ) = (multiplicity.lower, multiplicity.upper)
                 {
                     if upper < lower {
                         DiagnosticCode::InvalidMultiplicity

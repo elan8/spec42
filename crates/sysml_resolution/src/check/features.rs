@@ -176,10 +176,9 @@ impl<D> SemanticModel<D> {
                 DiagnosticCode::FeatureValueOverridesNonDefault,
                 DiagnosticSeverity::Warning,
             )?;
-            diagnostic.related = Box::from([self.related_declaration(
-                *first,
-                crate::check::conformance::RELATED_DECLARED,
-            )?]);
+            diagnostic.related = Box::from([
+                self.related_declaration(*first, crate::check::conformance::RELATED_DECLARED)?
+            ]);
             diagnostics.push(diagnostic);
         }
         Ok(())
