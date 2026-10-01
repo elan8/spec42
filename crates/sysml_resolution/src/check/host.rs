@@ -28,6 +28,7 @@
 use crate::lower::facts::AnnotationForm;
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::MultiplicityBound;
+use crate::lower::facts::ParameterDirection;
 use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
 use crate::model::span::document_range;
@@ -1435,7 +1436,16 @@ impl<D> SemanticModel<D> {
             .iter()
             .filter_map(|child| {
                 let declaration = self.storage.declaration(*child)?;
-                is_input_role_member(declaration.kind).then_some((*child, declaration.kind))
+                // `Type::input`: the subject, actor and stakeholder parameters, and every other
+                // owned feature directed `in` or `inout` (`in ref part other : P;`).
+                let directed_input = self.storage.declaration_facts(*child).is_some_and(|facts| {
+                    matches!(
+                        facts.direction,
+                        Some(ParameterDirection::In) | Some(ParameterDirection::InOut)
+                    )
+                });
+                (is_input_role_member(declaration.kind) || directed_input)
+                    .then_some((*child, declaration.kind))
             })
             .collect::<Vec<_>>();
         roles.sort_by_key(|(child, _)| self.declaration_range(*child));

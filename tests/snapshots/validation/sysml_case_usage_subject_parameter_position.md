@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.22.3:validateCaseUsageSubjectParameterPosition
-blocked_by=semantic-subject-member-order
 type=file
 ~~~
 # SOURCE
@@ -39,6 +38,12 @@ package Roles {
         (code "subject_member_not_first")
         (source "semantic")
         (range (start 12 8) (end 12 34))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_case_usage_subject_parameter_position.md")
+            (range (start 11 8) (end 11 38))
+          )
+        )
       )
     )
   )
@@ -49,6 +54,18 @@ package Roles {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_case_usage_subject_parameter_position.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "subject_member_not_first")
+        (source "semantic")
+        (range (start 12 8) (end 12 34))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_case_usage_subject_parameter_position.md")
+            (range (start 11 8) (end 11 38))
+          )
+        )
+      )
     )
   )
 )
