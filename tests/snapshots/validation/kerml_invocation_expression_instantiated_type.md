@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.8.8:validateInvocationExpressionInstantiatedType
-blocked_by=semantic-invocation-instantiated-type-not-behavior
 type=file
 ~~~
 # SOURCE
@@ -39,7 +38,13 @@ package Expressions {
         (severity warning)
         (code "invocation_instantiated_type_not_behavior")
         (source "semantic")
-        (range (start 13 8) (end 13 46))
+        (range (start 13 24) (end 13 45))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_invocation_expression_instantiated_type.md")
+            (range (start 1 4) (end 1 21))
+          )
+        )
       )
     )
   )
@@ -50,6 +55,18 @@ package Expressions {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_invocation_expression_instantiated_type.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "invocation_instantiated_type_not_behavior")
+        (source "semantic")
+        (range (start 13 24) (end 13 45))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_invocation_expression_instantiated_type.md")
+            (range (start 1 4) (end 1 21))
+          )
+        )
+      )
     )
   )
 )

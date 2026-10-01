@@ -28,6 +28,7 @@ use crate::index::expressions::RequiredMeasurement;
 use crate::index::expressions::UnitOutcome;
 use crate::index::types::TypeIndex;
 use crate::lower::facts::FilterForm;
+use crate::model::element_kind::element_kind;
 use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
 use crate::model::span::document_range;
@@ -43,6 +44,7 @@ use crate::DiagnosticCode;
 use crate::DiagnosticLocation;
 use crate::DiagnosticOrigin;
 use crate::DiagnosticSeverity;
+use sysml_contract::ElementKind;
 
 use crate::evaluation::EvaluatedScalar;
 
@@ -82,6 +84,7 @@ impl<D> SemanticModel<D> {
         self.collect_unit_conformance(document, diagnostics)?;
         self.collect_boolean_expressions(document, declared, diagnostics)?;
         self.collect_invocation_arity(document, diagnostics)?;
+        self.collect_invocation_instantiated_types(document, diagnostics)?;
         Ok(())
     }
 
@@ -426,6 +429,63 @@ impl<D> SemanticModel<D> {
                     range: document_range(&self.storage, document, &filter.span)?,
                 },
                 related: Box::default(),
+            });
+        }
+        Ok(())
+    }
+
+    /// KerML 8.3.4.8.8 `validateInvocationExpressionInstantiatedType`: the instantiated type of
+    /// an invocation is a Behavior, or a Feature typed by a Behavior.
+    ///
+    /// A Feature callee's types are its canonical non-redundant type set
+    /// ([`TypeIndex::feature_types`], the Pilot's `Feature::type`). The Pilot additionally requires
+    /// that set to be a single type; this rule accepts any set containing a Behavior. A Feature
+    /// callee with no settled type -- an unresolved typing, or the implied library typing of an
+    /// untyped step when the library is not admitted -- is left unanswered rather than reported.
+    pub(crate) fn collect_invocation_instantiated_types(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        for invocation in self.expressions.invocations().iter() {
+            if invocation.document != document {
+                continue;
+            }
+            let Some(kind) = self.kind_of(invocation.callee).map(element_kind) else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            if kind.conforms_to(ElementKind::Behavior) {
+                continue;
+            }
+            if kind.conforms_to(ElementKind::Feature) {
+                if self.specialization_hierarchy_is_unsettled(invocation.callee) {
+                    continue;
+                }
+                let types = self.types.feature_types(invocation.callee);
+                if types.is_empty()
+                    || types.iter().any(|general| {
+                        self.kind_of(*general).is_some_and(|kind| {
+                            element_kind(kind).conforms_to(ElementKind::Behavior)
+                        })
+                    })
+                {
+                    continue;
+                }
+            }
+            diagnostics.push(Diagnostic {
+                payload: None,
+                message: DiagnosticCode::InvocationInstantiatedTypeNotBehavior
+                    .describe()
+                    .into(),
+                code: DiagnosticCode::InvocationInstantiatedTypeNotBehavior,
+                severity: DiagnosticSeverity::Warning,
+                origin: DiagnosticOrigin::Semantic,
+                subject: self.symbol_id(invocation.declaration),
+                location: DiagnosticLocation {
+                    document: writer::document_identity(self, document).into(),
+                    range: document_range(&self.storage, document, &invocation.span)?,
+                },
+                related: Box::from([self.related_declaration(invocation.callee, RELATED_CALLEE)?]),
             });
         }
         Ok(())

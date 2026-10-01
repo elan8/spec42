@@ -277,12 +277,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule detects two invocation arguments redefining the same input parameter; the canonical code invocation_duplicate_parameter_redefinition does not exist yet"
 
 [[issue]]
-id = "semantic-invocation-instantiated-type-not-behavior"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule checks the metaclass family of an invocation expression instantiated type; the canonical code invocation_instantiated_type_not_behavior does not exist yet"
-
-[[issue]]
 id = "semantic-multiplicity-bound-result-type"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"

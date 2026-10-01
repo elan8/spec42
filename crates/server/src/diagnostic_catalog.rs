@@ -400,6 +400,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "invocation_instantiated_type_not_behavior",
+        severity: "warning",
+        meaning: "An invocation `F(...)` invokes something that is neither a behavior nor a feature typed by a behavior (KerML validateInvocationExpressionInstantiatedType).",
+        typical_fix: "Invoke a function, calculation or other behavior; construct a structure or data value with `new T(...)`.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "metadata_type_not_metaclass",
         severity: "warning",
         meaning: "A metadata feature is not typed by exactly one metaclass (KerML validateMetadataFeatureMetaclass).",

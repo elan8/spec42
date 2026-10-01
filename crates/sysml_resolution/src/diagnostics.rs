@@ -498,6 +498,9 @@ semantic_diagnostic_codes! {
     /// KerML 8.3.4.7.3 `validateExpressionResultParameterMembership`.
     ExpressionResultParameterCount => "expression_result_parameter_count",
         "An expression may own at most one return parameter.";
+    /// KerML 8.3.4.8.8 `validateInvocationExpressionInstantiatedType`.
+    InvocationInstantiatedTypeNotBehavior => "invocation_instantiated_type_not_behavior",
+        "An invocation must invoke a behavior or a feature typed by a behavior.";
     /// KerML 8.3.4.12.3 `validateMetadataFeatureMetaclass`.
     MetadataTypeNotMetaclass => "metadata_type_not_metaclass",
         "A metadata feature must have exactly one type that is a metaclass.";

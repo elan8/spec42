@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Invocation instantiated type validation.** KerML 8.3.4.8.8
+  `validateInvocationExpressionInstantiatedType` (`invocation_instantiated_type_not_behavior`)
+  reports an invocation `F(...)` whose callee is neither a behavior nor a feature typed by one;
+  constructing a structure or data value requires `new T(...)`.
+
 - **Return parameter memberships.** An authored `return` parameter now publishes its
   `ReturnParameterMembership` as the `return-parameter` membership role, and new diagnostics check
   KerML 8.3.4.7.8 `validateReturnParameterMembershipOwningType`
