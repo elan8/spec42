@@ -32,6 +32,66 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
   )
   (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "feature_value_overrides_non_default")
+        (source "semantic")
+        (range (start 19 30) (end 19 56))
+        (related-information
+          (related
+            (uri "memory://snapshot/examples/timer/KitchenTimerPorts.sysml")
+            (range (start 10 2) (end 10 33))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "feature_value_overrides_non_default")
+        (source "semantic")
+        (range (start 26 32) (end 26 59))
+        (related-information
+          (related
+            (uri "memory://snapshot/examples/timer/KitchenTimerPorts.sysml")
+            (range (start 10 2) (end 10 33))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "feature_value_overrides_non_default")
+        (source "semantic")
+        (range (start 35 30) (end 35 56))
+        (related-information
+          (related
+            (uri "memory://snapshot/examples/timer/KitchenTimerPorts.sysml")
+            (range (start 10 2) (end 10 33))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "feature_value_overrides_non_default")
+        (source "semantic")
+        (range (start 41 30) (end 41 57))
+        (related-information
+          (related
+            (uri "memory://snapshot/examples/timer/KitchenTimerPorts.sysml")
+            (range (start 10 2) (end 10 33))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "feature_value_overrides_non_default")
+        (source "semantic")
+        (range (start 47 30) (end 47 56))
+        (related-information
+          (related
+            (uri "memory://snapshot/examples/timer/KitchenTimerPorts.sysml")
+            (range (start 10 2) (end 10 33))
+          )
+        )
+      )
     )
   )
   (document "memory://snapshot/examples/timer/Views.sysml"
@@ -74,32 +134,56 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (kind initial-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (initialState (reference "idle")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "idle")) (transitionTarget (reference "idle")) (transitionTrigger (reference "DecrementPressed")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "idle")) (succession (reference "idle")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::expired"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Expired")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::idle"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Idle")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "idle")) (transitionTarget (reference "idle")) (transitionTrigger (reference "IncrementPressed")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "idle")) (succession (reference "idle")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::paused"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Paused")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::running"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Running")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "running")) (transitionTarget (reference "expired")) (transitionTrigger (reference "CountdownComplete")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "running")) (succession (reference "expired")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "expired")) (transitionTarget (reference "idle")) (transitionTrigger (reference "ResetPressed")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "expired")) (succession (reference "idle")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "paused")) (transitionTarget (reference "idle")) (transitionTrigger (reference "ResetPressed")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "paused")) (succession (reference "idle")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "running")) (transitionTarget (reference "paused")) (transitionTrigger (reference "StopPressed")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "running")) (succession (reference "paused")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "idle")) (transitionTarget (reference "running")) (transitionTrigger (reference "StartPressed")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "idle")) (succession (reference "running")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "paused")) (transitionTarget (reference "running")) (transitionTrigger (reference "StartPressed")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "paused")) (succession (reference "running")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SI::volt") (import (shape membership) (recursive false))))))
@@ -151,23 +235,23 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "DisplayFormatReq")) (anonymous (kind require-constraint) (ordinal 0))))) (kind require-constraint) (membership (kind feature) (visibility default)) (documentation (doc (text " The visible timer presentation uses a two-field minutes-and-seconds display. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq::display"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Display")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm"))) (kind use-case-def) (membership (kind owning) (visibility default)) (documentation (doc (text " When countdown expires, buzzer sounds; user hears alarm. "))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::objective"))) (kind requirement) (membership (kind feature) (visibility default)) (documentation (doc (text " Audible alarm on expiration. "))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::objective"))) (kind objective-requirement) (membership (kind feature) (visibility default)) (documentation (doc (text " Audible alarm on expiration. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::timer"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "KitchenTimer")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::user"))) (kind case-actor) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "User")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume"))) (kind use-case-def) (membership (kind owning) (visibility default)) (documentation (doc (text " User pauses via Stop, resumes via Start. "))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::objective"))) (kind requirement) (membership (kind feature) (visibility default)) (documentation (doc (text " Pause and resume countdown. "))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::objective"))) (kind objective-requirement) (membership (kind feature) (visibility default)) (documentation (doc (text " Pause and resume countdown. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::timer"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "KitchenTimer")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::user"))) (kind case-actor) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "User")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart"))) (kind use-case-def) (membership (kind owning) (visibility default)) (documentation (doc (text " User presses Start with preset (e.g., 5 min) without changing value. "))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::objective"))) (kind requirement) (membership (kind feature) (visibility default)) (documentation (doc (text " Start with preset duration. "))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::objective"))) (kind objective-requirement) (membership (kind feature) (visibility default)) (documentation (doc (text " Start with preset duration. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::timer"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "KitchenTimer")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::user"))) (kind case-actor) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "User")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset"))) (kind use-case-def) (membership (kind owning) (visibility default)) (documentation (doc (text " User presses Reset to return to Idle and clear. "))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::objective"))) (kind requirement) (membership (kind feature) (visibility default)) (documentation (doc (text " Return to idle state and clear set value. "))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::objective"))) (kind objective-requirement) (membership (kind feature) (visibility default)) (documentation (doc (text " Return to idle state and clear set value. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::timer"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "KitchenTimer")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::user"))) (kind case-actor) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "User")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer"))) (kind use-case-def) (membership (kind owning) (visibility default)) (documentation (doc (text " User sets time via +/-, then presses Start; countdown begins. "))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::objective"))) (kind requirement) (membership (kind feature) (visibility default)) (documentation (doc (text " Start countdown with user-selected duration. "))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::objective"))) (kind objective-requirement) (membership (kind feature) (visibility default)) (documentation (doc (text " Start countdown with user-selected duration. "))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::timer"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "KitchenTimer")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::user"))) (kind case-actor) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "User")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq"))) (kind requirement-def) (membership (kind owning) (visibility default)) (documentation (doc (text " The controller state machine shall remain in one mutually exclusive timer mode at a time. "))))
@@ -1022,10 +1106,16 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::StopPressed"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::expired"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::expired"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::idle"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
@@ -1033,7 +1123,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::paused"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::paused"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::running"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
@@ -1041,31 +1136,62 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::maxCurrent"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1073,6 +1199,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1120,6 +1247,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::objective"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::objective"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::objective"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase::obj"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::timer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::user"))) (target (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::user"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm"))) (provenance implied))
@@ -1127,6 +1255,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::objective"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::objective"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::objective"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase::obj"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::timer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::user"))) (target (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::user"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume"))) (provenance implied))
@@ -1134,6 +1263,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::objective"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::objective"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::objective"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase::obj"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::timer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::user"))) (target (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::user"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart"))) (provenance implied))
@@ -1141,6 +1271,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::objective"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::objective"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::objective"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase::obj"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::timer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::user"))) (target (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::user"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset"))) (provenance implied))
@@ -1148,6 +1279,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::objective"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::objective"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::objective"))) (target (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase::obj"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::timer"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::user"))) (target (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::actors"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::user"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer"))) (provenance implied))
@@ -1186,6 +1318,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1197,6 +1330,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1212,6 +1346,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1230,6 +1365,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1279,6 +1415,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::MCU::pwr"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "MCU")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "MCU")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::MCU::pwr"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "MCU")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::MCU::pwr"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "MCU")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "MCU")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "MCU")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "MCU")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1642,6 +1779,20 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (anonymous (kind initial-state) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
@@ -1661,6 +1812,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle")))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle")))
@@ -1694,6 +1864,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::decrement_idle")))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "decrement_idle")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::expired")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
@@ -1760,6 +1938,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle")))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::AcceptMessageAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))))
@@ -1792,6 +1989,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::increment_idle")))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "increment_idle")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::paused")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
@@ -1858,6 +2063,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired")))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::AcceptMessageAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))))
@@ -1891,6 +2115,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_expired")))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_expired")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
@@ -1909,6 +2141,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired")))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired")))
@@ -1943,6 +2194,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired")))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_expired")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
@@ -1961,6 +2220,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused")))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused")))
@@ -1995,6 +2273,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused")))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_idle_from_paused")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
@@ -2013,6 +2299,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused")))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused")))
@@ -2047,6 +2352,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_paused")))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_paused")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
@@ -2065,6 +2378,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running")))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running")))
@@ -2099,6 +2431,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running")))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
@@ -2117,6 +2457,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume")))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume")))
@@ -2151,6 +2510,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume")))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any subclassification))
@@ -2180,6 +2547,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (subtype (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "MCU")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -2235,6 +2603,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -2699,9 +3068,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::obj"))))
       (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::obj")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
@@ -2715,6 +3086,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase::obj")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm::timer")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::HearAlarm")))
@@ -2768,9 +3140,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::obj"))))
       (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::obj")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
@@ -2784,6 +3158,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase::obj")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume::timer")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::PauseResume")))
@@ -2837,9 +3212,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::obj"))))
       (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::obj")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
@@ -2853,6 +3230,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase::obj")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart::timer")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::QuickStart")))
@@ -2906,9 +3284,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::obj"))))
       (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::obj")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
@@ -2922,6 +3302,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase::obj")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset::timer")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::Reset")))
@@ -2975,9 +3356,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::obj"))))
       (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/cases.md") (qualified-name "Cases::Case::obj")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
@@ -2991,6 +3374,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/use_cases.md") (qualified-name "UseCases::UseCase::obj")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer::timer")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::SetAndStartTimer")))
@@ -3358,6 +3742,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "ButtonInterface")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::ButtonInterface::pwr")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3442,6 +3827,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Buzzer")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Buzzer::pwr")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3547,6 +3933,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "BuzzerDriver")) (named (kind port) (name "pwrIn")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::BuzzerDriver::pwrIn")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3675,6 +4062,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "Display")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::Display::pwr")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4118,6 +4506,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (path (named (kind package) (name "KitchenTimerStructure")) (named (kind part-def) (name "MCU")) (named (kind port) (name "pwr")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::MCU::pwr")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -5443,6 +5832,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "sourceDomain": "standard-library"
     },
     {
+      "uri": "memory://snapshot/sysml.library/occurrences.md",
+      "sourceDomain": "standard-library"
+    },
+    {
       "uri": "memory://snapshot/sysml.library/states.md",
       "sourceDomain": "standard-library"
     }
@@ -5991,6 +6384,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 0,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::decrement_idle::::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::expired"
     },
     {
@@ -6007,6 +6405,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::increment_idle::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::increment_idle::::"
     },
     {
       "document": 0,
@@ -6031,12 +6434,22 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 0,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_expired::::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired"
     },
     {
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired::::"
     },
     {
       "document": 0,
@@ -6051,12 +6464,22 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 0,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused::::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_paused"
     },
     {
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_paused::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_paused::::"
     },
     {
       "document": 0,
@@ -6071,12 +6494,22 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 0,
       "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running::::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running_resume"
     },
     {
       "document": 0,
       "kind": "qualified-name",
       "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running_resume::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
+      "qualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running_resume::::"
     },
     {
       "document": 1,
@@ -6096,10 +6529,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 3,
       "kind": "qualified-name",
+      "qualifiedName": "Occurrences::happensBeforeLinks"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
       "qualifiedName": "States::StateAction"
     },
     {
-      "document": 3,
+      "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "States::stateActions"
     },
@@ -6119,8 +6557,22 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::decrement_idle",
+      "source": 21,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::decrement_idle",
+      "source": 21,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::decrement_idle::",
       "source": 21,
       "sourceDomain": "workspace"
     },
@@ -6133,8 +6585,22 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::increment_idle",
+      "source": 16,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::increment_idle",
+      "source": 16,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::increment_idle::",
       "source": 16,
       "sourceDomain": "workspace"
     },
@@ -6147,8 +6613,22 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_expired",
+      "source": 31,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_expired",
+      "source": 31,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_expired::",
       "source": 31,
       "sourceDomain": "workspace"
     },
@@ -6161,8 +6641,22 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired",
+      "source": 46,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired",
+      "source": 46,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_expired::",
       "source": 46,
       "sourceDomain": "workspace"
     },
@@ -6175,8 +6669,22 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused",
+      "source": 41,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused",
+      "source": 41,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_idle_from_paused::",
       "source": 41,
       "sourceDomain": "workspace"
     },
@@ -6189,8 +6697,22 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_paused",
+      "source": 26,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_paused",
+      "source": 26,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_paused::",
       "source": 26,
       "sourceDomain": "workspace"
     },
@@ -6203,8 +6725,22 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running",
+      "source": 11,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running",
+      "source": 11,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running::",
       "source": 11,
       "sourceDomain": "workspace"
     },
@@ -6217,8 +6753,22 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running_resume",
+      "source": 36,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running_resume",
+      "source": 36,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ReferenceUsage",
+      "ownerQualifiedName": "KitchenTimerBehavior::TimerStateMachine::to_running_resume::",
       "source": 36,
       "sourceDomain": "workspace"
     },
@@ -6260,43 +6810,43 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
+      "ordinal": 14,
       "relationshipKind": "containment",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 16,
+      "ordinal": 22,
       "relationshipKind": "containment",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
+      "ordinal": 30,
       "relationshipKind": "containment",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
+      "ordinal": 38,
       "relationshipKind": "containment",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 31,
+      "ordinal": 46,
       "relationshipKind": "containment",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 36,
+      "ordinal": 54,
       "relationshipKind": "containment",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 41,
+      "ordinal": 62,
       "relationshipKind": "containment",
       "source": 10
     },
@@ -6321,708 +6871,1098 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "kind": "relationship",
       "ordinal": 8,
+      "relationshipKind": "subsetting",
+      "source": 11
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
       "relationshipKind": "typeFeaturing",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 23,
+      "ordinal": 32,
       "relationshipKind": "containment",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 25,
+      "ordinal": 33,
       "relationshipKind": "containment",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 42,
-      "relationshipKind": "subsetting",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 43,
-      "relationshipKind": "transitionSource",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 44,
-      "relationshipKind": "transitionTarget",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 45,
-      "relationshipKind": "transitionTrigger",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 46,
-      "relationshipKind": "typeFeaturing",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 49,
-      "relationshipKind": "subsetting",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 47,
-      "relationshipKind": "succession",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 48,
-      "relationshipKind": "succession",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 50,
-      "relationshipKind": "typeFeaturing",
-      "source": 13
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "subsetting",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 44,
-      "relationshipKind": "succession",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 42,
-      "relationshipKind": "transition",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 11,
-      "relationshipKind": "typeFeaturing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "typing",
-      "source": 14
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 2,
-      "relationshipKind": "subsetting",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "succession",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
-      "relationshipKind": "succession",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "succession",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "transition",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "transition",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "transition",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "typeFeaturing",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 1,
-      "relationshipKind": "typing",
-      "source": 15
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
+      "ordinal": 34,
       "relationshipKind": "containment",
-      "source": 16
+      "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 30,
+      "ordinal": 36,
       "relationshipKind": "containment",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 51,
-      "relationshipKind": "subsetting",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 52,
-      "relationshipKind": "transitionSource",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 53,
-      "relationshipKind": "transitionTarget",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 54,
-      "relationshipKind": "transitionTrigger",
-      "source": 16
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
-      "relationshipKind": "typeFeaturing",
-      "source": 16
+      "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 58,
       "relationshipKind": "subsetting",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 56,
-      "relationshipKind": "succession",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 57,
-      "relationshipKind": "succession",
-      "source": 17
+      "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 59,
+      "relationshipKind": "transitionSource",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 60,
+      "relationshipKind": "transitionTarget",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 61,
+      "relationshipKind": "transitionTrigger",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 62,
       "relationshipKind": "typeFeaturing",
-      "source": 17
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "subsetting",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
-      "relationshipKind": "succession",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 39,
-      "relationshipKind": "succession",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "transition",
-      "source": 18
+      "source": 12
     },
     {
       "kind": "relationship",
       "ordinal": 37,
-      "relationshipKind": "transition",
-      "source": 18
+      "relationshipKind": "containment",
+      "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "typeFeaturing",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "typing",
-      "source": 18
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
+      "ordinal": 64,
       "relationshipKind": "subsetting",
-      "source": 19
+      "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "succession",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "succession",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
-      "relationshipKind": "transition",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "transition",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "typeFeaturing",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "typing",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "containment",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "containment",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
+      "ordinal": 66,
       "relationshipKind": "subsetting",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 25,
-      "relationshipKind": "transitionSource",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 26,
-      "relationshipKind": "transitionTarget",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 27,
-      "relationshipKind": "transitionTrigger",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 28,
-      "relationshipKind": "typeFeaturing",
-      "source": 20
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "subsetting",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 29,
-      "relationshipKind": "succession",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 30,
-      "relationshipKind": "succession",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "typeFeaturing",
-      "source": 21
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 43,
-      "relationshipKind": "containment",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 45,
-      "relationshipKind": "containment",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 78,
-      "relationshipKind": "subsetting",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 79,
-      "relationshipKind": "transitionSource",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 80,
-      "relationshipKind": "transitionTarget",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 81,
-      "relationshipKind": "transitionTrigger",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 82,
-      "relationshipKind": "typeFeaturing",
-      "source": 22
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 85,
-      "relationshipKind": "subsetting",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 83,
-      "relationshipKind": "succession",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 84,
-      "relationshipKind": "succession",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 86,
-      "relationshipKind": "typeFeaturing",
-      "source": 23
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "containment",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 40,
-      "relationshipKind": "containment",
-      "source": 24
+      "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 69,
       "relationshipKind": "subsetting",
-      "source": 24
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 67,
+      "relationshipKind": "succession",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 68,
+      "relationshipKind": "succession",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 63,
+      "relationshipKind": "typeFeaturing",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 65,
+      "relationshipKind": "typeFeaturing",
+      "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 70,
-      "relationshipKind": "transitionSource",
-      "source": 24
+      "relationshipKind": "typeFeaturing",
+      "source": 13
     },
     {
       "kind": "relationship",
       "ordinal": 71,
-      "relationshipKind": "transitionTarget",
-      "source": 24
+      "relationshipKind": "typeFeaturing",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "subsetting",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 67,
+      "relationshipKind": "succession",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 63,
+      "relationshipKind": "transition",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 12,
+      "relationshipKind": "typeFeaturing",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "typing",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 2,
+      "relationshipKind": "subsetting",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "succession",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 35,
+      "relationshipKind": "succession",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 43,
+      "relationshipKind": "succession",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "transition",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 31,
+      "relationshipKind": "transition",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 39,
+      "relationshipKind": "transition",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
+      "relationshipKind": "typeFeaturing",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 1,
+      "relationshipKind": "typing",
+      "source": 16
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 40,
+      "relationshipKind": "containment",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 41,
+      "relationshipKind": "containment",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 42,
+      "relationshipKind": "containment",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 44,
+      "relationshipKind": "containment",
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 72,
-      "relationshipKind": "transitionTrigger",
-      "source": 24
+      "relationshipKind": "subsetting",
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 73,
-      "relationshipKind": "typeFeaturing",
-      "source": 24
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "subsetting",
-      "source": 25
+      "relationshipKind": "transitionSource",
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 74,
-      "relationshipKind": "succession",
-      "source": 25
+      "relationshipKind": "transitionTarget",
+      "source": 17
     },
     {
       "kind": "relationship",
       "ordinal": 75,
+      "relationshipKind": "transitionTrigger",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 76,
+      "relationshipKind": "typeFeaturing",
+      "source": 17
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 45,
+      "relationshipKind": "containment",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 78,
+      "relationshipKind": "subsetting",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 80,
+      "relationshipKind": "subsetting",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 83,
+      "relationshipKind": "subsetting",
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 81,
       "relationshipKind": "succession",
-      "source": 25
+      "source": 18
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 82,
+      "relationshipKind": "succession",
+      "source": 18
     },
     {
       "kind": "relationship",
       "ordinal": 77,
       "relationshipKind": "typeFeaturing",
-      "source": 25
+      "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
-      "relationshipKind": "containment",
-      "source": 26
+      "ordinal": 79,
+      "relationshipKind": "typeFeaturing",
+      "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "containment",
-      "source": 26
+      "ordinal": 84,
+      "relationshipKind": "typeFeaturing",
+      "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "ordinal": 85,
+      "relationshipKind": "typeFeaturing",
+      "source": 19
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
       "relationshipKind": "subsetting",
-      "source": 26
+      "source": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "transitionSource",
-      "source": 26
+      "ordinal": 51,
+      "relationshipKind": "succession",
+      "source": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "transitionTarget",
-      "source": 26
+      "ordinal": 59,
+      "relationshipKind": "succession",
+      "source": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "transitionTrigger",
-      "source": 26
+      "ordinal": 47,
+      "relationshipKind": "transition",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "transition",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 6,
+      "relationshipKind": "typeFeaturing",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
+      "relationshipKind": "typing",
+      "source": 20
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
+      "relationshipKind": "subsetting",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 11,
+      "relationshipKind": "succession",
+      "source": 21
     },
     {
       "kind": "relationship",
       "ordinal": 19,
-      "relationshipKind": "typeFeaturing",
-      "source": 26
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "subsetting",
-      "source": 27
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
       "relationshipKind": "succession",
-      "source": 27
+      "source": 21
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
-      "relationshipKind": "succession",
-      "source": 27
+      "ordinal": 7,
+      "relationshipKind": "transition",
+      "source": 21
     },
     {
       "kind": "relationship",
-      "ordinal": 23,
+      "ordinal": 15,
+      "relationshipKind": "transition",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
       "relationshipKind": "typeFeaturing",
-      "source": 27
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 13,
+      "relationshipKind": "typing",
+      "source": 21
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "containment",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "containment",
+      "source": 22
     },
     {
       "kind": "relationship",
       "ordinal": 18,
       "relationshipKind": "containment",
-      "source": 28
+      "source": 22
     },
     {
       "kind": "relationship",
       "ordinal": 20,
       "relationshipKind": "containment",
-      "source": 28
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 30,
+      "relationshipKind": "subsetting",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 31,
+      "relationshipKind": "transitionSource",
+      "source": 22
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 32,
+      "relationshipKind": "transitionTarget",
+      "source": 22
     },
     {
       "kind": "relationship",
       "ordinal": 33,
-      "relationshipKind": "subsetting",
-      "source": 28
+      "relationshipKind": "transitionTrigger",
+      "source": 22
     },
     {
       "kind": "relationship",
       "ordinal": 34,
-      "relationshipKind": "transitionSource",
-      "source": 28
+      "relationshipKind": "typeFeaturing",
+      "source": 22
     },
     {
       "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "transitionTarget",
-      "source": 28
+      "ordinal": 21,
+      "relationshipKind": "containment",
+      "source": 23
     },
     {
       "kind": "relationship",
       "ordinal": 36,
-      "relationshipKind": "transitionTrigger",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 37,
-      "relationshipKind": "typeFeaturing",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 40,
       "relationshipKind": "subsetting",
-      "source": 29
+      "source": 23
     },
     {
       "kind": "relationship",
       "ordinal": 38,
-      "relationshipKind": "succession",
-      "source": 29
+      "relationshipKind": "subsetting",
+      "source": 23
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 41,
+      "relationshipKind": "subsetting",
+      "source": 23
     },
     {
       "kind": "relationship",
       "ordinal": 39,
       "relationshipKind": "succession",
-      "source": 29
+      "source": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "typeFeaturing",
-      "source": 29
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "containment",
-      "source": 30
+      "ordinal": 40,
+      "relationshipKind": "succession",
+      "source": 23
     },
     {
       "kind": "relationship",
       "ordinal": 35,
-      "relationshipKind": "containment",
-      "source": 30
+      "relationshipKind": "typeFeaturing",
+      "source": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 60,
-      "relationshipKind": "subsetting",
-      "source": 30
+      "ordinal": 37,
+      "relationshipKind": "typeFeaturing",
+      "source": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 61,
-      "relationshipKind": "transitionSource",
-      "source": 30
+      "ordinal": 42,
+      "relationshipKind": "typeFeaturing",
+      "source": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 62,
-      "relationshipKind": "transitionTarget",
-      "source": 30
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 63,
-      "relationshipKind": "transitionTrigger",
-      "source": 30
+      "ordinal": 43,
+      "relationshipKind": "typeFeaturing",
+      "source": 24
     },
     {
       "kind": "relationship",
       "ordinal": 64,
+      "relationshipKind": "containment",
+      "source": 25
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 65,
+      "relationshipKind": "containment",
+      "source": 25
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 66,
+      "relationshipKind": "containment",
+      "source": 25
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 68,
+      "relationshipKind": "containment",
+      "source": 25
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 114,
+      "relationshipKind": "subsetting",
+      "source": 25
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 115,
+      "relationshipKind": "transitionSource",
+      "source": 25
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 116,
+      "relationshipKind": "transitionTarget",
+      "source": 25
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 117,
+      "relationshipKind": "transitionTrigger",
+      "source": 25
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 118,
+      "relationshipKind": "typeFeaturing",
+      "source": 25
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 69,
+      "relationshipKind": "containment",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 120,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 122,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 125,
+      "relationshipKind": "subsetting",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 123,
+      "relationshipKind": "succession",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 124,
+      "relationshipKind": "succession",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 119,
+      "relationshipKind": "typeFeaturing",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 121,
+      "relationshipKind": "typeFeaturing",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 126,
+      "relationshipKind": "typeFeaturing",
+      "source": 26
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 127,
+      "relationshipKind": "typeFeaturing",
+      "source": 27
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 56,
+      "relationshipKind": "containment",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
+      "relationshipKind": "containment",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 58,
+      "relationshipKind": "containment",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 60,
+      "relationshipKind": "containment",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 100,
+      "relationshipKind": "subsetting",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 101,
+      "relationshipKind": "transitionSource",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 102,
+      "relationshipKind": "transitionTarget",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 103,
+      "relationshipKind": "transitionTrigger",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 104,
+      "relationshipKind": "typeFeaturing",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 61,
+      "relationshipKind": "containment",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 106,
+      "relationshipKind": "subsetting",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 108,
+      "relationshipKind": "subsetting",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 111,
+      "relationshipKind": "subsetting",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 109,
+      "relationshipKind": "succession",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 110,
+      "relationshipKind": "succession",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 105,
+      "relationshipKind": "typeFeaturing",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 107,
+      "relationshipKind": "typeFeaturing",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 112,
+      "relationshipKind": "typeFeaturing",
+      "source": 29
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 113,
       "relationshipKind": "typeFeaturing",
       "source": 30
     },
     {
       "kind": "relationship",
-      "ordinal": 67,
+      "ordinal": 8,
+      "relationshipKind": "containment",
+      "source": 31
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "containment",
+      "source": 31
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "containment",
+      "source": 31
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 12,
+      "relationshipKind": "containment",
+      "source": 31
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
       "relationshipKind": "subsetting",
       "source": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 65,
-      "relationshipKind": "succession",
+      "ordinal": 17,
+      "relationshipKind": "transitionSource",
       "source": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 66,
-      "relationshipKind": "succession",
+      "ordinal": 18,
+      "relationshipKind": "transitionTarget",
       "source": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 68,
+      "ordinal": 19,
+      "relationshipKind": "transitionTrigger",
+      "source": 31
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
       "relationshipKind": "typeFeaturing",
       "source": 31
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 13,
+      "relationshipKind": "containment",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
+      "relationshipKind": "subsetting",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "subsetting",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "subsetting",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 25,
+      "relationshipKind": "succession",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
+      "relationshipKind": "succession",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 21,
+      "relationshipKind": "typeFeaturing",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
+      "relationshipKind": "typeFeaturing",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
+      "relationshipKind": "typeFeaturing",
+      "source": 32
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
+      "relationshipKind": "typeFeaturing",
+      "source": 33
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "containment",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 25,
+      "relationshipKind": "containment",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
+      "relationshipKind": "containment",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
+      "relationshipKind": "containment",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 44,
+      "relationshipKind": "subsetting",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 45,
+      "relationshipKind": "transitionSource",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 46,
+      "relationshipKind": "transitionTarget",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 47,
+      "relationshipKind": "transitionTrigger",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 48,
+      "relationshipKind": "typeFeaturing",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
+      "relationshipKind": "containment",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 50,
+      "relationshipKind": "subsetting",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 52,
+      "relationshipKind": "subsetting",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "subsetting",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 53,
+      "relationshipKind": "succession",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 54,
+      "relationshipKind": "succession",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 49,
+      "relationshipKind": "typeFeaturing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 51,
+      "relationshipKind": "typeFeaturing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 56,
+      "relationshipKind": "typeFeaturing",
+      "source": 35
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
+      "relationshipKind": "typeFeaturing",
+      "source": 36
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 48,
+      "relationshipKind": "containment",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 49,
+      "relationshipKind": "containment",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 50,
+      "relationshipKind": "containment",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 52,
+      "relationshipKind": "containment",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 86,
+      "relationshipKind": "subsetting",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 87,
+      "relationshipKind": "transitionSource",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 88,
+      "relationshipKind": "transitionTarget",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 89,
+      "relationshipKind": "transitionTrigger",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 90,
+      "relationshipKind": "typeFeaturing",
+      "source": 37
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 53,
+      "relationshipKind": "containment",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 92,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 94,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 97,
+      "relationshipKind": "subsetting",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 95,
+      "relationshipKind": "succession",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 96,
+      "relationshipKind": "succession",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 91,
+      "relationshipKind": "typeFeaturing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 93,
+      "relationshipKind": "typeFeaturing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 98,
+      "relationshipKind": "typeFeaturing",
+      "source": 38
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 99,
+      "relationshipKind": "typeFeaturing",
+      "source": 39
     }
   ],
   "selectedView": {
-    "reference": 32,
+    "reference": 40,
     "kind": "state-transition-view",
     "name": "timerStateMachine",
     "source": 51
@@ -7036,108 +7976,135 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "kind": "containment",
         "navigation": 3,
-        "origin": 26,
+        "origin": 50,
         "provenance": "authored",
-        "reference": 54,
+        "reference": 79,
         "source": 0,
-        "target": 26
+        "target": 50
       },
       {
         "kind": "containment",
         "navigation": 7,
-        "origin": 27,
+        "origin": 51,
         "provenance": "authored",
-        "reference": 55,
+        "reference": 80,
         "source": 0,
-        "target": 27
+        "target": 51
       },
       {
         "kind": "containment",
         "navigation": 1,
-        "origin": 25,
+        "origin": 49,
         "provenance": "authored",
-        "reference": 56,
+        "reference": 81,
         "source": 0,
-        "target": 25
+        "target": 49
       },
       {
         "kind": "initial-state",
         "navigation": 2,
-        "origin": 25,
+        "origin": 49,
         "provenance": "authored",
-        "reference": 68,
-        "source": 25,
-        "target": 26
+        "reference": 93,
+        "source": 49,
+        "target": 50
       },
       {
         "kind": "containment",
         "navigation": 9,
-        "origin": 28,
+        "origin": 52,
         "provenance": "authored",
-        "reference": 57,
+        "reference": 82,
         "source": 0,
-        "target": 28
+        "target": 52
       },
       {
         "kind": "containment",
         "navigation": 5,
-        "origin": 29,
+        "origin": 53,
         "provenance": "authored",
-        "reference": 58,
+        "reference": 83,
         "source": 0,
-        "target": 29
+        "target": 53
       },
       {
         "kind": "containment",
         "navigation": 27,
-        "origin": 22,
+        "origin": 43,
         "provenance": "authored",
-        "reference": 59,
+        "reference": 84,
         "source": 0,
-        "target": 22
+        "target": 43
       },
       {
         "kind": "transition",
         "navigation": 28,
-        "origin": 22,
+        "origin": 43,
         "provenance": "implied",
-        "reference": 117,
-        "source": 29,
-        "target": 27
+        "reference": 159,
+        "source": 53,
+        "target": 51
       },
       {
         "kind": "containment",
         "navigation": 26,
-        "origin": 23,
+        "origin": 48,
         "provenance": "authored",
-        "reference": 154,
-        "source": 22,
-        "target": 23
+        "reference": 220,
+        "source": 43,
+        "target": 48
+      },
+      {
+        "kind": "containment",
+        "navigation": 26,
+        "origin": 48,
+        "provenance": "authored",
+        "reference": 221,
+        "source": 43,
+        "target": 48
+      },
+      {
+        "kind": "containment",
+        "navigation": 26,
+        "origin": 44,
+        "provenance": "authored",
+        "reference": 222,
+        "source": 43,
+        "target": 44
       },
       {
         "kind": "succession",
         "navigation": 28,
-        "origin": 23,
-        "provenance": "authored",
-        "reference": 115,
-        "source": 29,
-        "target": 27
+        "origin": 44,
+        "provenance": "implied",
+        "reference": 157,
+        "source": 53,
+        "target": 51
       },
       {
         "kind": "containment",
         "navigation": 26,
-        "origin": 24,
+        "origin": 45,
         "provenance": "authored",
-        "reference": 155,
-        "source": 22,
-        "target": 24
+        "reference": 223,
+        "source": 43,
+        "target": 45
+      },
+      {
+        "kind": "containment",
+        "navigation": 26,
+        "origin": 46,
+        "provenance": "authored",
+        "reference": 229,
+        "source": 45,
+        "target": 46
       },
       {
         "kind": "containment",
         "navigation": 32,
         "origin": 1,
         "provenance": "authored",
-        "reference": 60,
+        "reference": 85,
         "source": 0,
         "target": 1
       },
@@ -7146,16 +8113,34 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 33,
         "origin": 1,
         "provenance": "implied",
-        "reference": 118,
-        "source": 29,
-        "target": 28
+        "reference": 160,
+        "source": 53,
+        "target": 52
+      },
+      {
+        "kind": "containment",
+        "navigation": 31,
+        "origin": 6,
+        "provenance": "authored",
+        "reference": 163,
+        "source": 1,
+        "target": 6
+      },
+      {
+        "kind": "containment",
+        "navigation": 31,
+        "origin": 6,
+        "provenance": "authored",
+        "reference": 164,
+        "source": 1,
+        "target": 6
       },
       {
         "kind": "containment",
         "navigation": 31,
         "origin": 2,
         "provenance": "authored",
-        "reference": 121,
+        "reference": 165,
         "source": 1,
         "target": 2
       },
@@ -7163,266 +8148,212 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 33,
         "origin": 2,
-        "provenance": "authored",
-        "reference": 116,
-        "source": 29,
-        "target": 28
+        "provenance": "implied",
+        "reference": 158,
+        "source": 53,
+        "target": 52
       },
       {
         "kind": "containment",
         "navigation": 31,
         "origin": 3,
         "provenance": "authored",
-        "reference": 122,
+        "reference": 166,
         "source": 1,
         "target": 3
       },
       {
         "kind": "containment",
-        "navigation": 12,
+        "navigation": 31,
         "origin": 4,
         "provenance": "authored",
-        "reference": 61,
-        "source": 0,
+        "reference": 172,
+        "source": 3,
         "target": 4
       },
       {
-        "kind": "transition",
-        "navigation": 13,
-        "origin": 4,
-        "provenance": "implied",
-        "reference": 91,
-        "source": 26,
-        "target": 29
-      },
-      {
         "kind": "containment",
-        "navigation": 11,
-        "origin": 5,
-        "provenance": "authored",
-        "reference": 165,
-        "source": 4,
-        "target": 5
-      },
-      {
-        "kind": "succession",
-        "navigation": 13,
-        "origin": 5,
-        "provenance": "authored",
-        "reference": 88,
-        "source": 26,
-        "target": 29
-      },
-      {
-        "kind": "containment",
-        "navigation": 11,
-        "origin": 6,
-        "provenance": "authored",
-        "reference": 166,
-        "source": 4,
-        "target": 6
-      },
-      {
-        "kind": "containment",
-        "navigation": 22,
+        "navigation": 12,
         "origin": 7,
         "provenance": "authored",
-        "reference": 62,
+        "reference": 86,
         "source": 0,
         "target": 7
       },
       {
         "kind": "transition",
-        "navigation": 23,
+        "navigation": 13,
         "origin": 7,
         "provenance": "implied",
-        "reference": 92,
-        "source": 26,
-        "target": 26
+        "reference": 125,
+        "source": 50,
+        "target": 53
       },
       {
         "kind": "containment",
-        "navigation": 21,
+        "navigation": 11,
+        "origin": 12,
+        "provenance": "authored",
+        "reference": 239,
+        "source": 7,
+        "target": 12
+      },
+      {
+        "kind": "containment",
+        "navigation": 11,
+        "origin": 12,
+        "provenance": "authored",
+        "reference": 240,
+        "source": 7,
+        "target": 12
+      },
+      {
+        "kind": "containment",
+        "navigation": 11,
         "origin": 8,
         "provenance": "authored",
-        "reference": 71,
+        "reference": 241,
         "source": 7,
         "target": 8
       },
       {
         "kind": "succession",
-        "navigation": 23,
+        "navigation": 13,
         "origin": 8,
-        "provenance": "authored",
-        "reference": 89,
-        "source": 26,
-        "target": 26
+        "provenance": "implied",
+        "reference": 122,
+        "source": 50,
+        "target": 53
       },
       {
         "kind": "containment",
-        "navigation": 21,
+        "navigation": 11,
         "origin": 9,
         "provenance": "authored",
-        "reference": 72,
+        "reference": 242,
         "source": 7,
         "target": 9
       },
       {
         "kind": "containment",
-        "navigation": 17,
+        "navigation": 11,
         "origin": 10,
         "provenance": "authored",
-        "reference": 63,
-        "source": 0,
+        "reference": 248,
+        "source": 9,
         "target": 10
       },
       {
-        "kind": "transition",
-        "navigation": 18,
-        "origin": 10,
-        "provenance": "implied",
-        "reference": 93,
-        "source": 26,
-        "target": 26
-      },
-      {
         "kind": "containment",
-        "navigation": 16,
-        "origin": 11,
-        "provenance": "authored",
-        "reference": 96,
-        "source": 10,
-        "target": 11
-      },
-      {
-        "kind": "succession",
-        "navigation": 18,
-        "origin": 11,
-        "provenance": "authored",
-        "reference": 90,
-        "source": 26,
-        "target": 26
-      },
-      {
-        "kind": "containment",
-        "navigation": 16,
-        "origin": 12,
-        "provenance": "authored",
-        "reference": 97,
-        "source": 10,
-        "target": 12
-      },
-      {
-        "kind": "containment",
-        "navigation": 37,
+        "navigation": 22,
         "origin": 13,
         "provenance": "authored",
-        "reference": 64,
+        "reference": 87,
         "source": 0,
         "target": 13
       },
       {
         "kind": "transition",
-        "navigation": 38,
+        "navigation": 23,
         "origin": 13,
         "provenance": "implied",
-        "reference": 110,
-        "source": 27,
-        "target": 29
+        "reference": 126,
+        "source": 50,
+        "target": 50
       },
       {
         "kind": "containment",
-        "navigation": 36,
+        "navigation": 21,
+        "origin": 18,
+        "provenance": "authored",
+        "reference": 97,
+        "source": 13,
+        "target": 18
+      },
+      {
+        "kind": "containment",
+        "navigation": 21,
+        "origin": 18,
+        "provenance": "authored",
+        "reference": 98,
+        "source": 13,
+        "target": 18
+      },
+      {
+        "kind": "containment",
+        "navigation": 21,
         "origin": 14,
         "provenance": "authored",
-        "reference": 176,
+        "reference": 99,
         "source": 13,
         "target": 14
       },
       {
         "kind": "succession",
-        "navigation": 38,
+        "navigation": 23,
         "origin": 14,
-        "provenance": "authored",
-        "reference": 108,
-        "source": 27,
-        "target": 29
+        "provenance": "implied",
+        "reference": 123,
+        "source": 50,
+        "target": 50
       },
       {
         "kind": "containment",
-        "navigation": 36,
+        "navigation": 21,
         "origin": 15,
         "provenance": "authored",
-        "reference": 177,
+        "reference": 100,
         "source": 13,
         "target": 15
       },
       {
         "kind": "containment",
-        "navigation": 42,
+        "navigation": 21,
         "origin": 16,
         "provenance": "authored",
-        "reference": 65,
-        "source": 0,
+        "reference": 106,
+        "source": 15,
         "target": 16
       },
       {
-        "kind": "transition",
-        "navigation": 43,
-        "origin": 16,
-        "provenance": "implied",
-        "reference": 111,
-        "source": 27,
-        "target": 26
-      },
-      {
         "kind": "containment",
-        "navigation": 41,
-        "origin": 17,
-        "provenance": "authored",
-        "reference": 143,
-        "source": 16,
-        "target": 17
-      },
-      {
-        "kind": "succession",
-        "navigation": 43,
-        "origin": 17,
-        "provenance": "authored",
-        "reference": 109,
-        "source": 27,
-        "target": 26
-      },
-      {
-        "kind": "containment",
-        "navigation": 41,
-        "origin": 18,
-        "provenance": "authored",
-        "reference": 144,
-        "source": 16,
-        "target": 18
-      },
-      {
-        "kind": "containment",
-        "navigation": 47,
+        "navigation": 17,
         "origin": 19,
         "provenance": "authored",
-        "reference": 66,
+        "reference": 88,
         "source": 0,
         "target": 19
       },
       {
         "kind": "transition",
-        "navigation": 48,
+        "navigation": 18,
         "origin": 19,
         "provenance": "implied",
-        "reference": 84,
-        "source": 28,
-        "target": 26
+        "reference": 127,
+        "source": 50,
+        "target": 50
       },
       {
         "kind": "containment",
-        "navigation": 46,
+        "navigation": 16,
+        "origin": 24,
+        "provenance": "authored",
+        "reference": 130,
+        "source": 19,
+        "target": 24
+      },
+      {
+        "kind": "containment",
+        "navigation": 16,
+        "origin": 24,
+        "provenance": "authored",
+        "reference": 131,
+        "source": 19,
+        "target": 24
+      },
+      {
+        "kind": "containment",
+        "navigation": 16,
         "origin": 20,
         "provenance": "authored",
         "reference": 132,
@@ -7431,21 +8362,246 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 48,
+        "navigation": 18,
         "origin": 20,
-        "provenance": "authored",
-        "reference": 83,
-        "source": 28,
-        "target": 26
+        "provenance": "implied",
+        "reference": 124,
+        "source": 50,
+        "target": 50
       },
       {
         "kind": "containment",
-        "navigation": 46,
+        "navigation": 16,
         "origin": 21,
         "provenance": "authored",
         "reference": 133,
         "source": 19,
         "target": 21
+      },
+      {
+        "kind": "containment",
+        "navigation": 16,
+        "origin": 22,
+        "provenance": "authored",
+        "reference": 139,
+        "source": 21,
+        "target": 22
+      },
+      {
+        "kind": "containment",
+        "navigation": 37,
+        "origin": 25,
+        "provenance": "authored",
+        "reference": 89,
+        "source": 0,
+        "target": 25
+      },
+      {
+        "kind": "transition",
+        "navigation": 38,
+        "origin": 25,
+        "provenance": "implied",
+        "reference": 152,
+        "source": 51,
+        "target": 53
+      },
+      {
+        "kind": "containment",
+        "navigation": 36,
+        "origin": 30,
+        "provenance": "authored",
+        "reference": 258,
+        "source": 25,
+        "target": 30
+      },
+      {
+        "kind": "containment",
+        "navigation": 36,
+        "origin": 30,
+        "provenance": "authored",
+        "reference": 259,
+        "source": 25,
+        "target": 30
+      },
+      {
+        "kind": "containment",
+        "navigation": 36,
+        "origin": 26,
+        "provenance": "authored",
+        "reference": 260,
+        "source": 25,
+        "target": 26
+      },
+      {
+        "kind": "succession",
+        "navigation": 38,
+        "origin": 26,
+        "provenance": "implied",
+        "reference": 150,
+        "source": 51,
+        "target": 53
+      },
+      {
+        "kind": "containment",
+        "navigation": 36,
+        "origin": 27,
+        "provenance": "authored",
+        "reference": 261,
+        "source": 25,
+        "target": 27
+      },
+      {
+        "kind": "containment",
+        "navigation": 36,
+        "origin": 28,
+        "provenance": "authored",
+        "reference": 267,
+        "source": 27,
+        "target": 28
+      },
+      {
+        "kind": "containment",
+        "navigation": 42,
+        "origin": 31,
+        "provenance": "authored",
+        "reference": 90,
+        "source": 0,
+        "target": 31
+      },
+      {
+        "kind": "transition",
+        "navigation": 43,
+        "origin": 31,
+        "provenance": "implied",
+        "reference": 153,
+        "source": 51,
+        "target": 50
+      },
+      {
+        "kind": "containment",
+        "navigation": 41,
+        "origin": 36,
+        "provenance": "authored",
+        "reference": 201,
+        "source": 31,
+        "target": 36
+      },
+      {
+        "kind": "containment",
+        "navigation": 41,
+        "origin": 36,
+        "provenance": "authored",
+        "reference": 202,
+        "source": 31,
+        "target": 36
+      },
+      {
+        "kind": "containment",
+        "navigation": 41,
+        "origin": 32,
+        "provenance": "authored",
+        "reference": 203,
+        "source": 31,
+        "target": 32
+      },
+      {
+        "kind": "succession",
+        "navigation": 43,
+        "origin": 32,
+        "provenance": "implied",
+        "reference": 151,
+        "source": 51,
+        "target": 50
+      },
+      {
+        "kind": "containment",
+        "navigation": 41,
+        "origin": 33,
+        "provenance": "authored",
+        "reference": 204,
+        "source": 31,
+        "target": 33
+      },
+      {
+        "kind": "containment",
+        "navigation": 41,
+        "origin": 34,
+        "provenance": "authored",
+        "reference": 210,
+        "source": 33,
+        "target": 34
+      },
+      {
+        "kind": "containment",
+        "navigation": 47,
+        "origin": 37,
+        "provenance": "authored",
+        "reference": 91,
+        "source": 0,
+        "target": 37
+      },
+      {
+        "kind": "transition",
+        "navigation": 48,
+        "origin": 37,
+        "provenance": "implied",
+        "reference": 118,
+        "source": 52,
+        "target": 50
+      },
+      {
+        "kind": "containment",
+        "navigation": 46,
+        "origin": 42,
+        "provenance": "authored",
+        "reference": 182,
+        "source": 37,
+        "target": 42
+      },
+      {
+        "kind": "containment",
+        "navigation": 46,
+        "origin": 42,
+        "provenance": "authored",
+        "reference": 183,
+        "source": 37,
+        "target": 42
+      },
+      {
+        "kind": "containment",
+        "navigation": 46,
+        "origin": 38,
+        "provenance": "authored",
+        "reference": 184,
+        "source": 37,
+        "target": 38
+      },
+      {
+        "kind": "succession",
+        "navigation": 48,
+        "origin": 38,
+        "provenance": "implied",
+        "reference": 117,
+        "source": 52,
+        "target": 50
+      },
+      {
+        "kind": "containment",
+        "navigation": 46,
+        "origin": 39,
+        "provenance": "authored",
+        "reference": 185,
+        "source": 37,
+        "target": 39
+      },
+      {
+        "kind": "containment",
+        "navigation": 46,
+        "origin": 40,
+        "provenance": "authored",
+        "reference": 191,
+        "source": 39,
+        "target": 40
       }
     ],
     "exposedRoots": [
@@ -7455,14 +8611,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     "metadata": {
       "finalNodes": [],
       "initialNodes": [
-        25
+        49
       ],
       "states": [
         0,
-        26,
-        27,
-        28,
-        29
+        50,
+        51,
+        52,
+        53
       ]
     },
     "nodes": [
@@ -7471,10 +8627,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "states",
             "members": [
-              26,
-              27,
-              28,
-              29
+              50,
+              51,
+              52,
+              53
             ],
             "provenance": "direct"
           }
@@ -7494,6 +8650,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [
           {
+            "kind": "attributes",
+            "members": [
+              6,
+              6
+            ],
+            "provenance": "direct"
+          },
+          {
             "kind": "actions",
             "members": [
               3
@@ -7507,7 +8671,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "to_expired",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 20,
+        "reference": 22,
         "source": 32,
         "typing": {
           "status": "absent"
@@ -7521,7 +8685,29 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 1,
-        "reference": 43,
+        "reference": 57,
+        "source": 31,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              4
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 1,
+        "reference": 55,
         "source": 31,
         "typing": {
           "status": "absent"
@@ -7531,11 +8717,39 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "compartments": [],
         "conjugated": false,
         "direction": null,
-        "metaclass": "AcceptActionUsage",
+        "metaclass": "ReferenceUsage",
         "name": null,
-        "notationRole": "unsupported",
+        "notationRole": "reference-usage",
+        "owner": 3,
+        "reference": 58,
+        "source": 31,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
         "owner": 1,
-        "reference": 42,
+        "reference": 56,
+        "source": 31,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 1,
+        "reference": 56,
         "source": 31,
         "typing": {
           "status": "absent"
@@ -7544,9 +8758,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [
           {
+            "kind": "attributes",
+            "members": [
+              12,
+              12
+            ],
+            "provenance": "direct"
+          },
+          {
             "kind": "actions",
             "members": [
-              6
+              9
             ],
             "provenance": "direct"
           }
@@ -7557,7 +8779,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "to_running",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 28,
+        "reference": 34,
         "source": 12,
         "typing": {
           "status": "absent"
@@ -7570,8 +8792,30 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 4,
-        "reference": 51,
+        "owner": 7,
+        "reference": 73,
+        "source": 11,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              10
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 7,
+        "reference": 71,
         "source": 11,
         "typing": {
           "status": "absent"
@@ -7581,11 +8825,39 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "compartments": [],
         "conjugated": false,
         "direction": null,
-        "metaclass": "AcceptActionUsage",
+        "metaclass": "ReferenceUsage",
         "name": null,
-        "notationRole": "unsupported",
-        "owner": 4,
-        "reference": 50,
+        "notationRole": "reference-usage",
+        "owner": 9,
+        "reference": 74,
+        "source": 11,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 7,
+        "reference": 72,
+        "source": 11,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 7,
+        "reference": 72,
         "source": 11,
         "typing": {
           "status": "absent"
@@ -7594,9 +8866,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [
           {
+            "kind": "attributes",
+            "members": [
+              18,
+              18
+            ],
+            "provenance": "direct"
+          },
+          {
             "kind": "actions",
             "members": [
-              9
+              15
             ],
             "provenance": "direct"
           }
@@ -7620,8 +8900,30 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 7,
-        "reference": 39,
+        "owner": 13,
+        "reference": 49,
+        "source": 21,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              16
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 13,
+        "reference": 47,
         "source": 21,
         "typing": {
           "status": "absent"
@@ -7631,11 +8933,39 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "compartments": [],
         "conjugated": false,
         "direction": null,
-        "metaclass": "AcceptActionUsage",
+        "metaclass": "ReferenceUsage",
         "name": null,
-        "notationRole": "unsupported",
-        "owner": 7,
-        "reference": 38,
+        "notationRole": "reference-usage",
+        "owner": 15,
+        "reference": 50,
+        "source": 21,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 13,
+        "reference": 48,
+        "source": 21,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 13,
+        "reference": 48,
         "source": 21,
         "typing": {
           "status": "absent"
@@ -7644,9 +8974,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [
           {
+            "kind": "attributes",
+            "members": [
+              24,
+              24
+            ],
+            "provenance": "direct"
+          },
+          {
             "kind": "actions",
             "members": [
-              12
+              21
             ],
             "provenance": "direct"
           }
@@ -7657,7 +8995,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "increment_idle",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 16,
+        "reference": 17,
         "source": 17,
         "typing": {
           "status": "absent"
@@ -7670,8 +9008,30 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 10,
-        "reference": 41,
+        "owner": 19,
+        "reference": 53,
+        "source": 16,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              22
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 19,
+        "reference": 51,
         "source": 16,
         "typing": {
           "status": "absent"
@@ -7681,11 +9041,39 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "compartments": [],
         "conjugated": false,
         "direction": null,
-        "metaclass": "AcceptActionUsage",
+        "metaclass": "ReferenceUsage",
         "name": null,
-        "notationRole": "unsupported",
-        "owner": 10,
-        "reference": 40,
+        "notationRole": "reference-usage",
+        "owner": 21,
+        "reference": 54,
+        "source": 16,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 19,
+        "reference": 52,
+        "source": 16,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 19,
+        "reference": 52,
         "source": 16,
         "typing": {
           "status": "absent"
@@ -7694,9 +9082,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [
           {
+            "kind": "attributes",
+            "members": [
+              30,
+              30
+            ],
+            "provenance": "direct"
+          },
+          {
             "kind": "actions",
             "members": [
-              15
+              27
             ],
             "provenance": "direct"
           }
@@ -7707,7 +9103,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "to_running_resume",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 30,
+        "reference": 37,
         "source": 37,
         "typing": {
           "status": "absent"
@@ -7720,8 +9116,30 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 13,
-        "reference": 53,
+        "owner": 25,
+        "reference": 77,
+        "source": 36,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              28
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 25,
+        "reference": 75,
         "source": 36,
         "typing": {
           "status": "absent"
@@ -7731,11 +9149,39 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "compartments": [],
         "conjugated": false,
         "direction": null,
-        "metaclass": "AcceptActionUsage",
+        "metaclass": "ReferenceUsage",
         "name": null,
-        "notationRole": "unsupported",
-        "owner": 13,
-        "reference": 52,
+        "notationRole": "reference-usage",
+        "owner": 27,
+        "reference": 78,
+        "source": 36,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 25,
+        "reference": 76,
+        "source": 36,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 25,
+        "reference": 76,
         "source": 36,
         "typing": {
           "status": "absent"
@@ -7744,9 +9190,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [
           {
+            "kind": "attributes",
+            "members": [
+              36,
+              36
+            ],
+            "provenance": "direct"
+          },
+          {
             "kind": "actions",
             "members": [
-              18
+              33
             ],
             "provenance": "direct"
           }
@@ -7757,7 +9211,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "to_idle_from_paused",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 24,
+        "reference": 28,
         "source": 42,
         "typing": {
           "status": "absent"
@@ -7770,8 +9224,30 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 16,
-        "reference": 47,
+        "owner": 31,
+        "reference": 65,
+        "source": 41,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              34
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 31,
+        "reference": 63,
         "source": 41,
         "typing": {
           "status": "absent"
@@ -7781,11 +9257,39 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "compartments": [],
         "conjugated": false,
         "direction": null,
-        "metaclass": "AcceptActionUsage",
+        "metaclass": "ReferenceUsage",
         "name": null,
-        "notationRole": "unsupported",
-        "owner": 16,
-        "reference": 46,
+        "notationRole": "reference-usage",
+        "owner": 33,
+        "reference": 66,
+        "source": 41,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 31,
+        "reference": 64,
+        "source": 41,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 31,
+        "reference": 64,
         "source": 41,
         "typing": {
           "status": "absent"
@@ -7794,9 +9298,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [
           {
+            "kind": "attributes",
+            "members": [
+              42,
+              42
+            ],
+            "provenance": "direct"
+          },
+          {
             "kind": "actions",
             "members": [
-              21
+              39
             ],
             "provenance": "direct"
           }
@@ -7807,7 +9319,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "to_idle_from_expired",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 22,
+        "reference": 25,
         "source": 47,
         "typing": {
           "status": "absent"
@@ -7820,8 +9332,30 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 19,
-        "reference": 45,
+        "owner": 37,
+        "reference": 61,
+        "source": 46,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              40
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 37,
+        "reference": 59,
         "source": 46,
         "typing": {
           "status": "absent"
@@ -7831,11 +9365,39 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "compartments": [],
         "conjugated": false,
         "direction": null,
-        "metaclass": "AcceptActionUsage",
+        "metaclass": "ReferenceUsage",
         "name": null,
-        "notationRole": "unsupported",
-        "owner": 19,
-        "reference": 44,
+        "notationRole": "reference-usage",
+        "owner": 39,
+        "reference": 62,
+        "source": 46,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 37,
+        "reference": 60,
+        "source": 46,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 37,
+        "reference": 60,
         "source": 46,
         "typing": {
           "status": "absent"
@@ -7844,9 +9406,17 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       {
         "compartments": [
           {
+            "kind": "attributes",
+            "members": [
+              48,
+              48
+            ],
+            "provenance": "direct"
+          },
+          {
             "kind": "actions",
             "members": [
-              24
+              45
             ],
             "provenance": "direct"
           }
@@ -7857,7 +9427,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "to_paused",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 26,
+        "reference": 31,
         "source": 27,
         "typing": {
           "status": "absent"
@@ -7870,8 +9440,30 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "SuccessionAsUsage",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 22,
-        "reference": 49,
+        "owner": 43,
+        "reference": 69,
+        "source": 26,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [
+          {
+            "kind": "attributes",
+            "members": [
+              46
+            ],
+            "provenance": "direct"
+          }
+        ],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "AcceptActionUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 43,
+        "reference": 67,
         "source": 26,
         "typing": {
           "status": "absent"
@@ -7881,11 +9473,39 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "compartments": [],
         "conjugated": false,
         "direction": null,
-        "metaclass": "AcceptActionUsage",
+        "metaclass": "ReferenceUsage",
         "name": null,
-        "notationRole": "unsupported",
-        "owner": 22,
-        "reference": 48,
+        "notationRole": "reference-usage",
+        "owner": 45,
+        "reference": 70,
+        "source": 26,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 43,
+        "reference": 68,
+        "source": 26,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "ReferenceUsage",
+        "name": null,
+        "notationRole": "reference-usage",
+        "owner": 43,
+        "reference": 68,
         "source": 26,
         "typing": {
           "status": "absent"
@@ -7899,7 +9519,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 37,
+        "reference": 46,
         "source": 1,
         "typing": {
           "status": "absent"
@@ -7913,7 +9533,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "idle",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 15,
+        "reference": 16,
         "source": 3,
         "typing": {
           "status": "resolved",
@@ -7933,7 +9553,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "paused",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 18,
+        "reference": 20,
         "source": 7,
         "typing": {
           "status": "resolved",
@@ -7953,7 +9573,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "expired",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 14,
+        "reference": 15,
         "source": 9,
         "typing": {
           "status": "resolved",
@@ -7973,7 +9593,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": "running",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 19,
+        "reference": 21,
         "source": 5,
         "typing": {
           "status": "resolved",
@@ -7991,10 +9611,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 67,
+        "reference": 92,
         "source": 0,
         "target": {
-          "reference": 35,
+          "reference": 44,
           "status": "resolved"
         }
       },
@@ -8002,8 +9622,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 95,
-        "source": 26,
+        "reference": 129,
+        "source": 50,
         "target": {
           "reference": 3,
           "status": "resolved"
@@ -8013,10 +9633,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 87,
-        "source": 26,
+        "reference": 121,
+        "source": 50,
         "target": {
-          "reference": 36,
+          "reference": 45,
           "status": "resolved"
         }
       },
@@ -8024,8 +9644,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 94,
-        "source": 26,
+        "reference": 128,
+        "source": 50,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -8035,8 +9655,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 113,
-        "source": 27,
+        "reference": 155,
+        "source": 51,
         "target": {
           "reference": 5,
           "status": "resolved"
@@ -8046,10 +9666,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 107,
-        "source": 27,
+        "reference": 149,
+        "source": 51,
         "target": {
-          "reference": 36,
+          "reference": 45,
           "status": "resolved"
         }
       },
@@ -8057,8 +9677,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 112,
-        "source": 27,
+        "reference": 154,
+        "source": 51,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -8068,10 +9688,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "initialState",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 69,
-        "source": 25,
+        "reference": 94,
+        "source": 49,
         "target": {
-          "node": 26,
+          "node": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 95,
+        "source": 49,
+        "target": {
+          "reference": 43,
           "status": "resolved"
         }
       },
@@ -8079,8 +9710,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 70,
-        "source": 25,
+        "reference": 96,
+        "source": 49,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -8090,8 +9721,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 86,
-        "source": 28,
+        "reference": 120,
+        "source": 52,
         "target": {
           "reference": 2,
           "status": "resolved"
@@ -8101,10 +9732,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 82,
-        "source": 28,
+        "reference": 116,
+        "source": 52,
         "target": {
-          "reference": 36,
+          "reference": 45,
           "status": "resolved"
         }
       },
@@ -8112,8 +9743,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 85,
-        "source": 28,
+        "reference": 119,
+        "source": 52,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -8123,8 +9754,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 120,
-        "source": 29,
+        "reference": 162,
+        "source": 53,
         "target": {
           "reference": 7,
           "status": "resolved"
@@ -8134,10 +9765,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 114,
-        "source": 29,
+        "reference": 156,
+        "source": 53,
         "target": {
-          "reference": 36,
+          "reference": 45,
           "status": "resolved"
         }
       },
@@ -8145,8 +9776,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 119,
-        "source": 29,
+        "reference": 161,
+        "source": 53,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -8156,10 +9787,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 156,
-        "source": 22,
+        "reference": 224,
+        "source": 43,
         "target": {
-          "reference": 34,
+          "reference": 42,
           "status": "resolved"
         }
       },
@@ -8167,10 +9798,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionSource",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 157,
-        "source": 22,
+        "reference": 225,
+        "source": 43,
         "target": {
-          "node": 29,
+          "node": 53,
           "status": "resolved"
         }
       },
@@ -8178,10 +9809,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 30,
         "provenance": "authored",
-        "reference": 158,
-        "source": 22,
+        "reference": 226,
+        "source": 43,
         "target": {
-          "node": 27,
+          "node": 51,
           "status": "resolved"
         }
       },
@@ -8189,8 +9820,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 29,
         "provenance": "authored",
-        "reference": 159,
-        "source": 22,
+        "reference": 227,
+        "source": 43,
         "target": {
           "reference": 9,
           "status": "resolved"
@@ -8200,43 +9831,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 160,
-        "source": 22,
+        "reference": 228,
+        "source": 43,
         "target": {
           "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 28,
-        "provenance": "authored",
-        "reference": 162,
-        "source": 23,
-        "target": {
-          "node": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 30,
-        "provenance": "authored",
-        "reference": 163,
-        "source": 23,
-        "target": {
-          "node": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 161,
-        "source": 24,
-        "target": {
-          "reference": 33,
           "status": "resolved"
         }
       },
@@ -8244,10 +9842,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 164,
-        "source": 24,
+        "reference": 235,
+        "source": 48,
         "target": {
-          "node": 22,
+          "node": 43,
           "status": "resolved"
         }
       },
@@ -8255,10 +9853,98 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 123,
+        "reference": 230,
+        "source": 48,
+        "target": {
+          "node": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 236,
+        "source": 48,
+        "target": {
+          "node": 43,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 231,
+        "source": 44,
+        "target": {
+          "reference": 43,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 28,
+        "provenance": "authored",
+        "reference": 233,
+        "source": 44,
+        "target": {
+          "node": 53,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 30,
+        "provenance": "authored",
+        "reference": 234,
+        "source": 44,
+        "target": {
+          "node": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 232,
+        "source": 45,
+        "target": {
+          "reference": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 237,
+        "source": 45,
+        "target": {
+          "node": 43,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 238,
+        "source": 46,
+        "target": {
+          "node": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 167,
         "source": 1,
         "target": {
-          "reference": 34,
+          "reference": 42,
           "status": "resolved"
         }
       },
@@ -8266,10 +9952,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionSource",
         "navigation": 33,
         "provenance": "authored",
-        "reference": 124,
+        "reference": 168,
         "source": 1,
         "target": {
-          "node": 29,
+          "node": 53,
           "status": "resolved"
         }
       },
@@ -8277,10 +9963,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 35,
         "provenance": "authored",
-        "reference": 125,
+        "reference": 169,
         "source": 1,
         "target": {
-          "node": 28,
+          "node": 52,
           "status": "resolved"
         }
       },
@@ -8288,7 +9974,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 34,
         "provenance": "authored",
-        "reference": 126,
+        "reference": 170,
         "source": 1,
         "target": {
           "reference": 0,
@@ -8299,7 +9985,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 127,
+        "reference": 171,
         "source": 1,
         "target": {
           "node": 0,
@@ -8307,44 +9993,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
-        "kind": "succession",
-        "navigation": 33,
-        "provenance": "authored",
-        "reference": 129,
-        "source": 2,
-        "target": {
-          "node": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 35,
-        "provenance": "authored",
-        "reference": 130,
-        "source": 2,
-        "target": {
-          "node": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 128,
-        "source": 3,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 131,
-        "source": 3,
+        "reference": 178,
+        "source": 6,
         "target": {
           "node": 1,
           "status": "resolved"
@@ -8354,10 +10007,98 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 167,
+        "reference": 173,
+        "source": 6,
+        "target": {
+          "node": 4,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 179,
+        "source": 6,
+        "target": {
+          "node": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 174,
+        "source": 2,
+        "target": {
+          "reference": 43,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 33,
+        "provenance": "authored",
+        "reference": 176,
+        "source": 2,
+        "target": {
+          "node": 53,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 35,
+        "provenance": "authored",
+        "reference": 177,
+        "source": 2,
+        "target": {
+          "node": 52,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 175,
+        "source": 3,
+        "target": {
+          "reference": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 180,
+        "source": 3,
+        "target": {
+          "node": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 181,
         "source": 4,
         "target": {
-          "reference": 34,
+          "node": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 243,
+        "source": 7,
+        "target": {
+          "reference": 42,
           "status": "resolved"
         }
       },
@@ -8365,10 +10106,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionSource",
         "navigation": 13,
         "provenance": "authored",
-        "reference": 168,
-        "source": 4,
+        "reference": 244,
+        "source": 7,
         "target": {
-          "node": 26,
+          "node": 50,
           "status": "resolved"
         }
       },
@@ -8376,10 +10117,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTarget",
         "navigation": 15,
         "provenance": "authored",
-        "reference": 169,
-        "source": 4,
+        "reference": 245,
+        "source": 7,
         "target": {
-          "node": 29,
+          "node": 53,
           "status": "resolved"
         }
       },
@@ -8387,8 +10128,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "transitionTrigger",
         "navigation": 14,
         "provenance": "authored",
-        "reference": 170,
-        "source": 4,
+        "reference": 246,
+        "source": 7,
         "target": {
           "reference": 8,
           "status": "resolved"
@@ -8398,106 +10139,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 171,
-        "source": 4,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 13,
-        "provenance": "authored",
-        "reference": 173,
-        "source": 5,
-        "target": {
-          "node": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 15,
-        "provenance": "authored",
-        "reference": 174,
-        "source": 5,
-        "target": {
-          "node": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 172,
-        "source": 6,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 175,
-        "source": 6,
-        "target": {
-          "node": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 73,
-        "source": 7,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 23,
-        "provenance": "authored",
-        "reference": 74,
-        "source": 7,
-        "target": {
-          "node": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 25,
-        "provenance": "authored",
-        "reference": 75,
-        "source": 7,
-        "target": {
-          "node": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 24,
-        "provenance": "authored",
-        "reference": 76,
-        "source": 7,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 77,
+        "reference": 247,
         "source": 7,
         "target": {
           "node": 0,
@@ -8505,44 +10147,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
-        "kind": "succession",
-        "navigation": 23,
-        "provenance": "authored",
-        "reference": 79,
-        "source": 8,
-        "target": {
-          "node": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 25,
-        "provenance": "authored",
-        "reference": 80,
-        "source": 8,
-        "target": {
-          "node": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 78,
-        "source": 9,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 81,
-        "source": 9,
+        "reference": 254,
+        "source": 12,
         "target": {
           "node": 7,
           "status": "resolved"
@@ -8552,95 +10161,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 98,
-        "source": 10,
-        "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 18,
-        "provenance": "authored",
-        "reference": 99,
-        "source": 10,
-        "target": {
-          "node": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 20,
-        "provenance": "authored",
-        "reference": 100,
-        "source": 10,
-        "target": {
-          "node": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 19,
-        "provenance": "authored",
-        "reference": 101,
-        "source": 10,
-        "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 102,
-        "source": 10,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 18,
-        "provenance": "authored",
-        "reference": 104,
-        "source": 11,
-        "target": {
-          "node": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 20,
-        "provenance": "authored",
-        "reference": 105,
-        "source": 11,
-        "target": {
-          "node": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 103,
-        "source": 12,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 106,
+        "reference": 249,
         "source": 12,
         "target": {
           "node": 10,
@@ -8648,46 +10169,57 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 255,
+        "source": 12,
+        "target": {
+          "node": 7,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 178,
-        "source": 13,
+        "reference": 250,
+        "source": 8,
         "target": {
-          "reference": 34,
+          "reference": 43,
           "status": "resolved"
         }
       },
       {
-        "kind": "transitionSource",
-        "navigation": 38,
+        "kind": "succession",
+        "navigation": 13,
         "provenance": "authored",
-        "reference": 179,
-        "source": 13,
+        "reference": 252,
+        "source": 8,
         "target": {
-          "node": 27,
+          "node": 50,
           "status": "resolved"
         }
       },
       {
-        "kind": "transitionTarget",
-        "navigation": 40,
+        "kind": "succession",
+        "navigation": 15,
         "provenance": "authored",
-        "reference": 180,
-        "source": 13,
+        "reference": 253,
+        "source": 8,
         "target": {
-          "node": 29,
+          "node": 53,
           "status": "resolved"
         }
       },
       {
-        "kind": "transitionTrigger",
-        "navigation": 39,
-        "provenance": "authored",
-        "reference": 181,
-        "source": 13,
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 251,
+        "source": 9,
         "target": {
-          "reference": 8,
+          "reference": 41,
           "status": "resolved"
         }
       },
@@ -8695,7 +10227,73 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 182,
+        "reference": 256,
+        "source": 9,
+        "target": {
+          "node": 7,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 257,
+        "source": 10,
+        "target": {
+          "node": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 101,
+        "source": 13,
+        "target": {
+          "reference": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 23,
+        "provenance": "authored",
+        "reference": 102,
+        "source": 13,
+        "target": {
+          "node": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 25,
+        "provenance": "authored",
+        "reference": 103,
+        "source": 13,
+        "target": {
+          "node": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 24,
+        "provenance": "authored",
+        "reference": 104,
+        "source": 13,
+        "target": {
+          "reference": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 105,
         "source": 13,
         "target": {
           "node": 0,
@@ -8703,44 +10301,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
-        "kind": "succession",
-        "navigation": 38,
-        "provenance": "authored",
-        "reference": 184,
-        "source": 14,
-        "target": {
-          "node": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 40,
-        "provenance": "authored",
-        "reference": 185,
-        "source": 14,
-        "target": {
-          "node": 29,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 183,
-        "source": 15,
-        "target": {
-          "reference": 33,
-          "status": "resolved"
-        }
-      },
-      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 186,
-        "source": 15,
+        "reference": 112,
+        "source": 18,
         "target": {
           "node": 13,
           "status": "resolved"
@@ -8750,43 +10315,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 145,
-        "source": 16,
+        "reference": 107,
+        "source": 18,
         "target": {
-          "reference": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionSource",
-        "navigation": 43,
-        "provenance": "authored",
-        "reference": 146,
-        "source": 16,
-        "target": {
-          "node": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTarget",
-        "navigation": 45,
-        "provenance": "authored",
-        "reference": 147,
-        "source": 16,
-        "target": {
-          "node": 26,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "transitionTrigger",
-        "navigation": 44,
-        "provenance": "authored",
-        "reference": 148,
-        "source": 16,
-        "target": {
-          "reference": 6,
+          "node": 16,
           "status": "resolved"
         }
       },
@@ -8794,32 +10326,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 149,
-        "source": 16,
+        "reference": 113,
+        "source": 18,
         "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 43,
-        "provenance": "authored",
-        "reference": 151,
-        "source": 17,
-        "target": {
-          "node": 27,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 45,
-        "provenance": "authored",
-        "reference": 152,
-        "source": 17,
-        "target": {
-          "node": 26,
+          "node": 13,
           "status": "resolved"
         }
       },
@@ -8827,10 +10337,43 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 150,
-        "source": 18,
+        "reference": 108,
+        "source": 14,
         "target": {
-          "reference": 33,
+          "reference": 43,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 23,
+        "provenance": "authored",
+        "reference": 110,
+        "source": 14,
+        "target": {
+          "node": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 25,
+        "provenance": "authored",
+        "reference": 111,
+        "source": 14,
+        "target": {
+          "node": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 109,
+        "source": 15,
+        "target": {
+          "reference": 41,
           "status": "resolved"
         }
       },
@@ -8838,10 +10381,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 153,
-        "source": 18,
+        "reference": 114,
+        "source": 15,
         "target": {
-          "node": 16,
+          "node": 13,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 115,
+        "source": 16,
+        "target": {
+          "node": 15,
           "status": "resolved"
         }
       },
@@ -8852,40 +10406,40 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "reference": 134,
         "source": 19,
         "target": {
-          "reference": 34,
+          "reference": 42,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionSource",
-        "navigation": 48,
+        "navigation": 18,
         "provenance": "authored",
         "reference": 135,
         "source": 19,
         "target": {
-          "node": 28,
+          "node": 50,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTarget",
-        "navigation": 50,
+        "navigation": 20,
         "provenance": "authored",
         "reference": 136,
         "source": 19,
         "target": {
-          "node": 26,
+          "node": 50,
           "status": "resolved"
         }
       },
       {
         "kind": "transitionTrigger",
-        "navigation": 49,
+        "navigation": 19,
         "provenance": "authored",
         "reference": 137,
         "source": 19,
         "target": {
-          "reference": 6,
+          "reference": 4,
           "status": "resolved"
         }
       },
@@ -8901,24 +10455,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
-        "kind": "succession",
-        "navigation": 48,
-        "provenance": "authored",
-        "reference": 140,
-        "source": 20,
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 145,
+        "source": 24,
         "target": {
-          "node": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 50,
-        "provenance": "authored",
-        "reference": 141,
-        "source": 20,
-        "target": {
-          "node": 26,
+          "node": 19,
           "status": "resolved"
         }
       },
@@ -8926,10 +10469,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 139,
-        "source": 21,
+        "reference": 140,
+        "source": 24,
         "target": {
-          "reference": 33,
+          "node": 22,
           "status": "resolved"
         }
       },
@@ -8937,10 +10480,538 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
+        "reference": 146,
+        "source": 24,
+        "target": {
+          "node": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 141,
+        "source": 20,
+        "target": {
+          "reference": 43,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 18,
+        "provenance": "authored",
+        "reference": 143,
+        "source": 20,
+        "target": {
+          "node": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 20,
+        "provenance": "authored",
+        "reference": 144,
+        "source": 20,
+        "target": {
+          "node": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
         "reference": 142,
         "source": 21,
         "target": {
+          "reference": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 147,
+        "source": 21,
+        "target": {
           "node": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 148,
+        "source": 22,
+        "target": {
+          "node": 21,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 262,
+        "source": 25,
+        "target": {
+          "reference": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 38,
+        "provenance": "authored",
+        "reference": 263,
+        "source": 25,
+        "target": {
+          "node": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 40,
+        "provenance": "authored",
+        "reference": 264,
+        "source": 25,
+        "target": {
+          "node": 53,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 39,
+        "provenance": "authored",
+        "reference": 265,
+        "source": 25,
+        "target": {
+          "reference": 8,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 266,
+        "source": 25,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 273,
+        "source": 30,
+        "target": {
+          "node": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 268,
+        "source": 30,
+        "target": {
+          "node": 28,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 274,
+        "source": 30,
+        "target": {
+          "node": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 269,
+        "source": 26,
+        "target": {
+          "reference": 43,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 38,
+        "provenance": "authored",
+        "reference": 271,
+        "source": 26,
+        "target": {
+          "node": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 40,
+        "provenance": "authored",
+        "reference": 272,
+        "source": 26,
+        "target": {
+          "node": 53,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 270,
+        "source": 27,
+        "target": {
+          "reference": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 275,
+        "source": 27,
+        "target": {
+          "node": 25,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 276,
+        "source": 28,
+        "target": {
+          "node": 27,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 205,
+        "source": 31,
+        "target": {
+          "reference": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 43,
+        "provenance": "authored",
+        "reference": 206,
+        "source": 31,
+        "target": {
+          "node": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 45,
+        "provenance": "authored",
+        "reference": 207,
+        "source": 31,
+        "target": {
+          "node": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 44,
+        "provenance": "authored",
+        "reference": 208,
+        "source": 31,
+        "target": {
+          "reference": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 209,
+        "source": 31,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 216,
+        "source": 36,
+        "target": {
+          "node": 31,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 211,
+        "source": 36,
+        "target": {
+          "node": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 217,
+        "source": 36,
+        "target": {
+          "node": 31,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 212,
+        "source": 32,
+        "target": {
+          "reference": 43,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 43,
+        "provenance": "authored",
+        "reference": 214,
+        "source": 32,
+        "target": {
+          "node": 51,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 45,
+        "provenance": "authored",
+        "reference": 215,
+        "source": 32,
+        "target": {
+          "node": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 213,
+        "source": 33,
+        "target": {
+          "reference": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 218,
+        "source": 33,
+        "target": {
+          "node": 31,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 219,
+        "source": 34,
+        "target": {
+          "node": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 186,
+        "source": 37,
+        "target": {
+          "reference": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionSource",
+        "navigation": 48,
+        "provenance": "authored",
+        "reference": 187,
+        "source": 37,
+        "target": {
+          "node": 52,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTarget",
+        "navigation": 50,
+        "provenance": "authored",
+        "reference": 188,
+        "source": 37,
+        "target": {
+          "node": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "transitionTrigger",
+        "navigation": 49,
+        "provenance": "authored",
+        "reference": 189,
+        "source": 37,
+        "target": {
+          "reference": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 190,
+        "source": 37,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 197,
+        "source": 42,
+        "target": {
+          "node": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 192,
+        "source": 42,
+        "target": {
+          "node": 40,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 198,
+        "source": 42,
+        "target": {
+          "node": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 193,
+        "source": 38,
+        "target": {
+          "reference": 43,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 48,
+        "provenance": "authored",
+        "reference": 195,
+        "source": 38,
+        "target": {
+          "node": 52,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 50,
+        "provenance": "authored",
+        "reference": 196,
+        "source": 38,
+        "target": {
+          "node": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 194,
+        "source": 39,
+        "target": {
+          "reference": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 199,
+        "source": 39,
+        "target": {
+          "node": 37,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 200,
+        "source": 40,
+        "target": {
+          "node": 39,
           "status": "resolved"
         }
       }

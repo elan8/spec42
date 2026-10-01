@@ -331,26 +331,44 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Created")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "paid")) (transitionTarget (reference "failed")) (transitionTrigger (reference "InventoryRejected")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "paid")) (succession (reference "failed")))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "paymentPending")) (transitionTarget (reference "failed")) (transitionTrigger (reference "PaymentDeclined")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "paymentPending")) (succession (reference "failed")))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::failed"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Failed")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fulfilled"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Fulfilled")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::paid"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Paid")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::paymentPending"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PaymentPending")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "fulfilled")) (transitionTarget (reference "completed")) (transitionTrigger (reference "ShipmentConfirmed")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "fulfilled")) (succession (reference "completed")))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "paid")) (transitionTarget (reference "fulfilled")) (transitionTrigger (reference "InventoryReserved")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "paid")) (succession (reference "fulfilled")))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "paymentPending")) (transitionTarget (reference "paid")) (transitionTrigger (reference "PaymentAuthorized")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "paymentPending")) (succession (reference "paid")))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "created")) (transitionTarget (reference "paymentPending")) (transitionTrigger (reference "PaymentRequested")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "created")) (succession (reference "paymentPending")))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Paid"))) (kind state-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::PaymentAuthorized"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::PaymentDeclined"))) (kind item-def) (membership (kind owning) (visibility default)))
@@ -1573,6 +1591,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::ApiGateway"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::ApiGateway"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::ApiGateway::catalogApiOut"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1594,6 +1613,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogDatabase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1605,6 +1626,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService::apiIn"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1613,6 +1635,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService::catalogDbOut"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService::catalogDbOut"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService::catalogDbOut"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 3))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 4))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 5))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 6))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 7))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow"))) (provenance implied))
@@ -1720,6 +1750,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutService::apiIn"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1741,6 +1772,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::EmailProvider"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::EmailProvider"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::EmailProvider::emailIngress"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1759,6 +1791,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryDatabase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1770,6 +1804,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryService::apiIn"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1796,6 +1831,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService::emailOut"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1805,6 +1841,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService::orderEventsIn"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService::orderEventsIn"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderCreatedEvent"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 3))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 4))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout"))) (provenance implied))
@@ -1878,6 +1919,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderProjection"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderProjection"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderProjectionCommand"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
@@ -1888,6 +1930,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersDatabase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1905,6 +1949,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersEventsTopic"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersEventsTopic"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersEventsTopic"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
@@ -1922,6 +1969,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentProvider"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentProvider"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentProvider::providerIngress"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1935,6 +1983,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsDatabase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1946,6 +1996,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsService::apiIn"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1971,6 +2022,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::Storefront"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::Storefront"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::Storefront::catalogApiOut"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -2041,6 +2093,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::WebShopSystem::storefront"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::WebShopSystem::storefront"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::WebShopSystem"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 3))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline"))) (provenance implied))
@@ -2074,18 +2130,30 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::InventoryRejected"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::InventoryReserved"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::failed"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::failed"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fulfilled"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
@@ -2097,19 +2165,39 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Paid"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::PaymentAuthorized"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::PaymentDeclined"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
@@ -2137,6 +2225,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::CommerceCluster"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::CommerceCluster"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::CommerceCluster"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
@@ -2441,6 +2532,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::ApiGateway")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -2572,6 +2664,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -2586,6 +2679,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -2654,6 +2748,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -2713,27 +2808,139 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 2)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 3)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 4)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 5)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 6)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 7)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
@@ -3387,6 +3594,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutService")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3524,6 +3732,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::EmailProvider")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3655,6 +3864,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3669,6 +3879,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3739,6 +3950,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryService")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3915,6 +4127,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3980,18 +4193,88 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 2)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 3)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 4)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::checkoutService")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout")))
@@ -4447,6 +4730,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderProjection")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4508,6 +4792,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4522,6 +4807,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4618,6 +4904,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersEventsTopic")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4632,6 +4919,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersEventsTopic")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4646,6 +4934,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersEventsTopic")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4744,6 +5033,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentProvider")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4824,6 +5114,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4838,6 +5129,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4908,6 +5200,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsService")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -5090,6 +5383,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::Storefront")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -5814,15 +6108,71 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 2)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 3)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline::authorizePayment")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline")))
@@ -6075,9 +6425,40 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (anonymous (kind initial-state) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
@@ -6121,6 +6502,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory")))
+    )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::AcceptMessageAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))))
@@ -6154,6 +6554,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory")))
+      (supertype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
@@ -6172,6 +6580,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment")))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment")))
@@ -6205,6 +6632,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment")))
+      (supertype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::failed")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
@@ -6317,6 +6752,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed")))
+    )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::AcceptMessageAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))))
@@ -6350,6 +6804,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed")))
+      (supertype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
@@ -6368,6 +6830,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled")))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled")))
@@ -6402,6 +6883,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled")))
+      (supertype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
@@ -6420,6 +6909,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid")))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid")))
@@ -6454,6 +6962,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid")))
+      (supertype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
@@ -6472,6 +6988,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending")))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending")))
@@ -6505,6 +7040,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending")))
+      (supertype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Paid")))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
@@ -7036,6 +7579,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::CommerceCluster")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -7050,6 +7594,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::CommerceCluster")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -7064,6 +7609,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::CommerceCluster")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -8887,6 +9433,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "sourceDomain": "standard-library"
     },
     {
+      "uri": "memory://snapshot/sysml.library/occurrences.md",
+      "sourceDomain": "standard-library"
+    },
+    {
       "uri": "memory://snapshot/sysml.library/scalar_values.md",
       "sourceDomain": "standard-library"
     }
@@ -9284,10 +9834,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 3,
       "kind": "qualified-name",
+      "qualifiedName": "Occurrences::happensBeforeLinks"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
       "qualifiedName": "ScalarValues::Boolean"
     },
     {
-      "document": 3,
+      "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "ScalarValues::String"
     },
@@ -9394,7 +9949,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "kind": "relationship",
       "ordinal": 1,
-      "relationshipKind": "succession",
+      "relationshipKind": "subsetting",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
+      "relationshipKind": "subsetting",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "subsetting",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 13,
+      "relationshipKind": "subsetting",
       "source": 2
     },
     {
@@ -9405,25 +9978,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
+      "ordinal": 3,
       "relationshipKind": "succession",
       "source": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
+      "ordinal": 6,
       "relationshipKind": "succession",
       "source": 2
     },
     {
       "kind": "relationship",
       "ordinal": 7,
-      "relationshipKind": "succession",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
       "relationshipKind": "succession",
       "source": 2
     },
@@ -9441,25 +10008,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "ordinal": 14,
+      "relationshipKind": "succession",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
+      "relationshipKind": "succession",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
       "relationshipKind": "typeFeaturing",
       "source": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "typeFeaturing",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 9,
+      "ordinal": 8,
       "relationshipKind": "typeFeaturing",
       "source": 2
     },
     {
       "kind": "relationship",
       "ordinal": 12,
+      "relationshipKind": "typeFeaturing",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
       "relationshipKind": "typeFeaturing",
       "source": 2
     },
@@ -9471,13 +10050,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 20,
+      "ordinal": 24,
       "relationshipKind": "subsetting",
       "source": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
+      "ordinal": 25,
       "relationshipKind": "subsetting",
       "source": 3
     },
@@ -9489,43 +10068,43 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 22,
+      "ordinal": 26,
       "relationshipKind": "typeFeaturing",
       "source": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 24,
+      "ordinal": 28,
       "relationshipKind": "typeFeaturing",
       "source": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 23,
+      "ordinal": 27,
       "relationshipKind": "typing",
       "source": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "ordinal": 18,
       "relationshipKind": "typeFeaturing",
       "source": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
+      "ordinal": 17,
       "relationshipKind": "typing",
       "source": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 36,
+      "ordinal": 40,
       "relationshipKind": "typeFeaturing",
       "source": 6
     },
     {
       "kind": "relationship",
-      "ordinal": 35,
+      "ordinal": 39,
       "relationshipKind": "typing",
       "source": 6
     },
@@ -9537,31 +10116,31 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 25,
+      "ordinal": 29,
       "relationshipKind": "subsetting",
       "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
+      "ordinal": 30,
       "relationshipKind": "subsetting",
       "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
+      "ordinal": 31,
       "relationshipKind": "typeFeaturing",
       "source": 7
     },
     {
       "kind": "relationship",
-      "ordinal": 29,
+      "ordinal": 33,
       "relationshipKind": "typeFeaturing",
       "source": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 28,
+      "ordinal": 32,
       "relationshipKind": "typing",
       "source": 8
     },
@@ -9573,13 +10152,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 37,
+      "ordinal": 41,
       "relationshipKind": "subsetting",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 38,
+      "ordinal": 42,
       "relationshipKind": "subsetting",
       "source": 9
     },
@@ -9591,19 +10170,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 39,
+      "ordinal": 43,
       "relationshipKind": "typeFeaturing",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 41,
+      "ordinal": 45,
       "relationshipKind": "typeFeaturing",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 40,
+      "ordinal": 44,
       "relationshipKind": "typing",
       "source": 10
     },
@@ -9615,13 +10194,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 30,
+      "ordinal": 34,
       "relationshipKind": "subsetting",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 31,
+      "ordinal": 35,
       "relationshipKind": "subsetting",
       "source": 11
     },
@@ -9633,19 +10212,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 32,
+      "ordinal": 36,
       "relationshipKind": "typeFeaturing",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 34,
+      "ordinal": 38,
       "relationshipKind": "typeFeaturing",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 33,
+      "ordinal": 37,
       "relationshipKind": "typing",
       "source": 12
     },
@@ -9657,13 +10236,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "ordinal": 19,
       "relationshipKind": "subsetting",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 16,
+      "ordinal": 20,
       "relationshipKind": "subsetting",
       "source": 13
     },
@@ -9675,19 +10254,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
+      "ordinal": 21,
       "relationshipKind": "typeFeaturing",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
+      "ordinal": 23,
       "relationshipKind": "typeFeaturing",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
+      "ordinal": 22,
       "relationshipKind": "typing",
       "source": 14
     }
@@ -9709,7 +10288,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 21,
         "origin": 1,
         "provenance": "authored",
-        "reference": 24,
+        "reference": 25,
         "source": 0,
         "target": 1
       },
@@ -9718,7 +10297,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 22,
         "origin": 1,
         "provenance": "implied",
-        "reference": 82,
+        "reference": 87,
         "source": 5,
         "target": 7
       },
@@ -9727,7 +10306,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 24,
         "origin": 2,
         "provenance": "authored",
-        "reference": 25,
+        "reference": 26,
         "source": 0,
         "target": 2
       },
@@ -9736,7 +10315,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 25,
         "origin": 2,
         "provenance": "implied",
-        "reference": 51,
+        "reference": 56,
         "source": 7,
         "target": 11
       },
@@ -9745,7 +10324,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 27,
         "origin": 3,
         "provenance": "authored",
-        "reference": 26,
+        "reference": 27,
         "source": 0,
         "target": 3
       },
@@ -9754,7 +10333,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 28,
         "origin": 3,
         "provenance": "implied",
-        "reference": 75,
+        "reference": 80,
         "source": 11,
         "target": 13
       },
@@ -9763,7 +10342,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 30,
         "origin": 4,
         "provenance": "authored",
-        "reference": 27,
+        "reference": 28,
         "source": 0,
         "target": 4
       },
@@ -9772,7 +10351,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 31,
         "origin": 4,
         "provenance": "implied",
-        "reference": 68,
+        "reference": 73,
         "source": 13,
         "target": 9
       },
@@ -9781,7 +10360,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 2,
         "origin": 16,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 29,
         "source": 0,
         "target": 16
       },
@@ -9790,7 +10369,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 6,
         "origin": 5,
         "provenance": "authored",
-        "reference": 29,
+        "reference": 30,
         "source": 0,
         "target": 5
       },
@@ -9799,7 +10378,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 7,
         "origin": 6,
         "provenance": "authored",
-        "reference": 79,
+        "reference": 84,
         "source": 5,
         "target": 6
       },
@@ -9808,7 +10387,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 9,
         "origin": 7,
         "provenance": "authored",
-        "reference": 30,
+        "reference": 31,
         "source": 0,
         "target": 7
       },
@@ -9817,7 +10396,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 10,
         "origin": 8,
         "provenance": "authored",
-        "reference": 48,
+        "reference": 53,
         "source": 7,
         "target": 8
       },
@@ -9826,7 +10405,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 18,
         "origin": 9,
         "provenance": "authored",
-        "reference": 31,
+        "reference": 32,
         "source": 0,
         "target": 9
       },
@@ -9835,7 +10414,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 19,
         "origin": 10,
         "provenance": "authored",
-        "reference": 59,
+        "reference": 64,
         "source": 9,
         "target": 10
       },
@@ -9844,7 +10423,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 12,
         "origin": 11,
         "provenance": "authored",
-        "reference": 32,
+        "reference": 33,
         "source": 0,
         "target": 11
       },
@@ -9853,7 +10432,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 13,
         "origin": 12,
         "provenance": "authored",
-        "reference": 72,
+        "reference": 77,
         "source": 11,
         "target": 12
       },
@@ -9862,7 +10441,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 4,
         "origin": 15,
         "provenance": "authored",
-        "reference": 33,
+        "reference": 34,
         "source": 0,
         "target": 15
       },
@@ -9871,7 +10450,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 15,
         "origin": 13,
         "provenance": "authored",
-        "reference": 34,
+        "reference": 35,
         "source": 0,
         "target": 13
       },
@@ -9880,7 +10459,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 16,
         "origin": 14,
         "provenance": "authored",
-        "reference": 65,
+        "reference": 70,
         "source": 13,
         "target": 14
       }
@@ -9943,7 +10522,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 20,
+        "reference": 21,
         "source": 21,
         "typing": {
           "status": "absent"
@@ -9957,7 +10536,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 21,
+        "reference": 22,
         "source": 24,
         "typing": {
           "status": "absent"
@@ -9971,7 +10550,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 22,
+        "reference": 23,
         "source": 27,
         "typing": {
           "status": "absent"
@@ -9985,7 +10564,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 23,
+        "reference": 24,
         "source": 30,
         "typing": {
           "status": "absent"
@@ -10028,7 +10607,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 18
+              "reference": 19
             }
           ]
         }
@@ -10070,7 +10649,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 18
+              "reference": 19
             }
           ]
         }
@@ -10112,7 +10691,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 18
+              "reference": 19
             }
           ]
         }
@@ -10154,7 +10733,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 18
+              "reference": 19
             }
           ]
         }
@@ -10196,7 +10775,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "Boolean",
-              "reference": 18
+              "reference": 19
             }
           ]
         }
@@ -10216,7 +10795,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 19
+              "reference": 20
             }
           ]
         }
@@ -10236,7 +10815,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 19
+              "reference": 20
             }
           ]
         }
@@ -10247,7 +10826,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 35,
+        "reference": 36,
         "source": 0,
         "target": {
           "reference": 15,
@@ -10255,10 +10834,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 37,
+        "source": 1,
+        "target": {
+          "reference": 18,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 22,
         "provenance": "authored",
-        "reference": 36,
+        "reference": 41,
         "source": 1,
         "target": {
           "node": 5,
@@ -10269,7 +10859,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 23,
         "provenance": "authored",
-        "reference": 37,
+        "reference": 42,
         "source": 1,
         "target": {
           "node": 7,
@@ -10280,7 +10870,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 44,
+        "reference": 49,
         "source": 1,
         "target": {
           "node": 0,
@@ -10288,10 +10878,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 38,
+        "source": 2,
+        "target": {
+          "reference": 18,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 25,
         "provenance": "authored",
-        "reference": 38,
+        "reference": 43,
         "source": 2,
         "target": {
           "node": 7,
@@ -10302,7 +10903,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 26,
         "provenance": "authored",
-        "reference": 39,
+        "reference": 44,
         "source": 2,
         "target": {
           "node": 11,
@@ -10313,7 +10914,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 45,
+        "reference": 50,
         "source": 2,
         "target": {
           "node": 0,
@@ -10321,10 +10922,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 39,
+        "source": 3,
+        "target": {
+          "reference": 18,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 28,
         "provenance": "authored",
-        "reference": 40,
+        "reference": 45,
         "source": 3,
         "target": {
           "node": 11,
@@ -10335,7 +10947,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 29,
         "provenance": "authored",
-        "reference": 41,
+        "reference": 46,
         "source": 3,
         "target": {
           "node": 13,
@@ -10346,7 +10958,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 46,
+        "reference": 51,
         "source": 3,
         "target": {
           "node": 0,
@@ -10354,10 +10966,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 40,
+        "source": 4,
+        "target": {
+          "reference": 18,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 31,
         "provenance": "authored",
-        "reference": 42,
+        "reference": 47,
         "source": 4,
         "target": {
           "node": 13,
@@ -10368,7 +10991,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 32,
         "provenance": "authored",
-        "reference": 43,
+        "reference": 48,
         "source": 4,
         "target": {
           "node": 9,
@@ -10379,7 +11002,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 47,
+        "reference": 52,
         "source": 4,
         "target": {
           "node": 0,
@@ -10390,10 +11013,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 56,
+        "reference": 61,
         "source": 16,
         "target": {
-          "reference": 19,
+          "reference": 20,
           "status": "resolved"
         }
       },
@@ -10401,7 +11024,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 55,
+        "reference": 60,
         "source": 16,
         "target": {
           "node": 0,
@@ -10412,7 +11035,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 80,
+        "reference": 85,
         "source": 5,
         "target": {
           "reference": 16,
@@ -10423,7 +11046,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 81,
+        "reference": 86,
         "source": 5,
         "target": {
           "reference": 17,
@@ -10434,7 +11057,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 83,
+        "reference": 88,
         "source": 5,
         "target": {
           "node": 0,
@@ -10445,10 +11068,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 8,
         "provenance": "authored",
-        "reference": 85,
+        "reference": 90,
         "source": 6,
         "target": {
-          "reference": 18,
+          "reference": 19,
           "status": "resolved"
         }
       },
@@ -10456,7 +11079,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 84,
+        "reference": 89,
         "source": 6,
         "target": {
           "node": 5,
@@ -10467,7 +11090,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 49,
+        "reference": 54,
         "source": 7,
         "target": {
           "reference": 16,
@@ -10478,7 +11101,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 50,
+        "reference": 55,
         "source": 7,
         "target": {
           "reference": 17,
@@ -10489,7 +11112,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 52,
+        "reference": 57,
         "source": 7,
         "target": {
           "node": 0,
@@ -10500,10 +11123,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 11,
         "provenance": "authored",
-        "reference": 54,
+        "reference": 59,
         "source": 8,
         "target": {
-          "reference": 18,
+          "reference": 19,
           "status": "resolved"
         }
       },
@@ -10511,7 +11134,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 53,
+        "reference": 58,
         "source": 8,
         "target": {
           "node": 7,
@@ -10522,7 +11145,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 60,
+        "reference": 65,
         "source": 9,
         "target": {
           "reference": 16,
@@ -10533,7 +11156,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 61,
+        "reference": 66,
         "source": 9,
         "target": {
           "reference": 17,
@@ -10544,7 +11167,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 62,
+        "reference": 67,
         "source": 9,
         "target": {
           "node": 0,
@@ -10555,10 +11178,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 20,
         "provenance": "authored",
-        "reference": 64,
+        "reference": 69,
         "source": 10,
         "target": {
-          "reference": 18,
+          "reference": 19,
           "status": "resolved"
         }
       },
@@ -10566,7 +11189,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 63,
+        "reference": 68,
         "source": 10,
         "target": {
           "node": 9,
@@ -10577,7 +11200,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 73,
+        "reference": 78,
         "source": 11,
         "target": {
           "reference": 16,
@@ -10588,7 +11211,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 74,
+        "reference": 79,
         "source": 11,
         "target": {
           "reference": 17,
@@ -10599,7 +11222,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 76,
+        "reference": 81,
         "source": 11,
         "target": {
           "node": 0,
@@ -10610,10 +11233,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 14,
         "provenance": "authored",
-        "reference": 78,
+        "reference": 83,
         "source": 12,
         "target": {
-          "reference": 18,
+          "reference": 19,
           "status": "resolved"
         }
       },
@@ -10621,7 +11244,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 77,
+        "reference": 82,
         "source": 12,
         "target": {
           "node": 11,
@@ -10632,10 +11255,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 58,
+        "reference": 63,
         "source": 15,
         "target": {
-          "reference": 19,
+          "reference": 20,
           "status": "resolved"
         }
       },
@@ -10643,7 +11266,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 57,
+        "reference": 62,
         "source": 15,
         "target": {
           "node": 0,
@@ -10654,7 +11277,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 66,
+        "reference": 71,
         "source": 13,
         "target": {
           "reference": 16,
@@ -10665,7 +11288,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 67,
+        "reference": 72,
         "source": 13,
         "target": {
           "reference": 17,
@@ -10676,7 +11299,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 69,
+        "reference": 74,
         "source": 13,
         "target": {
           "node": 0,
@@ -10687,10 +11310,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 17,
         "provenance": "authored",
-        "reference": 71,
+        "reference": 76,
         "source": 14,
         "target": {
-          "reference": 18,
+          "reference": 19,
           "status": "resolved"
         }
       },
@@ -10698,7 +11321,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 70,
+        "reference": 75,
         "source": 14,
         "target": {
           "node": 13,

@@ -331,26 +331,44 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Created")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "paid")) (transitionTarget (reference "failed")) (transitionTrigger (reference "InventoryRejected")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "paid")) (succession (reference "failed")))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "paymentPending")) (transitionTarget (reference "failed")) (transitionTrigger (reference "PaymentDeclined")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "paymentPending")) (succession (reference "failed")))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::failed"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Failed")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fulfilled"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Fulfilled")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::paid"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Paid")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::paymentPending"))) (kind state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PaymentPending")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "fulfilled")) (transitionTarget (reference "completed")) (transitionTrigger (reference "ShipmentConfirmed")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "fulfilled")) (succession (reference "completed")))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "paid")) (transitionTarget (reference "fulfilled")) (transitionTrigger (reference "InventoryReserved")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "paid")) (succession (reference "fulfilled")))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "paymentPending")) (transitionTarget (reference "paid")) (transitionTrigger (reference "PaymentAuthorized")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "paymentPending")) (succession (reference "paid")))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending"))) (kind transition) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (transitionSource (reference "created")) (transitionTarget (reference "paymentPending")) (transitionTrigger (reference "PaymentRequested")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (succession (reference "created")) (succession (reference "paymentPending")))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 1))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction inout)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Paid"))) (kind state-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::PaymentAuthorized"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::PaymentDeclined"))) (kind item-def) (membership (kind owning) (visibility default)))
@@ -1573,6 +1591,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::ApiGateway"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::ApiGateway"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::ApiGateway::catalogApiOut"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1594,6 +1613,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogDatabase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1605,6 +1626,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService::apiIn"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1613,6 +1635,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService::catalogDbOut"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService::catalogDbOut"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService::catalogDbOut"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 3))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 4))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 5))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 6))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 7))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow"))) (provenance implied))
@@ -1720,6 +1750,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutService::apiIn"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1741,6 +1772,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::EmailProvider"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::EmailProvider"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::EmailProvider::emailIngress"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1759,6 +1791,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryDatabase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1770,6 +1804,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryService::apiIn"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1796,6 +1831,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService::emailOut"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1805,6 +1841,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService::orderEventsIn"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService::orderEventsIn"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderCreatedEvent"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 3))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 4))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout"))) (provenance implied))
@@ -1878,6 +1919,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderProjection"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderProjection"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderProjectionCommand"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
@@ -1888,6 +1930,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersDatabase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1905,6 +1949,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersEventsTopic"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersEventsTopic"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersEventsTopic"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
@@ -1922,6 +1969,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentProvider"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentProvider"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentProvider::providerIngress"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1935,6 +1983,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsDatabase"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsDatabase"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
@@ -1946,6 +1996,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsService"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsService::apiIn"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -1971,6 +2022,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::Storefront"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::Storefront"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::Storefront::catalogApiOut"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
@@ -2041,6 +2093,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::WebShopSystem::storefront"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::WebShopSystem::storefront"))) (target (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::WebShopSystem"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 3))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 2))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline"))) (provenance implied))
@@ -2074,18 +2130,30 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::InventoryRejected"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::InventoryReserved"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::failed"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::failed"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fulfilled"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))) (provenance implied))
@@ -2097,19 +2165,39 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::transitionActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending"))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 1))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Paid"))) (target (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::PaymentAuthorized"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::PaymentDeclined"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
@@ -2137,6 +2225,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::CommerceCluster"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::CommerceCluster"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::CommerceCluster"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
@@ -2441,6 +2532,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "ApiGateway")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::ApiGateway")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -2572,6 +2664,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -2586,6 +2679,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -2654,6 +2748,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -2713,27 +2808,139 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 2)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 3)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 4)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 5)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 6)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 7)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow::apiGateway")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow")))
@@ -3387,6 +3594,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CheckoutService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutService")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3524,6 +3732,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "EmailProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::EmailProvider")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3655,6 +3864,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3669,6 +3879,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3739,6 +3950,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "InventoryService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::InventoryService")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3915,6 +4127,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "NotificationService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -3980,18 +4193,88 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 2)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 3)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 4)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout::checkoutService")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout")))
@@ -4447,6 +4730,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrderProjection")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderProjection")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4508,6 +4792,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4522,6 +4807,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4618,6 +4904,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersEventsTopic")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4632,6 +4919,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersEventsTopic")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4646,6 +4934,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "OrdersEventsTopic")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrdersEventsTopic")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4744,6 +5033,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentProvider")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentProvider")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4824,6 +5114,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4838,6 +5129,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsDatabase")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsDatabase")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -4908,6 +5200,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "PaymentsService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::PaymentsService")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -5090,6 +5383,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "Storefront")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::Storefront")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -5814,15 +6108,71 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 2)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind action-def) (name "CheckoutPipeline")) (anonymous (kind succession) (ordinal 3)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline::authorizePayment")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::CheckoutPipeline")))
@@ -6075,9 +6425,40 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (anonymous (kind initial-state) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::completed")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
+      (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions"))))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::DecisionPerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/state_performances.md") (qualified-name "StatePerformances::StatePerformance")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::StateAction")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/states.md") (qualified-name "States::stateActions")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::created")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
@@ -6121,6 +6502,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory")))
+    )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::AcceptMessageAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))))
@@ -6154,6 +6554,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_inventory")))
+      (supertype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_inventory")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
@@ -6172,6 +6580,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment")))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment")))
@@ -6205,6 +6632,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::fail_payment")))
+      (supertype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "fail_payment")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::failed")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
@@ -6317,6 +6752,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed")))
+    )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::AcceptMessageAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::TransitionAction::accepter"))))
@@ -6350,6 +6804,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_completed")))
+      (supertype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_completed")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
@@ -6368,6 +6830,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled")))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled")))
@@ -6402,6 +6883,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_fulfilled")))
+      (supertype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_fulfilled")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
@@ -6420,6 +6909,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid")))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid")))
@@ -6454,6 +6962,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_paid")))
+      (supertype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_paid")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending")))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
@@ -6472,6 +6988,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind succession) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending")))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending")))
@@ -6505,6 +7040,14 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::AcceptPerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::acceptPerformances")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transition_performances.md") (qualified-name "TransitionPerformances::TransitionPerformance::accept")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::OrderLifecycleStateMachine::to_payment_pending")))
+      (supertype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind accept-action) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (path (named (kind package) (name "WebShopBehavior")) (named (kind state-def) (name "OrderLifecycleStateMachine")) (named (kind transition) (name "to_payment_pending")) (anonymous (kind parameter) (ordinal 1)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::Paid")))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any subclassification))
@@ -7036,6 +7579,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::String")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::CommerceCluster")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -7050,6 +7594,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 1)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::CommerceCluster")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -7064,6 +7609,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (named (kind part-def) (name "CommerceCluster")) (anonymous (kind attribute) (ordinal 2)) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample::CommerceCluster")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -10725,6 +11271,11 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 4,
       "kind": "qualified-name",
+      "qualifiedName": "Occurrences::happensBeforeLinks"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
       "qualifiedName": "Occurrences::occurrences"
     },
     {
@@ -10994,19 +11545,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 27,
+      "ordinal": 35,
       "relationshipKind": "redefinition",
       "source": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 28,
+      "ordinal": 36,
       "relationshipKind": "subsetting",
       "source": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 29,
+      "ordinal": 37,
       "relationshipKind": "typeFeaturing",
       "source": 2
     },
@@ -11018,91 +11569,97 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 30,
+      "ordinal": 38,
       "relationshipKind": "subsetting",
       "source": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 32,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 33,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 35,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 36,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 37,
-      "relationshipKind": "subsetting",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "typeFeaturing",
-      "source": 6
-    },
-    {
-      "kind": "relationship",
       "ordinal": 39,
-      "relationshipKind": "subsetting",
-      "source": 7
+      "relationshipKind": "typeFeaturing",
+      "source": 3
     },
     {
       "kind": "relationship",
       "ordinal": 40,
       "relationshipKind": "subsetting",
-      "source": 7
+      "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 41,
       "relationshipKind": "typeFeaturing",
-      "source": 7
+      "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 42,
       "relationshipKind": "subsetting",
-      "source": 8
+      "source": 5
     },
     {
       "kind": "relationship",
       "ordinal": 43,
       "relationshipKind": "subsetting",
-      "source": 8
+      "source": 5
     },
     {
       "kind": "relationship",
       "ordinal": 44,
+      "relationshipKind": "typeFeaturing",
+      "source": 5
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 45,
+      "relationshipKind": "subsetting",
+      "source": 6
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 46,
+      "relationshipKind": "subsetting",
+      "source": 6
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 47,
+      "relationshipKind": "typeFeaturing",
+      "source": 6
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 48,
+      "relationshipKind": "subsetting",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 49,
+      "relationshipKind": "subsetting",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 50,
+      "relationshipKind": "typeFeaturing",
+      "source": 7
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 51,
+      "relationshipKind": "subsetting",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 52,
+      "relationshipKind": "subsetting",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 53,
       "relationshipKind": "typeFeaturing",
       "source": 8
     },
@@ -11247,7 +11804,49 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "kind": "relationship",
       "ordinal": 0,
-      "relationshipKind": "succession",
+      "relationshipKind": "subsetting",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
+      "relationshipKind": "subsetting",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "subsetting",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 12,
+      "relationshipKind": "subsetting",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "subsetting",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
+      "relationshipKind": "subsetting",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 24,
+      "relationshipKind": "subsetting",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
+      "relationshipKind": "subsetting",
       "source": 10
     },
     {
@@ -11258,25 +11857,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
+      "ordinal": 2,
       "relationshipKind": "succession",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
+      "ordinal": 5,
       "relationshipKind": "succession",
       "source": 10
     },
     {
       "kind": "relationship",
       "ordinal": 6,
-      "relationshipKind": "succession",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 7,
       "relationshipKind": "succession",
       "source": 10
     },
@@ -11294,25 +11887,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 12,
-      "relationshipKind": "succession",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
       "ordinal": 13,
       "relationshipKind": "succession",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "ordinal": 14,
       "relationshipKind": "succession",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 16,
+      "ordinal": 17,
       "relationshipKind": "succession",
       "source": 10
     },
@@ -11324,12 +11911,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
-      "relationshipKind": "succession",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
       "ordinal": 21,
       "relationshipKind": "succession",
       "source": 10
@@ -11342,19 +11923,37 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 2,
+      "ordinal": 25,
+      "relationshipKind": "succession",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 26,
+      "relationshipKind": "succession",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 29,
+      "relationshipKind": "succession",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 30,
+      "relationshipKind": "succession",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
       "relationshipKind": "typeFeaturing",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "typeFeaturing",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 8,
+      "ordinal": 7,
       "relationshipKind": "typeFeaturing",
       "source": 10
     },
@@ -11366,25 +11965,31 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "ordinal": 15,
       "relationshipKind": "typeFeaturing",
       "source": 10
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "typeFeaturing",
-      "source": 10
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
+      "ordinal": 19,
       "relationshipKind": "typeFeaturing",
       "source": 10
     },
     {
       "kind": "relationship",
       "ordinal": 23,
+      "relationshipKind": "typeFeaturing",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 27,
+      "relationshipKind": "typeFeaturing",
+      "source": 10
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 31,
       "relationshipKind": "typeFeaturing",
       "source": 10
     },
@@ -11456,19 +12061,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 25,
+      "ordinal": 33,
       "relationshipKind": "subsetting",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
+      "ordinal": 34,
       "relationshipKind": "typeFeaturing",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 24,
+      "ordinal": 32,
       "relationshipKind": "typing",
       "source": 11
     },
@@ -11480,13 +12085,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 51,
+      "ordinal": 60,
       "relationshipKind": "subsetting",
       "source": 12
     },
     {
       "kind": "relationship",
-      "ordinal": 52,
+      "ordinal": 61,
       "relationshipKind": "typeFeaturing",
       "source": 12
     },
@@ -11498,79 +12103,79 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 57,
+      "ordinal": 66,
       "relationshipKind": "subsetting",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 58,
+      "ordinal": 67,
       "relationshipKind": "typeFeaturing",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 55,
+      "ordinal": 64,
       "relationshipKind": "subsetting",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 56,
+      "ordinal": 65,
       "relationshipKind": "typeFeaturing",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 53,
+      "ordinal": 62,
       "relationshipKind": "subsetting",
       "source": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 54,
+      "ordinal": 63,
       "relationshipKind": "typeFeaturing",
       "source": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 201,
+      "ordinal": 213,
       "relationshipKind": "flowPayloadType",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 202,
+      "ordinal": 214,
       "relationshipKind": "flowSource",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 203,
+      "ordinal": 215,
       "relationshipKind": "flowTarget",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 204,
+      "ordinal": 216,
       "relationshipKind": "subsetting",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 205,
+      "ordinal": 217,
       "relationshipKind": "subsetting",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 206,
+      "ordinal": 218,
       "relationshipKind": "subsetting",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 207,
+      "ordinal": 219,
       "relationshipKind": "subsetting",
       "source": 16
     },
@@ -11582,49 +12187,49 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 208,
+      "ordinal": 220,
       "relationshipKind": "typeFeaturing",
       "source": 16
     },
     {
       "kind": "relationship",
-      "ordinal": 209,
+      "ordinal": 221,
       "relationshipKind": "flowPayloadType",
       "source": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 210,
+      "ordinal": 222,
       "relationshipKind": "flowSource",
       "source": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 211,
+      "ordinal": 223,
       "relationshipKind": "flowTarget",
       "source": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 212,
+      "ordinal": 224,
       "relationshipKind": "subsetting",
       "source": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 213,
+      "ordinal": 225,
       "relationshipKind": "subsetting",
       "source": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 214,
+      "ordinal": 226,
       "relationshipKind": "subsetting",
       "source": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 215,
+      "ordinal": 227,
       "relationshipKind": "subsetting",
       "source": 17
     },
@@ -11636,55 +12241,55 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 216,
+      "ordinal": 228,
       "relationshipKind": "typeFeaturing",
       "source": 17
     },
     {
       "kind": "relationship",
-      "ordinal": 105,
+      "ordinal": 115,
       "relationshipKind": "flowPayloadType",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 106,
+      "ordinal": 116,
       "relationshipKind": "flowSource",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 107,
+      "ordinal": 117,
       "relationshipKind": "flowTarget",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 108,
+      "ordinal": 118,
       "relationshipKind": "subsetting",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 109,
+      "ordinal": 119,
       "relationshipKind": "subsetting",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 110,
+      "ordinal": 120,
       "relationshipKind": "subsetting",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 111,
+      "ordinal": 121,
       "relationshipKind": "subsetting",
       "source": 18
     },
     {
       "kind": "relationship",
-      "ordinal": 112,
+      "ordinal": 122,
       "relationshipKind": "typeFeaturing",
       "source": 18
     },
@@ -11780,31 +12385,31 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 130,
+      "ordinal": 140,
       "relationshipKind": "subsetting",
       "source": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 131,
+      "ordinal": 141,
       "relationshipKind": "typeFeaturing",
       "source": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 129,
+      "ordinal": 139,
       "relationshipKind": "typing",
       "source": 19
     },
     {
       "kind": "relationship",
-      "ordinal": 171,
+      "ordinal": 182,
       "relationshipKind": "subsetting",
       "source": 20
     },
     {
       "kind": "relationship",
-      "ordinal": 172,
+      "ordinal": 183,
       "relationshipKind": "typeFeaturing",
       "source": 20
     },
@@ -11816,25 +12421,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 163,
+      "ordinal": 174,
       "relationshipKind": "subsetting",
       "source": 21
     },
     {
       "kind": "relationship",
-      "ordinal": 164,
+      "ordinal": 175,
       "relationshipKind": "typeFeaturing",
       "source": 21
     },
     {
       "kind": "relationship",
-      "ordinal": 165,
+      "ordinal": 176,
       "relationshipKind": "subsetting",
       "source": 22
     },
     {
       "kind": "relationship",
-      "ordinal": 166,
+      "ordinal": 177,
       "relationshipKind": "typeFeaturing",
       "source": 22
     },
@@ -11846,13 +12451,13 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 169,
+      "ordinal": 180,
       "relationshipKind": "subsetting",
       "source": 23
     },
     {
       "kind": "relationship",
-      "ordinal": 170,
+      "ordinal": 181,
       "relationshipKind": "typeFeaturing",
       "source": 23
     },
@@ -11864,25 +12469,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 159,
+      "ordinal": 170,
       "relationshipKind": "subsetting",
       "source": 24
     },
     {
       "kind": "relationship",
-      "ordinal": 160,
+      "ordinal": 171,
       "relationshipKind": "typeFeaturing",
       "source": 24
     },
     {
       "kind": "relationship",
-      "ordinal": 167,
+      "ordinal": 178,
       "relationshipKind": "subsetting",
       "source": 25
     },
     {
       "kind": "relationship",
-      "ordinal": 168,
+      "ordinal": 179,
       "relationshipKind": "typeFeaturing",
       "source": 25
     },
@@ -11894,55 +12499,55 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 161,
+      "ordinal": 172,
       "relationshipKind": "subsetting",
       "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 162,
+      "ordinal": 173,
       "relationshipKind": "typeFeaturing",
       "source": 26
     },
     {
       "kind": "relationship",
-      "ordinal": 113,
+      "ordinal": 123,
       "relationshipKind": "flowPayloadType",
       "source": 27
     },
     {
       "kind": "relationship",
-      "ordinal": 114,
+      "ordinal": 124,
       "relationshipKind": "flowSource",
       "source": 27
     },
     {
       "kind": "relationship",
-      "ordinal": 115,
+      "ordinal": 125,
       "relationshipKind": "flowTarget",
       "source": 27
     },
     {
       "kind": "relationship",
-      "ordinal": 116,
+      "ordinal": 126,
       "relationshipKind": "subsetting",
       "source": 27
     },
     {
       "kind": "relationship",
-      "ordinal": 117,
+      "ordinal": 127,
       "relationshipKind": "subsetting",
       "source": 27
     },
     {
       "kind": "relationship",
-      "ordinal": 118,
+      "ordinal": 128,
       "relationshipKind": "subsetting",
       "source": 27
     },
     {
       "kind": "relationship",
-      "ordinal": 119,
+      "ordinal": 129,
       "relationshipKind": "subsetting",
       "source": 27
     },
@@ -11954,7 +12559,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 120,
+      "ordinal": 130,
       "relationshipKind": "typeFeaturing",
       "source": 27
     },
@@ -12014,19 +12619,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 218,
+      "ordinal": 230,
       "relationshipKind": "subsetting",
       "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 219,
+      "ordinal": 231,
       "relationshipKind": "typeFeaturing",
       "source": 28
     },
     {
       "kind": "relationship",
-      "ordinal": 217,
+      "ordinal": 229,
       "relationshipKind": "typing",
       "source": 28
     },
@@ -12038,25 +12643,25 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 244,
+      "ordinal": 257,
       "relationshipKind": "subsetting",
       "source": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 245,
+      "ordinal": 258,
       "relationshipKind": "typeFeaturing",
       "source": 29
     },
     {
       "kind": "relationship",
-      "ordinal": 246,
+      "ordinal": 259,
       "relationshipKind": "subsetting",
       "source": 30
     },
     {
       "kind": "relationship",
-      "ordinal": 247,
+      "ordinal": 260,
       "relationshipKind": "typeFeaturing",
       "source": 30
     },
@@ -12116,73 +12721,73 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 249,
+      "ordinal": 262,
       "relationshipKind": "subsetting",
       "source": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 250,
+      "ordinal": 263,
       "relationshipKind": "typeFeaturing",
       "source": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 248,
+      "ordinal": 261,
       "relationshipKind": "typing",
       "source": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 284,
+      "ordinal": 300,
       "relationshipKind": "subsetting",
       "source": 32
     },
     {
       "kind": "relationship",
-      "ordinal": 285,
+      "ordinal": 301,
       "relationshipKind": "typeFeaturing",
       "source": 32
     },
     {
       "kind": "relationship",
-      "ordinal": 121,
+      "ordinal": 131,
       "relationshipKind": "flowPayloadType",
       "source": 33
     },
     {
       "kind": "relationship",
-      "ordinal": 122,
+      "ordinal": 132,
       "relationshipKind": "flowSource",
       "source": 33
     },
     {
       "kind": "relationship",
-      "ordinal": 123,
+      "ordinal": 133,
       "relationshipKind": "flowTarget",
       "source": 33
     },
     {
       "kind": "relationship",
-      "ordinal": 124,
+      "ordinal": 134,
       "relationshipKind": "subsetting",
       "source": 33
     },
     {
       "kind": "relationship",
-      "ordinal": 125,
+      "ordinal": 135,
       "relationshipKind": "subsetting",
       "source": 33
     },
     {
       "kind": "relationship",
-      "ordinal": 126,
+      "ordinal": 136,
       "relationshipKind": "subsetting",
       "source": 33
     },
     {
       "kind": "relationship",
-      "ordinal": 127,
+      "ordinal": 137,
       "relationshipKind": "subsetting",
       "source": 33
     },
@@ -12194,7 +12799,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 128,
+      "ordinal": 138,
       "relationshipKind": "typeFeaturing",
       "source": 33
     },
@@ -12248,19 +12853,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 174,
+      "ordinal": 185,
       "relationshipKind": "subsetting",
       "source": 34
     },
     {
       "kind": "relationship",
-      "ordinal": 175,
+      "ordinal": 186,
       "relationshipKind": "typeFeaturing",
       "source": 34
     },
     {
       "kind": "relationship",
-      "ordinal": 173,
+      "ordinal": 184,
       "relationshipKind": "typing",
       "source": 34
     },
@@ -12272,67 +12877,67 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 197,
+      "ordinal": 209,
       "relationshipKind": "subsetting",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 198,
+      "ordinal": 210,
       "relationshipKind": "typeFeaturing",
       "source": 35
     },
     {
       "kind": "relationship",
-      "ordinal": 199,
+      "ordinal": 211,
       "relationshipKind": "subsetting",
       "source": 36
     },
     {
       "kind": "relationship",
-      "ordinal": 200,
+      "ordinal": 212,
       "relationshipKind": "typeFeaturing",
       "source": 36
     },
     {
       "kind": "relationship",
-      "ordinal": 286,
+      "ordinal": 302,
       "relationshipKind": "flowPayloadType",
       "source": 37
     },
     {
       "kind": "relationship",
-      "ordinal": 287,
+      "ordinal": 303,
       "relationshipKind": "flowSource",
       "source": 37
     },
     {
       "kind": "relationship",
-      "ordinal": 288,
+      "ordinal": 304,
       "relationshipKind": "flowTarget",
       "source": 37
     },
     {
       "kind": "relationship",
-      "ordinal": 289,
+      "ordinal": 305,
       "relationshipKind": "subsetting",
       "source": 37
     },
     {
       "kind": "relationship",
-      "ordinal": 290,
+      "ordinal": 306,
       "relationshipKind": "subsetting",
       "source": 37
     },
     {
       "kind": "relationship",
-      "ordinal": 291,
+      "ordinal": 307,
       "relationshipKind": "subsetting",
       "source": 37
     },
     {
       "kind": "relationship",
-      "ordinal": 292,
+      "ordinal": 308,
       "relationshipKind": "subsetting",
       "source": 37
     },
@@ -12344,49 +12949,49 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 293,
+      "ordinal": 309,
       "relationshipKind": "typeFeaturing",
       "source": 37
     },
     {
       "kind": "relationship",
-      "ordinal": 81,
+      "ordinal": 91,
       "relationshipKind": "flowPayloadType",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 82,
+      "ordinal": 92,
       "relationshipKind": "flowSource",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 83,
+      "ordinal": 93,
       "relationshipKind": "flowTarget",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 84,
+      "ordinal": 94,
       "relationshipKind": "subsetting",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 85,
+      "ordinal": 95,
       "relationshipKind": "subsetting",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 86,
+      "ordinal": 96,
       "relationshipKind": "subsetting",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 87,
+      "ordinal": 97,
       "relationshipKind": "subsetting",
       "source": 38
     },
@@ -12398,49 +13003,49 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 88,
+      "ordinal": 98,
       "relationshipKind": "typeFeaturing",
       "source": 38
     },
     {
       "kind": "relationship",
-      "ordinal": 89,
+      "ordinal": 99,
       "relationshipKind": "flowPayloadType",
       "source": 39
     },
     {
       "kind": "relationship",
-      "ordinal": 90,
+      "ordinal": 100,
       "relationshipKind": "flowSource",
       "source": 39
     },
     {
       "kind": "relationship",
-      "ordinal": 91,
+      "ordinal": 101,
       "relationshipKind": "flowTarget",
       "source": 39
     },
     {
       "kind": "relationship",
-      "ordinal": 92,
+      "ordinal": 102,
       "relationshipKind": "subsetting",
       "source": 39
     },
     {
       "kind": "relationship",
-      "ordinal": 93,
+      "ordinal": 103,
       "relationshipKind": "subsetting",
       "source": 39
     },
     {
       "kind": "relationship",
-      "ordinal": 94,
+      "ordinal": 104,
       "relationshipKind": "subsetting",
       "source": 39
     },
     {
       "kind": "relationship",
-      "ordinal": 95,
+      "ordinal": 105,
       "relationshipKind": "subsetting",
       "source": 39
     },
@@ -12452,7 +13057,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 96,
+      "ordinal": 106,
       "relationshipKind": "typeFeaturing",
       "source": 39
     },
@@ -12494,31 +13099,31 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 60,
+      "ordinal": 69,
       "relationshipKind": "subsetting",
       "source": 40
     },
     {
       "kind": "relationship",
-      "ordinal": 61,
+      "ordinal": 70,
       "relationshipKind": "typeFeaturing",
       "source": 40
     },
     {
       "kind": "relationship",
-      "ordinal": 59,
+      "ordinal": 68,
       "relationshipKind": "typing",
       "source": 40
     },
     {
       "kind": "relationship",
-      "ordinal": 79,
+      "ordinal": 89,
       "relationshipKind": "subsetting",
       "source": 41
     },
     {
       "kind": "relationship",
-      "ordinal": 80,
+      "ordinal": 90,
       "relationshipKind": "typeFeaturing",
       "source": 41
     },
@@ -12530,55 +13135,55 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 77,
+      "ordinal": 87,
       "relationshipKind": "subsetting",
       "source": 42
     },
     {
       "kind": "relationship",
-      "ordinal": 78,
+      "ordinal": 88,
       "relationshipKind": "typeFeaturing",
       "source": 42
     },
     {
       "kind": "relationship",
-      "ordinal": 97,
+      "ordinal": 107,
       "relationshipKind": "flowPayloadType",
       "source": 43
     },
     {
       "kind": "relationship",
-      "ordinal": 98,
+      "ordinal": 108,
       "relationshipKind": "flowSource",
       "source": 43
     },
     {
       "kind": "relationship",
-      "ordinal": 99,
+      "ordinal": 109,
       "relationshipKind": "flowTarget",
       "source": 43
     },
     {
       "kind": "relationship",
-      "ordinal": 100,
+      "ordinal": 110,
       "relationshipKind": "subsetting",
       "source": 43
     },
     {
       "kind": "relationship",
-      "ordinal": 101,
+      "ordinal": 111,
       "relationshipKind": "subsetting",
       "source": 43
     },
     {
       "kind": "relationship",
-      "ordinal": 102,
+      "ordinal": 112,
       "relationshipKind": "subsetting",
       "source": 43
     },
     {
       "kind": "relationship",
-      "ordinal": 103,
+      "ordinal": 113,
       "relationshipKind": "subsetting",
       "source": 43
     },
@@ -12590,7 +13195,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 104,
+      "ordinal": 114,
       "relationshipKind": "typeFeaturing",
       "source": 43
     },
@@ -12602,19 +13207,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 132,
+      "ordinal": 142,
       "relationshipKind": "redefinition",
       "source": 47
     },
     {
       "kind": "relationship",
-      "ordinal": 133,
+      "ordinal": 143,
       "relationshipKind": "subsetting",
       "source": 47
     },
     {
       "kind": "relationship",
-      "ordinal": 134,
+      "ordinal": 144,
       "relationshipKind": "typeFeaturing",
       "source": 47
     },
@@ -12626,181 +13231,187 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 135,
+      "ordinal": 145,
       "relationshipKind": "subsetting",
       "source": 48
     },
     {
       "kind": "relationship",
-      "ordinal": 136,
+      "ordinal": 146,
+      "relationshipKind": "typeFeaturing",
+      "source": 48
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 147,
       "relationshipKind": "subsetting",
       "source": 49
     },
     {
       "kind": "relationship",
-      "ordinal": 137,
+      "ordinal": 148,
       "relationshipKind": "typeFeaturing",
       "source": 49
     },
     {
       "kind": "relationship",
-      "ordinal": 138,
+      "ordinal": 149,
       "relationshipKind": "subsetting",
       "source": 50
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 139,
-      "relationshipKind": "subsetting",
-      "source": 50
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 140,
-      "relationshipKind": "typeFeaturing",
-      "source": 50
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 156,
-      "relationshipKind": "subsetting",
-      "source": 51
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 157,
-      "relationshipKind": "subsetting",
-      "source": 51
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 158,
-      "relationshipKind": "typeFeaturing",
-      "source": 51
     },
     {
       "kind": "relationship",
       "ordinal": 150,
       "relationshipKind": "subsetting",
-      "source": 52
+      "source": 50
     },
     {
       "kind": "relationship",
       "ordinal": 151,
+      "relationshipKind": "typeFeaturing",
+      "source": 50
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 167,
       "relationshipKind": "subsetting",
+      "source": 51
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 168,
+      "relationshipKind": "subsetting",
+      "source": 51
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 169,
+      "relationshipKind": "typeFeaturing",
+      "source": 51
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 161,
+      "relationshipKind": "subsetting",
+      "source": 52
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 162,
+      "relationshipKind": "subsetting",
+      "source": 52
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 163,
+      "relationshipKind": "typeFeaturing",
       "source": 52
     },
     {
       "kind": "relationship",
       "ordinal": 152,
-      "relationshipKind": "typeFeaturing",
-      "source": 52
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 141,
       "relationshipKind": "subsetting",
-      "source": 53
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 142,
-      "relationshipKind": "subsetting",
-      "source": 53
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 143,
-      "relationshipKind": "typeFeaturing",
       "source": 53
     },
     {
       "kind": "relationship",
       "ordinal": 153,
       "relationshipKind": "subsetting",
-      "source": 54
+      "source": 53
     },
     {
       "kind": "relationship",
       "ordinal": 154,
+      "relationshipKind": "typeFeaturing",
+      "source": 53
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 164,
       "relationshipKind": "subsetting",
       "source": 54
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 165,
+      "relationshipKind": "subsetting",
+      "source": 54
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 166,
+      "relationshipKind": "typeFeaturing",
+      "source": 54
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "subsetting",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 156,
+      "relationshipKind": "subsetting",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 201,
+      "relationshipKind": "subsetting",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 243,
+      "relationshipKind": "subsetting",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 56,
+      "relationshipKind": "typeFeaturing",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 157,
+      "relationshipKind": "typeFeaturing",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 202,
+      "relationshipKind": "typeFeaturing",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 244,
+      "relationshipKind": "typeFeaturing",
+      "source": 56
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 54,
+      "relationshipKind": "typing",
+      "source": 56
     },
     {
       "kind": "relationship",
       "ordinal": 155,
-      "relationshipKind": "typeFeaturing",
-      "source": 54
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 46,
-      "relationshipKind": "subsetting",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 145,
-      "relationshipKind": "subsetting",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 189,
-      "relationshipKind": "subsetting",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 230,
-      "relationshipKind": "subsetting",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 47,
-      "relationshipKind": "typeFeaturing",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 146,
-      "relationshipKind": "typeFeaturing",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 190,
-      "relationshipKind": "typeFeaturing",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 231,
-      "relationshipKind": "typeFeaturing",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 45,
       "relationshipKind": "typing",
       "source": 56
     },
     {
       "kind": "relationship",
-      "ordinal": 144,
+      "ordinal": 200,
       "relationshipKind": "typing",
       "source": 56
     },
     {
       "kind": "relationship",
-      "ordinal": 188,
-      "relationshipKind": "typing",
-      "source": 56
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 229,
+      "ordinal": 242,
       "relationshipKind": "typing",
       "source": 56
     },
@@ -12812,19 +13423,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 220,
+      "ordinal": 232,
       "relationshipKind": "redefinition",
       "source": 58
     },
     {
       "kind": "relationship",
-      "ordinal": 221,
+      "ordinal": 233,
       "relationshipKind": "subsetting",
       "source": 58
     },
     {
       "kind": "relationship",
-      "ordinal": 222,
+      "ordinal": 234,
       "relationshipKind": "typeFeaturing",
       "source": 58
     },
@@ -12836,145 +13447,151 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 223,
+      "ordinal": 235,
       "relationshipKind": "subsetting",
       "source": 59
     },
     {
       "kind": "relationship",
-      "ordinal": 224,
+      "ordinal": 236,
+      "relationshipKind": "typeFeaturing",
+      "source": 59
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 237,
       "relationshipKind": "subsetting",
       "source": 60
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 225,
-      "relationshipKind": "typeFeaturing",
-      "source": 60
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 226,
-      "relationshipKind": "subsetting",
-      "source": 61
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 227,
-      "relationshipKind": "subsetting",
-      "source": 61
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 228,
-      "relationshipKind": "typeFeaturing",
-      "source": 61
     },
     {
       "kind": "relationship",
       "ordinal": 238,
-      "relationshipKind": "subsetting",
-      "source": 62
+      "relationshipKind": "typeFeaturing",
+      "source": 60
     },
     {
       "kind": "relationship",
       "ordinal": 239,
       "relationshipKind": "subsetting",
-      "source": 62
+      "source": 61
     },
     {
       "kind": "relationship",
       "ordinal": 240,
+      "relationshipKind": "subsetting",
+      "source": 61
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 241,
+      "relationshipKind": "typeFeaturing",
+      "source": 61
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 251,
+      "relationshipKind": "subsetting",
+      "source": 62
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 252,
+      "relationshipKind": "subsetting",
+      "source": 62
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 253,
       "relationshipKind": "typeFeaturing",
       "source": 62
     },
     {
       "kind": "relationship",
-      "ordinal": 235,
+      "ordinal": 248,
       "relationshipKind": "subsetting",
       "source": 63
     },
     {
       "kind": "relationship",
-      "ordinal": 236,
+      "ordinal": 249,
       "relationshipKind": "subsetting",
       "source": 63
     },
     {
       "kind": "relationship",
-      "ordinal": 237,
+      "ordinal": 250,
       "relationshipKind": "typeFeaturing",
       "source": 63
     },
     {
       "kind": "relationship",
-      "ordinal": 241,
+      "ordinal": 254,
       "relationshipKind": "subsetting",
       "source": 64
     },
     {
       "kind": "relationship",
-      "ordinal": 242,
+      "ordinal": 255,
       "relationshipKind": "subsetting",
       "source": 64
     },
     {
       "kind": "relationship",
-      "ordinal": 243,
+      "ordinal": 256,
       "relationshipKind": "typeFeaturing",
       "source": 64
     },
     {
       "kind": "relationship",
-      "ordinal": 276,
+      "ordinal": 292,
       "relationshipKind": "subsetting",
       "source": 66
     },
     {
       "kind": "relationship",
-      "ordinal": 277,
+      "ordinal": 293,
       "relationshipKind": "typeFeaturing",
       "source": 66
     },
     {
       "kind": "relationship",
-      "ordinal": 275,
+      "ordinal": 291,
       "relationshipKind": "typing",
       "source": 66
     },
     {
       "kind": "relationship",
-      "ordinal": 273,
+      "ordinal": 289,
       "relationshipKind": "subsetting",
       "source": 67
     },
     {
       "kind": "relationship",
-      "ordinal": 274,
+      "ordinal": 290,
       "relationshipKind": "typeFeaturing",
       "source": 67
     },
     {
       "kind": "relationship",
-      "ordinal": 272,
+      "ordinal": 288,
       "relationshipKind": "typing",
       "source": 67
     },
     {
       "kind": "relationship",
-      "ordinal": 270,
+      "ordinal": 286,
       "relationshipKind": "subsetting",
       "source": 68
     },
     {
       "kind": "relationship",
-      "ordinal": 271,
+      "ordinal": 287,
       "relationshipKind": "typeFeaturing",
       "source": 68
     },
     {
       "kind": "relationship",
-      "ordinal": 269,
+      "ordinal": 285,
       "relationshipKind": "typing",
       "source": 68
     },
@@ -12998,55 +13615,55 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 251,
-      "relationshipKind": "redefinition",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 257,
-      "relationshipKind": "redefinition",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 263,
-      "relationshipKind": "redefinition",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 252,
-      "relationshipKind": "subsetting",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 258,
-      "relationshipKind": "subsetting",
-      "source": 71
-    },
-    {
-      "kind": "relationship",
       "ordinal": 264,
-      "relationshipKind": "subsetting",
+      "relationshipKind": "redefinition",
       "source": 71
     },
     {
       "kind": "relationship",
-      "ordinal": 253,
-      "relationshipKind": "typeFeaturing",
+      "ordinal": 271,
+      "relationshipKind": "redefinition",
       "source": 71
     },
     {
       "kind": "relationship",
-      "ordinal": 259,
-      "relationshipKind": "typeFeaturing",
+      "ordinal": 278,
+      "relationshipKind": "redefinition",
       "source": 71
     },
     {
       "kind": "relationship",
       "ordinal": 265,
+      "relationshipKind": "subsetting",
+      "source": 71
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 272,
+      "relationshipKind": "subsetting",
+      "source": 71
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 279,
+      "relationshipKind": "subsetting",
+      "source": 71
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 266,
+      "relationshipKind": "typeFeaturing",
+      "source": 71
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 273,
+      "relationshipKind": "typeFeaturing",
+      "source": 71
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 280,
       "relationshipKind": "typeFeaturing",
       "source": 71
     },
@@ -13070,91 +13687,109 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 254,
-      "relationshipKind": "subsetting",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 260,
-      "relationshipKind": "subsetting",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 266,
-      "relationshipKind": "subsetting",
-      "source": 72
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 255,
-      "relationshipKind": "subsetting",
-      "source": 73
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 261,
-      "relationshipKind": "subsetting",
-      "source": 73
-    },
-    {
-      "kind": "relationship",
       "ordinal": 267,
       "relationshipKind": "subsetting",
-      "source": 73
+      "source": 72
     },
     {
       "kind": "relationship",
-      "ordinal": 256,
-      "relationshipKind": "typeFeaturing",
-      "source": 73
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 262,
-      "relationshipKind": "typeFeaturing",
-      "source": 73
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 268,
-      "relationshipKind": "typeFeaturing",
-      "source": 73
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 278,
+      "ordinal": 274,
       "relationshipKind": "subsetting",
-      "source": 74
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 279,
-      "relationshipKind": "subsetting",
-      "source": 74
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 280,
-      "relationshipKind": "typeFeaturing",
-      "source": 74
+      "source": 72
     },
     {
       "kind": "relationship",
       "ordinal": 281,
       "relationshipKind": "subsetting",
-      "source": 75
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 268,
+      "relationshipKind": "typeFeaturing",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 275,
+      "relationshipKind": "typeFeaturing",
+      "source": 72
     },
     {
       "kind": "relationship",
       "ordinal": 282,
+      "relationshipKind": "typeFeaturing",
+      "source": 72
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 269,
+      "relationshipKind": "subsetting",
+      "source": 73
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 276,
+      "relationshipKind": "subsetting",
+      "source": 73
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 283,
+      "relationshipKind": "subsetting",
+      "source": 73
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 270,
+      "relationshipKind": "typeFeaturing",
+      "source": 73
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 277,
+      "relationshipKind": "typeFeaturing",
+      "source": 73
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 284,
+      "relationshipKind": "typeFeaturing",
+      "source": 73
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 294,
+      "relationshipKind": "subsetting",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 295,
+      "relationshipKind": "subsetting",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 296,
+      "relationshipKind": "typeFeaturing",
+      "source": 74
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 297,
       "relationshipKind": "subsetting",
       "source": 75
     },
     {
       "kind": "relationship",
-      "ordinal": 283,
+      "ordinal": 298,
+      "relationshipKind": "subsetting",
+      "source": 75
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 299,
       "relationshipKind": "typeFeaturing",
       "source": 75
     },
@@ -13166,19 +13801,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 176,
+      "ordinal": 187,
       "relationshipKind": "redefinition",
       "source": 79
     },
     {
       "kind": "relationship",
-      "ordinal": 177,
+      "ordinal": 188,
       "relationshipKind": "subsetting",
       "source": 79
     },
     {
       "kind": "relationship",
-      "ordinal": 178,
+      "ordinal": 189,
       "relationshipKind": "typeFeaturing",
       "source": 79
     },
@@ -13190,163 +13825,169 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 179,
+      "ordinal": 190,
       "relationshipKind": "subsetting",
       "source": 80
     },
     {
       "kind": "relationship",
-      "ordinal": 180,
-      "relationshipKind": "subsetting",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 181,
-      "relationshipKind": "typeFeaturing",
-      "source": 81
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 182,
-      "relationshipKind": "subsetting",
-      "source": 82
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 183,
-      "relationshipKind": "subsetting",
-      "source": 82
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 184,
-      "relationshipKind": "typeFeaturing",
-      "source": 82
-    },
-    {
-      "kind": "relationship",
       "ordinal": 191,
-      "relationshipKind": "subsetting",
-      "source": 83
+      "relationshipKind": "typeFeaturing",
+      "source": 80
     },
     {
       "kind": "relationship",
       "ordinal": 192,
       "relationshipKind": "subsetting",
-      "source": 83
+      "source": 81
     },
     {
       "kind": "relationship",
       "ordinal": 193,
       "relationshipKind": "typeFeaturing",
-      "source": 83
+      "source": 81
     },
     {
       "kind": "relationship",
-      "ordinal": 185,
+      "ordinal": 194,
       "relationshipKind": "subsetting",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 186,
-      "relationshipKind": "subsetting",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 187,
-      "relationshipKind": "typeFeaturing",
-      "source": 84
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 49,
-      "relationshipKind": "subsetting",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 75,
-      "relationshipKind": "subsetting",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 148,
-      "relationshipKind": "subsetting",
-      "source": 86
+      "source": 82
     },
     {
       "kind": "relationship",
       "ordinal": 195,
       "relationshipKind": "subsetting",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 233,
-      "relationshipKind": "subsetting",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 50,
-      "relationshipKind": "typeFeaturing",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 76,
-      "relationshipKind": "typeFeaturing",
-      "source": 86
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 149,
-      "relationshipKind": "typeFeaturing",
-      "source": 86
+      "source": 82
     },
     {
       "kind": "relationship",
       "ordinal": 196,
       "relationshipKind": "typeFeaturing",
+      "source": 82
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 203,
+      "relationshipKind": "subsetting",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 204,
+      "relationshipKind": "subsetting",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 205,
+      "relationshipKind": "typeFeaturing",
+      "source": 83
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 197,
+      "relationshipKind": "subsetting",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 198,
+      "relationshipKind": "subsetting",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 199,
+      "relationshipKind": "typeFeaturing",
+      "source": 84
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 58,
+      "relationshipKind": "subsetting",
       "source": 86
     },
     {
       "kind": "relationship",
-      "ordinal": 234,
+      "ordinal": 85,
+      "relationshipKind": "subsetting",
+      "source": 86
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 159,
+      "relationshipKind": "subsetting",
+      "source": 86
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 207,
+      "relationshipKind": "subsetting",
+      "source": 86
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 246,
+      "relationshipKind": "subsetting",
+      "source": 86
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 59,
       "relationshipKind": "typeFeaturing",
       "source": 86
     },
     {
       "kind": "relationship",
-      "ordinal": 48,
+      "ordinal": 86,
+      "relationshipKind": "typeFeaturing",
+      "source": 86
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 160,
+      "relationshipKind": "typeFeaturing",
+      "source": 86
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 208,
+      "relationshipKind": "typeFeaturing",
+      "source": 86
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 247,
+      "relationshipKind": "typeFeaturing",
+      "source": 86
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
       "relationshipKind": "typing",
       "source": 86
     },
     {
       "kind": "relationship",
-      "ordinal": 74,
+      "ordinal": 84,
       "relationshipKind": "typing",
       "source": 86
     },
     {
       "kind": "relationship",
-      "ordinal": 147,
+      "ordinal": 158,
       "relationshipKind": "typing",
       "source": 86
     },
     {
       "kind": "relationship",
-      "ordinal": 194,
+      "ordinal": 206,
       "relationshipKind": "typing",
       "source": 86
     },
     {
       "kind": "relationship",
-      "ordinal": 232,
+      "ordinal": 245,
       "relationshipKind": "typing",
       "source": 86
     },
@@ -13358,19 +13999,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 62,
+      "ordinal": 71,
       "relationshipKind": "redefinition",
       "source": 89
     },
     {
       "kind": "relationship",
-      "ordinal": 63,
+      "ordinal": 72,
       "relationshipKind": "subsetting",
       "source": 89
     },
     {
       "kind": "relationship",
-      "ordinal": 64,
+      "ordinal": 73,
       "relationshipKind": "typeFeaturing",
       "source": 89
     },
@@ -13382,55 +14023,61 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 65,
+      "ordinal": 74,
       "relationshipKind": "subsetting",
       "source": 90
     },
     {
       "kind": "relationship",
-      "ordinal": 66,
+      "ordinal": 75,
+      "relationshipKind": "typeFeaturing",
+      "source": 90
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 76,
       "relationshipKind": "subsetting",
       "source": 91
     },
     {
       "kind": "relationship",
-      "ordinal": 67,
+      "ordinal": 77,
       "relationshipKind": "typeFeaturing",
       "source": 91
     },
     {
       "kind": "relationship",
-      "ordinal": 68,
+      "ordinal": 78,
       "relationshipKind": "subsetting",
       "source": 92
     },
     {
       "kind": "relationship",
-      "ordinal": 69,
+      "ordinal": 79,
       "relationshipKind": "subsetting",
       "source": 92
     },
     {
       "kind": "relationship",
-      "ordinal": 70,
+      "ordinal": 80,
       "relationshipKind": "typeFeaturing",
       "source": 92
     },
     {
       "kind": "relationship",
-      "ordinal": 71,
+      "ordinal": 81,
       "relationshipKind": "subsetting",
       "source": 93
     },
     {
       "kind": "relationship",
-      "ordinal": 72,
+      "ordinal": 82,
       "relationshipKind": "subsetting",
       "source": 93
     },
     {
       "kind": "relationship",
-      "ordinal": 73,
+      "ordinal": 83,
       "relationshipKind": "typeFeaturing",
       "source": 93
     }
@@ -13452,7 +14099,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 122,
         "origin": 1,
         "provenance": "authored",
-        "reference": 158,
+        "reference": 160,
         "source": 0,
         "target": 1
       },
@@ -13461,7 +14108,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 123,
         "origin": 1,
         "provenance": "implied",
-        "reference": 404,
+        "reference": 414,
         "source": 11,
         "target": 13
       },
@@ -13470,7 +14117,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 125,
         "origin": 2,
         "provenance": "authored",
-        "reference": 159,
+        "reference": 161,
         "source": 0,
         "target": 2
       },
@@ -13479,7 +14126,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 126,
         "origin": 2,
         "provenance": "implied",
-        "reference": 298,
+        "reference": 308,
         "source": 13,
         "target": 15
       },
@@ -13488,7 +14135,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 128,
         "origin": 3,
         "provenance": "authored",
-        "reference": 160,
+        "reference": 162,
         "source": 0,
         "target": 3
       },
@@ -13497,7 +14144,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 129,
         "origin": 3,
         "provenance": "implied",
-        "reference": 236,
+        "reference": 246,
         "source": 15,
         "target": 14
       },
@@ -13506,7 +14153,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 131,
         "origin": 4,
         "provenance": "authored",
-        "reference": 161,
+        "reference": 163,
         "source": 0,
         "target": 4
       },
@@ -13515,7 +14162,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 132,
         "origin": 4,
         "provenance": "implied",
-        "reference": 338,
+        "reference": 348,
         "source": 14,
         "target": 9
       },
@@ -13524,7 +14171,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 134,
         "origin": 5,
         "provenance": "authored",
-        "reference": 162,
+        "reference": 164,
         "source": 0,
         "target": 5
       },
@@ -13533,7 +14180,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 135,
         "origin": 5,
         "provenance": "implied",
-        "reference": 372,
+        "reference": 382,
         "source": 9,
         "target": 10
       },
@@ -13542,7 +14189,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 137,
         "origin": 6,
         "provenance": "authored",
-        "reference": 163,
+        "reference": 165,
         "source": 0,
         "target": 6
       },
@@ -13551,7 +14198,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 138,
         "origin": 6,
         "provenance": "implied",
-        "reference": 381,
+        "reference": 391,
         "source": 10,
         "target": 17
       },
@@ -13560,7 +14207,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 140,
         "origin": 7,
         "provenance": "authored",
-        "reference": 164,
+        "reference": 166,
         "source": 0,
         "target": 7
       },
@@ -13569,7 +14216,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 141,
         "origin": 7,
         "provenance": "implied",
-        "reference": 363,
+        "reference": 373,
         "source": 17,
         "target": 16
       },
@@ -13578,7 +14225,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 143,
         "origin": 8,
         "provenance": "authored",
-        "reference": 165,
+        "reference": 167,
         "source": 0,
         "target": 8
       },
@@ -13587,7 +14234,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 144,
         "origin": 8,
         "provenance": "implied",
-        "reference": 245,
+        "reference": 255,
         "source": 16,
         "target": 12
       },
@@ -13596,7 +14243,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 60,
         "origin": 18,
         "provenance": "authored",
-        "reference": 166,
+        "reference": 168,
         "source": 0,
         "target": 18
       },
@@ -13605,7 +14252,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 16,
         "origin": 27,
         "provenance": "implied",
-        "reference": 205,
+        "reference": 215,
         "source": 18,
         "target": 27
       },
@@ -13614,7 +14261,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 18,
         "origin": 28,
         "provenance": "authored",
-        "reference": 138,
+        "reference": 139,
         "source": 27,
         "target": 28
       },
@@ -13623,7 +14270,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 18,
         "origin": 29,
         "provenance": "authored",
-        "reference": 142,
+        "reference": 143,
         "source": 28,
         "target": 29
       },
@@ -13632,7 +14279,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 22,
         "origin": 23,
         "provenance": "implied",
-        "reference": 206,
+        "reference": 216,
         "source": 18,
         "target": 23
       },
@@ -13641,7 +14288,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 21,
         "origin": 24,
         "provenance": "implied",
-        "reference": 207,
+        "reference": 217,
         "source": 18,
         "target": 24
       },
@@ -13650,7 +14297,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 20,
         "origin": 25,
         "provenance": "implied",
-        "reference": 208,
+        "reference": 218,
         "source": 18,
         "target": 25
       },
@@ -13659,7 +14306,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 19,
         "origin": 26,
         "provenance": "implied",
-        "reference": 209,
+        "reference": 219,
         "source": 18,
         "target": 26
       },
@@ -13668,7 +14315,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 3,
         "origin": 30,
         "provenance": "implied",
-        "reference": 210,
+        "reference": 220,
         "source": 18,
         "target": 30
       },
@@ -13677,7 +14324,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 1,
         "origin": 31,
         "provenance": "implied",
-        "reference": 211,
+        "reference": 221,
         "source": 18,
         "target": 31
       },
@@ -13686,7 +14333,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 63,
         "origin": 19,
         "provenance": "authored",
-        "reference": 212,
+        "reference": 222,
         "source": 18,
         "target": 19
       },
@@ -13695,7 +14342,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 62,
         "origin": 20,
         "provenance": "authored",
-        "reference": 213,
+        "reference": 223,
         "source": 18,
         "target": 20
       },
@@ -13704,7 +14351,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 64,
         "origin": 21,
         "provenance": "authored",
-        "reference": 214,
+        "reference": 224,
         "source": 18,
         "target": 21
       },
@@ -13713,7 +14360,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 65,
         "origin": 22,
         "provenance": "authored",
-        "reference": 215,
+        "reference": 225,
         "source": 18,
         "target": 22
       },
@@ -13722,7 +14369,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 56,
         "origin": 32,
         "provenance": "authored",
-        "reference": 167,
+        "reference": 169,
         "source": 0,
         "target": 32
       },
@@ -13731,7 +14378,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 11,
         "origin": 37,
         "provenance": "implied",
-        "reference": 383,
+        "reference": 393,
         "source": 32,
         "target": 37
       },
@@ -13740,7 +14387,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 13,
         "origin": 38,
         "provenance": "authored",
-        "reference": 532,
+        "reference": 548,
         "source": 37,
         "target": 38
       },
@@ -13749,7 +14396,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 13,
         "origin": 39,
         "provenance": "authored",
-        "reference": 536,
+        "reference": 552,
         "source": 38,
         "target": 39
       },
@@ -13758,7 +14405,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 15,
         "origin": 35,
         "provenance": "implied",
-        "reference": 384,
+        "reference": 394,
         "source": 32,
         "target": 35
       },
@@ -13767,7 +14414,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 14,
         "origin": 36,
         "provenance": "implied",
-        "reference": 385,
+        "reference": 395,
         "source": 32,
         "target": 36
       },
@@ -13776,7 +14423,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 1,
         "origin": 40,
         "provenance": "implied",
-        "reference": 386,
+        "reference": 396,
         "source": 32,
         "target": 40
       },
@@ -13785,7 +14432,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 58,
         "origin": 33,
         "provenance": "authored",
-        "reference": 387,
+        "reference": 397,
         "source": 32,
         "target": 33
       },
@@ -13794,7 +14441,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 59,
         "origin": 34,
         "provenance": "authored",
-        "reference": 388,
+        "reference": 398,
         "source": 32,
         "target": 34
       },
@@ -13803,7 +14450,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 102,
         "origin": 9,
         "provenance": "authored",
-        "reference": 168,
+        "reference": 170,
         "source": 0,
         "target": 9
       },
@@ -13812,7 +14459,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 103,
         "origin": 9,
         "provenance": "implied",
-        "reference": 288,
+        "reference": 298,
         "source": 43,
         "target": 72
       },
@@ -13821,7 +14468,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 106,
         "origin": 10,
         "provenance": "authored",
-        "reference": 169,
+        "reference": 171,
         "source": 0,
         "target": 10
       },
@@ -13830,7 +14477,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 107,
         "origin": 10,
         "provenance": "implied",
-        "reference": 312,
+        "reference": 322,
         "source": 71,
         "target": 46
       },
@@ -13839,7 +14486,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 86,
         "origin": 11,
         "provenance": "authored",
-        "reference": 170,
+        "reference": 172,
         "source": 0,
         "target": 11
       },
@@ -13848,7 +14495,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 87,
         "origin": 11,
         "provenance": "implied",
-        "reference": 394,
+        "reference": 404,
         "source": 33,
         "target": 20
       },
@@ -13857,7 +14504,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 118,
         "origin": 12,
         "provenance": "authored",
-        "reference": 171,
+        "reference": 173,
         "source": 0,
         "target": 12
       },
@@ -13866,7 +14513,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 119,
         "origin": 12,
         "provenance": "implied",
-        "reference": 222,
+        "reference": 232,
         "source": 22,
         "target": 34
       },
@@ -13875,7 +14522,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 90,
         "origin": 13,
         "provenance": "authored",
-        "reference": 172,
+        "reference": 174,
         "source": 0,
         "target": 13
       },
@@ -13884,7 +14531,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 91,
         "origin": 13,
         "provenance": "implied",
-        "reference": 219,
+        "reference": 229,
         "source": 19,
         "target": 45
       },
@@ -13893,7 +14540,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 98,
         "origin": 14,
         "provenance": "authored",
-        "reference": 173,
+        "reference": 175,
         "source": 0,
         "target": 14
       },
@@ -13902,7 +14549,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 99,
         "origin": 14,
         "provenance": "implied",
-        "reference": 351,
+        "reference": 361,
         "source": 60,
         "target": 48
       },
@@ -13911,7 +14558,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 66,
         "origin": 41,
         "provenance": "authored",
-        "reference": 174,
+        "reference": 176,
         "source": 0,
         "target": 41
       },
@@ -13920,7 +14567,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 23,
         "origin": 56,
         "provenance": "implied",
-        "reference": 255,
+        "reference": 265,
         "source": 41,
         "target": 56
       },
@@ -13929,7 +14576,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 25,
         "origin": 57,
         "provenance": "authored",
-        "reference": 406,
+        "reference": 416,
         "source": 56,
         "target": 57
       },
@@ -13938,7 +14585,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 25,
         "origin": 58,
         "provenance": "authored",
-        "reference": 410,
+        "reference": 420,
         "source": 57,
         "target": 58
       },
@@ -13947,7 +14594,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 26,
         "origin": 55,
         "provenance": "implied",
-        "reference": 256,
+        "reference": 266,
         "source": 41,
         "target": 55
       },
@@ -13956,7 +14603,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 27,
         "origin": 51,
         "provenance": "implied",
-        "reference": 257,
+        "reference": 267,
         "source": 41,
         "target": 51
       },
@@ -13965,7 +14612,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 3,
         "origin": 49,
         "provenance": "implied",
-        "reference": 258,
+        "reference": 268,
         "source": 41,
         "target": 49
       },
@@ -13974,7 +14621,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 1,
         "origin": 50,
         "provenance": "implied",
-        "reference": 259,
+        "reference": 269,
         "source": 41,
         "target": 50
       },
@@ -13983,7 +14630,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 30,
         "origin": 52,
         "provenance": "implied",
-        "reference": 260,
+        "reference": 270,
         "source": 41,
         "target": 52
       },
@@ -13992,7 +14639,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 28,
         "origin": 53,
         "provenance": "implied",
-        "reference": 261,
+        "reference": 271,
         "source": 41,
         "target": 53
       },
@@ -14001,7 +14648,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 29,
         "origin": 54,
         "provenance": "implied",
-        "reference": 262,
+        "reference": 272,
         "source": 41,
         "target": 54
       },
@@ -14010,7 +14657,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 74,
         "origin": 42,
         "provenance": "authored",
-        "reference": 263,
+        "reference": 273,
         "source": 41,
         "target": 42
       },
@@ -14019,7 +14666,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 71,
         "origin": 43,
         "provenance": "authored",
-        "reference": 264,
+        "reference": 274,
         "source": 41,
         "target": 43
       },
@@ -14028,7 +14675,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 69,
         "origin": 44,
         "provenance": "authored",
-        "reference": 265,
+        "reference": 275,
         "source": 41,
         "target": 44
       },
@@ -14037,7 +14684,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 68,
         "origin": 45,
         "provenance": "authored",
-        "reference": 266,
+        "reference": 276,
         "source": 41,
         "target": 45
       },
@@ -14046,7 +14693,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 72,
         "origin": 46,
         "provenance": "authored",
-        "reference": 267,
+        "reference": 277,
         "source": 41,
         "target": 46
       },
@@ -14055,7 +14702,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 73,
         "origin": 47,
         "provenance": "authored",
-        "reference": 268,
+        "reference": 278,
         "source": 41,
         "target": 47
       },
@@ -14064,7 +14711,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 70,
         "origin": 48,
         "provenance": "authored",
-        "reference": 269,
+        "reference": 279,
         "source": 41,
         "target": 48
       },
@@ -14073,7 +14720,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 75,
         "origin": 59,
         "provenance": "authored",
-        "reference": 175,
+        "reference": 177,
         "source": 0,
         "target": 59
       },
@@ -14082,7 +14729,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 31,
         "origin": 67,
         "provenance": "implied",
-        "reference": 340,
+        "reference": 350,
         "source": 59,
         "target": 67
       },
@@ -14091,7 +14738,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 33,
         "origin": 68,
         "provenance": "authored",
-        "reference": 500,
+        "reference": 515,
         "source": 67,
         "target": 68
       },
@@ -14100,7 +14747,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 33,
         "origin": 69,
         "provenance": "authored",
-        "reference": 504,
+        "reference": 519,
         "source": 68,
         "target": 69
       },
@@ -14109,7 +14756,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 34,
         "origin": 66,
         "provenance": "implied",
-        "reference": 341,
+        "reference": 351,
         "source": 59,
         "target": 66
       },
@@ -14118,7 +14765,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 36,
         "origin": 64,
         "provenance": "implied",
-        "reference": 342,
+        "reference": 352,
         "source": 59,
         "target": 64
       },
@@ -14127,7 +14774,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 3,
         "origin": 62,
         "provenance": "implied",
-        "reference": 343,
+        "reference": 353,
         "source": 59,
         "target": 62
       },
@@ -14136,7 +14783,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 35,
         "origin": 65,
         "provenance": "implied",
-        "reference": 344,
+        "reference": 354,
         "source": 59,
         "target": 65
       },
@@ -14145,7 +14792,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 1,
         "origin": 63,
         "provenance": "implied",
-        "reference": 345,
+        "reference": 355,
         "source": 59,
         "target": 63
       },
@@ -14154,7 +14801,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 78,
         "origin": 60,
         "provenance": "authored",
-        "reference": 346,
+        "reference": 356,
         "source": 59,
         "target": 60
       },
@@ -14163,7 +14810,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 77,
         "origin": 61,
         "provenance": "authored",
-        "reference": 347,
+        "reference": 357,
         "source": 59,
         "target": 61
       },
@@ -14172,7 +14819,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 94,
         "origin": 15,
         "provenance": "authored",
-        "reference": 176,
+        "reference": 178,
         "source": 0,
         "target": 15
       },
@@ -14181,7 +14828,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 95,
         "origin": 15,
         "provenance": "implied",
-        "reference": 275,
+        "reference": 285,
         "source": 44,
         "target": 61
       },
@@ -14190,7 +14837,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 114,
         "origin": 16,
         "provenance": "authored",
-        "reference": 177,
+        "reference": 179,
         "source": 0,
         "target": 16
       },
@@ -14199,7 +14846,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 115,
         "origin": 16,
         "provenance": "implied",
-        "reference": 283,
+        "reference": 293,
         "source": 42,
         "target": 21
       },
@@ -14208,7 +14855,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 79,
         "origin": 70,
         "provenance": "authored",
-        "reference": 178,
+        "reference": 180,
         "source": 0,
         "target": 70
       },
@@ -14217,7 +14864,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 37,
         "origin": 79,
         "provenance": "implied",
-        "reference": 300,
+        "reference": 310,
         "source": 70,
         "target": 79
       },
@@ -14226,7 +14873,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 39,
         "origin": 80,
         "provenance": "authored",
-        "reference": 441,
+        "reference": 452,
         "source": 79,
         "target": 80
       },
@@ -14235,7 +14882,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 39,
         "origin": 81,
         "provenance": "authored",
-        "reference": 445,
+        "reference": 456,
         "source": 80,
         "target": 81
       },
@@ -14244,7 +14891,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 40,
         "origin": 78,
         "provenance": "implied",
-        "reference": 301,
+        "reference": 311,
         "source": 70,
         "target": 78
       },
@@ -14253,7 +14900,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 3,
         "origin": 73,
         "provenance": "implied",
-        "reference": 302,
+        "reference": 312,
         "source": 70,
         "target": 73
       },
@@ -14262,7 +14909,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 1,
         "origin": 74,
         "provenance": "implied",
-        "reference": 303,
+        "reference": 313,
         "source": 70,
         "target": 74
       },
@@ -14271,7 +14918,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 42,
         "origin": 75,
         "provenance": "implied",
-        "reference": 304,
+        "reference": 314,
         "source": 70,
         "target": 75
       },
@@ -14280,7 +14927,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 41,
         "origin": 76,
         "provenance": "implied",
-        "reference": 305,
+        "reference": 315,
         "source": 70,
         "target": 76
       },
@@ -14289,7 +14936,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 43,
         "origin": 77,
         "provenance": "implied",
-        "reference": 306,
+        "reference": 316,
         "source": 70,
         "target": 77
       },
@@ -14298,7 +14945,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 82,
         "origin": 71,
         "provenance": "authored",
-        "reference": 307,
+        "reference": 317,
         "source": 70,
         "target": 71
       },
@@ -14307,7 +14954,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 81,
         "origin": 72,
         "provenance": "authored",
-        "reference": 308,
+        "reference": 318,
         "source": 70,
         "target": 72
       },
@@ -14316,7 +14963,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 83,
         "origin": 82,
         "provenance": "authored",
-        "reference": 179,
+        "reference": 181,
         "source": 0,
         "target": 82
       },
@@ -14325,7 +14972,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 44,
         "origin": 89,
         "provenance": "implied",
-        "reference": 317,
+        "reference": 327,
         "source": 82,
         "target": 89
       },
@@ -14334,7 +14981,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 46,
         "origin": 90,
         "provenance": "authored",
-        "reference": 470,
+        "reference": 482,
         "source": 89,
         "target": 90
       },
@@ -14343,7 +14990,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 46,
         "origin": 91,
         "provenance": "authored",
-        "reference": 482,
+        "reference": 494,
         "source": 90,
         "target": 91
       },
@@ -14352,7 +14999,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 47,
         "origin": 92,
         "provenance": "implied",
-        "reference": 318,
+        "reference": 328,
         "source": 82,
         "target": 92
       },
@@ -14361,7 +15008,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 49,
         "origin": 93,
         "provenance": "authored",
-        "reference": 471,
+        "reference": 483,
         "source": 92,
         "target": 93
       },
@@ -14370,7 +15017,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 49,
         "origin": 94,
         "provenance": "authored",
-        "reference": 483,
+        "reference": 495,
         "source": 93,
         "target": 94
       },
@@ -14379,7 +15026,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 50,
         "origin": 95,
         "provenance": "implied",
-        "reference": 319,
+        "reference": 329,
         "source": 82,
         "target": 95
       },
@@ -14388,7 +15035,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 52,
         "origin": 96,
         "provenance": "authored",
-        "reference": 472,
+        "reference": 484,
         "source": 95,
         "target": 96
       },
@@ -14397,7 +15044,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 52,
         "origin": 97,
         "provenance": "authored",
-        "reference": 484,
+        "reference": 496,
         "source": 96,
         "target": 97
       },
@@ -14406,7 +15053,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 7,
         "origin": 86,
         "provenance": "implied",
-        "reference": 320,
+        "reference": 330,
         "source": 82,
         "target": 86
       },
@@ -14415,7 +15062,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 9,
         "origin": 84,
         "provenance": "implied",
-        "reference": 321,
+        "reference": 331,
         "source": 82,
         "target": 84
       },
@@ -14424,7 +15071,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 5,
         "origin": 85,
         "provenance": "implied",
-        "reference": 322,
+        "reference": 332,
         "source": 82,
         "target": 85
       },
@@ -14433,7 +15080,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 54,
         "origin": 87,
         "provenance": "implied",
-        "reference": 323,
+        "reference": 333,
         "source": 82,
         "target": 87
       },
@@ -14442,7 +15089,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 53,
         "origin": 88,
         "provenance": "implied",
-        "reference": 324,
+        "reference": 334,
         "source": 82,
         "target": 88
       },
@@ -14451,7 +15098,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 85,
         "origin": 83,
         "provenance": "authored",
-        "reference": 325,
+        "reference": 335,
         "source": 82,
         "target": 83
       },
@@ -14460,7 +15107,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 110,
         "origin": 17,
         "provenance": "authored",
-        "reference": 180,
+        "reference": 182,
         "source": 0,
         "target": 17
       },
@@ -14469,7 +15116,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 111,
         "origin": 17,
         "provenance": "implied",
-        "reference": 280,
+        "reference": 290,
         "source": 47,
         "target": 83
       }
@@ -14550,7 +15197,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 109,
+        "reference": 110,
         "source": 122,
         "typing": {
           "status": "absent"
@@ -14564,7 +15211,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 110,
+        "reference": 111,
         "source": 125,
         "typing": {
           "status": "absent"
@@ -14578,7 +15225,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 111,
+        "reference": 112,
         "source": 128,
         "typing": {
           "status": "absent"
@@ -14592,7 +15239,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 112,
+        "reference": 113,
         "source": 131,
         "typing": {
           "status": "absent"
@@ -14606,7 +15253,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 113,
+        "reference": 114,
         "source": 134,
         "typing": {
           "status": "absent"
@@ -14620,7 +15267,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 114,
+        "reference": 115,
         "source": 137,
         "typing": {
           "status": "absent"
@@ -14634,7 +15281,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 115,
+        "reference": 116,
         "source": 140,
         "typing": {
           "status": "absent"
@@ -14648,7 +15295,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 116,
+        "reference": 117,
         "source": 143,
         "typing": {
           "status": "absent"
@@ -14950,7 +15597,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "usage",
         "owner": 18,
-        "reference": 106,
+        "reference": 107,
         "source": 16,
         "typing": {
           "status": "absent"
@@ -14964,7 +15611,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 27,
-        "reference": 107,
+        "reference": 108,
         "source": 18,
         "typing": {
           "status": "absent"
@@ -14978,7 +15625,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 28,
-        "reference": 108,
+        "reference": 109,
         "source": 18,
         "typing": {
           "status": "absent"
@@ -14999,7 +15646,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 103
+              "reference": 104
             }
           ]
         }
@@ -15019,7 +15666,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 103
+              "reference": 104
             }
           ]
         }
@@ -15133,7 +15780,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "usage",
         "owner": 32,
-        "reference": 135,
+        "reference": 136,
         "source": 11,
         "typing": {
           "status": "absent"
@@ -15147,7 +15794,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 37,
-        "reference": 136,
+        "reference": 137,
         "source": 13,
         "typing": {
           "status": "absent"
@@ -15161,7 +15808,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 38,
-        "reference": 137,
+        "reference": 138,
         "source": 13,
         "typing": {
           "status": "absent"
@@ -15182,7 +15829,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 103
+              "reference": 104
             }
           ]
         }
@@ -15354,7 +16001,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 103
+              "reference": 104
             }
           ]
         }
@@ -15374,7 +16021,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 103
+              "reference": 104
             }
           ]
         }
@@ -15457,7 +16104,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "usage",
         "owner": 41,
-        "reference": 117,
+        "reference": 118,
         "source": 23,
         "typing": {
           "status": "absent"
@@ -15471,7 +16118,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 56,
-        "reference": 118,
+        "reference": 119,
         "source": 25,
         "typing": {
           "status": "absent"
@@ -15485,7 +16132,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 57,
-        "reference": 119,
+        "reference": 120,
         "source": 25,
         "typing": {
           "status": "absent"
@@ -15581,7 +16228,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 103
+              "reference": 104
             }
           ]
         }
@@ -15601,7 +16248,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 103
+              "reference": 104
             }
           ]
         }
@@ -15656,7 +16303,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "usage",
         "owner": 59,
-        "reference": 132,
+        "reference": 133,
         "source": 31,
         "typing": {
           "status": "absent"
@@ -15670,7 +16317,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 67,
-        "reference": 133,
+        "reference": 134,
         "source": 33,
         "typing": {
           "status": "absent"
@@ -15684,7 +16331,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 68,
-        "reference": 134,
+        "reference": 135,
         "source": 33,
         "typing": {
           "status": "absent"
@@ -15781,7 +16428,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 103
+              "reference": 104
             }
           ]
         }
@@ -15801,7 +16448,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 103
+              "reference": 104
             }
           ]
         }
@@ -15870,7 +16517,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "usage",
         "owner": 70,
-        "reference": 120,
+        "reference": 121,
         "source": 37,
         "typing": {
           "status": "absent"
@@ -15884,7 +16531,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 79,
-        "reference": 121,
+        "reference": 122,
         "source": 39,
         "typing": {
           "status": "absent"
@@ -15898,7 +16545,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 80,
-        "reference": 122,
+        "reference": 123,
         "source": 39,
         "typing": {
           "status": "absent"
@@ -15981,7 +16628,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 103
+              "reference": 104
             }
           ]
         }
@@ -16001,7 +16648,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 103
+              "reference": 104
             }
           ]
         }
@@ -16021,7 +16668,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           "types": [
             {
               "label": "String",
-              "reference": 103
+              "reference": 104
             }
           ]
         }
@@ -16062,7 +16709,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "usage",
         "owner": 82,
-        "reference": 123,
+        "reference": 124,
         "source": 44,
         "typing": {
           "status": "absent"
@@ -16076,7 +16723,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 89,
-        "reference": 126,
+        "reference": 127,
         "source": 46,
         "typing": {
           "status": "absent"
@@ -16090,50 +16737,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 90,
-        "reference": 129,
-        "source": 46,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "metaclass": "AttributeUsage",
-        "name": null,
-        "notationRole": "usage",
-        "owner": 82,
-        "reference": 124,
-        "source": 47,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "metaclass": "Expression",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 92,
-        "reference": 127,
-        "source": 49,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "metaclass": "Feature",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 93,
         "reference": 130,
-        "source": 49,
+        "source": 46,
         "typing": {
           "status": "absent"
         }
@@ -16147,6 +16752,48 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 82,
         "reference": 125,
+        "source": 47,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "Expression",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 92,
+        "reference": 128,
+        "source": 49,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 93,
+        "reference": 131,
+        "source": 49,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "AttributeUsage",
+        "name": null,
+        "notationRole": "usage",
+        "owner": 82,
+        "reference": 126,
         "source": 50,
         "typing": {
           "status": "absent"
@@ -16160,7 +16807,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 95,
-        "reference": 128,
+        "reference": 129,
         "source": 52,
         "typing": {
           "status": "absent"
@@ -16174,7 +16821,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 96,
-        "reference": 131,
+        "reference": 132,
         "source": 52,
         "typing": {
           "status": "absent"
@@ -16183,10 +16830,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     ],
     "relationships": [
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 183,
+        "source": 1,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 123,
         "provenance": "authored",
-        "reference": 181,
+        "reference": 191,
         "source": 1,
         "target": {
           "node": 11,
@@ -16197,7 +16855,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 124,
         "provenance": "authored",
-        "reference": 182,
+        "reference": 192,
         "source": 1,
         "target": {
           "node": 13,
@@ -16208,7 +16866,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 197,
+        "reference": 207,
         "source": 1,
         "target": {
           "node": 0,
@@ -16216,10 +16874,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 184,
+        "source": 2,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 126,
         "provenance": "authored",
-        "reference": 183,
+        "reference": 193,
         "source": 2,
         "target": {
           "node": 13,
@@ -16230,7 +16899,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 127,
         "provenance": "authored",
-        "reference": 184,
+        "reference": 194,
         "source": 2,
         "target": {
           "node": 15,
@@ -16241,7 +16910,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 198,
+        "reference": 208,
         "source": 2,
         "target": {
           "node": 0,
@@ -16249,10 +16918,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 185,
+        "source": 3,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 129,
         "provenance": "authored",
-        "reference": 185,
+        "reference": 195,
         "source": 3,
         "target": {
           "node": 15,
@@ -16263,7 +16943,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 130,
         "provenance": "authored",
-        "reference": 186,
+        "reference": 196,
         "source": 3,
         "target": {
           "node": 14,
@@ -16274,7 +16954,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 199,
+        "reference": 209,
         "source": 3,
         "target": {
           "node": 0,
@@ -16282,10 +16962,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 186,
+        "source": 4,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 132,
         "provenance": "authored",
-        "reference": 187,
+        "reference": 197,
         "source": 4,
         "target": {
           "node": 14,
@@ -16296,7 +16987,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 133,
         "provenance": "authored",
-        "reference": 188,
+        "reference": 198,
         "source": 4,
         "target": {
           "node": 9,
@@ -16307,7 +16998,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 200,
+        "reference": 210,
         "source": 4,
         "target": {
           "node": 0,
@@ -16315,10 +17006,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 187,
+        "source": 5,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 135,
         "provenance": "authored",
-        "reference": 189,
+        "reference": 199,
         "source": 5,
         "target": {
           "node": 9,
@@ -16329,7 +17031,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 136,
         "provenance": "authored",
-        "reference": 190,
+        "reference": 200,
         "source": 5,
         "target": {
           "node": 10,
@@ -16340,7 +17042,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 201,
+        "reference": 211,
         "source": 5,
         "target": {
           "node": 0,
@@ -16348,10 +17050,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 188,
+        "source": 6,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 138,
         "provenance": "authored",
-        "reference": 191,
+        "reference": 201,
         "source": 6,
         "target": {
           "node": 10,
@@ -16362,7 +17075,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 139,
         "provenance": "authored",
-        "reference": 192,
+        "reference": 202,
         "source": 6,
         "target": {
           "node": 17,
@@ -16373,7 +17086,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 202,
+        "reference": 212,
         "source": 6,
         "target": {
           "node": 0,
@@ -16381,10 +17094,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 189,
+        "source": 7,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 141,
         "provenance": "authored",
-        "reference": 193,
+        "reference": 203,
         "source": 7,
         "target": {
           "node": 17,
@@ -16395,7 +17119,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 142,
         "provenance": "authored",
-        "reference": 194,
+        "reference": 204,
         "source": 7,
         "target": {
           "node": 16,
@@ -16406,7 +17130,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 203,
+        "reference": 213,
         "source": 7,
         "target": {
           "node": 0,
@@ -16414,10 +17138,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 190,
+        "source": 8,
+        "target": {
+          "reference": 98,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 144,
         "provenance": "authored",
-        "reference": 195,
+        "reference": 205,
         "source": 8,
         "target": {
           "node": 16,
@@ -16428,7 +17163,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 145,
         "provenance": "authored",
-        "reference": 196,
+        "reference": 206,
         "source": 8,
         "target": {
           "node": 12,
@@ -16439,7 +17174,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 204,
+        "reference": 214,
         "source": 8,
         "target": {
           "node": 0,
@@ -16450,7 +17185,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 61,
         "provenance": "authored",
-        "reference": 218,
+        "reference": 228,
         "source": 18,
         "target": {
           "reference": 1,
@@ -16461,10 +17196,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 216,
+        "reference": 226,
         "source": 18,
         "target": {
-          "reference": 100,
+          "reference": 101,
           "status": "resolved"
         }
       },
@@ -16472,7 +17207,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 217,
+        "reference": 227,
         "source": 18,
         "target": {
           "node": 0,
@@ -16483,7 +17218,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": 17,
         "provenance": "authored",
-        "reference": 139,
+        "reference": 140,
         "source": 27,
         "target": {
           "node": 30,
@@ -16494,7 +17229,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 140,
+        "reference": 141,
         "source": 27,
         "target": {
           "reference": 94,
@@ -16505,7 +17240,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 141,
+        "reference": 142,
         "source": 27,
         "target": {
           "reference": 1,
@@ -16516,10 +17251,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 143,
+        "reference": 144,
         "source": 28,
         "target": {
-          "reference": 101,
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 145,
+        "source": 28,
+        "target": {
+          "reference": 1,
           "status": "resolved"
         }
       },
@@ -16527,7 +17273,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 144,
+        "reference": 146,
         "source": 29,
         "target": {
           "reference": 95,
@@ -16538,7 +17284,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 145,
+        "reference": 147,
         "source": 29,
         "target": {
           "node": 28,
@@ -16549,32 +17295,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 146,
-        "source": 23,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 147,
-        "source": 23,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 148,
         "source": 23,
         "target": {
-          "reference": 1,
+          "reference": 100,
           "status": "resolved"
         }
       },
@@ -16583,20 +17307,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 149,
-        "source": 24,
+        "source": 23,
         "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 150,
-        "source": 24,
-        "target": {
-          "reference": 102,
+          "reference": 103,
           "status": "resolved"
         }
       },
@@ -16604,10 +17317,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
+        "reference": 150,
+        "source": 23,
+        "target": {
+          "reference": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
         "reference": 151,
         "source": 24,
         "target": {
-          "reference": 1,
+          "reference": 100,
           "status": "resolved"
         }
       },
@@ -16616,20 +17340,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 152,
-        "source": 25,
+        "source": 24,
         "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 153,
-        "source": 25,
-        "target": {
-          "reference": 102,
+          "reference": 103,
           "status": "resolved"
         }
       },
@@ -16637,10 +17350,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
+        "reference": 153,
+        "source": 24,
+        "target": {
+          "reference": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
         "reference": 154,
         "source": 25,
         "target": {
-          "reference": 1,
+          "reference": 100,
           "status": "resolved"
         }
       },
@@ -16649,20 +17373,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 155,
-        "source": 26,
+        "source": 25,
         "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 156,
-        "source": 26,
-        "target": {
-          "reference": 102,
+          "reference": 103,
           "status": "resolved"
         }
       },
@@ -16670,7 +17383,40 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
+        "reference": 156,
+        "source": 25,
+        "target": {
+          "reference": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
         "reference": 157,
+        "source": 26,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 158,
+        "source": 26,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 159,
         "source": 26,
         "target": {
           "reference": 1,
@@ -16681,10 +17427,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 437,
+        "reference": 448,
         "source": 30,
         "target": {
-          "reference": 103,
+          "reference": 104,
           "status": "resolved"
         }
       },
@@ -16692,1933 +17438,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 429,
+        "reference": 440,
         "source": 30,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 433,
-        "source": 30,
-        "target": {
-          "reference": 55,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 527,
-        "source": 31,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 517,
-        "source": 31,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 522,
-        "source": 31,
-        "target": {
-          "reference": 85,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 220,
-        "source": 19,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 221,
-        "source": 19,
-        "target": {
-          "node": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 227,
-        "source": 20,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 228,
-        "source": 20,
-        "target": {
-          "node": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 225,
-        "source": 21,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 226,
-        "source": 21,
-        "target": {
-          "node": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 223,
-        "source": 22,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 224,
-        "source": 22,
-        "target": {
-          "node": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 57,
-        "provenance": "authored",
-        "reference": 391,
-        "source": 32,
-        "target": {
-          "reference": 88,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 389,
-        "source": 32,
-        "target": {
-          "reference": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 390,
-        "source": 32,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 12,
-        "provenance": "authored",
-        "reference": 533,
-        "source": 37,
-        "target": {
-          "node": 40,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 534,
-        "source": 37,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 535,
-        "source": 37,
-        "target": {
-          "reference": 88,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 537,
-        "source": 38,
-        "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 538,
-        "source": 39,
-        "target": {
-          "reference": 95,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 539,
-        "source": 39,
-        "target": {
-          "node": 38,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 540,
-        "source": 35,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 541,
-        "source": 35,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 542,
-        "source": 35,
-        "target": {
-          "reference": 88,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 543,
-        "source": 36,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 544,
-        "source": 36,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 545,
-        "source": 36,
-        "target": {
-          "reference": 88,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 528,
-        "source": 40,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 518,
-        "source": 40,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 523,
-        "source": 40,
-        "target": {
-          "reference": 85,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 395,
-        "source": 33,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 396,
-        "source": 33,
-        "target": {
-          "node": 32,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 392,
-        "source": 34,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 393,
-        "source": 34,
-        "target": {
-          "node": 32,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 103,
-        "provenance": "authored",
-        "reference": 365,
-        "source": 9,
-        "target": {
-          "reference": 87,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 104,
-        "provenance": "authored",
-        "reference": 366,
-        "source": 9,
-        "target": {
-          "node": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 105,
-        "provenance": "authored",
-        "reference": 367,
-        "source": 9,
-        "target": {
-          "node": 72,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 368,
-        "source": 9,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 369,
-        "source": 9,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 370,
-        "source": 9,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 371,
-        "source": 9,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 373,
-        "source": 9,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 107,
-        "provenance": "authored",
-        "reference": 374,
-        "source": 10,
-        "target": {
-          "reference": 87,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 108,
-        "provenance": "authored",
-        "reference": 375,
-        "source": 10,
-        "target": {
-          "node": 71,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 109,
-        "provenance": "authored",
-        "reference": 376,
-        "source": 10,
-        "target": {
-          "node": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 377,
-        "source": 10,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 378,
-        "source": 10,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 379,
-        "source": 10,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 380,
-        "source": 10,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 382,
-        "source": 10,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 87,
-        "provenance": "authored",
-        "reference": 397,
-        "source": 11,
-        "target": {
-          "reference": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 88,
-        "provenance": "authored",
-        "reference": 398,
-        "source": 11,
-        "target": {
-          "node": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 89,
-        "provenance": "authored",
-        "reference": 399,
-        "source": 11,
-        "target": {
-          "node": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 400,
-        "source": 11,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 401,
-        "source": 11,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 402,
-        "source": 11,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 403,
-        "source": 11,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 405,
-        "source": 11,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 119,
-        "provenance": "authored",
-        "reference": 247,
-        "source": 12,
-        "target": {
-          "reference": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 120,
-        "provenance": "authored",
-        "reference": 248,
-        "source": 12,
-        "target": {
-          "node": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 121,
-        "provenance": "authored",
-        "reference": 249,
-        "source": 12,
-        "target": {
-          "node": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 250,
-        "source": 12,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 251,
-        "source": 12,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 252,
-        "source": 12,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 253,
-        "source": 12,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 254,
-        "source": 12,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 91,
-        "provenance": "authored",
-        "reference": 291,
-        "source": 13,
-        "target": {
-          "reference": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 92,
-        "provenance": "authored",
-        "reference": 292,
-        "source": 13,
-        "target": {
-          "node": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 93,
-        "provenance": "authored",
-        "reference": 293,
-        "source": 13,
-        "target": {
-          "node": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 294,
-        "source": 13,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 295,
-        "source": 13,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 296,
-        "source": 13,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 297,
-        "source": 13,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 299,
-        "source": 13,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 99,
-        "provenance": "authored",
-        "reference": 331,
-        "source": 14,
-        "target": {
-          "reference": 77,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 100,
-        "provenance": "authored",
-        "reference": 332,
-        "source": 14,
-        "target": {
-          "node": 60,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 101,
-        "provenance": "authored",
-        "reference": 333,
-        "source": 14,
-        "target": {
-          "node": 48,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 334,
-        "source": 14,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 335,
-        "source": 14,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 336,
-        "source": 14,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 337,
-        "source": 14,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 339,
-        "source": 14,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 67,
-        "provenance": "authored",
-        "reference": 272,
-        "source": 41,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 270,
-        "source": 41,
-        "target": {
-          "reference": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 271,
-        "source": 41,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 24,
-        "provenance": "authored",
-        "reference": 407,
-        "source": 56,
-        "target": {
-          "node": 49,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 408,
-        "source": 56,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 409,
-        "source": 56,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 411,
-        "source": 57,
-        "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 412,
-        "source": 58,
-        "target": {
-          "reference": 95,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 413,
-        "source": 58,
-        "target": {
-          "node": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 414,
-        "source": 55,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 415,
-        "source": 55,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 416,
-        "source": 55,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 423,
-        "source": 51,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 424,
-        "source": 51,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 425,
-        "source": 51,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 4,
-        "provenance": "authored",
-        "reference": 438,
-        "source": 49,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 430,
-        "source": 49,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 434,
-        "source": 49,
-        "target": {
-          "reference": 55,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 529,
-        "source": 50,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 519,
-        "source": 50,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 524,
-        "source": 50,
-        "target": {
-          "reference": 85,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 420,
-        "source": 52,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 421,
-        "source": 52,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 422,
-        "source": 52,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 426,
-        "source": 53,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 427,
-        "source": 53,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 428,
-        "source": 53,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 417,
-        "source": 54,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 418,
-        "source": 54,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 419,
-        "source": 54,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 284,
-        "source": 42,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 285,
-        "source": 42,
-        "target": {
-          "node": 41,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 289,
-        "source": 43,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 290,
-        "source": 43,
-        "target": {
-          "node": 41,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 276,
-        "source": 44,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 277,
-        "source": 44,
-        "target": {
-          "node": 41,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 278,
-        "source": 45,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 279,
-        "source": 45,
-        "target": {
-          "node": 41,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 286,
-        "source": 46,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 287,
-        "source": 46,
-        "target": {
-          "node": 41,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 281,
-        "source": 47,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 282,
-        "source": 47,
-        "target": {
-          "node": 41,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 273,
-        "source": 48,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 274,
-        "source": 48,
-        "target": {
-          "node": 41,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 76,
-        "provenance": "authored",
-        "reference": 350,
-        "source": 59,
-        "target": {
-          "reference": 78,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 348,
-        "source": 59,
-        "target": {
-          "reference": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 349,
-        "source": 59,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 32,
-        "provenance": "authored",
-        "reference": 501,
-        "source": 67,
-        "target": {
-          "node": 62,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 502,
-        "source": 67,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 503,
-        "source": 67,
-        "target": {
-          "reference": 78,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 505,
-        "source": 68,
-        "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 506,
-        "source": 69,
-        "target": {
-          "reference": 95,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 507,
-        "source": 69,
-        "target": {
-          "node": 68,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 508,
-        "source": 66,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 509,
-        "source": 66,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 510,
-        "source": 66,
-        "target": {
-          "reference": 78,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 514,
-        "source": 64,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 515,
-        "source": 64,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 516,
-        "source": 64,
-        "target": {
-          "reference": 78,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 4,
-        "provenance": "authored",
-        "reference": 439,
-        "source": 62,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 431,
-        "source": 62,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 435,
-        "source": 62,
-        "target": {
-          "reference": 55,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 511,
-        "source": 65,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 512,
-        "source": 65,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 513,
-        "source": 65,
-        "target": {
-          "reference": 78,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 530,
-        "source": 63,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 520,
-        "source": 63,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 525,
-        "source": 63,
-        "target": {
-          "reference": 85,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 352,
-        "source": 60,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 353,
-        "source": 60,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 354,
-        "source": 61,
-        "target": {
-          "reference": 98,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 355,
-        "source": 61,
-        "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 95,
-        "provenance": "authored",
-        "reference": 229,
-        "source": 15,
-        "target": {
-          "reference": 76,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 96,
-        "provenance": "authored",
-        "reference": 230,
-        "source": 15,
-        "target": {
-          "node": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 97,
-        "provenance": "authored",
-        "reference": 231,
-        "source": 15,
-        "target": {
-          "node": 61,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 232,
-        "source": 15,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 233,
-        "source": 15,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 234,
-        "source": 15,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 235,
-        "source": 15,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 237,
-        "source": 15,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 115,
-        "provenance": "authored",
-        "reference": 238,
-        "source": 16,
-        "target": {
-          "reference": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 116,
-        "provenance": "authored",
-        "reference": 239,
-        "source": 16,
-        "target": {
-          "node": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 117,
-        "provenance": "authored",
-        "reference": 240,
-        "source": 16,
-        "target": {
-          "node": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 241,
-        "source": 16,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 242,
-        "source": 16,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 243,
-        "source": 16,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 244,
-        "source": 16,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 246,
-        "source": 16,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 80,
-        "provenance": "authored",
-        "reference": 311,
-        "source": 70,
-        "target": {
-          "reference": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 309,
-        "source": 70,
-        "target": {
-          "reference": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 310,
-        "source": 70,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 38,
-        "provenance": "authored",
-        "reference": 442,
-        "source": 79,
-        "target": {
-          "node": 73,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 443,
-        "source": 79,
         "target": {
           "reference": 94,
           "status": "resolved"
@@ -18629,6 +17450,1964 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 444,
+        "source": 30,
+        "target": {
+          "reference": 55,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 2,
+        "provenance": "authored",
+        "reference": 543,
+        "source": 31,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 533,
+        "source": 31,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 538,
+        "source": 31,
+        "target": {
+          "reference": 85,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 230,
+        "source": 19,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 231,
+        "source": 19,
+        "target": {
+          "node": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 237,
+        "source": 20,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 238,
+        "source": 20,
+        "target": {
+          "node": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 235,
+        "source": 21,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 236,
+        "source": 21,
+        "target": {
+          "node": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 233,
+        "source": 22,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 234,
+        "source": 22,
+        "target": {
+          "node": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 57,
+        "provenance": "authored",
+        "reference": 401,
+        "source": 32,
+        "target": {
+          "reference": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 399,
+        "source": 32,
+        "target": {
+          "reference": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 400,
+        "source": 32,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 12,
+        "provenance": "authored",
+        "reference": 549,
+        "source": 37,
+        "target": {
+          "node": 40,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 550,
+        "source": 37,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 551,
+        "source": 37,
+        "target": {
+          "reference": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 553,
+        "source": 38,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 554,
+        "source": 38,
+        "target": {
+          "reference": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 555,
+        "source": 39,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 556,
+        "source": 39,
+        "target": {
+          "node": 38,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 557,
+        "source": 35,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 558,
+        "source": 35,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 559,
+        "source": 35,
+        "target": {
+          "reference": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 560,
+        "source": 36,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 561,
+        "source": 36,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 562,
+        "source": 36,
+        "target": {
+          "reference": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 2,
+        "provenance": "authored",
+        "reference": 544,
+        "source": 40,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 534,
+        "source": 40,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 539,
+        "source": 40,
+        "target": {
+          "reference": 85,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 405,
+        "source": 33,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 406,
+        "source": 33,
+        "target": {
+          "node": 32,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 402,
+        "source": 34,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 403,
+        "source": 34,
+        "target": {
+          "node": 32,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 103,
+        "provenance": "authored",
+        "reference": 375,
+        "source": 9,
+        "target": {
+          "reference": 87,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 104,
+        "provenance": "authored",
+        "reference": 376,
+        "source": 9,
+        "target": {
+          "node": 43,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 105,
+        "provenance": "authored",
+        "reference": 377,
+        "source": 9,
+        "target": {
+          "node": 72,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 378,
+        "source": 9,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 379,
+        "source": 9,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 380,
+        "source": 9,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 381,
+        "source": 9,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 383,
+        "source": 9,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 107,
+        "provenance": "authored",
+        "reference": 384,
+        "source": 10,
+        "target": {
+          "reference": 87,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 108,
+        "provenance": "authored",
+        "reference": 385,
+        "source": 10,
+        "target": {
+          "node": 71,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 109,
+        "provenance": "authored",
+        "reference": 386,
+        "source": 10,
+        "target": {
+          "node": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 387,
+        "source": 10,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 388,
+        "source": 10,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 389,
+        "source": 10,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 390,
+        "source": 10,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 392,
+        "source": 10,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 87,
+        "provenance": "authored",
+        "reference": 407,
+        "source": 11,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 88,
+        "provenance": "authored",
+        "reference": 408,
+        "source": 11,
+        "target": {
+          "node": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 89,
+        "provenance": "authored",
+        "reference": 409,
+        "source": 11,
+        "target": {
+          "node": 20,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 410,
+        "source": 11,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 411,
+        "source": 11,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 412,
+        "source": 11,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 413,
+        "source": 11,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 415,
+        "source": 11,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 119,
+        "provenance": "authored",
+        "reference": 257,
+        "source": 12,
+        "target": {
+          "reference": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 120,
+        "provenance": "authored",
+        "reference": 258,
+        "source": 12,
+        "target": {
+          "node": 22,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 121,
+        "provenance": "authored",
+        "reference": 259,
+        "source": 12,
+        "target": {
+          "node": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 260,
+        "source": 12,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 261,
+        "source": 12,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 262,
+        "source": 12,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 263,
+        "source": 12,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 264,
+        "source": 12,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 91,
+        "provenance": "authored",
+        "reference": 301,
+        "source": 13,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 92,
+        "provenance": "authored",
+        "reference": 302,
+        "source": 13,
+        "target": {
+          "node": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 93,
+        "provenance": "authored",
+        "reference": 303,
+        "source": 13,
+        "target": {
+          "node": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 304,
+        "source": 13,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 305,
+        "source": 13,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 306,
+        "source": 13,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 307,
+        "source": 13,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 309,
+        "source": 13,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 99,
+        "provenance": "authored",
+        "reference": 341,
+        "source": 14,
+        "target": {
+          "reference": 77,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 100,
+        "provenance": "authored",
+        "reference": 342,
+        "source": 14,
+        "target": {
+          "node": 60,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 101,
+        "provenance": "authored",
+        "reference": 343,
+        "source": 14,
+        "target": {
+          "node": 48,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 344,
+        "source": 14,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 345,
+        "source": 14,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 346,
+        "source": 14,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 347,
+        "source": 14,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 349,
+        "source": 14,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 67,
+        "provenance": "authored",
+        "reference": 282,
+        "source": 41,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 280,
+        "source": 41,
+        "target": {
+          "reference": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 281,
+        "source": 41,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 24,
+        "provenance": "authored",
+        "reference": 417,
+        "source": 56,
+        "target": {
+          "node": 49,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 418,
+        "source": 56,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 419,
+        "source": 56,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 421,
+        "source": 57,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 422,
+        "source": 57,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 423,
+        "source": 58,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 424,
+        "source": 58,
+        "target": {
+          "node": 57,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 425,
+        "source": 55,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 426,
+        "source": 55,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 427,
+        "source": 55,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 434,
+        "source": 51,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 435,
+        "source": 51,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 436,
+        "source": 51,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 4,
+        "provenance": "authored",
+        "reference": 449,
+        "source": 49,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 441,
+        "source": 49,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 445,
+        "source": 49,
+        "target": {
+          "reference": 55,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 2,
+        "provenance": "authored",
+        "reference": 545,
+        "source": 50,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 535,
+        "source": 50,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 540,
+        "source": 50,
+        "target": {
+          "reference": 85,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 431,
+        "source": 52,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 432,
+        "source": 52,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 433,
+        "source": 52,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 437,
+        "source": 53,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 438,
+        "source": 53,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 439,
+        "source": 53,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 428,
+        "source": 54,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 429,
+        "source": 54,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 430,
+        "source": 54,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 294,
+        "source": 42,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 295,
+        "source": 42,
+        "target": {
+          "node": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 299,
+        "source": 43,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 300,
+        "source": 43,
+        "target": {
+          "node": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 286,
+        "source": 44,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 287,
+        "source": 44,
+        "target": {
+          "node": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 288,
+        "source": 45,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 289,
+        "source": 45,
+        "target": {
+          "node": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 296,
+        "source": 46,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 297,
+        "source": 46,
+        "target": {
+          "node": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 291,
+        "source": 47,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 292,
+        "source": 47,
+        "target": {
+          "node": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 283,
+        "source": 48,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 284,
+        "source": 48,
+        "target": {
+          "node": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 76,
+        "provenance": "authored",
+        "reference": 360,
+        "source": 59,
+        "target": {
+          "reference": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 358,
+        "source": 59,
+        "target": {
+          "reference": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 359,
+        "source": 59,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 32,
+        "provenance": "authored",
+        "reference": 516,
+        "source": 67,
+        "target": {
+          "node": 62,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 517,
+        "source": 67,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 518,
+        "source": 67,
+        "target": {
+          "reference": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 520,
+        "source": 68,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 521,
+        "source": 68,
+        "target": {
+          "reference": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 522,
+        "source": 69,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 523,
+        "source": 69,
+        "target": {
+          "node": 68,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 524,
+        "source": 66,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 525,
+        "source": 66,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 526,
+        "source": 66,
+        "target": {
+          "reference": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 530,
+        "source": 64,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 531,
+        "source": 64,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 532,
+        "source": 64,
+        "target": {
+          "reference": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 4,
+        "provenance": "authored",
+        "reference": 450,
+        "source": 62,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 442,
+        "source": 62,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 446,
+        "source": 62,
+        "target": {
+          "reference": 55,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 527,
+        "source": 65,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 528,
+        "source": 65,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 529,
+        "source": 65,
+        "target": {
+          "reference": 78,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 2,
+        "provenance": "authored",
+        "reference": 546,
+        "source": 63,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 536,
+        "source": 63,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 541,
+        "source": 63,
+        "target": {
+          "reference": 85,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 362,
+        "source": 60,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 363,
+        "source": 60,
+        "target": {
+          "node": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 364,
+        "source": 61,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 365,
+        "source": 61,
+        "target": {
+          "node": 59,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 95,
+        "provenance": "authored",
+        "reference": 239,
+        "source": 15,
+        "target": {
+          "reference": 76,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 96,
+        "provenance": "authored",
+        "reference": 240,
+        "source": 15,
+        "target": {
+          "node": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 97,
+        "provenance": "authored",
+        "reference": 241,
+        "source": 15,
+        "target": {
+          "node": 61,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 242,
+        "source": 15,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 243,
+        "source": 15,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 244,
+        "source": 15,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 245,
+        "source": 15,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 247,
+        "source": 15,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 115,
+        "provenance": "authored",
+        "reference": 248,
+        "source": 16,
+        "target": {
+          "reference": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 116,
+        "provenance": "authored",
+        "reference": 249,
+        "source": 16,
+        "target": {
+          "node": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 117,
+        "provenance": "authored",
+        "reference": 250,
+        "source": 16,
+        "target": {
+          "node": 21,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 251,
+        "source": 16,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 252,
+        "source": 16,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 253,
+        "source": 16,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 254,
+        "source": 16,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 256,
+        "source": 16,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 80,
+        "provenance": "authored",
+        "reference": 321,
+        "source": 70,
+        "target": {
+          "reference": 57,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 319,
+        "source": 70,
+        "target": {
+          "reference": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 320,
+        "source": 70,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 38,
+        "provenance": "authored",
+        "reference": 453,
+        "source": 79,
+        "target": {
+          "node": 73,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 454,
+        "source": 79,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 455,
         "source": 79,
         "target": {
           "reference": 57,
@@ -18639,10 +19418,21 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 446,
+        "reference": 457,
         "source": 80,
         "target": {
-          "reference": 101,
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 458,
+        "source": 80,
+        "target": {
+          "reference": 57,
           "status": "resolved"
         }
       },
@@ -18650,7 +19440,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 447,
+        "reference": 459,
         "source": 81,
         "target": {
           "reference": 95,
@@ -18661,7 +19451,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 448,
+        "reference": 460,
         "source": 81,
         "target": {
           "node": 80,
@@ -18672,10 +19462,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 449,
+        "reference": 461,
         "source": 78,
         "target": {
-          "reference": 99,
+          "reference": 100,
           "status": "resolved"
         }
       },
@@ -18683,10 +19473,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 450,
+        "reference": 462,
         "source": 78,
         "target": {
-          "reference": 102,
+          "reference": 103,
           "status": "resolved"
         }
       },
@@ -18694,7 +19484,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 451,
+        "reference": 463,
         "source": 78,
         "target": {
           "reference": 57,
@@ -18705,10 +19495,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 440,
+        "reference": 451,
         "source": 73,
         "target": {
-          "reference": 103,
+          "reference": 104,
           "status": "resolved"
         }
       },
@@ -18716,7 +19506,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 432,
+        "reference": 443,
         "source": 73,
         "target": {
           "reference": 94,
@@ -18727,7 +19517,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 436,
+        "reference": 447,
         "source": 73,
         "target": {
           "reference": 55,
@@ -18738,10 +19528,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 531,
+        "reference": 547,
         "source": 74,
         "target": {
-          "reference": 103,
+          "reference": 104,
           "status": "resolved"
         }
       },
@@ -18749,7 +19539,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 521,
+        "reference": 537,
         "source": 74,
         "target": {
           "reference": 94,
@@ -18760,7 +19550,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 526,
+        "reference": 542,
         "source": 74,
         "target": {
           "reference": 85,
@@ -18771,10 +19561,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 455,
+        "reference": 467,
         "source": 75,
         "target": {
-          "reference": 99,
+          "reference": 100,
           "status": "resolved"
         }
       },
@@ -18782,10 +19572,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 456,
+        "reference": 468,
         "source": 75,
         "target": {
-          "reference": 102,
+          "reference": 103,
           "status": "resolved"
         }
       },
@@ -18793,7 +19583,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 457,
+        "reference": 469,
         "source": 75,
         "target": {
           "reference": 57,
@@ -18804,10 +19594,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 452,
+        "reference": 464,
         "source": 76,
         "target": {
-          "reference": 99,
+          "reference": 100,
           "status": "resolved"
         }
       },
@@ -18815,10 +19605,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 453,
+        "reference": 465,
         "source": 76,
         "target": {
-          "reference": 102,
+          "reference": 103,
           "status": "resolved"
         }
       },
@@ -18826,7 +19616,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 454,
+        "reference": 466,
         "source": 76,
         "target": {
           "reference": 57,
@@ -18837,10 +19627,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 458,
+        "reference": 470,
         "source": 77,
         "target": {
-          "reference": 99,
+          "reference": 100,
           "status": "resolved"
         }
       },
@@ -18848,10 +19638,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 459,
+        "reference": 471,
         "source": 77,
         "target": {
-          "reference": 102,
+          "reference": 103,
           "status": "resolved"
         }
       },
@@ -18859,7 +19649,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 460,
+        "reference": 472,
         "source": 77,
         "target": {
           "reference": 57,
@@ -18870,10 +19660,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 313,
+        "reference": 323,
         "source": 71,
         "target": {
-          "reference": 98,
+          "reference": 99,
           "status": "resolved"
         }
       },
@@ -18881,7 +19671,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 314,
+        "reference": 324,
         "source": 71,
         "target": {
           "node": 70,
@@ -18892,10 +19682,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 315,
+        "reference": 325,
         "source": 72,
         "target": {
-          "reference": 98,
+          "reference": 99,
           "status": "resolved"
         }
       },
@@ -18903,7 +19693,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 316,
+        "reference": 326,
         "source": 72,
         "target": {
           "node": 70,
@@ -18914,7 +19704,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 84,
         "provenance": "authored",
-        "reference": 328,
+        "reference": 338,
         "source": 82,
         "target": {
           "reference": 70,
@@ -18925,10 +19715,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 326,
+        "reference": 336,
         "source": 82,
         "target": {
-          "reference": 100,
+          "reference": 101,
           "status": "resolved"
         }
       },
@@ -18936,7 +19726,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 327,
+        "reference": 337,
         "source": 82,
         "target": {
           "node": 0,
@@ -18947,7 +19737,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": 45,
         "provenance": "authored",
-        "reference": 473,
+        "reference": 485,
         "source": 89,
         "target": {
           "node": 85,
@@ -18958,43 +19748,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 476,
+        "reference": 488,
         "source": 89,
         "target": {
           "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 479,
-        "source": 89,
-        "target": {
-          "reference": 70,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 485,
-        "source": 90,
-        "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 488,
-        "source": 91,
-        "target": {
-          "reference": 95,
           "status": "resolved"
         }
       },
@@ -19003,271 +19760,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 491,
-        "source": 91,
-        "target": {
-          "node": 90,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 48,
-        "provenance": "authored",
-        "reference": 474,
-        "source": 92,
-        "target": {
-          "node": 86,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 477,
-        "source": 92,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 480,
-        "source": 92,
-        "target": {
-          "reference": 70,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 486,
-        "source": 93,
-        "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 489,
-        "source": 94,
-        "target": {
-          "reference": 95,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 492,
-        "source": 94,
-        "target": {
-          "node": 93,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 51,
-        "provenance": "authored",
-        "reference": 475,
-        "source": 95,
-        "target": {
-          "node": 84,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 478,
-        "source": 95,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 481,
-        "source": 95,
-        "target": {
-          "reference": 70,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 487,
-        "source": 96,
-        "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 490,
-        "source": 97,
-        "target": {
-          "reference": 95,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 493,
-        "source": 97,
-        "target": {
-          "node": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 8,
-        "provenance": "authored",
-        "reference": 469,
-        "source": 86,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 467,
-        "source": 86,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 468,
-        "source": 86,
-        "target": {
-          "reference": 65,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 10,
-        "provenance": "authored",
-        "reference": 466,
-        "source": 84,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 464,
-        "source": 84,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 465,
-        "source": 84,
-        "target": {
-          "reference": 65,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 6,
-        "provenance": "authored",
-        "reference": 463,
-        "source": 85,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 461,
-        "source": 85,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 462,
-        "source": 85,
-        "target": {
-          "reference": 65,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 494,
-        "source": 87,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 495,
-        "source": 87,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 496,
-        "source": 87,
+        "source": 89,
         "target": {
           "reference": 70,
           "status": "resolved"
@@ -19278,18 +19771,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 497,
-        "source": 88,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 498,
-        "source": 88,
+        "source": 90,
         "target": {
           "reference": 102,
           "status": "resolved"
@@ -19299,7 +19781,348 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
+        "reference": 500,
+        "source": 90,
+        "target": {
+          "reference": 70,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 503,
+        "source": 91,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 506,
+        "source": 91,
+        "target": {
+          "node": 90,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 48,
+        "provenance": "authored",
+        "reference": 486,
+        "source": 92,
+        "target": {
+          "node": 86,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 489,
+        "source": 92,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 492,
+        "source": 92,
+        "target": {
+          "reference": 70,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 498,
+        "source": 93,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 501,
+        "source": 93,
+        "target": {
+          "reference": 70,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 504,
+        "source": 94,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 507,
+        "source": 94,
+        "target": {
+          "node": 93,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 51,
+        "provenance": "authored",
+        "reference": 487,
+        "source": 95,
+        "target": {
+          "node": 84,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 490,
+        "source": 95,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 493,
+        "source": 95,
+        "target": {
+          "reference": 70,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
         "reference": 499,
+        "source": 96,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 502,
+        "source": 96,
+        "target": {
+          "reference": 70,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 505,
+        "source": 97,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 508,
+        "source": 97,
+        "target": {
+          "node": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 8,
+        "provenance": "authored",
+        "reference": 481,
+        "source": 86,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 479,
+        "source": 86,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 480,
+        "source": 86,
+        "target": {
+          "reference": 65,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 10,
+        "provenance": "authored",
+        "reference": 478,
+        "source": 84,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 476,
+        "source": 84,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 477,
+        "source": 84,
+        "target": {
+          "reference": 65,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 6,
+        "provenance": "authored",
+        "reference": 475,
+        "source": 85,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 473,
+        "source": 85,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 474,
+        "source": 85,
+        "target": {
+          "reference": 65,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 509,
+        "source": 87,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 510,
+        "source": 87,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 511,
+        "source": 87,
+        "target": {
+          "reference": 70,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 512,
+        "source": 88,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 513,
+        "source": 88,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 514,
         "source": 88,
         "target": {
           "reference": 70,
@@ -19310,10 +20133,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 329,
+        "reference": 339,
         "source": 83,
         "target": {
-          "reference": 98,
+          "reference": 99,
           "status": "resolved"
         }
       },
@@ -19321,7 +20144,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 330,
+        "reference": 340,
         "source": 83,
         "target": {
           "node": 82,
@@ -19332,7 +20155,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "flowPayloadType",
         "navigation": 111,
         "provenance": "authored",
-        "reference": 356,
+        "reference": 366,
         "source": 17,
         "target": {
           "reference": 69,
@@ -19343,7 +20166,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "flowSource",
         "navigation": 112,
         "provenance": "authored",
-        "reference": 357,
+        "reference": 367,
         "source": 17,
         "target": {
           "node": 47,
@@ -19354,7 +20177,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "flowTarget",
         "navigation": 113,
         "provenance": "authored",
-        "reference": 358,
+        "reference": 368,
         "source": 17,
         "target": {
           "node": 83,
@@ -19365,7 +20188,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 359,
+        "reference": 369,
         "source": 17,
         "target": {
           "reference": 97,
@@ -19376,7 +20199,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 360,
+        "reference": 370,
         "source": 17,
         "target": {
           "reference": 96,
@@ -19387,10 +20210,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 361,
+        "reference": 371,
         "source": 17,
         "target": {
-          "reference": 105,
+          "reference": 106,
           "status": "resolved"
         }
       },
@@ -19398,10 +20221,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 362,
+        "reference": 372,
         "source": 17,
         "target": {
-          "reference": 104,
+          "reference": 105,
           "status": "resolved"
         }
       },
@@ -19409,7 +20232,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 364,
+        "reference": 374,
         "source": 17,
         "target": {
           "node": 0,

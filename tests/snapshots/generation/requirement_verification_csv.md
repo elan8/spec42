@@ -28,6 +28,18 @@ package Verification {
 (fixture-diagnostics
   (document "memory://snapshot/requirement_verification_csv.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_role_member")
+        (source "semantic")
+        (range (start 8 8) (end 8 64))
+        (related-information
+          (related
+            (uri "memory://snapshot/requirement_verification_csv.md")
+            (range (start 7 8) (end 7 38))
+          )
+        )
+      )
     )
   )
 )
