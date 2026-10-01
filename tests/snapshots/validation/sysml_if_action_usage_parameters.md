@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.10:validateIfActionUsageParameters
-blocked_by=parser-gap-76-action-body-members
 type=file
 ~~~
 # SOURCE
@@ -23,7 +22,7 @@ package Actions {
     action def Act {
         action a1;
         action a2;
-        if true then a1 else a2;
+        if true { perform a1; } else { perform a2; }
     }
 }
 ~~~
@@ -41,12 +40,6 @@ package Actions {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_if_action_usage_parameters.md"
     (diagnostics
-      (diagnostic
-        (severity error)
-        (code "recovered_action_body_element")
-        (source "parser")
-        (range (start 10 8) (end 11 4))
-      )
     )
   )
 )
@@ -54,36 +47,80 @@ package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:2e457c706c8fd46dc33725cb52f366beeb45cca51109e24d6d83c379d0c3556e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0488e7db143223988def720689a9d19bc9776c520709f902960bf3f70fac13a8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0))))) (kind if) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "a1")))))
+    (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 1))))) (kind perform-action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "a2")))))
     (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a1"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a2"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0))
+      (authored-target "a1")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a1")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 1))))) (kind referenceSubsetting) (ordinal 0))
+      (authored-target "a2")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a2")))))
   )
   (relationships
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a1"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a2"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 1))))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a1"))) (target (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a2"))) (target (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act"))) (provenance implied))
   )
   (evaluation
+    (evaluated (declaration (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0))))) (state literal) (value (kind boolean) (boolean true)))
   )
 )
 ~~~
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act")))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a1")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a2")) (scopes any feature))
+    )
     (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a1")))
       (featured-by (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act")))
+      (subtype (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a2")))
       (featured-by (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act")))
+      (subtype (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 1)))) (scopes any feature))
     )
+)
+~~~
+# EXPRESSIONS
+~~~sexpr
+(expressions
+  (declaration (id (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0))))) (outcome resolved) (literal (value (kind boolean) (boolean true))))
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/sysml_if_action_usage_parameters.md") (range (start 10 26) (end 10 28)) (probe (position 10 26))
+    (reference (id (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 0))))) (kind referenceSubsetting) (ordinal 0) (authored-target "a1")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a1")))))
+    )
+  )
+  (query (document "memory://snapshot/sysml_if_action_usage_parameters.md") (range (start 10 47) (end 10 49)) (probe (position 10 47))
+    (reference (id (source (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind if) (ordinal 0)) (anonymous (kind perform-action) (ordinal 1))))) (kind referenceSubsetting) (ordinal 0) (authored-target "a2")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_if_action_usage_parameters.md") (qualified-name "Actions::Act::a2")))))
+    )
+  )
 )
 ~~~
