@@ -3551,10 +3551,6 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
             RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors,
         ),
         (
-            RedefinitionCheckKind::FeatureOwnedCrossFeatureSpecialization,
-            RedefinitionCheckPrerequisite::CrossFeatureAndSubsettingEndpoints,
-        ),
-        (
             RedefinitionCheckKind::FeatureParameter,
             RedefinitionCheckPrerequisite::ParameterDirectionAndInheritedPosition,
         ),
@@ -3607,6 +3603,7 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
     // corpus carries the occupied cases.
     for rule in [
         RedefinitionCheckKind::FeatureEnd,
+        RedefinitionCheckKind::FeatureOwnedCrossFeatureSpecialization,
         RedefinitionCheckKind::FeatureChainExpressionSourceTarget,
         RedefinitionCheckKind::FeatureChainExpressionTarget,
         RedefinitionCheckKind::ForLoopActionUsageVar,

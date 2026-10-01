@@ -877,6 +877,38 @@ pub(crate) fn synthesize_implied_relationships(
         &implied,
     )?;
     implied.extend(positional_ends);
+    // An owned cross feature subsets the cross feature of every end its own end redefines, which
+    // includes the positional redefinitions settled just above.
+    let mut redefinitions = std::collections::BTreeSet::new();
+    let mut authored_subsettings = std::collections::BTreeSet::new();
+    for (reference, outcome) in storage.references.iter().zip(resolution.outcomes.iter()) {
+        let ResolutionStatus::Resolved(target) = *outcome else {
+            continue;
+        };
+        match reference.kind {
+            ReferenceKind::Redefinition => {
+                redefinitions.insert((reference.source, target));
+                authored_subsettings.insert((reference.source, target));
+            }
+            ReferenceKind::Subsetting | ReferenceKind::References | ReferenceKind::Crosses => {
+                authored_subsettings.insert((reference.source, target));
+            }
+            _ => {}
+        }
+    }
+    redefinitions.extend(
+        implied
+            .iter()
+            .filter(|relationship| relationship.kind == ReferenceKind::Redefinition)
+            .map(|relationship| (relationship.source, relationship.target)),
+    );
+    implied.extend(
+        crate::resolve::end_features::synthesize_owned_cross_feature_redefinition_subsettings(
+            storage,
+            &redefinitions,
+            &authored_subsettings,
+        )?,
+    );
     implied.extend(
         synthesize_feature_membership_type_featurings(storage, &storage.references)?.into_vec(),
     );

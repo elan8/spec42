@@ -175,7 +175,6 @@ pub enum SpecializationCheckOutcome {
 pub enum RedefinitionCheckPrerequisite {
     RuleNotPublished,
     FlowEndOrdinalAndLibraryAnchors,
-    CrossFeatureAndSubsettingEndpoints,
     ParameterDirectionAndInheritedPosition,
     FunctionOrExpressionResult,
     ConstructorResultAndInstantiatedTypeFeatures,

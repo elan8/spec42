@@ -25,12 +25,6 @@ owner = "spec42-semantic"
 summary = "FlowEnd ownership ordinal and its two exact library redefinition anchors are not published together for checkFeatureFlowFeatureRedefinition."
 
 [[issue]]
-id = "lowering-gap-redefinition-cross-feature-subsetting-endpoints"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "checkFeatureOwnedCrossFeatureRedefinitionSpecialization ranges over the end features an owning end redefines, so it inherits every gap of lowering-gap-redefinition-end-feature-position; the cross-feature projection exists (DeclarationFacts::cross_feature_projection), but the CrossSubsetting endpoints of the redefined ends are not yet one canonical queryable fact family."
-
-[[issue]]
 id = "lowering-gap-redefinition-parameter-position"
 kind = "lowering_gap"
 owner = "spec42-semantic"

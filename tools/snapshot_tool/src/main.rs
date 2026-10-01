@@ -1267,9 +1267,6 @@ fn parse_redefinition_check_prerequisite(
         "flow_end_ordinal_and_library_anchors" => {
             Ok(RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors)
         }
-        "cross_feature_and_subsetting_endpoints" => {
-            Ok(RedefinitionCheckPrerequisite::CrossFeatureAndSubsettingEndpoints)
-        }
         "parameter_direction_and_inherited_position" => {
             Ok(RedefinitionCheckPrerequisite::ParameterDirectionAndInheritedPosition)
         }

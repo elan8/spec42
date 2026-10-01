@@ -14,13 +14,18 @@ use crate::lower::facts::OwnedEndFeature;
 use crate::model::resolver::SemanticModel;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
+use crate::model::ReferenceKind;
 use crate::redefinition_query::RedefinitionCheckKind;
 use crate::redefinition_query::RedefinitionCheckOutcome;
 use crate::redefinition_query::RedefinitionCheckPrerequisite;
+use crate::resolve::end_features::cross_feature_of;
+use crate::resolve::end_features::owned_cross_features;
 use crate::resolve::end_features::positional_end_obligations;
+use crate::resolve::end_features::CrossFeature;
 use crate::resolve::implied::redefinition_check_rule;
 use crate::resolve::implied::LibrarySpecializationAnchor;
 use crate::resolve::results::FeatureChainExpressionSpecializationStatus;
+use crate::resolve::results::ResolutionStatus;
 use crate::resolve::role_redefinitions::library_role_occupants;
 use crate::resolve::role_redefinitions::LibraryRoleOccupant;
 use crate::QueryOutcome;
@@ -85,9 +90,7 @@ impl<D> SemanticModel<D> {
                 prerequisite: RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors,
             },
             RedefinitionCheckKind::FeatureOwnedCrossFeatureSpecialization => {
-                RedefinitionCheckOutcome::Unsupported {
-                    prerequisite: RedefinitionCheckPrerequisite::CrossFeatureAndSubsettingEndpoints,
-                }
+                self.owned_cross_feature_redefinition_check()
             }
             RedefinitionCheckKind::FeatureParameter => RedefinitionCheckOutcome::Unsupported {
                 prerequisite: RedefinitionCheckPrerequisite::ParameterDirectionAndInheritedPosition,
@@ -127,6 +130,33 @@ impl<D> SemanticModel<D> {
         let mut redefined = BTreeSet::new();
         self.collect_redefined_members(source, &mut redefined);
         redefined.contains(&target)
+    }
+
+    /// Whether `source` directly subsets `target` in this publication, authored or implied:
+    /// KerML `ownedSubsetting`, which every Subsetting subkind (Redefinition, ReferenceSubsetting,
+    /// CrossSubsetting) belongs to.
+    fn subsets(&self, source: DeclarationId, target: DeclarationId) -> bool {
+        let is_subsetting = |kind: ReferenceKind| {
+            matches!(
+                kind,
+                ReferenceKind::Subsetting
+                    | ReferenceKind::Redefinition
+                    | ReferenceKind::References
+                    | ReferenceKind::Crosses
+            )
+        };
+        self.outgoing_reference_ids(source).iter().any(|reference| {
+            self.storage
+                .references
+                .get(reference.index())
+                .is_some_and(|authored| is_subsetting(authored.kind))
+                && self.resolution.outcome(*reference) == Some(ResolutionStatus::Resolved(target))
+        }) || self.outgoing_implied_indices(source).iter().any(|index| {
+            self.resolution
+                .implied_relationships
+                .get(*index as usize)
+                .is_some_and(|implied| is_subsetting(implied.kind) && implied.target == target)
+        })
     }
 
     fn role_occupants(&self) -> Option<Vec<LibraryRoleOccupant>> {
@@ -229,6 +259,43 @@ impl<D> SemanticModel<D> {
                         Some(self.redefines(source, target))
                     }
                     _ => None,
+                });
+            }
+        }
+        tally.outcome()
+    }
+
+    /// KerML `checkFeatureOwnedCrossFeatureRedefinitionSpecialization`: an owned cross feature
+    /// subsets the `crossFeature` of every Feature its end redefines.
+    ///
+    /// The redefined Features are the end's published Redefinitions, authored and implied; an end
+    /// with an unsettled specialization, or owned by a Type with one, may redefine more than are
+    /// published, and a redefined Feature whose cross feature is not a settled fact is unknown, so
+    /// either answers unresolved.
+    fn owned_cross_feature_redefinition_check(&self) -> RedefinitionCheckOutcome {
+        let Ok(owned) = owned_cross_features(&self.storage) else {
+            return RedefinitionCheckOutcome::Unresolved;
+        };
+        let mut tally = CheckTally::default();
+        for owned in owned {
+            let owner_unsettled = self
+                .storage
+                .declaration(owned.end)
+                .and_then(|end| end.owner)
+                .is_some_and(|owner| self.specialization_hierarchy_is_unsettled(owner));
+            if owner_unsettled || self.specialization_hierarchy_is_unsettled(owned.end) {
+                tally.require(None);
+                continue;
+            }
+            let mut redefined = BTreeSet::new();
+            self.collect_redefined_members(owned.end, &mut redefined);
+            for redefined in redefined {
+                tally.require(match cross_feature_of(&self.storage, redefined) {
+                    Ok(CrossFeature::Resolved(cross)) => Some(
+                        cross == owned.cross_feature || self.subsets(owned.cross_feature, cross),
+                    ),
+                    Ok(CrossFeature::Absent) => Some(true),
+                    Ok(CrossFeature::Unpublished) | Err(_) => None,
                 });
             }
         }

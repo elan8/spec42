@@ -15,6 +15,7 @@ use std::collections::BTreeSet;
 
 use crate::lower::facts::OwnedEndFeature;
 use crate::lower::facts::OwnedEndRecord;
+use crate::lower::storage::SemanticModelStorage;
 use crate::model::DeclarationId;
 use crate::model::ReferenceKind;
 use crate::resolve::results::ImpliedRelationship;
@@ -208,6 +209,100 @@ pub(crate) fn synthesize_positional_end_redefinitions(
                     kind: ReferenceKind::Redefinition,
                     source,
                     target,
+                });
+            }
+        }
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(implied)
+}
+
+/// KerML `Feature::crossFeature` of one Feature, as far as this publication states it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum CrossFeature {
+    /// The Feature owns this cross feature (`end crossing [1] feature e`), which the implied
+    /// CrossSubsetting the Pilot adds (`addCrossingSpecialization`) makes its `crossFeature`.
+    Resolved(DeclarationId),
+    /// The Feature authors a CrossSubsetting (`crosses a.b`) whose crossed feature chain is not
+    /// a settled fact, so its second chaining feature is unknown.
+    Unpublished,
+    /// The Feature has no cross feature.
+    Absent,
+}
+
+/// The `crossFeature` of `feature`, from its owned facts and authored relationships.
+pub(crate) fn cross_feature_of(
+    storage: &SemanticModelStorage,
+    feature: DeclarationId,
+) -> Result<CrossFeature, ResolutionError> {
+    let facts = storage
+        .declaration_facts(feature)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    if let Some(projection) = facts.cross_feature_projection {
+        return Ok(CrossFeature::Resolved(projection.cross_feature));
+    }
+    if storage
+        .references
+        .iter()
+        .any(|reference| reference.source == feature && reference.kind == ReferenceKind::Crosses)
+    {
+        return Ok(CrossFeature::Unpublished);
+    }
+    Ok(CrossFeature::Absent)
+}
+
+/// One owned cross feature together with the end Feature that owns it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct OwnedCrossFeature {
+    pub(crate) end: DeclarationId,
+    pub(crate) cross_feature: DeclarationId,
+}
+
+/// Every owned cross feature of the publication, in end identity order.
+pub(crate) fn owned_cross_features(
+    storage: &SemanticModelStorage,
+) -> Result<Vec<OwnedCrossFeature>, ResolutionError> {
+    let mut owned = Vec::new();
+    for (index, facts) in storage.declaration_facts.iter().enumerate() {
+        if let Some(projection) = facts.cross_feature_projection {
+            owned.push(OwnedCrossFeature {
+                end: DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?,
+                cross_feature: projection.owned_cross_feature,
+            });
+        }
+    }
+    Ok(owned)
+}
+
+/// Synthesizes the Subsettings implied by `checkFeatureOwnedCrossFeatureRedefinitionSpecialization`
+/// (KerML 8.3.3.3.4): an owned cross feature subsets the `crossFeature` of every Feature its end
+/// redefines, as the Pilot's `addOwnedCrossFeatureSpecialization` adds them.
+///
+/// `redefinitions` are the end's settled `(source, target)` Redefinitions, authored and implied
+/// (including the positional end redefinitions). A redefined Feature whose cross feature is not a
+/// settled fact contributes nothing; the redefinition check answers it as unresolved. A Subsetting
+/// an authored relationship already states (`authored_subsettings`) is not restated.
+pub(crate) fn synthesize_owned_cross_feature_redefinition_subsettings(
+    storage: &SemanticModelStorage,
+    redefinitions: &BTreeSet<(DeclarationId, DeclarationId)>,
+    authored_subsettings: &BTreeSet<(DeclarationId, DeclarationId)>,
+) -> Result<Vec<ImpliedRelationship>, ResolutionError> {
+    let mut implied = Vec::new();
+    for owned in owned_cross_features(storage)? {
+        let redefined_by_end = redefinitions
+            .range((owned.end, DeclarationId(0))..=(owned.end, DeclarationId(u32::MAX)));
+        for (_, redefined) in redefined_by_end {
+            let CrossFeature::Resolved(cross) = cross_feature_of(storage, *redefined)? else {
+                continue;
+            };
+            if cross != owned.cross_feature
+                && !authored_subsettings.contains(&(owned.cross_feature, cross))
+            {
+                implied.push(ImpliedRelationship {
+                    kind: ReferenceKind::Subsetting,
+                    source: owned.cross_feature,
+                    target: cross,
                 });
             }
         }

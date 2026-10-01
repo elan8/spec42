@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Links::BinaryLink::source`/`target` or `Connections::BinaryConnection::source`/`target`), a
   bare connector end occupies its position, and the pairing is implied alongside an authored
   redefinition. The check is evaluated; an obligation involving a bare connector end is reported
-  unresolved.
+  unresolved. An end's owned cross feature now also subsets the cross feature of every end it
+  redefines (`checkFeatureOwnedCrossFeatureRedefinitionSpecialization`), and a connector end's
+  `[m]` is published as its cross multiplicity rather than the end's own multiplicity.
 
 - **Library-anchored implied redefinitions.** A `for` loop variable now redefines
   `Actions::ForLoopAction::var`, a feature-chain expression's source target redefines
