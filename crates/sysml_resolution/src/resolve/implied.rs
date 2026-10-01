@@ -49,6 +49,9 @@ use crate::resolve::results::TransitionPayloadSubsettingProjection;
 use crate::resolve::results::TransitionPayloadSubsettingStatus;
 use crate::resolve::results::TransitionSuccessionSourceProjection;
 use crate::resolve::results::TransitionSuccessionSourceStatus;
+use crate::resolve::role_redefinitions::synthesize_library_role_redefinitions;
+use crate::resolve::role_redefinitions::LibraryRedefinitionRole;
+use crate::resolve::role_redefinitions::LibraryRoleAnchors;
 use crate::resolve::ResolutionReferenceFact;
 use crate::specialization_query::SpecializationCheckKind;
 use crate::traceability::BindingConnectorCheckKind;
@@ -526,6 +529,7 @@ pub(crate) fn library_anchor_packages() -> Vec<&'static str> {
                 .map(|rule| rule.anchor),
         )
         .filter_map(|anchor| anchor.split("::").next())
+        .chain(LibraryRedefinitionRole::anchor_packages())
         .collect::<Vec<_>>();
     packages.sort_unstable();
     packages.dedup();
@@ -579,6 +583,9 @@ pub(crate) struct LibrarySpecializationAnchorFacts {
     /// owns identity: an anchor can be deliberately shared by independent normative rules.
     pub(crate) by_rule:
         std::collections::BTreeMap<LibrarySpecializationAnchorKey, LibrarySpecializationAnchor>,
+    /// The library feature of every library-anchored redefinition role, settled at the same
+    /// barrier.
+    pub(crate) roles: LibraryRoleAnchors,
 }
 
 impl LibrarySpecializationAnchorFacts {
@@ -940,6 +947,11 @@ pub(crate) fn synthesize_implied_relationships(
         synthesize_feature_membership_type_featurings(storage, &storage.references)?.into_vec(),
     );
     implied.extend(synthesize_feature_valuation_specializations(storage)?.into_vec());
+    implied.extend(synthesize_library_role_redefinitions(
+        storage,
+        resolution,
+        &anchors.roles,
+    )?);
     implied.sort_by_key(|relationship| {
         (
             relationship.kind,
@@ -2247,7 +2259,10 @@ pub(crate) fn library_specialization_anchors(
             )
         })
         .collect();
-    LibrarySpecializationAnchorFacts { by_rule: anchors }
+    LibrarySpecializationAnchorFacts {
+        by_rule: anchors,
+        roles: LibraryRoleAnchors::resolve(storage),
+    }
 }
 
 pub(crate) fn resolve_library_specialization_anchor(
@@ -2255,6 +2270,16 @@ pub(crate) fn resolve_library_specialization_anchor(
     anchor: &'static str,
 ) -> LibrarySpecializationAnchor {
     let parts = anchor.split("::").collect::<Vec<_>>();
+    resolve_library_anchor_path(storage, &parts)
+}
+
+/// Resolves one standard-library declaration by its structural path of decoded names, outermost
+/// first. A path segment may be any decoded name, including one (`'.'`) that a `::`-joined
+/// spelling could not carry unambiguously.
+pub(crate) fn resolve_library_anchor_path(
+    storage: &SemanticModelStorage,
+    parts: &[&str],
+) -> LibrarySpecializationAnchor {
     let Some((&last, owners)) = parts.split_last() else {
         return LibrarySpecializationAnchor::Missing;
     };

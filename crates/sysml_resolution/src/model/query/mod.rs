@@ -1,6 +1,7 @@
 //! Phase 9: the read-only query surface over a finished model.
 
 pub(crate) mod ends;
+mod redefinition;
 mod visible;
 
 pub use visible::VisibleMemberRef;
@@ -44,9 +45,6 @@ use crate::projection::ProjectionPhase;
 use crate::projection::ProjectionTruncation;
 use crate::projection::PublishedModelProjection;
 use crate::projection::MODEL_PROJECTION_SCHEMA_VERSION;
-use crate::redefinition_query::RedefinitionCheckKind;
-use crate::redefinition_query::RedefinitionCheckOutcome;
-use crate::redefinition_query::RedefinitionCheckPrerequisite;
 use crate::requirement_query::RequirementDerivedFactCollection;
 use crate::requirement_query::RequirementDerivedFactOutcome;
 use crate::requirement_query::RequirementDerivedFactPrerequisite;
@@ -62,7 +60,6 @@ use crate::resolve::implied::feature_derived_relationship_rule;
 use crate::resolve::implied::lowered_redefinition_source_kind;
 use crate::resolve::implied::namespace_derived_element_rule;
 use crate::resolve::implied::namespace_import_derived_element_rule;
-use crate::resolve::implied::redefinition_check_rule;
 use crate::resolve::implied::requirement_derived_fact_rule;
 use crate::resolve::implied::specialization_check_rule;
 use crate::resolve::implied::type_derived_element_rule;
@@ -1862,70 +1859,6 @@ impl<D> SemanticModel<D> {
             TypeFeaturingCheckOutcome::Satisfied
         };
         self.resolved_outcome(outcome)
-    }
-
-    /// Returns the first missing canonical prerequisite for one exact redefinition check.
-    ///
-    /// Authored and implied redefinition edges are already settled in this publication. None of
-    /// these predicates is reducible to merely having an edge: each selects a particular endpoint
-    /// through a metamodel role (for example an end position, state subaction kind, or constructor
-    /// result). Those role facts are not yet published as canonical query inputs, so this method
-    /// deliberately does not walk source syntax, inspect names, or turn an arbitrary redefinition
-    /// into a satisfied result.
-    pub(crate) fn redefinition_check(
-        &self,
-        kind: RedefinitionCheckKind,
-    ) -> QueryOutcome<RedefinitionCheckOutcome> {
-        let Some(rule) = redefinition_check_rule(kind) else {
-            return self.resolved_outcome(RedefinitionCheckOutcome::Unsupported {
-                prerequisite: RedefinitionCheckPrerequisite::RuleNotPublished,
-            });
-        };
-        let _normative_rule = (rule.rule_id, rule.metaclass);
-        let prerequisite = match kind {
-            RedefinitionCheckKind::FeatureEnd => {
-                RedefinitionCheckPrerequisite::EndFeaturePositionAndInheritedEnds
-            }
-            RedefinitionCheckKind::FeatureFlowFeature => {
-                RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors
-            }
-            RedefinitionCheckKind::FeatureOwnedCrossFeatureSpecialization => {
-                RedefinitionCheckPrerequisite::CrossFeatureAndSubsettingEndpoints
-            }
-            RedefinitionCheckKind::FeatureParameter => {
-                RedefinitionCheckPrerequisite::ParameterDirectionAndInheritedPosition
-            }
-            RedefinitionCheckKind::FeatureResult => {
-                RedefinitionCheckPrerequisite::FunctionOrExpressionResult
-            }
-            RedefinitionCheckKind::ConstructorExpressionResultFeature => {
-                RedefinitionCheckPrerequisite::ConstructorResultAndInstantiatedTypeFeatures
-            }
-            RedefinitionCheckKind::FeatureChainExpressionSourceTarget => {
-                RedefinitionCheckPrerequisite::FeatureChainSourceTarget
-            }
-            RedefinitionCheckKind::FeatureChainExpressionTarget => {
-                RedefinitionCheckPrerequisite::FeatureChainSourceTargetAndLibraryAnchor
-            }
-            RedefinitionCheckKind::ActionUsageStateAction => {
-                RedefinitionCheckPrerequisite::StateSubactionMembershipAndKind
-            }
-            RedefinitionCheckKind::AssignmentActionUsageAccessedFeature
-            | RedefinitionCheckKind::AssignmentActionUsageReferent
-            | RedefinitionCheckKind::AssignmentActionUsageStartingAt => {
-                RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints
-            }
-            RedefinitionCheckKind::ForLoopActionUsageVar => {
-                RedefinitionCheckPrerequisite::ForLoopVariableProjection
-            }
-            RedefinitionCheckKind::RequirementUsageObjective => {
-                RedefinitionCheckPrerequisite::ObjectiveMembershipAndCaseObjective
-            }
-            RedefinitionCheckKind::RenderingUsage => {
-                RedefinitionCheckPrerequisite::ViewRenderingMembership
-            }
-        };
-        self.resolved_outcome(RedefinitionCheckOutcome::Unsupported { prerequisite })
     }
 
     /// Returns the first unpublished canonical input for one exact specialization predicate.

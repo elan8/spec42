@@ -1282,20 +1282,11 @@ fn parse_redefinition_check_prerequisite(
         "constructor_result_and_instantiated_type_features" => {
             Ok(RedefinitionCheckPrerequisite::ConstructorResultAndInstantiatedTypeFeatures)
         }
-        "feature_chain_source_target" => {
-            Ok(RedefinitionCheckPrerequisite::FeatureChainSourceTarget)
-        }
-        "feature_chain_source_target_and_library_anchor" => {
-            Ok(RedefinitionCheckPrerequisite::FeatureChainSourceTargetAndLibraryAnchor)
-        }
         "state_subaction_membership_and_kind" => {
             Ok(RedefinitionCheckPrerequisite::StateSubactionMembershipAndKind)
         }
         "assignment_action_input_parameter_endpoints" => {
             Ok(RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints)
-        }
-        "for_loop_variable_projection" => {
-            Ok(RedefinitionCheckPrerequisite::ForLoopVariableProjection)
         }
         "objective_membership_and_case_objective" => {
             Ok(RedefinitionCheckPrerequisite::ObjectiveMembershipAndCaseObjective)

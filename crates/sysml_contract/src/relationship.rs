@@ -180,11 +180,8 @@ pub enum RedefinitionCheckPrerequisite {
     ParameterDirectionAndInheritedPosition,
     FunctionOrExpressionResult,
     ConstructorResultAndInstantiatedTypeFeatures,
-    FeatureChainSourceTarget,
-    FeatureChainSourceTargetAndLibraryAnchor,
     StateSubactionMembershipAndKind,
     AssignmentActionInputParameterEndpoints,
-    ForLoopVariableProjection,
     ObjectiveMembershipAndCaseObjective,
     ViewRenderingMembership,
 }

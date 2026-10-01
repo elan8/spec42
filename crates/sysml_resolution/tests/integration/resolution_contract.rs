@@ -3571,14 +3571,6 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
             RedefinitionCheckPrerequisite::ConstructorResultAndInstantiatedTypeFeatures,
         ),
         (
-            RedefinitionCheckKind::FeatureChainExpressionSourceTarget,
-            RedefinitionCheckPrerequisite::FeatureChainSourceTarget,
-        ),
-        (
-            RedefinitionCheckKind::FeatureChainExpressionTarget,
-            RedefinitionCheckPrerequisite::FeatureChainSourceTargetAndLibraryAnchor,
-        ),
-        (
             RedefinitionCheckKind::ActionUsageStateAction,
             RedefinitionCheckPrerequisite::StateSubactionMembershipAndKind,
         ),
@@ -3593,10 +3585,6 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
         (
             RedefinitionCheckKind::AssignmentActionUsageStartingAt,
             RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints,
-        ),
-        (
-            RedefinitionCheckKind::ForLoopActionUsageVar,
-            RedefinitionCheckPrerequisite::ForLoopVariableProjection,
         ),
         (
             RedefinitionCheckKind::RequirementUsageObjective,
@@ -3616,6 +3604,23 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
                 QueryAnswer::Resolved(RedefinitionCheckOutcome::Unsupported { prerequisite }),
             ),
             "{rule:?} must expose its first missing canonical prerequisite rather than infer a relationship"
+        );
+    }
+    // Checks whose role facts are published are evaluated, never reported as unsupported. This
+    // model has no for loop or feature chain expression, so each holds vacuously; the snapshot
+    // corpus carries the occupied cases.
+    for rule in [
+        RedefinitionCheckKind::FeatureChainExpressionSourceTarget,
+        RedefinitionCheckKind::FeatureChainExpressionTarget,
+        RedefinitionCheckKind::ForLoopActionUsageVar,
+    ] {
+        assert_eq!(
+            published.redefinition_check(rule),
+            QueryOutcome::new(
+                published.completeness(),
+                QueryAnswer::Resolved(RedefinitionCheckOutcome::Satisfied),
+            ),
+            "{rule:?} is evaluated over its published role facts"
         );
     }
 }

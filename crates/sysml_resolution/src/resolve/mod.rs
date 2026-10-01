@@ -5,6 +5,7 @@ pub(crate) mod implied;
 pub(crate) mod library_seed;
 pub(crate) mod names;
 pub(crate) mod results;
+pub(crate) mod role_redefinitions;
 
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::Declaration;

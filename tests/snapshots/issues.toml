@@ -55,28 +55,16 @@ owner = "spec42-semantic"
 summary = "ConstructorExpression result-owned-feature and instantiatedType public-feature endpoints are not published for checkConstructorExpressionResultFeatureRedefinition."
 
 [[issue]]
-id = "lowering-gap-redefinition-feature-chain-source-target"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "FeatureChainExpression sourceTargetFeature and targetFeature are not canonical endpoint facts, preventing both feature-chain redefinition checks from consuming authored or implied Redefinition edges."
-
-[[issue]]
 id = "lowering-gap-redefinition-state-subaction-membership"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "StateSubactionMembership identity and entry/do/exit kind are not published with an ActionUsage source for checkActionUsageStateActionRedefinition."
+summary = "Declared and referencing entry/do/exit actions now publish their StateSubaction role and implied States::StateAction::entryAction/doAction/exitAction redefinitions, but a bare `entry;` (an EmptyActionUsage) and the effect forms (`entry assign ...;`, `do send ...;`, `do accept ...;`) are not lowered as StateSubactionMembership members, so checkActionUsageStateActionRedefinition cannot enumerate every occupant."
 
 [[issue]]
 id = "lowering-gap-redefinition-assignment-input-parameters"
 kind = "lowering_gap"
 owner = "spec42-semantic"
 summary = "AssignmentActionUsage inputParameter(1), its nested owned features, and referent endpoints are not canonical facts for the three assignment redefinition checks."
-
-[[issue]]
-id = "lowering-gap-redefinition-for-loop-variable"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "ForLoopActionUsage loopVariable is not published as an addressable canonical feature for checkForLoopActionUsageVarRedefinition."
 
 [[issue]]
 id = "lowering-gap-redefinition-objective-case-endpoints"
@@ -88,7 +76,7 @@ summary = "ObjectiveMembership and CaseDefinition/CaseUsage objectiveRequirement
 id = "lowering-gap-redefinition-view-rendering-membership"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "ViewRenderingMembership ownership is not published with a RenderingUsage source for checkRenderingUsageRedefinition."
+summary = "The pinned parser's ViewRenderingUsage AST drops whether the `rendering` keyword was written and parses the ReferenceSubsetting shorthand target (`render asTreeDiagram;`) as a declared name, so lowering cannot publish the ViewRenderingMembership RenderingUsage (or its reference) faithfully for checkRenderingUsageRedefinition; `render` members stay unsupported syntax."
 
 [[issue]]
 id = "lowering-gap-type-featuring-multiplicity-owner"

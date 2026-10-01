@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Library-anchored implied redefinitions.** A `for` loop variable now redefines
+  `Actions::ForLoopAction::var`, a feature-chain expression's source target redefines
+  `ControlFunctions::'.'::source::target`, and an `entry`/`do`/`exit` action redefines
+  `States::StateAction::entryAction`/`doAction`/`exitAction`, as implied relationships published
+  alongside any authored redefinition. The KerML/SysML `checkForLoopActionUsageVarRedefinition`
+  and both feature-chain redefinition checks are now evaluated instead of reported unsupported.
+
 - **KerML association, connector, flow and end-feature validations.** New diagnostics check KerML
   1.0 8.3.3.3.4 / 8.3.4.4.2 / 8.3.4.5.2-3 / 8.3.4.9.2: an end feature with a non-1..1 multiplicity
   (`end_feature_multiplicity_not_one`), an association end without exactly one type
