@@ -19,6 +19,7 @@ use crate::resolve::results::InvocationExpressionProjectionStatus;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
+use crate::resolve::results::TransitionSuccessionSourceStatus;
 
 use crate::{
     BindingConnectorCheckKind, BindingConnectorValidationOutcome,
@@ -49,6 +50,9 @@ pub(crate) enum ImpliedBindingRule {
     /// `checkInvocationExpressionBehaviorBindingConnector` (KerML 8.3.4.8.8): an invocation of a
     /// non-Function binds the expression itself to its `result`.
     InvocationExpressionBehavior,
+    /// `checkTransitionUsageSourceBindingConnector` (SysML 8.3.18.9): a TransitionUsage binds its
+    /// `source` to its first input parameter.
+    TransitionUsageSource,
 }
 
 /// The canonical `featuringType` of a FeatureValue binding connector.
@@ -212,7 +216,8 @@ impl BindingConnectorIndex {
         match rule {
             BindingConnectorCheckKind::FeatureValue
             | BindingConnectorCheckKind::FeatureReferenceExpression
-            | BindingConnectorCheckKind::InvocationExpressionBehavior => {
+            | BindingConnectorCheckKind::InvocationExpressionBehavior
+            | BindingConnectorCheckKind::TransitionUsageSource => {
                 if self.undecided.contains(&rule) {
                     return BindingConnectorValidationOutcome::Unresolved;
                 }
@@ -267,12 +272,6 @@ impl BindingConnectorIndex {
                 BindingConnectorValidationOutcome::Unsupported {
                     prerequisite:
                         BindingConnectorValidationPrerequisite::AcceptActionUsageReceiverEndpointFacts,
-                }
-            }
-            BindingConnectorCheckKind::TransitionUsageSource => {
-                BindingConnectorValidationOutcome::Unsupported {
-                    prerequisite:
-                        BindingConnectorValidationPrerequisite::TransitionUsageSourceEndpointFacts,
                 }
             }
             BindingConnectorCheckKind::TransitionUsageSuccession => {
@@ -376,8 +375,43 @@ fn required_implied_bindings(
                 });
             }
         }
+        BindingConnectorCheckKind::TransitionUsageSource => {
+            let parameters = transition_source_parameters(storage);
+            for projection in resolution.transition_succession_source_projections.iter() {
+                let (Some(source), Some(parameter)) = (
+                    projection.transition_source,
+                    parameters.get(&projection.transition),
+                ) else {
+                    continue;
+                };
+                required.push(RequiredBinding {
+                    origin: BindingConnectorOrigin::Implied {
+                        owner: projection.transition,
+                        rule: ImpliedBindingRule::TransitionUsageSource,
+                    },
+                    left: source,
+                    right: *parameter,
+                });
+            }
+        }
         _ => {}
     }
+}
+
+/// Each TransitionUsage's first input parameter, by transition.
+fn transition_source_parameters(
+    storage: &SemanticModelStorage,
+) -> std::collections::BTreeMap<DeclarationId, DeclarationId> {
+    storage
+        .declarations
+        .iter()
+        .zip(storage.declaration_facts.iter())
+        .enumerate()
+        .filter(|(_, (_, facts))| facts.is_transition_source_parameter)
+        .filter_map(|(index, (declaration, _))| {
+            Some((declaration.owner?, DeclarationId::from_index(index).ok()?))
+        })
+        .collect()
 }
 
 /// Publishes every implied binding connector as a canonical fact with implied provenance.
@@ -396,6 +430,7 @@ fn implied_binding_connectors(
         BindingConnectorCheckKind::FeatureValue,
         BindingConnectorCheckKind::FeatureReferenceExpression,
         BindingConnectorCheckKind::InvocationExpressionBehavior,
+        BindingConnectorCheckKind::TransitionUsageSource,
     ] {
         required_implied_bindings(storage, resolution, rule, &mut required);
     }
@@ -420,5 +455,24 @@ fn implied_binding_connectors(
             == InvocationExpressionProjectionStatus::Unresolved
     {
         undecided.push(BindingConnectorCheckKind::InvocationExpressionBehavior);
+    }
+    // A transition whose `source` is not a settled authored member (an unresolved source, or the
+    // implicit previous-feature source the semantic layer does not derive yet) has an applicable
+    // binding whose endpoint is unknown.
+    let transitions = storage
+        .declarations
+        .iter()
+        .filter(|declaration| declaration.kind == DeclarationKind::Transition)
+        .count();
+    let decided = resolution
+        .transition_succession_source_projections
+        .iter()
+        .filter(|projection| projection.transition_source.is_some())
+        .count();
+    if resolution.transition_succession_source_status
+        == TransitionSuccessionSourceStatus::Unresolved
+        || decided != transitions
+    {
+        undecided.push(BindingConnectorCheckKind::TransitionUsageSource);
     }
 }

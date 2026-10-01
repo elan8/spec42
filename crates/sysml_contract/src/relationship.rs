@@ -206,7 +206,6 @@ pub enum BindingConnectorValidationPrerequisite {
     ExpressionResultEndpointFacts,
     FunctionResultEndpointFacts,
     AcceptActionUsageReceiverEndpointFacts,
-    TransitionUsageSourceEndpointFacts,
     TransitionUsageSuccessionEndpointFacts,
     SatisfyRequirementUsageEndpointFacts,
     /// The exact pinned OCL body is `TBD`, so OMG has not supplied an evaluable predicate.

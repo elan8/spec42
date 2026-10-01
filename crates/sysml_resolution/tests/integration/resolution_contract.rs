@@ -3501,10 +3501,6 @@ fn binding_connector_checks_are_manifest_scoped_and_preserve_first_missing_prere
             BindingConnectorValidationPrerequisite::AcceptActionUsageReceiverEndpointFacts,
         ),
         (
-            BindingConnectorCheckKind::TransitionUsageSource,
-            BindingConnectorValidationPrerequisite::TransitionUsageSourceEndpointFacts,
-        ),
-        (
             BindingConnectorCheckKind::TransitionUsageSuccession,
             BindingConnectorValidationPrerequisite::TransitionUsageSuccessionEndpointFacts,
         ),

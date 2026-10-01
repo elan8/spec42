@@ -1185,9 +1185,6 @@ fn parse_binding_connector_prerequisite(
         "accept_action_usage_receiver_endpoint_facts" => {
             Ok(BindingConnectorValidationPrerequisite::AcceptActionUsageReceiverEndpointFacts)
         }
-        "transition_usage_source_endpoint_facts" => {
-            Ok(BindingConnectorValidationPrerequisite::TransitionUsageSourceEndpointFacts)
-        }
         "transition_usage_succession_endpoint_facts" => {
             Ok(BindingConnectorValidationPrerequisite::TransitionUsageSuccessionEndpointFacts)
         }

@@ -608,6 +608,7 @@ impl SemanticModelBuilder {
             &node.value.target,
         )?;
         self.lower_transition_succession(document, declaration, node)?;
+        self.lower_transition_source_parameter(document, declaration, node.span)?;
         if let Some(guard) = &node.value.guard {
             let guard_expression = self.push_typed_declaration(
                 document,
@@ -782,6 +783,39 @@ impl SemanticModelBuilder {
             &node.value.target,
         )?;
         Ok(succession)
+    }
+
+    /// Publishes a TransitionUsage's first input parameter.
+    ///
+    /// The transition grammar always authors an `EmptyParameterMember` after the source member
+    /// (and before the payload parameter of an accepting transition), so every TransitionUsage
+    /// owns this anonymous `in` parameter; `checkTransitionUsageSourceBindingConnector` binds it
+    /// to the transition's `source`.
+    fn lower_transition_source_parameter(
+        &mut self,
+        document: DocumentIdx,
+        transition: DeclarationId,
+        span: Span,
+    ) -> Result<DeclarationId, ConstructionError> {
+        let parameter = self.push_typed_declaration(
+            document,
+            Some(transition),
+            DeclarationKind::ParameterUsage,
+            None,
+            span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::In),
+                is_transition_source_parameter: true,
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            parameter,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
+        Ok(parameter)
     }
 
     /// Publishes the `AcceptActionUsage` owned through a transition's typed trigger membership.
