@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Assignment target parameters.** An `assign` now owns its `target` parameter, whose
+  `startingAt` feature owns the `accessedFeature`. They redefine the library's
+  `startingAt`/`accessedFeature`, and the accessed feature redefines the assignment's referent, so
+  SysML `checkAssignmentActionUsageStartingAtRedefinition`,
+  `checkAssignmentActionUsageAccessedFeatureRedefinition` and
+  `checkAssignmentActionUsageReferentRedefinition` are evaluated.
+
 - **Result redefinitions.** A Function's or Expression's result now redefines the result of
   every Function or Expression its owner directly specializes, including the result it inherits
   (KerML `checkFeatureResultRedefinition`): a calculation's `return` redefines

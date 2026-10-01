@@ -1261,9 +1261,6 @@ fn parse_redefinition_check_prerequisite(
         "state_subaction_membership_and_kind" => {
             Ok(RedefinitionCheckPrerequisite::StateSubactionMembershipAndKind)
         }
-        "assignment_action_input_parameter_endpoints" => {
-            Ok(RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints)
-        }
         "view_rendering_membership" => Ok(RedefinitionCheckPrerequisite::ViewRenderingMembership),
         "rule_not_published" => Ok(RedefinitionCheckPrerequisite::RuleNotPublished),
         _ => Err(format!(

@@ -671,6 +671,7 @@ mod tests {
             unit_tokens: Box::new([]),
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
+            assignments: Box::new([]),
             owned_end_features: Box::new([]),
         };
         let rule = GENERATED_CONDITIONAL_LIBRARY_SPECIALIZATION_RULES
@@ -786,6 +787,7 @@ mod tests {
             unit_tokens: Box::new([]),
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
+            assignments: Box::new([]),
             owned_end_features: [(1, 2), (1, 3), (4, 5)]
                 .map(|(owner, end)| OwnedEndRecord {
                     owner: id(owner),
@@ -970,6 +972,7 @@ mod tests {
                 predicate: FilterPredicate::Unsupported,
             }]),
             invocations: Box::new([]),
+            assignments: Box::new([]),
             owned_end_features: Box::new([]),
         }
     }
@@ -1060,6 +1063,7 @@ mod tests {
             unit_tokens: Box::new([]),
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
+            assignments: Box::new([]),
             owned_end_features: Box::new([]),
         }
     }
@@ -1148,6 +1152,7 @@ mod tests {
             unit_tokens: Box::new([]),
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
+            assignments: Box::new([]),
             owned_end_features: Box::new([]),
         }
     }

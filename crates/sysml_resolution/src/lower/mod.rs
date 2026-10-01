@@ -166,6 +166,7 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) unit_tokens: Vec<AuthoredUnitToken>,
     pub(crate) filter_conditions: Vec<AuthoredFilterCondition>,
     pub(crate) invocations: Vec<AuthoredInvocation>,
+    pub(crate) assignments: Vec<crate::lower::facts::AssignmentRecord>,
     /// Owned end Features in lowering order; sorted stably by owner at the freeze barrier.
     pub(crate) owned_end_features: Vec<OwnedEndRecord>,
     pub(crate) symbols: SymbolTableBuilder,
@@ -1758,6 +1759,7 @@ impl SemanticModelBuilder {
             unit_tokens: self.unit_tokens.into_boxed_slice(),
             filter_conditions: self.filter_conditions.into_boxed_slice(),
             invocations: self.invocations.into_boxed_slice(),
+            assignments: self.assignments.into_boxed_slice(),
             owned_end_features: {
                 let mut ends = self.owned_end_features;
                 // Lowering walks each owner's body once in source order, so a stable sort by

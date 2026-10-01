@@ -980,6 +980,11 @@ pub(crate) fn synthesize_implied_relationships(
         resolution,
         &anchors.roles,
     )?);
+    implied.extend(
+        crate::resolve::role_redefinitions::synthesize_assignment_referent_redefinitions(
+            storage, resolution,
+        )?,
+    );
     implied.sort_by_key(|relationship| {
         (
             relationship.kind,

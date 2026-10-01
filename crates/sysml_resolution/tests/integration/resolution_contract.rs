@@ -3543,18 +3543,6 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
             RedefinitionCheckPrerequisite::StateSubactionMembershipAndKind,
         ),
         (
-            RedefinitionCheckKind::AssignmentActionUsageAccessedFeature,
-            RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints,
-        ),
-        (
-            RedefinitionCheckKind::AssignmentActionUsageReferent,
-            RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints,
-        ),
-        (
-            RedefinitionCheckKind::AssignmentActionUsageStartingAt,
-            RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints,
-        ),
-        (
             RedefinitionCheckKind::RenderingUsage,
             RedefinitionCheckPrerequisite::ViewRenderingMembership,
         ),
@@ -3571,13 +3559,16 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
         );
     }
     // Checks whose role facts are published are evaluated, never reported as unsupported. This
-    // model has no end feature, for loop, feature chain expression, case objective or result, so
-    // each holds vacuously; the snapshot
+    // model has no end feature, for loop, feature chain expression, case objective, result or
+    // assignment, so each holds vacuously; the snapshot
     // corpus carries the occupied cases.
     for rule in [
         RedefinitionCheckKind::FeatureEnd,
         RedefinitionCheckKind::FeatureOwnedCrossFeatureSpecialization,
         RedefinitionCheckKind::FeatureResult,
+        RedefinitionCheckKind::AssignmentActionUsageAccessedFeature,
+        RedefinitionCheckKind::AssignmentActionUsageReferent,
+        RedefinitionCheckKind::AssignmentActionUsageStartingAt,
         RedefinitionCheckKind::FeatureChainExpressionSourceTarget,
         RedefinitionCheckKind::FeatureChainExpressionTarget,
         RedefinitionCheckKind::ForLoopActionUsageVar,

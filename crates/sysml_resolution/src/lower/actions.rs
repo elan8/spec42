@@ -1,5 +1,7 @@
 //! Phase 2 lowering — behaviour: action definitions and usages, control nodes, flows, performs.
 
+use crate::lower::facts::ParameterDirection;
+use crate::model::AuthoredReferenceId;
 use crate::lower::facts::definition_prefix_modifiers;
 use crate::lower::facts::definition_prefix_node_modifiers;
 use crate::lower::facts::direction_fact;
@@ -918,7 +920,21 @@ impl SemanticModelBuilder {
         kind: ReferenceKind,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
-        match &node.value {
+        self.lower_succession_end_reference(document, owner, family, kind, node)?;
+        Ok(())
+    }
+
+    /// [`Self::lower_succession_end`], returning the one reference it pushed for the end, if the
+    /// end's shape is one it resolves.
+    pub(crate) fn lower_succession_end_reference(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        kind: ReferenceKind,
+        node: &Node<Expression>,
+    ) -> Result<Option<AuthoredReferenceId>, ConstructionError> {
+        Ok(match &node.value {
             Expression::FeatureRef(target) => {
                 let span = self.documents[document.index()]
                     .parsed
@@ -926,7 +942,7 @@ impl SemanticModelBuilder {
                     .ok_or(ConstructionError::InvalidParserReference)?
                     .metadata
                     .span;
-                self.push_reference(PendingReference {
+                Some(self.push_reference(PendingReference {
                     source: owner,
                     kind,
                     document,
@@ -934,19 +950,20 @@ impl SemanticModelBuilder {
                     flags: RelationshipFlags::default(),
                     span,
                     import: None,
-                })?;
+                })?)
             }
             Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
-                if self
-                    .push_member_access_expression(owner, document, node)?
-                    .is_none()
-                {
+                let reference = self.push_member_access_expression(owner, document, node)?;
+                if reference.is_none() {
                     self.push_unsupported(document, family, node.span);
                 }
+                reference
             }
-            _ => self.push_unsupported(document, family, node.span),
-        }
-        Ok(())
+            _ => {
+                self.push_unsupported(document, family, node.span);
+                None
+            }
+        })
     }
 
     /// Lowers a `decide`/`merge`/`fork`/`join` control node (BNF `DecisionStmt`/`MergeStmt`/
@@ -1234,13 +1251,67 @@ impl SemanticModelBuilder {
             Visibility::Default,
             span,
         )?;
-        self.lower_succession_end(
+        let referent = self.lower_succession_end_reference(
             document,
             declaration,
             family,
             ReferenceKind::AssignTarget,
             &node.lhs,
         )?;
+        // The target parameter and the two Features it owns (`TargetParameter`/`TargetFeature`/
+        // `TargetAccessedFeatureMember`), each spanning the authored target.
+        let target_parameter = self.push_typed_declaration(
+            document,
+            Some(declaration),
+            DeclarationKind::ParameterUsage,
+            None,
+            node.lhs.span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::In),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            target_parameter,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.lhs.span,
+        )?;
+        let starting_at = self.push_typed_declaration(
+            document,
+            Some(target_parameter),
+            DeclarationKind::KermlFeature,
+            None,
+            node.lhs.span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            starting_at,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.lhs.span,
+        )?;
+        let accessed_feature = self.push_typed_declaration(
+            document,
+            Some(starting_at),
+            DeclarationKind::ReferenceUsage,
+            None,
+            node.lhs.span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            accessed_feature,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.lhs.span,
+        )?;
+        self.assignments.push(crate::lower::facts::AssignmentRecord {
+            assignment: declaration,
+            target_parameter,
+            starting_at,
+            accessed_feature,
+            referent,
+        });
         self.push_evaluation_fact(
             declaration,
             self.constraint_expression_site(document, &node.rhs.value),

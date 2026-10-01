@@ -54,6 +54,8 @@ pub(crate) struct SemanticModelStorage {
     pub(crate) unit_tokens: Box<[AuthoredUnitToken]>,
     pub(crate) filter_conditions: Box<[AuthoredFilterCondition]>,
     pub(crate) invocations: Box<[AuthoredInvocation]>,
+    /// Every `assign` and the Features of its target parameter, in lowering order.
+    pub(crate) assignments: Box<[crate::lower::facts::AssignmentRecord]>,
     /// Every Type's owned end Features, grouped by owner and in authored order within an owner.
     ///
     /// The one canonical representation of KerML `Type::ownedEndFeature` (and so of the owned

@@ -106,12 +106,14 @@ impl<D> SemanticModel<D> {
                 }
             }
             RedefinitionCheckKind::AssignmentActionUsageAccessedFeature
-            | RedefinitionCheckKind::AssignmentActionUsageReferent
             | RedefinitionCheckKind::AssignmentActionUsageStartingAt => {
-                RedefinitionCheckOutcome::Unsupported {
-                    prerequisite:
-                        RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints,
+                match self.assignments_without_target_parameter() {
+                    true => RedefinitionCheckOutcome::Unresolved,
+                    false => self.library_role_check(kind),
                 }
+            }
+            RedefinitionCheckKind::AssignmentActionUsageReferent => {
+                self.assignment_referent_check()
             }
             RedefinitionCheckKind::RequirementUsageObjective => self.objective_redefinition_check(),
             RedefinitionCheckKind::RenderingUsage => RedefinitionCheckOutcome::Unsupported {
@@ -294,6 +296,51 @@ impl<D> SemanticModel<D> {
                     Ok(CrossFeature::Unpublished) | Err(_) => None,
                 });
             }
+        }
+        tally.outcome()
+    }
+
+    /// Whether some AssignmentActionUsage has no lowered target parameter: an `assign` effect of a
+    /// transition is not lowered beyond its own declaration, so its `startingAt`,
+    /// `accessedFeature` and referent are not facts of this publication.
+    fn assignments_without_target_parameter(&self) -> bool {
+        let lowered = self
+            .storage
+            .assignments
+            .iter()
+            .map(|assignment| assignment.assignment)
+            .collect::<BTreeSet<_>>();
+        self.storage
+            .declarations
+            .iter()
+            .enumerate()
+            .any(|(index, declaration)| {
+                declaration.kind == DeclarationKind::Assign
+                    && DeclarationId::from_index(index)
+                        .map_or(true, |assignment| !lowered.contains(&assignment))
+            })
+    }
+
+    /// SysML `checkAssignmentActionUsageReferentRedefinition`: the `accessedFeature` of every
+    /// assignment redefines the assignment's `referent`. A referent that did not settle, or an
+    /// assignment whose target parameter is not lowered, answers unresolved.
+    fn assignment_referent_check(&self) -> RedefinitionCheckOutcome {
+        let mut tally = CheckTally::default();
+        if self.assignments_without_target_parameter() {
+            tally.require(None);
+        }
+        for assignment in self.storage.assignments.iter() {
+            tally.require(
+                match assignment
+                    .referent
+                    .and_then(|referent| self.resolution.outcome(referent))
+                {
+                    Some(ResolutionStatus::Resolved(referent)) => {
+                        Some(self.redefines(assignment.accessed_feature, referent))
+                    }
+                    _ => None,
+                },
+            );
         }
         tally.outcome()
     }

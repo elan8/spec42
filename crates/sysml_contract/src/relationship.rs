@@ -178,7 +178,6 @@ pub enum RedefinitionCheckPrerequisite {
     ParameterDirectionAndInheritedPosition,
     ConstructorResultAndInstantiatedTypeFeatures,
     StateSubactionMembershipAndKind,
-    AssignmentActionInputParameterEndpoints,
     ViewRenderingMembership,
 }
 

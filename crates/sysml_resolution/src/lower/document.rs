@@ -79,6 +79,7 @@ pub(crate) struct LoweredDocument {
     pub(crate) unit_tokens: Box<[AuthoredUnitToken]>,
     pub(crate) filter_conditions: Box<[AuthoredFilterCondition]>,
     pub(crate) invocations: Box<[AuthoredInvocation]>,
+    pub(crate) assignments: Box<[crate::lower::facts::AssignmentRecord]>,
     pub(crate) owned_end_features: Box<[OwnedEndRecord]>,
     /// The names this document interned, in the order the walk first interned them.
     pub(crate) symbols: SymbolTable,
@@ -125,6 +126,7 @@ pub(crate) fn lower_document(
         unit_tokens: builder.unit_tokens.into_boxed_slice(),
         filter_conditions: builder.filter_conditions.into_boxed_slice(),
         invocations: builder.invocations.into_boxed_slice(),
+        assignments: builder.assignments.into_boxed_slice(),
         owned_end_features: builder.owned_end_features.into_boxed_slice(),
         symbols: builder.symbols.freeze(),
         paths: builder.paths.freeze(),
@@ -491,6 +493,20 @@ impl SemanticModelBuilder {
                 callee: relocation.reference(invocation.callee)?,
                 argument_count: invocation.argument_count,
                 span: invocation.span,
+            });
+        }
+
+        reserve(&mut self.assignments, lowered.assignments.len())?;
+        for record in lowered.assignments.iter() {
+            self.assignments.push(crate::lower::facts::AssignmentRecord {
+                assignment: relocation.declaration(record.assignment)?,
+                target_parameter: relocation.declaration(record.target_parameter)?,
+                starting_at: relocation.declaration(record.starting_at)?,
+                accessed_feature: relocation.declaration(record.accessed_feature)?,
+                referent: record
+                    .referent
+                    .map(|referent| relocation.reference(referent))
+                    .transpose()?,
             });
         }
 

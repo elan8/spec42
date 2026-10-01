@@ -1171,6 +1171,31 @@ pub(crate) struct AuthoredInvocation {
     pub(crate) span: Span,
 }
 
+/// One `assign` (SysML `AssignmentActionUsage`) and the Features its target parameter owns.
+///
+/// The SysML grammar (`AssignmentTargetMember`/`TargetParameter`/`TargetFeature`/
+/// `TargetAccessedFeatureMember`) gives an AssignmentActionUsage a first input parameter, the
+/// `target`, whose first owned Feature is the `startingAt` feature and whose first owned Feature
+/// in turn is the `accessedFeature`. Lowering mints all three, so
+/// `checkAssignmentActionUsageStartingAtRedefinition`,
+/// `checkAssignmentActionUsageAccessedFeatureRedefinition` and
+/// `checkAssignmentActionUsageReferentRedefinition` each have a Feature to read.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct AssignmentRecord {
+    /// The AssignmentActionUsage.
+    pub(crate) assignment: DeclarationId,
+    /// Its first parameter, `target`.
+    pub(crate) target_parameter: DeclarationId,
+    /// The first owned Feature of `target`.
+    pub(crate) starting_at: DeclarationId,
+    /// The first owned Feature of `startingAt`.
+    pub(crate) accessed_feature: DeclarationId,
+    /// The reference naming the assignment's `referent` (the `AssignTarget` reference of a bare
+    /// target, the member-access reference of a dotted one), sourced at `assignment`. `None` when
+    /// the authored target is a shape lowering does not resolve, so the referent is unknown.
+    pub(crate) referent: Option<AuthoredReferenceId>,
+}
+
 /// Which instantiation expression an argument Feature belongs to.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum InstantiationForm {

@@ -51,15 +51,23 @@ pub(crate) enum LibraryRedefinitionRole {
     StateDoAction,
     /// SysML 8.3.17.4 `checkActionUsageStateActionRedefinition`, `exit` kind.
     StateExitAction,
+    /// SysML 8.3.17.5 `checkAssignmentActionUsageStartingAtRedefinition`: the first owned
+    /// Feature of an `AssignmentActionUsage`'s target parameter.
+    AssignmentStartingAt,
+    /// SysML 8.3.17.5 `checkAssignmentActionUsageAccessedFeatureRedefinition`: the first owned
+    /// Feature of the `startingAt` Feature.
+    AssignmentAccessedFeature,
 }
 
 impl LibraryRedefinitionRole {
-    pub(crate) const ALL: [Self; 5] = [
+    pub(crate) const ALL: [Self; 7] = [
         Self::ForLoopVariable,
         Self::FeatureChainSourceTarget,
         Self::StateEntryAction,
         Self::StateDoAction,
         Self::StateExitAction,
+        Self::AssignmentStartingAt,
+        Self::AssignmentAccessedFeature,
     ];
 
     /// The structural path of the library feature this role's occupant redefines, outermost
@@ -71,6 +79,22 @@ impl LibraryRedefinitionRole {
             Self::StateEntryAction => &["States", "StateAction", "entryAction"],
             Self::StateDoAction => &["States", "StateAction", "doAction"],
             Self::StateExitAction => &["States", "StateAction", "exitAction"],
+            // The OCL names `AssignmentAction::target::startingAt`, which the library declares
+            // once, on the `onOccurrence` parameter `AssignmentAction::target` redefines; the
+            // Pilot's ImplicitGeneralizationMap names the declaring feature, as here.
+            Self::AssignmentStartingAt => &[
+                "FeatureReferencingPerformances",
+                "FeatureAccessPerformance",
+                "onOccurrence",
+                "startingAt",
+            ],
+            Self::AssignmentAccessedFeature => &[
+                "FeatureReferencingPerformances",
+                "FeatureAccessPerformance",
+                "onOccurrence",
+                "startingAt",
+                "accessedFeature",
+            ],
         }
     }
 
@@ -81,6 +105,10 @@ impl LibraryRedefinitionRole {
             Self::FeatureChainSourceTarget => RedefinitionCheckKind::FeatureChainExpressionTarget,
             Self::StateEntryAction | Self::StateDoAction | Self::StateExitAction => {
                 RedefinitionCheckKind::ActionUsageStateAction
+            }
+            Self::AssignmentStartingAt => RedefinitionCheckKind::AssignmentActionUsageStartingAt,
+            Self::AssignmentAccessedFeature => {
+                RedefinitionCheckKind::AssignmentActionUsageAccessedFeature
             }
         }
     }
@@ -134,6 +162,8 @@ pub(crate) struct LibraryRoleOccupant {
 /// - A feature chain expression's source-target feature is its lowered `source_target`.
 /// - An `entry`/`do`/`exit` action is the member of a `StateSubactionMembership`; the kind is the
 ///   membership role, never the declaration's name.
+/// - An assignment's `startingAt` and `accessedFeature` are the Features of its lowered
+///   [`crate::lower::facts::AssignmentRecord`].
 pub(crate) fn library_role_occupants(
     storage: &SemanticModelStorage,
 ) -> Result<Vec<LibraryRoleOccupant>, ResolutionError> {
@@ -169,6 +199,16 @@ pub(crate) fn library_role_occupants(
                 role: LibraryRedefinitionRole::FeatureChainSourceTarget,
             }),
     );
+    for assignment in storage.assignments.iter() {
+        occupants.push(LibraryRoleOccupant {
+            source: assignment.starting_at,
+            role: LibraryRedefinitionRole::AssignmentStartingAt,
+        });
+        occupants.push(LibraryRoleOccupant {
+            source: assignment.accessed_feature,
+            role: LibraryRedefinitionRole::AssignmentAccessedFeature,
+        });
+    }
     occupants.sort_unstable();
     occupants.dedup();
     Ok(occupants)
@@ -212,6 +252,31 @@ pub(crate) fn synthesize_library_role_redefinitions(
                 target: *anchor,
             });
         }
+    }
+    Ok(implied)
+}
+
+/// Synthesizes `checkAssignmentActionUsageReferentRedefinition`: the `accessedFeature` of every
+/// assignment redefines the assignment's `referent`, as the Pilot's `FeatureAdapter.
+/// addFeatureWriteTypes` adds it. An assignment whose referent did not settle yields no edge; the
+/// check reports it unresolved. An authored edge to the same target is not restated.
+pub(crate) fn synthesize_assignment_referent_redefinitions(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> Result<Vec<ImpliedRelationship>, ResolutionError> {
+    let mut implied = Vec::new();
+    for assignment in storage.assignments.iter() {
+        let Some(ResolutionStatus::Resolved(referent)) = assignment
+            .referent
+            .and_then(|referent| resolution.outcome(referent))
+        else {
+            continue;
+        };
+        implied.push(ImpliedRelationship {
+            kind: ReferenceKind::Redefinition,
+            source: assignment.accessed_feature,
+            target: referent,
+        });
     }
     Ok(implied)
 }
