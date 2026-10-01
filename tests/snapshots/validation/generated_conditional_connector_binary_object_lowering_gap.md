@@ -1,13 +1,13 @@
 # META
 ~~~ini
-description=Connector binary-object specialization remains explicit until KerML connector bodies publish a positional connector-end collection
+description=Connector binary-object specialization implies Objects::binaryLinkObjects for a two-ended connector typed by an association structure
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=kerml-1.0:8.3.4.5.3:checkConnectorBinaryObjectSpecialization
-blocked_by=lowering-gap-kerml-connector-positional-end-collection
+blocked_by=semantic-connector-binary-object-specialization-contract
 type=file
 libraries=standard
 ~~~

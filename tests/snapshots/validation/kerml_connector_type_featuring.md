@@ -7,7 +7,7 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=kerml-1.0:8.3.4.5.3:checkConnectorTypeFeaturing
-blocked_by=lowering-gap-type-featuring-connector-related-features
+blocked_by=semantic-connector-context-featuring-type
 type=file
 ~~~
 # SOURCE
@@ -17,8 +17,11 @@ package Connectors {
     classifier Holder {
         feature a : Thing;
         feature b : Thing;
-        connector pair { end feature e1 ::> a; end feature e2 ::> b; }
     }
+
+    // A connector with no owning type is featured by the innermost featuring type its related
+    // features share, so each related feature is featured within it.
+    connector pair { end feature e1 ::> Holder::a; end feature e2 ::> Holder::b; }
 }
 ~~~
 # EXPECTED SEMANTICS
@@ -26,7 +29,7 @@ package Connectors {
 (fixture-semantics
   (relationship
     (kind type_featuring)
-    (source "Connectors::Holder::pair::e1")
+    (source "Connectors::pair")
     (target "Connectors::Holder")
     (provenance implied)
     (outcome resolved)))
@@ -43,16 +46,16 @@ package Connectors {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:45abbace78763492b2592c9e97237c945b256fd13e3af3ca8acc69564d10c483"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:85ae814fb2b1c28efee97f9d6767e862d6a9af7aeff124209703e5e6211c896b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair"))) (kind kerml-connector) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e1"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "a")))))
-    (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e2"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "b")))))
     (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair"))) (kind kerml-connector) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e1"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "Holder::a")))))
+    (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e2"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "Holder::b")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a"))) (kind featureTyping) (ordinal 0))
@@ -61,23 +64,22 @@ package Connectors {
     (reference (id (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b"))) (kind featureTyping) (ordinal 0))
       (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")))))
-    (reference (id (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e1"))) (kind referenceSubsetting) (ordinal 0))
-      (authored-target "a")
+    (reference (id (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e1"))) (kind referenceSubsetting) (ordinal 0))
+      (authored-target "Holder::a")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a")))))
-    (reference (id (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e2"))) (kind referenceSubsetting) (ordinal 0))
-      (authored-target "b")
+    (reference (id (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e2"))) (kind referenceSubsetting) (ordinal 0))
+      (authored-target "Holder::b")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b")))))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a"))) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b"))) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e1"))) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e1"))) (kind referenceSubsetting) (ordinal 0)))
-    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e2"))) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e2"))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e1"))) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e1"))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e2"))) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e2"))) (kind referenceSubsetting) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a"))) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b"))) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair"))) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e1"))) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e2"))) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e1"))) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e2"))) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair"))) (provenance implied))
   )
   (evaluation
   )
@@ -91,40 +93,37 @@ package Connectors {
       (type (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")) (source direct))
       (supertype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")) (scopes any))
-      (subtype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e1")) (scopes any feature))
+      (subtype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e1")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b")))
       (featured-by (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder")))
       (type (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")) (source direct))
       (supertype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")) (scopes any))
-      (subtype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e2")) (scopes any feature))
-    )
-    (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair")))
-      (featured-by (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder")))
-    )
-    (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e1")))
-      (featured-by (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair")))
-      (effective-type (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a"))))
-      (supertype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")) (scopes any))
-    )
-    (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e2")))
-      (featured-by (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair")))
-      (effective-type (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b"))))
-      (supertype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")) (scopes any))
+      (subtype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e2")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")))
       (subtype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a")) (scopes any))
       (subtype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e1")))
+      (featured-by (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair")))
+      (effective-type (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a"))))
+      (supertype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e2")))
+      (featured-by (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair")))
+      (effective-type (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b"))))
+      (supertype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")) (scopes any))
     )
 )
 ~~~
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair"))) (kind connection))
+  (connector (id (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair"))) (kind connection))
 )
 ~~~
 # NAVIGATION
@@ -140,13 +139,13 @@ package Connectors {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_connector_type_featuring.md") (range (start 5 44) (end 5 45)) (probe (position 5 44))
-    (reference (id (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e1"))) (kind referenceSubsetting) (ordinal 0) (authored-target "a")
+  (query (document "memory://snapshot/kerml_connector_type_featuring.md") (range (start 9 40) (end 9 49)) (probe (position 9 40))
+    (reference (id (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e1"))) (kind referenceSubsetting) (ordinal 0) (authored-target "Holder::a")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::a")))))
     )
   )
-  (query (document "memory://snapshot/kerml_connector_type_featuring.md") (range (start 5 66) (end 5 67)) (probe (position 5 66))
-    (reference (id (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::pair::e2"))) (kind referenceSubsetting) (ordinal 0) (authored-target "b")
+  (query (document "memory://snapshot/kerml_connector_type_featuring.md") (range (start 9 70) (end 9 79)) (probe (position 9 70))
+    (reference (id (source (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::pair::e2"))) (kind referenceSubsetting) (ordinal 0) (authored-target "Holder::b")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_connector_type_featuring.md") (qualified-name "Connectors::Holder::b")))))
     )
   )
