@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Every invocation is its own expression.** A nested invocation or constructor (`f(g(x))`,
+  `new A(new B())`), and one written directly in a constraint, calculation or filter body, is now
+  its own Expression with its own result and argument features. A nested callee no longer types
+  the expression it is nested in, a nested constructor settles its own instantiated type, and a
+  calculation or constraint callee is classified as a Function, so its invocation's result is not
+  typed by it. A subject, actor or stakeholder named as an argument is an `in` parameter.
+
 - **Instantiation argument validation.** Each argument of a feature value's top-level invocation
   or `new T(...)` is now an argument feature, and a named argument redefines the parameter it
   names, resolved among the invoked type's members. New diagnostics check KerML

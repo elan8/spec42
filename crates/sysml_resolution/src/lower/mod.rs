@@ -106,8 +106,8 @@ pub(crate) struct FeatureValueEndpoints {
 /// `record_feature_value` mints the value Expression and knows its top-level syntax node; the
 /// expression walker that later lowers that node pushes the callee reference. The argument
 /// Features are minted there, where the callee reference that scopes a named argument exists, and
-/// only for the node recorded here -- a nested invocation shares its enclosing expression
-/// declaration and owns no argument Features.
+/// only for the node recorded here; every other instantiation expression is minted as its own
+/// element by [`SemanticModelBuilder::enter_instantiation`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct PendingInstantiation {
     pub(crate) expression: DeclarationId,
@@ -116,6 +116,16 @@ pub(crate) struct PendingInstantiation {
     pub(crate) form: crate::lower::facts::InstantiationForm,
     /// The top-level expression node's span, identifying the node within `expression`.
     pub(crate) span: Span,
+}
+
+/// An instantiation expression whose arguments are being lowered: nested instantiations written
+/// at the same evaluation site are owned by the innermost one.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct InstantiationScope {
+    /// The evaluation site the expression walker sources operand references at.
+    pub(crate) site: DeclarationId,
+    /// The InvocationExpression / ConstructorExpression element.
+    pub(crate) element: DeclarationId,
 }
 
 /// One buffered body-less `#tag` prefix metadata keyword awaiting binding to the member it
@@ -146,6 +156,7 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) expression_arguments: Vec<ExpressionArgumentRecord>,
     pub(crate) constructor_expressions: Vec<ConstructorExpressionRecord>,
     pub(crate) pending_instantiations: Vec<PendingInstantiation>,
+    pub(crate) instantiation_scopes: Vec<InstantiationScope>,
     pub(crate) feature_chain_expressions: Vec<FeatureChainExpressionRecord>,
     pub(crate) feature_reference_expressions: Vec<FeatureReferenceExpressionRecord>,
     pub(crate) metadata_annotations: Vec<MetadataAnnotationRecord>,
@@ -1251,29 +1262,138 @@ impl SemanticModelBuilder {
         }
     }
 
-    /// Mints the argument Features of the instantiation expression `node` when it is the recorded
-    /// top-level expression of `declaration` (see [`PendingInstantiation`]).
+    /// Lowers the head of the instantiation expression `node` (an `Expression::Invocation` or
+    /// `Expression::Constructor`) written at the evaluation site `site`, and returns whether it
+    /// opened an instantiation scope the caller must close with [`Self::leave_instantiation`] once
+    /// it has lowered the arguments.
     ///
-    /// Each argument becomes an anonymous `in` Feature of the container at its authored position.
-    /// A named argument's parameter is an authored Redefinition resolved among the members of the
-    /// settled `callee` (a lookup that starts from the callee reference's target, recorded as a
-    /// root [`MemberAccessNarrowing`]).
-    pub(crate) fn lower_instantiation_arguments(
+    /// Every instantiation expression is its own KerML `InvocationExpression` /
+    /// `ConstructorExpression` element. The top-level instantiation of a FeatureValue is the value
+    /// Expression `record_feature_value` already minted (see [`PendingInstantiation`]); any other --
+    /// one nested in another expression, or written directly in a constraint, calculation, filter or
+    /// operand body -- is minted here as an anonymous Expression with its own `out` result, owned
+    /// by the innermost instantiation it is nested in at the same site (or by `site` itself). The
+    /// callee reference, the invocation record and the argument Features belong to that element,
+    /// so a nested callee never types its enclosing expression. Operand references stay sourced at
+    /// `site`: they are the evaluation site's operand slots, which evaluation pairs by ordinal.
+    ///
+    /// An invocation whose callee is a dotted member access, or a computed callee, names no callee
+    /// this helper can record, so it mints no element (see [`Self::lower_invocation_callee`]).
+    pub(crate) fn enter_instantiation(
         &mut self,
         document: DocumentIdx,
-        declaration: DeclarationId,
+        site: DeclarationId,
         node: &Node<Expression>,
+    ) -> Result<bool, ConstructionError> {
+        use crate::lower::facts::InstantiationForm;
+        let (form, target, args) = match &node.value {
+            Expression::Invocation { callee, args } => match &callee.value {
+                Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
+                    (InstantiationForm::Invocation, *target, args)
+                }
+                _ => {
+                    self.lower_invocation_callee(document, site, callee, args.len(), node.span)?;
+                    return Ok(false);
+                }
+            },
+            Expression::Constructor { type_name, args } => {
+                (InstantiationForm::Constructor, *type_name, args)
+            }
+            _ => return Ok(false),
+        };
+        let pending = self
+            .pending_instantiations
+            .iter()
+            .position(|pending| pending.expression == site && pending.span == node.span)
+            .map(|index| self.pending_instantiations.swap_remove(index));
+        let (element, container) = match pending {
+            Some(pending) => (pending.expression, pending.container),
+            None => {
+                let owner = self
+                    .instantiation_scopes
+                    .last()
+                    .filter(|scope| scope.site == site)
+                    .map_or(site, |scope| scope.element);
+                let element = self.push_typed_declaration(
+                    document,
+                    Some(owner),
+                    DeclarationKind::KermlExpression,
+                    None,
+                    node.span,
+                    DeclarationFacts::none(),
+                )?;
+                self.push_membership(
+                    element,
+                    MembershipKind::Owning,
+                    Visibility::Default,
+                    node.span,
+                )?;
+                let result = self.push_typed_declaration(
+                    document,
+                    Some(element),
+                    DeclarationKind::KermlFeature,
+                    None,
+                    node.span,
+                    DeclarationFacts {
+                        direction: Some(ParameterDirection::Out),
+                        ..DeclarationFacts::none()
+                    },
+                )?;
+                self.push_membership(
+                    result,
+                    MembershipKind::Feature,
+                    Visibility::Default,
+                    node.span,
+                )?;
+                self.declaration_facts[element.index()].expression_result = Some(result);
+                if form == InstantiationForm::Constructor {
+                    self.constructor_expressions
+                        .push(ConstructorExpressionRecord {
+                            expression: element,
+                            result,
+                        });
+                }
+                (
+                    element,
+                    match form {
+                        InstantiationForm::Invocation => element,
+                        InstantiationForm::Constructor => result,
+                    },
+                )
+            }
+        };
+        let callee = self.push_invocation_callee_reference(document, element, target)?;
+        if form == InstantiationForm::Invocation {
+            self.push_invocation(element, document, callee, args.len(), node.span)?;
+        }
+        self.mint_instantiation_arguments(document, container, form, callee, args)?;
+        self.instantiation_scopes
+            .push(InstantiationScope { site, element });
+        Ok(true)
+    }
+
+    /// Closes the instantiation scope [`Self::enter_instantiation`] opened, if it opened one.
+    pub(crate) fn leave_instantiation(&mut self, entered: bool) {
+        if entered {
+            self.instantiation_scopes.pop();
+        }
+    }
+
+    /// Mints the argument Features of one instantiation expression.
+    ///
+    /// Each argument becomes an anonymous `in` Feature of `container` (the expression for an
+    /// invocation, its result for a constructor) at its authored position. A named argument's
+    /// parameter is an authored Redefinition resolved among the members of the settled `callee` (a
+    /// lookup that starts from the callee reference's target, recorded as a root
+    /// [`MemberAccessNarrowing`]).
+    fn mint_instantiation_arguments(
+        &mut self,
+        document: DocumentIdx,
+        container: DeclarationId,
+        form: crate::lower::facts::InstantiationForm,
         callee: AuthoredReferenceId,
         args: &[sysml_v2_parser::ast::Argument],
     ) -> Result<(), ConstructionError> {
-        let Some(index) = self
-            .pending_instantiations
-            .iter()
-            .position(|pending| pending.expression == declaration && pending.span == node.span)
-        else {
-            return Ok(());
-        };
-        let pending = self.pending_instantiations.swap_remove(index);
         for (position, argument) in args.iter().enumerate() {
             // A named argument spans its parameter name through its value.
             let parameter_span = argument
@@ -1297,14 +1417,14 @@ impl SemanticModelBuilder {
             };
             let feature = self.push_typed_declaration(
                 document,
-                Some(pending.container),
+                Some(container),
                 DeclarationKind::KermlFeature,
                 None,
                 span,
                 DeclarationFacts {
                     direction: Some(ParameterDirection::In),
                     instantiation_argument: Some(crate::lower::facts::InstantiationArgument {
-                        form: pending.form,
+                        form,
                         position: u32::try_from(position)
                             .map_err(|_| ConstructionError::Capacity)?,
                         named: argument.parameter.is_some(),

@@ -637,17 +637,12 @@ impl SemanticModelBuilder {
                     self.push_unsupported(document, family, node.span);
                 }
             }
-            Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(document, owner, callee, args.len(), node.span)?;
+            Expression::Invocation { args, .. } | Expression::Constructor { args, .. } => {
+                let entered = self.enter_instantiation(document, owner, node)?;
                 for arg in args {
                     self.lower_satisfy_operand(document, owner, family, kind, &arg.value)?;
                 }
-            }
-            Expression::Constructor { type_name, args } => {
-                self.push_invocation_callee_reference(document, owner, *type_name)?;
-                for arg in args {
-                    self.lower_satisfy_operand(document, owner, family, kind, &arg.value)?;
-                }
+                self.leave_instantiation(entered);
             }
             _ => self.push_unsupported(document, family, node.span),
         }

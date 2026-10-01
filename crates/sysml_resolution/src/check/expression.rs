@@ -487,15 +487,15 @@ impl<D> SemanticModel<D> {
                 continue;
             };
             let code = if argument.form == InstantiationForm::Invocation
-                && !self
-                    .storage
-                    .declaration_facts(parameter)
-                    .is_some_and(|facts| {
-                        matches!(
-                            facts.direction,
-                            Some(ParameterDirection::In) | Some(ParameterDirection::InOut)
-                        )
-                    }) {
+                && !matches!(
+                    crate::model::element_kind::effective_direction(
+                        self.effective_membership_role(parameter),
+                        self.storage
+                            .declaration_facts(parameter)
+                            .and_then(|facts| facts.direction),
+                    ),
+                    Some(ParameterDirection::In) | Some(ParameterDirection::InOut)
+                ) {
                 DiagnosticCode::InvocationArgumentRedefinesNoParameter
             } else if !bound.insert((container, parameter)) {
                 match argument.form {

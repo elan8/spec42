@@ -1812,16 +1812,18 @@ pub(crate) fn synthesize_invocation_expression_specializations(
         if cyclic.contains(&target) {
             return None;
         }
-        let direct = storage
-            .declaration(target)
-            .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlFunction);
-        let inherited = ancestors.get(target.index()).is_some_and(|values| {
-            values.iter().any(|ancestor| {
-                storage
-                    .declaration(*ancestor)
-                    .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlFunction)
+        // A Function is any declaration whose metaclass conforms to KerML `Function`: a KerML
+        // `function` or `predicate`, and a SysML calculation or constraint definition.
+        let is_function = |declaration: DeclarationId| {
+            storage.declaration(declaration).is_some_and(|declaration| {
+                crate::model::element_kind::element_kind(declaration.kind)
+                    .conforms_to(crate::ElementKind::Function)
             })
-        });
+        };
+        let direct = is_function(target);
+        let inherited = ancestors
+            .get(target.index())
+            .is_some_and(|values| values.iter().any(|ancestor| is_function(*ancestor)));
         Some(direct || inherited)
     };
 

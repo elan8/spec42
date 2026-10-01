@@ -144,34 +144,12 @@ impl SemanticModelBuilder {
                 self.lower_constraint_expression(document, declaration, family, left)?;
                 self.lower_constraint_expression(document, declaration, family, right)
             }
-            Expression::Invocation { callee, args } => {
-                if let Some(reference) = self.lower_invocation_callee(
-                    document,
-                    declaration,
-                    callee,
-                    args.len(),
-                    node.span,
-                )? {
-                    self.lower_instantiation_arguments(
-                        document,
-                        declaration,
-                        node,
-                        reference,
-                        args,
-                    )?;
-                }
+            Expression::Invocation { args, .. } | Expression::Constructor { args, .. } => {
+                let entered = self.enter_instantiation(document, declaration, node)?;
                 for arg in args {
                     self.lower_constraint_expression(document, declaration, family, &arg.value)?;
                 }
-                Ok(())
-            }
-            Expression::Constructor { type_name, args } => {
-                let reference =
-                    self.push_invocation_callee_reference(document, declaration, *type_name)?;
-                self.lower_instantiation_arguments(document, declaration, node, reference, args)?;
-                for arg in args {
-                    self.lower_constraint_expression(document, declaration, family, &arg.value)?;
-                }
+                self.leave_instantiation(entered);
                 Ok(())
             }
             Expression::CollectionOp { base, args, .. } => {
@@ -330,34 +308,12 @@ impl SemanticModelBuilder {
                 self.lower_calc_expression(document, declaration, family, left)?;
                 self.lower_calc_expression(document, declaration, family, right)
             }
-            Expression::Invocation { callee, args } => {
-                if let Some(reference) = self.lower_invocation_callee(
-                    document,
-                    declaration,
-                    callee,
-                    args.len(),
-                    node.span,
-                )? {
-                    self.lower_instantiation_arguments(
-                        document,
-                        declaration,
-                        node,
-                        reference,
-                        args,
-                    )?;
-                }
+            Expression::Invocation { args, .. } | Expression::Constructor { args, .. } => {
+                let entered = self.enter_instantiation(document, declaration, node)?;
                 for arg in args {
                     self.lower_calc_expression(document, declaration, family, &arg.value)?;
                 }
-                Ok(())
-            }
-            Expression::Constructor { type_name, args } => {
-                let reference =
-                    self.push_invocation_callee_reference(document, declaration, *type_name)?;
-                self.lower_instantiation_arguments(document, declaration, node, reference, args)?;
-                for arg in args {
-                    self.lower_calc_expression(document, declaration, family, &arg.value)?;
-                }
+                self.leave_instantiation(entered);
                 Ok(())
             }
             Expression::CollectionOp { base, args, .. } => {
@@ -563,34 +519,12 @@ impl SemanticModelBuilder {
                 self.lower_filter_expression(document, declaration, left)?;
                 self.lower_filter_expression(document, declaration, right)
             }
-            Expression::Invocation { callee, args } => {
-                if let Some(reference) = self.lower_invocation_callee(
-                    document,
-                    declaration,
-                    callee,
-                    args.len(),
-                    node.span,
-                )? {
-                    self.lower_instantiation_arguments(
-                        document,
-                        declaration,
-                        node,
-                        reference,
-                        args,
-                    )?;
-                }
+            Expression::Invocation { args, .. } | Expression::Constructor { args, .. } => {
+                let entered = self.enter_instantiation(document, declaration, node)?;
                 for arg in args {
                     self.lower_filter_expression(document, declaration, &arg.value)?;
                 }
-                Ok(())
-            }
-            Expression::Constructor { type_name, args } => {
-                let reference =
-                    self.push_invocation_callee_reference(document, declaration, *type_name)?;
-                self.lower_instantiation_arguments(document, declaration, node, reference, args)?;
-                for arg in args {
-                    self.lower_filter_expression(document, declaration, &arg.value)?;
-                }
+                self.leave_instantiation(entered);
                 Ok(())
             }
             Expression::CollectionOp { base, args, .. } => {

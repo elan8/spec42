@@ -328,6 +328,27 @@ pub(crate) fn membership_role_with_trigger(
     }
 }
 
+/// KerML `Feature::direction` of a Feature with effective membership `role` and authored
+/// `direction`.
+///
+/// A `ParameterMembership` fixes its parameter's direction (`parameterDirection()`): `in` for a
+/// subject, actor or stakeholder, `out` for a `ReturnParameterMembership` result, as the Pilot's
+/// `ParameterMembershipAdapter` sets it. Those memberships admit no authored direction, so the
+/// derived one is the only one; every other Feature has the direction its author wrote, or none.
+pub(crate) fn effective_direction(
+    role: Option<MembershipRole>,
+    authored: Option<crate::lower::facts::ParameterDirection>,
+) -> Option<crate::lower::facts::ParameterDirection> {
+    use crate::lower::facts::ParameterDirection;
+    match role {
+        Some(MembershipRole::Subject | MembershipRole::Actor | MembershipRole::Stakeholder) => {
+            Some(ParameterDirection::In)
+        }
+        Some(MembershipRole::ReturnParameter) => Some(ParameterDirection::Out),
+        _ => authored,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
