@@ -1,6 +1,6 @@
 # META
 ~~~ini
-description=Generated specialization metaclasses that have no direct queryable authored concrete-syntax declaration remain visibly blocked
+description=Generated specializations of literal, null and metadata-access expressions remain visibly blocked: these expression metaclass instances have no canonical element identity to assert against
 specification=OMG SysML 2.0 and KerML 1.0 (formal/26-03)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 source_expectation=accepted
@@ -15,12 +15,6 @@ rule_id=kerml-1.0:8.3.4.8.14:checkLiteralStringSpecialization
 rule_id=kerml-1.0:8.3.4.8.15:checkMetadataAccessExpressionSpecialization
 rule_id=kerml-1.0:8.3.4.8.16:checkNullExpressionSpecialization
 rule_id=kerml-1.0:8.3.4.8.9:checkLiteralBooleanSpecialization
-rule_id=kerml-1.0:8.3.4.5.2:checkBindingConnectorSpecialization
-rule_id=kerml-1.0:8.3.4.9.2:checkFlowSpecialization
-rule_id=kerml-1.0:8.3.4.9.6:checkSuccessionFlowSpecialization
-rule_id=sysml-2.0:8.3.16.3:checkFlowUsageSpecialization
-rule_id=sysml-2.0:8.3.16.4:checkSuccessionFlowUsageSpecialization
-rule_id=sysml-2.0:8.3.17.6:checkControlNodeSpecialization
 type=file
 libraries=standard
 ~~~
