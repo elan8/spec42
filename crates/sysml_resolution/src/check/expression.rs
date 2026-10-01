@@ -89,6 +89,7 @@ impl<D> SemanticModel<D> {
         self.collect_invocation_instantiated_types(document, diagnostics)?;
         self.collect_feature_reference_referents(document, diagnostics)?;
         self.collect_instantiation_argument_redefinitions(document, diagnostics)?;
+        self.collect_trigger_invocation_arguments(document, diagnostics)?;
         Ok(())
     }
 
@@ -632,6 +633,106 @@ impl<D> SemanticModel<D> {
                 },
                 related: Box::from([self.related_declaration(invocation.callee, RELATED_CALLEE)?]),
             });
+        }
+        Ok(())
+    }
+
+    /// SysML 8.3.17.17 `validateTriggerInvocationExpressionWhenArgument`, `...AtArgument` and
+    /// `...AfterArgument`: the argument of a `when` trigger is Boolean, of an `at` trigger a
+    /// `Time::TimeInstantValue`, of an `after` trigger an `ISQBase::DurationValue`.
+    ///
+    /// The argument's result type is known for a literal (its `LiteralExpression` type) and for a
+    /// feature reference (the settled feature's canonical types). Any other argument -- a quantity
+    /// with a unit, an operator, an invocation -- has a result type this publication does not
+    /// derive, and is left unanswered, as is a reference that did not settle, a feature whose
+    /// types or specializations did not, and a library type this publication does not admit.
+    pub(crate) fn collect_trigger_invocation_arguments(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        use crate::lower::facts::LiteralKind;
+        use crate::lower::facts::TriggerArgument;
+        use crate::lower::facts::TriggerInvocationKind;
+        use crate::resolve::implied::resolve_library_specialization_anchor;
+        use crate::resolve::implied::LibrarySpecializationAnchor;
+        let triggers = self
+            .storage
+            .trigger_invocations
+            .iter()
+            .filter(|trigger| {
+                self.storage
+                    .declaration(trigger.expression)
+                    .is_some_and(|declaration| declaration.document == document)
+            })
+            .collect::<Vec<_>>();
+        if triggers.is_empty() {
+            return Ok(());
+        }
+        let anchor = |path| match resolve_library_specialization_anchor(&self.storage, path) {
+            LibrarySpecializationAnchor::Resolved(anchor) => Some(anchor),
+            LibrarySpecializationAnchor::Missing | LibrarySpecializationAnchor::Ambiguous(_) => {
+                None
+            }
+        };
+        let boolean = anchor("ScalarValues::Boolean");
+        let time_instant = anchor("Time::TimeInstantValue");
+        let duration = anchor("ISQBase::DurationValue");
+        for trigger in triggers {
+            let (expected, code) = match trigger.kind {
+                TriggerInvocationKind::When => {
+                    (boolean, DiagnosticCode::TriggerWhenArgumentNotBoolean)
+                }
+                TriggerInvocationKind::At => {
+                    (time_instant, DiagnosticCode::TriggerAtArgumentNotTimeInstant)
+                }
+                TriggerInvocationKind::After => {
+                    (duration, DiagnosticCode::TriggerAfterArgumentNotDuration)
+                }
+            };
+            let conforms = match trigger.argument {
+                // A Boolean literal is a `LiteralBoolean`; no other literal's type is Boolean, a
+                // time instant or a duration, whatever the library admits.
+                TriggerArgument::Literal(kind) => Some(
+                    kind == LiteralKind::Boolean && trigger.kind == TriggerInvocationKind::When,
+                ),
+                TriggerArgument::FeatureReference(reference) => {
+                    match (self.resolution.outcome(reference), expected) {
+                        (Some(ResolutionStatus::Resolved(feature)), Some(expected))
+                            if self.kind_of(feature).is_some_and(|kind| {
+                                element_kind(kind).conforms_to(ElementKind::Feature)
+                            }) && !self.specialization_hierarchy_is_unsettled(feature) =>
+                        {
+                            let types = self.types.feature_types(feature);
+                            let mut verdict = if types.is_empty() { None } else { Some(false) };
+                            for general in types {
+                                match self.conformance(
+                                    general,
+                                    expected,
+                                    crate::SpecializationScope::AnySpecialization,
+                                ) {
+                                    crate::Conformance::Conforms => {
+                                        verdict = Some(true);
+                                        break;
+                                    }
+                                    crate::Conformance::DoesNotConform => {}
+                                    crate::Conformance::Indeterminate(_) => verdict = None,
+                                }
+                            }
+                            verdict
+                        }
+                        _ => None,
+                    }
+                }
+                TriggerArgument::Other => None,
+            };
+            if conforms == Some(false) {
+                diagnostics.push(self.declaration_diagnostic(
+                    trigger.expression,
+                    code,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
         }
         Ok(())
     }

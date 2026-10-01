@@ -669,19 +669,17 @@ impl SemanticModelBuilder {
                     expression,
                 )?;
             }
-            Some(TransitionAccept::TimeTrigger(_kind, expression)) => {
+            Some(TransitionAccept::TimeTrigger(kind, expression)) => {
                 // Mirrors `lower_then_accept`'s `TimeTrigger` arm: the `at`/`when`/`after`
-                // trigger expression (e.g. `accept at vehicle.maintenanceTime`) is lowered
-                // through the general constraint-expression dispatch (`FeatureRef`/
-                // `MemberAccess`/`Invocation`/`Constructor`), the same as a `Transition`'s
-                // `guard` clause, rather than `lower_transition_end`'s narrower reference-only
-                // dispatch (which `Shorthand` above uses for a bare accepted-signal name). The
-                // `TriggerKind` (`at`/`when`/`after`) distinction is not yet represented.
-                self.lower_constraint_expression(
+                // trigger (e.g. `accept at vehicle.maintenanceTime`) is its own
+                // TriggerInvocationExpression, owned by the transition's trigger action.
+                self.lower_trigger_invocation(
                     document,
-                    declaration,
+                    trigger_action.expect("an authored accept always creates its trigger action"),
                     UnsupportedFamily::StateDefinitionMember,
+                    *kind,
                     expression,
+                    node.span,
                 )?;
             }
             Some(TransitionAccept::Payload(_clause, via)) => {

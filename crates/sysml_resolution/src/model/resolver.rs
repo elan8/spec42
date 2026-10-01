@@ -672,6 +672,7 @@ mod tests {
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
             assignments: Box::new([]),
+            trigger_invocations: Box::new([]),
             unlowered_expressions: Box::new([]),
             owned_end_features: Box::new([]),
         };
@@ -789,6 +790,7 @@ mod tests {
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
             assignments: Box::new([]),
+            trigger_invocations: Box::new([]),
             unlowered_expressions: Box::new([]),
             owned_end_features: [(1, 2), (1, 3), (4, 5)]
                 .map(|(owner, end)| OwnedEndRecord {
@@ -975,6 +977,7 @@ mod tests {
             }]),
             invocations: Box::new([]),
             assignments: Box::new([]),
+            trigger_invocations: Box::new([]),
             unlowered_expressions: Box::new([]),
             owned_end_features: Box::new([]),
         }
@@ -1067,6 +1070,7 @@ mod tests {
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
             assignments: Box::new([]),
+            trigger_invocations: Box::new([]),
             unlowered_expressions: Box::new([]),
             owned_end_features: Box::new([]),
         }
@@ -1157,6 +1161,7 @@ mod tests {
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
             assignments: Box::new([]),
+            trigger_invocations: Box::new([]),
             unlowered_expressions: Box::new([]),
             owned_end_features: Box::new([]),
         }

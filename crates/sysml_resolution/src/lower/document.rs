@@ -80,6 +80,7 @@ pub(crate) struct LoweredDocument {
     pub(crate) filter_conditions: Box<[AuthoredFilterCondition]>,
     pub(crate) invocations: Box<[AuthoredInvocation]>,
     pub(crate) assignments: Box<[crate::lower::facts::AssignmentRecord]>,
+    pub(crate) trigger_invocations: Box<[crate::lower::facts::TriggerInvocationRecord]>,
     pub(crate) unlowered_expressions: Box<[crate::lower::facts::UnloweredExpressionSite]>,
     pub(crate) owned_end_features: Box<[OwnedEndRecord]>,
     /// The names this document interned, in the order the walk first interned them.
@@ -128,6 +129,7 @@ pub(crate) fn lower_document(
         filter_conditions: builder.filter_conditions.into_boxed_slice(),
         invocations: builder.invocations.into_boxed_slice(),
         assignments: builder.assignments.into_boxed_slice(),
+        trigger_invocations: builder.trigger_invocations.into_boxed_slice(),
         unlowered_expressions: builder.unlowered_expressions.into_boxed_slice(),
         owned_end_features: builder.owned_end_features.into_boxed_slice(),
         symbols: builder.symbols.freeze(),
@@ -507,6 +509,25 @@ impl SemanticModelBuilder {
                 .push(crate::lower::facts::UnloweredExpressionSite {
                     site: relocation.declaration(record.site)?,
                     kind: record.kind,
+                });
+        }
+
+        reserve(
+            &mut self.trigger_invocations,
+            lowered.trigger_invocations.len(),
+        )?;
+        for record in lowered.trigger_invocations.iter() {
+            use crate::lower::facts::TriggerArgument;
+            self.trigger_invocations
+                .push(crate::lower::facts::TriggerInvocationRecord {
+                    expression: relocation.declaration(record.expression)?,
+                    kind: record.kind,
+                    argument: match record.argument {
+                        TriggerArgument::FeatureReference(reference) => {
+                            TriggerArgument::FeatureReference(relocation.reference(reference)?)
+                        }
+                        other => other,
+                    },
                 });
         }
 

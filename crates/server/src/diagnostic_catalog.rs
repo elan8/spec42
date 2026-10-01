@@ -442,6 +442,27 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "trigger_when_argument_not_boolean",
+        severity: "warning",
+        meaning: "The argument of an `accept when` trigger is not a Boolean condition (SysML validateTriggerInvocationExpressionWhenArgument).",
+        typical_fix: "Write a Boolean expression, or reference a Boolean feature, after `when`.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "trigger_at_argument_not_time_instant",
+        severity: "warning",
+        meaning: "The argument of an `accept at` trigger is not a time instant value (SysML validateTriggerInvocationExpressionAtArgument).",
+        typical_fix: "Reference a `Time::TimeInstantValue` after `at`; use `after` for a duration.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "trigger_after_argument_not_duration",
+        severity: "warning",
+        meaning: "The argument of an `accept after` trigger is not a duration value (SysML validateTriggerInvocationExpressionAfterArgument).",
+        typical_fix: "Reference an `ISQBase::DurationValue`, or write a quantity in a duration unit, after `after`.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "invocation_argument_redefines_no_parameter",
         severity: "warning",
         meaning: "A named invocation argument names a feature of the invoked behavior that is not one of its input parameters (KerML validateInvocationExpressionParameterRedefinition).",

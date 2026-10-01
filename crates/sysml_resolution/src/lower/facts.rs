@@ -1196,6 +1196,49 @@ pub(crate) struct AssignmentRecord {
     pub(crate) referent: Option<AuthoredReferenceId>,
 }
 
+/// The kind of a SysML `TriggerInvocationExpression` (`TriggerKind`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum TriggerInvocationKind {
+    /// `accept when <condition>`: a change trigger on a Boolean condition.
+    When,
+    /// `accept at <instant>`: a time trigger at a time instant.
+    At,
+    /// `accept after <duration>`: a time trigger after a duration.
+    After,
+}
+
+/// The literal kind of a literal argument, as the parser types it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum LiteralKind {
+    Boolean,
+    Integer,
+    Real,
+    String,
+    Null,
+}
+
+/// The argument of a [`TriggerInvocationRecord`], as far as its syntax settles it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum TriggerArgument {
+    /// A literal, whose `LiteralExpression` result type the literal kind fixes.
+    Literal(LiteralKind),
+    /// A feature reference: the `ExpressionOperand` reference sourced at the trigger expression,
+    /// whose settled feature's types are the argument's result types.
+    FeatureReference(AuthoredReferenceId),
+    /// Any other expression, whose result type this publication does not derive.
+    Other,
+}
+
+/// One `accept when|at|after <argument>` trigger, lowered as its own SysML
+/// `TriggerInvocationExpression` element.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct TriggerInvocationRecord {
+    /// The TriggerInvocationExpression element.
+    pub(crate) expression: DeclarationId,
+    pub(crate) kind: TriggerInvocationKind,
+    pub(crate) argument: TriggerArgument,
+}
+
 /// What an expression the source writes leaves out of the publication when lowering does not
 /// represent it as its own Expression element with its grammar-defined parameters.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

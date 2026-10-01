@@ -42,11 +42,14 @@ package Actions {
     (declaration (id (node (document "memory://snapshot/sysml_accept_action_usage_receiver_binding_connector.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_accept_action_usage_receiver_binding_connector.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_accept_action_usage_receiver_binding_connector.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (kind accept-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
+    (declaration (id (node (document "memory://snapshot/sysml_accept_action_usage_receiver_binding_connector.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/sysml_accept_action_usage_receiver_binding_connector.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/sysml_accept_action_usage_receiver_binding_connector.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
   )
   (references
   )
   (relationships
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_accept_action_usage_receiver_binding_connector.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_accept_action_usage_receiver_binding_connector.md") (qualified-name "Actions::Act"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_accept_action_usage_receiver_binding_connector.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_accept_action_usage_receiver_binding_connector.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
   )
@@ -57,6 +60,9 @@ package Actions {
 (types
     (declaration (id (node (document "memory://snapshot/sysml_accept_action_usage_receiver_binding_connector.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/sysml_accept_action_usage_receiver_binding_connector.md") (qualified-name "Actions::Act")))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_accept_action_usage_receiver_binding_connector.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_accept_action_usage_receiver_binding_connector.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind accept-action) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
     )
 )
 ~~~

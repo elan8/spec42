@@ -526,6 +526,15 @@ semantic_diagnostic_codes! {
     /// KerML 8.3.4.8.3 `validateConstructorExpressionNoDuplicateFeatureRedefinition`.
     ConstructorDuplicateFeatureRedefinition => "constructor_duplicate_feature_redefinition",
         "Two arguments of a constructor must not initialise the same feature.";
+    /// SysML 8.3.17.17 `validateTriggerInvocationExpressionWhenArgument`.
+    TriggerWhenArgumentNotBoolean => "trigger_when_argument_not_boolean",
+        "The argument of a `when` trigger must be a Boolean condition.";
+    /// SysML 8.3.17.17 `validateTriggerInvocationExpressionAtArgument`.
+    TriggerAtArgumentNotTimeInstant => "trigger_at_argument_not_time_instant",
+        "The argument of an `at` trigger must be a time instant value.";
+    /// SysML 8.3.17.17 `validateTriggerInvocationExpressionAfterArgument`.
+    TriggerAfterArgumentNotDuration => "trigger_after_argument_not_duration",
+        "The argument of an `after` trigger must be a duration value.";
     /// KerML 8.3.4.8.8 `validateInvocationExpressionInstantiatedType`.
     InvocationInstantiatedTypeNotBehavior => "invocation_instantiated_type_not_behavior",
         "An invocation must invoke a behavior or a feature typed by a behavior.";

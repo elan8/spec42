@@ -168,6 +168,7 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) invocations: Vec<AuthoredInvocation>,
     pub(crate) assignments: Vec<crate::lower::facts::AssignmentRecord>,
     pub(crate) unlowered_expressions: Vec<crate::lower::facts::UnloweredExpressionSite>,
+    pub(crate) trigger_invocations: Vec<crate::lower::facts::TriggerInvocationRecord>,
     /// Owned end Features in lowering order; sorted stably by owner at the freeze barrier.
     pub(crate) owned_end_features: Vec<OwnedEndRecord>,
     pub(crate) symbols: SymbolTableBuilder,
@@ -1596,6 +1597,18 @@ impl SemanticModelBuilder {
         target: QualifiedReferenceId,
         role: crate::lower::facts::ExpressionOperandRole,
     ) -> Result<(), ConstructionError> {
+        self.push_expression_operand_reference_id(document, declaration, target, role)?;
+        Ok(())
+    }
+
+    /// [`Self::push_expression_operand_reference`], returning the reference it pushed.
+    pub(crate) fn push_expression_operand_reference_id(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        target: QualifiedReferenceId,
+        role: crate::lower::facts::ExpressionOperandRole,
+    ) -> Result<AuthoredReferenceId, ConstructionError> {
         let span = self.documents[document.index()]
             .parsed
             .qualified_reference(target)
@@ -1613,8 +1626,7 @@ impl SemanticModelBuilder {
             },
             span,
             import: None,
-        })?;
-        Ok(())
+        })
     }
 
     /// The site of a constraint-body expression: what the author wrote, and where.
@@ -1802,6 +1814,7 @@ impl SemanticModelBuilder {
             filter_conditions: self.filter_conditions.into_boxed_slice(),
             invocations: self.invocations.into_boxed_slice(),
             assignments: self.assignments.into_boxed_slice(),
+            trigger_invocations: self.trigger_invocations.into_boxed_slice(),
             unlowered_expressions: {
                 let mut sites = self.unlowered_expressions;
                 sites.sort_unstable();

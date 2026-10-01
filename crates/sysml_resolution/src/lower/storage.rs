@@ -56,6 +56,8 @@ pub(crate) struct SemanticModelStorage {
     pub(crate) invocations: Box<[AuthoredInvocation]>,
     /// Every `assign` and the Features of its target parameter, in lowering order.
     pub(crate) assignments: Box<[crate::lower::facts::AssignmentRecord]>,
+    /// Every `accept when|at|after` TriggerInvocationExpression, in lowering order.
+    pub(crate) trigger_invocations: Box<[crate::lower::facts::TriggerInvocationRecord]>,
     /// Every evaluation site whose authored expression lowering does not fully represent as
     /// Expression elements, sorted and deduplicated.
     pub(crate) unlowered_expressions: Box<[crate::lower::facts::UnloweredExpressionSite]>,

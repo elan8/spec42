@@ -2423,6 +2423,7 @@ mod tests {
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
             assignments: Box::new([]),
+            trigger_invocations: Box::new([]),
             unlowered_expressions: Box::new([]),
             owned_end_features: Box::new([]),
         };

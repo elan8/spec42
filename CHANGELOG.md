@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Trigger argument validation.** `accept when|at|after <argument>` now lowers its
+  TriggerInvocationExpression with its kind. New diagnostics check SysML
+  `validateTriggerInvocationExpressionWhenArgument` (`trigger_when_argument_not_boolean`),
+  `validateTriggerInvocationExpressionAtArgument` (`trigger_at_argument_not_time_instant`) and
+  `validateTriggerInvocationExpressionAfterArgument` (`trigger_after_argument_not_duration`) for a
+  literal or feature-reference argument.
+
 - **Constructor argument redefinitions.** A positional `new T(...)` argument now redefines the
   public feature of `T` at its position (owned features first, then inherited ones), and KerML
   `checkConstructorExpressionResultFeatureRedefinition` checks that every argument redefines

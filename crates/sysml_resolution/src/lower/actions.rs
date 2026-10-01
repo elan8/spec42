@@ -458,7 +458,7 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let family = UnsupportedFamily::ActionUsageMember;
         if let Some(accept) = &node.value.accept {
-            self.lower_accept_trigger(document, declaration, family, accept)?;
+            self.lower_accept_trigger(document, declaration, family, accept, node.span)?;
         }
         if let Some(send) = &node.value.send {
             match send {
@@ -1555,7 +1555,80 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         accept: &Node<TransitionAccept>,
     ) -> Result<(), ConstructionError> {
-        self.lower_accept_trigger(document, owner, family, &accept.value)
+        self.lower_accept_trigger(document, owner, family, &accept.value, accept.span)
+    }
+
+    /// Lowers an `accept when|at|after <argument>` trigger as its own SysML
+    /// `TriggerInvocationExpression` element owned by `owner` (the accept action, or the site an
+    /// accept trigger is written at), spanning `span`, with its `TriggerKind`. The argument is
+    /// lowered through the general constraint-expression dispatch at that element, and its
+    /// syntax is recorded as far as it settles the argument's result type: a literal, or the
+    /// feature reference whose settled feature carries the type.
+    pub(crate) fn lower_trigger_invocation(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        kind: sysml_v2_parser::ast::TriggerKind,
+        argument: &Node<Expression>,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        use crate::lower::facts::LiteralKind;
+        use crate::lower::facts::TriggerArgument;
+        use crate::lower::facts::TriggerInvocationKind;
+        let expression = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::KermlExpression,
+            None,
+            span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(expression, MembershipKind::Owning, Visibility::Default, span)?;
+        let result = self.push_typed_declaration(
+            document,
+            Some(expression),
+            DeclarationKind::KermlFeature,
+            None,
+            span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::Out),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(result, MembershipKind::Feature, Visibility::Default, span)?;
+        self.declaration_facts[expression.index()].expression_result = Some(result);
+        let argument_fact = match &argument.value {
+            Expression::LiteralBoolean(_) => TriggerArgument::Literal(LiteralKind::Boolean),
+            Expression::LiteralInteger(_) => TriggerArgument::Literal(LiteralKind::Integer),
+            Expression::LiteralReal(_) => TriggerArgument::Literal(LiteralKind::Real),
+            Expression::LiteralString(_) => TriggerArgument::Literal(LiteralKind::String),
+            Expression::Null => TriggerArgument::Literal(LiteralKind::Null),
+            Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
+                self.note_expression_node(expression, argument);
+                TriggerArgument::FeatureReference(self.push_expression_operand_reference_id(
+                    document,
+                    expression,
+                    *target,
+                    crate::lower::facts::ExpressionOperandRole::FeatureReference,
+                )?)
+            }
+            _ => TriggerArgument::Other,
+        };
+        if argument_fact == TriggerArgument::Other {
+            self.lower_constraint_expression(document, expression, family, argument)?;
+        }
+        self.trigger_invocations
+            .push(crate::lower::facts::TriggerInvocationRecord {
+                expression,
+                kind: match kind {
+                    sysml_v2_parser::ast::TriggerKind::When => TriggerInvocationKind::When,
+                    sysml_v2_parser::ast::TriggerKind::At => TriggerInvocationKind::At,
+                    sysml_v2_parser::ast::TriggerKind::After => TriggerInvocationKind::After,
+                },
+                argument: argument_fact,
+            });
+        Ok(())
     }
 
     /// The `TransitionAccept` dispatch shared by `then accept ...;` (see `lower_then_accept`) and
@@ -1567,6 +1640,7 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         family: UnsupportedFamily,
         accept: &TransitionAccept,
+        span: Span,
     ) -> Result<(), ConstructionError> {
         match accept {
             TransitionAccept::Shorthand(expr, via) => {
@@ -1593,8 +1667,8 @@ impl SemanticModelBuilder {
                     )?;
                 }
             }
-            TransitionAccept::TimeTrigger(_kind, expr) => {
-                self.lower_constraint_expression(document, owner, family, expr)?;
+            TransitionAccept::TimeTrigger(kind, expr) => {
+                self.lower_trigger_invocation(document, owner, family, *kind, expr, span)?;
             }
             TransitionAccept::Payload(clause, via) => {
                 self.lower_payload_clause_type(document, owner, clause)?;
