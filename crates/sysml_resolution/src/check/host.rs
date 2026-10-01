@@ -1012,35 +1012,6 @@ impl<D> SemanticModel<D> {
                         )?);
                     }
                 }
-                DeclarationKind::ExhibitStateUsage => {
-                    // SysML 8.3.18.2 `validateExhibitStateUsageReference`: the referenced
-                    // feature of an owned ReferenceSubsetting is a StateUsage.
-                    for (reference_id, reference) in
-                        self.authored_references(id, &[ReferenceKind::References])
-                    {
-                        let Some(target) = self.settled_target(reference_id) else {
-                            continue;
-                        };
-                        let Some(target_kind) = self.kind_of(target) else {
-                            continue;
-                        };
-                        if crate::model::element_kind::element_kind(target_kind)
-                            .conforms_to(sysml_contract::ElementKind::StateUsage)
-                        {
-                            continue;
-                        }
-                        diagnostics.push(self.reference_message_diagnostic(
-                            reference,
-                            DiagnosticCode::ExhibitTargetInvalidKind,
-                            DiagnosticSeverity::Warning,
-                            format!(
-                                "Exhibited state '{}' does not resolve to a state usage.",
-                                self.display_name(target)
-                            ),
-                            Some((target, RELATED_TARGET)),
-                        )?);
-                    }
-                }
                 DeclarationKind::Transition => {
                     self.collect_transition(id, diagnostics)?;
                 }

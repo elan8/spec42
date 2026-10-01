@@ -194,6 +194,16 @@ impl<D> SemanticModel<D> {
                 }
             }
         }
+        // SysML 8.3.18.2 `validateExhibitStateUsageReference`: the feature an `exhibit <path>;`
+        // reference-subsets is a StateUsage.
+        if self.metaclass_conforms(id, ElementKind::ExhibitStateUsage) {
+            self.collect_reference_subsetting_type(
+                id,
+                ElementKind::StateUsage,
+                DiagnosticCode::ExhibitTargetInvalidKind,
+                diagnostics,
+            )?;
+        }
         // SysML 8.3.20.2 `validateAssertConstraintUsageReference`: the feature an
         // `assert <path>;` reference-subsets is a ConstraintUsage.
         if self.metaclass_conforms(id, ElementKind::AssertConstraintUsage) {
