@@ -277,12 +277,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule detects two constructor initialisers redefining the same feature; the canonical code constructor_duplicate_feature_redefinition does not exist yet"
 
 [[issue]]
-id = "semantic-directed-usage-not-referential"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule pairs a usage direction with its referential status; the canonical code directed_usage_not_referential does not exist yet"
-
-[[issue]]
 id = "semantic-expression-result-parameter-count"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"

@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Usage referentiality follows the SysML derivation.** The published `Usage::isReference` (and
+  the composition every rule reads) now treats a directed usage, an end usage, a usage with no
+  featuring type (such as a package-level part), an `event` occurrence, a perform action, and a
+  port usage outside a port as referential, as the Pilot's usage post-processing does, so
+  `validateUsageIsReferential` holds by construction. A package-level usage now reports
+  `isReference = true`.
+
 - **Feature variability and portion validations.** New diagnostics check KerML 1.0 8.3.3.3.4
   `validateFeatureIsVariable` (`variable_feature_owner_not_occurrence`), KerML
   `validateFeaturePortionNotVariable` (`portion_feature_is_variable`), KerML 8.3.4.10.2

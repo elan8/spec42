@@ -373,6 +373,9 @@ pub(crate) struct TypeIndex {
     /// Keeping the family here makes every consumer use the same anchor identities and settled
     /// specialization closure rather than reinterpreting rendered names or direct edges.
     usage_time_variation_anchors: UsageTimeVariationAnchors,
+    /// Whether each declaration is owned through a VariantMembership (authored, or implied by its
+    /// metaclass as for an enumeration literal): the input of `getExpectedFeaturingTypeOf`.
+    variant_members: Box<[bool]>,
 }
 
 #[derive(Debug)]
@@ -613,9 +616,31 @@ impl TypeIndex {
                 *slot = true;
             }
         }
+        let mut variant_members = vec![false; count];
+        for membership in storage.memberships.iter() {
+            let (Some(declaration), Some(facts)) = (
+                storage.declaration(membership.member),
+                storage.declaration_facts(membership.member),
+            ) else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            let role = membership.role.or_else(|| {
+                crate::model::element_kind::membership_role_with_trigger(
+                    declaration.kind,
+                    facts.is_trigger_action,
+                )
+            });
+            if role == Some(crate::MembershipRole::Variant) {
+                let slot = variant_members
+                    .get_mut(membership.member.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                *slot = true;
+            }
+        }
         let end_features = derive_end_features(storage, &supertypes)?;
 
         Ok(Self {
+            variant_members: variant_members.into_boxed_slice(),
             specialization,
             direct_types,
             supertypes,
@@ -760,23 +785,98 @@ impl TypeIndex {
         ))
     }
 
-    /// The effective SysML `Usage::isReference` fact shared by its own derivation and every
-    /// predicate, such as `mayTimeVary`, that consumes the complementary `isComposite` value.
+    /// The effective SysML `Usage::isReference` fact (`not isComposite`) shared by its own
+    /// derivation and every predicate, such as `mayTimeVary`, that consumes the complementary
+    /// `isComposite` value. `None` when `usage` is not a Usage.
+    ///
+    /// A Usage is composite unless one of these makes it referential, exactly as the Pilot sets
+    /// `isComposite`:
+    /// - an authored `ref` prefix;
+    /// - a metaclass that is never composite (`AttributeUsage`, `ReferenceUsage`,
+    ///   `PerformActionUsage`, `SuccessionAsUsage`, `BindingConnectorAsUsage`, and an `event`
+    ///   occurrence, whose constructors clear `isComposite`);
+    /// - SysML 8.3.6.4 `validateUsageIsReferential`, which the Pilot's `UsageAdapter.postProcess`
+    ///   satisfies by construction: a direction, an end feature, or no expected featuring type
+    ///   (`UsageUtil.getExpectedFeaturingTypeOf`: the owning type of a FeatureMembership, or, for
+    ///   a variant of a variation usage, that usage's own expected featuring type);
+    /// - `validatePortUsageIsReference`: a port usage whose expected featuring type is not a port
+    ///   definition or port usage (`PortUsageAdapter.postProcess`).
     pub(crate) fn usage_is_reference(
         &self,
         storage: &SemanticModelStorage,
         usage: DeclarationId,
     ) -> Option<bool> {
+        use crate::model::element_kind::element_kind;
+        use sysml_contract::ElementKind;
         let declaration = storage.declaration(usage)?;
+        if !crate::resolve::is_usage_declaration(declaration.kind) {
+            return None;
+        }
         let facts = storage.declaration_facts(usage)?;
-        Some(
-            facts.modifiers.reference
-                || matches!(
-                    declaration.kind,
-                    crate::model::DeclarationKind::ReferenceUsage
-                        | crate::model::DeclarationKind::DefaultReferenceUsage
-                ),
-        )
+        let kind = element_kind(declaration.kind);
+        if facts.modifiers.reference
+            || facts.modifiers.event
+            || facts.direction.is_some()
+            || facts.modifiers.end
+            || facts.positional_end.is_some()
+            || matches!(
+                declaration.kind,
+                crate::model::DeclarationKind::ReferenceUsage
+                    | crate::model::DeclarationKind::DefaultReferenceUsage
+            )
+            || [
+                ElementKind::AttributeUsage,
+                ElementKind::ReferenceUsage,
+                ElementKind::PerformActionUsage,
+                ElementKind::SuccessionAsUsage,
+                ElementKind::BindingConnectorAsUsage,
+            ]
+            .iter()
+            .any(|general| kind.conforms_to(*general))
+        {
+            return Some(true);
+        }
+        let Some(featuring_type) = self.expected_featuring_type(storage, usage) else {
+            return Some(true);
+        };
+        if kind.conforms_to(ElementKind::PortUsage) {
+            let featured_by_port = storage.declaration(featuring_type).is_some_and(|owner| {
+                let owner = element_kind(owner.kind);
+                owner.conforms_to(ElementKind::PortDefinition)
+                    || owner.conforms_to(ElementKind::PortUsage)
+            });
+            return Some(!featured_by_port);
+        }
+        Some(false)
+    }
+
+    /// The Pilot's `UsageUtil.getExpectedFeaturingTypeOf`: the owning type of a usage owned
+    /// through a FeatureMembership, or, for a variant (VariantMembership) owned by a variation
+    /// usage, that usage's own expected featuring type. A variant of a variation definition and a
+    /// package-owned usage have none.
+    fn expected_featuring_type(
+        &self,
+        storage: &SemanticModelStorage,
+        usage: DeclarationId,
+    ) -> Option<DeclarationId> {
+        let mut current = usage;
+        // Each step moves to a strictly enclosing owner, so the walk is bounded by nesting depth.
+        loop {
+            let owner = Self::owning_type(storage, current)?;
+            if !self.variant_members.get(current.index()).copied().unwrap_or(false) {
+                return Some(owner);
+            }
+            let (owner_declaration, owner_facts) =
+                (storage.declaration(owner)?, storage.declaration_facts(owner)?);
+            if !crate::resolve::is_usage_declaration(owner_declaration.kind)
+                || !owner_facts
+                    .modifiers
+                    .effectively_variation(owner_declaration.kind)
+            {
+                return None;
+            }
+            current = owner;
+        }
     }
 
     fn specializes_library_anchor(

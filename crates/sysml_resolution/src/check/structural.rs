@@ -294,44 +294,25 @@ impl<D> SemanticModel<D> {
         Ok(())
     }
 
-    /// SysML `Usage::isComposite`, the canonical composition fact of one lowered usage.
+    /// `Feature::isComposite` of one lowered declaration.
     ///
-    /// A SysML usage is composite by default (`UsageImpl` in the Pilot); `ref` (`isReference`)
-    /// and `end` make it referential, an attribute or enumeration usage is always referential
-    /// (`AttributeUsage` sets `isComposite = false`), and a `ReferenceUsage` is referential by
-    /// its metaclass. KerML features are composite only when authored `composite`.
-    ///
-    /// A feature direction (`in` / `out` / `inout`) also makes the usage referential: the Pilot's
-    /// `isReferenceDefault` treats every directed feature as a reference (which is why a
-    /// `ParameterUsage` above is always non-composite), so `in item rx : Signal;` inside a `port
-    /// def` is a flow feature declaration, not an owned composite subpart.
+    /// A SysML usage's value is the complement of the canonical effective
+    /// [`crate::index::types::TypeIndex::usage_is_reference`] fact (authored `ref`, a
+    /// never-composite metaclass, a direction, an end, or no expected featuring type all make it
+    /// referential). KerML features are composite only when authored `composite`.
     pub(crate) fn usage_is_composite(&self, declaration: DeclarationId) -> bool {
         let Some(kind) = self.kind_of(declaration) else {
             return false;
         };
-        let Some(facts) = self.storage.declaration_facts(declaration) else {
-            return false;
-        };
         if !is_usage_declaration(kind) {
-            return facts.modifiers.composite;
+            return self
+                .storage
+                .declaration_facts(declaration)
+                .is_some_and(|facts| facts.modifiers.composite);
         }
-        if matches!(
-            kind,
-            DeclarationKind::AttributeUsage
-                | DeclarationKind::EnumerationUsage
-                | DeclarationKind::EnumerationLiteral
-                | DeclarationKind::ReferenceUsage
-                | DeclarationKind::DefaultReferenceUsage
-                | DeclarationKind::ParameterUsage
-                | DeclarationKind::SubjectUsage
-                | DeclarationKind::PerformParameterBinding
-        ) {
-            return false;
-        }
-        !facts.modifiers.reference
-            && !facts.modifiers.end
-            && !self.is_end_feature(declaration)
-            && facts.direction.is_none()
+        self.types
+            .usage_is_reference(&self.storage, declaration)
+            .is_some_and(|is_reference| !is_reference)
     }
 
     /// Appends every structural feature-conformance diagnostic authored in `document`.
