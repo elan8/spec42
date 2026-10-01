@@ -130,7 +130,7 @@ summary = "Pinned KerML XMI body for checkStepOwnedPerformanceSpecialization is 
 id = "lowering-gap-library-specialization-forms"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "These authored specialization forms either lower to a broader declaration kind or do not publish a stable declaration identity, so their generated implied-library specialization fact cannot yet be observed through the semantic query facade."
+summary = "The pinned parser reads a namespace-level `connection X;`, `interface X;` and `calc X;` as ConnectionDef/InterfaceDef/CalcDef (the `def` keyword is optional there), so they lower as definitions and take the definition anchors instead of checkConnectionUsage/InterfaceUsage/CalculationUsageSpecialization; and a SysML `metadata` usage publishes only the MetadataUsage metaclass, whose nearer Metadata::metadataItems rule shadows the KerML checkMetadataFeatureSpecialization anchor Metaobjects::metaobjects, so the KerML MetadataFeature form needs its own published metaclass."
 
 [[issue]]
 id = "semantic-connector-binary-object-specialization-contract"
