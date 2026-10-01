@@ -393,7 +393,8 @@ semantic_diagnostic_codes! {
     /// A usage is typed by a definition of an incompatible metaclass family.
     IncompatibleTypeKind => "incompatible_type_kind",
         "This usage is typed by a definition of an incompatible kind.";
-    /// A definition specializes a definition of an incompatible metaclass family.
+    /// A definition specializes a definition of an incompatible metaclass family, or a classifier
+    /// violates KerML `validate{DataType,Class,Structure,Behavior}Specialization`.
     IncompatibleSpecializationKind => "incompatible_specializes_kind",
         "This definition specializes a definition of an incompatible kind.";
     /// A usage subsets or redefines a feature of an incompatible metaclass family.

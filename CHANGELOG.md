@@ -31,6 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`feature_chaining_single_operand`) and `validateFeatureChainingFeaturesNotSelf`
   (`feature_chaining_includes_self`) are now checked.
 
+- **KerML classifier specialization kinds.** `incompatible_specializes_kind` now also reports KerML
+  `validate{DataType,Class,Structure,Behavior}Specialization` violations for KerML classifiers and
+  SysML definitions alike, at the specialization reference.
+
 - **Case objectives redefine the objectives they specialize.** An `objective` is now published as
   an `objective-requirement` (a `RequirementUsage` under an `ObjectiveMembership`, membership role
   `objective`) and implicitly redefines the objective of every case definition or case usage its

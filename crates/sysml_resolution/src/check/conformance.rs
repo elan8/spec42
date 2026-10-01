@@ -30,6 +30,7 @@ use crate::lower::facts::MultiplicityRecord;
 use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
 use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
+use crate::model::element_kind::element_kind;
 use crate::model::span::document_range;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
@@ -52,6 +53,7 @@ use crate::DiagnosticLocation;
 use crate::DiagnosticOrigin;
 use crate::DiagnosticSeverity;
 use crate::RelatedLocation;
+use sysml_contract::ElementKind;
 
 /// The SysML metaclass family a declaration belongs to.
 ///
@@ -228,6 +230,160 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         | K::KermlBinding
         | K::KermlInvariant
         | K::KermlEnd => return None,
+    })
+}
+
+/// Which of the KerML classifier metaclasses the specialization rules distinguish a metaclass
+/// conforms to. A SysML definition is its KerML generalization: an attribute definition is a
+/// DataType, an occurrence definition a Class, an item or part definition a Structure, an action
+/// definition a Behavior, a connection definition an AssociationStructure, and so on.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub(crate) struct ClassifierMetaclass {
+    pub(crate) data_type: bool,
+    pub(crate) class: bool,
+    pub(crate) association: bool,
+    pub(crate) structure: bool,
+    pub(crate) behavior: bool,
+}
+
+/// The classifier metaclasses `kind` conforms to, or `None` when it is not a Classifier (or its
+/// metaclass is not known precisely, as for an extended `Definition`). Exhaustive by construction.
+pub(crate) fn classifier_metaclass(kind: ElementKind) -> Option<ClassifierMetaclass> {
+    use ElementKind as K;
+    const NONE: ClassifierMetaclass = ClassifierMetaclass {
+        data_type: false,
+        class: false,
+        association: false,
+        structure: false,
+        behavior: false,
+    };
+    const DATA_TYPE: ClassifierMetaclass = ClassifierMetaclass {
+        data_type: true,
+        ..NONE
+    };
+    const CLASS: ClassifierMetaclass = ClassifierMetaclass {
+        class: true,
+        ..NONE
+    };
+    const STRUCTURE: ClassifierMetaclass = ClassifierMetaclass {
+        class: true,
+        structure: true,
+        ..NONE
+    };
+    const ASSOCIATION_STRUCTURE: ClassifierMetaclass = ClassifierMetaclass {
+        class: true,
+        structure: true,
+        association: true,
+        ..NONE
+    };
+    const BEHAVIOR: ClassifierMetaclass = ClassifierMetaclass {
+        class: true,
+        behavior: true,
+        ..NONE
+    };
+    const INTERACTION: ClassifierMetaclass = ClassifierMetaclass {
+        class: true,
+        behavior: true,
+        association: true,
+        ..NONE
+    };
+    Some(match kind {
+        K::Classifier => NONE,
+        K::DataType | K::AttributeDefinition | K::EnumerationDefinition => DATA_TYPE,
+        K::Class | K::OccurrenceDefinition | K::IndividualDefinition => CLASS,
+        K::Association => ClassifierMetaclass {
+            association: true,
+            ..NONE
+        },
+        K::Structure
+        | K::Metaclass
+        | K::ItemDefinition
+        | K::PartDefinition
+        | K::PortDefinition
+        | K::ViewDefinition
+        | K::RenderingDefinition
+        | K::MetadataDefinition => STRUCTURE,
+        K::AssociationStructure
+        | K::ConnectionDefinition
+        | K::InterfaceDefinition
+        | K::AllocationDefinition => ASSOCIATION_STRUCTURE,
+        K::Behavior
+        | K::Function
+        | K::Predicate
+        | K::ActionDefinition
+        | K::StateDefinition
+        | K::CalculationDefinition
+        | K::ConstraintDefinition
+        | K::RequirementDefinition
+        | K::ConcernDefinition
+        | K::CaseDefinition
+        | K::AnalysisCaseDefinition
+        | K::VerificationCaseDefinition
+        | K::UseCaseDefinition
+        | K::ViewpointDefinition => BEHAVIOR,
+        K::Interaction | K::FlowConnectionDefinition => INTERACTION,
+        K::Namespace
+        | K::Package
+        | K::LibraryPackage
+        | K::Definition
+        | K::Type
+        | K::Multiplicity
+        | K::PartUsage
+        | K::AttributeUsage
+        | K::EnumerationUsage
+        | K::ItemUsage
+        | K::PortUsage
+        | K::OccurrenceUsage
+        | K::ConnectionUsage
+        | K::InterfaceUsage
+        | K::AllocationUsage
+        | K::FlowConnectionUsage
+        | K::ActionUsage
+        | K::AcceptActionUsage
+        | K::SendActionUsage
+        | K::TerminateActionUsage
+        | K::StateUsage
+        | K::CalculationUsage
+        | K::ConstraintUsage
+        | K::AssertConstraintUsage
+        | K::RequirementUsage
+        | K::ConcernUsage
+        | K::CaseUsage
+        | K::AnalysisCaseUsage
+        | K::VerificationCaseUsage
+        | K::UseCaseUsage
+        | K::ViewUsage
+        | K::ViewpointUsage
+        | K::RenderingUsage
+        | K::MetadataUsage
+        | K::Usage
+        | K::ReferenceUsage
+        | K::PerformActionUsage
+        | K::TransitionUsage
+        | K::AssignmentActionUsage
+        | K::IfActionUsage
+        | K::WhileLoopActionUsage
+        | K::ForLoopActionUsage
+        | K::ForLoopVariable
+        | K::DecisionNode
+        | K::MergeNode
+        | K::ForkNode
+        | K::JoinNode
+        | K::SuccessionAsUsage
+        | K::FinalState
+        | K::SatisfyRequirementUsage
+        | K::BindingConnectorAsUsage
+        | K::Import
+        | K::Expose
+        | K::Alias
+        | K::Dependency
+        | K::Feature
+        | K::Step
+        | K::Expression
+        | K::BooleanExpression
+        | K::Connector
+        | K::BindingConnector
+        | K::Invariant => return None,
     })
 }
 
@@ -644,6 +800,20 @@ impl<D> SemanticModel<D> {
         target: DeclarationId,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
+        // KerML 8.3.4.1.2/8.3.4.2.2/8.3.4.3.2/8.3.4.6.2 `validate{DataType,Class,Structure,
+        // Behavior}Specialization` are metaclass tests over an owned Specialization's general,
+        // and apply to every KerML and SysML classifier alike.
+        if reference.kind == ReferenceKind::Subclassification
+            && self.kerml_specialization_incompatible(reference.source, target)
+        {
+            diagnostics.push(self.reference_diagnostic(
+                reference,
+                DiagnosticCode::IncompatibleSpecializationKind,
+                DiagnosticSeverity::Warning,
+                Some(target),
+            )?);
+            return Ok(());
+        }
         let (Some((source_family, source_role)), Some((target_family, target_role))) = (
             self.declaration_family(reference.source),
             self.declaration_family(target),
@@ -704,6 +874,32 @@ impl<D> SemanticModel<D> {
             Some(target),
         )?);
         Ok(())
+    }
+
+    /// Whether `specific`'s metaclass may not specialize `general`'s under the KerML classifier
+    /// specialization rules: a DataType specializes no Class or Association, a Class no DataType
+    /// and no Association unless it is one, a Structure no Behavior, and a Behavior no Structure.
+    pub(crate) fn kerml_specialization_incompatible(
+        &self,
+        specific: DeclarationId,
+        general: DeclarationId,
+    ) -> bool {
+        let (Some(specific), Some(general)) =
+            (self.storage.declaration(specific), self.storage.declaration(general))
+        else {
+            return false;
+        };
+        let (Some(specific), Some(general)) = (
+            classifier_metaclass(element_kind(specific.kind)),
+            classifier_metaclass(element_kind(general.kind)),
+        ) else {
+            return false;
+        };
+        (specific.data_type && (general.class || general.association))
+            || (specific.class
+                && (general.data_type || (general.association && !specific.association)))
+            || (specific.structure && general.behavior)
+            || (specific.behavior && general.structure)
     }
 
     /// KerML §8.3.3.3.10 and §8.4.3.4: a specializing feature's co-domain and multiplicity must

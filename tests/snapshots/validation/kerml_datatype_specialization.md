@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.1.2:validateDataTypeSpecialization
-blocked_by=semantic-specialization-kind-compatibility
 type=file
 ~~~
 # SOURCE
@@ -33,7 +32,13 @@ package Kinds {
         (severity warning)
         (code "incompatible_specializes_kind")
         (source "semantic")
-        (range (start 8 4) (end 8 41))
+        (range (start 8 31) (end 8 40))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_datatype_specialization.md")
+            (range (start 2 4) (end 2 20))
+          )
+        )
       )
     )
   )
@@ -44,6 +49,18 @@ package Kinds {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_datatype_specialization.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "incompatible_specializes_kind")
+        (source "semantic")
+        (range (start 8 31) (end 8 40))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_datatype_specialization.md")
+            (range (start 2 4) (end 2 20))
+          )
+        )
+      )
     )
   )
 )

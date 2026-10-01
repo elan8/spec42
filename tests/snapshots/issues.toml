@@ -385,12 +385,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule checks the owningType of a return parameter membership; the canonical code return_parameter_membership_invalid_owner does not exist yet"
 
 [[issue]]
-id = "semantic-specialization-kind-compatibility"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "incompatible_specializes_kind is not reported for a KerML behavior specializing a structure; the metaclass-family check does not run on kerml-behavior declarations"
-
-[[issue]]
 id = "semantic-subject-member-order"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"

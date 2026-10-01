@@ -255,7 +255,7 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     DiagnosticCatalogEntry {
         code: "incompatible_specializes_kind",
         severity: "warning",
-        meaning: "A definition specializes another definition of an incompatible kind.",
+        meaning: "A definition or KerML classifier specializes one of an incompatible kind: a SysML definition of an unrelated family, or a KerML metaclass the classifier rules forbid (a data type specializing a class or association, a class specializing a data type or, unless it is one, an association, a structure specializing a behavior, or a behavior specializing a structure).",
         typical_fix: "Specialize a compatible base definition for this element kind.",
         editor_quick_fixes: None,
     },
