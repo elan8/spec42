@@ -1231,9 +1231,9 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     };
 
     for (index, reference) in references.iter().enumerate() {
-        if reference.kind() != ReferenceKind::MemberAccessOperand
-            && !(reference.kind() == ReferenceKind::ConnectorEnd && reference.flags().dotted)
-        {
+        // Every dotted reference is a feature chain whose per-hop outcomes are its chaining
+        // features, so the path is published for each of them, seeded or not.
+        if reference.kind() != ReferenceKind::MemberAccessOperand && !reference.flags().dotted {
             continue;
         }
         let reference_id =

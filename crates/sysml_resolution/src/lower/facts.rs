@@ -964,6 +964,11 @@ pub(crate) struct AuthoredReference {
     /// segments, subsequent member lookup starts from the resolved cast target rather than the
     /// operand's pre-cast type.
     pub(crate) member_access_narrowings: Box<[MemberAccessNarrowing]>,
+    /// For a dotted feature chain (`a::b.c`), the zero-based index of the last path segment of
+    /// each KerML chaining feature, in order: a `.` separator ends a chaining feature, while `::`
+    /// qualifies within one. Read from the parser's typed separators; empty for an undotted
+    /// reference.
+    pub(crate) chaining_feature_ends: Box<[u32]>,
     pub(crate) span: Span,
 }
 

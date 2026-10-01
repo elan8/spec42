@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Cross subsetting validation.** New diagnostics check KerML 8.3.3.3.2
+  `validateCrossSubsettingCrossingFeature` (`cross_subsetting_crossing_feature_invalid`) and
+  `validateCrossSubsettingCrossedFeature` (`cross_subsetting_crossed_feature_invalid`).
+
 - **Event occurrence references.** The new `event_occurrence_reference_not_occurrence` diagnostic
   checks SysML 8.3.9.2 `validateEventOccurrenceUsageReference`.
 

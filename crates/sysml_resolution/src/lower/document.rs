@@ -315,6 +315,7 @@ impl SemanticModelBuilder {
                     })
                     .collect::<Result<Vec<_>, ConstructionError>>()?
                     .into_boxed_slice(),
+                chaining_feature_ends: reference.chaining_feature_ends.clone(),
                 span: reference.span,
             });
         }

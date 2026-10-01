@@ -57,6 +57,24 @@ package Crossings {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_cross_feature_specialization.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "cross_subsetting_crossing_feature_invalid")
+        (source "semantic")
+        (range (start 6 41) (end 6 47))
+      )
+      (diagnostic
+        (severity warning)
+        (code "cross_subsetting_crossing_feature_invalid")
+        (source "semantic")
+        (range (start 13 43) (end 13 49))
+      )
+      (diagnostic
+        (severity warning)
+        (code "cross_subsetting_crossing_feature_invalid")
+        (source "semantic")
+        (range (start 20 41) (end 20 47))
+      )
     )
   )
 )

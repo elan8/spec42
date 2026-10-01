@@ -915,6 +915,23 @@ impl SemanticModelBuilder {
             .iter()
             .any(|segment| segment.separator_before == Some(ReferenceSeparator::Dot));
         let flags = RelationshipFlags { dotted, ..flags };
+        let chaining_feature_ends = if dotted {
+            let last = reference.segments.len().saturating_sub(1);
+            reference
+                .segments
+                .iter()
+                .enumerate()
+                .filter(|(index, segment)| {
+                    *index > 0 && segment.separator_before == Some(ReferenceSeparator::Dot)
+                })
+                .map(|(index, _)| index - 1)
+                .chain(std::iter::once(last))
+                .map(|index| u32::try_from(index).map_err(|_| ConstructionError::Capacity))
+                .collect::<Result<Vec<_>, _>>()?
+                .into_boxed_slice()
+        } else {
+            Box::default()
+        };
         let ordinal = self
             .next_reference_ordinals
             .entry((source, kind))
@@ -931,6 +948,7 @@ impl SemanticModelBuilder {
             import,
             flags,
             member_access_narrowings: Box::default(),
+            chaining_feature_ends,
             span,
         });
         Ok(id)
@@ -1143,6 +1161,7 @@ impl SemanticModelBuilder {
             import: None,
             flags: RelationshipFlags::default(),
             member_access_narrowings: Box::default(),
+            chaining_feature_ends: Box::default(),
             span,
         });
         Ok(id)

@@ -393,6 +393,20 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "cross_subsetting_crossing_feature_invalid",
+        severity: "warning",
+        meaning: "A `crosses` relationship is owned by a feature that is not an end feature of a type with at least two end features (KerML validateCrossSubsettingCrossingFeature).",
+        typical_fix: "Declare `crosses` only on an `end` feature of an association or connector with two or more ends.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "cross_subsetting_crossed_feature_invalid",
+        severity: "warning",
+        meaning: "The crossed feature of an end feature is not a two-feature chain through the opposite end (KerML validateCrossSubsettingCrossedFeature).",
+        typical_fix: "Cross a chain `otherEnd.feature` that starts with the opposite end feature.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "transition_trigger_source_not_state",
         severity: "warning",
         meaning: "A transition with an `accept` trigger has a source that is not a state usage (SysML validateTransitionUsageTriggerActions).",

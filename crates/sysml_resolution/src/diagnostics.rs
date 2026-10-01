@@ -496,6 +496,12 @@ semantic_diagnostic_codes! {
     /// SysML 8.3.9.2 `validateEventOccurrenceUsageReference`.
     EventOccurrenceReferenceNotOccurrence => "event_occurrence_reference_not_occurrence",
         "An event occurrence reference must name an occurrence usage.";
+    /// KerML 8.3.3.3.2 `validateCrossSubsettingCrossingFeature`.
+    CrossSubsettingCrossingFeatureInvalid => "cross_subsetting_crossing_feature_invalid",
+        "A crossing feature must be an end feature of a type with at least two end features.";
+    /// KerML 8.3.3.3.2 `validateCrossSubsettingCrossedFeature`.
+    CrossSubsettingCrossedFeatureInvalid => "cross_subsetting_crossed_feature_invalid",
+        "A crossed feature must be a two-feature chain through the opposite end feature.";
     /// SysML 8.3.18.9 `validateTransitionUsageTriggerActions`.
     TransitionTriggerSourceNotState => "transition_trigger_source_not_state",
         "A transition with a trigger must have a state usage as its source.";

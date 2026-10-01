@@ -172,7 +172,7 @@ summary = "ConjugatedPortDefinition is not published as a distinct declaration, 
 id = "lowering-kerml-feature-relationships"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "the crosses clause now lowers to a crossSubsetting relationship, but its target settles as unsupported_reference, so no resolved crossFeature is published for the rule to inspect"
+summary = "crosses targets resolve and validateCrossSubsetting{CrossingFeature,CrossedFeature} are checked, but Feature::crossFeature (the second chaining feature of an end feature's owned CrossSubsetting) is not derived, so validateFeatureCrossFeatureType/Specialization and checkFeatureOwnedCrossFeatureTypeFeaturing have no operand; those fixtures also cross from non-end features, which the crossing-feature rule rejects, and must move to end features when the derivation lands. A FeatureChainExpression whose target is not featured by its argument's result settles as unresolved_reference in resolution rather than as a typed targetFeature for validateFeatureChainExpressionConformance."
 
 [[issue]]
 id = "lowering-metadata-expressions"

@@ -28,7 +28,9 @@ use crate::model::query::ends::EndRelatedFeature;
 use crate::model::resolver::SemanticModel;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
+use crate::model::ReferenceKind;
 use crate::resolve::results::ResolutionError;
+use crate::resolve::results::ResolutionStatus;
 use crate::Diagnostic;
 use crate::DiagnosticCode;
 use crate::DiagnosticSeverity;
@@ -74,6 +76,8 @@ impl<D> SemanticModel<D> {
                 )?);
             }
 
+            self.collect_cross_subsetting_rules(id, declaration.owner, diagnostics)?;
+
             let is_abstract = facts.modifiers.effectively_abstract(declaration.kind);
             // A recovered member means the parser could not read part of the body, so the ends
             // it authored are unknown rather than few.
@@ -89,6 +93,89 @@ impl<D> SemanticModel<D> {
                     self.collect_connector_rules(id, declaration.kind, is_abstract, diagnostics)?;
                 }
                 _ => {}
+            }
+        }
+        Ok(())
+    }
+
+    /// KerML 8.3.3.3.2 `validateCrossSubsettingCrossingFeature` and
+    /// `validateCrossSubsettingCrossedFeature`, as the Pilot's `checkCrossSubsetting` evaluates
+    /// them over each authored CrossSubsetting (`crosses`):
+    ///
+    /// - the crossing feature is an end feature of an owning Type with at least two end features;
+    /// - when it is an end feature of an owning Type, the crossed feature is a feature chain of
+    ///   exactly two chaining features and, for a Type with exactly two end features, the first
+    ///   chaining feature is the other end.
+    ///
+    /// The chaining features are the canonical per-hop outcomes at the last segment of each
+    /// `.`-separated chaining feature of the dotted reference; a chain
+    /// hop or other end that did not settle to a declaration leaves the rule unanswered.
+    fn collect_cross_subsetting_rules(
+        &self,
+        id: DeclarationId,
+        owner: Option<DeclarationId>,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        let crossings = self.authored_references(id, &[ReferenceKind::Crosses]);
+        if crossings.is_empty() {
+            return Ok(());
+        }
+        let is_end = self.is_end_feature(id);
+        let ends = owner
+            .map(|owner| self.types.end_features(owner).collect::<Vec<_>>())
+            .unwrap_or_default();
+        for (reference_id, reference) in crossings {
+            if !is_end || owner.is_none() || ends.len() < 2 {
+                diagnostics.push(self.reference_diagnostic(
+                    reference,
+                    DiagnosticCode::CrossSubsettingCrossingFeatureInvalid,
+                    DiagnosticSeverity::Warning,
+                    None,
+                )?);
+            }
+            if !is_end || owner.is_none() {
+                continue;
+            }
+            let chain = if reference.flags.dotted {
+                let Some(path) = self.resolution.member_access_paths.get(&reference_id) else {
+                    continue;
+                };
+                reference
+                    .chaining_feature_ends
+                    .iter()
+                    .map(|end| {
+                        path.get(*end as usize)
+                            .copied()
+                            .unwrap_or(ResolutionStatus::Unresolved)
+                    })
+                    .collect::<Vec<_>>()
+            } else {
+                Vec::new()
+            };
+            let violated = if chain.len() != 2 {
+                true
+            } else if ends.len() == 2 {
+                let other = ends
+                    .iter()
+                    .find(|end| **end != OwnedEndFeature::Declared(id))
+                    .copied();
+                match (chain.first(), other) {
+                    (
+                        Some(ResolutionStatus::Resolved(first)),
+                        Some(OwnedEndFeature::Declared(other)),
+                    ) => *first != other,
+                    _ => continue,
+                }
+            } else {
+                false
+            };
+            if violated {
+                diagnostics.push(self.reference_diagnostic(
+                    reference,
+                    DiagnosticCode::CrossSubsettingCrossedFeatureInvalid,
+                    DiagnosticSeverity::Warning,
+                    None,
+                )?);
             }
         }
         Ok(())

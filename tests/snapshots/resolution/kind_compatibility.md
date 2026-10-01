@@ -225,6 +225,12 @@ package Kinds {
         )
       )
       (diagnostic
+        (severity warning)
+        (code "cross_subsetting_crossing_feature_invalid")
+        (source "semantic")
+        (range (start 97 43) (end 97 49))
+      )
+      (diagnostic
         (severity error)
         (code "specialization_cycle")
         (source "semantic")
