@@ -7,12 +7,15 @@ validation_rule=8.3.18.4 validateStateSubactionMembershipOwningType
 source_expectation=accepted
 rule_family=validate
 expectation=by_construction
+evidence_reference=file:tests/snapshots/validation/sysml_grammar_restricted_membership_owners.md
 rule_id=sysml-2.0:8.3.18.4:validateStateSubactionMembershipOwningType
-blocked_by=abstract-syntax-invalid-state-subaction-owner
 type=file
 ~~~
 # SOURCE
 ~~~sysml
+// The violating side has no textual counterpart: the grammar admits this element only in
+// state bodies (EntryActionMember, DoActionMember and ExitActionMember in StateBodyItem), whose owners all satisfy the rule.
+// sysml_grammar_restricted_membership_owners.md pins the parser rejecting a forbidden owner.
 package States {
     // Conforming: the subaction membership is owned by a state definition.
     state def Good {
@@ -29,7 +32,7 @@ package States {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
-        (range (start 3 21) (end 3 28))
+        (range (start 6 21) (end 6 28))
       )
     )
   )
@@ -38,7 +41,7 @@ package States {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b995c4fe9333c16fe09a1a2a335e210b820facda254707fd7da38590a5ac0dc9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e5f70a01cf2ec2c7fb02d9810c1f7296aefa6201cb48ab1ae079f21cccb1927e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (qualified-name "States"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (qualified-name "States::Good"))) (kind state-def) (membership (kind owning) (visibility default)))
@@ -67,7 +70,7 @@ package States {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (range (start 3 21) (end 3 28)) (probe (position 3 21))
+  (query (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (range (start 6 21) (end 6 28)) (probe (position 6 21))
     (reference (id (source (node (document "memory://snapshot/sysml_state_subaction_membership_owning_type.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entryActionBinding) (ordinal 0) (authored-target "started")
       (outcome (status unresolved)))
     )

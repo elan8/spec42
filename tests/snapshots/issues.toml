@@ -229,28 +229,10 @@ owner = "spec42-snapshot"
 summary = "Annotation ownership identities have no executable violating concrete-syntax form."
 
 [[issue]]
-id = "abstract-syntax-invalid-control-node-owner"
-kind = "abstract_syntax_coverage_gap"
-owner = "spec42-snapshot"
-summary = "the pinned parser rejects a control node outside an action body, reporting unexpected_keyword_in_scope, so the invalidly owned control node never reaches semantics"
-
-[[issue]]
 id = "parser-gap-directed-control-node"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
 summary = "SysML ControlNodePrefix is RefPrefix (direction, derived, abstract/variation, constant) plus individual/portion, so `in fork g;` is grammatical and denotes a non-composite (referential) control node, but the pinned parser reports it as recovered_action_body_element; once it parses, spec42 also needs the effective Usage::isComposite (false for a directed or end usage, Pilot UsageAdapter.postProcess) and a control_node_not_composite rule"
-
-[[issue]]
-id = "abstract-syntax-invalid-membership-owner"
-kind = "abstract_syntax_coverage_gap"
-owner = "spec42-snapshot"
-summary = "the pinned parser has no production for this membership outside its permitted owning type, so the invalid model is reported as unexpected_keyword_in_scope and never reaches semantics"
-
-[[issue]]
-id = "abstract-syntax-invalid-state-subaction-owner"
-kind = "abstract_syntax_coverage_gap"
-owner = "spec42-snapshot"
-summary = "the pinned parser has no production for an entry subaction outside a state, so the invalid owner is reported as unexpected_keyword_in_scope and never reaches semantics"
 
 [[issue]]
 id = "parser-gap-kerml-multiplicity-member"

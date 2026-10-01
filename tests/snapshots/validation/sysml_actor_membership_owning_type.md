@@ -7,12 +7,15 @@ validation_rule=8.3.21.2 validateActorMembershipOwningType
 source_expectation=accepted
 rule_family=validate
 expectation=by_construction
+evidence_reference=file:tests/snapshots/validation/sysml_grammar_restricted_membership_owners.md
 rule_id=sysml-2.0:8.3.21.2:validateActorMembershipOwningType
-blocked_by=abstract-syntax-invalid-membership-owner
 type=file
 ~~~
 # SOURCE
 ~~~sysml
+// The violating side has no textual counterpart: the grammar admits this element only in
+// requirement and case bodies (ActorMember in RequirementBodyItem and CaseBodyItem), whose owners all satisfy the rule.
+// sysml_grammar_restricted_membership_owners.md pins the parser rejecting a forbidden owner.
 package Roles {
     part def Component;
 
@@ -35,7 +38,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:617fde7413a062a14e8fe619dfe0f280b47f9b91887ffea2ed2dfaed258990ca"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5856d37f665ea97a0abb325870d0bb2dbcba471ebbf9f33de9adb21db6940918"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -85,12 +88,12 @@ package Roles {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_actor_membership_owning_type.md") (range (start 5 23) (end 5 32)) (probe (position 5 23))
+  (query (document "memory://snapshot/sysml_actor_membership_owning_type.md") (range (start 8 23) (end 8 32)) (probe (position 8 23))
     (reference (id (source (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Component")))))
     )
   )
-  (query (document "memory://snapshot/sysml_actor_membership_owning_type.md") (range (start 6 25) (end 6 34)) (probe (position 6 25))
+  (query (document "memory://snapshot/sysml_actor_membership_owning_type.md") (range (start 9 25) (end 9 34)) (probe (position 9 25))
     (reference (id (source (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Good::operator"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_actor_membership_owning_type.md") (qualified-name "Roles::Component")))))
     )
