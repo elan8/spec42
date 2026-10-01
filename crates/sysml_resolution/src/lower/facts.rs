@@ -43,6 +43,10 @@ pub(crate) struct RelationshipFlags {
     pub(crate) implied: bool,
     pub(crate) recursive: bool,
     pub(crate) wildcard: bool,
+    /// The authored target uses the bracketed filtered-import shape. View exposes retain this
+    /// separately from namespace wildcards so the exposed-element query can report the shape as
+    /// unsupported instead of treating its resolved namespace as an explicitly exposed element.
+    pub(crate) filtered: bool,
     pub(crate) direction: Option<ParameterDirection>,
     /// Mirrors the `variation` keyword prefix (BNF `BasicDefinitionPrefix`, `DefinitionPrefix::
     /// Variation`) on the owning `part`/`part def` declaration whose `FeatureTyping`/

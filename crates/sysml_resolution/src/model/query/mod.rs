@@ -74,6 +74,7 @@ use crate::resolve::implied::GENERATED_LIBRARY_REDEFINITION_RULES;
 use crate::resolve::is_action_usage_declaration;
 use crate::resolve::is_usage_declaration;
 use crate::resolve::names::lookup_lexical_into;
+use crate::resolve::names::EffectiveVisibility;
 use crate::resolve::names::FirstScopePolicy;
 use crate::resolve::names::LookupTarget;
 use crate::resolve::requirement_derived_membership_role;
@@ -146,6 +147,10 @@ use crate::SymbolId;
 use crate::SymbolToken;
 use crate::TextPosition;
 use crate::TextRange;
+use crate::ViewExposedElements;
+use crate::ViewExposureObstacle;
+use crate::ViewSelectionObstacle;
+use crate::ViewSelectionOutcome;
 
 use source_identity::PublicationModelDigest;
 use source_identity::RootDigest;
@@ -2806,6 +2811,206 @@ impl<D> SemanticModel<D> {
                 }),
         );
         self.resolved_outcome(values)
+    }
+
+    /// Projects `ViewUsage::exposedElement` from owned expose members and effective filters.
+    /// Namespace exposes expand their importable members; the target namespace itself is not an
+    /// exposed element merely because it is the reference's resolution target.
+    pub(crate) fn view_exposed_elements(
+        &self,
+        symbol: SymbolId,
+    ) -> QueryOutcome<ViewExposedElements> {
+        let view = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        if self
+            .storage
+            .declaration(view)
+            .is_none_or(|value| value.kind != DeclarationKind::ViewUsage)
+        {
+            return self.query_outcome(QueryAnswer::Unsupported);
+        }
+
+        let mut candidates = std::collections::BTreeSet::new();
+        let mut obstacles = std::collections::BTreeSet::new();
+        for exposure in self
+            .child_declarations(view)
+            .iter()
+            .copied()
+            .filter(|candidate| {
+                self.storage
+                    .declaration(*candidate)
+                    .is_some_and(|value| value.kind == DeclarationKind::Expose)
+            })
+        {
+            let Some(exposure_symbol) = self.symbol_id(exposure) else {
+                return self.query_outcome(QueryAnswer::Unsupported);
+            };
+            let references = self
+                .outgoing_reference_ids(exposure)
+                .iter()
+                .copied()
+                .filter(|reference| {
+                    self.storage.references[reference.index()].kind == ReferenceKind::ViewExpose
+                })
+                .collect::<Vec<_>>();
+            let [reference_id] = references.as_slice() else {
+                obstacles.insert(ViewExposureObstacle::ExposureUnsupported {
+                    exposure: exposure_symbol,
+                });
+                continue;
+            };
+            let reference = &self.storage.references[reference_id.index()];
+            if reference.flags.filtered {
+                obstacles.insert(ViewExposureObstacle::ExposureUnsupported {
+                    exposure: exposure_symbol,
+                });
+                continue;
+            }
+            match self.resolution.outcome(*reference_id) {
+                // Every Type is a Namespace, so `vehicle::*` on a part usage exposes its members
+                // just as `Catalog::*` does on a package. An alias target is not expanded here.
+                Some(ResolutionStatus::Resolved(target))
+                    if self
+                        .storage
+                        .declaration(target)
+                        .is_none_or(|value| value.kind == DeclarationKind::Alias)
+                        && (reference.flags.wildcard || reference.flags.recursive) =>
+                {
+                    obstacles.insert(ViewExposureObstacle::ExposureUnsupported {
+                        exposure: exposure_symbol,
+                    });
+                }
+                Some(ResolutionStatus::Resolved(target)) if reference.flags.wildcard => {
+                    self.collect_exposed_namespace_members(
+                        target,
+                        reference.flags.recursive,
+                        &mut candidates,
+                    );
+                }
+                Some(ResolutionStatus::Resolved(target)) => {
+                    candidates.insert(target);
+                    if reference.flags.recursive {
+                        self.collect_exposed_namespace_members(target, true, &mut candidates);
+                    }
+                }
+                Some(ResolutionStatus::Ambiguous(range)) => {
+                    let values = range
+                        .slice(&self.resolution.ambiguous_candidates)
+                        .unwrap_or_default()
+                        .iter()
+                        .filter_map(|candidate| self.symbol_id(*candidate))
+                        .collect::<Vec<_>>()
+                        .into_boxed_slice();
+                    obstacles.insert(ViewExposureObstacle::ExposureAmbiguous {
+                        exposure: exposure_symbol,
+                        candidates: values,
+                    });
+                }
+                Some(ResolutionStatus::Unresolved) => {
+                    obstacles.insert(ViewExposureObstacle::ExposureUnresolved {
+                        exposure: exposure_symbol,
+                    });
+                }
+                Some(ResolutionStatus::Unsupported | ResolutionStatus::NonConverged) | None => {
+                    obstacles.insert(ViewExposureObstacle::ExposureUnsupported {
+                        exposure: exposure_symbol,
+                    });
+                }
+            }
+        }
+
+        let mut elements = Vec::new();
+        for candidate in candidates {
+            let Some(candidate_symbol) = self.symbol_id(candidate) else {
+                continue;
+            };
+            match self.view_selection(symbol, candidate_symbol).answer {
+                QueryAnswer::Resolved(selection) => match selection.outcome {
+                    ViewSelectionOutcome::Included => elements.push(candidate_symbol),
+                    ViewSelectionOutcome::Excluded => {}
+                    ViewSelectionOutcome::Indeterminate(selection_obstacles) => {
+                        for obstacle in selection_obstacles {
+                            obstacles.insert(match obstacle {
+                                ViewSelectionObstacle::UnresolvedPredicate => {
+                                    ViewExposureObstacle::FilterUnresolved {
+                                        candidate: candidate_symbol,
+                                    }
+                                }
+                                ViewSelectionObstacle::AmbiguousPredicate(predicates) => {
+                                    ViewExposureObstacle::FilterAmbiguous {
+                                        candidate: candidate_symbol,
+                                        predicates,
+                                    }
+                                }
+                                ViewSelectionObstacle::UnsupportedPredicate => {
+                                    ViewExposureObstacle::FilterUnsupported {
+                                        candidate: candidate_symbol,
+                                    }
+                                }
+                            });
+                        }
+                    }
+                },
+                QueryAnswer::Unresolved => {
+                    obstacles.insert(ViewExposureObstacle::FilterUnresolved {
+                        candidate: candidate_symbol,
+                    });
+                }
+                QueryAnswer::Ambiguous(_)
+                | QueryAnswer::Unsupported
+                | QueryAnswer::Recovery
+                | QueryAnswer::Incomplete => {
+                    obstacles.insert(ViewExposureObstacle::FilterUnsupported {
+                        candidate: candidate_symbol,
+                    });
+                }
+            }
+        }
+        self.resolved_outcome(ViewExposedElements {
+            view: symbol,
+            elements: elements.into_boxed_slice(),
+            obstacles: obstacles.into_iter().collect::<Vec<_>>().into_boxed_slice(),
+        })
+    }
+
+    /// The visible members of a Namespace: its owned members that are public or carry no
+    /// authored visibility, plus its public imports. Every Type is a Namespace, so this covers
+    /// `vehicle::*` on a part usage as well as `Catalog::*` on a package. A recursive expose
+    /// descends into each such member. Inherited memberships are not expanded: through the
+    /// library specialization chain they would expose every standard feature of `Part`.
+    fn collect_exposed_namespace_members(
+        &self,
+        target: DeclarationId,
+        recursive: bool,
+        into: &mut std::collections::BTreeSet<DeclarationId>,
+    ) {
+        // The name index treats a default-visibility member of a non-package owner as private
+        // for name lookup; for exposure only an authored `private`/`protected` hides a member.
+        let exposable = |member: DeclarationId| {
+            self.memberships.get(member).is_some_and(|membership| {
+                membership.visibility == EffectiveVisibility::Public || !membership.authored
+            })
+        };
+        let mut pending = vec![target];
+        let mut visited = std::collections::BTreeSet::new();
+        while let Some(namespace) = pending.pop() {
+            if !visited.insert(namespace) {
+                continue;
+            }
+            for (_, imported) in self.exported_imports.entries_for_owner(Some(namespace)) {
+                into.extend(imported.iter().copied());
+            }
+            for (_, named) in self.direct_names.entries_for_owner(Some(namespace)) {
+                for member in named.iter().copied().filter(|member| exposable(*member)) {
+                    into.insert(member);
+                    if recursive {
+                        pending.push(member);
+                    }
+                }
+            }
+        }
     }
 
     /// Projects `deriveNamespaceImportImportedElement` for every direct authored NamespaceImport

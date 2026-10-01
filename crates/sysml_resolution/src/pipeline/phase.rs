@@ -79,6 +79,7 @@ pub(crate) struct Resolved {
     sources: ParsedSources,
     direct_names: NameIndex,
     effective_imports: NameIndex,
+    exported_imports: NameIndex,
     memberships: MembershipIndex,
     resolution: ResolutionResults,
     completeness: PublicationCompleteness,
@@ -90,6 +91,7 @@ pub(crate) struct Evaluated {
     sources: ParsedSources,
     direct_names: NameIndex,
     effective_imports: NameIndex,
+    exported_imports: NameIndex,
     memberships: MembershipIndex,
     resolution: ResolutionResults,
     evaluation: Box<[EvaluationFact]>,
@@ -135,18 +137,19 @@ impl Lowered {
                 &library_anchors,
             )?;
         let shadowed_library_roots = crate::resolve::library_seed::shadowed_library_roots(&storage);
-        let (direct_names, effective_imports, memberships, resolution) = resolve_dense(
-            &storage.declarations,
-            Some(&storage.declaration_facts),
-            &storage.memberships,
-            &storage.paths,
-            &storage.references,
-            crate::resolve::ResolutionStartingState {
-                provisional_relationships: &provisional_library_specializations,
-                settled_outcomes: seed,
-                shadowed_library_roots: &shadowed_library_roots,
-            },
-        )?;
+        let (direct_names, effective_imports, exported_imports, memberships, resolution) =
+            resolve_dense(
+                &storage.declarations,
+                Some(&storage.declaration_facts),
+                &storage.memberships,
+                &storage.paths,
+                &storage.references,
+                crate::resolve::ResolutionStartingState {
+                    provisional_relationships: &provisional_library_specializations,
+                    settled_outcomes: seed,
+                    shadowed_library_roots: &shadowed_library_roots,
+                },
+            )?;
         let authored_relationships = storage
             .relationship_declarations
             .iter()
@@ -440,6 +443,7 @@ impl Lowered {
             sources,
             direct_names,
             effective_imports,
+            exported_imports,
             memberships,
             resolution,
             completeness,
@@ -460,6 +464,7 @@ impl Resolved {
             sources: self.sources,
             direct_names: self.direct_names,
             effective_imports: self.effective_imports,
+            exported_imports: self.exported_imports,
             memberships: self.memberships,
             resolution: self.resolution,
             evaluation,
@@ -514,6 +519,7 @@ impl Evaluated {
             storage: self.storage,
             direct_names: self.direct_names,
             effective_imports: self.effective_imports,
+            exported_imports: self.exported_imports,
             identities,
             qualified_names,
             documents,
@@ -559,6 +565,7 @@ impl Indexed {
                 storage: self.storage,
                 direct_names: self.direct_names,
                 effective_imports: self.effective_imports,
+                exported_imports: self.exported_imports,
                 identities: self.identities,
                 qualified_names: self.qualified_names,
                 documents: self.documents,

@@ -51,7 +51,8 @@ pub use sysml_resolution::{
     TypeDerivedFactPrerequisite, TypeDerivedFactValue, TypeDerivedRelationshipCollection,
     TypeFeaturingCheckKind, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
     TypeReference, UnitResolution, ValueKind, VerificationOutcome, VerificationRequirement,
-    Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
+    ViewExposedElements, ViewExposureObstacle, Visibility, VisibilityProvenance, VisibleMemberRef,
+    VisibleMembers,
 };
 
 pub use sysml_resolution::source::RootDigest;
@@ -664,6 +665,13 @@ impl InspectionQueries<'_> {
     /// Everything the publication knows about one element.
     pub fn inspect(&self, symbol: SymbolId) -> QueryOutcome<ElementInspection> {
         self.model.inspect(symbol)
+    }
+
+    /// The canonical `ViewUsage::exposedElement` result for any view usage, independent of the
+    /// diagram catalog. Elements are deduplicated in canonical identity order; obstacles retain
+    /// unresolved or unsupported expose and filter facts alongside the usable subset.
+    pub fn exposed_elements(&self, view: SymbolId) -> QueryOutcome<ViewExposedElements> {
+        self.model.view_exposed_elements(view)
     }
 
     /// Resolves a canonical Membership relationship identity without substituting its member
