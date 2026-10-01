@@ -53,6 +53,9 @@ pub(crate) enum ImpliedBindingRule {
     /// `checkTransitionUsageSourceBindingConnector` (SysML 8.3.18.9): a TransitionUsage binds its
     /// `source` to its first input parameter.
     TransitionUsageSource,
+    /// `checkTransitionUsageSuccessionBindingConnector` (SysML 8.3.18.9): a TransitionUsage binds
+    /// its succession to its `transitionLink` feature.
+    TransitionUsageSuccession,
 }
 
 /// The canonical `featuringType` of a FeatureValue binding connector.
@@ -217,7 +220,8 @@ impl BindingConnectorIndex {
             BindingConnectorCheckKind::FeatureValue
             | BindingConnectorCheckKind::FeatureReferenceExpression
             | BindingConnectorCheckKind::InvocationExpressionBehavior
-            | BindingConnectorCheckKind::TransitionUsageSource => {
+            | BindingConnectorCheckKind::TransitionUsageSource
+            | BindingConnectorCheckKind::TransitionUsageSuccession => {
                 if self.undecided.contains(&rule) {
                     return BindingConnectorValidationOutcome::Unresolved;
                 }
@@ -272,12 +276,6 @@ impl BindingConnectorIndex {
                 BindingConnectorValidationOutcome::Unsupported {
                     prerequisite:
                         BindingConnectorValidationPrerequisite::AcceptActionUsageReceiverEndpointFacts,
-                }
-            }
-            BindingConnectorCheckKind::TransitionUsageSuccession => {
-                BindingConnectorValidationOutcome::Unsupported {
-                    prerequisite:
-                        BindingConnectorValidationPrerequisite::TransitionUsageSuccessionEndpointFacts,
                 }
             }
             BindingConnectorCheckKind::SatisfyRequirementUsage => {
@@ -394,8 +392,43 @@ fn required_implied_bindings(
                 });
             }
         }
+        BindingConnectorCheckKind::TransitionUsageSuccession => {
+            let links = transition_members(storage, |facts| facts.is_transition_link);
+            for (transition, succession) in
+                transition_members(storage, |facts| facts.is_transition_succession)
+            {
+                let Some(link) = links.get(&transition) else {
+                    continue;
+                };
+                required.push(RequiredBinding {
+                    origin: BindingConnectorOrigin::Implied {
+                        owner: transition,
+                        rule: ImpliedBindingRule::TransitionUsageSuccession,
+                    },
+                    left: succession,
+                    right: *link,
+                });
+            }
+        }
         _ => {}
     }
+}
+
+/// The member each TransitionUsage owns with the lowering role `role` selects, by transition.
+fn transition_members(
+    storage: &SemanticModelStorage,
+    role: impl Fn(&crate::lower::facts::DeclarationFacts) -> bool,
+) -> std::collections::BTreeMap<DeclarationId, DeclarationId> {
+    storage
+        .declarations
+        .iter()
+        .zip(storage.declaration_facts.iter())
+        .enumerate()
+        .filter(|(_, (_, facts))| role(facts))
+        .filter_map(|(index, (declaration, _))| {
+            Some((declaration.owner?, DeclarationId::from_index(index).ok()?))
+        })
+        .collect()
 }
 
 /// Each TransitionUsage's first input parameter, by transition.
@@ -431,6 +464,7 @@ fn implied_binding_connectors(
         BindingConnectorCheckKind::FeatureReferenceExpression,
         BindingConnectorCheckKind::InvocationExpressionBehavior,
         BindingConnectorCheckKind::TransitionUsageSource,
+        BindingConnectorCheckKind::TransitionUsageSuccession,
     ] {
         required_implied_bindings(storage, resolution, rule, &mut required);
     }

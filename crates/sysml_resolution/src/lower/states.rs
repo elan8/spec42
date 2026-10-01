@@ -605,6 +605,7 @@ impl SemanticModelBuilder {
         )?;
         self.lower_transition_succession(document, declaration, node)?;
         self.lower_transition_source_parameter(document, declaration, node.span)?;
+        self.lower_transition_link(document, declaration, node.span)?;
         if let Some(guard) = &node.value.guard {
             let guard_expression = self.push_typed_declaration(
                 document,
@@ -821,6 +822,32 @@ impl SemanticModelBuilder {
             span,
         )?;
         Ok(parameter)
+    }
+
+    /// Publishes a TransitionUsage's `transitionLink` feature.
+    ///
+    /// Every TransitionUsage owns a succession, so `TransitionUsageAdapter.
+    /// computeTransitionLinkConnectors` adds this anonymous ReferenceUsage to each one;
+    /// `checkTransitionUsageSuccessionBindingConnector` binds it to that succession.
+    fn lower_transition_link(
+        &mut self,
+        document: DocumentIdx,
+        transition: DeclarationId,
+        span: Span,
+    ) -> Result<DeclarationId, ConstructionError> {
+        let link = self.push_typed_declaration(
+            document,
+            Some(transition),
+            DeclarationKind::ReferenceUsage,
+            None,
+            span,
+            DeclarationFacts {
+                is_transition_link: true,
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(link, MembershipKind::Feature, Visibility::Default, span)?;
+        Ok(link)
     }
 
     /// Publishes the `AcceptActionUsage` owned through a transition's typed trigger membership.

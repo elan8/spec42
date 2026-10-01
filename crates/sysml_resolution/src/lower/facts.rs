@@ -289,6 +289,9 @@ pub(crate) struct DeclarationFacts {
     /// This ParameterUsage is the TransitionUsage's first input parameter, the grammar's
     /// `EmptyParameterMember` that `checkTransitionUsageSourceBindingConnector` binds to `source`.
     pub(crate) is_transition_source_parameter: bool,
+    /// This ReferenceUsage is the TransitionUsage's `transitionLink` feature, which
+    /// `checkTransitionUsageSuccessionBindingConnector` binds to the transition's succession.
+    pub(crate) is_transition_link: bool,
     /// This ParameterUsage is the TransitionUsage's synthesized second input parameter.
     pub(crate) is_transition_payload_parameter: bool,
     /// This ParameterUsage is the payload parameter of a transition's trigger AcceptActionUsage.

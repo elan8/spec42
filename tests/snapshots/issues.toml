@@ -281,10 +281,3 @@ id = "semantic-feature-chaining-featured-within"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
 summary = "feature_chaining_not_featured_within_previous does not exist: the member-access resolver looks each `.` hop up only among the owned and inherited members of the previous hop's types, so a chaining feature not featured within the previous one is reported unresolved_reference instead of resolving; a settled violation needs a hop visible through the previous hop's imports, which that resolver does not consult"
-
-[[issue]]
-id = "lowering-gap-binding-connector-transition-link-endpoints"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "The transition succession is lowered, but the anonymous ReferenceUsage TransitionUsageAdapter.computeTransitionLinkConnectors adds to a TransitionUsage (its transitionLink feature) is not, so checkTransitionUsageSuccessionBindingConnector has no endpoint to bind the succession to and stays Unsupported(TransitionUsageSuccessionEndpointFacts)."
-
