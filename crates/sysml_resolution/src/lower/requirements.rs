@@ -468,11 +468,12 @@ impl SemanticModelBuilder {
     /// fabricate a subject. The `assert` prefix and the `not` negation (`negated`) do not
     /// change how the references resolve.
     ///
-    /// Out of scope, left as an explicit `family` unsupported diagnostic: the
-    /// `'requirement' UsageDeclaration` alternative (`SatisfiedRequirement::Declaration`, which
-    /// declares a new requirement inline rather than referencing an existing one -- a meaningfully
-    /// different construct, not merely an unresolved reference) and the members of the
-    /// `RequirementBody` the usage owns.
+    /// The `'requirement' UsageDeclaration` alternative (`SatisfiedRequirement::Declaration`)
+    /// declares the satisfied requirement inline: the satisfy usage *is* that requirement usage
+    /// (8.4.17.3), named by the declaration and typed by the shared `FeatureSpecializationPart`.
+    /// It carries no `SatisfySource` reference, and the satisfy projection publishes the usage
+    /// itself as the satisfied requirement. Out of scope, left as an explicit `family`
+    /// unsupported diagnostic: the members of the `RequirementBody` the usage owns.
     pub(crate) fn lower_satisfy(
         &mut self,
         document: DocumentIdx,
@@ -523,6 +524,23 @@ impl SemanticModelBuilder {
                 subject.value.reference,
             )?;
         }
+        // The satisfy usage's own `FeatureSpecializationPart`, shared by both requirement
+        // alternatives (the parser keeps it beside them): `satisfy requirement r : R by x` types
+        // the declared requirement usage `r` by `R` (8.4.17.3).
+        if let Some(typing) = &node.value.typing {
+            self.lower_typing_relationship_impl(document, declaration, typing, false, None)?;
+        }
+        for relationship in [
+            node.value.subsets.as_ref(),
+            node.value.redefines.as_ref(),
+            node.value.references.as_ref(),
+            node.value.crosses.as_ref(),
+        ]
+        .into_iter()
+        .flatten()
+        {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
         self.lower_requirement_shaped_body(document, declaration, &node.value.body, family)
     }
 
@@ -558,6 +576,24 @@ impl SemanticModelBuilder {
                     &[reference],
                     span,
                 )?;
+            } else if matches!(
+                kind,
+                ReferenceKind::SatisfySource | ReferenceKind::SatisfyTarget
+            ) {
+                // `satisfy R by a.b`: the `by` operand is a feature chain (SysML 8.2.2.21.2,
+                // `SatisfactionReferenceExpression` -> `FeatureChainMember` ->
+                // `OwnedFeatureChain`), and the chain as a whole is the satisfying feature
+                // (8.3.21.10). It keeps its satisfy role and is marked dotted, so the resolver
+                // walks it hop by hop (`member_access_slots`) and the satisfy projection
+                // publishes the chain.
+                let id = self.push_member_access_reference_with_kind(
+                    declaration,
+                    document,
+                    kind,
+                    &[reference],
+                    span,
+                )?;
+                self.references[id.index()].flags.dotted = true;
             } else {
                 self.push_member_access_reference(declaration, document, &[reference], span)?;
             }

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **A feature-chain satisfying element resolves (#213).** `satisfy R by a.b` names a feature chain
+  (SysML v2 8.2.2.21.2), and the chain as a whole is the satisfying feature (8.3.21.10). It used to
+  publish `SatisfyEndpoint::Unsupported`; it now publishes `SatisfyEndpoint::FeatureChain` with the
+  feature each segment resolves to, in order (`a`, then `b`), and the authored segments. A chain
+  with an unresolved hop is `Unresolved`. The dotted operand keeps its `satisfyTarget` reference
+  kind (it was `memberAccessOperand`), resolved hop by hop.
+  - Generator ABI: `SatisfyEndpoint` gains `FeatureChain { path, authored }`. The wire schema
+    fingerprint and compatibility token move, so every guest must be rebuilt.
+- **`satisfy requirement r : R by x` publishes its requirement (#220).** The inline-declaration
+  form of satisfy published its requirement end as `Unsupported` and dropped its `: R` typing. The
+  satisfy usage is itself the declared requirement usage (SysML v2 8.4.17.3), so its requirement
+  end is now the usage itself, typed by `R`. The satisfy usage's own specialization clauses
+  (`:`, `:>`, `:>>`, `::>`, `crosses`) are lowered in both forms.
+
 - **Interconnection connectors show their name or type (#215).** A connector is labelled with its
   authored name, else its type (`: PowerLink`); an anonymous, untyped `connect a to b` stays
   unlabelled instead of reading `connector`. Labels inside a container part are placed again:

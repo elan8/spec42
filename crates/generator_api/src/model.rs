@@ -129,6 +129,12 @@ pub enum RequirementUsageTypingSummary {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SatisfyEndpointSummary {
     Resolved(ElementSummary),
+    /// A feature chain (`satisfy R by a.b.c`), every hop resolved; see
+    /// `sysml_query::resolved_slice::SatisfyEndpoint::FeatureChain`.
+    FeatureChain {
+        path: Vec<ElementSummary>,
+        authored: String,
+    },
     Ambiguous(Vec<ElementSummary>),
     Unresolved,
     Unsupported,
@@ -551,6 +557,15 @@ impl GeneratorModelView {
             Ok(match value {
                 OwnedEndpoint::Resolved(identity) => {
                     SatisfyEndpointSummary::Resolved(self.summary(identity)?)
+                }
+                OwnedEndpoint::FeatureChain { path, authored } => {
+                    SatisfyEndpointSummary::FeatureChain {
+                        path: path
+                            .iter()
+                            .map(|hop| self.summary(hop))
+                            .collect::<Result<Vec<_>, _>>()?,
+                        authored: authored.to_string(),
+                    }
                 }
                 OwnedEndpoint::Ambiguous(values) => SatisfyEndpointSummary::Ambiguous(
                     values

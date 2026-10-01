@@ -637,6 +637,14 @@ pub enum RequirementUsageTyping {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub enum SatisfyEndpoint {
     Resolved(ElementSummary),
+    /// A feature chain (`satisfy R by a.b.c`), every hop resolved: the feature each authored
+    /// segment resolves to, in order, and the authored segments `::`-joined (`a::b::c`). The
+    /// chain as a whole is the satisfying feature; its last hop is only the declaration the chain
+    /// ends at.
+    FeatureChain {
+        path: Vec<ElementSummary>,
+        authored: String,
+    },
     Ambiguous(Vec<ElementSummary>),
     Unresolved,
     Unsupported,
@@ -1238,7 +1246,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x4d17_44a4_bb18_d9be,
+            SCHEMA_FINGERPRINT, 0xcc04_4d40_b564_e08f,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1246,7 +1254,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xfe7b_3c60_64f1_8e26,
+            COMPATIBILITY_TOKEN, 0x70fe_02c0_7dfa_c729,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }
