@@ -295,12 +295,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule checks that a feature reference expression referent is a Feature; the canonical code feature_reference_referent_not_feature does not exist yet"
 
 [[issue]]
-id = "semantic-feature-value-overrides-non-default"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule checks whether a redefined feature value is a default before it is overridden; the canonical code feature_value_overrides_non_default does not exist yet"
-
-[[issue]]
 id = "semantic-filter-condition-not-model-level-evaluable"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"

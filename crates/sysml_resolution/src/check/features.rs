@@ -118,7 +118,70 @@ impl<D> SemanticModel<D> {
             self.collect_individual_definitions(id, declaration.kind, facts, diagnostics)?;
         }
         self.collect_initial_feature_values(document, diagnostics)?;
+        self.collect_feature_value_overriding(document, diagnostics)?;
         self.collect_feature_chaining_rules(document, diagnostics)
+    }
+
+    /// KerML 8.3.4.10.2 `validateFeatureValueOverriding`: every feature directly or indirectly
+    /// redefined by a FeatureValue's `featureWithValue` has only default FeatureValues.
+    ///
+    /// The redefined features are the settled specialization closure restricted to Redefinition
+    /// edges (authored and implied alike, as the Pilot's `getAllRedefinedFeaturesOf` is). The
+    /// violation is reported at the overriding feature, with the overridden feature related.
+    fn collect_feature_value_overriding(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        use crate::index::types::ScopeBits;
+        let valuations = self
+            .storage
+            .feature_values
+            .iter()
+            .map(|value| (value.declaration, value))
+            .collect::<std::collections::BTreeMap<_, _>>();
+        for value in self.storage.feature_values.iter() {
+            let feature = self
+                .storage
+                .declaration(value.declaration)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            if feature.document != document {
+                continue;
+            }
+            let mut overridden = self
+                .types
+                .specialization()
+                .scoped_ancestors(value.declaration)
+                .map(|(ancestor, _)| ancestor)
+                .filter(|ancestor| {
+                    self.types.specialization().reaches(
+                        value.declaration,
+                        *ancestor,
+                        ScopeBits::Redefinition,
+                    )
+                })
+                .filter(|ancestor| {
+                    valuations
+                        .get(ancestor)
+                        .is_some_and(|redefined| !redefined.is_default)
+                })
+                .collect::<Vec<_>>();
+            overridden.sort_by_key(|ancestor| self.declaration_range(*ancestor));
+            let Some(first) = overridden.first() else {
+                continue;
+            };
+            let mut diagnostic = self.declaration_diagnostic(
+                value.declaration,
+                DiagnosticCode::FeatureValueOverridesNonDefault,
+                DiagnosticSeverity::Warning,
+            )?;
+            diagnostic.related = Box::from([self.related_declaration(
+                *first,
+                crate::check::conformance::RELATED_DECLARED,
+            )?]);
+            diagnostics.push(diagnostic);
+        }
+        Ok(())
     }
 
     /// KerML 8.3.3.3.4 `validateFeatureChainingFeatureNotOne` and

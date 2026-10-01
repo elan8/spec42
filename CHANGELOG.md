@@ -12,7 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `validateFeaturePortionNotVariable` (`portion_feature_is_variable`), KerML 8.3.4.10.2
   `validateFeatureValueIsInitial` (`initial_value_feature_not_variable`, an `:=` value on a
   feature that is not variable) and SysML 8.3.9.4 `validateOccurrenceUsagePortionKind`
-  (`portion_owner_not_occurrence`).
+  (`portion_owner_not_occurrence`), and KerML `validateFeatureValueOverriding`
+  (`feature_value_overrides_non_default`, a value on a feature that redefines a feature whose
+  value is bound rather than `default`).
 
 - **Individual occurrence validations.** SysML 8.3.9.4 `validateOccurrenceUsageIndividualDefinition`
   (`occurrence_multiple_individual_definitions`) and `validateOccurrenceUsageIndividualUsage`

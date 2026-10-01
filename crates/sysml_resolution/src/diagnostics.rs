@@ -536,6 +536,9 @@ semantic_diagnostic_codes! {
     /// KerML 8.3.4.10.2 `validateFeatureValueIsInitial`.
     InitialValueFeatureNotVariable => "initial_value_feature_not_variable",
         "An initial value (`:=`) requires a variable feature.";
+    /// KerML 8.3.4.10.2 `validateFeatureValueOverriding`.
+    FeatureValueOverridesNonDefault => "feature_value_overrides_non_default",
+        "A feature value may only override default values of the features it redefines.";
     /// SysML 8.3.9.4 `validateOccurrenceUsageIndividualDefinition`.
     OccurrenceMultipleIndividualDefinitions => "occurrence_multiple_individual_definitions",
         "An occurrence usage may have at most one individual occurrence definition.";

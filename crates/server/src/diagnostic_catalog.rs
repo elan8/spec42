@@ -449,6 +449,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "feature_value_overrides_non_default",
+        severity: "warning",
+        meaning: "A feature with a value redefines (directly or indirectly) a feature whose value is bound with `=` or `:=` rather than given as a `default`, so the bound value cannot be overridden (KerML validateFeatureValueOverriding).",
+        typical_fix: "Declare the redefined feature's value as `default`, or drop the overriding value.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "variable_feature_owner_not_occurrence",
         severity: "warning",
         meaning: "A KerML feature declared `var` (or `const`, which implies variable) has no owning type, or its owning type does not specialize Occurrences::Occurrence (KerML validateFeatureIsVariable).",
