@@ -169,12 +169,6 @@ owner = "spec42-semantic"
 summary = "ConjugatedPortDefinition is not published as a distinct declaration, so neither side of the rule can be observed in SMG"
 
 [[issue]]
-id = "lowering-event-occurrence-reference"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "the referenced feature of an event occurrence usage parses but sysml_resolution settles it as unsupported_reference, so the reference target never reaches semantics"
-
-[[issue]]
 id = "lowering-kerml-feature-relationships"
 kind = "lowering_gap"
 owner = "spec42-semantic"

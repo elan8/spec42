@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Event occurrence references.** The new `event_occurrence_reference_not_occurrence` diagnostic
+  checks SysML 8.3.9.2 `validateEventOccurrenceUsageReference`.
+
 - **Asserted constraint references.** `assert <name>;` now lowers as an `AssertConstraintUsage`
   reference-subsetting the named feature instead of an unsupported member, and the new
   `assert_target_invalid_kind` diagnostic checks SysML 8.3.20.2

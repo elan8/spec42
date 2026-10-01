@@ -386,6 +386,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "event_occurrence_reference_not_occurrence",
+        severity: "warning",
+        meaning: "An `event occurrence` references a feature that is not an occurrence usage (SysML validateEventOccurrenceUsageReference).",
+        typical_fix: "Reference an occurrence usage (an `occurrence`, `item`, `part`, `action`, ...) as the event.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "transition_trigger_source_not_state",
         severity: "warning",
         meaning: "A transition with an `accept` trigger has a source that is not a state usage (SysML validateTransitionUsageTriggerActions).",

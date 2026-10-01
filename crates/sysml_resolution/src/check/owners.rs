@@ -204,6 +204,22 @@ impl<D> SemanticModel<D> {
                 diagnostics,
             )?;
         }
+        // SysML 8.3.9.2 `validateEventOccurrenceUsageReference`: the feature an `event
+        // occurrence` reference-subsets is an OccurrenceUsage. The `event` prefix is the
+        // EventOccurrenceUsage metaclass fact of an occurrence usage.
+        if self.metaclass_conforms(id, ElementKind::OccurrenceUsage)
+            && self
+                .storage
+                .declaration_facts(id)
+                .is_some_and(|facts| facts.modifiers.event)
+        {
+            self.collect_reference_subsetting_type(
+                id,
+                ElementKind::OccurrenceUsage,
+                DiagnosticCode::EventOccurrenceReferenceNotOccurrence,
+                diagnostics,
+            )?;
+        }
         if kind == DeclarationKind::MetadataUsage {
             self.collect_metadata_feature_typing(id, diagnostics)?;
         }
