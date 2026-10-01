@@ -1899,6 +1899,7 @@ pub(crate) fn is_usage_declaration(kind: DeclarationKind) -> bool {
             | DeclarationKind::Succession
             | DeclarationKind::ThenContinuation
             | DeclarationKind::Flow
+            | DeclarationKind::SuccessionFlow
             | DeclarationKind::StakeholderUsage
             | DeclarationKind::RequirementActor
             | DeclarationKind::CaseActor
@@ -2003,7 +2004,10 @@ pub(crate) fn definition_usage_candidate_matches(
             DeclarationKind::EnumerationUsage | DeclarationKind::EnumerationLiteral
         ),
         Collection::DefinitionOwnedFlow | Collection::UsageNestedFlow => {
-            matches!(kind, DeclarationKind::Flow)
+            matches!(
+                kind,
+                DeclarationKind::Flow | DeclarationKind::SuccessionFlow
+            )
         }
         // The pinned XMI body selects ReferenceUsage for both `ownedInterface` and
         // `nestedInterface`; the exact body, not the property suffix, is authoritative.

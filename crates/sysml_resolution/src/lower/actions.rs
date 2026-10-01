@@ -25,9 +25,9 @@ use sysml_v2_parser::ast::{
     ActionBranchBody, ActionDef, ActionDefBody, ActionDefBodyElement,
     ActionUsage as ParserActionUsage, ActionUsageBody, ActionUsageBodyElement, ActionUsageKeyword,
     AssignStmt, ControlNodeDeclaration, DefinitionBody, DefinitionBodyElement, Expression,
-    FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDeclaration, FlowDef, FlowUsage, ForLoop,
-    GuardedSuccession, IfStmt, MembershipKind as ParserMembershipKind, Node,
-    Perform as ParserPerform, PerformActionTarget, PerformBody, PerformBodyElement,
+    FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDeclaration, FlowDef, FlowUsage,
+    FlowUsageKind, ForLoop, GuardedSuccession, IfStmt, MembershipKind as ParserMembershipKind,
+    Node, Perform as ParserPerform, PerformActionTarget, PerformBody, PerformBodyElement,
     PerformInOutBinding, SendPayload, Span, SuccessionUsage, TerminateStmt, ThenAction, ThenTarget,
     TransitionAccept,
 };
@@ -1582,7 +1582,10 @@ impl SemanticModelBuilder {
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
-            DeclarationKind::Flow,
+            match node.value.kind {
+                FlowUsageKind::Flow | FlowUsageKind::Message => DeclarationKind::Flow,
+                FlowUsageKind::SuccessionFlow => DeclarationKind::SuccessionFlow,
+            },
             name,
             node.span,
             DeclarationFacts {

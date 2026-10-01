@@ -1173,6 +1173,7 @@ fn compartment_kind(kind: ElementKind) -> Option<DiagramCompartmentKind> {
         ElementKind::CalculationUsage => Compartment::Calculations,
         ElementKind::ConnectionUsage
         | ElementKind::FlowConnectionUsage
+        | ElementKind::SuccessionFlowUsage
         | ElementKind::BindingConnectorAsUsage
         | ElementKind::Connector
         | ElementKind::BindingConnector => Compartment::Connections,
@@ -1306,7 +1307,7 @@ fn sequence_scene(
     let messages = elements
         .iter()
         .enumerate()
-        .filter(|(_, element)| element.kind == ElementKind::FlowConnectionUsage)
+        .filter(|(_, element)| element.kind.conforms_to(ElementKind::FlowConnectionUsage))
         .filter(|(_, element)| is_direct_member(element))
         .map(|(index, element)| (index as u32, element))
         .collect::<Vec<_>>();
@@ -1699,6 +1700,7 @@ fn is_connector_edge_element(kind: ElementKind) -> bool {
             | ElementKind::InterfaceUsage
             | ElementKind::AllocationUsage
             | ElementKind::FlowConnectionUsage
+            | ElementKind::SuccessionFlowUsage
             | ElementKind::BindingConnectorAsUsage
     )
 }

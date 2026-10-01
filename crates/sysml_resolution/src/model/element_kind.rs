@@ -51,6 +51,7 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::Allocate => ElementKind::AllocationUsage,
         DeclarationKind::FlowDefinition => ElementKind::FlowConnectionDefinition,
         DeclarationKind::Flow => ElementKind::FlowConnectionUsage,
+        DeclarationKind::SuccessionFlow => ElementKind::SuccessionFlowUsage,
         DeclarationKind::ActionDefinition => ElementKind::ActionDefinition,
         DeclarationKind::ActionUsage => ElementKind::ActionUsage,
         DeclarationKind::AcceptActionUsage => ElementKind::AcceptActionUsage,
@@ -231,6 +232,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::Allocate
         | DeclarationKind::FlowDefinition
         | DeclarationKind::Flow
+        | DeclarationKind::SuccessionFlow
         | DeclarationKind::ActionDefinition
         | DeclarationKind::ActionUsage
         | DeclarationKind::AcceptActionUsage
@@ -419,6 +421,7 @@ mod tests {
         DeclarationKind::Join,
         DeclarationKind::ThenContinuation,
         DeclarationKind::Flow,
+        DeclarationKind::SuccessionFlow,
         DeclarationKind::StakeholderUsage,
         DeclarationKind::RequirementActor,
         DeclarationKind::CaseActor,

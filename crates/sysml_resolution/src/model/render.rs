@@ -2193,6 +2193,7 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::Join => "join",
         DeclarationKind::ThenContinuation => "then-continuation",
         DeclarationKind::Flow => "flow",
+        DeclarationKind::SuccessionFlow => "succession-flow",
         DeclarationKind::StakeholderUsage => "stakeholder",
         DeclarationKind::RequirementActor => "requirement-actor",
         DeclarationKind::CaseActor => "case-actor",

@@ -86,6 +86,9 @@ element_kinds! {
     AllocationUsage,
     FlowConnectionDefinition,
     FlowConnectionUsage,
+    /// A `succession flow`: a flow whose transfer starts after its source ends
+    /// (`SuccessionFlowUsage :> FlowUsage, SuccessionFlow`).
+    SuccessionFlowUsage,
     ActionDefinition,
     ActionUsage,
     /// An `ActionUsage` carrying the `accept` action form.
@@ -282,6 +285,9 @@ impl ElementKind {
             K::InterfaceUsage | K::AllocationUsage => &[K::ConnectionUsage],
             K::ActionUsage => &[K::OccurrenceUsage, K::Step],
             K::FlowConnectionUsage => &[K::ActionUsage, K::Connector],
+            // KerML `SuccessionFlow :> Flow, Succession`; `Flow` is not published, so the
+            // succession side is stated directly.
+            K::SuccessionFlowUsage => &[K::FlowConnectionUsage, K::Succession],
             K::AcceptActionUsage
             | K::SendActionUsage
             | K::TerminateActionUsage

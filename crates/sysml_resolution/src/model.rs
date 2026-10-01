@@ -574,6 +574,10 @@ pub(crate) enum DeclarationKind {
     /// out of scope -- only the bare two-operand statement form's `from`/`to` references are
     /// resolved here.
     Flow,
+    /// A `succession flow` (`ast::FlowUsageKind::SuccessionFlow`): lowered exactly like
+    /// [`DeclarationKind::Flow`], but its metaclass is `SuccessionFlowUsage`, whose transfer
+    /// happens after its source ends (`Flows::successionFlows`).
+    SuccessionFlow,
     /// A `stakeholder` member found in a requirement/viewpoint def body (BNF `StakeholderMember`,
     /// `ast::requirement::StakeholderMember`), e.g. `stakeholder driver : Driver;` inside
     /// `requirement def SafetyRequirement`. The typed AST folds three distinct textual shapes into

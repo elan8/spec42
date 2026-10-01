@@ -41,6 +41,7 @@ fn is_connector(kind: crate::model::DeclarationKind) -> bool {
             | ElementKind::InterfaceUsage
             | ElementKind::AllocationUsage
             | ElementKind::FlowConnectionUsage
+            | ElementKind::SuccessionFlowUsage
             | ElementKind::SuccessionAsUsage
             | ElementKind::BindingConnectorAsUsage
     )

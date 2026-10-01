@@ -519,8 +519,10 @@ pub(crate) fn library_specialization_metaclasses(
     if kind == crate::model::DeclarationKind::Satisfy && primary != "Feature" {
         metaclasses.push("Feature");
     }
-    if kind == crate::model::DeclarationKind::Flow {
-        metaclasses.push("Flow");
+    match kind {
+        crate::model::DeclarationKind::Flow => metaclasses.push("Flow"),
+        crate::model::DeclarationKind::SuccessionFlow => metaclasses.push("SuccessionFlow"),
+        _ => {}
     }
     metaclasses.sort_unstable();
     metaclasses.dedup();
@@ -2623,8 +2625,10 @@ pub(crate) fn conditional_library_specialization_predicate_holds(
                 && positional_end_count(storage, source) == 2
         }
         LibrarySpecializationPredicate::OwnedEndFeaturesNotEmpty => {
-            declaration.kind == DeclarationKind::Flow
-                && facts.owned_end_feature_count.is_some_and(|count| count > 0)
+            matches!(
+                declaration.kind,
+                DeclarationKind::Flow | DeclarationKind::SuccessionFlow
+            ) && facts.owned_end_feature_count.is_some_and(|count| count > 0)
         }
         LibrarySpecializationPredicate::OwnedTypingDataType
         | LibrarySpecializationPredicate::OwnedTypingClass
@@ -2870,9 +2874,13 @@ pub(crate) fn synthesize_generated_library_redefinitions(
         if authored_sources.contains(&source) {
             continue;
         }
-        for metaclass in std::iter::once(library_rule_metaclass(declaration.kind))
-            .chain((declaration.kind == DeclarationKind::Flow).then_some("Flow"))
-        {
+        for metaclass in std::iter::once(library_rule_metaclass(declaration.kind)).chain(
+            match declaration.kind {
+                DeclarationKind::Flow => Some("Flow"),
+                DeclarationKind::SuccessionFlow => Some("SuccessionFlow"),
+                _ => None,
+            },
+        ) {
             for rule in library_redefinition_rules(metaclass) {
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
                     anchor_facts.generated_outcome(rule.rule_id)
@@ -3022,6 +3030,7 @@ pub(crate) fn library_rule_metaclass(kind: DeclarationKind) -> &'static str {
     match kind {
         DeclarationKind::FlowDefinition => "FlowDefinition",
         DeclarationKind::Flow => "FlowUsage",
+        DeclarationKind::SuccessionFlow => "SuccessionFlowUsage",
         DeclarationKind::CalcDefinition => "CalculationDefinition",
         DeclarationKind::CalcUsage => "CalculationUsage",
         _ => element_kind::element_kind(kind).as_str(),

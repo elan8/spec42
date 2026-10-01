@@ -137,6 +137,7 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::InterfaceUsage
         | ElementKind::AllocationUsage
         | ElementKind::FlowConnectionUsage
+        | ElementKind::SuccessionFlowUsage
         | ElementKind::SuccessionAsUsage
         | ElementKind::SatisfyRequirementUsage
         | ElementKind::BindingConnectorAsUsage

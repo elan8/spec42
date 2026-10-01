@@ -146,7 +146,7 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         K::InterfaceDefinition => (F::Interface, Definition),
         K::InterfaceUsage => (F::Interface, Usage),
         K::FlowDefinition => (F::Flow, Definition),
-        K::Flow => (F::Flow, Usage),
+        K::Flow | K::SuccessionFlow => (F::Flow, Usage),
         K::AllocationDefinition => (F::Allocation, Definition),
         K::Allocate => (F::Allocation, Usage),
         K::ConstraintDefinition => (F::Constraint, Definition),

@@ -159,6 +159,7 @@ pub enum Metaclass {
     ParameterUsage,
     PurposeUsage,
     RequireConstraintUsage,
+    SuccessionFlowUsage,
     TerminateActionUsage,
     TextualRepresentation,
     VerdictUsage,
@@ -268,6 +269,7 @@ impl Metaclass {
             Self::ParameterUsage => "ParameterUsage",
             Self::PurposeUsage => "PurposeUsage",
             Self::RequireConstraintUsage => "RequireConstraintUsage",
+            Self::SuccessionFlowUsage => "SuccessionFlowUsage",
             Self::TerminateActionUsage => "TerminateActionUsage",
             Self::TextualRepresentation => "TextualRepresentation",
             Self::VerdictUsage => "VerdictUsage",
@@ -372,6 +374,7 @@ impl Metaclass {
             "ParameterUsage" => Self::ParameterUsage,
             "PurposeUsage" => Self::PurposeUsage,
             "RequireConstraintUsage" => Self::RequireConstraintUsage,
+            "SuccessionFlowUsage" => Self::SuccessionFlowUsage,
             "TerminateActionUsage" => Self::TerminateActionUsage,
             "TextualRepresentation" => Self::TextualRepresentation,
             "VerdictUsage" => Self::VerdictUsage,
@@ -1238,7 +1241,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x4d17_44a4_bb18_d9be,
+            SCHEMA_FINGERPRINT, 0x9b26_ea80_c1f0_5e3f,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1246,7 +1249,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xfe7b_3c60_64f1_8e26,
+            COMPATIBILITY_TOKEN, 0x0b15_80b3_a614_ffb1,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

@@ -2087,6 +2087,7 @@ fn diagram_notation_role(kind: ElementKind) -> DiagramNotationRole {
         | Metaclass::ParameterUsage
         | Metaclass::PurposeUsage
         | Metaclass::RequireConstraintUsage
+        | Metaclass::SuccessionFlowUsage
         | Metaclass::TerminateActionUsage
         | Metaclass::VerdictUsage
         | Metaclass::VerifyUsage
