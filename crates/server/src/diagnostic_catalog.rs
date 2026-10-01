@@ -379,6 +379,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "assignment_target_not_time_varying",
+        severity: "warning",
+        meaning: "An assignment's referent resolves to a feature that cannot have time-varying values: its featureTarget has isVariable = false, for example a feature not owned by an occurrence (SysML validateAssignmentActionUsage).",
+        typical_fix: "Assign to a feature of an occurrence definition or usage (which is variable unless it is a portion, a link participant, or a composite action), or stop assigning to this feature.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "unknown_unit_symbol",
         severity: "warning",
         meaning: "A value unit suffix names no unit in the admitted measurement libraries.",

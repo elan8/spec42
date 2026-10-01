@@ -403,12 +403,6 @@ owner = "sysml-v2-parser"
 summary = "at pinned 695b2b44 a bare `variation part def D;` / `variation part u : T;` parses, but pairing it with `abstract` in either order (`abstract variation part def Good;`) is still recovered at the package and part-definition body boundaries (and unsupported_grammar_form in an attribute body), so the abstractness rules cannot be exercised"
 
 [[issue]]
-id = "parser-gap-52-var-modifier"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "at pinned 695b2b44 the parser has no SysML `var` / `variable` feature-variability modifier, so `var attribute tracked : Reading;` in an occurrence definition body is unrecognized_declaration_in_scope and no time-varying fact reaches semantics"
-
-[[issue]]
 id = "semantic-association-end-type-not-one"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"

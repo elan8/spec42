@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Assignment targets must be variable.** `assign x := v;` now reports
+  `assignment_target_not_time_varying` when `x` cannot have time-varying values (SysML
+  `validateAssignmentActionUsage`), e.g. a package-owned attribute or a composite action.
+
 - **Control-node succession validations.** Successions attached to `decide` / `merge` / `fork` /
   `join` nodes are now checked against SysML 8.3.17.6-13: authored end multiplicities
   (`control_node_incoming_multiplicity`, `control_node_outgoing_multiplicity`,

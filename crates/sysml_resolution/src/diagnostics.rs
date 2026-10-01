@@ -467,6 +467,9 @@ semantic_diagnostic_codes! {
     /// An assignment's value has a type unrelated to the feature it assigns to.
     AssignmentValueIncompatible => "assignment_value_incompatible",
         "This value's type is unrelated to the feature it is assigned to.";
+    /// SysML 8.3.17.5 `validateAssignmentActionUsage`: the assigned feature is not variable.
+    AssignmentTargetNotTimeVarying => "assignment_target_not_time_varying",
+        "An assignment's target feature must be able to have time-varying values.";
     /// A unit token names no unit in the admitted measurement catalog.
     UnknownUnitSymbol => "unknown_unit_symbol",
         "This unit token names no unit in the admitted measurement catalog.";

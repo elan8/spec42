@@ -690,6 +690,44 @@ impl TypeIndex {
         UsageTimeVariationOutcome::Resolved(true)
     }
 
+    /// KerML `Feature::isVariable` for one Feature, or `None` when the declaration is not a
+    /// Feature and the property does not apply.
+    ///
+    /// SysML `Usage::mayTimeVary` redefines `isVariable` as a derived property, so a Usage answers
+    /// through [`Self::usage_may_time_vary`]. Any other (KerML) Feature carries the authored fact:
+    /// `var` sets it, and `const` sets it too because `isConstant implies isVariable`
+    /// (`validateFeatureConstantIsVariable`; the Pilot's `FeatureAdapter.setIsVariableIfConstant`).
+    pub(crate) fn feature_is_variable(
+        &self,
+        storage: &SemanticModelStorage,
+        feature: DeclarationId,
+    ) -> Option<UsageTimeVariationOutcome> {
+        use crate::model::DeclarationKind;
+        let declaration = storage.declaration(feature)?;
+        if crate::resolve::is_usage_declaration(declaration.kind) {
+            return Some(self.usage_may_time_vary(storage, feature));
+        }
+        if !matches!(
+            declaration.kind,
+            DeclarationKind::KermlFeature
+                | DeclarationKind::KermlStep
+                | DeclarationKind::KermlExpression
+                | DeclarationKind::KermlBooleanExpression
+                | DeclarationKind::KermlConnector
+                | DeclarationKind::KermlBinding
+                | DeclarationKind::KermlInvariant
+                | DeclarationKind::KermlEnd
+        ) {
+            return None;
+        }
+        let Some(facts) = storage.declaration_facts(feature) else {
+            return Some(UsageTimeVariationOutcome::Unresolved);
+        };
+        Some(UsageTimeVariationOutcome::Resolved(
+            facts.modifiers.var || facts.modifiers.constant,
+        ))
+    }
+
     /// The effective SysML `Usage::isReference` fact shared by its own derivation and every
     /// predicate, such as `mayTimeVary`, that consumes the complementary `isComposite` value.
     pub(crate) fn usage_is_reference(

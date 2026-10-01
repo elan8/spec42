@@ -78,6 +78,7 @@ impl<D> SemanticModel<D> {
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         self.collect_value_conformance(document, diagnostics)?;
+        self.collect_assignment_time_variation(document, diagnostics)?;
         self.collect_unit_conformance(document, diagnostics)?;
         self.collect_boolean_expressions(document, declared, diagnostics)?;
         self.collect_invocation_arity(document, diagnostics)?;
@@ -160,6 +161,62 @@ impl<D> SemanticModel<D> {
                     .describe()
                     .into(),
                 code: DiagnosticCode::AssignmentValueIncompatible,
+                severity: DiagnosticSeverity::Warning,
+                origin: DiagnosticOrigin::Semantic,
+                subject: self.symbol_id(reference.source),
+                location: DiagnosticLocation {
+                    document: writer::document_identity(self, document).into(),
+                    range: document_range(&self.storage, document, &source.span)?,
+                },
+                related: Box::from([
+                    self.related_declaration(target, conformance::RELATED_DECLARED)?
+                ]),
+            });
+        }
+        Ok(())
+    }
+
+    /// Reports an assignment whose referent cannot have time-varying values.
+    ///
+    /// SysML `validateAssignmentActionUsage` is `referent <> null implies
+    /// referent.featureTarget.isVariable`. The referent is the settled `AssignTarget` reference
+    /// (a qualified or dotted target already resolves to its featureTarget), and `isVariable` is
+    /// the canonical [`crate::index::types::TypeIndex::feature_is_variable`] fact. A target that
+    /// is unresolved, ambiguous, not a Feature, or whose variability depends on an unresolved
+    /// library anchor is left unanswered rather than reported.
+    pub(crate) fn collect_assignment_time_variation(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            if reference.kind != ReferenceKind::AssignTarget {
+                continue;
+            }
+            let source = self
+                .storage
+                .declaration(reference.source)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            if source.document != document {
+                continue;
+            }
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let Some(ResolutionStatus::Resolved(target)) = self.resolution.outcome(id) else {
+                continue;
+            };
+            if !matches!(
+                self.types.feature_is_variable(&self.storage, target),
+                Some(crate::index::types::UsageTimeVariationOutcome::Resolved(false))
+            ) {
+                continue;
+            }
+            diagnostics.push(Diagnostic {
+                payload: None,
+                message: DiagnosticCode::AssignmentTargetNotTimeVarying
+                    .describe()
+                    .into(),
+                code: DiagnosticCode::AssignmentTargetNotTimeVarying,
                 severity: DiagnosticSeverity::Warning,
                 origin: DiagnosticOrigin::Semantic,
                 subject: self.symbol_id(reference.source),
