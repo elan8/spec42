@@ -11,6 +11,7 @@
 //! is a lookup rather than a traversal, an answer cannot depend on the order queries arrive in,
 //! and the publication keeps its "the only interior mutation is source line indexing" invariant.
 
+use crate::lower::facts::OwnedEndFeature;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
@@ -357,10 +358,33 @@ pub(crate) struct TypeIndex {
     /// and the legacy check could only answer the first, which is why it fell silent whenever an
     /// ancestor declared any end at all.
     pub(crate) effective_ends: Box<[u32]>,
+    /// KerML `Type::endFeature` per declaration, each entry keyed by its position.
+    ///
+    /// The owned ends come first, in authored order, from the canonical
+    /// [`SemanticModelStorage::owned_end_features`]. Each owned end at position `i` redefines the
+    /// end at position `i` of every direct supertype (`checkFeatureEndRedefinition`, synthesized
+    /// by `synthesize_positional_end_redefinitions`), so a direct supertype contributes only its
+    /// end features past the owned count; those are inherited unchanged. Direct supertypes are
+    /// visited in identity order and an end inherited along two paths is listed once. A supertype
+    /// on a specialization cycle with the declaration contributes nothing, so the derivation is a
+    /// single deterministic pass rather than a fixed point.
+    pub(crate) end_features: Rows<(u32, OwnedEndFeature)>,
+    /// The resolved `Links::BinaryLink` anchor that `validateAssociationBinarySpecialization` and
+    /// `validateConnectorBinarySpecialization` test conformance against.
+    binary_link: BinaryLinkAnchor,
     /// Source-role-verified anchors used together by the exact `Usage::mayTimeVary` derivation.
     /// Keeping the family here makes every consumer use the same anchor identities and settled
     /// specialization closure rather than reinterpreting rendered names or direct edges.
     usage_time_variation_anchors: UsageTimeVariationAnchors,
+}
+
+#[derive(Debug)]
+struct BinaryLinkAnchor(LibrarySpecializationAnchor);
+
+impl Default for BinaryLinkAnchor {
+    fn default() -> Self {
+        Self(LibrarySpecializationAnchor::Missing)
+    }
 }
 
 #[derive(Debug)]
@@ -592,6 +616,7 @@ impl TypeIndex {
                 *slot = true;
             }
         }
+        let end_features = derive_end_features(storage, &supertypes)?;
 
         Ok(Self {
             specialization,
@@ -605,6 +630,11 @@ impl TypeIndex {
             set_operands,
             authored_ends: authored_ends.into_boxed_slice(),
             effective_ends: effective_ends.into_boxed_slice(),
+            end_features,
+            binary_link: BinaryLinkAnchor(resolve_library_specialization_anchor(
+                storage,
+                "Links::BinaryLink",
+            )),
             usage_time_variation_anchors: UsageTimeVariationAnchors {
                 occurrence: resolve_library_specialization_anchor(
                     storage,
@@ -858,6 +888,61 @@ impl TypeIndex {
             .unwrap_or_default()
     }
 
+    /// KerML `Type::endFeature` of `declaration`: its owned ends in authored order, then the ends
+    /// it inherits unredefined. See [`TypeIndex::end_features`] for the derivation.
+    pub(crate) fn end_features(
+        &self,
+        declaration: DeclarationId,
+    ) -> impl Iterator<Item = OwnedEndFeature> + '_ {
+        self.end_features
+            .row(declaration)
+            .iter()
+            .map(|(_, end)| *end)
+    }
+
+    /// KerML `Feature::type` of `declaration`: its effective types with redundant ones removed.
+    ///
+    /// A type is redundant when another of the feature's types specializes it (the Pilot's
+    /// `FeatureAdapter.removeRedundantTypes`), so a feature typed `Thing` that also inherits
+    /// `Anything` along a library subsetting has the one type `Thing`. Types that specialize each
+    /// other through a cycle are both kept: neither is the more specific. Identity order.
+    pub(crate) fn feature_types(&self, declaration: DeclarationId) -> Vec<DeclarationId> {
+        let mut types = self
+            .effective_types(declaration)
+            .iter()
+            .map(|(target, _)| *target)
+            .collect::<Vec<_>>();
+        types.sort_unstable();
+        types.dedup();
+        let redundant = |general: DeclarationId| {
+            types.iter().any(|specific| {
+                *specific != general
+                    && self
+                        .specialization
+                        .reaches(*specific, general, ScopeBits::AnySpecialization)
+                    && !self.specialization.reaches(
+                        general,
+                        *specific,
+                        ScopeBits::AnySpecialization,
+                    )
+            })
+        };
+        types
+            .iter()
+            .copied()
+            .filter(|general| !redundant(*general))
+            .collect()
+    }
+
+    /// Whether `declaration` is or specializes `Links::BinaryLink`, or `None` when this
+    /// publication has no single resolved anchor to answer against.
+    pub(crate) fn specializes_binary_link(&self, declaration: DeclarationId) -> Option<bool> {
+        match self.specializes_library_anchor(declaration, &self.binary_link.0) {
+            UsageTimeVariationOutcome::Resolved(conforms) => Some(conforms),
+            UsageTimeVariationOutcome::Unresolved | UsageTimeVariationOutcome::Ambiguous => None,
+        }
+    }
+
     /// How many positional ends `declaration` has, counting those it inherits.
     pub(crate) fn effective_ends(&self, declaration: DeclarationId) -> u32 {
         self.effective_ends
@@ -865,6 +950,75 @@ impl TypeIndex {
             .copied()
             .unwrap_or_default()
     }
+}
+
+/// Derives every declaration's KerML `Type::endFeature` row; see [`TypeIndex::end_features`].
+fn derive_end_features(
+    storage: &SemanticModelStorage,
+    supertypes: &Rows<(DeclarationId, u8)>,
+) -> Result<Rows<(u32, OwnedEndFeature)>, ResolutionError> {
+    const UNVISITED: u8 = 0;
+    const IN_PROGRESS: u8 = 1;
+    const DONE: u8 = 2;
+    let count = storage.declarations.len();
+    let mut state = vec![UNVISITED; count];
+    let mut ends: Vec<Vec<OwnedEndFeature>> = vec![Vec::new(); count];
+    let mut stack = Vec::new();
+    for root in 0..count {
+        if state[root] != UNVISITED {
+            continue;
+        }
+        stack.push((root, false));
+        while let Some((node, expanded)) = stack.pop() {
+            let declaration =
+                DeclarationId::from_index(node).map_err(|_| ResolutionError::Capacity)?;
+            if !expanded {
+                if state[node] != UNVISITED {
+                    continue;
+                }
+                state[node] = IN_PROGRESS;
+                stack.push((node, true));
+                for (general, _) in supertypes.row(declaration).iter().rev() {
+                    if state.get(general.index()) == Some(&UNVISITED) {
+                        stack.push((general.index(), false));
+                    }
+                }
+                continue;
+            }
+            let mut row = storage
+                .owned_end_features(declaration)
+                .iter()
+                .map(|record| record.end)
+                .collect::<Vec<_>>();
+            let owned = row.len();
+            for (general, _) in supertypes.row(declaration) {
+                // A general still in progress is on a cycle through this declaration.
+                if state.get(general.index()) != Some(&DONE) {
+                    continue;
+                }
+                let inherited = ends
+                    .get(general.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                for end in inherited.iter().skip(owned) {
+                    if !row.contains(end) {
+                        row.push(*end);
+                    }
+                }
+            }
+            ends[node] = row;
+            state[node] = DONE;
+        }
+    }
+    let mut pairs = Vec::new();
+    for (index, row) in ends.into_iter().enumerate() {
+        let declaration =
+            DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        for (position, end) in row.into_iter().enumerate() {
+            let position = u32::try_from(position).map_err(|_| ResolutionError::Capacity)?;
+            pairs.push((declaration, (position, end)));
+        }
+    }
+    Rows::build(count, pairs)
 }
 
 /// The set operation one reference kind states, or `None` if it states none.

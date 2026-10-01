@@ -40,6 +40,12 @@ package Demo {
 (fixture-diagnostics
   (document "memory://snapshot/named_kerml_connector_ends.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 1 4) (end 1 15))
+      )
     )
   )
 )

@@ -313,7 +313,7 @@ pub(crate) struct CrossFeatureProjection {
 ///
 /// KerML gives every connector end an end Feature. The lowering represents an end in one of two
 /// shapes, and the collection keeps the shape as provenance rather than flattening it:
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum OwnedEndFeature {
     /// An owned end Feature that is its own declaration: an `end`-prefixed feature, a positional
     /// `EndDecl`, or a named (`references`) connector end.

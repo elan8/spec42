@@ -313,12 +313,6 @@ owner = "spec42-semantic"
 summary = "the parser now retains every authored flow payload clause, but semantic Flow facts do not publish the owned PayloadFeature count required by validateFlowPayloadFeature"
 
 [[issue]]
-id = "lowering-gap-binding-body-end-count"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "binding connector body end features now parse and lower as owned features, but the binding's canonical connectorEnd count does not include them"
-
-[[issue]]
 id = "semantic-requirement-constraint-owner"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
@@ -349,34 +343,10 @@ owner = "spec42-semantic"
 summary = "the parser now preserves ordered feature specialization clauses, but semantic facts collapse each clause to relationship targets and do not retain per-kind authored clause counts"
 
 [[issue]]
-id = "semantic-association-end-type-not-one"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule checks the type count of an association end feature; the canonical code association_end_type_not_one does not exist yet"
-
-[[issue]]
-id = "semantic-association-related-types-insufficient"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule checks the relatedType count of a concrete KerML association; the canonical code association_related_types_insufficient does not exist yet"
-
-[[issue]]
 id = "semantic-attribute-feature-composite"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
 summary = "no semantic rule rejects a composite feature of an attribute definition; the canonical code attribute_feature_composite does not exist yet"
-
-[[issue]]
-id = "semantic-binary-association-end-count"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule compares an association's end count against a Links::BinaryLink specialization; the canonical code binary_association_end_count does not exist yet"
-
-[[issue]]
-id = "semantic-connector-related-features-insufficient"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule checks the relatedFeature count of a concrete KerML connector; the canonical code connector_related_features_insufficient does not exist yet"
 
 [[issue]]
 id = "semantic-constructor-duplicate-feature-redefinition"
@@ -401,12 +371,6 @@ id = "semantic-duplicate-role-member"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
 summary = "duplicate_role_member is reported for a repeated subject membership but not for a repeated objective membership, so this manifestation of the rule is unenforced"
-
-[[issue]]
-id = "semantic-end-feature-multiplicity-not-one"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule checks the multiplicity of an end feature; the canonical code end_feature_multiplicity_not_one does not exist yet"
 
 [[issue]]
 id = "semantic-expression-result-parameter-count"
@@ -617,12 +581,6 @@ id = "semantic-feature-chaining-rules"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
 summary = "a `chains` clause lowers and resolves as a featureChaining relationship, but no semantic rule counts chaining features, checks that each is featured within the previous, or rejects a self-chain; the canonical codes feature_chaining_single_operand, feature_chaining_not_featured_within_previous and feature_chaining_includes_self do not exist yet"
-
-[[issue]]
-id = "semantic-connector-binary-specialization"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "validateConnectorBinarySpecialization (connectorEnd->size() > 2 implies not specializesFromLibrary('Links::BinaryLink')) has no rule: the connector parses (KerML spells connector specialization with `:` typing; `specializes` is classifier-only), but KerML `end feature` members of a connector body publish no positional_end fact, so there is no canonical Connector::connectorEnd count, and no Links::BinaryLink specialization anchor is resolved for the check"
 
 [[issue]]
 id = "semantic-library-specialization-metaclass-generalization"

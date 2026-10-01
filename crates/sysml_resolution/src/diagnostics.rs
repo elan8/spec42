@@ -420,6 +420,27 @@ semantic_diagnostic_codes! {
     /// A binary connection-like declaration has more than two ends.
     InvalidBinaryConnectionLikeEndCount => "invalid_binary_connection_like_end_count",
         "This binary connection-like definition declares more than two ends.";
+    /// KerML 8.3.3.3.4 `validateFeatureEndMultiplicity`.
+    EndFeatureMultiplicityNotOne => "end_feature_multiplicity_not_one",
+        "An end feature must have multiplicity 1..1.";
+    /// KerML 8.3.4.4.2 `validateAssociationEndTypes`.
+    AssociationEndTypeNotOne => "association_end_type_not_one",
+        "An owned end feature of an association must have exactly one type.";
+    /// KerML 8.3.4.4.2 `validateAssociationRelatedTypes`.
+    AssociationRelatedTypesInsufficient => "association_related_types_insufficient",
+        "A concrete association must relate at least two types.";
+    /// KerML 8.3.4.4.2 `validateAssociationBinarySpecialization`.
+    BinaryAssociationEndCount => "binary_association_end_count",
+        "An association with more than two ends must not specialize Links::BinaryLink.";
+    /// KerML 8.3.4.5.2 `validateBindingConnectorIsBinary`.
+    BindingConnectorNotBinary => "binding_connector_not_binary",
+        "A binding connector must relate exactly two features.";
+    /// KerML 8.3.4.5.3 `validateConnectorRelatedFeatures`.
+    ConnectorRelatedFeaturesInsufficient => "connector_related_features_insufficient",
+        "A concrete connector must relate at least two features.";
+    /// KerML 8.3.4.5.3 `validateConnectorBinarySpecialization`.
+    BinaryConnectorEndCount => "binary_connector_end_count",
+        "A connector with more than two ends must not specialize Links::BinaryLink.";
     /// An end feature is derived, abstract, composite or portion.
     EndFeatureInvalidRestrictions => "end_feature_invalid_restrictions",
         "An end feature must not be derived, abstract, composite or portion.";

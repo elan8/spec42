@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.3.4:validateFeatureEndMultiplicity
-blocked_by=semantic-end-feature-multiplicity-not-one
 type=file
 ~~~
 # SOURCE
@@ -44,6 +43,12 @@ package Ends {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_end_multiplicity.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "end_feature_multiplicity_not_one")
+        (source "semantic")
+        (range (start 7 8) (end 7 39))
+      )
     )
   )
 )

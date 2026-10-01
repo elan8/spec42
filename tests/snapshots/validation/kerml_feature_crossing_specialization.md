@@ -30,6 +30,12 @@ package Model {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_crossing_specialization.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 2 4) (end 7 5))
+      )
     )
   )
 )

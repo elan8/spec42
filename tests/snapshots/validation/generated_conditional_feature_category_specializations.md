@@ -36,6 +36,12 @@ package FeatureCategorySpecializations {
 (fixture-diagnostics
   (document "memory://snapshot/generated_conditional_feature_category_specializations.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 7 4) (end 9 5))
+      )
     )
   )
 )

@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.4.2:validateAssociationEndTypes
-blocked_by=semantic-association-end-type-not-one
 type=file
 ~~~
 # SOURCE
@@ -23,7 +22,7 @@ package Associations {
         end feature target : Thing;
     }
 
-    assoc Untyped {
+    abstract assoc Untyped {
         end feature source : Thing;
 
         // Invalid: an owned end feature with no type.
@@ -51,6 +50,12 @@ package Associations {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_association_end_types.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "association_end_type_not_one")
+        (source "semantic")
+        (range (start 14 8) (end 14 27))
+      )
     )
   )
 )
@@ -58,7 +63,7 @@ package Associations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:32ba0ba84018c13d48cae0f2b8ac728832f3b70d8fb0cd59f488800d16d4d730"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:957c0206c24b4544a307c712862e0fff6f3183d068f71fc552497a38c69a5a65"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Other"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -66,7 +71,7 @@ package Associations {
     (declaration (id (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Typed"))) (kind kerml-association) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Typed::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Typed::target"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Untyped"))) (kind kerml-association) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Untyped"))) (kind kerml-association) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Untyped::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Untyped::target"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)))
   )

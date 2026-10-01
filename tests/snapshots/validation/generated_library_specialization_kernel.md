@@ -45,7 +45,7 @@ package GeneratedKernel {
     classifier Holder {
         feature a;
         feature b;
-        connector Connector { end feature source :>> a; end feature target :>> b; }
+        connector Connector { end feature source ::> a; end feature target ::> b; }
         step Step;
     }
 }
@@ -75,6 +75,18 @@ package GeneratedKernel {
 (fixture-diagnostics
   (document "memory://snapshot/generated_library_specialization_kernel.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 8 4) (end 8 22))
+      )
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 9 4) (end 9 38))
+      )
     )
   )
 )
@@ -82,7 +94,7 @@ package GeneratedKernel {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a75c6b4ca128a63f4085c3b0f623d7cf7106a86a32678bbc2bc8de4e25cbee1d") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e49d2c1999d6451c65e35dd4bed95723234a3f3feedbf05329f1a10e7cfc11e5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Association"))) (kind kerml-association) (membership (kind owning) (visibility default)))
@@ -96,8 +108,8 @@ package GeneratedKernel {
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Function"))) (kind kerml-function) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector"))) (kind kerml-connector) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "a")))))
-    (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::target"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "b")))))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "a")))))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::target"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "b")))))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Step"))) (kind kerml-step) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::a"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::b"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
@@ -108,16 +120,16 @@ package GeneratedKernel {
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Type"))) (kind kerml-type) (membership (kind owning) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::source"))) (kind redefinition) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::source"))) (kind referenceSubsetting) (ordinal 0))
       (authored-target "a")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::a")))))
-    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::target"))) (kind redefinition) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::target"))) (kind referenceSubsetting) (ordinal 0))
       (authored-target "b")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::b")))))
   )
   (relationships
-    (relationship (kind redefinition) (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::source"))) (target (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::source"))) (kind redefinition) (ordinal 0)))
-    (relationship (kind redefinition) (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::target"))) (target (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::b"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::target"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::source"))) (target (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::source"))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::target"))) (target (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::b"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::target"))) (kind referenceSubsetting) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Association"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::AssociationStructure"))) (target (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Behavior"))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance"))) (provenance implied))
@@ -337,12 +349,12 @@ package GeneratedKernel {
 ~~~sexpr
 (navigation
   (query (document "memory://snapshot/generated_library_specialization_kernel.md") (range (start 18 53) (end 18 54)) (probe (position 18 53))
-    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::source"))) (kind redefinition) (ordinal 0) (authored-target "a")
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::source"))) (kind referenceSubsetting) (ordinal 0) (authored-target "a")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::a")))))
     )
   )
   (query (document "memory://snapshot/generated_library_specialization_kernel.md") (range (start 18 79) (end 18 80)) (probe (position 18 79))
-    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::target"))) (kind redefinition) (ordinal 0) (authored-target "b")
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::Connector::target"))) (kind referenceSubsetting) (ordinal 0) (authored-target "b")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Holder::b")))))
     )
   )

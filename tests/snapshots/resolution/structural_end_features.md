@@ -51,6 +51,18 @@ package Ends {
       )
       (diagnostic
         (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 13 4) (end 15 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 16 4) (end 18 5))
+      )
+      (diagnostic
+        (severity warning)
         (code "redefinition_end_mismatch")
         (source "semantic")
         (range (start 17 8) (end 17 30))

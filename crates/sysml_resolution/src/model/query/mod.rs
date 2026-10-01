@@ -1,5 +1,6 @@
 //! Phase 9: the read-only query surface over a finished model.
 
+pub(crate) mod ends;
 mod visible;
 
 pub use visible::VisibleMemberRef;
@@ -3922,7 +3923,7 @@ impl<D> SemanticModel<D> {
     /// checks that turn a failed reachability probe into a violation use this companion query so
     /// an unresolved, ambiguous, unsupported, or non-converged edge on the reachable hierarchy is
     /// not mistaken for proof of non-conformance.
-    fn specialization_hierarchy_is_unsettled(&self, specific: DeclarationId) -> bool {
+    pub(crate) fn specialization_hierarchy_is_unsettled(&self, specific: DeclarationId) -> bool {
         std::iter::once(specific)
             .chain(
                 self.types

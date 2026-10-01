@@ -29,6 +29,12 @@ package Ends {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_end_is_constant.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 2 4) (end 8 5))
+      )
     )
   )
 )

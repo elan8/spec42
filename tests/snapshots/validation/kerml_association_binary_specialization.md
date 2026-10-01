@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.4.2:validateAssociationBinarySpecialization
-blocked_by=semantic-binary-association-end-count
 type=file
 libraries=standard
 ~~~
@@ -38,7 +37,7 @@ package Associations {
         (severity warning)
         (code "binary_association_end_count")
         (source "semantic")
-        (range (start 8 30) (end 8 47))
+        (range (start 11 8) (end 11 44))
       )
     )
   )
@@ -49,6 +48,12 @@ package Associations {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_association_binary_specialization.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "binary_association_end_count")
+        (source "semantic")
+        (range (start 11 8) (end 11 44))
+      )
     )
   )
 )

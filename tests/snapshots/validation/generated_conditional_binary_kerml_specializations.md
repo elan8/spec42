@@ -36,6 +36,30 @@ package BinaryKerMLSpecializations {
 (fixture-diagnostics
   (document "memory://snapshot/generated_conditional_binary_kerml_specializations.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "association_end_type_not_one")
+        (source "semantic")
+        (range (start 3 8) (end 3 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "association_end_type_not_one")
+        (source "semantic")
+        (range (start 4 8) (end 4 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "association_end_type_not_one")
+        (source "semantic")
+        (range (start 7 8) (end 7 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "association_end_type_not_one")
+        (source "semantic")
+        (range (start 8 8) (end 8 35))
+      )
     )
   )
 )

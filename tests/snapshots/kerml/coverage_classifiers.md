@@ -30,6 +30,24 @@ package ClassifierCoverage {
 (fixture-diagnostics
   (document "memory://snapshot/coverage_classifiers.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 4 4) (end 4 23))
+      )
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 5 4) (end 5 29))
+      )
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 11 4) (end 11 28))
+      )
     )
   )
 )
