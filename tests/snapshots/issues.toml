@@ -223,12 +223,6 @@ owner = "spec42-snapshot"
 summary = "The pinned concrete syntax cannot directly name these generated specialization metaclasses as queryable declarations; their individual abstract-syntax instances therefore cannot receive an authored relationship assertion."
 
 [[issue]]
-id = "semantic-query-gap-anonymous-library-specialization-forms"
-kind = "semantic_query_gap"
-owner = "spec42-query"
-summary = "The resolver publishes these anonymous action forms, but the query facade accepts only stable qualified declaration names and cannot address their semantic identities."
-
-[[issue]]
 id = "abstract-syntax-annotation-identity"
 kind = "abstract_syntax_coverage_gap"
 owner = "spec42-snapshot"
@@ -665,3 +659,9 @@ id = "semantic-connector-binary-specialization"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
 summary = "validateConnectorBinarySpecialization (connectorEnd->size() > 2 implies not specializesFromLibrary('Links::BinaryLink')) has no rule: the connector parses (KerML spells connector specialization with `:` typing; `specializes` is classifier-only), but KerML `end feature` members of a connector body publish no positional_end fact, so there is no canonical Connector::connectorEnd count, and no Links::BinaryLink specialization anchor is resolved for the check"
+
+[[issue]]
+id = "semantic-succession-as-usage-library-specialization"
+kind = "semantic_not_implemented"
+owner = "spec42-semantic"
+summary = "checkSuccessionSpecialization is generated for metaclass Succession only, so a SysML SuccessionAsUsage (the Pilot's ImplicitGeneralizationMap applies happensBeforeLinks to SuccessionAsUsageImpl) gets no implied Occurrences::happensBeforeLinks subsetting; applying the Succession rule to SuccessionAsUsage makes standard-library construction fail, so the metaclass generalization needs a library-safe owner first"

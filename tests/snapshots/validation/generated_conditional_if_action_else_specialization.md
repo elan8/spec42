@@ -8,7 +8,6 @@ rule_family=check
 expectation=semantics
 rule_id=sysml-2.0:8.3.17.10:checkIfActionUsageSpecialization
 coverage_role=secondary
-blocked_by=semantic-query-gap-anonymous-library-specialization-forms
 type=file
 libraries=standard
 ~~~
@@ -28,7 +27,7 @@ package IfActionElseSpecialization {
 # EXPECTED SEMANTICS
 ~~~sexpr
 (fixture-semantics
-  (relationship (kind specialization) (source "IfActionElseSpecialization::Decision::<anonymous>") (target "Actions::ifThenElseActions") (provenance implied) (outcome resolved)))
+  (relationship (kind subsetting) (source (anonymous (owner "IfActionElseSpecialization::Decision") (kind IfActionUsage) (ordinal 0))) (target "Actions::ifThenElseActions") (provenance implied) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr

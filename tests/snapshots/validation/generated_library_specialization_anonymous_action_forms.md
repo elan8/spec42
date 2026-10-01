@@ -1,16 +1,14 @@
 # META
 ~~~ini
-description=Generated anonymous action-form specialization facts remain explicit until the query facade can address their published identities
+description=Generated anonymous action forms (assign, for, while) subset their library anchors; their sources are addressed by canonical owner-scoped anonymous identity
 specification=OMG SysML 2.0 Language (formal/26-03-02)
 specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 source_expectation=accepted
 rule_family=check
 expectation=semantics
-blocked_by=semantic-query-gap-anonymous-library-specialization-forms
 rule_id=sysml-2.0:8.3.17.5:checkAssignmentActionUsageSpecialization
 rule_id=sysml-2.0:8.3.17.9:checkForLoopActionUsageSpecialization
 rule_id=sysml-2.0:8.3.17.19:checkWhileLoopActionUsageSpecialization
-rule_id=kerml-1.0:8.3.4.5.4:checkSuccessionSpecialization
 type=file
 libraries=standard
 ~~~
@@ -32,10 +30,9 @@ package GeneratedAnonymousActionForms {
 # EXPECTED SEMANTICS
 ~~~sexpr
 (fixture-semantics
-  (relationship (kind specialization) (source "GeneratedAnonymousActionForms::Act::assignment") (target "Actions::assignmentActions") (provenance implied) (outcome resolved))
-  (relationship (kind specialization) (source "GeneratedAnonymousActionForms::Act::forLoop") (target "Actions::forLoopActions") (provenance implied) (outcome resolved))
-  (relationship (kind specialization) (source "GeneratedAnonymousActionForms::Act::whileLoop") (target "Actions::whileLoopActions") (provenance implied) (outcome resolved))
-  (relationship (kind specialization) (source "GeneratedAnonymousActionForms::Act::succession") (target "Occurrences::happensBeforeLinks") (provenance implied) (outcome resolved)))
+  (relationship (kind subsetting) (source (anonymous (owner "GeneratedAnonymousActionForms::Act") (kind AssignmentActionUsage) (ordinal 0))) (target "Actions::assignmentActions") (provenance implied) (outcome resolved))
+  (relationship (kind subsetting) (source (anonymous (owner "GeneratedAnonymousActionForms::Act") (kind ForLoopActionUsage) (ordinal 0))) (target "Actions::forLoopActions") (provenance implied) (outcome resolved))
+  (relationship (kind subsetting) (source (anonymous (owner "GeneratedAnonymousActionForms::Act") (kind WhileLoopActionUsage) (ordinal 0))) (target "Actions::whileLoopActions") (provenance implied) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr

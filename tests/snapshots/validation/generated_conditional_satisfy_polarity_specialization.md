@@ -7,7 +7,6 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=sysml-2.0:8.3.21.10:checkSatisfyRequirementUsageSpecialization
-blocked_by=semantic-query-gap-anonymous-library-specialization-forms
 type=file
 libraries=standard
 ~~~
@@ -22,7 +21,7 @@ package SatisfyPolaritySpecialization {
 # EXPECTED SEMANTICS
 ~~~sexpr
 (fixture-semantics
-  (relationship (kind specialization) (source "SatisfyPolaritySpecialization::<anonymous>") (target "Requirements::notSatisfiedRequirementChecks") (provenance implied) (outcome resolved)))
+  (relationship (kind subsetting) (source (anonymous (owner "SatisfyPolaritySpecialization") (kind SatisfyRequirementUsage) (ordinal 0))) (target "Requirements::notSatisfiedRequirementChecks") (provenance implied) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr

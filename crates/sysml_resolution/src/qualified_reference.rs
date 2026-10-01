@@ -21,6 +21,23 @@ pub struct QualifiedElementReference {
     pub expected_kind: Option<ElementKind>,
 }
 
+/// An anonymous owned member addressed by its canonical owner-scoped identity.
+///
+/// An anonymous declaration (an `if`, `assign`, `satisfy`, transition, ...) has no qualified
+/// name, but its canonical identity is owner-scoped: the owning element, the declaration's
+/// metaclass, and its zero-based `ordinal` among the owner's anonymous members of the same
+/// declaration form in that document. This is the same `(anonymous (kind ...) (ordinal ...))`
+/// path segment the semantic snapshot renders, so a caller never invents a display name for it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct AnonymousElementReference {
+    /// The canonical owner of the anonymous member.
+    pub owner: SymbolId,
+    /// The member's metaclass.
+    pub kind: ElementKind,
+    /// The canonical anonymous ordinal.
+    pub ordinal: u32,
+}
+
 /// One canonical candidate for a readable qualified reference.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct QualifiedReferenceTarget {
@@ -99,6 +116,51 @@ impl PublishedResolution {
             0 if !named.is_empty() => {
                 QualifiedReferenceOutcome::WrongKind(named.into_boxed_slice())
             }
+            0 => self.absent_qualified_reference_outcome(),
+            1 => self.settled_qualified_reference_outcome(matching.pop().expect("one target")),
+            _ => QualifiedReferenceOutcome::Ambiguous(matching.into_boxed_slice()),
+        }
+    }
+
+    /// Resolves an anonymous owned member through its canonical owner-scoped identity.
+    ///
+    /// Only unnamed direct members of `owner` whose metaclass is `kind` and whose canonical
+    /// anonymous ordinal is `ordinal` match. Two declaration forms that share one metaclass keep
+    /// independent ordinals, so they can collide; that is reported as
+    /// [`QualifiedReferenceOutcome::Ambiguous`] rather than settled by a guess. A named member is
+    /// never a candidate: it is addressed by its qualified name.
+    pub fn resolve_anonymous_member(
+        &self,
+        reference: &AnonymousElementReference,
+    ) -> QualifiedReferenceOutcome {
+        let Some(owner) = self.model.declaration_of(reference.owner) else {
+            return QualifiedReferenceOutcome::Unresolved;
+        };
+        let mut matching = Vec::new();
+        for child in self.model.child_declarations(owner) {
+            let Some(declaration) = self.model.storage.declaration(*child) else {
+                continue;
+            };
+            if declaration.name.is_some()
+                || declaration.anonymous_ordinal != Some(reference.ordinal)
+                || crate::model::element_kind::element_kind(declaration.kind) != reference.kind
+            {
+                continue;
+            }
+            let (Some(identity), Some(location)) = (
+                self.model.symbol_id(*child),
+                self.model.source_location(*child),
+            ) else {
+                continue;
+            };
+            matching.push(QualifiedReferenceTarget {
+                identity,
+                kind: reference.kind,
+                location,
+            });
+        }
+        canonicalize_targets(&mut matching);
+        match matching.len() {
             0 => self.absent_qualified_reference_outcome(),
             1 => self.settled_qualified_reference_outcome(matching.pop().expect("one target")),
             _ => QualifiedReferenceOutcome::Ambiguous(matching.into_boxed_slice()),

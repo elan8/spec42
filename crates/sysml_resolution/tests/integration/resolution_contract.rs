@@ -6165,3 +6165,49 @@ fn same_named_packages_in_two_documents_do_not_share_an_unqualified_scope() {
     let motor = details_of(&qualified, "memory://usage.sysml", "S::motor");
     assert_eq!(motor.typing.outcome, RelationshipOutcome::Resolved);
 }
+
+/// An anonymous member is addressed by its canonical owner-scoped identity: owner, metaclass and
+/// anonymous ordinal. Missing members stay unresolved, a named member is never a candidate, and
+/// two declaration forms sharing one metaclass and ordinal are ambiguous rather than guessed.
+#[test]
+fn anonymous_members_resolve_by_owner_kind_and_ordinal() {
+    let document = "memory://anonymous.sysml";
+    let publication = detail_publication(
+        &[(
+            document,
+            "package P { action def A { action c; if c { action t; } if c { action u; } \
+             while c { action w; } loop { action l; } } }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+    let owner = identity_of(&publication, document, "P::A");
+    let resolve = |kind, ordinal| {
+        publication.resolve_anonymous_member(&AnonymousElementReference {
+            owner,
+            kind,
+            ordinal,
+        })
+    };
+    let first = match resolve(ElementKind::IfActionUsage, 0) {
+        QualifiedReferenceOutcome::Resolved(target) => target,
+        other => panic!("expected the first if, got {other:?}"),
+    };
+    let second = match resolve(ElementKind::IfActionUsage, 1) {
+        QualifiedReferenceOutcome::Resolved(target) => target,
+        other => panic!("expected the second if, got {other:?}"),
+    };
+    assert_ne!(first.identity, second.identity);
+    assert_eq!(first.kind, ElementKind::IfActionUsage);
+    assert!(matches!(
+        resolve(ElementKind::IfActionUsage, 2),
+        QualifiedReferenceOutcome::Unresolved
+    ));
+    assert!(matches!(
+        resolve(ElementKind::ActionUsage, 0),
+        QualifiedReferenceOutcome::Unresolved
+    ));
+    match resolve(ElementKind::WhileLoopActionUsage, 0) {
+        QualifiedReferenceOutcome::Ambiguous(candidates) => assert_eq!(candidates.len(), 2),
+        other => panic!("expected while/loop ordinal collision to be ambiguous, got {other:?}"),
+    }
+}

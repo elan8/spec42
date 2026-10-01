@@ -7,7 +7,6 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=sysml-2.0:8.3.17.2:checkAcceptActionUsageTriggerActionSpecialization
-blocked_by=semantic-query-gap-anonymous-library-specialization-forms
 type=file
 libraries=standard
 ~~~
@@ -24,7 +23,7 @@ package AcceptActionTriggerSpecialization {
 # EXPECTED SEMANTICS
 ~~~sexpr
 (fixture-semantics
-  (relationship (kind specialization) (source "AcceptActionTriggerSpecialization::Machine::<anonymous>::<anonymous>") (target "Actions::TransitionAction::accepter") (provenance implied) (outcome resolved)))
+  (relationship (kind subsetting) (source (anonymous (owner (anonymous (owner "AcceptActionTriggerSpecialization::Machine") (kind TransitionUsage) (ordinal 0))) (kind AcceptActionUsage) (ordinal 0))) (target "Actions::TransitionAction::accepter") (provenance implied) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr

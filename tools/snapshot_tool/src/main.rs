@@ -38,12 +38,13 @@ use spec42_constraint_manifest::{
 };
 use sysml_query::resolved_slice::{
     ActionDerivedFactCollection, ActionDerivedFactOutcome, AnnotationForm,
-    BindingConnectorValidationOutcome, BindingConnectorValidationPrerequisite,
-    DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivedElementOwner,
-    Documentation, EditorProbe, ElementDerivedDocumentationCollection, ElementKind,
-    FeatureDerivedRelationshipCollection, NamespaceDerivedElementCollection, PublishedModel,
-    QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceProbe, QueryAnswer,
-    QueryOutcome, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, RelationshipProvenance,
+    AnonymousElementReference, BindingConnectorValidationOutcome,
+    BindingConnectorValidationPrerequisite, DefinitionUsageDerivedOutcome,
+    DefinitionUsageDerivedPrerequisite, DerivedElementOwner, Documentation, EditorProbe,
+    ElementDerivedDocumentationCollection, ElementKind, FeatureDerivedRelationshipCollection,
+    NamespaceDerivedElementCollection, PublishedModel, QualifiedElementReference,
+    QualifiedReferenceOutcome, QualifiedReferenceProbe, QueryAnswer, QueryOutcome,
+    RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, RelationshipProvenance,
     RelationshipTarget, RequirementDerivedFactCollection, RequirementDerivedFactOutcome,
     RequirementDerivedFactPrerequisite, SourceKind, SpecializationCheckOutcome,
     SpecializationCheckPrerequisite, SymbolId, TextPosition, TypeDerivedElementCollection,
@@ -333,10 +334,145 @@ struct SemanticExpectations {
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct RelationshipExpectation {
     kind: SemanticRelationshipKind,
-    source: String,
+    source: ElementReferenceExpectation,
     target: Option<String>,
     provenance: Option<RelationshipProvenance>,
     outcome: SemanticRelationshipOutcome,
+}
+
+/// An authored semantic source: a KerML qualified name, or an anonymous member addressed by its
+/// canonical owner-scoped identity `(anonymous (owner <reference>) (kind <ElementKind>) (ordinal
+/// <n>))`. Both resolve only through `sysml_query`; no display name is invented for an anonymous
+/// element.
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum ElementReferenceExpectation {
+    Qualified(String),
+    Anonymous {
+        owner: Box<ElementReferenceExpectation>,
+        kind: ElementKind,
+        ordinal: u32,
+    },
+}
+
+impl std::fmt::Display for ElementReferenceExpectation {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Qualified(name) => formatter.write_str(name),
+            Self::Anonymous {
+                owner,
+                kind,
+                ordinal,
+            } => write!(
+                formatter,
+                "(anonymous (owner {owner}) (kind {kind}) (ordinal {ordinal}))"
+            ),
+        }
+    }
+}
+
+fn parse_element_reference_expectation(
+    expression: &AuthoredSexpr,
+    fallback_name: &str,
+) -> Result<ElementReferenceExpectation, String> {
+    let items = match expression {
+        AuthoredSexpr::Atom(value) | AuthoredSexpr::String(value) if !value.is_empty() => {
+            return Ok(ElementReferenceExpectation::Qualified(value.clone()));
+        }
+        AuthoredSexpr::Atom(_) | AuthoredSexpr::String(_) => {
+            return Err(format!(
+                "{fallback_name}: element reference must not be empty"
+            ));
+        }
+        AuthoredSexpr::List(items) => items,
+    };
+    if items.first().and_then(authored_atom) != Some("anonymous") {
+        return Err(format!(
+            "{fallback_name}: element reference list must be (anonymous (owner ...) (kind ...) (ordinal ...))"
+        ));
+    }
+    let mut owner = None;
+    let mut kind = None;
+    let mut ordinal = None;
+    for field in &items[1..] {
+        let AuthoredSexpr::List(field_items) = field else {
+            return Err(format!(
+                "{fallback_name}: anonymous reference field must be a list"
+            ));
+        };
+        let [key, value] = field_items.as_slice() else {
+            return Err(format!(
+                "{fallback_name}: anonymous reference fields require exactly one value"
+            ));
+        };
+        let duplicate = match authored_atom(key) {
+            Some("owner") => owner
+                .replace(parse_element_reference_expectation(value, fallback_name)?)
+                .is_some(),
+            Some("kind") => {
+                let text = authored_value(value).unwrap_or_default();
+                let parsed = ElementKind::parse(text).ok_or_else(|| {
+                    format!("{fallback_name}: unknown anonymous reference kind {text:?}")
+                })?;
+                kind.replace(parsed).is_some()
+            }
+            Some("ordinal") => {
+                let text = authored_value(value).unwrap_or_default();
+                let parsed = text.parse::<u32>().map_err(|_| {
+                    format!("{fallback_name}: anonymous reference ordinal {text:?} is not a u32")
+                })?;
+                ordinal.replace(parsed).is_some()
+            }
+            other => {
+                return Err(format!(
+                    "{fallback_name}: unknown anonymous reference field {other:?}"
+                ))
+            }
+        };
+        if duplicate {
+            return Err(format!(
+                "{fallback_name}: duplicate anonymous reference field"
+            ));
+        }
+    }
+    match (owner, kind, ordinal) {
+        (Some(owner), Some(kind), Some(ordinal)) => Ok(ElementReferenceExpectation::Anonymous {
+            owner: Box::new(owner),
+            kind,
+            ordinal,
+        }),
+        _ => Err(format!(
+            "{fallback_name}: anonymous reference requires owner, kind, and ordinal"
+        )),
+    }
+}
+
+/// Removes the one `(name <value>)` field whose value may be a structured element reference, so
+/// the remaining scalar fields keep the shared parser.
+fn take_element_reference_field(
+    fields: &[AuthoredSexpr],
+    name: &str,
+    fallback_name: &str,
+) -> Result<(Option<ElementReferenceExpectation>, Vec<AuthoredSexpr>), String> {
+    let mut reference = None;
+    let mut rest = Vec::new();
+    for field in fields {
+        if let AuthoredSexpr::List(items) = field {
+            if items.len() == 2 && authored_atom(&items[0]) == Some(name) {
+                if reference
+                    .replace(parse_element_reference_expectation(
+                        &items[1],
+                        fallback_name,
+                    )?)
+                    .is_some()
+                {
+                    return Err(format!("{fallback_name}: duplicate field {name:?}"));
+                }
+                continue;
+            }
+        }
+        rest.push(field.clone());
+    }
+    Ok((reference, rest))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -3412,9 +3548,12 @@ fn parse_relationship_expectation(
             "{fallback_name}: EXPECTED SEMANTICS only accepts relationship expectations"
         ));
     }
+    let (source, rest) = take_element_reference_field(&items[1..], "source", fallback_name)?;
+    let source =
+        source.ok_or_else(|| format!("{fallback_name}: semantic relationship requires source"))?;
     let fields = parse_semantic_assertion_fields(
-        &items[1..],
-        &["kind", "source", "target", "provenance", "outcome"],
+        &rest,
+        &["kind", "target", "provenance", "outcome"],
         "semantic relationship",
         fallback_name,
     )?;
@@ -3424,11 +3563,6 @@ fn parse_relationship_expectation(
             .ok_or_else(|| format!("{fallback_name}: semantic relationship requires kind"))?,
         fallback_name,
     )?;
-    let source = fields
-        .get("source")
-        .filter(|value| !value.is_empty())
-        .cloned()
-        .ok_or_else(|| format!("{fallback_name}: semantic relationship requires source"))?;
     let outcome = SemanticRelationshipOutcome::parse(
         fields
             .get("outcome")
@@ -4751,7 +4885,7 @@ fn observe_semantic_relationship(
     model: &PublishedModel,
     expectation: &RelationshipExpectation,
 ) -> Result<SemanticRelationshipObservation, String> {
-    let source = match resolve_semantic_identity(model, &expectation.source) {
+    let source = match resolve_element_reference(model, &expectation.source) {
         Ok(source) => source,
         Err(SemanticIdentityStatus::Incomplete) => {
             return Ok(SemanticRelationshipObservation::Incomplete)
@@ -5326,17 +5460,48 @@ fn observe_expected_relationship(
     })
 }
 
+fn resolve_element_reference(
+    model: &PublishedModel,
+    reference: &ElementReferenceExpectation,
+) -> Result<SymbolId, SemanticIdentityStatus> {
+    match reference {
+        ElementReferenceExpectation::Qualified(name) => resolve_semantic_identity(model, name),
+        ElementReferenceExpectation::Anonymous {
+            owner,
+            kind,
+            ordinal,
+        } => {
+            let owner = resolve_element_reference(model, owner)?;
+            reference_identity(model.inspection().resolve_anonymous_member(
+                &AnonymousElementReference {
+                    owner,
+                    kind: *kind,
+                    ordinal: *ordinal,
+                },
+            ))
+        }
+    }
+}
+
 fn resolve_semantic_identity(
     model: &PublishedModel,
     qualified_name: &str,
 ) -> Result<SymbolId, SemanticIdentityStatus> {
-    match model
-        .inspection()
-        .resolve_qualified_reference(&QualifiedElementReference {
-            document: None,
-            qualified_name: qualified_name.into(),
-            expected_kind: None,
-        }) {
+    reference_identity(
+        model
+            .inspection()
+            .resolve_qualified_reference(&QualifiedElementReference {
+                document: None,
+                qualified_name: qualified_name.into(),
+                expected_kind: None,
+            }),
+    )
+}
+
+fn reference_identity(
+    outcome: QualifiedReferenceOutcome,
+) -> Result<SymbolId, SemanticIdentityStatus> {
+    match outcome {
         QualifiedReferenceOutcome::Resolved(target)
         | QualifiedReferenceOutcome::Recovered(target)
         | QualifiedReferenceOutcome::UnsupportedWith(target) => Ok(target.identity),
@@ -5360,7 +5525,7 @@ fn compare_semantic_expectations(
     {
         compare_semantic_relationship_observation(
             expectation.outcome,
-            &expectation.source,
+            &expectation.source.to_string(),
             expectation.kind,
             observation,
         )?;
@@ -8094,14 +8259,18 @@ mod tests {
                 relationships: vec![
                     RelationshipExpectation {
                         kind: SemanticRelationshipKind::Specialization,
-                        source: "Model::Component".to_string(),
+                        source: ElementReferenceExpectation::Qualified(
+                            "Model::Component".to_string()
+                        ),
                         target: Some("Parts::Part".to_string()),
                         provenance: Some(RelationshipProvenance::Implied),
                         outcome: SemanticRelationshipOutcome::Resolved,
                     },
                     RelationshipExpectation {
                         kind: SemanticRelationshipKind::Specialization,
-                        source: "Model::Equivalent".to_string(),
+                        source: ElementReferenceExpectation::Qualified(
+                            "Model::Equivalent".to_string()
+                        ),
                         target: None,
                         provenance: Some(RelationshipProvenance::Implied),
                         outcome: SemanticRelationshipOutcome::Absent,
@@ -9516,6 +9685,39 @@ mod tests {
                 }),
             })
         );
+    }
+
+    #[test]
+    fn parses_nested_anonymous_element_references() {
+        let expression = parse_authored_sexpr(
+            "(anonymous (owner (anonymous (owner \"M::S\") (kind TransitionUsage) (ordinal 0))) (kind AcceptActionUsage) (ordinal 1))",
+        )
+        .unwrap();
+        assert_eq!(
+            parse_element_reference_expectation(&expression, "fixture.md").unwrap(),
+            ElementReferenceExpectation::Anonymous {
+                owner: Box::new(ElementReferenceExpectation::Anonymous {
+                    owner: Box::new(ElementReferenceExpectation::Qualified("M::S".to_string())),
+                    kind: ElementKind::TransitionUsage,
+                    ordinal: 0,
+                }),
+                kind: ElementKind::AcceptActionUsage,
+                ordinal: 1,
+            }
+        );
+        for invalid in [
+            "(anonymous (owner \"M\") (kind IfActionUsage))",
+            "(anonymous (owner \"M\") (kind NotAKind) (ordinal 0))",
+            "(anonymous (owner \"M\") (kind IfActionUsage) (ordinal -1))",
+            "(anonymous (owner \"M\") (owner \"N\") (kind IfActionUsage) (ordinal 0))",
+            "(named (owner \"M\"))",
+        ] {
+            let expression = parse_authored_sexpr(invalid).unwrap();
+            assert!(
+                parse_element_reference_expectation(&expression, "fixture.md").is_err(),
+                "{invalid} should be rejected"
+            );
+        }
     }
 
     #[test]

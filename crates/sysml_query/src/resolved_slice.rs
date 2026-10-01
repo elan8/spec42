@@ -8,8 +8,8 @@ pub use sysml_resolution::{ContextualExpressionOutcome, PublishedContextualExpre
 pub use sysml_resolution::{
     requirement_collection_from_kind, ActionDerivedFactCollection, ActionDerivedFactKind,
     ActionDerivedFactOutcome, ActionDerivedFactPrerequisite, AdmittedSourceCounts,
-    AffectedDocument, AnalysisEvaluation, AnnotationForm, AuthoredUnit, AuthoredValue,
-    BindingConnector, BindingConnectorCheckKind, BindingConnectorValidationOutcome,
+    AffectedDocument, AnalysisEvaluation, AnnotationForm, AnonymousElementReference, AuthoredUnit,
+    AuthoredValue, BindingConnector, BindingConnectorCheckKind, BindingConnectorValidationOutcome,
     BindingConnectorValidationPrerequisite, BuildMeasurements, Conformance, ConformanceObstacle,
     ConnectedElement, ConnectorEndpoint, ConnectorKind, DefinitionUsageDerivedKind,
     DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivedElementOwner,
@@ -646,6 +646,14 @@ impl InspectionQueries<'_> {
         reference: &QualifiedElementReference,
     ) -> QualifiedReferenceOutcome {
         self.model.resolve_qualified_reference(reference)
+    }
+
+    /// Resolves an anonymous owned member through its canonical owner-scoped identity.
+    pub fn resolve_anonymous_member(
+        &self,
+        reference: &AnonymousElementReference,
+    ) -> QualifiedReferenceOutcome {
+        self.model.resolve_anonymous_member(reference)
     }
 
     /// Everything the publication knows about one element.

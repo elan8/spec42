@@ -125,7 +125,8 @@ pub use projection::{
     ProjectionTruncation, PublishedModelProjection, MODEL_PROJECTION_SCHEMA_VERSION,
 };
 pub use qualified_reference::{
-    QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceTarget,
+    AnonymousElementReference, QualifiedElementReference, QualifiedReferenceOutcome,
+    QualifiedReferenceTarget,
 };
 pub use redefinition_query::{
     RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite,
