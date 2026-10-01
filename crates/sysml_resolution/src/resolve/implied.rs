@@ -2894,14 +2894,7 @@ pub(crate) fn synthesize_feature_membership_type_featurings(
         let Some(owner_declaration) = storage.declaration(owner) else {
             return Err(ResolutionError::InvalidStorage);
         };
-        if matches!(
-            owner_declaration.kind,
-            DeclarationKind::Namespace
-                | DeclarationKind::Package
-                | DeclarationKind::LibraryPackage
-                | DeclarationKind::Import
-                | DeclarationKind::Alias
-        ) {
+        if !is_owning_type_kind(owner_declaration.kind) {
             continue;
         }
         implied.push(ImpliedRelationship {
@@ -2913,6 +2906,19 @@ pub(crate) fn synthesize_feature_membership_type_featurings(
     implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
     implied.dedup();
     Ok(implied.into_boxed_slice())
+}
+
+/// Whether a declaration of this kind is a Type, and so the `owningType` of the features it owns.
+/// Packages and the other non-Type namespace members are not.
+pub(crate) fn is_owning_type_kind(kind: DeclarationKind) -> bool {
+    !matches!(
+        kind,
+        DeclarationKind::Namespace
+            | DeclarationKind::Package
+            | DeclarationKind::LibraryPackage
+            | DeclarationKind::Import
+            | DeclarationKind::Alias
+    )
 }
 
 /// Materializes KerML's `checkExpressionTypeFeaturing` semantic consequence (8.3.4.7.3).

@@ -18,6 +18,8 @@ use crate::evaluate::EvaluationFact;
 use crate::evaluate::SettledEvaluation;
 use crate::evaluation::EvaluationPolicy;
 use crate::index::bindings::BindingConnectorIndex;
+use crate::index::connector_context::context_featuring_candidates;
+use crate::index::connector_context::synthesize_connector_context_featurings;
 use crate::index::documents::DocumentIndex;
 use crate::index::elements::ElementFactIndex;
 use crate::index::expressions::ExpressionIndex;
@@ -425,6 +427,36 @@ impl Lowered {
                 synthesis.merge_status,
                 synthesis.control_node_successions,
             )
+        };
+        // A Connector with no owning Type is featured by the innermost featuring type its related
+        // features share (`checkConnectorTypeFeaturing`). That reads the settled featuring rows,
+        // end features and specialization closure, so it consumes a prerequisite type index at
+        // this final sub-barrier; nothing else depends on a Connector's own featuring type.
+        let connector_candidates = context_featuring_candidates(&storage)?;
+        let resolution = if connector_candidates.is_empty() {
+            resolution
+        } else {
+            let prerequisite_types = TypeIndex::build(&storage, &resolution)?;
+            let mut implied = resolution.implied_relationships.to_vec();
+            implied.extend(
+                synthesize_connector_context_featurings(
+                    &storage,
+                    &resolution,
+                    &prerequisite_types,
+                    &connector_candidates,
+                )?
+                .into_vec(),
+            );
+            implied.sort_by_key(|relationship| {
+                (
+                    relationship.kind,
+                    relationship.source.0,
+                    relationship.target.0,
+                )
+            });
+            implied.dedup();
+            let library_anchors = resolution.library_specialization_anchors.clone();
+            resolution.settle(implied.into_boxed_slice(), library_anchors)
         };
         let mut completeness = PublicationCompleteness::Complete;
         if has_recovery {

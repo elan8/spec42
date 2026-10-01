@@ -73,12 +73,6 @@ owner = "spec42-semantic"
 summary = "MultiplicityRange bound expressions and their canonical featuringTypes are not published as addressable semantic facts, so checkMultiplicityRangeExpressionTypeFeaturing cannot compare them to the range."
 
 [[issue]]
-id = "semantic-connector-context-featuring-type"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "Connector relatedFeature is canonical (SemanticModel::end_related_feature), but no implied TypeFeaturing gives a connector without an owning type the innermost featuring type its related features share (the Pilot satisfies checkConnectorTypeFeaturing this way: ConnectorAdapter.addContextFeaturingType / ConnectorUtil.getContextTypeFor). The featuring-type closure and compatibility walk it needs is not derived."
-
-[[issue]]
 id = "lowering-gap-binding-connector-transition-source-endpoints"
 kind = "lowering_gap"
 owner = "spec42-semantic"

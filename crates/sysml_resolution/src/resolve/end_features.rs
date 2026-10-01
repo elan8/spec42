@@ -16,10 +16,84 @@ use std::collections::BTreeSet;
 use crate::lower::facts::OwnedEndFeature;
 use crate::lower::facts::OwnedEndRecord;
 use crate::lower::storage::SemanticModelStorage;
+use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::ReferenceKind;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
+use crate::resolve::results::ResolutionResults;
+use crate::resolve::results::ResolutionStatus;
+
+/// What one connector end contributes to its connector's `relatedFeature` collection.
+///
+/// KerML derives `relatedFeature` from each end's owned ReferenceSubsetting
+/// (`ConnectorUtil.getRelatedFeaturesOf` in the Pilot). An end with no ReferenceSubsetting
+/// contributes nothing; an end whose ReferenceSubsetting is authored but did not settle to one
+/// target does relate a feature, just not one this publication can name.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum EndRelatedFeature {
+    /// The end's ReferenceSubsetting settled to this feature.
+    Resolved(DeclarationId),
+    /// The end authors a ReferenceSubsetting whose target is unresolved or ambiguous.
+    Unsettled,
+    /// The end authors no ReferenceSubsetting.
+    Absent,
+}
+
+impl EndRelatedFeature {
+    /// Whether the end contributes a member to `relatedFeature`, known or not.
+    pub(crate) fn is_present(self) -> bool {
+        !matches!(self, Self::Absent)
+    }
+}
+
+/// The reference kinds that carry a connector end's ReferenceSubsetting: the `references` /
+/// `::>` relationship of a declared end, and the connector-end kinds a bare or named KerML
+/// connector end is lowered as.
+fn is_reference_subsetting(kind: ReferenceKind) -> bool {
+    matches!(
+        kind,
+        ReferenceKind::References
+            | ReferenceKind::ConnectorEnd
+            | ReferenceKind::BindSource
+            | ReferenceKind::BindTarget
+            | ReferenceKind::Succession
+            | ReferenceKind::FlowSource
+            | ReferenceKind::FlowTarget
+            | ReferenceKind::MemberAccessOperand
+    )
+}
+
+/// The single derivation of the `relatedFeature` member one connector end contributes.
+///
+/// `outgoing` yields a declared end's authored references in canonical (authored) order; the
+/// published model supplies its index, and resolver phases a map built from the same storage.
+pub(crate) fn end_related_feature<I>(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+    end: OwnedEndFeature,
+    outgoing: impl Fn(DeclarationId) -> I,
+) -> EndRelatedFeature
+where
+    I: IntoIterator<Item = AuthoredReferenceId>,
+{
+    let reference = match end {
+        OwnedEndFeature::Bare(reference) => Some(reference),
+        OwnedEndFeature::Declared(declaration) => {
+            outgoing(declaration).into_iter().find(|reference| {
+                storage
+                    .references
+                    .get(reference.index())
+                    .is_some_and(|reference| is_reference_subsetting(reference.kind))
+            })
+        }
+    };
+    match reference.map(|reference| resolution.outcome(reference)) {
+        None => EndRelatedFeature::Absent,
+        Some(Some(ResolutionStatus::Resolved(target))) => EndRelatedFeature::Resolved(target),
+        Some(_) => EndRelatedFeature::Unsettled,
+    }
+}
 
 /// The owned ends of `owner`, from an owned end collection sorted by owner.
 pub(crate) fn owned_ends_of(owned: &[OwnedEndRecord], owner: DeclarationId) -> &[OwnedEndRecord] {
