@@ -171,6 +171,7 @@ pub(crate) struct SemanticModel<D> {
     pub(crate) storage: SemanticModelStorage,
     pub(crate) direct_names: NameIndex,
     pub(crate) effective_imports: NameIndex,
+    pub(crate) exported_imports: NameIndex,
     pub(crate) identities: IdentityIndex,
     /// Every declaration's `::`-joined display path, settled at the barrier into one blob.
     pub(crate) qualified_names: QualifiedNameIndex,
@@ -1356,7 +1357,13 @@ mod tests {
 
     fn resolve_fixture(
         fixture: &ResolverFixture,
-    ) -> (NameIndex, NameIndex, MembershipIndex, ResolutionResults) {
+    ) -> (
+        NameIndex,
+        NameIndex,
+        NameIndex,
+        MembershipIndex,
+        ResolutionResults,
+    ) {
         resolve_dense(
             &fixture.declarations,
             None,
@@ -1774,7 +1781,7 @@ mod tests {
     #[test]
     fn same_name_direct_parent_feature_synthesizes_implied_redefinition() {
         let fixture = redefinition_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.implied_relationships.as_ref(),
@@ -1797,7 +1804,7 @@ mod tests {
             false,
         ));
         fixture.references = references.into_boxed_slice();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert!(resolution.implied_relationships.is_empty());
     }
 
@@ -1823,7 +1830,7 @@ mod tests {
             span: Span::dummy(),
         });
         fixture.memberships = memberships.into_boxed_slice();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert!(resolution.implied_relationships.is_empty());
     }
 
@@ -1932,7 +1939,7 @@ mod tests {
             false,
         ));
         fixture.references = references.into_boxed_slice();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(redefinition_index)),
@@ -1957,7 +1964,7 @@ mod tests {
             false,
         ));
         fixture.references = references.into_boxed_slice();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(subsetting_index)),
@@ -2097,7 +2104,7 @@ mod tests {
             references: references.into_boxed_slice(),
         };
 
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(redefinition_index)),
@@ -2183,7 +2190,7 @@ mod tests {
             references: references.into_boxed_slice(),
         };
 
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(fixture.declarations[anonymous_length.index()].name, None);
         assert_eq!(
             resolution.effective_names[anonymous_length.index()].name,
@@ -2288,7 +2295,7 @@ mod tests {
             references: references.into_boxed_slice(),
         };
 
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -2352,7 +2359,7 @@ mod tests {
     #[test]
     fn port_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = port_def_specialization_fixture(false);
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -2412,7 +2419,7 @@ mod tests {
     #[test]
     fn occurrence_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = occurrence_def_specialization_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -2472,7 +2479,7 @@ mod tests {
     #[test]
     fn analysis_case_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = analysis_case_def_specialization_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -2523,7 +2530,7 @@ mod tests {
     #[test]
     fn case_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = case_family_def_specialization_fixture(DeclarationKind::CaseDefinition);
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -2535,7 +2542,7 @@ mod tests {
     fn verification_case_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture =
             case_family_def_specialization_fixture(DeclarationKind::VerificationCaseDefinition);
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -2546,7 +2553,7 @@ mod tests {
     #[test]
     fn use_case_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = case_family_def_specialization_fixture(DeclarationKind::UseCaseDefinition);
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -2561,7 +2568,7 @@ mod tests {
         // declaration itself, which the resolved outcome still names correctly.
         let fixture = port_def_specialization_fixture(true);
         assert!(fixture.references[0].flags.conjugated);
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -2630,7 +2637,7 @@ mod tests {
     #[test]
     fn item_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = item_def_specialization_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -2691,7 +2698,7 @@ mod tests {
     #[test]
     fn class_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = class_def_specialization_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -2752,7 +2759,7 @@ mod tests {
     #[test]
     fn action_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = action_def_specialization_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -2813,7 +2820,7 @@ mod tests {
     #[test]
     fn state_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = state_def_specialization_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -2874,7 +2881,7 @@ mod tests {
     #[test]
     fn metadata_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = metadata_def_specialization_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -2937,7 +2944,7 @@ mod tests {
     #[test]
     fn metadata_annotation_on_part_usage_resolves_to_metadata_def() {
         let fixture = metadata_annotation_fixture("Safety");
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -2948,7 +2955,7 @@ mod tests {
     #[test]
     fn metadata_annotation_with_unresolvable_target_stays_unresolved() {
         let fixture = metadata_annotation_fixture("NoSuchMetadata");
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -3009,7 +3016,7 @@ mod tests {
     #[test]
     fn connection_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = connection_def_specialization_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -3066,7 +3073,7 @@ mod tests {
     #[test]
     fn interface_def_specialization_resolves_through_the_ancestor_fixed_point() {
         let fixture = interface_def_specialization_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -3128,7 +3135,7 @@ mod tests {
     #[test]
     fn connector_end_reference_resolves_to_its_target() {
         let fixture = connector_end_reference_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -3139,7 +3146,8 @@ mod tests {
     #[test]
     fn namespace_import_populates_index_used_by_feature_typing() {
         let fixture = cross_file_fixture(false);
-        let (direct_names, effective_imports, _memberships, resolution) = resolve_fixture(&fixture);
+        let (direct_names, effective_imports, _exported_imports, _memberships, resolution) =
+            resolve_fixture(&fixture);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
             Some(ResolutionStatus::Resolved(DeclarationId(0)))
@@ -3205,7 +3213,8 @@ mod tests {
     fn namespace_import_excludes_explicitly_private_members() {
         let mut fixture = cross_file_fixture(false);
         fixture.memberships[1].visibility = Visibility::Private;
-        let (_, effective_imports, _memberships, resolution) = resolve_fixture(&fixture);
+        let (_, effective_imports, _exported_imports, _memberships, resolution) =
+            resolve_fixture(&fixture);
 
         assert!(effective_imports
             .candidates(Some(DeclarationId(2)), NameId(2))
@@ -3219,7 +3228,7 @@ mod tests {
     #[test]
     fn duplicate_imported_type_is_canonically_ambiguous() {
         let fixture = cross_file_fixture(true);
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         let Some(ResolutionStatus::Ambiguous(range)) = resolution.outcome(AuthoredReferenceId(1))
         else {
             panic!("feature typing must retain ambiguity");
@@ -3233,7 +3242,8 @@ mod tests {
     #[test]
     fn transitive_namespace_imports_converge_without_reference_scans() {
         let fixture = transitive_import_fixture();
-        let (_, effective_imports, _memberships, resolution) = resolve_fixture(&fixture);
+        let (_, effective_imports, _exported_imports, _memberships, resolution) =
+            resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(resolution.work.passes, 4);
         assert_eq!(resolution.work.import_evaluations, 12);
@@ -3253,7 +3263,8 @@ mod tests {
     #[test]
     fn an_import_target_can_become_visible_through_an_earlier_import() {
         let fixture = imported_target_fixture();
-        let (_, effective_imports, _memberships, resolution) = resolve_fixture(&fixture);
+        let (_, effective_imports, _exported_imports, _memberships, resolution) =
+            resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(1)),
@@ -3272,7 +3283,8 @@ mod tests {
     #[test]
     fn cyclic_namespace_imports_reach_a_finite_canonical_closure() {
         let fixture = cyclic_import_fixture();
-        let (_, effective_imports, _memberships, resolution) = resolve_fixture(&fixture);
+        let (_, effective_imports, _exported_imports, _memberships, resolution) =
+            resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(resolution.work.passes, 3);
         assert_eq!(
@@ -3288,7 +3300,8 @@ mod tests {
     #[test]
     fn later_qualified_segments_use_the_effective_import_index() {
         let fixture = qualified_import_target_fixture();
-        let (_, effective_imports, _memberships, resolution) = resolve_fixture(&fixture);
+        let (_, effective_imports, _exported_imports, _memberships, resolution) =
+            resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(1)),
@@ -3307,7 +3320,7 @@ mod tests {
     #[test]
     fn exhausted_bound_is_a_typed_non_converged_publication_state() {
         let fixture = cross_file_fixture(false);
-        let (_, _, _memberships, resolution) = resolve_dense_with_limit(
+        let (_, _, _, _memberships, resolution) = resolve_dense_with_limit(
             &fixture.declarations,
             None,
             &fixture.memberships,
@@ -3333,7 +3346,7 @@ mod tests {
     fn missing_and_filtered_references_remain_explicit() {
         let mut fixture = cross_file_fixture(false);
         fixture.references[0].kind = ReferenceKind::FilterImport;
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
             Some(ResolutionStatus::Unsupported)
@@ -3439,7 +3452,7 @@ mod tests {
     #[test]
     fn diamond_inherited_member_lookup_dedups_to_a_single_target() {
         let fixture = diamond_fixture("p", "Member");
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         // Member is owned only by Base (id 2), reached via both Left -> Base and Right -> Base;
         // the diamond must dedup to exactly one Resolved outcome rather than an Ambiguous one.
@@ -3461,7 +3474,7 @@ mod tests {
         references.remove(3);
         references.remove(1);
         fixture.references = references.into_boxed_slice();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(2)),
@@ -3559,7 +3572,7 @@ mod tests {
     #[test]
     fn diamond_with_conflicting_ancestor_members_publishes_an_explicit_ambiguous_outcome() {
         let fixture = diamond_conflict_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         match resolution.outcome(AuthoredReferenceId(2)) {
             Some(ResolutionStatus::Ambiguous(range)) => {
@@ -3636,7 +3649,7 @@ mod tests {
     #[test]
     fn cyclic_specialization_yields_a_typed_non_converged_typing_outcome_not_a_loop() {
         let fixture = cyclic_specialization_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         // The import/typing fixed point above this family still converges; only the
         // ancestor-closure-dependent FeatureTyping outcome for the cyclically-specialized owner
         // is explicitly NonConverged, rather than the solver looping forever or silently guessing
@@ -3712,7 +3725,7 @@ mod tests {
     #[test]
     fn alias_binding_resolves_through_the_shared_lexical_lookup_fixed_point() {
         let fixture = alias_binding_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         // DeviceAlias's own authored `AliasBinding` reference resolves to Device (id 1), using
         // the same fixed point as every other authored reference kind rather than a separate
@@ -3726,7 +3739,7 @@ mod tests {
     #[test]
     fn typing_through_an_alias_resolves_transitively_to_the_ultimate_target() {
         let fixture = alias_binding_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         // `device : DeviceAlias`'s own FeatureTyping outcome targets the alias declaration (id 2)
         // itself -- the alias's own authored fact is never weakened or bypassed.
@@ -3801,7 +3814,7 @@ mod tests {
         // test would time out (rather than merely fail an assertion) if alias cycle detection
         // ever degenerated into an unbounded chase.
         let fixture = cyclic_alias_binding_fixture();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(0)),
@@ -3894,7 +3907,7 @@ mod tests {
         // it must shadow the imported, domain-compatible
         // A::T rather than being silently discarded in favor of the import or left Unresolved.
         let fixture = local_shadow_fixture(false);
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(1)),
@@ -3918,7 +3931,7 @@ mod tests {
         let mut references = fixture.references.into_vec();
         references[1].source = DeclarationId(4);
         fixture.references = references.into_boxed_slice();
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(1)),
@@ -3933,7 +3946,7 @@ mod tests {
         // chain to C, find C::T there, and shadow A::T at that outer tier before ever consulting
         // imports.
         let fixture = local_shadow_fixture(true);
-        let (_, _, _, resolution) = resolve_fixture(&fixture);
+        let (_, _, _, _, resolution) = resolve_fixture(&fixture);
         assert_eq!(resolution.solver_status, SolverStatus::Converged);
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(1)),
