@@ -117,20 +117,20 @@ impl<D> SemanticModel<D> {
                     }
                 }
             }
-            // KerML 8.3.4.7.8 `validateReturnParameterMembershipOwningType`.
-            Some(MembershipRole::ReturnParameter) => {
-                if !owner.is_some_and(|owner| {
-                    self.metaclass_conforms(owner, ElementKind::Function)
-                        || self.metaclass_conforms(owner, ElementKind::Expression)
-                }) {
-                    diagnostics.push(self.declaration_diagnostic(
-                        id,
-                        DiagnosticCode::ReturnParameterMembershipInvalidOwner,
-                        DiagnosticSeverity::Warning,
-                    )?);
-                }
-            }
             _ => {}
+        }
+        // KerML 8.3.4.7.8 `validateReturnParameterMembershipOwningType`.
+        if self.effective_membership_role(id) == Some(MembershipRole::ReturnParameter)
+            && !owner.is_some_and(|owner| {
+                self.metaclass_conforms(owner, ElementKind::Function)
+                    || self.metaclass_conforms(owner, ElementKind::Expression)
+            })
+        {
+            diagnostics.push(self.declaration_diagnostic(
+                id,
+                DiagnosticCode::ReturnParameterMembershipInvalidOwner,
+                DiagnosticSeverity::Warning,
+            )?);
         }
         // KerML 8.3.4.7.4 `validateFunctionResultParameterMembership` and 8.3.4.7.3
         // `validateExpressionResultParameterMembership`, as the Pilot checks them: at most one
