@@ -39,6 +39,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   [RUSTSEC-2026-0316](https://rustsec.org/advisories/RUSTSEC-2026-0316). 48.0.3 is in
   the patched range for both, so the nightly full-tree `cargo audit` passes again.
 
+- **`brace-expansion` 2.1.7 in the VS Code extension.** The extension shipped 2.1.4 (through
+  `vscode-languageclient` → `minimatch`), which is affected by
+  [GHSA-q2hr-2g5m-vwhr](https://github.com/advisories/GHSA-q2hr-2g5m-vwhr),
+  [GHSA-qhr7-859c-m2p7](https://github.com/advisories/GHSA-qhr7-859c-m2p7) and
+  [GHSA-6j4f-fj2g-mc7p](https://github.com/advisories/GHSA-6j4f-fj2g-mc7p). 2.1.7 is in
+  `minimatch`'s range and patched for all three, so the nightly npm audit of shipped packages
+  passes again.
+
 - **Graphical notation inventory matches the `2026-04` release tip.** The coverage JSON
   now records `subsetting` as supported, the same status the markdown inventory and the
   generator already used.
