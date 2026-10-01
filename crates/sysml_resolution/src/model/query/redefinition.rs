@@ -98,9 +98,7 @@ impl<D> SemanticModel<D> {
             RedefinitionCheckKind::FeatureParameter => RedefinitionCheckOutcome::Unsupported {
                 prerequisite: RedefinitionCheckPrerequisite::ParameterDirectionAndInheritedPosition,
             },
-            RedefinitionCheckKind::FeatureResult => RedefinitionCheckOutcome::Unsupported {
-                prerequisite: RedefinitionCheckPrerequisite::FunctionOrExpressionResult,
-            },
+            RedefinitionCheckKind::FeatureResult => self.feature_result_check(),
             RedefinitionCheckKind::ConstructorExpressionResultFeature => {
                 RedefinitionCheckOutcome::Unsupported {
                     prerequisite:
@@ -300,6 +298,98 @@ impl<D> SemanticModel<D> {
         tally.outcome()
     }
 
+    /// Every settled authored Redefinition, as `(source, target)`.
+    fn authored_redefinition_pairs(&self) -> BTreeSet<(DeclarationId, DeclarationId)> {
+        let mut authored = BTreeSet::new();
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            if reference.kind != ReferenceKind::Redefinition {
+                continue;
+            }
+            if let Some(ResolutionStatus::Resolved(target)) =
+                self.resolution.outcomes.get(index).copied()
+            {
+                authored.insert((reference.source, target));
+            }
+        }
+        authored
+    }
+
+    /// The deduplicated direct supertypes of `declaration` in this publication.
+    fn direct_generals(&self, declaration: DeclarationId) -> Vec<DeclarationId> {
+        let mut generals = self
+            .types
+            .supertypes(declaration)
+            .iter()
+            .map(|(general, _)| *general)
+            .collect::<Vec<_>>();
+        generals.sort();
+        generals.dedup();
+        generals
+    }
+
+    /// KerML `checkFeatureResultRedefinition`: the result of a Function or Expression redefines
+    /// the result of every Function or Expression its owner directly specializes.
+    ///
+    /// Obligations come from the same derivation the synthesis uses, over the published direct
+    /// supertypes. An owner whose specializations did not all settle -- including an
+    /// instantiation Expression whose callee, and so its typing, did not settle -- may have
+    /// supertypes this publication does not know, and an owner with several results, or a
+    /// supertype whose inherited result is ambiguous, has no single result to pair, so each
+    /// answers unresolved.
+    fn feature_result_check(&self) -> RedefinitionCheckOutcome {
+        use crate::resolve::inherited_members::InheritedMember;
+        use crate::resolve::result_parameters::is_function_or_expression;
+        use crate::resolve::result_parameters::owned_result_parameters;
+        use crate::resolve::result_parameters::result_obligations;
+        let generals = |declaration: DeclarationId| self.direct_generals(declaration);
+        let authored = self.authored_redefinition_pairs();
+        let (Ok(owned), Ok(obligations)) = (
+            owned_result_parameters(&self.storage),
+            result_obligations(&self.storage, generals, &authored),
+        ) else {
+            return RedefinitionCheckOutcome::Unresolved;
+        };
+        let callee_unsettled = |owner: DeclarationId| {
+            self.outgoing_reference_ids(owner).iter().any(|reference| {
+                self.storage
+                    .references
+                    .get(reference.index())
+                    .is_some_and(|authored| authored.kind == ReferenceKind::InvocationCallee)
+                    && !matches!(
+                        self.resolution.outcome(*reference),
+                        Some(ResolutionStatus::Resolved(_))
+                    )
+            })
+        };
+        let mut tally = CheckTally::default();
+        for owner in owned
+            .iter()
+            .map(|(owner, _)| owner)
+            .chain(owned.owners_with_several())
+        {
+            let Some(declaration) = self.storage.declaration(owner) else {
+                return RedefinitionCheckOutcome::Unresolved;
+            };
+            if is_function_or_expression(declaration.kind)
+                && (owned.owned(owner).is_none()
+                    || self.specialization_hierarchy_is_unsettled(owner)
+                    || callee_unsettled(owner))
+            {
+                tally.require(None);
+            }
+        }
+        for obligation in obligations {
+            tally.require(match obligation.target {
+                InheritedMember::Resolved(target) => {
+                    Some(self.redefines(obligation.result, target))
+                }
+                InheritedMember::Ambiguous => None,
+                InheritedMember::Absent => Some(true),
+            });
+        }
+        tally.outcome()
+    }
+
     /// SysML `checkRequirementUsageObjectiveRedefinition`: an objective redefines the
     /// `objectiveRequirement` of every case its owning Type directly specializes.
     ///
@@ -317,17 +407,7 @@ impl<D> SemanticModel<D> {
             generals.dedup();
             generals
         };
-        let mut authored = BTreeSet::new();
-        for (index, reference) in self.storage.references.iter().enumerate() {
-            if reference.kind != ReferenceKind::Redefinition {
-                continue;
-            }
-            if let Some(ResolutionStatus::Resolved(target)) =
-                self.resolution.outcomes.get(index).copied()
-            {
-                authored.insert((reference.source, target));
-            }
-        }
+        let authored = self.authored_redefinition_pairs();
         let Ok(objectives) = derive_objective_requirements(&self.storage, generals, &authored)
         else {
             return RedefinitionCheckOutcome::Unresolved;

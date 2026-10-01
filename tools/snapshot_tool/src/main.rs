@@ -1255,9 +1255,6 @@ fn parse_redefinition_check_prerequisite(
         "parameter_direction_and_inherited_position" => {
             Ok(RedefinitionCheckPrerequisite::ParameterDirectionAndInheritedPosition)
         }
-        "function_or_expression_result" => {
-            Ok(RedefinitionCheckPrerequisite::FunctionOrExpressionResult)
-        }
         "constructor_result_and_instantiated_type_features" => {
             Ok(RedefinitionCheckPrerequisite::ConstructorResultAndInstantiatedTypeFeatures)
         }

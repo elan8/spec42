@@ -402,6 +402,40 @@ impl Lowered {
                 synthesis.status,
             )
         };
+        // `checkFeatureResultRedefinition`: a result redefines the result of every Function or
+        // Expression its owner directly specializes, which includes the FeatureTyping of an
+        // invocation by its Function settled just above, so it runs once every specialization of
+        // a Function or Expression is known.
+        let resolution = if !matches!(resolution.solver_status, SolverStatus::Converged) {
+            resolution
+        } else {
+            let settled = crate::resolve::SettledTypeEdges::collect(
+                &storage.references,
+                &resolution.outcomes,
+                &resolution.implied_relationships,
+            )?;
+            let synthesized = crate::resolve::result_parameters::synthesize_result_redefinitions(
+                &storage,
+                settled.edges,
+                &settled.authored_redefinitions,
+            )?;
+            if synthesized.is_empty() {
+                resolution
+            } else {
+                let mut implied = resolution.implied_relationships.to_vec();
+                implied.extend(synthesized);
+                implied.sort_by_key(|relationship| {
+                    (
+                        relationship.kind,
+                        relationship.source.0,
+                        relationship.target.0,
+                    )
+                });
+                implied.dedup();
+                let library_anchors = resolution.library_specialization_anchors.clone();
+                resolution.settle(implied.into_boxed_slice(), library_anchors)
+            }
+        };
         let resolution = if storage
             .declarations
             .iter()

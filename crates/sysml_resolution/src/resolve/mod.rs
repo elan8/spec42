@@ -3,9 +3,11 @@
 pub(crate) mod effective_types;
 pub(crate) mod end_features;
 pub(crate) mod implied;
+pub(crate) mod inherited_members;
 pub(crate) mod library_seed;
 pub(crate) mod names;
 pub(crate) mod objective_redefinitions;
+pub(crate) mod result_parameters;
 pub(crate) mod results;
 pub(crate) mod role_redefinitions;
 

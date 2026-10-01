@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Result redefinitions.** A Function's or Expression's result now redefines the result of
+  every Function or Expression its owner directly specializes, including the result it inherits
+  (KerML `checkFeatureResultRedefinition`): a calculation's `return` redefines
+  `Performances::Evaluation::result`, and an invocation's result redefines its Function's result
+  and so takes its type.
+
 - **Every invocation is its own expression.** A nested invocation or constructor (`f(g(x))`,
   `new A(new B())`), and one written directly in a constraint, calculation or filter body, is now
   its own Expression with its own result and argument features. A nested callee no longer types

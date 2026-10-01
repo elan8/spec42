@@ -19,6 +19,9 @@ use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::ReferenceKind;
 use crate::resolve::results::ImpliedRelationship;
+use crate::resolve::inherited_members::derive_inherited_members;
+use crate::resolve::inherited_members::InheritedMember;
+use crate::resolve::inherited_members::OwnedMembers;
 use crate::resolve::results::ResolutionError;
 use crate::ElementKind;
 
@@ -47,25 +50,12 @@ pub(crate) fn is_case_usage(kind: DeclarationKind) -> bool {
 }
 
 /// A case's `objectiveRequirement`, as far as this publication settles it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum ObjectiveRequirement {
-    /// The case owns or inherits exactly this objective.
-    Resolved(DeclarationId),
-    /// The case inherits more than one distinct objective, none of which it owns or redefines
-    /// (`objectiveRequirement` is `[0..1]`), so which one it has is not settled.
-    Ambiguous,
-    /// The case neither owns nor inherits an objective.
-    Absent,
-}
+pub(crate) type ObjectiveRequirement = InheritedMember;
 
 /// Every declaration's `objectiveRequirement`, indexed by declaration.
 ///
-/// A declaration that owns an objective has that one. Otherwise it inherits the objectives of its
-/// direct supertypes, less any that another inherited objective redefines (inherited memberships
-/// exclude redefined features): none, one, or several (ambiguous). An owned objective redefines
-/// its supertypes' objectives (the obligation this module implies) and whatever it redefines in
-/// `authored`, transitively. A supertype still being derived is on a specialization cycle and
-/// contributes nothing, so this is one deterministic pass.
+/// A declaration's owned objective is its `ObjectiveRequirement` member; the rest is the shared
+/// [`derive_inherited_members`] derivation.
 pub(crate) fn derive_objective_requirements<F>(
     storage: &SemanticModelStorage,
     generals: F,
@@ -74,12 +64,7 @@ pub(crate) fn derive_objective_requirements<F>(
 where
     F: Fn(DeclarationId) -> Vec<DeclarationId>,
 {
-    const UNVISITED: u8 = 0;
-    const IN_PROGRESS: u8 = 1;
-    const DONE: u8 = 2;
-    let count = storage.declarations.len();
-    let mut owned = vec![None; count];
-    let mut owned_twice = vec![false; count];
+    let mut owned = OwnedMembers::new(storage.declarations.len());
     for (index, declaration) in storage.declarations.iter().enumerate() {
         if declaration.kind != DeclarationKind::ObjectiveRequirement {
             continue;
@@ -88,114 +73,9 @@ where
             continue;
         };
         let objective = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-        let slot = owned
-            .get_mut(owner.index())
-            .ok_or(ResolutionError::InvalidStorage)?;
-        if slot.is_some() {
-            owned_twice[owner.index()] = true;
-        }
-        slot.get_or_insert(objective);
+        owned.insert(owner, objective)?;
     }
-    let mut state = vec![UNVISITED; count];
-    let mut objectives = vec![ObjectiveRequirement::Absent; count];
-    // The objectives each owned objective redefines, transitively.
-    let mut redefines: std::collections::BTreeMap<DeclarationId, BTreeSet<DeclarationId>> =
-        std::collections::BTreeMap::new();
-    let mut stack = Vec::new();
-    for root in 0..count {
-        if state[root] != UNVISITED {
-            continue;
-        }
-        stack.push((root, false));
-        while let Some((node, expanded)) = stack.pop() {
-            let declaration =
-                DeclarationId::from_index(node).map_err(|_| ResolutionError::Capacity)?;
-            if !expanded {
-                if state[node] != UNVISITED {
-                    continue;
-                }
-                state[node] = IN_PROGRESS;
-                stack.push((node, true));
-                for general in generals(declaration).into_iter().rev() {
-                    if state.get(general.index()) == Some(&UNVISITED) {
-                        stack.push((general.index(), false));
-                    }
-                }
-                continue;
-            }
-            objectives[node] = if owned_twice[node] {
-                // validateCaseDefinitionOnlyOneObjective / validateCaseUsageOnlyOneObjective
-                // report this; which one is the objective is not settled.
-                ObjectiveRequirement::Ambiguous
-            } else if let Some(objective) = owned[node] {
-                let mut redefined = BTreeSet::new();
-                let direct = generals(declaration)
-                    .into_iter()
-                    .filter(|general| state.get(general.index()) == Some(&DONE))
-                    .filter_map(|general| match objectives[general.index()] {
-                        ObjectiveRequirement::Resolved(target) => Some(target),
-                        ObjectiveRequirement::Ambiguous | ObjectiveRequirement::Absent => None,
-                    })
-                    .chain(
-                        authored
-                            .range(
-                                (objective, DeclarationId(0))
-                                    ..=(objective, DeclarationId(u32::MAX)),
-                            )
-                            .map(|(_, target)| *target),
-                    )
-                    .filter(|target| *target != objective)
-                    .collect::<Vec<_>>();
-                for target in direct {
-                    redefined.insert(target);
-                    if let Some(transitive) = redefines.get(&target) {
-                        redefined.extend(transitive.iter().copied());
-                    }
-                }
-                redefines.insert(objective, redefined);
-                ObjectiveRequirement::Resolved(objective)
-            } else {
-                let mut inherited = BTreeSet::new();
-                let mut ambiguous = false;
-                for general in generals(declaration) {
-                    if state.get(general.index()) != Some(&DONE) {
-                        continue;
-                    }
-                    match objectives[general.index()] {
-                        ObjectiveRequirement::Resolved(objective) => {
-                            inherited.insert(objective);
-                        }
-                        ObjectiveRequirement::Ambiguous => ambiguous = true,
-                        ObjectiveRequirement::Absent => {}
-                    }
-                }
-                let redefined_by_another = inherited
-                    .iter()
-                    .filter(|candidate| {
-                        inherited.iter().any(|other| {
-                            other != *candidate
-                                && redefines
-                                    .get(other)
-                                    .is_some_and(|redefined| redefined.contains(candidate))
-                        })
-                    })
-                    .copied()
-                    .collect::<Vec<_>>();
-                for candidate in redefined_by_another {
-                    inherited.remove(&candidate);
-                }
-                match (ambiguous, inherited.len()) {
-                    (false, 0) => ObjectiveRequirement::Absent,
-                    (false, 1) => ObjectiveRequirement::Resolved(
-                        *inherited.first().ok_or(ResolutionError::InvalidStorage)?,
-                    ),
-                    _ => ObjectiveRequirement::Ambiguous,
-                }
-            };
-            state[node] = DONE;
-        }
-    }
-    Ok(objectives)
+    derive_inherited_members(&owned, generals, authored)
 }
 
 /// What one objective must redefine for one direct supertype of its owning Type.

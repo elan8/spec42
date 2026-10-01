@@ -31,12 +31,6 @@ owner = "spec42-semantic"
 summary = "Positional parameter redefinitions (the Pilot's getRelevantParameters over a general's directedFeature, as resolve::end_features does for ends) need two missing facts: a Behavior/Step metaclass classification of declaration kinds and the parameters the Pilot mints for send/accept/assign/perform/invocation forms, without which a Step's owned parameters are not all published and the check would read too few obligations. A FeatureValue's top-level invocation now mints its positional argument Features (instantiation_argument position facts), so they are among the obligations once the positional pairing is derived; a nested invocation still owns none."
 
 [[issue]]
-id = "lowering-gap-redefinition-function-expression-result"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Only KerML expression results are minted (DeclarationFacts::expression_result); an authored `return` now carries its ReturnParameterMembership role, but the result parameter the Pilot adds to every Function/Expression lacking one (calc, constraint and requirement definitions and usages) is not minted, so a Function's result and the general result it must redefine are not settled facts."
-
-[[issue]]
 id = "lowering-gap-redefinition-constructor-result-instantiated-features"
 kind = "lowering_gap"
 owner = "spec42-semantic"

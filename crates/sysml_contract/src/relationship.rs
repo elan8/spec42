@@ -176,7 +176,6 @@ pub enum RedefinitionCheckPrerequisite {
     RuleNotPublished,
     FlowEndOrdinalAndLibraryAnchors,
     ParameterDirectionAndInheritedPosition,
-    FunctionOrExpressionResult,
     ConstructorResultAndInstantiatedTypeFeatures,
     StateSubactionMembershipAndKind,
     AssignmentActionInputParameterEndpoints,
