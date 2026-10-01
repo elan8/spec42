@@ -37,6 +37,18 @@ package Model {
   (document "memory://snapshot/kerml_feature_owned_type_featuring.md"
     (diagnostics
       (diagnostic
+        (severity error)
+        (code "redefinition_featuring_type_incompatible")
+        (source "semantic")
+        (range (start 3 44) (end 3 48))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_feature_owned_type_featuring.md")
+            (range (start 2 8) (end 2 21))
+          )
+        )
+      )
+      (diagnostic
         (severity warning)
         (code "feature_chaining_single_operand")
         (source "semantic")

@@ -367,12 +367,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule requires a part usage to have a part definition among its types; the canonical code part_usage_without_part_definition does not exist yet"
 
 [[issue]]
-id = "semantic-redefinition-featuring-type-compatibility"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "redefinition_featuring_type_incompatible is not reported when the redefining and redefined features share one owning type, so this manifestation of the rule is unenforced"
-
-[[issue]]
 id = "semantic-return-parameter-membership-invalid-owner"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"

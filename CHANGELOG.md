@@ -40,6 +40,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   SysML family table does not classify) and one member's metaclass conforms to the other's
   (KerML `Membership::isDistinguishableFrom`).
 
+- **Redefinitions between features with the same featuring types.**
+  `redefinition_featuring_type_incompatible` now also reports a redefinition whose redefining and
+  redefined features have the same effective featuring types, such as a feature redefining a
+  sibling (KerML `validateRedefinitionFeaturingTypes`).
+
 - **Case objectives redefine the objectives they specialize.** An `objective` is now published as
   an `objective-requirement` (a `RequirementUsage` under an `ObjectiveMembership`, membership role
   `objective`) and implicitly redefines the objective of every case definition or case usage its

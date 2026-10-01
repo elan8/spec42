@@ -735,6 +735,44 @@ impl<D> SemanticModel<D> {
         source: DeclarationId,
         target: DeclarationId,
     ) -> Option<DiagnosticCode> {
+        // KerML 8.3.3.3.8 `validateRedefinitionFeaturingTypes`: the redefining feature must have
+        // a featuring type the redefined feature does not, so a redefinition between features
+        // with the same effective featuring types (including none at all) redefines nothing it
+        // could narrow. Compared as sets, as the Pilot's `checkRedefinition` does.
+        let featuring = |feature: DeclarationId| {
+            self.types
+                .featuring_types(feature)
+                .iter()
+                .map(|(featuring_type, _)| *featuring_type)
+                .collect::<std::collections::BTreeSet<_>>()
+        };
+        // A variable feature is featured by its owner's snapshots and a feature nested in another
+        // is featured through that enclosing feature; neither effective featuring type is a
+        // published fact yet, and an unresolved `featured by` or `chains` target leaves the row
+        // incomplete, so such (possibly empty) rows cannot be compared.
+        let settled = |feature: DeclarationId| {
+            !self.types.featuring_requires_snapshots(feature)
+                && self
+                    .outgoing_reference_ids(feature)
+                    .iter()
+                    .all(|reference_id| {
+                        !matches!(
+                            self.storage.references[reference_id.index()].kind,
+                            ReferenceKind::TypeFeaturing | ReferenceKind::FeatureChaining
+                        ) || matches!(
+                            self.resolution.outcome(*reference_id),
+                            Some(ResolutionStatus::Resolved(_))
+                        )
+                    })
+                && !self
+                    .types
+                    .featuring_types(feature)
+                    .iter()
+                    .any(|(featuring_type, _)| self.is_feature_member(*featuring_type))
+        };
+        if settled(source) && settled(target) && featuring(source) == featuring(target) {
+            return Some(DiagnosticCode::RedefinitionFeaturingTypeIncompatible);
+        }
         let redefining = self.types.featuring_type(source)?;
         let redefined = self.types.featuring_type(target)?;
         if self.is_feature_member(redefining) || self.is_feature_member(redefined) {

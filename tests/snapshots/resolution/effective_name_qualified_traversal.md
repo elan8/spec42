@@ -36,6 +36,18 @@ package Demo {
 (fixture-diagnostics
   (document "memory://snapshot/effective_name_qualified_traversal.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "redefinition_featuring_type_incompatible")
+        (source "semantic")
+        (range (start 3 27) (end 3 43))
+        (related-information
+          (related
+            (uri "memory://snapshot/effective_name_qualified_traversal.md")
+            (range (start 2 8) (end 2 18))
+          )
+        )
+      )
     )
   )
 )

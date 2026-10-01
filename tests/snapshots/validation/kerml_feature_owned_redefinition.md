@@ -36,6 +36,18 @@ package Model {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_owned_redefinition.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "redefinition_featuring_type_incompatible")
+        (source "semantic")
+        (range (start 3 34) (end 3 38))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_feature_owned_redefinition.md")
+            (range (start 2 8) (end 2 21))
+          )
+        )
+      )
     )
   )
 )

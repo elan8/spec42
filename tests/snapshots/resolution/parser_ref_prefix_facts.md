@@ -54,6 +54,18 @@ package RefPrefixFacts {
 (fixture-diagnostics
   (document "memory://snapshot/parser_ref_prefix_facts.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "redefinition_featuring_type_incompatible")
+        (source "semantic")
+        (range (start 40 35) (end 40 41))
+        (related-information
+          (related
+            (uri "memory://snapshot/parser_ref_prefix_facts.md")
+            (range (start 39 8) (end 39 29))
+          )
+        )
+      )
     )
   )
 )

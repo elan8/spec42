@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.3.8:validateRedefinitionFeaturingTypes
-blocked_by=semantic-redefinition-featuring-type-compatibility
 type=file
 ~~~
 # SOURCE
@@ -36,10 +35,16 @@ package Redefinitions {
   (document "memory://snapshot/kerml_redefinition_featuring_types.md"
     (diagnostics
       (diagnostic
-        (severity warning)
+        (severity error)
         (code "redefinition_featuring_type_incompatible")
         (source "semantic")
-        (range (start 13 8) (end 13 47))
+        (range (start 13 41) (end 13 46))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_redefinition_featuring_types.md")
+            (range (start 10 8) (end 10 30))
+          )
+        )
       )
     )
   )
@@ -50,6 +55,18 @@ package Redefinitions {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_redefinition_featuring_types.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "redefinition_featuring_type_incompatible")
+        (source "semantic")
+        (range (start 13 41) (end 13 46))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_redefinition_featuring_types.md")
+            (range (start 10 8) (end 10 30))
+          )
+        )
+      )
     )
   )
 )
