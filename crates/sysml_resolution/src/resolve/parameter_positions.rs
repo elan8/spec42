@@ -94,11 +94,10 @@ pub(crate) fn owned_parameters(
             .ok_or(ResolutionError::InvalidStorage)?;
         *roles
             .get_mut(membership.member.index())
-            .ok_or(ResolutionError::InvalidStorage)? = Some(
-            membership
-                .role
-                .or_else(|| membership_role_with_trigger(declaration.kind, facts.is_trigger_action)),
-        );
+            .ok_or(ResolutionError::InvalidStorage)? =
+            Some(membership.role.or_else(|| {
+                membership_role_with_trigger(declaration.kind, facts.is_trigger_action)
+            }));
     }
     let mut owned = vec![Vec::new(); storage.declarations.len()];
     for (index, declaration) in storage.declarations.iter().enumerate() {

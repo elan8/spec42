@@ -683,9 +683,10 @@ impl<D> SemanticModel<D> {
                 TriggerInvocationKind::When => {
                     (boolean, DiagnosticCode::TriggerWhenArgumentNotBoolean)
                 }
-                TriggerInvocationKind::At => {
-                    (time_instant, DiagnosticCode::TriggerAtArgumentNotTimeInstant)
-                }
+                TriggerInvocationKind::At => (
+                    time_instant,
+                    DiagnosticCode::TriggerAtArgumentNotTimeInstant,
+                ),
                 TriggerInvocationKind::After => {
                     (duration, DiagnosticCode::TriggerAfterArgumentNotDuration)
                 }

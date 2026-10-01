@@ -446,7 +446,9 @@ impl Lowered {
                 with_parameters
                     .iter()
                     .chain(synthesized.iter())
-                    .filter(|relationship| relationship.kind == crate::model::ReferenceKind::Redefinition)
+                    .filter(|relationship| {
+                        relationship.kind == crate::model::ReferenceKind::Redefinition
+                    })
                     .map(|relationship| (relationship.source, relationship.target)),
             );
             synthesized.extend(

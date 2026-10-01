@@ -58,7 +58,12 @@ impl OwnedMembers {
 
     /// The single member `owner` owns, if it owns exactly one.
     pub(crate) fn owned(&self, owner: DeclarationId) -> Option<DeclarationId> {
-        if self.owned_twice.get(owner.index()).copied().unwrap_or(false) {
+        if self
+            .owned_twice
+            .get(owner.index())
+            .copied()
+            .unwrap_or(false)
+        {
             return None;
         }
         self.owned.get(owner.index()).copied().flatten()
@@ -147,9 +152,7 @@ where
                     })
                     .chain(
                         authored
-                            .range(
-                                (member, DeclarationId(0))..=(member, DeclarationId(u32::MAX)),
-                            )
+                            .range((member, DeclarationId(0))..=(member, DeclarationId(u32::MAX)))
                             .map(|(_, target)| *target),
                     )
                     .filter(|target| *target != member)
@@ -205,4 +208,3 @@ where
     }
     Ok(members)
 }
-

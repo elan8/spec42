@@ -40,7 +40,10 @@ where
     let mut owned: BTreeMap<DeclarationId, Vec<DeclarationId>> = BTreeMap::new();
     for membership in storage.memberships.iter() {
         if membership.kind != MembershipKind::Feature
-            || !matches!(membership.visibility, Visibility::Default | Visibility::Public)
+            || !matches!(
+                membership.visibility,
+                Visibility::Default | Visibility::Public
+            )
         {
             continue;
         }

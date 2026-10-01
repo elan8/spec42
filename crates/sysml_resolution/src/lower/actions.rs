@@ -1,19 +1,19 @@
 //! Phase 2 lowering — behaviour: action definitions and usages, control nodes, flows, performs.
 
-use crate::lower::facts::ParameterDirection;
-use crate::model::AuthoredReferenceId;
 use crate::lower::facts::definition_prefix_modifiers;
 use crate::lower::facts::definition_prefix_node_modifiers;
 use crate::lower::facts::direction_fact;
 use crate::lower::facts::multiplicity_facts;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
+use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::facts::SuccessionEndMultiplicities;
 use crate::lower::facts::UnsupportedFamily;
 use crate::lower::kerml::kerml_bare_end_multiplicity;
 use crate::lower::SemanticModelBuilder;
+use crate::model::AuthoredReferenceId;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
@@ -1305,13 +1305,14 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.lhs.span,
         )?;
-        self.assignments.push(crate::lower::facts::AssignmentRecord {
-            assignment: declaration,
-            target_parameter,
-            starting_at,
-            accessed_feature,
-            referent,
-        });
+        self.assignments
+            .push(crate::lower::facts::AssignmentRecord {
+                assignment: declaration,
+                target_parameter,
+                starting_at,
+                accessed_feature,
+                referent,
+            });
         self.push_evaluation_fact(
             declaration,
             self.constraint_expression_site(document, &node.rhs.value),
@@ -1584,7 +1585,12 @@ impl SemanticModelBuilder {
             span,
             DeclarationFacts::none(),
         )?;
-        self.push_membership(expression, MembershipKind::Owning, Visibility::Default, span)?;
+        self.push_membership(
+            expression,
+            MembershipKind::Owning,
+            Visibility::Default,
+            span,
+        )?;
         let result = self.push_typed_declaration(
             document,
             Some(expression),

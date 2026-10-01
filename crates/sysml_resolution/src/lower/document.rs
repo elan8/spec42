@@ -533,16 +533,17 @@ impl SemanticModelBuilder {
 
         reserve(&mut self.assignments, lowered.assignments.len())?;
         for record in lowered.assignments.iter() {
-            self.assignments.push(crate::lower::facts::AssignmentRecord {
-                assignment: relocation.declaration(record.assignment)?,
-                target_parameter: relocation.declaration(record.target_parameter)?,
-                starting_at: relocation.declaration(record.starting_at)?,
-                accessed_feature: relocation.declaration(record.accessed_feature)?,
-                referent: record
-                    .referent
-                    .map(|referent| relocation.reference(referent))
-                    .transpose()?,
-            });
+            self.assignments
+                .push(crate::lower::facts::AssignmentRecord {
+                    assignment: relocation.declaration(record.assignment)?,
+                    target_parameter: relocation.declaration(record.target_parameter)?,
+                    starting_at: relocation.declaration(record.starting_at)?,
+                    accessed_feature: relocation.declaration(record.accessed_feature)?,
+                    referent: record
+                        .referent
+                        .map(|referent| relocation.reference(referent))
+                        .transpose()?,
+                });
         }
 
         reserve(

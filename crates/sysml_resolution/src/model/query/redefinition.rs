@@ -419,13 +419,17 @@ impl<D> SemanticModel<D> {
                 .map(|features| features.iter().copied().collect::<BTreeSet<_>>())
                 .unwrap_or_default();
             for argument in arguments.iter().copied() {
-                let named_unsettled = self.outgoing_reference_ids(argument).iter().any(|reference| {
-                    self.storage.references[reference.index()].kind == ReferenceKind::Redefinition
-                        && !matches!(
-                            self.resolution.outcome(*reference),
-                            Some(ResolutionStatus::Resolved(_))
-                        )
-                });
+                let named_unsettled =
+                    self.outgoing_reference_ids(argument)
+                        .iter()
+                        .any(|reference| {
+                            self.storage.references[reference.index()].kind
+                                == ReferenceKind::Redefinition
+                                && !matches!(
+                                    self.resolution.outcome(*reference),
+                                    Some(ResolutionStatus::Resolved(_))
+                                )
+                        });
                 tally.require(if named_unsettled {
                     None
                 } else {
@@ -498,9 +502,12 @@ impl<D> SemanticModel<D> {
         use crate::resolve::result_parameters::is_function_or_expression;
         use crate::resolve::result_parameters::owned_result_parameters;
         use crate::resolve::result_parameters::result_obligations;
-        if self.storage.unlowered_expressions.iter().any(|site| {
-            site.kind == crate::lower::facts::UnloweredExpression::Element
-        }) {
+        if self
+            .storage
+            .unlowered_expressions
+            .iter()
+            .any(|site| site.kind == crate::lower::facts::UnloweredExpression::Element)
+        {
             return RedefinitionCheckOutcome::Unsupported {
                 prerequisite: RedefinitionCheckPrerequisite::ExpressionElements,
             };

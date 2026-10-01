@@ -1398,9 +1398,13 @@ impl SemanticModelBuilder {
             Expression::Sequence { operands, .. } if operands.value.elements.len() == 1 => return,
             _ => {}
         }
-        let top_level = self.declarations.get(site.index()).is_some_and(|declaration| {
-            declaration.kind == DeclarationKind::KermlExpression && declaration.span == node.span
-        });
+        let top_level = self
+            .declarations
+            .get(site.index())
+            .is_some_and(|declaration| {
+                declaration.kind == DeclarationKind::KermlExpression
+                    && declaration.span == node.span
+            });
         let kind = match (top_level, &node.value) {
             (
                 true,

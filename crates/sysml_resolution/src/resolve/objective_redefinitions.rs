@@ -18,10 +18,10 @@ use crate::model::element_kind::element_kind;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::ReferenceKind;
-use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::inherited_members::derive_inherited_members;
 use crate::resolve::inherited_members::InheritedMember;
 use crate::resolve::inherited_members::OwnedMembers;
+use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
 use crate::ElementKind;
 
