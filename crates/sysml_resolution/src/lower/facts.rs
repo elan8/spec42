@@ -519,7 +519,8 @@ pub(crate) fn multiplicity_bound(expression: Option<&Node<Expression>>) -> Multi
 
 /// Folds a multiplicity bound expression to a literal integer, or reports that it is not one.
 ///
-/// Deliberately narrow: only an integer literal (optionally parenthesised) is a literal bound.
+/// Deliberately narrow: only an integer literal (optionally parenthesised or signed) is a literal
+/// bound.
 /// Everything else -- a feature reference, an arithmetic expression, an index -- is published as
 /// `MultiplicityBound::Expression` rather than guessed at, because folding it needs operand
 /// resolution this fact family does not perform.
@@ -530,6 +531,17 @@ pub(crate) fn literal_bound_value(expression: &Expression) -> Option<i64> {
             [only] => literal_bound_value(&only.expression.value),
             _ => None,
         },
+        // A signed integer literal (`-1`, `+2`) is still a literal-only, model-level-evaluable
+        // value; a negative result is a published fact the bound rule rejects.
+        Expression::UnaryOp { op, operand } => {
+            let value = literal_bound_value(&operand.value)?;
+            match op {
+                sysml_v2_parser::ast::UnaryOperator::Plus => Some(value),
+                sysml_v2_parser::ast::UnaryOperator::Minus => value.checked_neg(),
+                sysml_v2_parser::ast::UnaryOperator::Not
+                | sysml_v2_parser::ast::UnaryOperator::BitNot => None,
+            }
+        }
         _ => None,
     }
 }

@@ -49,6 +49,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reference subsetting whose subsetted feature is featured by types none of the subsetting
   feature's featuring types specialize (KerML `validateSubsettingFeaturingTypes`).
 
+- **Negative multiplicity bounds.** A signed integer literal bound (`[-1]`) is now published as a
+  literal, and a negative bound is reported as `multiplicity_bound_invalid` (KerML
+  `validateMultiplicityRangeBoundResultTypes`) instead of `invalid_multiplicity`, which now means
+  only an upper bound below the lower bound.
+
 - **Case objectives redefine the objectives they specialize.** An `objective` is now published as
   an `objective-requirement` (a `RequirementUsage` under an `ObjectiveMembership`, membership role
   `objective`) and implicitly redefines the objective of every case definition or case usage its

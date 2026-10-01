@@ -719,6 +719,9 @@ semantic_diagnostic_codes! {
     /// A declared multiplicity states bounds that admit nothing.
     InvalidMultiplicity => "invalid_multiplicity",
         "This multiplicity states bounds that admit nothing.";
+    /// KerML 8.3.4.11.2 `validateMultiplicityRangeBoundResultTypes`.
+    MultiplicityBoundInvalid => "multiplicity_bound_invalid",
+        "A multiplicity bound must evaluate to a natural number.";
 
     // --- Analysis ------------------------------------------------------------------------------
     /// An analysis constraint settled to false.

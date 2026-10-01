@@ -1661,8 +1661,12 @@ impl<D> SemanticModel<D> {
         for id in declared.iter().copied() {
             let kind = self.kind_of(id).ok_or(ResolutionError::InvalidStorage)?;
 
-            // A multiplicity whose literal bounds cross admits nothing at all, whether it is the
-            // feature's own or a connector end's cross multiplicity.
+            // KerML 8.3.4.11.2 `validateMultiplicityRangeBoundResultTypes`: a model-level
+            // evaluable bound must evaluate to a natural number, so a negative literal bound is
+            // `multiplicity_bound_invalid`. Otherwise, a multiplicity whose literal bounds cross
+            // admits nothing at all. Both apply to the feature's own multiplicity and a connector
+            // end's cross multiplicity. A non-literal bound's result type is not a published fact,
+            // so its half of the rule stays unanswered.
             let facts = self
                 .storage
                 .declaration_facts(id)
@@ -1671,25 +1675,35 @@ impl<D> SemanticModel<D> {
                 .into_iter()
                 .flatten()
             {
-                if let (MultiplicityBound::Literal(lower), MultiplicityBound::Literal(upper)) =
+                let negative = |bound: MultiplicityBound| {
+                    matches!(bound, MultiplicityBound::Literal(value) if value < 0)
+                };
+                let code = if negative(multiplicity.lower) || negative(multiplicity.upper) {
+                    DiagnosticCode::MultiplicityBoundInvalid
+                } else if let (MultiplicityBound::Literal(lower), MultiplicityBound::Literal(upper)) =
                     (multiplicity.lower, multiplicity.upper)
                 {
-                    if lower < 0 || upper < lower {
-                        diagnostics.push(Diagnostic {
-                            payload: None,
-                            message: DiagnosticCode::InvalidMultiplicity.describe().into(),
-                            code: DiagnosticCode::InvalidMultiplicity,
-                            severity: DiagnosticSeverity::Warning,
-                            origin: DiagnosticOrigin::Semantic,
-                            subject: self.symbol_id(id),
-                            location: DiagnosticLocation {
-                                document: writer::document_identity(self, document).into(),
-                                range: document_range(&self.storage, document, &multiplicity.span)?,
-                            },
-                            related: Box::default(),
-                        });
+                    if upper < lower {
+                        DiagnosticCode::InvalidMultiplicity
+                    } else {
+                        continue;
                     }
-                }
+                } else {
+                    continue;
+                };
+                diagnostics.push(Diagnostic {
+                    payload: None,
+                    message: code.describe().into(),
+                    code,
+                    severity: DiagnosticSeverity::Warning,
+                    origin: DiagnosticOrigin::Semantic,
+                    subject: self.symbol_id(id),
+                    location: DiagnosticLocation {
+                        document: writer::document_identity(self, document).into(),
+                        range: document_range(&self.storage, document, &multiplicity.span)?,
+                    },
+                    related: Box::default(),
+                });
             }
 
             // A `redefines` clause naming its own feature is deliberately not its own code: the

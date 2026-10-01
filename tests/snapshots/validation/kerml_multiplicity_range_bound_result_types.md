@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.11.2:validateMultiplicityRangeBoundResultTypes
-blocked_by=semantic-multiplicity-bound-invalid
 type=file
 ~~~
 # SOURCE
@@ -30,7 +29,7 @@ package Multiplicities {
         (severity warning)
         (code "multiplicity_bound_invalid")
         (source "semantic")
-        (range (start 5 4) (end 5 28))
+        (range (start 5 23) (end 5 27))
       )
     )
   )
@@ -41,6 +40,12 @@ package Multiplicities {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "multiplicity_bound_invalid")
+        (source "semantic")
+        (range (start 5 23) (end 5 27))
+      )
     )
   )
 )
@@ -52,7 +57,7 @@ package Multiplicities {
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (qualified-name "Multiplicities"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (qualified-name "Multiplicities::Bounded"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 0) (upper 3))))
-    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (qualified-name "Multiplicities::Negative"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (multiplicity (lower expression) (upper expression))))
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_result_types.md") (qualified-name "Multiplicities::Negative"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (multiplicity (lower -1) (upper -1))))
   )
   (references
   )

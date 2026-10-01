@@ -913,8 +913,15 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     DiagnosticCatalogEntry {
         code: "invalid_multiplicity",
         severity: "warning",
-        meaning: "A multiplicity clause is not valid for the usage.",
+        meaning: "A multiplicity's literal upper bound is below its lower bound, so it admits no cardinality at all.",
         typical_fix: "Fix multiplicity syntax or bounds.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "multiplicity_bound_invalid",
+        severity: "warning",
+        meaning: "A multiplicity bound evaluates to a negative number, but bounds must be natural numbers (KerML validateMultiplicityRangeBoundResultTypes).",
+        typical_fix: "Use a non-negative integer or `*` as the bound.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {

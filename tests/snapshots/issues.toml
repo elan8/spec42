@@ -349,10 +349,10 @@ owner = "spec42-semantic"
 summary = "no semantic rule checks that a metadata feature type is a Metaclass; the canonical code metadata_type_not_metaclass does not exist yet"
 
 [[issue]]
-id = "semantic-multiplicity-bound-invalid"
+id = "semantic-multiplicity-bound-result-type"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
-summary = "no semantic rule checks the result type or sign of a multiplicity bound expression; the canonical code multiplicity_bound_invalid does not exist yet"
+summary = "multiplicity_bound_invalid covers negative literal bounds only: a non-literal or non-integer bound is published as MultiplicityBound::Expression with no result type, so the ScalarValues::Integer result-type half of validateMultiplicityRangeBoundResultTypes is unanswered"
 
 [[issue]]
 id = "semantic-parameter-membership-invalid-owner"
