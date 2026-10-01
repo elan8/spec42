@@ -6463,7 +6463,7 @@ fn multiple_bare_dotted_chain_operands_on_one_declaration_each_resolve() {
 }
 
 #[test]
-fn derivation_shorthand_and_redefined_ends_name_the_standard_features() {
+fn redefined_derivation_ends_name_the_standard_features_and_prefix_metadata_invents_none() {
     let library = r#"
         standard library package DerivationConnections {
             requirement originalRequirements[*];
@@ -6520,71 +6520,35 @@ fn derivation_shorthand_and_redefined_ends_name_the_standard_features() {
         "DerivationConnections::Derivation::originalRequirement",
     );
     let model = settled(published.document_symbols("memory://model.sysml"));
+    // `#derivation`, `#original` and `#derive` are prefix metadata (SysML BNF 1699), not
+    // grammar roles. This library has no `RequirementDerivation` metadata definitions, so they
+    // resolve to nothing and imply nothing: the connection is a usage that specializes no
+    // `Derivation`, and its anonymous ends are not renamed after the standard features.
     let specializes_derivation = model.iter().any(|entry| {
         settled(published.element_details(entry.identity))
             .outgoing
             .iter()
-            .any(|edge| {
-                edge.kind == "specialization"
-                    && edge.provenance == RelationshipProvenance::Implied
-                    && edge.peer.identity == derivation
-            })
+            .any(|edge| edge.kind == "specialization" && edge.peer.identity == derivation)
     });
     assert!(
-        specializes_derivation,
-        "#derivation connection must specialize Derivation"
+        !specializes_derivation,
+        "prefix metadata that does not resolve must not specialize Derivation"
     );
-
-    let model_names = model
+    let invented_names = model
         .iter()
-        .map(|entry| {
-            format!(
-                "{} ({}, {})",
-                published.qualified_name(entry.identity).unwrap_or("<none>"),
-                published
-                    .symbol_name(entry.identity)
-                    .unwrap_or("<anonymous>"),
-                entry.kind.as_str()
-            )
+        .filter(|entry| {
+            matches!(
+                published.symbol_name(entry.identity),
+                Some("originalRequirement" | "derivedRequirements")
+            ) && !published
+                .qualified_name(entry.identity)
+                .unwrap_or("")
+                .contains("placed")
         })
-        .collect::<Vec<_>>();
-    let shorthand_original = model
-        .iter()
-        .find(|entry| {
-            published.symbol_name(entry.identity) == Some("originalRequirement")
-                && !published
-                    .qualified_name(entry.identity)
-                    .unwrap_or("")
-                    .contains("placed")
-        })
-        .unwrap_or_else(|| panic!("shorthand #original end missing from {model_names:?}"));
-    let shorthand_details = settled(published.element_details(shorthand_original.identity));
-    assert!(
-        shorthand_details.outgoing.iter().any(|edge| {
-            edge.kind == "redefinition"
-                && edge.provenance == RelationshipProvenance::Implied
-                && edge.peer.identity == original
-        }),
-        "shorthand #original must redefine Derivation::originalRequirement, got {:?}",
-        shorthand_details.outgoing
-    );
-    let shorthand_derived = model
-        .iter()
-        .find(|entry| {
-            published.symbol_name(entry.identity) == Some("derivedRequirements")
-                && !published
-                    .qualified_name(entry.identity)
-                    .unwrap_or("")
-                    .contains("placed")
-        })
-        .expect("#derive end");
-    let derived_details = settled(published.element_details(shorthand_derived.identity));
-    assert!(
-        derived_details.outgoing.iter().any(|edge| {
-            edge.kind == "redefinition" && edge.provenance == RelationshipProvenance::Implied
-        }),
-        "shorthand #derive must redefine the library derived end, got {:?}",
-        derived_details.outgoing
+        .count();
+    assert_eq!(
+        invented_names, 0,
+        "no end is named after a standard feature"
     );
 
     let placed_original = details_of(

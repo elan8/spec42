@@ -219,12 +219,16 @@ pub(crate) fn walk_part_def_body_element_type_refs(
             push_optional_typing_reference(document, exhibit_state.value.typing.as_deref(), out);
         }
         PartDefBodyElement::Connection(connection) => {
+            push_optional_typing_reference(document, connection.value.typing.as_deref(), out);
             push_optional_type_reference(
-                reference_text(document, connection.value.type_reference).as_deref(),
-                out,
-            );
-            push_optional_type_reference(
-                subsetting_target(document, connection.value.subsets.as_deref()),
+                subsetting_target(
+                    document,
+                    connection
+                        .value
+                        .subsets
+                        .as_ref()
+                        .map(|(relationship, _)| &relationship.value),
+                ),
                 out,
             );
             push_optional_type_reference(

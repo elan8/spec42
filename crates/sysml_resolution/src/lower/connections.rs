@@ -7,7 +7,6 @@ use crate::lower::facts::occurrence_prefix_direction;
 use crate::lower::facts::occurrence_prefix_modifiers;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
-use crate::lower::facts::DerivationEndRoleFact;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::facts::UnsupportedFamily;
@@ -22,12 +21,12 @@ use crate::model::Visibility;
 use sysml_v2_parser::ast::{
     Allocate, AllocationDef, AllocationUsage as ParserAllocationUsage, Bind, BindingConnectorUsage,
     ConnectStmt, ConnectionDef, ConnectionDefBody, ConnectionDefBodyElement, ConnectionEnd,
-    ConnectionUsageMember as ParserConnectionUsage, DefinitionBody, DefinitionBodyElement,
-    DerivationEndRole, EndDecl, EndIdentity, Expression, InterfaceDef, InterfaceDefBody,
-    InterfaceDefBodyElement, InterfaceEnd, InterfaceEndTarget, InterfacePart,
-    InterfaceUsage as ParserInterfaceUsage, InterfaceUsageBodyElement,
-    MembershipKind as ParserMembershipKind, Node, PortBody, PortBodyElement, PortDef, PortDefBody,
-    PortDefBodyElement, PortUsage as ParserPortUsage, QualifiedReferenceId,
+    ConnectionUsageMember as ParserConnectionUsage, DefinitionBody, DefinitionBodyElement, EndDecl,
+    EndIdentity, Expression, InterfaceDef, InterfaceDefBody, InterfaceDefBodyElement, InterfaceEnd,
+    InterfaceEndTarget, InterfacePart, InterfaceUsage as ParserInterfaceUsage,
+    InterfaceUsageBodyElement, MembershipKind as ParserMembershipKind, Node, PortBody,
+    PortBodyElement, PortDef, PortDefBody, PortDefBodyElement, PortUsage as ParserPortUsage,
+    QualifiedReferenceId,
 };
 
 impl SemanticModelBuilder {
@@ -297,7 +296,6 @@ impl SemanticModelBuilder {
                     individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
-                derivation_connection: node.value.derivation_role.is_some(),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -310,18 +308,20 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
+        // `DefinitionExtensionKeyword*` (`#derivation`, `#multicausation`): metadata applications
+        // whose `SemanticMetadata` `baseType` specializes the definition (KerML 7.4.13).
+        self.lower_usage_extension_keywords(document, declaration, &node.value.extension_keywords)?;
         if let Some(relationship) = &node.value.specializes {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }
         self.lower_connection_body(document, declaration, &node.value.body)
     }
 
-    /// Lowers a package/definition/usage-level `connection` feature member (BNF ConnectionUsage),
-    /// mirroring `lower_metadata_usage`: ownership, membership, an optional `:` typing reference
-    /// (a bare `QualifiedReferenceId`, not a structured `TypingRelationship`),
-    /// `subsets`/`redefines` subsetting relationships, an optional inline `connect from to to`
-    /// clause (connector-end references), and owned attribute/item/port/nested-connection
-    /// members via the same shared `lower_connection_body` as `connection def`.
+    /// Lowers a `def`-less `connection` usage (BNF `ConnectionUsage`, 8.2.2.13) the way every
+    /// `OccurrenceUsagePrefix` family lowers: the prefix modifiers and its `#` extension keywords
+    /// (metadata applications, so `#derivation connection d { … }` subsets `derivations` through
+    /// its `SemanticMetadata` `baseType`), the typing and specialization clauses, a value, an
+    /// inline `connect` clause, and the body through the same walker as `connection def`.
     pub(crate) fn lower_connection_usage(
         &mut self,
         document: DocumentIdx,
@@ -329,6 +329,7 @@ impl SemanticModelBuilder {
         node: &Node<ParserConnectionUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -336,12 +337,13 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
-                // `abstract connection <name>[mult] : Type;` -- the def-less usage prefix the
-                // Apollo 11 model uses (issue #100 form 5). `RefPrefix.isAbstract`.
+                short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
-                    ..DeclarationModifiers::default()
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
+                    ..occurrence_prefix_modifiers(&node.value.prefix)
                 },
+                direction: occurrence_prefix_direction(&node.value.prefix),
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
@@ -355,27 +357,25 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
-        if let Some(type_reference) = node.value.type_reference {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_reference)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span;
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_reference,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
+        self.lower_occurrence_prefix_members(document, declaration, &node.value.prefix)?;
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(document, declaration, feature_value)?;
         }
-        if let Some(relationship) = &node.value.subsets {
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
+        }
+        if let Some((relationship, _)) = &node.value.subsets {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
-        if let Some(relationship) = &node.value.redefines {
+        for relationship in [
+            node.value.redefines.as_ref(),
+            node.value.references.as_ref(),
+            node.value.crosses.as_ref(),
+            node.value.intersects.as_ref(),
+        ]
+        .into_iter()
+        .flatten()
+        {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
         if let Some(end) = &node.value.connect_from {
@@ -494,24 +494,13 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         node: &Node<EndDecl>,
     ) -> Result<(), ConstructionError> {
-        let (name, derivation_end) = match &node.value.identity {
+        let name = match &node.value.identity {
             EndIdentity::Declaration(label) => {
-                (self.intern_declaration_name(document, Some(*label))?, None)
+                self.intern_declaration_name(document, Some(*label))?
             }
-            EndIdentity::Derivation(role) => match role.value {
-                DerivationEndRole::Original => (
-                    self.intern_declared_name("originalRequirement")?,
-                    Some(DerivationEndRoleFact::Original),
-                ),
-                DerivationEndRole::Derive => (
-                    self.intern_declared_name("derivedRequirements")?,
-                    Some(DerivationEndRoleFact::Derived),
-                ),
-            },
-            EndIdentity::Anonymous => (
-                self.redefinition_simple_name(document, node.value.redefines.as_ref())?,
-                None,
-            ),
+            EndIdentity::Anonymous => {
+                self.redefinition_simple_name(document, node.value.redefines.as_ref())?
+            }
         };
         let positional_end = self.next_positional_end_ordinal(owner)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
@@ -541,7 +530,6 @@ impl SemanticModelBuilder {
                 direction: direction_node_fact(prefix.direction.as_ref()),
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 positional_end: Some(positional_end),
-                derivation_end,
                 ..DeclarationFacts::none()
             },
         )?;
@@ -551,6 +539,10 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
+        // `ExtendedUsage`'s `UsageExtensionKeyword+` (`end #original r1 : Req1;`, `end #cause c :
+        // C;`): metadata applications on the end, whose `SemanticMetadata` `baseType` makes it
+        // subset the library feature (`originalRequirements`, `causes`, ...).
+        self.lower_usage_extension_keywords(document, declaration, &node.value.extension_keywords)?;
         if let Some(relationship) = &node.value.typing {
             self.lower_typing_relationship(document, declaration, relationship)?;
         }

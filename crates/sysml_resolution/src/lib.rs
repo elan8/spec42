@@ -140,8 +140,8 @@ pub use specialization_query::{
 };
 pub use traceability::{
     BindingConnector, BindingConnectorCheckKind, BindingConnectorValidationOutcome,
-    BindingConnectorValidationPrerequisite, BindingEndpoint, SatisfyEndpoint, SatisfyPolarity,
-    SatisfyRelationship,
+    BindingConnectorValidationPrerequisite, BindingEndpoint, DerivationEndpoint,
+    DerivationRelationship, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship,
 };
 pub use type_query::{
     Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, RequirementUsageTyping,
@@ -1020,6 +1020,11 @@ impl PublishedResolution {
     /// Workspace-authored satisfy statements in canonical declaration order.
     pub fn satisfy_relationships(&self) -> QueryOutcome<Box<[SatisfyRelationship]>> {
         self.model.satisfy_relationships()
+    }
+
+    /// Workspace requirement derivation connections in canonical declaration order.
+    pub fn derivation_relationships(&self) -> QueryOutcome<Box<[DerivationRelationship]>> {
+        self.model.derivation_relationships()
     }
 
     /// One exact derived relationship collection for a lowered Feature.
