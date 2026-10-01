@@ -256,7 +256,7 @@ summary = "the referent of a FeatureReferenceExpression is not a distinguished f
 id = "semantic-filter-condition-not-model-level-evaluable"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
-summary = "no semantic rule checks that a filter condition is model-level evaluable; the canonical code filter_condition_not_model_level_evaluable does not exist yet"
+summary = "no canonical Expression::modelLevelEvaluable fact exists: deciding it needs the referent rules over the classified expression tree (featuring types, metaclass/metadata owners, value expressions, cycle detection) and each invoked library Function's isModelLevelEvaluable, so filter_condition_not_model_level_evaluable cannot be reported yet"
 
 [[issue]]
 id = "semantic-invocation-argument-redefines-no-parameter"
