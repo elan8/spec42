@@ -536,6 +536,12 @@ semantic_diagnostic_codes! {
     /// KerML 8.3.4.10.2 `validateFeatureValueIsInitial`.
     InitialValueFeatureNotVariable => "initial_value_feature_not_variable",
         "An initial value (`:=`) requires a variable feature.";
+    /// KerML 8.3.3.3.4 `validateFeatureOwnedReferenceSubsetting`.
+    FeatureMultipleReferenceSubsettings => "feature_multiple_reference_subsettings",
+        "A feature may own at most one reference subsetting.";
+    /// KerML 8.3.3.3.4 `validateFeatureOwnedCrossSubsetting`.
+    FeatureMultipleCrossSubsettings => "feature_multiple_cross_subsettings",
+        "A feature may own at most one cross subsetting.";
     /// KerML 8.3.4.10.2 `validateFeatureValueOverriding`.
     FeatureValueOverridesNonDefault => "feature_value_overrides_non_default",
         "A feature value may only override default values of the features it redefines.";

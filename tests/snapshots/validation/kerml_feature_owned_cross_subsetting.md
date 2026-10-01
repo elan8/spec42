@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.3.4:validateFeatureOwnedCrossSubsetting
-blocked_by=lowering-gap-feature-specialization-clause-count
 type=file
 ~~~
 # SOURCE
@@ -36,7 +35,7 @@ package Crossings {
         (severity warning)
         (code "feature_multiple_cross_subsettings")
         (source "semantic")
-        (range (start 10 8) (end 10 50))
+        (range (start 10 43) (end 10 49))
       )
     )
   )
@@ -47,6 +46,12 @@ package Crossings {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_owned_cross_subsetting.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "feature_multiple_cross_subsettings")
+        (source "semantic")
+        (range (start 10 43) (end 10 49))
+      )
     )
   )
 )

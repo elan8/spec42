@@ -38,7 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Feature chaining validations.** KerML 8.3.3.3.4 `validateFeatureChainingFeatureNotOne`
   (`feature_chaining_single_operand`) and `validateFeatureChainingFeaturesNotSelf`
-  (`feature_chaining_includes_self`) are now checked.
+  (`feature_chaining_includes_self`) are now checked, as are KerML
+  `validateFeatureOwnedReferenceSubsetting` (`feature_multiple_reference_subsettings`) and
+  `validateFeatureOwnedCrossSubsetting` (`feature_multiple_cross_subsettings`).
 
 - **KerML classifier specialization kinds.** `incompatible_specializes_kind` now also reports KerML
   `validate{DataType,Class,Structure,Behavior}Specialization` violations for KerML classifiers and

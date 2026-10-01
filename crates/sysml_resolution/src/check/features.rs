@@ -116,6 +116,7 @@ impl<D> SemanticModel<D> {
             }
 
             self.collect_individual_definitions(id, declaration.kind, facts, diagnostics)?;
+            self.collect_owned_subsetting_counts(id, diagnostics)?;
         }
         self.collect_initial_feature_values(document, diagnostics)?;
         self.collect_feature_value_overriding(document, diagnostics)?;
@@ -265,6 +266,43 @@ impl<D> SemanticModel<D> {
         };
         occurrence_metaclass_role(element_kind(record.kind)) == Some(OccurrenceRole::Definition)
             && facts.modifiers.individual
+    }
+
+    /// KerML 8.3.3.3.4 `validateFeatureOwnedReferenceSubsetting` and
+    /// `validateFeatureOwnedCrossSubsetting`: a Feature owns at most one ReferenceSubsetting and at
+    /// most one CrossSubsetting.
+    ///
+    /// Every `references`/`::>` and `crosses`/`=>` clause owns exactly one such relationship (the
+    /// grammar admits no target list in either), so the authored references of each kind are
+    /// the owned relationships. As the Pilot does, each one after the first is reported.
+    fn collect_owned_subsetting_counts(
+        &self,
+        id: DeclarationId,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        use crate::model::ReferenceKind;
+        for (kind, code) in [
+            (
+                ReferenceKind::References,
+                DiagnosticCode::FeatureMultipleReferenceSubsettings,
+            ),
+            (
+                ReferenceKind::Crosses,
+                DiagnosticCode::FeatureMultipleCrossSubsettings,
+            ),
+        ] {
+            let mut owned = self.authored_references(id, &[kind]);
+            owned.sort_by_key(|(_, reference)| reference.ordinal);
+            for (_, reference) in owned.iter().skip(1) {
+                diagnostics.push(self.reference_diagnostic(
+                    reference,
+                    code.clone(),
+                    DiagnosticSeverity::Warning,
+                    None,
+                )?);
+            }
+        }
+        Ok(())
     }
 
     /// SysML 8.3.9.4 `validateOccurrenceUsageIndividualDefinition`

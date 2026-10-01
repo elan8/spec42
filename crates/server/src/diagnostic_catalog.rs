@@ -456,6 +456,20 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "feature_multiple_reference_subsettings",
+        severity: "warning",
+        meaning: "A feature has more than one `references` (`::>`) clause, but it may own at most one ReferenceSubsetting (KerML validateFeatureOwnedReferenceSubsetting).",
+        typical_fix: "Keep one `references` clause and use `subsets` for the others.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "feature_multiple_cross_subsettings",
+        severity: "warning",
+        meaning: "A feature has more than one `crosses` (`=>`) clause, but it may own at most one CrossSubsetting (KerML validateFeatureOwnedCrossSubsetting).",
+        typical_fix: "Keep a single `crosses` clause.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "variable_feature_owner_not_occurrence",
         severity: "warning",
         meaning: "A KerML feature declared `var` (or `const`, which implies variable) has no owning type, or its owning type does not specialize Occurrences::Occurrence (KerML validateFeatureIsVariable).",
