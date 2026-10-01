@@ -647,8 +647,22 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     DiagnosticCatalogEntry {
         code: "view_rendering_invalid_target",
         severity: "warning",
-        meaning: "A view rendering member does not resolve to a rendering definition or usage.",
-        typical_fix: "Type the rendering member with a valid rendering definition.",
+        meaning: "A view rendering member does not resolve to a rendering usage, or has an invalid rendering type.",
+        typical_fix: "Reference a rendering usage or type an inline rendering with a rendering definition.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "view_rendering_invalid_owner",
+        severity: "warning",
+        meaning: "A render member is owned outside a view definition or usage.",
+        typical_fix: "Move the render member into a view definition or usage.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "view_multiple_renderings",
+        severity: "warning",
+        meaning: "A view definition or usage directly owns more than one render member.",
+        typical_fix: "Keep one render member on the view.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {

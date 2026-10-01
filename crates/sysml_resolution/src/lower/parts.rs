@@ -254,11 +254,7 @@ impl SemanticModelBuilder {
                         self.lower_rendering_usage(document, Some(declaration), node)?;
                     }
                     PartDefBodyElement::ViewRendering(node) => {
-                        self.push_unsupported(
-                            document,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node.span,
-                        );
+                        self.lower_view_rendering_usage(document, declaration, node)?;
                     }
                     PartDefBodyElement::VerifyRequirement(node) => {
                         self.lower_verify_requirement_member(

@@ -259,6 +259,8 @@ pub enum MembershipRole {
     FramedConcern,
     /// `RequirementVerificationMembership` -- a requirement verified by a case.
     RequirementVerification,
+    /// `ViewRenderingMembership` -- the rendering selected by a view definition or usage.
+    ViewRendering,
     /// `TransitionFeatureMembership` with `kind = trigger` -- the accept action that triggers a
     /// transition.
     TransitionTriggerAction,
@@ -284,6 +286,7 @@ impl MembershipRole {
             Self::Actor => "actor",
             Self::FramedConcern => "framed-concern",
             Self::RequirementVerification => "requirement-verification",
+            Self::ViewRendering => "view-rendering",
             Self::TransitionTriggerAction => "transition-trigger-action",
             Self::Variant => "variant",
             Self::Parameter => "parameter",
@@ -350,6 +353,7 @@ mod tests {
             MembershipRole::Actor,
             MembershipRole::FramedConcern,
             MembershipRole::RequirementVerification,
+            MembershipRole::ViewRendering,
             MembershipRole::TransitionTriggerAction,
             MembershipRole::Variant,
             MembershipRole::Parameter,

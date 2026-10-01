@@ -19,9 +19,15 @@ in send// nd port for HTT3prin  pq  for y  // nd port for HTT3prin items { }
     (diagnostics
       (diagnostic
         (severity error)
+        (code "missing_semicolon")
+        (source "parser")
+        (range (start 2 4) (end 3 0))
+      )
+      (diagnostic
+        (severity error)
         (code "recovered_action_body_element")
         (source "parser")
-        (range (start 2 4) (end 4 2))
+        (range (start 3 0) (end 4 2))
       )
       (diagnostic
         (severity warning)

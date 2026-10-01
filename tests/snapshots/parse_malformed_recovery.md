@@ -19,7 +19,7 @@ package Foo {
         (severity error)
         (code "recovered_package_body_element")
         (source "parser")
-        (range (start 1 4) (end 2 4))
+        (range (start 1 4) (end 1 16))
       )
     )
   )

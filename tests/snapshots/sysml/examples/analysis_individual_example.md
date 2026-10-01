@@ -314,7 +314,7 @@ package AnalysisIndividualExample {
         (severity error)
         (code "recovered_occurrence_body_element")
         (source "parser")
-        (range (start 87 5) (end 88 4))
+        (range (start 87 5) (end 87 35))
       )
     )
   )

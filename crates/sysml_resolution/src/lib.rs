@@ -81,8 +81,8 @@ pub use definition_usage_query::{
 };
 pub use details::{
     ConnectedElement, EffectiveTypeEntry, EffectiveTyping, ElementDetails, ElementDetailsAt,
-    InheritedFeature, ReferencedDetails, RelationshipFamily, RelationshipOutcome, ViewSelection,
-    ViewSelectionObstacle, ViewSelectionOutcome,
+    InheritedFeature, ReferencedDetails, RelationshipFamily, RelationshipOutcome, ViewRendering,
+    ViewSelection, ViewSelectionObstacle, ViewSelectionOutcome,
 };
 pub use diagnostics::{
     Diagnostic, DiagnosticCategory, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin,
@@ -1208,6 +1208,11 @@ impl PublishedResolution {
     /// The elements exposed by any view usage after namespace expansion and effective filters.
     pub fn view_exposed_elements(&self, view: SymbolId) -> QueryOutcome<ViewExposedElements> {
         self.model.view_exposed_elements(view)
+    }
+
+    /// The rendering reached through this view's direct or inherited rendering membership.
+    pub fn view_rendering(&self, view: SymbolId) -> QueryOutcome<Option<ViewRendering>> {
+        self.model.view_rendering(view)
     }
 
     /// The types a feature declares.

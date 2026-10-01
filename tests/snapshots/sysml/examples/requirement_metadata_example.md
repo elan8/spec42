@@ -199,7 +199,7 @@ package RequirementMetadataExample {
         (severity error)
         (code "recovered_requirement_body_element")
         (source "parser")
-        (range (start 30 5) (end 31 4))
+        (range (start 30 5) (end 30 42))
       )
     )
   )

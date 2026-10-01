@@ -178,6 +178,9 @@ pub(crate) struct DeclarationFacts {
     pub(crate) portion_kind: Option<PortionKind>,
     pub(crate) direction: Option<ParameterDirection>,
     pub(crate) multiplicity: Option<MultiplicityRecord>,
+    /// The owned reference subsetting of a short `render target` member. `None` means an inline
+    /// `render rendering` declaration for members with the ViewRendering role.
+    pub(crate) view_rendering_reference: Option<AuthoredReferenceId>,
     /// Authored negation for a declaration whose exact metaclass owns an `isNegated` fact.
     ///
     /// Satisfy, assert, and invariant spell the polarity at different grammar positions, but

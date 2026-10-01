@@ -1457,19 +1457,79 @@ impl<D> SemanticModel<D> {
                         )?);
                     }
                 }
-                Some(DeclarationKind::RenderingUsage) => self.collect_target_kind(
-                    id,
-                    &[ReferenceKind::FeatureTyping],
-                    |kind| {
-                        matches!(
-                            kind,
-                            DeclarationKind::RenderingDefinition | DeclarationKind::RenderingUsage
-                        )
-                    },
-                    DiagnosticCode::ViewRenderingInvalidTarget,
-                    diagnostics,
-                )?,
+                Some(DeclarationKind::RenderingUsage) => {
+                    self.collect_target_kind(
+                        id,
+                        &[ReferenceKind::FeatureTyping],
+                        |kind| {
+                            matches!(
+                                kind,
+                                DeclarationKind::RenderingDefinition
+                                    | DeclarationKind::RenderingUsage
+                            )
+                        },
+                        DiagnosticCode::ViewRenderingInvalidTarget,
+                        diagnostics,
+                    )?;
+                    if self.effective_membership_role(id)
+                        == Some(crate::MembershipRole::ViewRendering)
+                    {
+                        let owner = self
+                            .storage
+                            .declaration(id)
+                            .and_then(|declaration| declaration.owner);
+                        if !owner
+                            .and_then(|owner| self.kind_of(owner))
+                            .is_some_and(|kind| {
+                                matches!(
+                                    kind,
+                                    DeclarationKind::ViewDefinition | DeclarationKind::ViewUsage
+                                )
+                            })
+                        {
+                            diagnostics.push(self.declaration_diagnostic(
+                                id,
+                                DiagnosticCode::ViewRenderingInvalidOwner,
+                                DiagnosticSeverity::Warning,
+                            )?);
+                        }
+                        if let Some(reference_id) = self
+                            .storage
+                            .declaration_facts(id)
+                            .and_then(|facts| facts.view_rendering_reference)
+                        {
+                            if let Some(target) = self.settled_target(reference_id) {
+                                if self.kind_of(target) != Some(DeclarationKind::RenderingUsage) {
+                                    let reference = &self.storage.references[reference_id.index()];
+                                    diagnostics.push(self.reference_diagnostic(
+                                        reference,
+                                        DiagnosticCode::ViewRenderingInvalidTarget,
+                                        DiagnosticSeverity::Warning,
+                                        Some(target),
+                                    )?);
+                                }
+                            }
+                        }
+                    }
+                }
                 _ => {}
+            }
+            if matches!(
+                self.kind_of(id),
+                Some(DeclarationKind::ViewDefinition | DeclarationKind::ViewUsage)
+            ) {
+                let mut renderings = self.owned_feature_members(id).into_iter().filter(|member| {
+                    self.effective_membership_role(*member)
+                        == Some(crate::MembershipRole::ViewRendering)
+                });
+                renderings.next();
+                for extra in renderings {
+                    diagnostics.push(self.declaration_diagnostic(
+                        extra,
+                        DiagnosticCode::ViewMultipleRenderings,
+                        DiagnosticSeverity::Warning,
+                    )?);
+                }
             }
         }
 
