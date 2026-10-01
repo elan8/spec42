@@ -85,24 +85,6 @@ owner = "spec42-semantic"
 summary = "Expression ownership through FeatureValue and the FeatureValue featureWithValue endpoint are not published together with the expression's canonical featuringTypes for checkExpressionTypeFeaturing."
 
 [[issue]]
-id = "lowering-gap-binding-connector-feature-value-endpoints"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "The semantic publication pairs authored BindingConnector endpoints but does not publish the FeatureValue featureWithValue, value/result chain, or initial-value endpoint facts required by checkFeatureValueBindingConnector."
-
-[[issue]]
-id = "lowering-gap-binding-connector-feature-reference-endpoints"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Lowering does not publish FeatureReferenceExpression targetFeature and result facts, so the paired BindingConnector fact cannot evaluate checkFeatureReferenceExpressionBindingConnector."
-
-[[issue]]
-id = "lowering-gap-binding-connector-invocation-behavior-endpoints"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Lowering does not publish InvocationExpression instantiated behavior and result endpoint facts needed to evaluate checkInvocationExpressionBehaviorBindingConnector over canonical BindingConnector pairs."
-
-[[issue]]
 id = "lowering-gap-binding-connector-transition-source-endpoints"
 kind = "lowering_gap"
 owner = "spec42-semantic"

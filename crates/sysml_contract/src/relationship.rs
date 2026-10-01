@@ -203,13 +203,8 @@ pub enum SatisfyPolarity {
 /// Why a named binding-connector validation could not be evaluated from canonical facts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BindingConnectorValidationPrerequisite {
-    /// Lowering has not yet published the `FeatureReferenceExpression.targetFeature` and
-    /// expression-result facts which the exact rule relates through a binding connector.
-    FeatureReferenceExpressionTargetAndResult,
-    FeatureValueEndpointFacts,
     ExpressionResultEndpointFacts,
     FunctionResultEndpointFacts,
-    InvocationExpressionBehaviorEndpointFacts,
     AcceptActionUsageReceiverEndpointFacts,
     TransitionUsageSourceEndpointFacts,
     TransitionUsageSuccessionEndpointFacts,

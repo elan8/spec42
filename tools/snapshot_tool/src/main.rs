@@ -1176,20 +1176,11 @@ fn parse_binding_connector_prerequisite(
     fixture: &str,
 ) -> Result<BindingConnectorValidationPrerequisite, String> {
     match value {
-        "feature_reference_expression_target_and_result" => {
-            Ok(BindingConnectorValidationPrerequisite::FeatureReferenceExpressionTargetAndResult)
-        }
-        "feature_value_endpoint_facts" => {
-            Ok(BindingConnectorValidationPrerequisite::FeatureValueEndpointFacts)
-        }
         "expression_result_endpoint_facts" => {
             Ok(BindingConnectorValidationPrerequisite::ExpressionResultEndpointFacts)
         }
         "function_result_endpoint_facts" => {
             Ok(BindingConnectorValidationPrerequisite::FunctionResultEndpointFacts)
-        }
-        "invocation_expression_behavior_endpoint_facts" => {
-            Ok(BindingConnectorValidationPrerequisite::InvocationExpressionBehaviorEndpointFacts)
         }
         "accept_action_usage_receiver_endpoint_facts" => {
             Ok(BindingConnectorValidationPrerequisite::AcceptActionUsageReceiverEndpointFacts)
@@ -8296,7 +8287,7 @@ mod tests {
 
     #[test]
     fn parses_manifest_scoped_binding_connector_check_expectations_strictly() {
-        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (binding-connector-check\n    (rule_id \"kerml-1.0:8.3.4.8.5:checkFeatureReferenceExpressionBindingConnector\")\n    (outcome unsupported)\n    (prerequisite feature_reference_expression_target_and_result))\n  (binding-connector-check\n    (rule_id \"kerml-1.0:8.3.4.8.3:checkConstructorExpressionResultDefaultValueBindingConnector\")\n    (outcome satisfied)))\n~~~\n";
+        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (binding-connector-check\n    (rule_id \"sysml-2.0:8.3.17.2:checkAcceptActionUsageReceiverBindingConnector\")\n    (outcome unsupported)\n    (prerequisite accept_action_usage_receiver_endpoint_facts))\n  (binding-connector-check\n    (rule_id \"kerml-1.0:8.3.4.8.3:checkConstructorExpressionResultDefaultValueBindingConnector\")\n    (outcome satisfied)))\n~~~\n";
         let parsed = parse_expected_semantics(fixture, "fixture.md")
             .unwrap()
             .expect("semantic expectations");
@@ -8304,9 +8295,9 @@ mod tests {
             parsed.binding_connector_checks,
             vec![
                 BindingConnectorCheckExpectation {
-                    rule: BindingConnectorCheckKind::FeatureReferenceExpression,
+                    rule: BindingConnectorCheckKind::AcceptActionUsageReceiver,
                     outcome: BindingConnectorCheckOutcome::Unsupported(
-                        BindingConnectorValidationPrerequisite::FeatureReferenceExpressionTargetAndResult,
+                        BindingConnectorValidationPrerequisite::AcceptActionUsageReceiverEndpointFacts,
                     ),
                 },
                 BindingConnectorCheckExpectation {

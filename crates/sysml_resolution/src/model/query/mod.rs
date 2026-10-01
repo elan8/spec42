@@ -2901,20 +2901,25 @@ impl<D> SemanticModel<D> {
             .facts()
             .iter()
             .filter_map(|fact| {
-                let declaration = self.storage.declaration(fact.connector)?;
+                // Implied connectors have no authored declaration; this projection lists the
+                // workspace-authored ones, and the exact rule query evaluates the implied ones.
+                let binding::BindingConnectorOrigin::Authored(connector) = fact.origin else {
+                    return None;
+                };
+                let declaration = self.storage.declaration(connector)?;
                 let document = self.storage.document(declaration.document)?;
                 if document.role != SourceRole::Workspace {
                     return None;
                 }
                 Some(BindingConnector {
-                    identity: self.symbol_id(fact.connector)?,
+                    identity: self.symbol_id(connector)?,
                     source: endpoint(&fact.source),
                     target: endpoint(&fact.target),
                     provenance: match fact.provenance {
                         types::FactProvenance::Authored => RelationshipProvenance::Authored,
                         types::FactProvenance::Implied => RelationshipProvenance::Implied,
                     },
-                    location: self.source_location(fact.connector)?,
+                    location: self.source_location(connector)?,
                 })
             })
             .collect::<Vec<_>>();
@@ -3468,7 +3473,10 @@ impl<D> SemanticModel<D> {
         // Both fields are manifest-owned contract data. Touch them here so a generated table
         // cannot quietly become a kind-only lookalike while the query retains no rule-ID map.
         let _normative_rule = (contract.rule_id, contract.metaclass);
-        self.resolved_outcome(self.bindings.validation(rule))
+        self.resolved_outcome(
+            self.bindings
+                .validation(&self.storage, &self.resolution, rule),
+        )
     }
 
     pub(crate) fn requirement_verifications(&self) -> QueryOutcome<Box<[RequirementVerification]>> {

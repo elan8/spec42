@@ -7,7 +7,6 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=kerml-1.0:8.3.4.8.5:checkFeatureReferenceExpressionBindingConnector
-blocked_by=lowering-gap-binding-connector-feature-reference-endpoints
 type=file
 ~~~
 # SOURCE

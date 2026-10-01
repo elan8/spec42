@@ -3481,10 +3481,6 @@ fn binding_connector_checks_are_manifest_scoped_and_preserve_first_missing_prere
     )]);
     let expected = [
         (
-            BindingConnectorCheckKind::FeatureValue,
-            BindingConnectorValidationPrerequisite::FeatureValueEndpointFacts,
-        ),
-        (
             BindingConnectorCheckKind::ExpressionResult,
             BindingConnectorValidationPrerequisite::ExpressionResultEndpointFacts,
         ),
@@ -3495,14 +3491,6 @@ fn binding_connector_checks_are_manifest_scoped_and_preserve_first_missing_prere
         (
             BindingConnectorCheckKind::ConstructorExpressionResultDefaultValueTbd,
             BindingConnectorValidationPrerequisite::NormativeSpecificationTbd,
-        ),
-        (
-            BindingConnectorCheckKind::FeatureReferenceExpression,
-            BindingConnectorValidationPrerequisite::FeatureReferenceExpressionTargetAndResult,
-        ),
-        (
-            BindingConnectorCheckKind::InvocationExpressionBehavior,
-            BindingConnectorValidationPrerequisite::InvocationExpressionBehaviorEndpointFacts,
         ),
         (
             BindingConnectorCheckKind::InvocationExpressionDefaultValueTbd,
