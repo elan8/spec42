@@ -199,18 +199,6 @@ owner = "spec42-semantic"
 summary = "the publication does not record a ResultExpressionMembership -- a body result expression is only an evaluation site of its owner -- and it cannot count them from the parser's Expression body elements, which also carry members the pinned parser shreds into stray expressions (planning/UPSTREAM_PARSER_GAPS.md body-member-expression-shredding: `attribute a : T;` in a constraint def body, `protected in c : C;` in a KerML class body); counting them reports multiple_result_expressions on conforming corpus models"
 
 [[issue]]
-id = "lowering-transition-feature-memberships"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "the transition feature memberships of a transition usage are not published, so the rule has no transitionFeature to inspect"
-
-[[issue]]
-id = "lowering-transition-usage-succession"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "the succession owned by a transition usage is not published as a member, so the accepted side cannot be observed in SMG either"
-
-[[issue]]
 id = "lowering-view-rendering-membership"
 kind = "lowering_gap"
 owner = "spec42-semantic"
@@ -305,3 +293,9 @@ id = "semantic-library-specialization-metaclass-generalization"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
 summary = "generated specializesFromLibrary rules match the exact metaclass only, so rules declared on Succession, BindingConnector, SuccessionFlow and ControlNode never reach SuccessionAsUsage, BindingConnectorAsUsage, SuccessionFlowUsage or ForkNode (the Pilot ImplicitGeneralizationMap applies them); widening only Succession to SuccessionAsUsage made standard-library construction fail, `succession flow` lowers to the same declaration kind as `flow`, and the XMI anchor for checkControlNodeSpecialization is spelled Action::Action::controls with no recorded OMG correction"
+
+[[issue]]
+id = "lowering-gap-binding-connector-transition-link-endpoints"
+kind = "lowering_gap"
+owner = "spec42-semantic"
+summary = "The transition succession is lowered, but the anonymous ReferenceUsage TransitionUsageAdapter.computeTransitionLinkConnectors adds to a TransitionUsage (its transitionLink feature) is not, so checkTransitionUsageSuccessionBindingConnector has no endpoint to bind the succession to and stays Unsupported(TransitionUsageSuccessionEndpointFacts)."

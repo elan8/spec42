@@ -67,6 +67,12 @@ package Machines {
       )
       (diagnostic
         (severity warning)
+        (code "transition_guard_non_boolean")
+        (source "semantic")
+        (range (start 20 8) (end 20 50))
+      )
+      (diagnostic
+        (severity warning)
         (code "transition_endpoint_invalid_context")
         (source "semantic")
         (range (start 33 8) (end 33 47))
