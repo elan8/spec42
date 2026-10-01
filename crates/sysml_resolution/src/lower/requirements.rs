@@ -146,6 +146,7 @@ impl SemanticModelBuilder {
         node: &Node<StakeholderMember>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.declaration_name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -153,7 +154,10 @@ impl SemanticModelBuilder {
             name,
             node.span,
             // `ast::StakeholderMember` carries no modifier, multiplicity, direction, or short name.
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -1139,15 +1143,19 @@ impl SemanticModelBuilder {
         node: &Node<ParserViewpointUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::ViewpointUsage,
             name,
             node.span,
-            // No modifier, multiplicity, or short-name field on `ast::ViewpointUsage`; its
+            // No modifier or multiplicity field on `ast::ViewpointUsage`; its
             // `subsets`/`redefines` clauses are relationships, pushed below rather than facts.
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -1221,6 +1229,7 @@ impl SemanticModelBuilder {
         };
         let name = self.intern_declaration_name(document, Some(node.value.name))?;
         // `ast::ConcernUsage` carries no direction or short name.
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1228,6 +1237,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
                     individual: node.value.is_individual,
@@ -1412,6 +1422,7 @@ impl SemanticModelBuilder {
         node: &Node<ParserAnalysisCaseUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1419,6 +1430,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: occurrence_prefix_modifiers(&node.value.prefix),
                 ..DeclarationFacts::none()
             },
@@ -1474,6 +1486,7 @@ impl SemanticModelBuilder {
         node: &Node<ParserCaseUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1481,6 +1494,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
                     ..DeclarationModifiers::default()
@@ -1607,6 +1621,7 @@ impl SemanticModelBuilder {
         node: &Node<ParserVerificationCaseUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1614,6 +1629,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
                     ..DeclarationModifiers::default()

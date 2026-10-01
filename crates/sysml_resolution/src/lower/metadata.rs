@@ -78,6 +78,7 @@ impl SemanticModelBuilder {
         node: &Node<ParserMetadataUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -85,7 +86,10 @@ impl SemanticModelBuilder {
             name,
             node.span,
             // `ast::MetadataUsage` carries no modifier, multiplicity, direction, or short name.
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,

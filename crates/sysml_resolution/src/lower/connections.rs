@@ -850,9 +850,10 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserInterfaceUsage>,
     ) -> Result<(), ConstructionError> {
-        let (name, interface_type, subsets, redefines, ends, body) = match &node.value {
+        let (name, short_name, interface_type, subsets, redefines, ends, body) = match &node.value {
             ParserInterfaceUsage::TypedConnect {
                 name,
+                short_name,
                 interface_type,
                 subsets,
                 redefines,
@@ -861,6 +862,7 @@ impl SemanticModelBuilder {
                 ..
             } => (
                 *name,
+                *short_name,
                 interface_type.as_ref(),
                 subsets.as_ref(),
                 redefines.as_ref(),
@@ -876,6 +878,7 @@ impl SemanticModelBuilder {
             } => (
                 None,
                 None,
+                None,
                 subsets.as_ref(),
                 redefines.as_ref(),
                 Some(part),
@@ -883,6 +886,7 @@ impl SemanticModelBuilder {
             ),
             ParserInterfaceUsage::Declaration {
                 name,
+                short_name,
                 interface_type,
                 subsets,
                 redefines,
@@ -890,6 +894,7 @@ impl SemanticModelBuilder {
                 ..
             } => (
                 *name,
+                *short_name,
                 interface_type.as_ref(),
                 subsets.as_ref(),
                 redefines.as_ref(),
@@ -898,16 +903,19 @@ impl SemanticModelBuilder {
             ),
         };
         let name = self.intern_declaration_name(document, name)?;
+        let short_name = self.intern_short_name(document, short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::InterfaceUsage,
             name,
             node.span,
-            // `ast::InterfaceUsage` is an enum of connect/declaration shapes carrying only name,
-            // type, subsets/redefines, and ends -- no modifier, multiplicity, direction, or short
-            // name on either variant.
-            DeclarationFacts::none(),
+            // `ast::InterfaceUsage` is an enum of connect/declaration shapes carrying name, short
+            // name, type, subsets/redefines, and ends -- no modifier, multiplicity, or direction.
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -1157,14 +1165,21 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<Bind>,
     ) -> Result<(), ConstructionError> {
+        // `'binding' UsageDeclaration`: the optional `binding <s> name` prefix is the binding
+        // connector's own `Identification`. The bare `bind a = b;` form has neither part.
+        let name = self.intern_declaration_name(document, node.value.binding_name)?;
+        let short_name = self.intern_short_name(document, node.value.binding_short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
             DeclarationKind::Bind,
-            None,
+            name,
             node.span,
-            // `ast::Bind` carries only its two bound operands, lowered as references.
-            DeclarationFacts::none(),
+            // The two bound operands are lowered as references below.
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -1207,6 +1222,7 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<BindingConnectorUsage>,
     ) -> Result<(), ConstructionError> {
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -1214,6 +1230,7 @@ impl SemanticModelBuilder {
             None,
             node.span,
             DeclarationFacts {
+                short_name,
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
@@ -1347,13 +1364,17 @@ impl SemanticModelBuilder {
         node: &Node<ParserAllocationUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::Allocate,
             name,
             node.span,
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
