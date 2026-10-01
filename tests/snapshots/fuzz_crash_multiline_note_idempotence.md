@@ -29,7 +29,43 @@ er E specializes C intersects A, B;
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 3 1) (end 12 0))
+        (range (start 3 1) (end 3 52))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 4 1) (end 4 37))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 6 1) (end 6 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_grammar_form")
+        (source "parser")
+        (range (start 7 1) (end 7 65))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_package_member")
+        (source "semantic")
+        (range (start 7 1) (end 7 65))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 8 2) (end 8 48))
+      )
+      (diagnostic
+        (severity error)
+        (code "unrecognized_declaration_in_scope")
+        (source "parser")
+        (range (start 9 1) (end 12 0))
       )
       (diagnostic
         (severity error)
@@ -44,7 +80,7 @@ er E specializes C intersects A, B;
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:5ef0e4760c2f7811cb9c38c75d1a1bbe739a0b9754b6b66dee31d68795cf20af"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:5ef0e4760c2f7811cb9c38c75d1a1bbe739a0b9754b6b66dee31d68795cf20af"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_crash_multiline_note_idempotence.md") (qualified-name "ers"))) (kind package) (membership (kind owning) (visibility default)))
   )

@@ -124,13 +124,13 @@ package CauseAndEffectExample {
         (severity error)
         (code "recovered_package_body_element")
         (source "parser")
-        (range (start 24 17) (end 28 4))
+        (range (start 24 17) (end 26 51))
       )
       (diagnostic
         (severity warning)
         (code "recovery_cascade_suppressed")
         (source "parser")
-        (range (start 24 17) (end 28 4))
+        (range (start 24 17) (end 26 51))
       )
       (diagnostic
         (severity information)

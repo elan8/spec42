@@ -20,7 +20,7 @@ package P {
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 2 8) (end 3 4))
+        (range (start 2 8) (end 2 25))
       )
     )
   )

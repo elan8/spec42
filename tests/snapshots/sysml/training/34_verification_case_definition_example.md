@@ -68,13 +68,13 @@ package 'Verification Case Definition Example' {
         (severity error)
         (code "recovered_requirement_body_element")
         (source "parser")
-        (range (start 8 2) (end 9 2))
+        (range (start 8 2) (end 8 29))
       )
       (diagnostic
         (severity warning)
         (code "recovery_cascade_suppressed")
         (source "parser")
-        (range (start 8 2) (end 9 2))
+        (range (start 8 2) (end 8 29))
       )
       (diagnostic
         (severity warning)
