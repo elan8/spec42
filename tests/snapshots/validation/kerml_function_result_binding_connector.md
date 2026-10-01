@@ -44,7 +44,7 @@ package Functions {
     (declaration (id (node (document "memory://snapshot/kerml_function_result_binding_connector.md") (qualified-name "Functions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_binding_connector.md") (qualified-name "Functions::Identity"))) (kind kerml-function) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_binding_connector.md") (qualified-name "Functions::Identity::input"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction in)))))
-    (declaration (id (node (document "memory://snapshot/kerml_function_result_binding_connector.md") (qualified-name "Functions::Identity::result"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_binding_connector.md") (qualified-name "Functions::Identity::result"))) (kind parameter) (membership (kind feature) (visibility default) (role return-parameter)) (authored (membership (kind feature) (visibility default) (role return-parameter)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_binding_connector.md") (qualified-name "Functions::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
   (references

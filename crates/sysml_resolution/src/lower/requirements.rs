@@ -56,10 +56,11 @@ impl SemanticModelBuilder {
                 ..DeclarationFacts::none()
             },
         )?;
-        self.push_membership(
+        self.push_role_membership(
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
+            crate::MembershipRole::ReturnParameter,
             node.span,
         )?;
         if let ReturnRefBody::Brace { elements, .. } = &node.value.body.value {

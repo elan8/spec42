@@ -376,8 +376,11 @@ pub enum MembershipRole {
     TransitionTriggerAction,
     /// `VariantMembership` -- an enumeration literal, or a variant of a variation.
     Variant,
-    /// `ParameterMembership` -- a directed parameter, a return, or a bound argument.
+    /// `ParameterMembership` -- a directed parameter or a bound argument.
     Parameter,
+    /// `ReturnParameterMembership` -- the result parameter of a function or expression, authored
+    /// with `return`.
+    ReturnParameter,
     /// `EndFeatureMembership` -- an association or connector end.
     EndFeature,
 }
@@ -400,6 +403,7 @@ impl MembershipRole {
             Self::TransitionTriggerAction => "transition-trigger-action",
             Self::Variant => "variant",
             Self::Parameter => "parameter",
+            Self::ReturnParameter => "return-parameter",
             Self::EndFeature => "end-feature",
         }
     }
@@ -496,6 +500,7 @@ mod tests {
             MembershipRole::TransitionTriggerAction,
             MembershipRole::Variant,
             MembershipRole::Parameter,
+            MembershipRole::ReturnParameter,
             MembershipRole::EndFeature,
         ];
         let names = roles

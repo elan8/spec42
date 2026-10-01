@@ -1683,10 +1683,11 @@ impl SemanticModelBuilder {
                 ..DeclarationFacts::none()
             },
         )?;
-        self.push_membership(
+        self.push_role_membership(
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
+            crate::MembershipRole::ReturnParameter,
             node.span,
         )?;
         if let Some(type_name) = node.value.type_name {
@@ -1768,10 +1769,11 @@ impl SemanticModelBuilder {
                 ..DeclarationFacts::none()
             },
         )?;
-        self.push_membership(
+        self.push_role_membership(
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
+            crate::MembershipRole::ReturnParameter,
             node.span,
         )?;
         if let Some(type_name) = node.value.type_name {

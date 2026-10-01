@@ -489,6 +489,15 @@ semantic_diagnostic_codes! {
     /// SysML 8.3.18.9 `validateTransitionUsageTriggerActions`.
     TransitionTriggerSourceNotState => "transition_trigger_source_not_state",
         "A transition with a trigger must have a state usage as its source.";
+    /// KerML 8.3.4.7.8 `validateReturnParameterMembershipOwningType`.
+    ReturnParameterMembershipInvalidOwner => "return_parameter_membership_invalid_owner",
+        "A return parameter must be owned by a function or an expression.";
+    /// KerML 8.3.4.7.4 `validateFunctionResultParameterMembership`.
+    FunctionResultParameterCount => "function_result_parameter_count",
+        "A function may own at most one return parameter.";
+    /// KerML 8.3.4.7.3 `validateExpressionResultParameterMembership`.
+    ExpressionResultParameterCount => "expression_result_parameter_count",
+        "An expression may own at most one return parameter.";
     /// KerML 8.3.4.12.3 `validateMetadataFeatureMetaclass`.
     MetadataTypeNotMetaclass => "metadata_type_not_metaclass",
         "A metadata feature must have exactly one type that is a metaclass.";

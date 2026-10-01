@@ -379,6 +379,27 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "return_parameter_membership_invalid_owner",
+        severity: "warning",
+        meaning: "A `return` parameter is owned by something other than a function or an expression (KerML validateReturnParameterMembershipOwningType).",
+        typical_fix: "Move the `return` parameter into a function, expression, calculation, constraint, requirement or case.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "function_result_parameter_count",
+        severity: "warning",
+        meaning: "A function owns more than one `return` parameter (KerML validateFunctionResultParameterMembership).",
+        typical_fix: "Keep a single `return` parameter; declare the others as `out` parameters or features.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "expression_result_parameter_count",
+        severity: "warning",
+        meaning: "An expression owns more than one `return` parameter (KerML validateExpressionResultParameterMembership).",
+        typical_fix: "Keep a single `return` parameter; declare the others as `out` parameters or features.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "metadata_type_not_metaclass",
         severity: "warning",
         meaning: "A metadata feature is not typed by exactly one metaclass (KerML validateMetadataFeatureMetaclass).",

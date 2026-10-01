@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.7.3:validateExpressionResultParameterMembership
-blocked_by=semantic-expression-result-parameter-count
 type=file
 ~~~
 # SOURCE
@@ -21,7 +20,8 @@ package Expressions {
         return feature result : Thing;
     }
 
-    // Invalid: no return parameter at all.
+    // Conforming: no owned return parameter; the result parameter is inherited from
+    // Performances::evaluations, so the expression still has exactly one.
     expr None {
         in feature input : Thing;
     }
@@ -42,13 +42,7 @@ package Expressions {
         (severity warning)
         (code "expression_result_parameter_count")
         (source "semantic")
-        (range (start 9 4) (end 9 15))
-      )
-      (diagnostic
-        (severity warning)
-        (code "expression_result_parameter_count")
-        (source "semantic")
-        (range (start 14 4) (end 14 14))
+        (range (start 17 8) (end 17 38))
       )
     )
   )
@@ -59,6 +53,12 @@ package Expressions {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_expression_result_parameter_membership.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "expression_result_parameter_count")
+        (source "semantic")
+        (range (start 17 8) (end 17 38))
+      )
     )
   )
 )
@@ -66,17 +66,17 @@ package Expressions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ff742a586bed86326f64900b6c5f949031e143d47801c70e9a225dc23459c788"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5b2c3ea004c325da3a1e3d07ab64448a9f7f07f4fd1164f06f3923f90fe4c412"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::None"))) (kind kerml-expression) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::None::input"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction in)))))
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::One"))) (kind kerml-expression) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::One::result"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::One::result"))) (kind parameter) (membership (kind feature) (visibility default) (role return-parameter)) (authored (membership (kind feature) (visibility default) (role return-parameter)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two"))) (kind kerml-expression) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two::first"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two::second"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two::first"))) (kind parameter) (membership (kind feature) (visibility default) (role return-parameter)) (authored (membership (kind feature) (visibility default) (role return-parameter)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two::second"))) (kind parameter) (membership (kind feature) (visibility default) (role return-parameter)) (authored (membership (kind feature) (visibility default) (role return-parameter)) (relationships (featureTyping (reference "Thing")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::None::input"))) (kind featureTyping) (ordinal 0))
@@ -144,7 +144,7 @@ package Expressions {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (range (start 10 27) (end 10 32)) (probe (position 10 27))
+  (query (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (range (start 11 27) (end 11 32)) (probe (position 11 27))
     (reference (id (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::None::input"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Thing")))))
     )
@@ -154,12 +154,12 @@ package Expressions {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (range (start 15 31) (end 15 36)) (probe (position 15 31))
+  (query (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (range (start 16 31) (end 16 36)) (probe (position 16 31))
     (reference (id (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two::first"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (range (start 16 32) (end 16 37)) (probe (position 16 32))
+  (query (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (range (start 17 32) (end 17 37)) (probe (position 17 32))
     (reference (id (source (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Two::second"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_expression_result_parameter_membership.md") (qualified-name "Expressions::Thing")))))
     )

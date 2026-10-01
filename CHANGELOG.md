@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Return parameter memberships.** An authored `return` parameter now publishes its
+  `ReturnParameterMembership` as the `return-parameter` membership role, and new diagnostics check
+  KerML 8.3.4.7.8 `validateReturnParameterMembershipOwningType`
+  (`return_parameter_membership_invalid_owner`) and, as the Pilot does, at most one owned return
+  parameter per function or expression (`function_result_parameter_count`,
+  `expression_result_parameter_count`).
+
 - **Membership owner and metadata typing validations.** New diagnostics check SysML 8.3.26.2
   `validateExposeOwningNamespace` (`expose_invalid_owner`), 8.3.24.2
   `validateRequirementVerificationMembershipOwningType` (`verification_membership_invalid_owner`),

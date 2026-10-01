@@ -110,7 +110,48 @@ impl<D> SemanticModel<D> {
                     }
                 }
             }
+            // KerML 8.3.4.7.8 `validateReturnParameterMembershipOwningType`.
+            Some(MembershipRole::ReturnParameter) => {
+                if !owner.is_some_and(|owner| {
+                    self.metaclass_conforms(owner, ElementKind::Function)
+                        || self.metaclass_conforms(owner, ElementKind::Expression)
+                }) {
+                    diagnostics.push(self.declaration_diagnostic(
+                        id,
+                        DiagnosticCode::ReturnParameterMembershipInvalidOwner,
+                        DiagnosticSeverity::Warning,
+                    )?);
+                }
+            }
             _ => {}
+        }
+        // KerML 8.3.4.7.4 `validateFunctionResultParameterMembership` and 8.3.4.7.3
+        // `validateExpressionResultParameterMembership`, as the Pilot checks them: at most one
+        // owned ReturnParameterMembership, every one after the first reported. A Function or
+        // Expression that owns none inherits its result from its general type.
+        let result_count_code = if self.metaclass_conforms(id, ElementKind::Function) {
+            Some(DiagnosticCode::FunctionResultParameterCount)
+        } else if self.metaclass_conforms(id, ElementKind::Expression) {
+            Some(DiagnosticCode::ExpressionResultParameterCount)
+        } else {
+            None
+        };
+        if let Some(code) = result_count_code {
+            for member in self
+                .child_declarations(id)
+                .iter()
+                .copied()
+                .filter(|member| {
+                    self.effective_membership_role(*member) == Some(MembershipRole::ReturnParameter)
+                })
+                .skip(1)
+            {
+                diagnostics.push(self.declaration_diagnostic(
+                    member,
+                    code.clone(),
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
         }
         if kind == DeclarationKind::MetadataUsage {
             self.collect_metadata_feature_typing(id, diagnostics)?;

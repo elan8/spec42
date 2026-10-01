@@ -43,7 +43,7 @@ package Expressions {
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_binding_connector.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_binding_connector.md") (qualified-name "Expressions::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_binding_connector.md") (qualified-name "Expressions::Value"))) (kind kerml-expression) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_expression_result_binding_connector.md") (qualified-name "Expressions::Value::result"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_expression_result_binding_connector.md") (qualified-name "Expressions::Value::result"))) (kind parameter) (membership (kind feature) (visibility default) (role return-parameter)) (authored (membership (kind feature) (visibility default) (role return-parameter)) (relationships (featureTyping (reference "Thing")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/kerml_expression_result_binding_connector.md") (qualified-name "Expressions::Value::result"))) (kind featureTyping) (ordinal 0))

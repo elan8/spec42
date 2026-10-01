@@ -822,6 +822,26 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Pushes a membership whose OMG metaclass carries a role the member's element kind does not
+    /// imply (a `return` parameter's `ReturnParameterMembership`, for instance).
+    pub(crate) fn push_role_membership(
+        &mut self,
+        member: DeclarationId,
+        kind: MembershipKind,
+        visibility: Visibility,
+        role: MembershipRole,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        if self
+            .next_membership_override
+            .replace((kind, visibility, role, span))
+            .is_some()
+        {
+            return Err(ConstructionError::InvalidMembership);
+        }
+        self.push_membership(member, kind, visibility, span)
+    }
+
     pub(crate) fn push_membership(
         &mut self,
         member: DeclarationId,

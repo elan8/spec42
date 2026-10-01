@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.7.4:validateFunctionResultParameterMembership
-blocked_by=semantic-function-result-parameter-count
 type=file
 ~~~
 # SOURCE
@@ -21,7 +20,8 @@ package Functions {
         return feature result : Thing;
     }
 
-    // Invalid: no return parameter at all.
+    // Conforming: no owned return parameter; the result parameter is inherited from
+    // Performances::Evaluation, so the function still has exactly one.
     function None {
         in feature input : Thing;
     }
@@ -42,13 +42,7 @@ package Functions {
         (severity warning)
         (code "function_result_parameter_count")
         (source "semantic")
-        (range (start 9 4) (end 9 19))
-      )
-      (diagnostic
-        (severity warning)
-        (code "function_result_parameter_count")
-        (source "semantic")
-        (range (start 14 4) (end 14 18))
+        (range (start 17 8) (end 17 38))
       )
     )
   )
@@ -59,6 +53,12 @@ package Functions {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_function_result_parameter_membership.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "function_result_parameter_count")
+        (source "semantic")
+        (range (start 17 8) (end 17 38))
+      )
     )
   )
 )
@@ -66,17 +66,17 @@ package Functions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b57384dc9ed3274127372319ce9a423ec90b4375827e64f7ebdbaf4db52462bd"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2cff84fad11fe30b8596de6403483dbd0af02e0ebcfbf480247be6de40f9bfd9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::None"))) (kind kerml-function) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::None::input"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction in)))))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::One"))) (kind kerml-function) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::One::result"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::One::result"))) (kind parameter) (membership (kind feature) (visibility default) (role return-parameter)) (authored (membership (kind feature) (visibility default) (role return-parameter)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two"))) (kind kerml-function) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two::first"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two::second"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two::first"))) (kind parameter) (membership (kind feature) (visibility default) (role return-parameter)) (authored (membership (kind feature) (visibility default) (role return-parameter)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two::second"))) (kind parameter) (membership (kind feature) (visibility default) (role return-parameter)) (authored (membership (kind feature) (visibility default) (role return-parameter)) (relationships (featureTyping (reference "Thing")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::None::input"))) (kind featureTyping) (ordinal 0))
@@ -144,7 +144,7 @@ package Functions {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/kerml_function_result_parameter_membership.md") (range (start 10 27) (end 10 32)) (probe (position 10 27))
+  (query (document "memory://snapshot/kerml_function_result_parameter_membership.md") (range (start 11 27) (end 11 32)) (probe (position 11 27))
     (reference (id (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::None::input"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Thing")))))
     )
@@ -154,12 +154,12 @@ package Functions {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_function_result_parameter_membership.md") (range (start 15 31) (end 15 36)) (probe (position 15 31))
+  (query (document "memory://snapshot/kerml_function_result_parameter_membership.md") (range (start 16 31) (end 16 36)) (probe (position 16 31))
     (reference (id (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two::first"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_function_result_parameter_membership.md") (range (start 16 32) (end 16 37)) (probe (position 16 32))
+  (query (document "memory://snapshot/kerml_function_result_parameter_membership.md") (range (start 17 32) (end 17 37)) (probe (position 17 32))
     (reference (id (source (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Two::second"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::Thing")))))
     )

@@ -28,13 +28,13 @@ summary = "Flow endpoints (`flow from a.x to b.y`, KerML `flow ... from ... to`)
 id = "lowering-gap-redefinition-parameter-position"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "Positional parameter redefinitions (the Pilot's getRelevantParameters over a general's directedFeature, as resolve::end_features does for ends) need three missing facts: a Behavior/Step metaclass classification of declaration kinds, the ReturnParameterMembership role (`return` lowers as an undirected ParameterUsage), and the parameters the Pilot mints for send/accept/assign/perform/invocation forms, without which a Step's owned parameters are not all published and the check would read too few obligations."
+summary = "Positional parameter redefinitions (the Pilot's getRelevantParameters over a general's directedFeature, as resolve::end_features does for ends) need two missing facts: a Behavior/Step metaclass classification of declaration kinds and the parameters the Pilot mints for send/accept/assign/perform/invocation forms, without which a Step's owned parameters are not all published and the check would read too few obligations."
 
 [[issue]]
 id = "lowering-gap-redefinition-function-expression-result"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "Only KerML expression results are minted (DeclarationFacts::expression_result); a `return` lowers as an undirected ParameterUsage with no ReturnParameterMembership role, and the result parameter the Pilot adds to every Function/Expression lacking one (calc, constraint and requirement definitions and usages) is not minted, so a Function's result and the general result it must redefine are not settled facts."
+summary = "Only KerML expression results are minted (DeclarationFacts::expression_result); an authored `return` now carries its ReturnParameterMembership role, but the result parameter the Pilot adds to every Function/Expression lacking one (calc, constraint and requirement definitions and usages) is not minted, so a Function's result and the general result it must redefine are not settled facts."
 
 [[issue]]
 id = "lowering-gap-redefinition-constructor-result-instantiated-features"
@@ -247,12 +247,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule detects two constructor initialisers redefining the same feature; the canonical code constructor_duplicate_feature_redefinition does not exist yet"
 
 [[issue]]
-id = "semantic-expression-result-parameter-count"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule counts the result parameter memberships of an expression; the canonical code expression_result_parameter_count does not exist yet"
-
-[[issue]]
 id = "semantic-feature-reference-referent-not-feature"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
@@ -263,12 +257,6 @@ id = "semantic-filter-condition-not-model-level-evaluable"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
 summary = "no semantic rule checks that a filter condition is model-level evaluable; the canonical code filter_condition_not_model_level_evaluable does not exist yet"
-
-[[issue]]
-id = "semantic-function-result-parameter-count"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule counts the result parameter memberships of a function; the canonical code function_result_parameter_count does not exist yet"
 
 [[issue]]
 id = "semantic-instantiation-expression-validation"
@@ -299,18 +287,6 @@ id = "semantic-multiplicity-bound-result-type"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
 summary = "multiplicity_bound_invalid covers negative literal bounds only: a non-literal or non-integer bound is published as MultiplicityBound::Expression with no result type, so the ScalarValues::Integer result-type half of validateMultiplicityRangeBoundResultTypes is unanswered"
-
-[[issue]]
-id = "semantic-parameter-membership-invalid-owner"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule checks the owningType of a parameter membership; the canonical code parameter_membership_invalid_owner does not exist yet"
-
-[[issue]]
-id = "semantic-return-parameter-membership-invalid-owner"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule checks the owningType of a return parameter membership; the canonical code return_parameter_membership_invalid_owner does not exist yet"
 
 [[issue]]
 id = "semantic-subject-member-order"
