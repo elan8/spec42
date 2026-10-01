@@ -881,6 +881,12 @@ standard library package Actions {
       )
       (diagnostic
         (severity warning)
+        (code "transition_trigger_source_not_state")
+        (source "semantic")
+        (range (start 227 3) (end 227 87))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 227 55) (end 227 63))

@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.26.2:validateExposeOwningNamespace
-blocked_by=semantic-expose-owner
 type=file
 ~~~
 # SOURCE
@@ -36,7 +35,7 @@ package Views {
         (severity warning)
         (code "expose_invalid_owner")
         (source "semantic")
-        (range (start 9 4) (end 9 23))
+        (range (start 10 8) (end 10 32))
       )
     )
   )
@@ -47,6 +46,12 @@ package Views {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_expose_owning_namespace.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "expose_invalid_owner")
+        (source "semantic")
+        (range (start 10 8) (end 10 32))
+      )
     )
   )
 )

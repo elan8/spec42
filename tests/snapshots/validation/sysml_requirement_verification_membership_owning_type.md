@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.24.2:validateRequirementVerificationMembershipOwningType
-blocked_by=semantic-verification-membership-owner
 type=file
 ~~~
 # SOURCE
@@ -40,7 +39,7 @@ package Verification {
         (severity warning)
         (code "verification_membership_invalid_owner")
         (source "semantic")
-        (range (start 13 4) (end 13 18))
+        (range (start 14 8) (end 14 41))
       )
     )
   )
@@ -51,6 +50,12 @@ package Verification {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_requirement_verification_membership_owning_type.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "verification_membership_invalid_owner")
+        (source "semantic")
+        (range (start 14 8) (end 14 41))
+      )
     )
   )
 )

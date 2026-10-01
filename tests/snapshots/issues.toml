@@ -235,30 +235,6 @@ owner = "spec42-semantic"
 summary = "a render member parses but sysml_resolution reports it as unsupported_view_definition_member, so no ViewRenderingMembership reaches semantics"
 
 [[issue]]
-id = "semantic-requirement-constraint-owner"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "invalid-owner require constraint members now parse and lower, but validateRequirementConstraintMembershipOwningType is not evaluated over their typed owner"
-
-[[issue]]
-id = "semantic-transition-trigger-source"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "transitions in action bodies now parse and lower, but validateTransitionUsageTriggerActions does not report its dedicated source-not-StateUsage diagnostic"
-
-[[issue]]
-id = "semantic-expose-owner"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "package-owned expose members now parse and lower, but validateExposeOwningNamespace is not evaluated over their typed owner"
-
-[[issue]]
-id = "semantic-verification-membership-owner"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "part-owned verify requirement members now parse and lower, but validateRequirementVerificationMembershipOwningType is not evaluated over their typed owner"
-
-[[issue]]
 id = "semantic-attribute-feature-composite"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
@@ -317,18 +293,6 @@ id = "semantic-invocation-instantiated-type-not-behavior"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
 summary = "no semantic rule checks the metaclass family of an invocation expression instantiated type; the canonical code invocation_instantiated_type_not_behavior does not exist yet"
-
-[[issue]]
-id = "semantic-metadata-metaclass-abstract"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule checks the abstractness of a metadata feature metaclass; the canonical code metadata_metaclass_abstract does not exist yet"
-
-[[issue]]
-id = "semantic-metadata-type-not-metaclass"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "no semantic rule checks that a metadata feature type is a Metaclass; the canonical code metadata_type_not_metaclass does not exist yet"
 
 [[issue]]
 id = "semantic-multiplicity-bound-result-type"

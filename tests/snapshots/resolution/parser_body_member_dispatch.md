@@ -87,6 +87,12 @@ package BodyMemberDispatch {
         (source "semantic")
         (range (start 40 4) (end 42 5))
       )
+      (diagnostic
+        (severity warning)
+        (code "requirement_constraint_invalid_owner")
+        (source "semantic")
+        (range (start 49 8) (end 49 50))
+      )
     )
   )
 )

@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.21.7:validateRequirementConstraintMembershipOwningType
-blocked_by=semantic-requirement-constraint-owner
 type=file
 ~~~
 # SOURCE
@@ -38,7 +37,7 @@ package Roles {
         (severity warning)
         (code "requirement_constraint_invalid_owner")
         (source "semantic")
-        (range (start 11 4) (end 11 18))
+        (range (start 12 8) (end 12 41))
       )
     )
   )
@@ -49,6 +48,12 @@ package Roles {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "requirement_constraint_invalid_owner")
+        (source "semantic")
+        (range (start 12 8) (end 12 41))
+      )
     )
   )
 )

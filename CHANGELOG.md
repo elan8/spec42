@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Membership owner and metadata typing validations.** New diagnostics check SysML 8.3.26.2
+  `validateExposeOwningNamespace` (`expose_invalid_owner`), 8.3.24.2
+  `validateRequirementVerificationMembershipOwningType` (`verification_membership_invalid_owner`),
+  8.3.21.7 `validateRequirementConstraintMembershipOwningType`
+  (`requirement_constraint_invalid_owner`), 8.3.18.9 `validateTransitionUsageTriggerActions`
+  (`transition_trigger_source_not_state`), and KerML 8.3.4.12.3
+  `validateMetadataFeatureMetaclass` (`metadata_type_not_metaclass`) and
+  `validateMetadataFeatureMetaclassNotAbstract` (`metadata_metaclass_abstract`).
+  `transition_endpoint_invalid_state` now applies only to transitions owned by a state; a
+  transition in an action body legitimately moves between actions.
+
 - **Usage referentiality follows the SysML derivation.** The published `Usage::isReference` (and
   the composition every rule reads) now treats a directed usage, an end usage, a usage with no
   featuring type (such as a package-level part), an `event` occurrence, a perform action, and a

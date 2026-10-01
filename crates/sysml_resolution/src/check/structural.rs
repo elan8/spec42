@@ -405,6 +405,8 @@ impl<D> SemanticModel<D> {
                 )?);
             }
 
+            self.collect_owner_rules(id, declaration.kind, declaration.owner, diagnostics)?;
+
             // An abstract declaration is deliberately incomplete, so its end count states nothing.
             if !is_connection_like(declaration.kind)
                 || facts.modifiers.effectively_abstract(declaration.kind)

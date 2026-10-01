@@ -477,6 +477,24 @@ semantic_diagnostic_codes! {
     /// SysML 8.3.6.5 `validateVariantMembershipOwningNamespace`.
     VariantOutsideVariation => "variant_outside_variation",
         "A variant must be an owned member of a variation definition or usage.";
+    /// SysML 8.3.26.2 `validateExposeOwningNamespace`.
+    ExposeInvalidOwner => "expose_invalid_owner",
+        "An expose must be owned by a view usage.";
+    /// SysML 8.3.24.2 `validateRequirementVerificationMembershipOwningType`.
+    VerificationMembershipInvalidOwner => "verification_membership_invalid_owner",
+        "A verified requirement must be owned by the objective of a verification case.";
+    /// SysML 8.3.21.7 `validateRequirementConstraintMembershipOwningType`.
+    RequirementConstraintInvalidOwner => "requirement_constraint_invalid_owner",
+        "An assumed or required constraint must be owned by a requirement definition or usage.";
+    /// SysML 8.3.18.9 `validateTransitionUsageTriggerActions`.
+    TransitionTriggerSourceNotState => "transition_trigger_source_not_state",
+        "A transition with a trigger must have a state usage as its source.";
+    /// KerML 8.3.4.12.3 `validateMetadataFeatureMetaclass`.
+    MetadataTypeNotMetaclass => "metadata_type_not_metaclass",
+        "A metadata feature must have exactly one type that is a metaclass.";
+    /// KerML 8.3.4.12.3 `validateMetadataFeatureMetaclassNotAbstract`.
+    MetadataMetaclassAbstract => "metadata_metaclass_abstract",
+        "The metaclass of a metadata feature must not be abstract.";
     /// A redefining feature is featured by a type unrelated to the redefined feature's.
     RedefinitionFeaturingTypeIncompatible => "redefinition_featuring_type_incompatible",
         "A redefinition must be introduced by the redefined feature's featuring type or a \

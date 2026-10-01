@@ -1145,6 +1145,18 @@ impl<D> SemanticModel<D> {
         let (Some(source), Some(target)) = (source.first(), target.first()) else {
             return Ok(());
         };
+        // A transition in an action body (SysML `ActionBodyItem` admits `TransitionUsage`) moves
+        // between actions, as the normative `Actions` library itself does, so the endpoint rules
+        // below are state-machine rules and apply only to a transition a state owns.
+        if !self
+            .storage
+            .declaration(id)
+            .and_then(|transition| transition.owner)
+            .and_then(|owner| self.kind_of(owner))
+            .is_some_and(is_state_kind)
+        {
+            return Ok(());
+        }
         let (Some(source_kind), Some(target_kind)) = (self.kind_of(*source), self.kind_of(*target))
         else {
             return Ok(());
