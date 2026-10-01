@@ -28,8 +28,8 @@ use crate::index::expressions::RequiredMeasurement;
 use crate::index::expressions::UnitOutcome;
 use crate::index::types::TypeIndex;
 use crate::lower::facts::ExpressionOperandRole;
-use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::FilterForm;
+use crate::lower::facts::ParameterDirection;
 use crate::model::element_kind::element_kind;
 use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
@@ -487,12 +487,15 @@ impl<D> SemanticModel<D> {
                 continue;
             };
             let code = if argument.form == InstantiationForm::Invocation
-                && !self.storage.declaration_facts(parameter).is_some_and(|facts| {
-                    matches!(
-                        facts.direction,
-                        Some(ParameterDirection::In) | Some(ParameterDirection::InOut)
-                    )
-                }) {
+                && !self
+                    .storage
+                    .declaration_facts(parameter)
+                    .is_some_and(|facts| {
+                        matches!(
+                            facts.direction,
+                            Some(ParameterDirection::In) | Some(ParameterDirection::InOut)
+                        )
+                    }) {
                 DiagnosticCode::InvocationArgumentRedefinesNoParameter
             } else if !bound.insert((container, parameter)) {
                 match argument.form {

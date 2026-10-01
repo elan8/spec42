@@ -705,7 +705,10 @@ impl SemanticModelBuilder {
                     Expression::FeatureRef(_) | Expression::FeatureChainRef(_)
                 ) =>
             {
-                Some((expression, crate::lower::facts::InstantiationForm::Invocation))
+                Some((
+                    expression,
+                    crate::lower::facts::InstantiationForm::Invocation,
+                ))
             }
             Expression::Constructor { .. } => {
                 Some((result, crate::lower::facts::InstantiationForm::Constructor))
@@ -1263,9 +1266,11 @@ impl SemanticModelBuilder {
         callee: AuthoredReferenceId,
         args: &[sysml_v2_parser::ast::Argument],
     ) -> Result<(), ConstructionError> {
-        let Some(index) = self.pending_instantiations.iter().position(|pending| {
-            pending.expression == declaration && pending.span == node.span
-        }) else {
+        let Some(index) = self
+            .pending_instantiations
+            .iter()
+            .position(|pending| pending.expression == declaration && pending.span == node.span)
+        else {
             return Ok(());
         };
         let pending = self.pending_instantiations.swap_remove(index);

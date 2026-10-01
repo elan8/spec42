@@ -482,15 +482,15 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             ) || (reference.kind() == ReferenceKind::Redefinition
                 && root_narrowing(reference).is_some())
                 || (reference.flags().dotted
-                && matches!(
-                    reference.kind(),
-                    ReferenceKind::Subsetting
-                        | ReferenceKind::References
-                        | ReferenceKind::Crosses
-                        | ReferenceKind::Redefinition
-                        | ReferenceKind::FeatureInverting
-                        | ReferenceKind::FeatureChaining
-                )))
+                    && matches!(
+                        reference.kind(),
+                        ReferenceKind::Subsetting
+                            | ReferenceKind::References
+                            | ReferenceKind::Crosses
+                            | ReferenceKind::Redefinition
+                            | ReferenceKind::FeatureInverting
+                            | ReferenceKind::FeatureChaining
+                    )))
             .then_some(index)
         })
         .collect();

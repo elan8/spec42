@@ -152,7 +152,13 @@ impl SemanticModelBuilder {
                     args.len(),
                     node.span,
                 )? {
-                    self.lower_instantiation_arguments(document, declaration, node, reference, args)?;
+                    self.lower_instantiation_arguments(
+                        document,
+                        declaration,
+                        node,
+                        reference,
+                        args,
+                    )?;
                 }
                 for arg in args {
                     self.lower_constraint_expression(document, declaration, family, &arg.value)?;
@@ -332,7 +338,13 @@ impl SemanticModelBuilder {
                     args.len(),
                     node.span,
                 )? {
-                    self.lower_instantiation_arguments(document, declaration, node, reference, args)?;
+                    self.lower_instantiation_arguments(
+                        document,
+                        declaration,
+                        node,
+                        reference,
+                        args,
+                    )?;
                 }
                 for arg in args {
                     self.lower_calc_expression(document, declaration, family, &arg.value)?;
@@ -559,7 +571,13 @@ impl SemanticModelBuilder {
                     args.len(),
                     node.span,
                 )? {
-                    self.lower_instantiation_arguments(document, declaration, node, reference, args)?;
+                    self.lower_instantiation_arguments(
+                        document,
+                        declaration,
+                        node,
+                        reference,
+                        args,
+                    )?;
                 }
                 for arg in args {
                     self.lower_filter_expression(document, declaration, &arg.value)?;
