@@ -1499,7 +1499,19 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         match accept {
             TransitionAccept::Shorthand(expr, via) => {
-                self.lower_constraint_expression(document, owner, family, expr)?;
+                // `accept T` names the payload's type (SysML `PayloadFeature`'s
+                // `OwnedFeatureTyping`), not a feature reference.
+                match &expr.value {
+                    Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
+                        self.push_expression_operand_reference(
+                            document,
+                            owner,
+                            *target,
+                            crate::lower::facts::ExpressionOperandRole::PayloadTyping,
+                        )?;
+                    }
+                    _ => self.lower_constraint_expression(document, owner, family, expr)?,
+                }
                 if let Some(via) = via {
                     self.lower_satisfy_operand(
                         document,

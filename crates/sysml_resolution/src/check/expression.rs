@@ -27,6 +27,7 @@ use crate::index::expressions::conforms;
 use crate::index::expressions::RequiredMeasurement;
 use crate::index::expressions::UnitOutcome;
 use crate::index::types::TypeIndex;
+use crate::lower::facts::ExpressionOperandRole;
 use crate::lower::facts::FilterForm;
 use crate::model::element_kind::element_kind;
 use crate::model::render as writer;
@@ -85,6 +86,7 @@ impl<D> SemanticModel<D> {
         self.collect_boolean_expressions(document, declared, diagnostics)?;
         self.collect_invocation_arity(document, diagnostics)?;
         self.collect_invocation_instantiated_types(document, diagnostics)?;
+        self.collect_feature_reference_referents(document, diagnostics)?;
         Ok(())
     }
 
@@ -429,6 +431,57 @@ impl<D> SemanticModel<D> {
                     range: document_range(&self.storage, document, &filter.span)?,
                 },
                 related: Box::default(),
+            });
+        }
+        Ok(())
+    }
+
+    /// KerML 8.3.4.8.5 `validateFeatureReferenceExpressionReferentIsFeature`: the referent of a
+    /// `FeatureReferenceExpression` is a Feature.
+    ///
+    /// Only an `ExpressionOperand` lowered in feature-reference position
+    /// ([`ExpressionOperandRole::FeatureReference`]) is such an expression; the operand of `meta`,
+    /// a `->f g` function reference and an `accept T` payload type legitimately name other
+    /// elements. An unresolved or ambiguous referent is its own diagnostic and is left unanswered.
+    pub(crate) fn collect_feature_reference_referents(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            if reference.kind != ReferenceKind::ExpressionOperand
+                || reference.flags.operand_role != Some(ExpressionOperandRole::FeatureReference)
+                || reference.target.document != document
+            {
+                continue;
+            }
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let Some(ResolutionStatus::Resolved(target)) = self.resolution.outcome(id) else {
+                continue;
+            };
+            let Some(kind) = self.kind_of(target).map(element_kind) else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            if kind.conforms_to(ElementKind::Feature) {
+                continue;
+            }
+            diagnostics.push(Diagnostic {
+                payload: None,
+                message: DiagnosticCode::FeatureReferenceReferentNotFeature
+                    .describe()
+                    .into(),
+                code: DiagnosticCode::FeatureReferenceReferentNotFeature,
+                severity: DiagnosticSeverity::Warning,
+                origin: DiagnosticOrigin::Semantic,
+                subject: self.symbol_id(reference.source),
+                location: DiagnosticLocation {
+                    document: writer::document_identity(self, document).into(),
+                    range: document_range(&self.storage, document, &reference.span)?,
+                },
+                related: Box::from([
+                    self.related_declaration(target, conformance::RELATED_DECLARED)?
+                ]),
             });
         }
         Ok(())

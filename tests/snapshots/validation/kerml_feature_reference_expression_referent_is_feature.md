@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.8.5:validateFeatureReferenceExpressionReferentIsFeature
-blocked_by=semantic-feature-reference-referent-not-feature
 type=file
 ~~~
 # SOURCE
@@ -35,7 +34,13 @@ package Expressions {
         (severity warning)
         (code "feature_reference_referent_not_feature")
         (source "semantic")
-        (range (start 9 8) (end 9 28))
+        (range (start 9 22) (end 9 27))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md")
+            (range (start 1 4) (end 1 21))
+          )
+        )
       )
     )
   )
@@ -46,6 +51,18 @@ package Expressions {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "feature_reference_referent_not_feature")
+        (source "semantic")
+        (range (start 9 22) (end 9 27))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md")
+            (range (start 1 4) (end 1 21))
+          )
+        )
+      )
     )
   )
 )

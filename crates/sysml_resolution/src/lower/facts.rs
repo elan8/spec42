@@ -52,6 +52,32 @@ pub(crate) struct RelationshipFlags {
     /// Transmission;`); the sibling `abstract` prefix is deliberately left unrepresented, as
     /// before this slice.
     pub(crate) variation: bool,
+    /// What the authored position of an `ExpressionOperand` reference makes of its target; `None`
+    /// on every other reference kind. Set by lowering from the parser's expression shape, so a
+    /// consumer never re-derives it from the target or the source text.
+    pub(crate) operand_role: Option<ExpressionOperandRole>,
+}
+
+/// The KerML expression element an `ExpressionOperand` reference is the member reference of.
+///
+/// Every role is resolved and numbered alike (evaluation pairs operand slots by ordinal), but
+/// only a [`ExpressionOperandRole::FeatureReference`] is a `FeatureReferenceExpression` whose
+/// referent must be a Feature (KerML 8.3.4.8.5 `validateFeatureReferenceExpressionReferentIsFeature`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ExpressionOperandRole {
+    /// A `FeatureReferenceExpression` (KerML `FeatureReferenceMember`).
+    FeatureReference,
+    /// The `ElementReferenceMember` of a `MetadataAccessExpression`: the operand of `meta`, which
+    /// may name any Element.
+    MetadataReference,
+    /// The function a `->f g` arrow invocation passes without parentheses (KerML
+    /// `FunctionReferenceExpression`, whose member is an Expression typed by the named function).
+    FunctionReference,
+    /// The `FeatureChainMember` a `.?`/`.` selection names.
+    FeatureChainMember,
+    /// The bare type of an `accept T` payload shorthand (SysML `PayloadFeature`'s
+    /// `OwnedFeatureTyping`), not a feature reference.
+    PayloadTyping,
 }
 
 /// The `in`/`out`/`inout` direction prefix on a directed parameter declaration (BNF `InOutDecl`),

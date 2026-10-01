@@ -3325,6 +3325,18 @@ package SimpleVehicleModel{
       )
       (diagnostic
         (severity warning)
+        (code "feature_reference_referent_not_feature")
+        (source "semantic")
+        (range (start 1411 25) (end 1411 40))
+        (related-information
+          (related
+            (uri "memory://snapshot/sys_ml_v2_spec_annex_a_simple_vehicle_model.md")
+            (range (start 303 12) (end 303 42))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 1412 16) (end 1412 20))

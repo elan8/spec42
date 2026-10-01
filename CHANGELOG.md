@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Feature reference referent validation.** KerML 8.3.4.8.5
+  `validateFeatureReferenceExpressionReferentIsFeature` (`feature_reference_referent_not_feature`)
+  reports a name used as a value that references a type or other non-feature. The operand of
+  `meta`, a `->f g` function reference and an `accept T` payload type are not feature references.
+
 - **Implied library specializations follow the metaclass hierarchy.** A generated
   `specializesFromLibrary` rule now applies to the specializations of its metaclass through the
   nearest rule-carrying metaclass, as the Pilot's `ImplicitGeneralizationMap` does: successions

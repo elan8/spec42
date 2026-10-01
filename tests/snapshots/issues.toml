@@ -217,12 +217,6 @@ owner = "spec42-semantic"
 summary = "a ConstructorExpression's named initialisers (`new Point(x = a, x = b)`) are not lowered as owned features of its result with Redefinitions of the instantiated type's features: ast::Argument::parameter is dropped and only the argument values become ExpressionOperand references on the enclosing expression declaration, so there are no redefinitions to compare"
 
 [[issue]]
-id = "semantic-feature-reference-referent-not-feature"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "the referent of a FeatureReferenceExpression is not a distinguished fact: lowering mints the same ExpressionOperand reference for non-FeatureReferenceExpression sites whose target is legitimately not a Feature -- a meta-cast operand (`SS meta KerML::Type`, a MetadataAccessExpression), a reduce function argument (`->reduce '+'`, a FunctionReferenceExpression), an accept payload name (`accept S;`) -- so checking every operand target reports conforming corpus models (kerml/metadata_test, sysml.library numerical_functions, sysml/examples action_test)"
-
-[[issue]]
 id = "semantic-filter-condition-not-model-level-evaluable"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"

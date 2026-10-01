@@ -435,6 +435,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "feature_reference_referent_not_feature",
+        severity: "warning",
+        meaning: "A name used as a value in an expression references an element that is not a feature, such as a type or package (KerML validateFeatureReferenceExpressionReferentIsFeature).",
+        typical_fix: "Reference a feature; to talk about a type or other element itself, use `T.metadata` or `meta`.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "invocation_instantiated_type_not_behavior",
         severity: "warning",
         meaning: "An invocation `F(...)` invokes something that is neither a behavior nor a feature typed by a behavior (KerML validateInvocationExpressionInstantiatedType).",

@@ -1305,6 +1305,7 @@ impl SemanticModelBuilder {
         document: DocumentIdx,
         declaration: DeclarationId,
         target: QualifiedReferenceId,
+        role: crate::lower::facts::ExpressionOperandRole,
     ) -> Result<(), ConstructionError> {
         let span = self.documents[document.index()]
             .parsed
@@ -1317,7 +1318,10 @@ impl SemanticModelBuilder {
             kind: ReferenceKind::ExpressionOperand,
             document,
             local: target,
-            flags: RelationshipFlags::default(),
+            flags: RelationshipFlags {
+                operand_role: Some(role),
+                ..RelationshipFlags::default()
+            },
             span,
             import: None,
         })?;

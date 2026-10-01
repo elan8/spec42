@@ -514,6 +514,9 @@ semantic_diagnostic_codes! {
     /// KerML 8.3.4.7.3 `validateExpressionResultParameterMembership`.
     ExpressionResultParameterCount => "expression_result_parameter_count",
         "An expression may own at most one return parameter.";
+    /// KerML 8.3.4.8.5 `validateFeatureReferenceExpressionReferentIsFeature`.
+    FeatureReferenceReferentNotFeature => "feature_reference_referent_not_feature",
+        "A feature reference expression must reference a feature.";
     /// KerML 8.3.4.8.8 `validateInvocationExpressionInstantiatedType`.
     InvocationInstantiatedTypeNotBehavior => "invocation_instantiated_type_not_behavior",
         "An invocation must invoke a behavior or a feature typed by a behavior.";
