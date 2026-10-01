@@ -428,6 +428,17 @@ impl<D> SemanticModel<D> {
                     | DeclarationKind::PartDefinition
                     | DeclarationKind::RequirementDefinition
                     | DeclarationKind::UseCaseDefinition
+                    | DeclarationKind::KermlType
+                    | DeclarationKind::KermlClassifier
+                    | DeclarationKind::KermlStructure
+                    | DeclarationKind::KermlAssociation
+                    | DeclarationKind::KermlAssociationStructure
+                    | DeclarationKind::KermlDataType
+                    | DeclarationKind::KermlMetaclass
+                    | DeclarationKind::KermlBehavior
+                    | DeclarationKind::KermlFunction
+                    | DeclarationKind::KermlPredicate
+                    | DeclarationKind::KermlInteraction
             ) {
                 continue;
             }
@@ -493,12 +504,30 @@ impl<D> SemanticModel<D> {
         members: &[DeclarationId],
     ) -> Option<(DeclarationId, DeclarationId)> {
         for (index, member) in members.iter().enumerate().skip(1) {
-            let later = self.declaration_family(*member)?;
+            let later = self.declaration_family(*member);
             for earlier_id in &members[..index] {
-                let Some(earlier) = self.declaration_family(*earlier_id) else {
-                    continue;
+                let indistinguishable = match (self.declaration_family(*earlier_id), later) {
+                    (Some(earlier), Some(later)) => {
+                        names_must_be_distinguishable(owner, earlier, later)
+                    }
+                    // A member outside the SysML family table (a KerML type or feature, or a
+                    // usage form the table does not classify) is compared by the normative
+                    // `Membership::isDistinguishableFrom`: same-named members are
+                    // indistinguishable when either member's metaclass conforms to the other's.
+                    _ => {
+                        let (Some(earlier), Some(later)) =
+                            (self.kind_of(*earlier_id), self.kind_of(*member))
+                        else {
+                            continue;
+                        };
+                        let (earlier, later) = (
+                            crate::model::element_kind::element_kind(earlier),
+                            crate::model::element_kind::element_kind(later),
+                        );
+                        earlier.conforms_to(later) || later.conforms_to(earlier)
+                    }
                 };
-                if names_must_be_distinguishable(owner, earlier, later) {
+                if indistinguishable {
                     return Some((*earlier_id, *member));
                 }
             }

@@ -35,6 +35,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `validate{DataType,Class,Structure,Behavior}Specialization` violations for KerML classifiers and
   SysML definitions alike, at the specialization reference.
 
+- **KerML namespace distinguishability.** `duplicate_namespace_member` now also reports same-named
+  members of a package or KerML type when either member is a KerML element (or a usage form the
+  SysML family table does not classify) and one member's metaclass conforms to the other's
+  (KerML `Membership::isDistinguishableFrom`).
+
 - **Case objectives redefine the objectives they specialize.** An `objective` is now published as
   an `objective-requirement` (a `RequirementUsage` under an `ObjectiveMembership`, membership role
   `objective`) and implicitly redefines the objective of every case definition or case usage its

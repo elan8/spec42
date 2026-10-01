@@ -32,6 +32,18 @@ package ion {
         (range (start 2 7) (end 2 8))
       )
       (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 5 2) (end 6 3))
+        (related-information
+          (related
+            (uri "memory://snapshot/fuzz_unclosed_short_name.md")
+            (range (start 1 2) (end 3 3))
+          )
+        )
+      )
+      (diagnostic
         (severity error)
         (code "recovered_calc_body_element")
         (source "parser")

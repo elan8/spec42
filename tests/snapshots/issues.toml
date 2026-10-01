@@ -283,12 +283,6 @@ owner = "spec42-semantic"
 summary = "no semantic rule pairs a usage direction with its referential status; the canonical code directed_usage_not_referential does not exist yet"
 
 [[issue]]
-id = "semantic-duplicate-namespace-member"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "duplicate_namespace_member is not reported for KerML-flavored members; the collision is only visible as two kind-qualified declaration paths in SMG"
-
-[[issue]]
 id = "semantic-expression-result-parameter-count"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"

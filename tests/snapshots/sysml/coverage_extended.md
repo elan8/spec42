@@ -24,6 +24,18 @@ package ExtendedExamples {
     (diagnostics
       (diagnostic
         (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 2 4) (end 2 35))
+        (related-information
+          (related
+            (uri "memory://snapshot/coverage_extended.md")
+            (range (start 1 4) (end 1 27))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_specializes_reference")
         (source "semantic")
         (range (start 2 30) (end 2 34))
@@ -51,6 +63,18 @@ package ExtendedExamples {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 7 19) (end 7 20))
+      )
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 8 4) (end 8 24))
+        (related-information
+          (related
+            (uri "memory://snapshot/coverage_extended.md")
+            (range (start 7 4) (end 7 21))
+          )
+        )
       )
       (diagnostic
         (severity warning)

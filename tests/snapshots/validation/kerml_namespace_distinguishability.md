@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.2.4.5:validateNamespaceDistinguishibility
-blocked_by=semantic-duplicate-namespace-member
 type=file
 ~~~
 # SOURCE
@@ -51,6 +50,18 @@ package Colliding {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_namespace_distinguishability.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_namespace_member")
+        (source "semantic")
+        (range (start 9 4) (end 9 19))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_namespace_distinguishability.md")
+            (range (start 8 4) (end 8 21))
+          )
+        )
+      )
     )
   )
 )
