@@ -1703,6 +1703,12 @@ package SimpleVehicleModel{
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
+        (range (start 76 24) (end 78 25))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_state_definition_member")
+        (source "semantic")
         (range (start 91 24) (end 95 42))
       )
       (diagnostic

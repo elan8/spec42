@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Every state action form is a state subaction.** A bare `entry;` and the effect forms
+  (`entry assign ...;`, `do send ...;`, `do accept ...;`) now publish the action that occupies the
+  state's entry/do/exit membership and redefines `States::StateAction::entryAction`/`doAction`/
+  `exitAction`, so SysML `checkActionUsageStateActionRedefinition` is evaluated. Effect operands
+  and an entry/do/exit body on the reference form, which were silently dropped, are now reported
+  as `unsupported_state_definition_member`.
+
 - **Exhibit states.** `exhibit state s;` and `exhibit <path>;` now publish an ExhibitStateUsage
   (`exhibit-state`), a state usage that is also a perform action usage; the path form references
   the exhibited state, and the new `exhibit_target_invalid_kind` diagnostic checks SysML

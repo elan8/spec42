@@ -161,16 +161,30 @@ pub(crate) struct LibraryRoleOccupant {
 /// - A `ForLoopVariable` declaration is the `loopVariable` of the `ForLoop` that owns it.
 /// - A feature chain expression's source-target feature is its lowered `source_target`.
 /// - An `entry`/`do`/`exit` action is the member of a `StateSubactionMembership`; the kind is the
-///   membership role, never the declaration's name.
+///   membership role, never the declaration's name. Every StateActionUsage form publishes one.
 /// - An assignment's `startingAt` and `accessedFeature` are the Features of its lowered
 ///   [`crate::lower::facts::AssignmentRecord`].
 pub(crate) fn library_role_occupants(
     storage: &SemanticModelStorage,
 ) -> Result<Vec<LibraryRoleOccupant>, ResolutionError> {
+    // The role an owning membership authors (an effect-form `entry assign ...;` is an
+    // AssignmentActionUsage whose StateSubactionMembership carries the kind) or, absent one, the
+    // role its member's declaration kind implies.
+    let mut membership_roles = vec![None; storage.declarations.len()];
+    for membership in storage.memberships.iter() {
+        let declaration = storage
+            .declaration(membership.member)
+            .ok_or(ResolutionError::InvalidStorage)?;
+        *membership_roles
+            .get_mut(membership.member.index())
+            .ok_or(ResolutionError::InvalidStorage)? = membership
+            .role
+            .or_else(|| membership_role(declaration.kind));
+    }
     let mut occupants = Vec::new();
     for (index, declaration) in storage.declarations.iter().enumerate() {
         let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-        let role = match (declaration.kind, membership_role(declaration.kind)) {
+        let role = match (declaration.kind, membership_roles[index]) {
             (DeclarationKind::ForLoopVariable, _) => {
                 let owner = declaration
                     .owner

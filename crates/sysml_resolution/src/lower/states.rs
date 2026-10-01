@@ -18,6 +18,8 @@ use crate::model::DocumentIdx;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::model::Visibility;
+use crate::MembershipRole;
+use crate::StateSubactionKind;
 use sysml_v2_parser::ast::{
     DeclarationName, DoAction, EntryAction, ExhibitState as ParserExhibitState, ExitAction,
     Expression, FinalState, MembershipKind as ParserMembershipKind, Node, QualifiedReferenceId,
@@ -226,174 +228,211 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
-    /// Lowers a state def/usage's `entry action <path> ...;` body element (BNF `EntryAction`) as
-    /// an anonymous `DeclarationKind::EntryActionBinding` feature owned by the enclosing state
-    /// `owner` declaration, mirroring `lower_first_stmt`'s nested-declaration shape so the bound
-    /// action reference resolves against the state's own scope (where sibling actions are
-    /// declared), not the state's enclosing scope. `EntryAction.action_reference` is already a
-    /// structured `QualifiedReferenceId` (not a flattened string), so it resolves through the
-    /// same shared lexical lookup as `AliasBinding`/`Succession`. A plain `entry` with no bound
-    /// action (`action_reference: None`) has no reference to lower: a bare `entry;`/empty `entry
-    /// { }` (no owned members) is a legal no-op marker with genuinely nothing to represent, so it
-    /// is silently recognized rather than reported (pervasive in the training/validation corpus,
-    /// e.g. `24_state_actions.md`'s `entry; then off;`); an inline `entry { <members> }` body with
-    /// actual owned content has no representation in this typed AST shape (no field carries it)
-    /// and stays an explicit unsupported diagnostic.
+    /// Lowers a state def/usage's `entry` body element (BNF `EntryActionMember`).
     pub(crate) fn lower_state_entry_action(
         &mut self,
         document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<EntryAction>,
     ) -> Result<(), ConstructionError> {
-        if let Some(declared_name) = node.value.declared_name {
-            return self.lower_state_declared_action(
-                document,
-                owner,
-                DeclarationKind::EntryActionBinding,
-                declared_name,
-                node.value.type_name,
-                node.value.redefines.as_ref(),
-                &node.value.body,
-                node.span,
-            );
-        }
-        let Some(target) = node.value.action_reference else {
-            if state_action_body_has_content(&node.value.body) {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::StateDefinitionMember,
-                    node.span,
-                );
-            }
-            return Ok(());
-        };
-        let declaration = self.push_typed_declaration(
+        let EntryAction {
+            action_reference,
+            declared_name,
+            type_name,
+            redefines,
+            effect,
+            body,
+            ..
+        } = &node.value;
+        self.lower_state_subaction(
             document,
-            Some(owner),
-            DeclarationKind::EntryActionBinding,
-            None,
+            owner,
+            StateSubactionKind::Entry,
+            StateSubactionSyntax {
+                action_reference: *action_reference,
+                declared_name: *declared_name,
+                type_name: *type_name,
+                redefines: redefines.as_ref(),
+                effect: effect.as_ref(),
+                body,
+            },
             node.span,
-            // A synthesized scope for the state's entry-action binding reference.
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span,
-        )?;
-        self.push_action_binding_reference(
-            document,
-            declaration,
-            ReferenceKind::EntryActionBinding,
-            target,
         )
     }
 
-    /// Same as `lower_state_entry_action`, for a `do action <path> ...;` body element
-    /// (`DoAction.action_reference`).
+    /// Lowers a state def/usage's `do` body element (BNF `DoActionMember`).
     pub(crate) fn lower_state_do_action(
         &mut self,
         document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<DoAction>,
     ) -> Result<(), ConstructionError> {
-        if let Some(declared_name) = node.value.declared_name {
-            return self.lower_state_declared_action(
-                document,
-                owner,
-                DeclarationKind::DoActionBinding,
-                declared_name,
-                node.value.type_name,
-                node.value.redefines.as_ref(),
-                &node.value.body,
-                node.span,
-            );
-        }
-        let Some(target) = node.value.action_reference else {
-            if state_action_body_has_content(&node.value.body) {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::StateDefinitionMember,
-                    node.span,
-                );
-            }
-            return Ok(());
-        };
-        let declaration = self.push_typed_declaration(
+        let DoAction {
+            action_reference,
+            declared_name,
+            type_name,
+            redefines,
+            effect,
+            body,
+            ..
+        } = &node.value;
+        self.lower_state_subaction(
             document,
-            Some(owner),
-            DeclarationKind::DoActionBinding,
-            None,
+            owner,
+            StateSubactionKind::Do,
+            StateSubactionSyntax {
+                action_reference: *action_reference,
+                declared_name: *declared_name,
+                type_name: *type_name,
+                redefines: redefines.as_ref(),
+                effect: effect.as_ref(),
+                body,
+            },
             node.span,
-            // A synthesized scope for the state's do-action binding reference.
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            declaration,
-            MembershipKind::Feature,
-            Visibility::Default,
-            node.span,
-        )?;
-        self.push_action_binding_reference(
-            document,
-            declaration,
-            ReferenceKind::DoActionBinding,
-            target,
         )
     }
 
-    /// Same as `lower_state_entry_action`, for an `exit action <path> ...;` body element
-    /// (`ExitAction.action_reference`).
+    /// Lowers a state def/usage's `exit` body element (BNF `ExitActionMember`).
     pub(crate) fn lower_state_exit_action(
         &mut self,
         document: DocumentIdx,
         owner: DeclarationId,
         node: &Node<ExitAction>,
     ) -> Result<(), ConstructionError> {
-        if let Some(declared_name) = node.value.declared_name {
+        let ExitAction {
+            action_reference,
+            declared_name,
+            type_name,
+            redefines,
+            effect,
+            body,
+            ..
+        } = &node.value;
+        self.lower_state_subaction(
+            document,
+            owner,
+            StateSubactionKind::Exit,
+            StateSubactionSyntax {
+                action_reference: *action_reference,
+                declared_name: *declared_name,
+                type_name: *type_name,
+                redefines: redefines.as_ref(),
+                effect: effect.as_ref(),
+                body,
+            },
+            node.span,
+        )
+    }
+
+    /// Lowers the StateActionUsage of one `entry`/`do`/`exit` member (SysML BNF
+    /// `StateActionUsage`) as the member of a StateSubactionMembership of `kind`, owned by the
+    /// enclosing state `owner`:
+    ///
+    /// - the declaration form (`entry action entryAction :>> 'entry';`) introduces a named action
+    ///   ([`Self::lower_state_declared_action`]);
+    /// - the reference form (`entry action <path>;`) binds an existing action through an
+    ///   anonymous binding declaration whose reference resolves in the state's own scope, the same
+    ///   shared lexical lookup as `AliasBinding`/`Succession`;
+    /// - the effect forms (`entry assign ...;`, `do send ...;`, `do accept ...;`) publish the
+    ///   AssignmentActionUsage, SendActionUsage or AcceptActionUsage itself, whose membership
+    ///   carries the role; the effect's operands are not lowered and stay explicitly unsupported,
+    ///   as a transition effect's are;
+    /// - a bare `entry;` is the `EmptyActionUsage` alternative, an anonymous ActionUsage.
+    ///
+    /// Every form therefore publishes its occupant of the StateSubactionMembership, which
+    /// `checkActionUsageStateActionRedefinition` enumerates. A body with owned members on a
+    /// reference or bare form has no field in this typed AST shape and stays an explicit
+    /// unsupported diagnostic.
+    fn lower_state_subaction(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        kind: StateSubactionKind,
+        syntax: StateSubactionSyntax<'_>,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        let (binding_kind, reference_kind) = match kind {
+            StateSubactionKind::Entry => (
+                DeclarationKind::EntryActionBinding,
+                ReferenceKind::EntryActionBinding,
+            ),
+            StateSubactionKind::Do => (
+                DeclarationKind::DoActionBinding,
+                ReferenceKind::DoActionBinding,
+            ),
+            StateSubactionKind::Exit => (
+                DeclarationKind::ExitActionBinding,
+                ReferenceKind::ExitActionBinding,
+            ),
+        };
+        if let Some(declared_name) = syntax.declared_name {
             return self.lower_state_declared_action(
                 document,
                 owner,
-                DeclarationKind::ExitActionBinding,
+                binding_kind,
                 declared_name,
-                node.value.type_name,
-                node.value.redefines.as_ref(),
-                &node.value.body,
-                node.span,
+                syntax.type_name,
+                syntax.redefines,
+                syntax.body,
+                span,
             );
         }
-        let Some(target) = node.value.action_reference else {
-            if state_action_body_has_content(&node.value.body) {
-                self.push_unsupported(
-                    document,
-                    UnsupportedFamily::StateDefinitionMember,
-                    node.span,
-                );
-            }
+        if let Some(effect) = syntax.effect {
+            let (effect_kind, name) = match effect {
+                TransitionEffect::Perform { name, .. } => (
+                    DeclarationKind::PerformActionUsage,
+                    self.intern_declaration_name(document, *name)?,
+                ),
+                TransitionEffect::Accept { .. } => (DeclarationKind::AcceptActionUsage, None),
+                TransitionEffect::Send { .. } => (DeclarationKind::SendActionUsage, None),
+                TransitionEffect::Assign { .. } => (DeclarationKind::Assign, None),
+                TransitionEffect::Expression(_) => (DeclarationKind::ActionUsage, None),
+            };
+            let action = self.push_typed_declaration(
+                document,
+                Some(owner),
+                effect_kind,
+                name,
+                span,
+                DeclarationFacts {
+                    is_trigger_action: (effect_kind == DeclarationKind::AcceptActionUsage)
+                        .then_some(false),
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            self.push_role_membership(
+                action,
+                MembershipKind::Feature,
+                Visibility::Default,
+                MembershipRole::StateSubaction(kind),
+                span,
+            )?;
+            self.push_unsupported(document, UnsupportedFamily::StateDefinitionMember, span);
             return Ok(());
-        };
+        }
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
-            DeclarationKind::ExitActionBinding,
+            binding_kind,
             None,
-            node.span,
-            // A synthesized scope for the state's exit-action binding reference.
+            span,
             DeclarationFacts::none(),
         )?;
         self.push_membership(
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
-            node.span,
+            span,
         )?;
-        self.push_action_binding_reference(
-            document,
-            declaration,
-            ReferenceKind::ExitActionBinding,
-            target,
-        )
+        if state_action_body_has_content(syntax.body) {
+            self.push_unsupported(document, UnsupportedFamily::StateDefinitionMember, span);
+        }
+        match syntax.action_reference {
+            Some(target) => {
+                self.push_action_binding_reference(document, declaration, reference_kind, target)
+            }
+            None => Ok(()),
+        }
     }
 
     /// Lowers the *declaration* form of an `entry`/`do`/`exit` action -- `do action
@@ -1198,6 +1237,16 @@ impl SemanticModelBuilder {
         }
         self.lower_state_def_body(document, declaration, &node.value.body)
     }
+}
+
+/// The authored parts of one `entry`/`do`/`exit` member shared by the three typed AST nodes.
+struct StateSubactionSyntax<'a> {
+    action_reference: Option<QualifiedReferenceId>,
+    declared_name: Option<DeclarationName>,
+    type_name: Option<QualifiedReferenceId>,
+    redefines: Option<&'a Node<SubsettingRelationship>>,
+    effect: Option<&'a TransitionEffect>,
+    body: &'a StateDefBody,
 }
 
 /// True when a state def/usage's `entry`/`do`/`exit` action body (BNF `StateDefBody`, shared by

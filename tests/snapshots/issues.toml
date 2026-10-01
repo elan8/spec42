@@ -25,12 +25,6 @@ owner = "spec42-semantic"
 summary = "Flow endpoints (`flow from a.x to b.y`, KerML `flow ... from ... to`) lower as bare FlowSource/FlowTarget connector ends: one reference to the whole chain, sourced at the flow, which is the end's relatedFeature and what the diagram, generator-protocol and connector checks read. checkFeatureFlowFeatureRedefinition needs the grammar's FlowEnd structure instead -- a declared FlowEnd whose ReferenceSubsetting is the chain prefix (`a`), owning a flow feature that redefines the last segment (`x`) and Transfers::Transfer::source::sourceOutput / target::targetInput -- which splits each end reference in two and moves it off the flow, so every FlowSource/FlowTarget consumer must move with it in one change."
 
 [[issue]]
-id = "lowering-gap-redefinition-state-subaction-membership"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Declared and referencing entry/do/exit actions now publish their StateSubaction role and implied States::StateAction::entryAction/doAction/exitAction redefinitions, but a bare `entry;` (an EmptyActionUsage) and the effect forms (`entry assign ...;`, `do send ...;`, `do accept ...;`) are not lowered as StateSubactionMembership members, so checkActionUsageStateActionRedefinition cannot enumerate every occupant."
-
-[[issue]]
 id = "lowering-gap-redefinition-view-rendering-membership"
 kind = "lowering_gap"
 owner = "spec42-semantic"

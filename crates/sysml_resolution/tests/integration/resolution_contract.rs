@@ -3531,10 +3531,6 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
             RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors,
         ),
         (
-            RedefinitionCheckKind::ActionUsageStateAction,
-            RedefinitionCheckPrerequisite::StateSubactionMembershipAndKind,
-        ),
-        (
             RedefinitionCheckKind::RenderingUsage,
             RedefinitionCheckPrerequisite::ViewRenderingMembership,
         ),
@@ -3552,7 +3548,7 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
     }
     // Checks whose role facts are published are evaluated, never reported as unsupported. This
     // model has no end feature, for loop, feature chain expression, case objective, parameter,
-    // result, constructor or assignment, so each holds vacuously; the snapshot
+    // result, constructor, assignment or state action, so each holds vacuously; the snapshot
     // corpus carries the occupied cases.
     for rule in [
         RedefinitionCheckKind::FeatureEnd,
@@ -3567,6 +3563,7 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
         RedefinitionCheckKind::FeatureChainExpressionTarget,
         RedefinitionCheckKind::ForLoopActionUsageVar,
         RedefinitionCheckKind::RequirementUsageObjective,
+        RedefinitionCheckKind::ActionUsageStateAction,
     ] {
         assert_eq!(
             published.redefinition_check(rule),

@@ -77,14 +77,7 @@ impl<D> SemanticModel<D> {
         let outcome = match kind {
             RedefinitionCheckKind::ForLoopActionUsageVar => self.for_loop_variable_check(),
             RedefinitionCheckKind::FeatureChainExpressionTarget => self.library_role_check(kind),
-            // Bare (`entry;`) and effect (`entry assign ...;`) state actions are not yet lowered
-            // as StateSubactionMembership members, so the occupants this publication knows are
-            // not all of them.
-            RedefinitionCheckKind::ActionUsageStateAction => {
-                RedefinitionCheckOutcome::Unsupported {
-                    prerequisite: RedefinitionCheckPrerequisite::StateSubactionMembershipAndKind,
-                }
-            }
+            RedefinitionCheckKind::ActionUsageStateAction => self.library_role_check(kind),
             RedefinitionCheckKind::FeatureChainExpressionSourceTarget => {
                 self.feature_chain_source_target_check()
             }

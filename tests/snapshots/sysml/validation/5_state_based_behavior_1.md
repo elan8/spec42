@@ -299,6 +299,12 @@ package '5-State-based Behavior-1' {
         (severity warning)
         (code "unsupported_state_definition_member")
         (source "semantic")
+        (range (start 129 4) (end 133 6))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unsupported_state_definition_member")
+        (source "semantic")
         (range (start 144 4) (end 148 19))
       )
       (diagnostic
