@@ -3547,10 +3547,6 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
     )]);
     let expected = [
         (
-            RedefinitionCheckKind::FeatureEnd,
-            RedefinitionCheckPrerequisite::EndFeaturePositionAndInheritedEnds,
-        ),
-        (
             RedefinitionCheckKind::FeatureFlowFeature,
             RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors,
         ),
@@ -3607,9 +3603,10 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
         );
     }
     // Checks whose role facts are published are evaluated, never reported as unsupported. This
-    // model has no for loop or feature chain expression, so each holds vacuously; the snapshot
+    // model has no end feature, for loop or feature chain expression, so each holds vacuously; the snapshot
     // corpus carries the occupied cases.
     for rule in [
+        RedefinitionCheckKind::FeatureEnd,
         RedefinitionCheckKind::FeatureChainExpressionSourceTarget,
         RedefinitionCheckKind::FeatureChainExpressionTarget,
         RedefinitionCheckKind::ForLoopActionUsageVar,

@@ -145,6 +145,7 @@ impl Lowered {
                 provisional_relationships: &provisional_library_specializations,
                 settled_outcomes: seed,
                 shadowed_library_roots: &shadowed_library_roots,
+                owned_end_features: &storage.owned_end_features,
             },
         )?;
         let authored_relationships = storage

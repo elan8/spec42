@@ -1,0 +1,316 @@
+//! KerML `Type::endFeature` and the positional end redefinitions it implies.
+//!
+//! `checkFeatureEndRedefinition` (KerML 8.3.3.3.4) pairs the owned end at position `i` of a Type
+//! with the `endFeature` at position `i` of each of that Type's direct supertypes. Both sides of the
+//! pairing are owned facts: positions come from the canonical owned end collection
+//! ([`crate::lower::storage::SemanticModelStorage::owned_end_features`], where a bare connector end
+//! occupies its position even though it mints no declaration), and a supertype's `endFeature` is
+//! derived here, once, over whatever direct specialization edges the caller has settled.
+//!
+//! The same derivation serves the published `TypeIndex` and the resolver phases that synthesize the
+//! implied redefinitions, so the endFeature a pairing reads and the endFeature a query reports can
+//! never be computed two different ways.
+
+use std::collections::BTreeSet;
+
+use crate::lower::facts::OwnedEndFeature;
+use crate::lower::facts::OwnedEndRecord;
+use crate::model::DeclarationId;
+use crate::model::ReferenceKind;
+use crate::resolve::results::ImpliedRelationship;
+use crate::resolve::results::ResolutionError;
+
+/// The owned ends of `owner`, from an owned end collection sorted by owner.
+pub(crate) fn owned_ends_of(owned: &[OwnedEndRecord], owner: DeclarationId) -> &[OwnedEndRecord] {
+    let start = owned.partition_point(|record| record.owner < owner);
+    let end = owned.partition_point(|record| record.owner <= owner);
+    &owned[start..end]
+}
+
+/// Derives every declaration's KerML `Type::endFeature`, indexed by declaration.
+///
+/// A row is the declaration's owned ends in authored order, then, for each direct supertype in
+/// the order `generals` yields them, that supertype's end features past the owned count: the owned
+/// ends redefine the supertype's ends at the same positions, so only the rest are inherited. An
+/// end inherited along two paths is listed once. A supertype still being derived is on a
+/// specialization cycle with the declaration and contributes nothing, so the derivation is one
+/// deterministic pass rather than a fixed point.
+pub(crate) fn derive_end_features<F, I>(
+    count: usize,
+    owned: &[OwnedEndRecord],
+    generals: F,
+) -> Result<Vec<Vec<OwnedEndFeature>>, ResolutionError>
+where
+    F: Fn(DeclarationId) -> I,
+    I: DoubleEndedIterator<Item = DeclarationId>,
+{
+    const UNVISITED: u8 = 0;
+    const IN_PROGRESS: u8 = 1;
+    const DONE: u8 = 2;
+    let mut state = vec![UNVISITED; count];
+    let mut ends: Vec<Vec<OwnedEndFeature>> = vec![Vec::new(); count];
+    let mut stack = Vec::new();
+    for root in 0..count {
+        if state[root] != UNVISITED {
+            continue;
+        }
+        stack.push((root, false));
+        while let Some((node, expanded)) = stack.pop() {
+            let declaration =
+                DeclarationId::from_index(node).map_err(|_| ResolutionError::Capacity)?;
+            if !expanded {
+                if state[node] != UNVISITED {
+                    continue;
+                }
+                state[node] = IN_PROGRESS;
+                stack.push((node, true));
+                for general in generals(declaration).rev() {
+                    if state.get(general.index()) == Some(&UNVISITED) {
+                        stack.push((general.index(), false));
+                    }
+                }
+                continue;
+            }
+            let mut row = owned_ends_of(owned, declaration)
+                .iter()
+                .map(|record| record.end)
+                .collect::<Vec<_>>();
+            let owned_count = row.len();
+            for general in generals(declaration) {
+                if state.get(general.index()) != Some(&DONE) {
+                    continue;
+                }
+                let inherited = ends
+                    .get(general.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                for end in inherited.iter().skip(owned_count) {
+                    if !row.contains(end) {
+                        row.push(*end);
+                    }
+                }
+            }
+            ends[node] = row;
+            state[node] = DONE;
+        }
+    }
+    Ok(ends)
+}
+
+/// One `checkFeatureEndRedefinition` obligation: the owned end at `position` of `owner` must
+/// redefine `target`, the end at the same position of `general`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct PositionalEndObligation {
+    pub(crate) owner: DeclarationId,
+    pub(crate) position: usize,
+    pub(crate) general: DeclarationId,
+    pub(crate) source: OwnedEndFeature,
+    pub(crate) target: OwnedEndFeature,
+}
+
+/// Every positional end obligation of `owner`, in position then supertype order.
+///
+/// `generals` yields `owner`'s direct supertypes; a Type that specializes itself pairs nothing,
+/// since an end never redefines itself. `end_features` reads a supertype's `endFeature` row.
+pub(crate) fn positional_end_obligations<G, E>(
+    owned: &[OwnedEndRecord],
+    owner: DeclarationId,
+    generals: G,
+    end_features: E,
+) -> Vec<PositionalEndObligation>
+where
+    G: Fn(DeclarationId) -> Vec<DeclarationId>,
+    E: Fn(DeclarationId) -> Vec<OwnedEndFeature>,
+{
+    let owner_generals = generals(owner);
+    let mut obligations = Vec::new();
+    for (position, record) in owned_ends_of(owned, owner).iter().enumerate() {
+        for general in owner_generals.iter().copied() {
+            if general == owner {
+                continue;
+            }
+            if let Some(target) = end_features(general).get(position).copied() {
+                if target != record.end {
+                    obligations.push(PositionalEndObligation {
+                        owner,
+                        position,
+                        general,
+                        source: record.end,
+                        target,
+                    });
+                }
+            }
+        }
+    }
+    obligations
+}
+
+/// Synthesizes the positional end Redefinitions implied by `checkFeatureEndRedefinition`.
+///
+/// `type_edges` are the settled direct specialization edges, `(specific, general)`: authored ones
+/// and every implied one known at the calling phase, including implied library supertypes such
+/// as `Links::BinaryLink`, whose `source`/`target` ends are thereby redefined. Matching the Pilot
+/// (`FeatureAdapter.addRedefinitions`), the pairing is implied whether or not the end also authors
+/// a redefinition; only a pairing an authored edge already states is omitted (`authored`, as
+/// `(source, target)`), so it keeps its authored provenance. A pairing with a bare end on either
+/// side has no declaration to relate and publishes nothing; the redefinition check answers it as
+/// unresolved.
+pub(crate) fn synthesize_positional_end_redefinitions(
+    count: usize,
+    owned: &[OwnedEndRecord],
+    type_edges: impl IntoIterator<Item = (DeclarationId, DeclarationId)>,
+    authored: &BTreeSet<(DeclarationId, DeclarationId)>,
+) -> Result<Vec<ImpliedRelationship>, ResolutionError> {
+    if owned.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut generals = vec![BTreeSet::new(); count];
+    for (specific, general) in type_edges {
+        generals
+            .get_mut(specific.index())
+            .ok_or(ResolutionError::InvalidStorage)?
+            .insert(general);
+    }
+    let generals = generals
+        .into_iter()
+        .map(|set| set.into_iter().collect::<Vec<_>>())
+        .collect::<Vec<_>>();
+    let generals_of = |declaration: DeclarationId| {
+        generals
+            .get(declaration.index())
+            .map(Vec::as_slice)
+            .unwrap_or_default()
+            .iter()
+            .copied()
+    };
+    let end_features = derive_end_features(count, owned, generals_of)?;
+    let mut owners = owned.iter().map(|record| record.owner).collect::<Vec<_>>();
+    owners.dedup();
+    let mut implied = Vec::new();
+    for owner in owners {
+        for obligation in positional_end_obligations(
+            owned,
+            owner,
+            |declaration| generals_of(declaration).collect(),
+            |general| {
+                end_features
+                    .get(general.index())
+                    .cloned()
+                    .unwrap_or_default()
+            },
+        ) {
+            let (OwnedEndFeature::Declared(source), OwnedEndFeature::Declared(target)) =
+                (obligation.source, obligation.target)
+            else {
+                continue;
+            };
+            if !authored.contains(&(source, target)) {
+                implied.push(ImpliedRelationship {
+                    kind: ReferenceKind::Redefinition,
+                    source,
+                    target,
+                });
+            }
+        }
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(implied)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::model::AuthoredReferenceId;
+
+    fn id(index: usize) -> DeclarationId {
+        DeclarationId::from_index(index).unwrap()
+    }
+
+    fn declared(owner: usize, end: usize) -> OwnedEndRecord {
+        OwnedEndRecord {
+            owner: id(owner),
+            end: OwnedEndFeature::Declared(id(end)),
+        }
+    }
+
+    fn pairs(implied: &[ImpliedRelationship]) -> Vec<(usize, usize)> {
+        implied
+            .iter()
+            .map(|relationship| {
+                assert_eq!(relationship.kind, ReferenceKind::Redefinition);
+                (relationship.source.index(), relationship.target.index())
+            })
+            .collect()
+    }
+
+    #[test]
+    fn a_bare_end_occupies_its_position() {
+        // General 0 owns ends 1 and 2; specific 3 owns a bare end, then declared end 4.
+        let owned = [
+            declared(0, 1),
+            declared(0, 2),
+            OwnedEndRecord {
+                owner: id(3),
+                end: OwnedEndFeature::Bare(AuthoredReferenceId::from_index(0).unwrap()),
+            },
+            declared(3, 4),
+        ];
+        let implied =
+            synthesize_positional_end_redefinitions(5, &owned, [(id(3), id(0))], &BTreeSet::new())
+                .unwrap();
+        assert_eq!(pairs(&implied), [(4, 2)]);
+    }
+
+    #[test]
+    fn a_position_pairs_with_an_inherited_end_of_the_general() {
+        // 0 owns ends 1, 2; 3 specializes 0 and owns end 4; 5 specializes 3 and owns ends 6, 7.
+        let owned = [
+            declared(0, 1),
+            declared(0, 2),
+            declared(3, 4),
+            declared(5, 6),
+            declared(5, 7),
+        ];
+        let implied = synthesize_positional_end_redefinitions(
+            8,
+            &owned,
+            [(id(3), id(0)), (id(5), id(3))],
+            &BTreeSet::new(),
+        )
+        .unwrap();
+        assert_eq!(pairs(&implied), [(4, 1), (6, 4), (7, 2)]);
+    }
+
+    #[test]
+    fn an_authored_pairing_is_not_restated_but_other_authored_targets_do_not_suppress() {
+        // 0 owns ends 1, 2; 3 specializes 0 and owns ends 4, 5. End 4 authors `:>> 1`, end 5
+        // authors `:>> 1` too: only 4's pairing is already stated.
+        let owned = [
+            declared(0, 1),
+            declared(0, 2),
+            declared(3, 4),
+            declared(3, 5),
+        ];
+        let authored = BTreeSet::from([(id(4), id(1)), (id(5), id(1))]);
+        let implied =
+            synthesize_positional_end_redefinitions(6, &owned, [(id(3), id(0))], &authored)
+                .unwrap();
+        assert_eq!(pairs(&implied), [(5, 2)]);
+    }
+
+    #[test]
+    fn a_specialization_cycle_terminates_with_the_owned_ends() {
+        let owned = [declared(0, 1), declared(2, 3)];
+        let ends = derive_end_features(4, &owned, |declaration| {
+            match declaration.index() {
+                0 => vec![id(2)],
+                2 => vec![id(0)],
+                _ => vec![],
+            }
+            .into_iter()
+        })
+        .unwrap();
+        assert_eq!(ends[0], [OwnedEndFeature::Declared(id(1))]);
+        assert_eq!(ends[2], [OwnedEndFeature::Declared(id(3))]);
+    }
+}

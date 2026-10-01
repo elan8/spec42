@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Positional end redefinitions follow KerML `checkFeatureEndRedefinition`.** An owned end now
+  redefines the end at its position in each direct supertype's full `endFeature` list (including
+  ends the supertype inherits and the ends of implied library supertypes such as
+  `Links::BinaryLink::source`/`target` or `Connections::BinaryConnection::source`/`target`), a
+  bare connector end occupies its position, and the pairing is implied alongside an authored
+  redefinition. The check is evaluated; an obligation involving a bare connector end is reported
+  unresolved.
+
 - **Library-anchored implied redefinitions.** A `for` loop variable now redefines
   `Actions::ForLoopAction::var`, a feature-chain expression's source target redefines
   `ControlFunctions::'.'::source::target`, and an `entry`/`do`/`exit` action redefines

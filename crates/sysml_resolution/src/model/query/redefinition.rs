@@ -10,12 +10,14 @@
 
 use std::collections::BTreeSet;
 
+use crate::lower::facts::OwnedEndFeature;
 use crate::model::resolver::SemanticModel;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::redefinition_query::RedefinitionCheckKind;
 use crate::redefinition_query::RedefinitionCheckOutcome;
 use crate::redefinition_query::RedefinitionCheckPrerequisite;
+use crate::resolve::end_features::positional_end_obligations;
 use crate::resolve::implied::redefinition_check_rule;
 use crate::resolve::implied::LibrarySpecializationAnchor;
 use crate::resolve::results::FeatureChainExpressionSpecializationStatus;
@@ -78,9 +80,7 @@ impl<D> SemanticModel<D> {
             RedefinitionCheckKind::FeatureChainExpressionSourceTarget => {
                 self.feature_chain_source_target_check()
             }
-            RedefinitionCheckKind::FeatureEnd => RedefinitionCheckOutcome::Unsupported {
-                prerequisite: RedefinitionCheckPrerequisite::EndFeaturePositionAndInheritedEnds,
-            },
+            RedefinitionCheckKind::FeatureEnd => self.feature_end_check(),
             RedefinitionCheckKind::FeatureFlowFeature => RedefinitionCheckOutcome::Unsupported {
                 prerequisite: RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors,
             },
@@ -187,6 +187,52 @@ impl<D> SemanticModel<D> {
             }
             outcome => outcome,
         }
+    }
+
+    /// KerML `checkFeatureEndRedefinition`: each owned end redefines the `endFeature` at its
+    /// position of every direct supertype of its owning Type.
+    ///
+    /// Positions come from the canonical owned end collection and each supertype's `endFeature`
+    /// from the published `TypeIndex`, through the same pairing the synthesis uses. A bare
+    /// connector end mints no Feature, so an obligation with a bare end on either side has no
+    /// declaration whose redefinitions could be read and is unresolved, as is every end of a Type
+    /// whose specializations did not all settle or whose body was recovered.
+    fn feature_end_check(&self) -> RedefinitionCheckOutcome {
+        let owned = &self.storage.owned_end_features;
+        let mut owners = owned.iter().map(|record| record.owner).collect::<Vec<_>>();
+        owners.dedup();
+        let mut tally = CheckTally::default();
+        for owner in owners {
+            if self.specialization_hierarchy_is_unsettled(owner)
+                || self.contains_recovery(owner).unwrap_or(true)
+            {
+                tally.require(None);
+                continue;
+            }
+            for obligation in positional_end_obligations(
+                owned,
+                owner,
+                |declaration| {
+                    let mut generals = self
+                        .types
+                        .supertypes(declaration)
+                        .iter()
+                        .map(|(general, _)| *general)
+                        .collect::<Vec<_>>();
+                    generals.dedup();
+                    generals
+                },
+                |general| self.types.end_features(general).collect(),
+            ) {
+                tally.require(match (obligation.source, obligation.target) {
+                    (OwnedEndFeature::Declared(source), OwnedEndFeature::Declared(target)) => {
+                        Some(self.redefines(source, target))
+                    }
+                    _ => None,
+                });
+            }
+        }
+        tally.outcome()
     }
 
     /// KerML `checkFeatureChainExpressionSourceTargetRedefinition`: the source-target feature of

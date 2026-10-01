@@ -72,21 +72,22 @@ impl ScopeBits {
 /// makes one tagged closure answer both readings: a path through a `Subsetting` edge stops being
 /// a subclassification path at that edge and never regains it.
 pub(crate) fn edge_scopes(kind: ReferenceKind) -> Option<u8> {
-    match kind {
+    if !kind.is_specialization() {
+        return None;
+    }
+    Some(match kind {
         ReferenceKind::Subclassification => {
-            Some(ScopeBits::AnySpecialization.bit() | ScopeBits::Subclassification.bit())
+            ScopeBits::AnySpecialization.bit() | ScopeBits::Subclassification.bit()
         }
-        ReferenceKind::Redefinition => Some(
+        ReferenceKind::Redefinition => {
             ScopeBits::AnySpecialization.bit()
                 | ScopeBits::FeatureSpecialization.bit()
-                | ScopeBits::Redefinition.bit(),
-        ),
-        ReferenceKind::Subsetting | ReferenceKind::References | ReferenceKind::Crosses => {
-            Some(ScopeBits::AnySpecialization.bit() | ScopeBits::FeatureSpecialization.bit())
+                | ScopeBits::Redefinition.bit()
         }
-        ReferenceKind::FeatureTyping => Some(ScopeBits::AnySpecialization.bit()),
-        _ => None,
-    }
+        ReferenceKind::FeatureTyping => ScopeBits::AnySpecialization.bit(),
+        // Subsetting, ReferenceSubsetting and CrossSubsetting.
+        _ => ScopeBits::AnySpecialization.bit() | ScopeBits::FeatureSpecialization.bit(),
+    })
 }
 
 /// Whether a fact was authored or synthesized by the resolver.
@@ -360,14 +361,10 @@ pub(crate) struct TypeIndex {
     pub(crate) effective_ends: Box<[u32]>,
     /// KerML `Type::endFeature` per declaration, each entry keyed by its position.
     ///
-    /// The owned ends come first, in authored order, from the canonical
-    /// [`SemanticModelStorage::owned_end_features`]. Each owned end at position `i` redefines the
-    /// end at position `i` of every direct supertype (`checkFeatureEndRedefinition`, synthesized
-    /// by `synthesize_positional_end_redefinitions`), so a direct supertype contributes only its
-    /// end features past the owned count; those are inherited unchanged. Direct supertypes are
-    /// visited in identity order and an end inherited along two paths is listed once. A supertype
-    /// on a specialization cycle with the declaration contributes nothing, so the derivation is a
-    /// single deterministic pass rather than a fixed point.
+    /// Derived by [`crate::resolve::end_features::derive_end_features`] over the published direct
+    /// supertypes, visited in identity order: the owned ends in authored order, then each direct
+    /// supertype's ends past the owned count (the owned ends redefine those at their positions,
+    /// `checkFeatureEndRedefinition`).
     pub(crate) end_features: Rows<(u32, OwnedEndFeature)>,
     /// The resolved `Links::BinaryLink` anchor that `validateAssociationBinarySpecialization` and
     /// `validateConnectorBinarySpecialization` test conformance against.
@@ -957,58 +954,17 @@ fn derive_end_features(
     storage: &SemanticModelStorage,
     supertypes: &Rows<(DeclarationId, u8)>,
 ) -> Result<Rows<(u32, OwnedEndFeature)>, ResolutionError> {
-    const UNVISITED: u8 = 0;
-    const IN_PROGRESS: u8 = 1;
-    const DONE: u8 = 2;
     let count = storage.declarations.len();
-    let mut state = vec![UNVISITED; count];
-    let mut ends: Vec<Vec<OwnedEndFeature>> = vec![Vec::new(); count];
-    let mut stack = Vec::new();
-    for root in 0..count {
-        if state[root] != UNVISITED {
-            continue;
-        }
-        stack.push((root, false));
-        while let Some((node, expanded)) = stack.pop() {
-            let declaration =
-                DeclarationId::from_index(node).map_err(|_| ResolutionError::Capacity)?;
-            if !expanded {
-                if state[node] != UNVISITED {
-                    continue;
-                }
-                state[node] = IN_PROGRESS;
-                stack.push((node, true));
-                for (general, _) in supertypes.row(declaration).iter().rev() {
-                    if state.get(general.index()) == Some(&UNVISITED) {
-                        stack.push((general.index(), false));
-                    }
-                }
-                continue;
-            }
-            let mut row = storage
-                .owned_end_features(declaration)
+    let ends = crate::resolve::end_features::derive_end_features(
+        count,
+        &storage.owned_end_features,
+        |declaration| {
+            supertypes
+                .row(declaration)
                 .iter()
-                .map(|record| record.end)
-                .collect::<Vec<_>>();
-            let owned = row.len();
-            for (general, _) in supertypes.row(declaration) {
-                // A general still in progress is on a cycle through this declaration.
-                if state.get(general.index()) != Some(&DONE) {
-                    continue;
-                }
-                let inherited = ends
-                    .get(general.index())
-                    .ok_or(ResolutionError::InvalidStorage)?;
-                for end in inherited.iter().skip(owned) {
-                    if !row.contains(end) {
-                        row.push(*end);
-                    }
-                }
-            }
-            ends[node] = row;
-            state[node] = DONE;
-        }
-    }
+                .map(|(general, _)| *general)
+        },
+    )?;
     let mut pairs = Vec::new();
     for (index, row) in ends.into_iter().enumerate() {
         let declaration =

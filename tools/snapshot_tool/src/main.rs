@@ -1264,9 +1264,6 @@ fn parse_redefinition_check_prerequisite(
     fixture: &str,
 ) -> Result<RedefinitionCheckPrerequisite, String> {
     match value {
-        "end_feature_position_and_inherited_ends" => {
-            Ok(RedefinitionCheckPrerequisite::EndFeaturePositionAndInheritedEnds)
-        }
         "flow_end_ordinal_and_library_anchors" => {
             Ok(RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors)
         }
@@ -8333,7 +8330,7 @@ mod tests {
 
     #[test]
     fn parses_manifest_scoped_redefinition_check_expectations_strictly() {
-        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (redefinition-check\n    (rule_id \"kerml-1.0:8.3.3.3.4:checkFeatureEndRedefinition\")\n    (outcome unsupported)\n    (prerequisite end_feature_position_and_inherited_ends))\n  (redefinition-check\n    (rule_id \"sysml-2.0:8.3.26.6:checkRenderingUsageRedefinition\")\n    (outcome unsupported)\n    (prerequisite view_rendering_membership)))\n~~~\n";
+        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (redefinition-check\n    (rule_id \"kerml-1.0:8.3.3.3.4:checkFeatureParameterRedefinition\")\n    (outcome unsupported)\n    (prerequisite parameter_direction_and_inherited_position))\n  (redefinition-check\n    (rule_id \"sysml-2.0:8.3.26.6:checkRenderingUsageRedefinition\")\n    (outcome unsupported)\n    (prerequisite view_rendering_membership)))\n~~~\n";
         let parsed = parse_expected_semantics(fixture, "fixture.md")
             .unwrap()
             .expect("semantic expectations");
@@ -8341,9 +8338,9 @@ mod tests {
             parsed.redefinition_checks,
             vec![
                 RedefinitionCheckExpectation {
-                    rule: RedefinitionCheckKind::FeatureEnd,
+                    rule: RedefinitionCheckKind::FeatureParameter,
                     outcome: RedefinitionCheckExpectationOutcome::Unsupported(
-                        RedefinitionCheckPrerequisite::EndFeaturePositionAndInheritedEnds,
+                        RedefinitionCheckPrerequisite::ParameterDirectionAndInheritedPosition,
                     ),
                 },
                 RedefinitionCheckExpectation {

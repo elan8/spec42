@@ -2,7 +2,6 @@
 
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::Declaration;
-use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::PortionKind;
 use crate::lower::facts::TransitionFeatureRole;
@@ -707,82 +706,6 @@ pub(crate) fn synthesize_implied_redefinitions<R: ResolutionReferenceFact>(
     Ok(implied.into_boxed_slice())
 }
 
-/// Synthesizes the positional Redefinitions required for owned end Features.
-///
-/// KerML `checkFeatureEndRedefinition` pairs each owned end with the end at the same position in
-/// every direct supertype of its owning Type. `Type::supertypes` is formed from every owned
-/// Specialization, so a FeatureTyping is just as relevant here as a Subclassification. End
-/// identity and order come from lowering facts and declaration order; names are presentation and
-/// are deliberately not consulted. An authored Redefinition remains authoritative.
-pub(crate) fn synthesize_positional_end_redefinitions<R: ResolutionReferenceFact>(
-    declarations: &[Declaration],
-    declaration_facts: Option<&[DeclarationFacts]>,
-    references: &[R],
-    outcomes: &[ResolutionStatus],
-) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
-    let Some(declaration_facts) = declaration_facts else {
-        return Ok(Box::default());
-    };
-    if declaration_facts.len() != declarations.len() || outcomes.len() != references.len() {
-        return Err(ResolutionError::InvalidStorage);
-    }
-
-    let mut ends_by_owner = vec![Vec::new(); declarations.len()];
-    for (index, (declaration, facts)) in declarations.iter().zip(declaration_facts).enumerate() {
-        if !(facts.modifiers.end || facts.positional_end.is_some()) {
-            continue;
-        }
-        let Some(owner) = declaration.owner else {
-            continue;
-        };
-        let end = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-        ends_by_owner
-            .get_mut(owner.index())
-            .ok_or(ResolutionError::InvalidStorage)?
-            .push(end);
-    }
-
-    let explicitly_redefines = references
-        .iter()
-        .filter(|reference| reference.kind() == ReferenceKind::Redefinition)
-        .map(ResolutionReferenceFact::source)
-        .collect::<std::collections::BTreeSet<_>>();
-    let mut implied = Vec::new();
-    for (index, reference) in references.iter().enumerate() {
-        if !matches!(
-            reference.kind(),
-            ReferenceKind::Subclassification
-                | ReferenceKind::FeatureTyping
-                | ReferenceKind::Subsetting
-                | ReferenceKind::Redefinition
-        ) {
-            continue;
-        }
-        let ResolutionStatus::Resolved(general) = outcomes[index] else {
-            continue;
-        };
-        let specific = reference.source();
-        let specific_ends = ends_by_owner
-            .get(specific.index())
-            .ok_or(ResolutionError::InvalidStorage)?;
-        let general_ends = ends_by_owner
-            .get(general.index())
-            .ok_or(ResolutionError::InvalidStorage)?;
-        for (&source, &target) in specific_ends.iter().zip(general_ends) {
-            if !explicitly_redefines.contains(&source) && source != target {
-                implied.push(ImpliedRelationship {
-                    kind: ReferenceKind::Redefinition,
-                    source,
-                    target,
-                });
-            }
-        }
-    }
-    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
-    implied.dedup();
-    Ok(implied.into_boxed_slice())
-}
-
 /// Detects `alias` targets that eventually cycle back to their own starting alias declaration
 /// (`alias A for B; alias B for A;`). Alias bindings form a functional graph -- each alias
 /// declaration has at most one outgoing edge, its own resolved `AliasBinding` target -- so a walk
@@ -943,6 +866,17 @@ pub(crate) fn synthesize_implied_relationships(
         synthesize_generated_library_redefinitions(storage, &storage.references, anchors)?
             .into_vec(),
     );
+    // `checkFeatureEndRedefinition` pairs owned ends with the ends of every direct supertype,
+    // including the implied library supertypes settled just above (`Links::BinaryLink` and its
+    // SysML specializations), so it runs only once they are known.
+    let positional_ends = crate::resolve::positional_end_redefinitions(
+        storage.declarations.len(),
+        &storage.owned_end_features,
+        &storage.references,
+        &resolution.outcomes,
+        &implied,
+    )?;
+    implied.extend(positional_ends);
     implied.extend(
         synthesize_feature_membership_type_featurings(storage, &storage.references)?.into_vec(),
     );

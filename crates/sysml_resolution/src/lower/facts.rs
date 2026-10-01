@@ -224,7 +224,15 @@ pub(crate) struct DeclarationFacts {
     pub(crate) modifiers: DeclarationModifiers,
     pub(crate) portion_kind: Option<PortionKind>,
     pub(crate) direction: Option<ParameterDirection>,
+    /// The Feature's own multiplicity (`[m]` after its declared name or typing).
     pub(crate) multiplicity: Option<MultiplicityRecord>,
+    /// The cross multiplicity a connector end authors (KerML/SysML `ConnectorEnd`:
+    /// `OwnedCrossMultiplicityMember? (declaredName 'references')? OwnedReferenceSubsetting`),
+    /// e.g. the `[0..*]` of `from [0..*] x references y`. It constrains the end's cross feature
+    /// (how many values the end has for fixed values of the other ends), not the end Feature, whose
+    /// own multiplicity is never authored in this production, so it is kept apart from
+    /// `multiplicity`.
+    pub(crate) cross_multiplicity: Option<MultiplicityRecord>,
     /// Authored negation for a declaration whose exact metaclass owns an `isNegated` fact.
     ///
     /// Satisfy, assert, and invariant spell the polarity at different grammar positions, but

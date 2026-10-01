@@ -1591,11 +1591,15 @@ impl<D> SemanticModel<D> {
         for id in declared.iter().copied() {
             let kind = self.kind_of(id).ok_or(ResolutionError::InvalidStorage)?;
 
-            // A multiplicity whose literal bounds cross admits nothing at all.
-            if let Some(multiplicity) = self
+            // A multiplicity whose literal bounds cross admits nothing at all, whether it is the
+            // feature's own or a connector end's cross multiplicity.
+            let facts = self
                 .storage
                 .declaration_facts(id)
-                .and_then(|facts| facts.multiplicity.as_ref())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            for multiplicity in [&facts.multiplicity, &facts.cross_multiplicity]
+                .into_iter()
+                .flatten()
             {
                 if let (MultiplicityBound::Literal(lower), MultiplicityBound::Literal(upper)) =
                     (multiplicity.lower, multiplicity.upper)

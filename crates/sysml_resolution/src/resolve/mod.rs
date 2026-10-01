@@ -1,6 +1,7 @@
 //! Phase 3: name resolution, run to convergence under an explicit bound.
 
 pub(crate) mod effective_types;
+pub(crate) mod end_features;
 pub(crate) mod implied;
 pub(crate) mod library_seed;
 pub(crate) mod names;
@@ -11,6 +12,7 @@ use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::MembershipRecord;
+use crate::lower::facts::OwnedEndRecord;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::intern::SymbolPathArena;
 use crate::model::AuthoredReferenceId;
@@ -22,7 +24,6 @@ use crate::requirement_query::RequirementDerivedFactCollection;
 use crate::resolve::implied::detect_cyclic_alias_bindings;
 use crate::resolve::implied::synthesize_implied_alias_bindings;
 use crate::resolve::implied::synthesize_implied_redefinitions;
-use crate::resolve::implied::synthesize_positional_end_redefinitions;
 use crate::resolve::implied::LibrarySpecializationAnchorFacts;
 use crate::resolve::names::build_direct_name_index;
 use crate::resolve::names::build_effective_import_indexes;
@@ -87,6 +88,53 @@ pub(crate) struct ResolutionStartingState<'a> {
     /// an explicit `import <Name>::*` over the workspace package resolves to both and is reported
     /// ambiguous. Sorted ascending. See [`build_direct_name_index`].
     pub shadowed_library_roots: &'a [DeclarationId],
+    /// The canonical owned end collection, sorted by owner, whose positions the provisional
+    /// positional end redefinitions pair.
+    pub owned_end_features: &'a [OwnedEndRecord],
+}
+
+/// The positional end redefinitions implied over `references` and `implied` type edges.
+///
+/// Shared by the solver's provisional passes and phase 4's settled synthesis so both pair ends
+/// from the same derivation; see [`end_features::synthesize_positional_end_redefinitions`].
+pub(crate) fn positional_end_redefinitions<R: ResolutionReferenceFact>(
+    count: usize,
+    owned_end_features: &[OwnedEndRecord],
+    references: &[R],
+    outcomes: &[ResolutionStatus],
+    implied: &[ImpliedRelationship],
+) -> Result<Vec<ImpliedRelationship>, ResolutionError> {
+    if owned_end_features.is_empty() {
+        return Ok(Vec::new());
+    }
+    if outcomes.len() != references.len() {
+        return Err(ResolutionError::InvalidStorage);
+    }
+    let mut type_edges = Vec::new();
+    let mut authored = std::collections::BTreeSet::new();
+    for (reference, outcome) in references.iter().zip(outcomes) {
+        let ResolutionStatus::Resolved(target) = *outcome else {
+            continue;
+        };
+        if reference.kind().is_specialization() {
+            type_edges.push((reference.source(), target));
+        }
+        if reference.kind() == ReferenceKind::Redefinition {
+            authored.insert((reference.source(), target));
+        }
+    }
+    type_edges.extend(
+        implied
+            .iter()
+            .filter(|relationship| relationship.kind.is_specialization())
+            .map(|relationship| (relationship.source, relationship.target)),
+    );
+    end_features::synthesize_positional_end_redefinitions(
+        count,
+        owned_end_features,
+        type_edges,
+        &authored,
+    )
 }
 
 pub(crate) fn resolve_dense<R: ResolutionReferenceFact>(
@@ -134,6 +182,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         provisional_relationships,
         settled_outcomes: seed,
         shadowed_library_roots,
+        owned_end_features,
     } = starting_state;
     let membership_records = memberships;
     let memberships = MembershipIndex::build(declarations, memberships)?;
@@ -783,15 +832,14 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                 )?
                 .into_vec(),
             );
-            pass_provisional_relationships.extend(
-                synthesize_positional_end_redefinitions(
-                    declarations,
-                    declaration_facts,
-                    references,
-                    &outcomes,
-                )?
-                .into_vec(),
-            );
+            let positional_ends = positional_end_redefinitions(
+                declarations.len(),
+                owned_end_features,
+                references,
+                &outcomes,
+                &pass_provisional_relationships,
+            )?;
+            pass_provisional_relationships.extend(positional_ends);
             pass_provisional_relationships.sort_by_key(|relationship| {
                 (
                     relationship.kind,
@@ -1129,15 +1177,10 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             &outcomes,
         )?
         .into_vec();
-        implied.extend(
-            synthesize_positional_end_redefinitions(
-                declarations,
-                declaration_facts,
-                references,
-                &outcomes,
-            )?
-            .into_vec(),
-        );
+        // Positional end redefinitions are not settled here: their pairing reads the owning
+        // Type's implied library supertypes, which phase 4 settles
+        // (`synthesize_implied_relationships`). The provisional pairing above only scoped name
+        // resolution.
         let cyclic_alias_sources =
             detect_cyclic_alias_bindings(declarations, references, &outcomes)?;
         implied.extend(

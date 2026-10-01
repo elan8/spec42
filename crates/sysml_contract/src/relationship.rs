@@ -174,7 +174,6 @@ pub enum SpecializationCheckOutcome {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RedefinitionCheckPrerequisite {
     RuleNotPublished,
-    EndFeaturePositionAndInheritedEnds,
     FlowEndOrdinalAndLibraryAnchors,
     CrossFeatureAndSubsettingEndpoints,
     ParameterDirectionAndInheritedPosition,

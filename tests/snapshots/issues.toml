@@ -19,12 +19,6 @@ owner = "spec42-semantic"
 summary = "Multiplicity remains a fact attached to its owning declaration rather than an independently addressable canonical Multiplicity element required by deriveTypeMultiplicity."
 
 [[issue]]
-id = "lowering-gap-redefinition-end-feature-position"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "The positional end collections now exist (owned ends in SemanticModelStorage::owned_end_features, inherited endFeature in TypeIndex::end_features), but synthesize_positional_end_redefinitions still indexes declared ends only (a bare connector end shifts later positions), pairs with the general's owned rather than all end features, and never sees implied library supertypes (e.g. Links::BinaryLink::source/target), so checkFeatureEndRedefinition over the published redefinitions would report those synthesis gaps as model violations."
-
-[[issue]]
 id = "lowering-gap-redefinition-flow-end-library-anchors"
 kind = "lowering_gap"
 owner = "spec42-semantic"

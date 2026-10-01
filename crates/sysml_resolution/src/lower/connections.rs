@@ -625,7 +625,7 @@ impl SemanticModelBuilder {
                     name,
                     node.span,
                     DeclarationFacts {
-                        multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                        cross_multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                         positional_end: Some(positional_end),
                         ..DeclarationFacts::none()
                     },

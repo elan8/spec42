@@ -1350,6 +1350,24 @@ pub(crate) enum ReferenceKind {
     FlowPayloadType,
 }
 
+impl ReferenceKind {
+    /// Whether the kind is a KerML `Specialization` subkind, i.e. one of the edges that form
+    /// `Type::ownedSpecialization` and so `Type::supertypes`: Subclassification, FeatureTyping,
+    /// Subsetting, Redefinition, ReferenceSubsetting (`References`) and CrossSubsetting
+    /// (`Crosses`). The specialization closure's scope table refines this set; it never widens it.
+    pub(crate) const fn is_specialization(self) -> bool {
+        matches!(
+            self,
+            Self::Subclassification
+                | Self::FeatureTyping
+                | Self::Subsetting
+                | Self::Redefinition
+                | Self::References
+                | Self::Crosses
+        )
+    }
+}
+
 /// The computed or explicit outcome of evaluating one supported constraint/calc expression
 /// (slice 2 of the constraint/calc expression fact family; slice 1, `4ca42166`, only resolved
 /// operand references and never evaluated anything). Only expressions within slice 1's supported

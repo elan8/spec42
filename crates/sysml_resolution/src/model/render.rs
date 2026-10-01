@@ -617,6 +617,17 @@ pub(crate) fn write_connections(
                 write_multiplicity_bound(multiplicity.upper, output)?;
                 output.write_str("))")?;
             }
+            if let Some(multiplicity) = model
+                .storage
+                .declaration_facts(child)
+                .and_then(|facts| facts.cross_multiplicity.as_ref())
+            {
+                output.write_str(" (cross-multiplicity (lower ")?;
+                write_multiplicity_bound(multiplicity.lower, output)?;
+                output.write_str(") (upper ")?;
+                write_multiplicity_bound(multiplicity.upper, output)?;
+                output.write_str("))")?;
+            }
             Ok(())
         }
 
@@ -1123,6 +1134,7 @@ pub(crate) fn write_declaration_facts(
         && facts.portion_kind.is_none()
         && facts.direction.is_none()
         && facts.multiplicity.is_none()
+        && facts.cross_multiplicity.is_none()
         && facts.succession_end_multiplicities.is_none()
         && facts.positional_end.is_none()
         && facts.cross_feature_projection.is_none()
@@ -1160,6 +1172,13 @@ pub(crate) fn write_declaration_facts(
     }
     if let Some(multiplicity) = &facts.multiplicity {
         output.write_str(" (multiplicity (lower ")?;
+        write_multiplicity_bound(multiplicity.lower, output)?;
+        output.write_str(") (upper ")?;
+        write_multiplicity_bound(multiplicity.upper, output)?;
+        output.write_str("))")?;
+    }
+    if let Some(multiplicity) = &facts.cross_multiplicity {
+        output.write_str(" (cross-multiplicity (lower ")?;
         write_multiplicity_bound(multiplicity.lower, output)?;
         output.write_str(") (upper ")?;
         write_multiplicity_bound(multiplicity.upper, output)?;
