@@ -923,9 +923,14 @@ pub(crate) fn synthesize_implied_relationships(
             &authored_subsettings,
         )?,
     );
-    implied.extend(
-        synthesize_feature_membership_type_featurings(storage, &storage.references)?.into_vec(),
-    );
+    let membership_featurings =
+        synthesize_feature_membership_type_featurings(storage, &storage.references)?;
+    implied.extend(synthesize_feature_value_expression_type_featurings(
+        storage,
+        &resolution.outcomes,
+        &membership_featurings,
+    )?);
+    implied.extend(membership_featurings.into_vec());
     implied.extend(synthesize_feature_valuation_specializations(storage)?.into_vec());
     implied.extend(synthesize_library_role_redefinitions(
         storage,
@@ -2904,6 +2909,56 @@ pub(crate) fn synthesize_feature_membership_type_featurings(
             source: membership.member,
             target: owner,
         });
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(implied.into_boxed_slice())
+}
+
+/// Materializes KerML's `checkExpressionTypeFeaturing` semantic consequence (8.3.4.7.3).
+///
+/// An Expression owned by a FeatureValue has the featuring types of that FeatureValue's
+/// `featureWithValue`, as the Pilot's `ExpressionAdapter.addImplicitFeaturingTypesIfNecessary`
+/// adds them. The featureWithValue's featuring types are its settled authored TypeFeaturings and
+/// the FeatureMembership featurings published by
+/// [`synthesize_feature_membership_type_featurings`]; a featureWithValue with neither (for example
+/// a `var` Feature, whose `snapshots` featuring is not lowered) implies nothing rather than a
+/// guessed featuring type.
+pub(crate) fn synthesize_feature_value_expression_type_featurings(
+    storage: &SemanticModelStorage,
+    outcomes: &[ResolutionStatus],
+    membership_featurings: &[ImpliedRelationship],
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    let mut featuring = std::collections::BTreeMap::<DeclarationId, Vec<DeclarationId>>::new();
+    let mut authored_sources = std::collections::BTreeSet::new();
+    for (reference, outcome) in storage.references.iter().zip(outcomes.iter()) {
+        if reference.kind != ReferenceKind::TypeFeaturing {
+            continue;
+        }
+        authored_sources.insert(reference.source);
+        if let ResolutionStatus::Resolved(target) = *outcome {
+            featuring.entry(reference.source).or_default().push(target);
+        }
+    }
+    for relationship in membership_featurings {
+        featuring
+            .entry(relationship.source)
+            .or_default()
+            .push(relationship.target);
+    }
+    let mut implied = Vec::new();
+    for value in storage.feature_values.iter() {
+        if authored_sources.contains(&value.value) {
+            continue;
+        }
+        let Some(types) = featuring.get(&value.declaration) else {
+            continue;
+        };
+        implied.extend(types.iter().map(|target| ImpliedRelationship {
+            kind: ReferenceKind::TypeFeaturing,
+            source: value.value,
+            target: *target,
+        }));
     }
     implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
     implied.dedup();

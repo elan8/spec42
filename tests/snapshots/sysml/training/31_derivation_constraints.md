@@ -260,6 +260,7 @@ package 'Derivation Constraints' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle1")) (anonymous (kind assert-constraint) (ordinal 0))))) (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1::totalMass"))) (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle2::totalMass"))) (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle2"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle2")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle2"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle2")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle2")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
@@ -295,6 +296,9 @@ package 'Derivation Constraints' {
       (featured-by (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle1")))
     )
     (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle2::totalMass")))
+      (featured-by (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle2")))
+    )
+    (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle2")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints::vehicle2")))
     )
     (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (named (kind part) (name "vehicle2")) (named (kind attribute) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))

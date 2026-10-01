@@ -36,6 +36,7 @@ package NoCatalog {
   (relationships
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/unit_catalog_unavailable.md") (qualified-name "NoCatalog::Vehicle::mass"))) (target (node (document "memory://snapshot/unit_catalog_unavailable.md") (qualified-name "NoCatalog::Vehicle"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/unit_catalog_unavailable.md") (qualified-name "NoCatalog::Vehicle::mass"))) (target (node (document "memory://snapshot/unit_catalog_unavailable.md") (path (named (kind package) (name "NoCatalog")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/unit_catalog_unavailable.md") (path (named (kind package) (name "NoCatalog")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/unit_catalog_unavailable.md") (qualified-name "NoCatalog::Vehicle"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/unit_catalog_unavailable.md") (path (named (kind package) (name "NoCatalog")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/unit_catalog_unavailable.md") (path (named (kind package) (name "NoCatalog")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
@@ -50,6 +51,9 @@ package NoCatalog {
     (declaration (id (node (document "memory://snapshot/unit_catalog_unavailable.md") (qualified-name "NoCatalog::Vehicle::mass")))
       (featured-by (node (document "memory://snapshot/unit_catalog_unavailable.md") (qualified-name "NoCatalog::Vehicle")))
       (supertype (node (document "memory://snapshot/unit_catalog_unavailable.md") (path (named (kind package) (name "NoCatalog")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/unit_catalog_unavailable.md") (path (named (kind package) (name "NoCatalog")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/unit_catalog_unavailable.md") (qualified-name "NoCatalog::Vehicle")))
     )
     (declaration (id (node (document "memory://snapshot/unit_catalog_unavailable.md") (path (named (kind package) (name "NoCatalog")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/unit_catalog_unavailable.md") (path (named (kind package) (name "NoCatalog")) (named (kind part-def) (name "Vehicle")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)))))

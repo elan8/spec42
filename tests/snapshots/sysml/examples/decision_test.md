@@ -140,6 +140,7 @@ action def DecisionTest {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::test x"))) (target (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::x"))) (target (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::x"))) (target (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (named (kind attribute) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (named (kind attribute) (name "x")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (named (kind attribute) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (named (kind attribute) (name "x")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
@@ -212,6 +213,9 @@ action def DecisionTest {
     (declaration (id (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest::x")))
       (featured-by (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest")))
       (supertype (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (named (kind attribute) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (named (kind attribute) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/decision_test.md") (qualified-name "DecisionTest")))
     )
     (declaration (id (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (named (kind attribute) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/decision_test.md") (path (named (kind action-def) (name "DecisionTest")) (named (kind attribute) (name "x")) (anonymous (kind kerml-expression) (ordinal 0)))))

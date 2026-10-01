@@ -100,6 +100,7 @@ package MassRollup_1 {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing::mass"))) (target (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing::subcomponents"))) (target (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing::totalMass"))) (target (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/mass_rollup_1.md") (path (named (kind package) (name "MassRollup_1")) (named (kind class-def) (name "MassedThing")) (named (kind kerml-feature) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/mass_rollup_1.md") (path (named (kind package) (name "MassRollup_1")) (named (kind class-def) (name "MassedThing")) (named (kind kerml-feature) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/mass_rollup_1.md") (path (named (kind package) (name "MassRollup_1")) (named (kind class-def) (name "MassedThing")) (named (kind kerml-feature) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
@@ -123,6 +124,9 @@ package MassRollup_1 {
       (supertype (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing::totalMass")))
+      (featured-by (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing")))
+    )
+    (declaration (id (node (document "memory://snapshot/mass_rollup_1.md") (path (named (kind package) (name "MassRollup_1")) (named (kind class-def) (name "MassedThing")) (named (kind kerml-feature) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/mass_rollup_1.md") (qualified-name "MassRollup_1::MassedThing")))
     )
     (declaration (id (node (document "memory://snapshot/mass_rollup_1.md") (path (named (kind package) (name "MassRollup_1")) (named (kind class-def) (name "MassedThing")) (named (kind kerml-feature) (name "totalMass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))

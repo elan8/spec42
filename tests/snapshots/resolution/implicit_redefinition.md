@@ -68,6 +68,7 @@ package P {
     (relationship (kind redefinition) (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass"))) (target (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base::mass"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass"))) (target (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child::mass"))) (target (node (document "memory://snapshot/implicit_redefinition.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/implicit_redefinition.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/implicit_redefinition.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/implicit_redefinition.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
@@ -92,6 +93,9 @@ package P {
       (featured-by (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child")))
       (supertype (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base::mass")) (scopes any feature))
       (supertype (node (document "memory://snapshot/implicit_redefinition.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Child")))
     )
     (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/implicit_redefinition.md") (path (named (kind package) (name "P")) (named (kind part-def) (name "Child")) (named (kind attribute) (name "mass")) (anonymous (kind kerml-expression) (ordinal 0)))))

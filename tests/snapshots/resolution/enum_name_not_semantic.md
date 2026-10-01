@@ -76,6 +76,7 @@ package Demo {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode::approved"))) (target (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::StateCode"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host::value"))) (target (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host::value"))) (target (node (document "memory://snapshot/enum_name_not_semantic.md") (path (named (kind package) (name "Demo")) (named (kind part) (name "host")) (named (kind attribute) (name "value")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/enum_name_not_semantic.md") (path (named (kind package) (name "Demo")) (named (kind part) (name "host")) (named (kind attribute) (name "value")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/enum_name_not_semantic.md") (path (named (kind package) (name "Demo")) (named (kind part) (name "host")) (named (kind attribute) (name "value")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/enum_name_not_semantic.md") (path (named (kind package) (name "Demo")) (named (kind part) (name "host")) (named (kind attribute) (name "value")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
@@ -114,6 +115,9 @@ package Demo {
     (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host::value")))
       (featured-by (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host")))
       (supertype (node (document "memory://snapshot/enum_name_not_semantic.md") (path (named (kind package) (name "Demo")) (named (kind part) (name "host")) (named (kind attribute) (name "value")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (path (named (kind package) (name "Demo")) (named (kind part) (name "host")) (named (kind attribute) (name "value")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/enum_name_not_semantic.md") (qualified-name "Demo::host")))
     )
     (declaration (id (node (document "memory://snapshot/enum_name_not_semantic.md") (path (named (kind package) (name "Demo")) (named (kind part) (name "host")) (named (kind attribute) (name "value")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/enum_name_not_semantic.md") (path (named (kind package) (name "Demo")) (named (kind part) (name "host")) (named (kind attribute) (name "value")) (anonymous (kind kerml-expression) (ordinal 0)))))
