@@ -8,7 +8,7 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.3.4:validateFeatureChainingFeatureConformance
-blocked_by=semantic-feature-chaining-rules
+blocked_by=semantic-feature-chaining-featured-within
 type=file
 ~~~
 # SOURCE

@@ -498,6 +498,12 @@ semantic_diagnostic_codes! {
     /// KerML 8.3.2.4.2 `validateImportTopLevelVisibility`.
     TopLevelImportNotPrivate => "top_level_import_not_private",
         "An import owned by a root namespace must be private.";
+    /// KerML 8.3.3.3.4 `validateFeatureChainingFeatureNotOne`.
+    FeatureChainingSingleOperand => "feature_chaining_single_operand",
+        "A feature chain must chain at least two features.";
+    /// KerML 8.3.3.3.4 `validateFeatureChainingFeaturesNotSelf`.
+    FeatureChainingIncludesSelf => "feature_chaining_includes_self",
+        "A feature cannot be one of its own chaining features.";
     /// A type owns exactly one `unions`, `intersects` or `differences` operand.
     ///
     /// KerML requires zero or at least two: a union, intersection or difference of one type is

@@ -428,6 +428,20 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "feature_chaining_single_operand",
+        severity: "warning",
+        meaning: "A `chains` clause names exactly one chaining feature; a feature chain needs none or at least two (KerML validateFeatureChainingFeatureNotOne).",
+        typical_fix: "Chain at least two features with `.` (`chains a.b`), or subset or redefine the single feature instead.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "feature_chaining_includes_self",
+        severity: "warning",
+        meaning: "A feature's `chains` clause resolves one of its chaining features to the feature itself (KerML validateFeatureChainingFeaturesNotSelf).",
+        typical_fix: "Chain through other features; a feature cannot be part of its own chain.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "variable_feature_owner_not_occurrence",
         severity: "warning",
         meaning: "A KerML feature declared `var` (or `const`, which implies variable) has no owning type, or its owning type does not specialize Occurrences::Occurrence (KerML validateFeatureIsVariable).",

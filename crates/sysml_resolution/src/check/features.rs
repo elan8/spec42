@@ -214,7 +214,79 @@ impl<D> SemanticModel<D> {
 
             self.collect_individual_definitions(id, declaration.kind, facts, diagnostics)?;
         }
-        self.collect_initial_feature_values(document, diagnostics)
+        self.collect_initial_feature_values(document, diagnostics)?;
+        self.collect_feature_chaining_rules(document, diagnostics)
+    }
+
+    /// KerML 8.3.3.3.4 `validateFeatureChainingFeatureNotOne` and
+    /// `validateFeatureChainingFeaturesNotSelf`, over each authored `chains` reference.
+    ///
+    /// The chaining features of one `chains` clause are its `.`-separated hops: the parser's
+    /// typed separators set the reference's `dotted` fact, so a reference without it names
+    /// exactly one chaining feature, and a feature has exactly one chaining feature when that is
+    /// its only `chains` reference. Each hop's settled target is the canonical per-hop
+    /// member-access outcome; a hop that is not settled is not compared.
+    fn collect_feature_chaining_rules(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        use crate::model::AuthoredReferenceId;
+        use crate::model::ReferenceKind;
+        use crate::resolve::results::ResolutionStatus;
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            if reference.kind != ReferenceKind::FeatureChaining {
+                continue;
+            }
+            let source = self
+                .storage
+                .declaration(reference.source)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            if source.document != document {
+                continue;
+            }
+            // `ownedFeatureChaining` spans every `chains` clause of the feature, so exactly one
+            // chaining feature means one clause whose target has no `.` hop.
+            if !reference.flags.dotted
+                && self
+                    .storage
+                    .references
+                    .iter()
+                    .filter(|other| {
+                        other.source == reference.source
+                            && other.kind == ReferenceKind::FeatureChaining
+                    })
+                    .count()
+                    == 1
+            {
+                diagnostics.push(self.reference_diagnostic(
+                    reference,
+                    DiagnosticCode::FeatureChainingSingleOperand,
+                    DiagnosticSeverity::Warning,
+                    None,
+                )?);
+            }
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let includes_self = match self.resolution.member_access_paths.get(&id) {
+                Some(path) => path.iter().any(|hop| {
+                    matches!(hop, ResolutionStatus::Resolved(target) if *target == reference.source)
+                }),
+                None => matches!(
+                    self.resolution.outcome(id),
+                    Some(ResolutionStatus::Resolved(target)) if target == reference.source
+                ),
+            };
+            if includes_self {
+                diagnostics.push(self.reference_diagnostic(
+                    reference,
+                    DiagnosticCode::FeatureChainingIncludesSelf,
+                    DiagnosticSeverity::Warning,
+                    None,
+                )?);
+            }
+        }
+        Ok(())
     }
 
     /// Whether `declaration` is an `OccurrenceDefinition` with `isIndividual = true`.

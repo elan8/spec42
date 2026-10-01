@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   implied subsettings and redefinitions); `duplicate_role_member` now also reports a second
   objective of a case definition or usage (SysML `validateCase{Definition,Usage}OnlyOneObjective`).
 
+- **Feature chaining validations.** KerML 8.3.3.3.4 `validateFeatureChainingFeatureNotOne`
+  (`feature_chaining_single_operand`) and `validateFeatureChainingFeaturesNotSelf`
+  (`feature_chaining_includes_self`) are now checked.
+
 - **Case objectives redefine the objectives they specialize.** An `objective` is now published as
   an `objective-requirement` (a `RequirementUsage` under an `ObjectiveMembership`, membership role
   `objective`) and implicitly redefines the objective of every case definition or case usage its

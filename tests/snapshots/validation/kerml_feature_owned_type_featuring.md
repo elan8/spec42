@@ -36,6 +36,12 @@ package Model {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_owned_type_featuring.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "feature_chaining_single_operand")
+        (source "semantic")
+        (range (start 3 56) (end 3 60))
+      )
     )
   )
 )

@@ -439,10 +439,10 @@ owner = "spec42-semantic"
 summary = "StateUsage isParallel is now published as the `parallel` modifier, but the StateSubactionKind role and library-anchor facts that checkStateUsageExclusiveStateSpecialization and checkStateUsageSubstateSpecialization evaluate over are not jointly published (specialization_check prerequisite StateSubactionKindAndLibraryAnchor)"
 
 [[issue]]
-id = "semantic-feature-chaining-rules"
+id = "semantic-feature-chaining-featured-within"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
-summary = "a `chains` clause lowers and resolves as a featureChaining relationship, but no semantic rule counts chaining features, checks that each is featured within the previous, or rejects a self-chain; the canonical codes feature_chaining_single_operand, feature_chaining_not_featured_within_previous and feature_chaining_includes_self do not exist yet"
+summary = "feature_chaining_not_featured_within_previous does not exist: the member-access resolver looks each `.` hop up only among the owned and inherited members of the previous hop's types, so a chaining feature not featured within the previous one is reported unresolved_reference instead of resolving; a settled violation needs a hop visible through the previous hop's imports, which that resolver does not consult"
 
 [[issue]]
 id = "semantic-library-specialization-metaclass-generalization"

@@ -45,6 +45,18 @@ package Model {
     (diagnostics
       (diagnostic
         (severity warning)
+        (code "feature_chaining_single_operand")
+        (source "semantic")
+        (range (start 3 31) (end 3 35))
+      )
+      (diagnostic
+        (severity warning)
+        (code "feature_chaining_single_operand")
+        (source "semantic")
+        (range (start 4 34) (end 4 41))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 4 34) (end 4 41))

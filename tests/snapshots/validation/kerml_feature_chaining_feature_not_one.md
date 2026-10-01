@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.3.4:validateFeatureChainingFeatureNotOne
-blocked_by=semantic-feature-chaining-rules
 type=file
 ~~~
 # SOURCE
@@ -37,7 +36,7 @@ package Chains {
         (severity warning)
         (code "feature_chaining_single_operand")
         (source "semantic")
-        (range (start 11 8) (end 11 36))
+        (range (start 11 30) (end 11 35))
       )
     )
   )
@@ -48,6 +47,12 @@ package Chains {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_chaining_feature_not_one.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "feature_chaining_single_operand")
+        (source "semantic")
+        (range (start 11 30) (end 11 35))
+      )
     )
   )
 )
