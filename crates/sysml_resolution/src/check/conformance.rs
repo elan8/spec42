@@ -120,7 +120,7 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         K::PortDefinition => (F::Port, Definition),
         K::PortUsage => (F::Port, Usage),
         K::RequirementDefinition => (F::Requirement, Definition),
-        K::RequirementUsage => (F::Requirement, Usage),
+        K::RequirementUsage | K::ObjectiveRequirement => (F::Requirement, Usage),
         K::ConcernDefinition => (F::Concern, Definition),
         K::ConcernUsage => (F::Concern, Usage),
         K::UseCaseDefinition => (F::UseCase, Definition),

@@ -630,6 +630,12 @@ pub(crate) enum DeclarationKind {
     /// merely an unresolved reference, mirroring `Satisfy::inline_requirement`'s own scope boundary)
     /// is out of scope and left as an explicit unsupported-member diagnostic.
     VerifyRequirement,
+    /// The `RequirementUsage` a case-family definition or usage owns through its
+    /// `ObjectiveMembership` (`objective { ... }`, `objective obj : RequirementCheck;`): the
+    /// `objectiveRequirement` of a `CaseDefinition`/`CaseUsage`. The element is an ordinary
+    /// `RequirementUsage`; the kind carries the membership role, as `VerifyRequirement` does for
+    /// `RequirementVerificationMembership`.
+    ObjectiveRequirement,
     // --- Bodied KerML classifier declarations (`KermlClassifierDecl`) ---------------------
     //
     // One variant per metaclass the declaration's keyword denotes. KerML makes these distinct

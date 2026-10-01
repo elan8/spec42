@@ -5,6 +5,7 @@ pub(crate) mod end_features;
 pub(crate) mod implied;
 pub(crate) mod library_seed;
 pub(crate) mod names;
+pub(crate) mod objective_redefinitions;
 pub(crate) mod results;
 pub(crate) mod role_redefinitions;
 
@@ -93,6 +94,51 @@ pub(crate) struct ResolutionStartingState<'a> {
     pub owned_end_features: &'a [OwnedEndRecord],
 }
 
+/// The settled direct specialization edges `(specific, general)` over resolved `references` and
+/// `implied` relationships, and the authored Redefinitions `(source, target)` among them.
+///
+/// The input every role-pairing synthesis (positional ends, objectives) reads, so each pairs over
+/// one edge set.
+pub(crate) struct SettledTypeEdges {
+    pub(crate) edges: Vec<(DeclarationId, DeclarationId)>,
+    pub(crate) authored_redefinitions: std::collections::BTreeSet<(DeclarationId, DeclarationId)>,
+}
+
+impl SettledTypeEdges {
+    pub(crate) fn collect<R: ResolutionReferenceFact>(
+        references: &[R],
+        outcomes: &[ResolutionStatus],
+        implied: &[ImpliedRelationship],
+    ) -> Result<Self, ResolutionError> {
+        if outcomes.len() != references.len() {
+            return Err(ResolutionError::InvalidStorage);
+        }
+        let mut edges = Vec::new();
+        let mut authored_redefinitions = std::collections::BTreeSet::new();
+        for (reference, outcome) in references.iter().zip(outcomes) {
+            let ResolutionStatus::Resolved(target) = *outcome else {
+                continue;
+            };
+            if reference.kind().is_specialization() {
+                edges.push((reference.source(), target));
+            }
+            if reference.kind() == ReferenceKind::Redefinition {
+                authored_redefinitions.insert((reference.source(), target));
+            }
+        }
+        edges.extend(
+            implied
+                .iter()
+                .filter(|relationship| relationship.kind.is_specialization())
+                .map(|relationship| (relationship.source, relationship.target)),
+        );
+        Ok(Self {
+            edges,
+            authored_redefinitions,
+        })
+    }
+}
+
 /// The positional end redefinitions implied over `references` and `implied` type edges.
 ///
 /// Shared by the solver's provisional passes and phase 4's settled synthesis so both pair ends
@@ -107,33 +153,12 @@ pub(crate) fn positional_end_redefinitions<R: ResolutionReferenceFact>(
     if owned_end_features.is_empty() {
         return Ok(Vec::new());
     }
-    if outcomes.len() != references.len() {
-        return Err(ResolutionError::InvalidStorage);
-    }
-    let mut type_edges = Vec::new();
-    let mut authored = std::collections::BTreeSet::new();
-    for (reference, outcome) in references.iter().zip(outcomes) {
-        let ResolutionStatus::Resolved(target) = *outcome else {
-            continue;
-        };
-        if reference.kind().is_specialization() {
-            type_edges.push((reference.source(), target));
-        }
-        if reference.kind() == ReferenceKind::Redefinition {
-            authored.insert((reference.source(), target));
-        }
-    }
-    type_edges.extend(
-        implied
-            .iter()
-            .filter(|relationship| relationship.kind.is_specialization())
-            .map(|relationship| (relationship.source, relationship.target)),
-    );
+    let settled = SettledTypeEdges::collect(references, outcomes, implied)?;
     end_features::synthesize_positional_end_redefinitions(
         count,
         owned_end_features,
-        type_edges,
-        &authored,
+        settled.edges,
+        &settled.authored_redefinitions,
     )
 }
 
@@ -1784,7 +1809,10 @@ pub(crate) fn requirement_derived_source_matches(metaclass: &str, kind: Declarat
         (
             "RequirementDefinition",
             DeclarationKind::RequirementDefinition
-        ) | ("RequirementUsage", DeclarationKind::RequirementUsage)
+        ) | (
+            "RequirementUsage",
+            DeclarationKind::RequirementUsage | DeclarationKind::ObjectiveRequirement
+        )
     )
 }
 
@@ -1823,6 +1851,7 @@ pub(crate) fn is_usage_declaration(kind: DeclarationKind) -> bool {
             | DeclarationKind::EnumerationUsage
             | DeclarationKind::EnumerationLiteral
             | DeclarationKind::RequirementUsage
+            | DeclarationKind::ObjectiveRequirement
             | DeclarationKind::PortUsage
             | DeclarationKind::ItemUsage
             | DeclarationKind::ActionUsage
@@ -2012,7 +2041,9 @@ pub(crate) fn definition_usage_candidate_matches(
         }
         Collection::DefinitionOwnedRequirement | Collection::UsageNestedRequirement => matches!(
             kind,
-            DeclarationKind::RequirementUsage | DeclarationKind::VerifyRequirement
+            DeclarationKind::RequirementUsage
+                | DeclarationKind::VerifyRequirement
+                | DeclarationKind::ObjectiveRequirement
         ),
         Collection::DefinitionOwnedState | Collection::UsageNestedState => {
             matches!(

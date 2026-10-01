@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Case objectives redefine the objectives they specialize.** An `objective` is now published as
+  an `objective-requirement` (a `RequirementUsage` under an `ObjectiveMembership`, membership role
+  `objective`) and implicitly redefines the objective of every case definition or case usage its
+  owner specializes, including `Cases::Case::obj` (SysML `checkRequirementUsageObjectiveRedefinition`,
+  now evaluated). Objective element identities change accordingly (kind `objective-requirement`).
+
 - **Positional end redefinitions follow KerML `checkFeatureEndRedefinition`.** An owned end now
   redefines the end at its position in each direct supertype's full `endFeature` list (including
   ends the supertype inherits and the ends of implied library supertypes such as

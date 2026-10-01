@@ -180,7 +180,6 @@ pub enum RedefinitionCheckPrerequisite {
     ConstructorResultAndInstantiatedTypeFeatures,
     StateSubactionMembershipAndKind,
     AssignmentActionInputParameterEndpoints,
-    ObjectiveMembershipAndCaseObjective,
     ViewRenderingMembership,
 }
 

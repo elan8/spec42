@@ -145,6 +145,7 @@ pub(crate) fn is_requirement_kind(kind: DeclarationKind) -> bool {
         DeclarationKind::RequirementDefinition
             | DeclarationKind::RequirementUsage
             | DeclarationKind::VerifyRequirement
+            | DeclarationKind::ObjectiveRequirement
     )
 }
 
@@ -175,6 +176,7 @@ pub(crate) fn supports_subject_role(kind: DeclarationKind) -> bool {
         kind,
         DeclarationKind::RequirementDefinition
             | DeclarationKind::RequirementUsage
+            | DeclarationKind::ObjectiveRequirement
             | DeclarationKind::ConcernDefinition
             | DeclarationKind::ConcernUsage
             | DeclarationKind::CaseDefinition

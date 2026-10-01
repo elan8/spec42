@@ -1282,9 +1282,6 @@ fn parse_redefinition_check_prerequisite(
         "assignment_action_input_parameter_endpoints" => {
             Ok(RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints)
         }
-        "objective_membership_and_case_objective" => {
-            Ok(RedefinitionCheckPrerequisite::ObjectiveMembershipAndCaseObjective)
-        }
         "view_rendering_membership" => Ok(RedefinitionCheckPrerequisite::ViewRenderingMembership),
         "rule_not_published" => Ok(RedefinitionCheckPrerequisite::RuleNotPublished),
         _ => Err(format!(

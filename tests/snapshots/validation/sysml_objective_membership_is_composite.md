@@ -51,7 +51,7 @@ package Roles {
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_objective_membership_is_composite.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_objective_membership_is_composite.md") (qualified-name "Roles::Analysis"))) (kind case-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_objective_membership_is_composite.md") (qualified-name "Roles::Analysis::achieved"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_objective_membership_is_composite.md") (qualified-name "Roles::Analysis::achieved"))) (kind objective-requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_objective_membership_is_composite.md") (qualified-name "Roles::Analysis::item"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
     (declaration (id (node (document "memory://snapshot/sysml_objective_membership_is_composite.md") (qualified-name "Roles::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
   )

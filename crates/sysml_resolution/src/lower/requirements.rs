@@ -1812,7 +1812,7 @@ impl SemanticModelBuilder {
                     self.lower_requirement_usage_as_with_implicit_name(
                         document,
                         Some(owner),
-                        DeclarationKind::RequirementUsage,
+                        DeclarationKind::ObjectiveRequirement,
                         &node.value.requirement,
                         Some("objective"),
                     )?;

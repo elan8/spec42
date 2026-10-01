@@ -260,6 +260,8 @@ pub enum MembershipRole {
     FramedConcern,
     /// `RequirementVerificationMembership` -- a requirement verified by a case.
     RequirementVerification,
+    /// `ObjectiveMembership` -- the objective requirement of a case.
+    Objective,
     /// `TransitionFeatureMembership` with `kind = trigger` -- the accept action that triggers a
     /// transition.
     TransitionTriggerAction,
@@ -285,6 +287,7 @@ impl MembershipRole {
             Self::Actor => "actor",
             Self::FramedConcern => "framed-concern",
             Self::RequirementVerification => "requirement-verification",
+            Self::Objective => "objective",
             Self::TransitionTriggerAction => "transition-trigger-action",
             Self::Variant => "variant",
             Self::Parameter => "parameter",

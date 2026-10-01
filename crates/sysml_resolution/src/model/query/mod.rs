@@ -2750,11 +2750,12 @@ impl<D> SemanticModel<D> {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
         };
-        if self
-            .storage
-            .declaration(declaration)
-            .is_none_or(|value| value.kind != DeclarationKind::RequirementUsage)
-        {
+        if self.storage.declaration(declaration).is_none_or(|value| {
+            !matches!(
+                value.kind,
+                DeclarationKind::RequirementUsage | DeclarationKind::ObjectiveRequirement
+            )
+        }) {
             return self.query_outcome(QueryAnswer::Unsupported);
         }
         let relationships = self.relationships(declaration);
@@ -3520,7 +3521,7 @@ impl<D> SemanticModel<D> {
             else {
                 continue;
             };
-            if objective.kind != DeclarationKind::RequirementUsage {
+            if objective.kind != DeclarationKind::ObjectiveRequirement {
                 continue;
             }
             let Some(case_id) = objective.owner else {

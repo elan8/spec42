@@ -877,6 +877,20 @@ pub(crate) fn synthesize_implied_relationships(
         &implied,
     )?;
     implied.extend(positional_ends);
+    // A case objective redefines the objective of each case its owner specializes, including the
+    // implied library supertypes (`Cases::Case::obj`) settled above.
+    let settled = crate::resolve::SettledTypeEdges::collect(
+        &storage.references,
+        &resolution.outcomes,
+        &implied,
+    )?;
+    implied.extend(
+        crate::resolve::objective_redefinitions::synthesize_objective_redefinitions(
+            storage,
+            settled.edges,
+            &settled.authored_redefinitions,
+        )?,
+    );
     // An owned cross feature subsets the cross feature of every end its own end redefines, which
     // includes the positional redefinitions settled just above.
     let mut redefinitions = std::collections::BTreeSet::new();
@@ -2743,7 +2757,9 @@ pub(crate) fn conditional_library_specialization_anchor_branch(
             .is_some_and(|owner| {
                 matches!(
                     owner.kind,
-                    DeclarationKind::RequirementDefinition | DeclarationKind::RequirementUsage
+                    DeclarationKind::RequirementDefinition
+                        | DeclarationKind::RequirementUsage
+                        | DeclarationKind::ObjectiveRequirement
                 )
             }),
         LibrarySpecializationPredicate::IsIndividual

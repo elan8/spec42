@@ -24,6 +24,9 @@ use crate::resolve::end_features::positional_end_obligations;
 use crate::resolve::end_features::CrossFeature;
 use crate::resolve::implied::redefinition_check_rule;
 use crate::resolve::implied::LibrarySpecializationAnchor;
+use crate::resolve::objective_redefinitions::derive_objective_requirements;
+use crate::resolve::objective_redefinitions::objective_obligations;
+use crate::resolve::objective_redefinitions::ObjectiveRequirement;
 use crate::resolve::results::FeatureChainExpressionSpecializationStatus;
 use crate::resolve::results::ResolutionStatus;
 use crate::resolve::role_redefinitions::library_role_occupants;
@@ -112,12 +115,7 @@ impl<D> SemanticModel<D> {
                         RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints,
                 }
             }
-            RedefinitionCheckKind::RequirementUsageObjective => {
-                RedefinitionCheckOutcome::Unsupported {
-                    prerequisite:
-                        RedefinitionCheckPrerequisite::ObjectiveMembershipAndCaseObjective,
-                }
-            }
+            RedefinitionCheckKind::RequirementUsageObjective => self.objective_redefinition_check(),
             RedefinitionCheckKind::RenderingUsage => RedefinitionCheckOutcome::Unsupported {
                 prerequisite: RedefinitionCheckPrerequisite::ViewRenderingMembership,
             },
@@ -298,6 +296,63 @@ impl<D> SemanticModel<D> {
                     Ok(CrossFeature::Unpublished) | Err(_) => None,
                 });
             }
+        }
+        tally.outcome()
+    }
+
+    /// SysML `checkRequirementUsageObjectiveRedefinition`: an objective redefines the
+    /// `objectiveRequirement` of every case its owning Type directly specializes.
+    ///
+    /// Obligations come from the same derivation the synthesis uses, over the published direct
+    /// supertypes. An ambiguous inherited objective, or an owner whose specializations did not all
+    /// settle, answers unresolved.
+    fn objective_redefinition_check(&self) -> RedefinitionCheckOutcome {
+        let generals = |declaration: DeclarationId| {
+            let mut generals = self
+                .types
+                .supertypes(declaration)
+                .iter()
+                .map(|(general, _)| *general)
+                .collect::<Vec<_>>();
+            generals.dedup();
+            generals
+        };
+        let mut authored = BTreeSet::new();
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            if reference.kind != ReferenceKind::Redefinition {
+                continue;
+            }
+            if let Some(ResolutionStatus::Resolved(target)) =
+                self.resolution.outcomes.get(index).copied()
+            {
+                authored.insert((reference.source, target));
+            }
+        }
+        let Ok(objectives) = derive_objective_requirements(&self.storage, generals, &authored)
+        else {
+            return RedefinitionCheckOutcome::Unresolved;
+        };
+        let Ok(obligations) = objective_obligations(&self.storage, generals, &objectives) else {
+            return RedefinitionCheckOutcome::Unresolved;
+        };
+        let mut tally = CheckTally::default();
+        for declaration in self.storage.declarations.iter() {
+            if declaration.kind == DeclarationKind::ObjectiveRequirement
+                && declaration
+                    .owner
+                    .is_some_and(|owner| self.specialization_hierarchy_is_unsettled(owner))
+            {
+                tally.require(None);
+            }
+        }
+        for obligation in obligations {
+            tally.require(match obligation.target {
+                ObjectiveRequirement::Resolved(target) => {
+                    Some(self.redefines(obligation.objective, target))
+                }
+                ObjectiveRequirement::Ambiguous => None,
+                ObjectiveRequirement::Absent => Some(true),
+            });
         }
         tally.outcome()
     }

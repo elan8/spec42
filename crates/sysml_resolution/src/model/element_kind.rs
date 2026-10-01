@@ -77,6 +77,8 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         // A verified requirement is a `RequirementUsage` under a
         // `RequirementVerificationMembership`.
         DeclarationKind::VerifyRequirement => ElementKind::RequirementUsage,
+        // A case's objective is a `RequirementUsage` under an `ObjectiveMembership`.
+        DeclarationKind::ObjectiveRequirement => ElementKind::RequirementUsage,
         DeclarationKind::ConcernDefinition => ElementKind::ConcernDefinition,
         DeclarationKind::ConcernUsage => ElementKind::ConcernUsage,
         // A `frame` is a `ConcernUsage` under a `FramedConcernMembership`.
@@ -191,6 +193,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         }
         DeclarationKind::Frame => Some(MembershipRole::FramedConcern),
         DeclarationKind::VerifyRequirement => Some(MembershipRole::RequirementVerification),
+        DeclarationKind::ObjectiveRequirement => Some(MembershipRole::Objective),
         DeclarationKind::EnumerationLiteral => Some(MembershipRole::Variant),
         DeclarationKind::ParameterUsage | DeclarationKind::PerformParameterBinding => {
             Some(MembershipRole::Parameter)
@@ -421,6 +424,7 @@ mod tests {
         DeclarationKind::CaseActor,
         DeclarationKind::Frame,
         DeclarationKind::VerifyRequirement,
+        DeclarationKind::ObjectiveRequirement,
         DeclarationKind::KermlType,
         DeclarationKind::KermlClassifier,
         DeclarationKind::KermlStructure,
@@ -526,6 +530,7 @@ mod tests {
             &[
                 DeclarationKind::RequirementUsage,
                 DeclarationKind::VerifyRequirement,
+                DeclarationKind::ObjectiveRequirement,
             ],
         ),
         (

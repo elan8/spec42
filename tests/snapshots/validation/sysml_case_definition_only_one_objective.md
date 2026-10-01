@@ -61,12 +61,12 @@ package Roles {
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_case_definition_only_one_objective.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_case_definition_only_one_objective.md") (qualified-name "Roles::Bad"))) (kind case-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_case_definition_only_one_objective.md") (qualified-name "Roles::Bad::first"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_case_definition_only_one_objective.md") (qualified-name "Roles::Bad::first"))) (kind objective-requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_case_definition_only_one_objective.md") (qualified-name "Roles::Bad::s"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
-    (declaration (id (node (document "memory://snapshot/sysml_case_definition_only_one_objective.md") (qualified-name "Roles::Bad::second"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_case_definition_only_one_objective.md") (qualified-name "Roles::Bad::second"))) (kind objective-requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_case_definition_only_one_objective.md") (qualified-name "Roles::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_case_definition_only_one_objective.md") (qualified-name "Roles::Good"))) (kind case-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_case_definition_only_one_objective.md") (qualified-name "Roles::Good::first"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_case_definition_only_one_objective.md") (qualified-name "Roles::Good::first"))) (kind objective-requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_case_definition_only_one_objective.md") (qualified-name "Roles::Good::s"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
   )
   (references

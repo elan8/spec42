@@ -2198,6 +2198,7 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::CaseActor => "case-actor",
         DeclarationKind::Frame => "frame",
         DeclarationKind::VerifyRequirement => "verify-requirement",
+        DeclarationKind::ObjectiveRequirement => "objective-requirement",
         // One name per KerML metaclass; see `DeclarationKind`'s own doc comments for why the
         // keyword spellings are distinct metaclasses rather than one bucket.
         DeclarationKind::KermlClassifier => "kerml-classifier",

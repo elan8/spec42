@@ -1671,24 +1671,6 @@ fn textual_representation_inside_requirement_def_body_is_ignored() {
     );
 }
 
-/// `UseCaseDefBodyElement::Objective` (`objective { ... }`/`objective <name> : <Type> { ... }`)
-/// wraps a fully typed `RequirementUsage` (`Objective::requirement`) but was unconditionally
-/// unsupported. Wires it through the existing `lower_requirement_usage` pipeline, the same as
-/// every other requirement-usage site.
-#[test]
-fn case_family_objective_lowers_as_requirement_usage() {
-    let sexpr =
-        semantic_sexpr_for("package P { analysis def A { objective obj { doc /* g */ } } }");
-    assert!(
-        sexpr.contains("(kind requirement)"),
-        "expected the objective's wrapped RequirementUsage to lower as a requirement, got: {sexpr}"
-    );
-    assert!(
-        !sexpr.contains("unsupported_analysis_case_definition_member"),
-        "did not expect unsupported_analysis_case_definition_member, got: {sexpr}"
-    );
-}
-
 /// `PerformBodyElement::AttributeUsage` (an `in`/`out attribute` usage directly inside a
 /// `perform` body, BNF §6 G6) was unconditionally unsupported despite being a fully typed
 /// `AttributeUsage` node -- wires it through the already-existing `lower_attribute_usage`.
