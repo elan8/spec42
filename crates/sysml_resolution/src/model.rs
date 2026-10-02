@@ -1337,6 +1337,13 @@ pub(crate) enum ReferenceKind {
     /// `EvalNode::Invocation` (reused rather than adding a distinct variant, exactly like
     /// `Expression::TypeCheck`/`Expression::Tuple`) always folds to `EvaluatedValue::NonConstant`.
     MetaCastTarget,
+    /// The `referencedElement` of a KerML `MetadataAccessExpression` (`X.metadata`, KerML
+    /// 8.3.4.8.15): the Element its `ElementReferenceMember` names. Sourced at the minted
+    /// `KermlMetadataAccessExpression` element (which owns that membership), not at the evaluation
+    /// site, and resolved through the `DeclarationDomain::Any` lookup: the referent may be any
+    /// Element, so it is deliberately not an `ExpressionOperand` (whose `FeatureReference` role
+    /// must name a Feature) and takes no operand ordinal.
+    MetadataAccessTarget,
     /// The `target` concern reference of a `stakeholder` member found in a requirement/viewpoint
     /// def body (`StakeholderMember.target`, BNF `StakeholderMember`'s bare `stakeholder Concern;`
     /// reference form, `is_redefinition == false`), resolved through the same `DeclarationDomain::

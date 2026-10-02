@@ -1661,6 +1661,7 @@ fn relationship_kind_from_name(name: &str) -> Option<DiagramRelationshipKind> {
         "flowTarget" => Some(DiagramRelationshipKind::FlowTarget),
         "typeCheckTarget" => Some(DiagramRelationshipKind::TypeCheckTarget),
         "metaCastTarget" => Some(DiagramRelationshipKind::MetaCastTarget),
+        "metadataAccessTarget" => Some(DiagramRelationshipKind::MetadataAccessTarget),
         "stakeholderTarget" => Some(DiagramRelationshipKind::StakeholderTarget),
         "purposeTarget" => Some(DiagramRelationshipKind::PurposeTarget),
         "verifyRequirementTarget" => Some(DiagramRelationshipKind::VerifyRequirementTarget),

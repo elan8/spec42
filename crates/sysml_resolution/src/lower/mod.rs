@@ -1510,9 +1510,13 @@ impl SemanticModelBuilder {
                     && declaration.span == node.span
             });
         let kind = match (top_level, &node.value) {
-            // A metadata access is its own element (see `Self::lower_leaf_expression`), but the
-            // membership owning its referenced element is not lowered.
-            (_, Expression::MetadataAccess(_)) => UnloweredExpression::Parameters,
+            // A metadata access over a qualified name is its own element owning its referenced
+            // element (see `Self::lower_metadata_access`); any other base is reported unsupported.
+            (_, Expression::MetadataAccess(base))
+                if matches!(base.value, Expression::FeatureRef(_)) =>
+            {
+                return
+            }
             (
                 true,
                 Expression::FeatureRef(_)
@@ -1722,6 +1726,46 @@ impl SemanticModelBuilder {
             import: None,
         })?;
         Ok(())
+    }
+
+    /// Lowers a metadata access expression (`X.metadata`, KerML 8.3.4.8.15): mints its
+    /// `MetadataAccessExpression` element (see [`Self::lower_leaf_expression`]) and the
+    /// `ReferenceKind::MetadataAccessTarget` reference its `ElementReferenceMember` denotes,
+    /// sourced at that element. Returns `false`, minting nothing, when `node` is not a metadata
+    /// access whose base is a qualified name (BNF `referencedElement = [QualifiedName]`): the
+    /// caller then reports the node unsupported rather than publishing an expression without
+    /// its referenced element.
+    pub(crate) fn lower_metadata_access(
+        &mut self,
+        document: DocumentIdx,
+        site: DeclarationId,
+        node: &Node<Expression>,
+    ) -> Result<bool, ConstructionError> {
+        let Expression::MetadataAccess(base) = &node.value else {
+            return Ok(false);
+        };
+        let Expression::FeatureRef(target) = &base.value else {
+            return Ok(false);
+        };
+        let Some(element) = self.lower_leaf_expression(document, site, node)? else {
+            return Ok(false);
+        };
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(*target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span;
+        self.push_reference(PendingReference {
+            source: element,
+            kind: ReferenceKind::MetadataAccessTarget,
+            document,
+            local: *target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(true)
     }
 
     /// Pushes one `ReferenceKind::TypeCheckTarget` reference for an `Expression::TypeCheck`'s

@@ -75,10 +75,9 @@ impl SemanticModelBuilder {
                 .lower_leaf_expression(document, declaration, node)
                 .map(drop),
             Expression::MetadataAccess(_) => {
-                // The MetadataAccessExpression element is minted; its referenced element is not
-                // lowered yet, so the node stays reported as unsupported.
-                self.lower_leaf_expression(document, declaration, node)?;
-                self.push_unsupported(document, family, node.span);
+                if !self.lower_metadata_access(document, declaration, node)? {
+                    self.push_unsupported(document, family, node.span);
+                }
                 Ok(())
             }
             Expression::Bracket { base, operands, .. } => {
@@ -259,10 +258,9 @@ impl SemanticModelBuilder {
                 .lower_leaf_expression(document, declaration, node)
                 .map(drop),
             Expression::MetadataAccess(_) => {
-                // The MetadataAccessExpression element is minted; its referenced element is not
-                // lowered yet, so the node stays reported as unsupported.
-                self.lower_leaf_expression(document, declaration, node)?;
-                self.push_unsupported(document, family, node.span);
+                if !self.lower_metadata_access(document, declaration, node)? {
+                    self.push_unsupported(document, family, node.span);
+                }
                 Ok(())
             }
             Expression::Bracket { base, operands, .. } => {
@@ -501,6 +499,12 @@ impl SemanticModelBuilder {
                     *target,
                     ExpressionOperandRole::FeatureReference,
                 ),
+            Expression::MetadataAccess(_) => {
+                if !self.lower_metadata_access(document, declaration, node)? {
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span);
+                }
+                Ok(())
+            }
             Expression::Classification { metaclass } => {
                 let span = self.documents[document.index()]
                     .parsed

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`X.metadata` resolves its referenced element.** A metadata access expression's qualified name
+  now resolves (any Element) as a `metadataAccessTarget` relationship from its
+  `MetadataAccessExpression`, so the expression is no longer reported as unsupported. The diagram
+  relationship vocabulary gains `metadataAccessTarget`.
+
 - **Comments, documentation and textual representations are elements.** Every `comment`, `doc`
   and `rep` member is published as a `Comment`/`Documentation`/`TextualRepresentation` element
   owned by the namespace it is written in, carrying its body. Each `about` target of a comment is

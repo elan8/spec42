@@ -653,6 +653,7 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::FlowTarget
             | ReferenceKind::TypeCheckTarget
             | ReferenceKind::MetaCastTarget
+            | ReferenceKind::MetadataAccessTarget
             | ReferenceKind::StakeholderTarget
             | ReferenceKind::PurposeTarget
             | ReferenceKind::VerifyRequirementTarget

@@ -97,12 +97,6 @@ owner = "spec42-semantic"
 summary = "crosses targets resolve and validateCrossSubsetting{CrossingFeature,CrossedFeature} are checked, but Feature::crossFeature (the second chaining feature of an end feature's owned CrossSubsetting) is not derived, so validateFeatureCrossFeatureType/Specialization and checkFeatureOwnedCrossFeatureTypeFeaturing have no operand; those fixtures also cross from non-end features, which the crossing-feature rule rejects, and must move to end features when the derivation lands. A FeatureChainExpression whose target is not featured by its argument's result settles as unresolved_reference in resolution rather than as a typed targetFeature for validateFeatureChainExpressionConformance."
 
 [[issue]]
-id = "lowering-metadata-expressions"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "a metadata access expression (`Thing.metadata`, ast::Expression::MetadataAccess) parses but lowering reports it as unsupported_calc_definition_member, so no MetadataAccessExpression reaches semantics. Its referencedElement must resolve through a reference kind of its own -- not ExpressionOperand, whose target must be a Feature -- and a new reference kind is a relationship kind of the diagram and generator-protocol contracts"
-
-[[issue]]
 id = "lowering-metadata-feature-facts"
 kind = "lowering_gap"
 owner = "spec42-semantic"

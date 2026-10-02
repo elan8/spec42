@@ -67,8 +67,9 @@ pub(crate) struct RelationshipFlags {
 pub(crate) enum ExpressionOperandRole {
     /// A `FeatureReferenceExpression` (KerML `FeatureReferenceMember`).
     FeatureReference,
-    /// The `ElementReferenceMember` of a `MetadataAccessExpression`: the operand of `meta`, which
-    /// may name any Element.
+    /// The operand of `meta`, which KerML reads as an implicit `MetadataAccessExpression`'s
+    /// `ElementReferenceMember` and which may name any Element. (An authored `X.metadata` is its
+    /// own element instead, see `ReferenceKind::MetadataAccessTarget`.)
     MetadataReference,
     /// The function a `->f g` arrow invocation passes without parentheses (KerML
     /// `FunctionReferenceExpression`, whose member is an Expression typed by the named function).

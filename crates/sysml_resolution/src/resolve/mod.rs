@@ -436,6 +436,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::IncludeUseCase
                     | ReferenceKind::ViewExpose
                     | ReferenceKind::InvocationCallee
+                    | ReferenceKind::MetadataAccessTarget
                     | ReferenceKind::ThenTarget
                     | ReferenceKind::AcceptVia
                     | ReferenceKind::SendTarget
@@ -1764,6 +1765,7 @@ pub(crate) fn supported_import_domain(
         | ReferenceKind::FlowTarget
         | ReferenceKind::TypeCheckTarget
         | ReferenceKind::MetaCastTarget
+        | ReferenceKind::MetadataAccessTarget
         | ReferenceKind::StakeholderTarget
         | ReferenceKind::PurposeTarget
         | ReferenceKind::VerifyRequirementTarget
