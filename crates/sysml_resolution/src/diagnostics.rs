@@ -505,6 +505,12 @@ semantic_diagnostic_codes! {
     /// KerML 8.3.3.3.2 `validateCrossSubsettingCrossedFeature`.
     CrossSubsettingCrossedFeatureInvalid => "cross_subsetting_crossed_feature_invalid",
         "A crossed feature must be a two-feature chain through the opposite end feature.";
+    /// KerML 8.3.3.3.4 `validateFeatureCrossFeatureType`.
+    CrossFeatureTypeMismatch => "cross_feature_type_mismatch",
+        "The cross feature of a feature must have the same types as the feature.";
+    /// KerML 8.3.3.3.4 `validateFeatureCrossFeatureSpecialization`.
+    CrossFeatureSpecializationIncompatible => "cross_feature_specialization_incompatible",
+        "The cross feature of a feature must specialize the cross feature of every end feature it redefines.";
     /// SysML 8.3.18.9 `validateTransitionUsageTriggerActions`.
     TransitionTriggerSourceNotState => "transition_trigger_source_not_state",
         "A transition with a trigger must have a state usage as its source.";

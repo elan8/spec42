@@ -407,6 +407,20 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "cross_feature_type_mismatch",
+        severity: "warning",
+        meaning: "The cross feature of an end feature does not have the same types as the end feature (KerML validateFeatureCrossFeatureType).",
+        typical_fix: "Type the crossed feature with exactly the end feature's types, or cross a feature that has them.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "cross_feature_specialization_incompatible",
+        severity: "warning",
+        meaning: "The cross feature of an end feature does not specialize the cross feature of an end feature it redefines (KerML validateFeatureCrossFeatureSpecialization).",
+        typical_fix: "Cross a feature that subsets or redefines the redefined end's cross feature.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "transition_trigger_source_not_state",
         severity: "warning",
         meaning: "A transition with an `accept` trigger has a source that is not a state usage (SysML validateTransitionUsageTriggerActions).",

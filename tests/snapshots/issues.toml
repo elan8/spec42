@@ -79,12 +79,6 @@ owner = "sysml-v2-parser"
 summary = "KerML TypeBody admits a NonFeatureMember whose element is a Multiplicity (`multiplicity extra [2];`), giving a type a second owned Multiplicity, but the pinned parser reads that member in a classifier body as a result expression with two unresolved operands instead of a Multiplicity; once it parses, spec42 needs an owned-Multiplicity count over the classifier's multiplicity fact plus Multiplicity members and a type_multiple_multiplicities rule"
 
 [[issue]]
-id = "lowering-kerml-feature-relationships"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "crosses targets resolve and validateCrossSubsetting{CrossingFeature,CrossedFeature} are checked, but Feature::crossFeature (the second chaining feature of an end feature's owned CrossSubsetting) is not derived, so validateFeatureCrossFeatureType/Specialization and checkFeatureOwnedCrossFeatureTypeFeaturing have no operand; those fixtures also cross from non-end features, which the crossing-feature rule rejects, and must move to end features when the derivation lands. A FeatureChainExpression whose target is not featured by its argument's result settles as unresolved_reference in resolution rather than as a typed targetFeature for validateFeatureChainExpressionConformance."
-
-[[issue]]
 id = "lowering-result-expression-memberships"
 kind = "lowering_gap"
 owner = "spec42-semantic"

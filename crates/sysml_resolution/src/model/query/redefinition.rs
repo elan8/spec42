@@ -276,13 +276,20 @@ impl<D> SemanticModel<D> {
             let mut redefined = BTreeSet::new();
             self.collect_redefined_members(owned.end, &mut redefined);
             for redefined in redefined {
-                tally.require(match cross_feature_of(&self.storage, redefined) {
-                    Ok(CrossFeature::Resolved(cross)) => Some(
-                        cross == owned.cross_feature || self.subsets(owned.cross_feature, cross),
-                    ),
-                    Ok(CrossFeature::Absent) => Some(true),
-                    Ok(CrossFeature::Unpublished) | Err(_) => None,
-                });
+                tally.require(
+                    match cross_feature_of(
+                        &self.storage,
+                        &self.resolution.member_access_paths,
+                        redefined,
+                    ) {
+                        Ok(CrossFeature::Resolved(cross)) => Some(
+                            cross == owned.cross_feature
+                                || self.subsets(owned.cross_feature, cross),
+                        ),
+                        Ok(CrossFeature::Absent) => Some(true),
+                        Ok(CrossFeature::Unpublished) | Err(_) => None,
+                    },
+                );
             }
         }
         tally.outcome()

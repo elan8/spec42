@@ -11,6 +11,7 @@
 //! implied redefinitions, so the endFeature a pairing reads and the endFeature a query reports can
 //! never be computed two different ways.
 
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
 use crate::lower::facts::OwnedEndFeature;
@@ -319,19 +320,34 @@ pub(crate) fn synthesize_positional_end_redefinitions(
 /// KerML `Feature::crossFeature` of one Feature, as far as this publication states it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum CrossFeature {
-    /// The Feature owns this cross feature (`end crossing [1] feature e`), which the implied
-    /// CrossSubsetting the Pilot adds (`addCrossingSpecialization`) makes its `crossFeature`.
+    /// The settled cross feature: the Feature's owned cross feature (`end crossing [1] feature
+    /// e`), which the implied CrossSubsetting the Pilot adds (`addCrossingSpecialization`) makes
+    /// its `crossFeature`, or the second chaining feature of its authored `crosses a.b`.
     Resolved(DeclarationId),
-    /// The Feature authors a CrossSubsetting (`crosses a.b`) whose crossed feature chain is not
-    /// a settled fact, so its second chaining feature is unknown.
+    /// The Feature authors a CrossSubsetting (`crosses a.b`) whose second chaining feature did
+    /// not settle to a declaration.
     Unpublished,
-    /// The Feature has no cross feature.
+    /// The Feature has no cross feature: no owned cross feature and no owned CrossSubsetting, or
+    /// one whose crossed feature has fewer than two chaining features.
     Absent,
 }
 
-/// The `crossFeature` of `feature`, from its owned facts and authored relationships.
+/// KerML 8.3.3.3.4 `Feature::crossFeature` of `feature`:
+///
+/// ```text
+/// crossFeature = if ownedCrossSubsetting = null then null else
+///     let chainingFeatures = ownedCrossSubsetting.crossedFeature.chainingFeature in
+///     if chainingFeatures->size() < 2 then null else chainingFeatures->at(2)
+/// ```
+///
+/// An owned cross feature's CrossSubsetting is implied, not authored, so its projection fact
+/// answers directly. Otherwise the first authored `crosses` is the owned CrossSubsetting (the
+/// Pilot's `getOwnedCrossSubsetting`; a second one is `validateFeatureOwnedCrossSubsetting`'s
+/// concern) and its chaining features are the canonical per-hop outcomes `member_access_paths`
+/// captured at the last segment of each `.`-separated chaining feature of its dotted reference.
 pub(crate) fn cross_feature_of(
     storage: &SemanticModelStorage,
+    member_access_paths: &BTreeMap<AuthoredReferenceId, Box<[ResolutionStatus]>>,
     feature: DeclarationId,
 ) -> Result<CrossFeature, ResolutionError> {
     let facts = storage
@@ -340,14 +356,32 @@ pub(crate) fn cross_feature_of(
     if let Some(projection) = facts.cross_feature_projection {
         return Ok(CrossFeature::Resolved(projection.cross_feature));
     }
-    if storage
+    let Some((index, reference)) = storage
         .references
         .iter()
-        .any(|reference| reference.source == feature && reference.kind == ReferenceKind::Crosses)
-    {
-        return Ok(CrossFeature::Unpublished);
+        .enumerate()
+        .find(|(_, reference)| {
+            reference.source == feature
+                && reference.kind == ReferenceKind::Crosses
+                && !reference.flags.implied
+        })
+    else {
+        return Ok(CrossFeature::Absent);
+    };
+    if !reference.flags.dotted || reference.chaining_feature_ends.len() < 2 {
+        return Ok(CrossFeature::Absent);
     }
-    Ok(CrossFeature::Absent)
+    let id = AuthoredReferenceId(u32::try_from(index).map_err(|_| ResolutionError::Capacity)?);
+    let second = member_access_paths.get(&id).and_then(|path| {
+        reference
+            .chaining_feature_ends
+            .get(1)
+            .and_then(|end| path.get(*end as usize).copied())
+    });
+    Ok(match second {
+        Some(ResolutionStatus::Resolved(cross)) => CrossFeature::Resolved(cross),
+        _ => CrossFeature::Unpublished,
+    })
 }
 
 /// One owned cross feature together with the end Feature that owns it.
@@ -383,6 +417,7 @@ pub(crate) fn owned_cross_features(
 /// an authored relationship already states (`authored_subsettings`) is not restated.
 pub(crate) fn synthesize_owned_cross_feature_redefinition_subsettings(
     storage: &SemanticModelStorage,
+    member_access_paths: &BTreeMap<AuthoredReferenceId, Box<[ResolutionStatus]>>,
     redefinitions: &BTreeSet<(DeclarationId, DeclarationId)>,
     authored_subsettings: &BTreeSet<(DeclarationId, DeclarationId)>,
 ) -> Result<Vec<ImpliedRelationship>, ResolutionError> {
@@ -391,7 +426,9 @@ pub(crate) fn synthesize_owned_cross_feature_redefinition_subsettings(
         let redefined_by_end = redefinitions
             .range((owned.end, DeclarationId(0))..=(owned.end, DeclarationId(u32::MAX)));
         for (_, redefined) in redefined_by_end {
-            let CrossFeature::Resolved(cross) = cross_feature_of(storage, *redefined)? else {
+            let CrossFeature::Resolved(cross) =
+                cross_feature_of(storage, member_access_paths, *redefined)?
+            else {
                 continue;
             };
             if cross != owned.cross_feature

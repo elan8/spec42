@@ -23,12 +23,17 @@
 //! authors its multiplicity in the cross-multiplicity position of the grammar, which is not the
 //! end feature's own multiplicity, so only `end`-prefixed features are judged.
 
+use std::collections::BTreeSet;
+
+use crate::index::expressions::conforms;
 use crate::lower::facts::OwnedEndFeature;
 use crate::model::query::ends::EndRelatedFeature;
 use crate::model::resolver::SemanticModel;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::ReferenceKind;
+use crate::resolve::end_features::cross_feature_of;
+use crate::resolve::end_features::CrossFeature;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionStatus;
 use crate::Diagnostic;
@@ -77,6 +82,7 @@ impl<D> SemanticModel<D> {
             }
 
             self.collect_cross_subsetting_rules(id, declaration.owner, diagnostics)?;
+            self.collect_cross_feature_rules(id, diagnostics)?;
 
             let is_abstract = facts.modifiers.effectively_abstract(declaration.kind);
             // A recovered member means the parser could not read part of the body, so the ends
@@ -177,6 +183,75 @@ impl<D> SemanticModel<D> {
                     None,
                 )?);
             }
+        }
+        Ok(())
+    }
+
+    /// KerML 8.3.3.3.4 `validateFeatureCrossFeatureType` and
+    /// `validateFeatureCrossFeatureSpecialization` over the canonical `Feature::crossFeature`
+    /// ([`cross_feature_of`]), as the Pilot's `KerMLValidator.checkFeature` evaluates them:
+    ///
+    /// - the cross feature has the same `type` set as the feature;
+    /// - the cross feature specializes the cross feature of every Feature the feature redefines,
+    ///   authored or implied (such as the positional end redefinitions).
+    ///
+    /// Reported at the owned CrossSubsetting's crossed feature when the feature authors one, and
+    /// otherwise at its owned cross feature. A cross feature or redefined cross feature that did
+    /// not settle, or an operand whose specialization hierarchy did not settle, leaves the rule
+    /// unanswered.
+    fn collect_cross_feature_rules(
+        &self,
+        id: DeclarationId,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        let CrossFeature::Resolved(cross) =
+            cross_feature_of(&self.storage, &self.resolution.member_access_paths, id)?
+        else {
+            return Ok(());
+        };
+        let crossing = self
+            .authored_references(id, &[ReferenceKind::Crosses])
+            .into_iter()
+            .next()
+            .map(|(_, reference)| reference);
+        let report = |code: DiagnosticCode| match crossing {
+            Some(reference) => {
+                self.reference_diagnostic(reference, code, DiagnosticSeverity::Warning, None)
+            }
+            None => self.declaration_diagnostic(cross, code, DiagnosticSeverity::Warning),
+        };
+
+        let mut redefined = BTreeSet::new();
+        self.collect_redefined_members(id, &mut redefined);
+        let mut specializes_all = Some(true);
+        for redefined in redefined {
+            match cross_feature_of(
+                &self.storage,
+                &self.resolution.member_access_paths,
+                redefined,
+            )? {
+                CrossFeature::Resolved(general) => {
+                    if self.specialization_hierarchy_is_unsettled(cross) {
+                        specializes_all = None;
+                    } else if !conforms(&self.types, cross, general) {
+                        specializes_all = specializes_all.map(|_| false);
+                    }
+                }
+                CrossFeature::Absent => {}
+                CrossFeature::Unpublished => specializes_all = None,
+            }
+        }
+        if specializes_all == Some(false) {
+            diagnostics.push(report(
+                DiagnosticCode::CrossFeatureSpecializationIncompatible,
+            )?);
+        }
+
+        if !self.specialization_hierarchy_is_unsettled(id)
+            && !self.specialization_hierarchy_is_unsettled(cross)
+            && self.types.feature_types(cross) != self.types.feature_types(id)
+        {
+            diagnostics.push(report(DiagnosticCode::CrossFeatureTypeMismatch)?);
         }
         Ok(())
     }

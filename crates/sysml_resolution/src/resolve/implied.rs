@@ -3,6 +3,7 @@
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::Declaration;
 use crate::lower::facts::MembershipRecord;
+use crate::lower::facts::OwnedEndFeature;
 use crate::lower::facts::PortionKind;
 use crate::lower::facts::TransitionFeatureRole;
 use crate::lower::storage::SemanticModelStorage;
@@ -1104,6 +1105,7 @@ pub(crate) fn synthesize_implied_relationships(
     implied.extend(
         crate::resolve::end_features::synthesize_owned_cross_feature_redefinition_subsettings(
             storage,
+            &resolution.member_access_paths,
             &redefinitions,
             &authored_subsettings,
         )?,
@@ -1314,6 +1316,61 @@ pub(crate) fn synthesize_owned_cross_feature_typings(
                 .iter()
                 .map(|(target, _)| ImpliedRelationship {
                     kind: ReferenceKind::FeatureTyping,
+                    source: projection.owned_cross_feature,
+                    target: *target,
+                }),
+        );
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(implied.into_boxed_slice())
+}
+
+/// Synthesizes the TypeFeaturings required by `checkFeatureOwnedCrossFeatureTypeFeaturing`
+/// (KerML 8.3.3.3.4) for the binary case, as the Pilot's
+/// `FeatureAdapter.addOwnedCrossFeatureTypeFeaturing` adds them: an owned cross feature with no
+/// authored TypeFeaturing is featured by the types of the other end of its end's owning Type.
+///
+/// With more than two ends the featuring type is a Cartesian-product Feature the Pilot mints;
+/// this publication has no such element, so the n-ary featuring is not stated rather than
+/// approximated. Ends are the owning Type's owned ends, which redefine inherited ones
+/// positionally; a Type with fewer than two owned ends states nothing here.
+pub(crate) fn synthesize_owned_cross_feature_type_featurings(
+    storage: &SemanticModelStorage,
+    types: &EffectiveTypes,
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    let authored_featuring = storage
+        .references
+        .iter()
+        .filter(|reference| reference.kind == ReferenceKind::TypeFeaturing)
+        .map(|reference| reference.source)
+        .collect::<std::collections::BTreeSet<_>>();
+    let mut implied = Vec::new();
+    for (index, facts) in storage.declaration_facts.iter().enumerate() {
+        let Some(projection) = facts.cross_feature_projection else {
+            continue;
+        };
+        if authored_featuring.contains(&projection.owned_cross_feature) {
+            continue;
+        }
+        let end = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let Some(owning_type) = storage.declaration(end).and_then(|end| end.owner) else {
+            continue;
+        };
+        let [first, second] = storage.owned_end_features(owning_type) else {
+            continue;
+        };
+        let other = match (first.end, second.end) {
+            (OwnedEndFeature::Declared(a), OwnedEndFeature::Declared(b)) if a == end => b,
+            (OwnedEndFeature::Declared(a), OwnedEndFeature::Declared(b)) if b == end => a,
+            _ => continue,
+        };
+        implied.extend(
+            types
+                .row(other)
+                .iter()
+                .map(|(target, _)| ImpliedRelationship {
+                    kind: ReferenceKind::TypeFeaturing,
                     source: projection.owned_cross_feature,
                     target: *target,
                 }),

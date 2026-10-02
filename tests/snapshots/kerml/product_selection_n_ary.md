@@ -188,6 +188,12 @@ package ProductSelection_N_ary {
       )
       (diagnostic
         (severity warning)
+        (code "cross_feature_specialization_incompatible")
+        (source "semantic")
+        (range (start 90 51) (end 90 81))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 91 58) (end 91 74))
@@ -206,6 +212,12 @@ package ProductSelection_N_ary {
       )
       (diagnostic
         (severity warning)
+        (code "cross_feature_specialization_incompatible")
+        (source "semantic")
+        (range (start 98 68) (end 98 115))
+      )
+      (diagnostic
+        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 99 62) (end 99 75))
@@ -221,6 +233,12 @@ package ProductSelection_N_ary {
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 102 34) (end 102 65))
+      )
+      (diagnostic
+        (severity warning)
+        (code "cross_feature_specialization_incompatible")
+        (source "semantic")
+        (range (start 106 43) (end 106 78))
       )
       (diagnostic
         (severity warning)

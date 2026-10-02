@@ -47,6 +47,7 @@ use crate::resolve::implied::synthesize_feature_reference_expression_result_spec
 use crate::resolve::implied::synthesize_implied_relationships;
 use crate::resolve::implied::synthesize_invocation_expression_specializations;
 use crate::resolve::implied::synthesize_operator_expression_result_specializations;
+use crate::resolve::implied::synthesize_owned_cross_feature_type_featurings;
 use crate::resolve::implied::synthesize_owned_cross_feature_typings;
 use crate::resolve::implied::synthesize_semantic_metadata_specializations;
 use crate::resolve::implied::synthesize_succession_endpoint_subsettings;
@@ -191,6 +192,10 @@ impl Lowered {
             let mut implied = resolution.implied_relationships.to_vec();
             implied.extend(
                 synthesize_owned_cross_feature_typings(&storage, &prerequisite_types)?.into_vec(),
+            );
+            implied.extend(
+                synthesize_owned_cross_feature_type_featurings(&storage, &prerequisite_types)?
+                    .into_vec(),
             );
             implied.sort_by_key(|relationship| {
                 (
