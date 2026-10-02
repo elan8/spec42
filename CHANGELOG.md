@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- **Short names are published wherever SysML's `Identification` allows them.** A short name
+## [0.54.1] - 2026-10-02
+
+- **Short names are published wherever SysML's `Identification` allows them (#236).** A short name
   (`<'V1'>`) is legal on every definition and usage, but on `verification`, `analysis`, `case`,
   `state`, `exhibit state`, `concern` (and `concern def`), `viewpoint`, `rendering`, `enum`,
   `allocation`, `interface`, `metadata`, `assert constraint`, `succession`, `binding`,
@@ -19,8 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   bodies. Pins sysml-v2-parser `3ccf83ea` (elan8/sysml-v2-parser#157 and #160).
   - A named `binding b bind x = y;` member now publishes its declared name as well; it was
     lowered as an anonymous binding.
-
-## [0.54.1] - 2026-10-02
 
 - **Repeated `#derivation` connections resolve quickly (#239).** Each metadata annotation
   walked the specialization graph for every library feature value while looking up
