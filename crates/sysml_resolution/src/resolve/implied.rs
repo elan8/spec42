@@ -1155,8 +1155,22 @@ pub(crate) fn synthesize_feature_valuation_specializations(
     storage: &SemanticModelStorage,
 ) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
     let mut implied = Vec::new();
+    // One pass over the authored references instead of one per feature value.
+    let mut specialized = vec![false; storage.declarations.len()];
+    for reference in storage.references.iter() {
+        if is_owned_specialization_reference(reference.kind) {
+            *specialized
+                .get_mut(reference.source.index())
+                .ok_or(ResolutionError::InvalidStorage)? = true;
+        }
+    }
     for value in storage.feature_values.iter() {
-        if !feature_valuation_specialization_applies(storage, value)? {
+        if !feature_valuation_specialization_applies_given(storage, value, |declaration| {
+            specialized
+                .get(declaration.index())
+                .copied()
+                .unwrap_or(false)
+        })? {
             continue;
         }
         implied.push(ImpliedRelationship {
@@ -1175,21 +1189,53 @@ pub(crate) fn feature_valuation_specialization_applies(
     storage: &SemanticModelStorage,
     value: &crate::lower::facts::FeatureValueRecord,
 ) -> Result<bool, ResolutionError> {
+    feature_valuation_specialization_applies_given(storage, value, |declaration| {
+        storage.references.iter().any(|reference| {
+            reference.source == declaration && is_owned_specialization_reference(reference.kind)
+        })
+    })
+}
+
+/// [`feature_valuation_specialization_applies`] over a caller-supplied answer to "does this
+/// declaration author an owned specialization", so a synthesis over every feature value can
+/// answer it from one pass over the references.
+fn feature_valuation_specialization_applies_given(
+    storage: &SemanticModelStorage,
+    value: &crate::lower::facts::FeatureValueRecord,
+    authors_owned_specialization: impl Fn(DeclarationId) -> bool,
+) -> Result<bool, ResolutionError> {
     let facts = storage
         .declaration_facts(value.declaration)
         .ok_or(ResolutionError::InvalidStorage)?;
     Ok(!value.is_default
         && facts.direction.is_none()
-        && !storage.references.iter().any(|reference| {
-            reference.source == value.declaration
-                && matches!(
-                    reference.kind,
-                    ReferenceKind::Subclassification
-                        | ReferenceKind::FeatureTyping
-                        | ReferenceKind::Subsetting
-                        | ReferenceKind::Redefinition
-                )
-        }))
+        && !authors_owned_specialization(value.declaration))
+}
+
+/// The authored relationship kinds that are an owned specialization of their source.
+fn is_owned_specialization_reference(kind: ReferenceKind) -> bool {
+    matches!(
+        kind,
+        ReferenceKind::Subclassification
+            | ReferenceKind::FeatureTyping
+            | ReferenceKind::Subsetting
+            | ReferenceKind::Redefinition
+    )
+}
+
+/// The indices of the authored references of `kind`, grouped by source in authored order: one
+/// pass over the references for a synthesis that looks up several sources.
+fn reference_indices_by_source(
+    storage: &SemanticModelStorage,
+    kind: ReferenceKind,
+) -> std::collections::HashMap<DeclarationId, Vec<usize>> {
+    let mut by_source = std::collections::HashMap::<DeclarationId, Vec<usize>>::new();
+    for (index, reference) in storage.references.iter().enumerate() {
+        if reference.kind == kind {
+            by_source.entry(reference.source).or_default().push(index);
+        }
+    }
+    by_source
 }
 
 /// Synthesizes the FeatureTyping relationships required by
@@ -1350,6 +1396,7 @@ pub(crate) fn synthesize_feature_chain_expression_result_specializations(
     let mut implied = Vec::new();
     let mut projections = Vec::new();
     let mut status = FeatureChainExpressionSpecializationStatus::Complete;
+    let operands = reference_indices_by_source(storage, ReferenceKind::MemberAccessOperand);
     for chain in storage.feature_chain_expressions.iter() {
         implied.extend([
             ImpliedRelationship {
@@ -1368,15 +1415,12 @@ pub(crate) fn synthesize_feature_chain_expression_result_specializations(
                 target: chain.subsetting_chain,
             },
         ]);
-        let mut references = storage
-            .references
+        let mut references = operands
+            .get(&chain.expression)
+            .map_or(&[][..], Vec::as_slice)
             .iter()
-            .enumerate()
-            .filter(|(_, reference)| {
-                reference.source == chain.expression
-                    && reference.kind == ReferenceKind::MemberAccessOperand
-            });
-        let Some((index, _)) = references.next() else {
+            .copied();
+        let Some(index) = references.next() else {
             status = FeatureChainExpressionSpecializationStatus::Unresolved;
             continue;
         };
@@ -1431,16 +1475,14 @@ pub(crate) fn synthesize_feature_reference_expression_result_specializations(
     let mut implied = Vec::new();
     let mut projections = Vec::new();
     let mut status = FeatureReferenceExpressionSpecializationStatus::Complete;
+    let operands = reference_indices_by_source(storage, ReferenceKind::ExpressionOperand);
     for expression in storage.feature_reference_expressions.iter() {
-        let mut references = storage
-            .references
+        let mut references = operands
+            .get(&expression.expression)
+            .map_or(&[][..], Vec::as_slice)
             .iter()
-            .enumerate()
-            .filter(|(_, reference)| {
-                reference.source == expression.expression
-                    && reference.kind == ReferenceKind::ExpressionOperand
-            });
-        let Some((index, _)) = references.next() else {
+            .copied();
+        let Some(index) = references.next() else {
             status = FeatureReferenceExpressionSpecializationStatus::Unresolved;
             continue;
         };
@@ -2472,17 +2514,19 @@ pub(crate) fn resolve_library_anchor_path(
     let Some((&last, owners)) = parts.split_last() else {
         return LibrarySpecializationAnchor::Missing;
     };
+    // Names are interned once each, so comparing the interned id is comparing the decoded name.
+    let Some(last) = storage.symbols.find(last) else {
+        return LibrarySpecializationAnchor::Missing;
+    };
     let mut candidates = storage
         .declarations
         .iter()
         .enumerate()
         .filter_map(|(index, declaration)| {
-            (storage
-                .document(declaration.document)
-                .is_some_and(|document| document.role == SourceRole::StandardLibrary)
-                && declaration
-                    .name
-                    .is_some_and(|name| storage.symbol(name) == Some(last))
+            (declaration.name == Some(last)
+                && storage
+                    .document(declaration.document)
+                    .is_some_and(|document| document.role == SourceRole::StandardLibrary)
                 && anchor_owner_path_matches(storage, declaration.owner, owners))
             .then(|| DeclarationId::from_index(index).ok())
             .flatten()
