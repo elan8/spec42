@@ -8,6 +8,7 @@ use crate::model::span::document_range;
 use crate::model::span::identifier_range;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
+use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;
 use crate::model::NameId;
 use crate::resolve::results::ResolutionError;
@@ -251,8 +252,12 @@ impl DocumentIndex {
             }
             // A generated result Feature has no authored token or source extent distinct from its
             // owning Expression. Keep its semantic span for diagnostics and identity, but do not
-            // let it win cursor containment over the authored value Expression.
-            if !synthetic_expression_results[index] {
+            // let it win cursor containment over the authored value Expression. Likewise a
+            // ConjugatedPortDefinition is never authored: lowering mints it with its original
+            // PortDefinition's span, so it must not win containment over that definition.
+            let synthesized = synthetic_expression_results[index]
+                || declaration.kind == DeclarationKind::ConjugatedPortDefinition;
+            if !synthesized {
                 if let Ok(range) = document_range(storage, declaration.document, &declaration.span)
                 {
                     spans[declaration.document.index()].push((range, id));
