@@ -28,16 +28,16 @@ pub enum TypeDerivedRelationshipCollection {
 
 /// One exact element-valued derivation defined on KerML `Type`.
 ///
-/// This intentionally exposes final member elements only. `FeatureMembership` remains compact
-/// declaration-aligned storage, rather than a fabricated public relationship identity.
+/// This intentionally exposes final member elements only; the `FeatureMembership` relationships
+/// that own them are published by the Type derived-fact collections.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum TypeDerivedElementCollection {
     OwnedFeature,
     OwnedEndFeature,
 }
 
-/// One exact Type derivation whose normative result shape is known, but whose fact owner is not
-/// yet published by the canonical model.
+/// One exact Type derivation over canonical membership, specialization-closure, multiplicity and
+/// conjugation facts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum TypeDerivedFactCollection {
     OwnedFeatureMembership,
@@ -56,8 +56,6 @@ pub enum TypeDerivedFactCollection {
 /// The first canonical fact owner an exact Type derivation needs before it can publish values.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TypeDerivedFactPrerequisite {
-    FeatureMembershipIdentity,
-    FeatureMembershipIdentityAndInheritedClosure,
     InheritedMembershipClosure,
     ConjugationRelationshipIdentity,
     RuleNotPublished,

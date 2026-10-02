@@ -18,7 +18,13 @@ pub use sysml_contract::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TypeDerivedFactValue {
     Feature(SymbolId),
+    /// One `FeatureMembership` relationship: its canonical publication-scoped identity, which
+    /// [`crate::PublishedResolution::membership`] resolves to the full relationship, and the
+    /// `ownedMemberFeature` it owns. An owning Membership and its owned member are distinct
+    /// semantic objects that share one aligned storage slot, so the identity is derived from the
+    /// existing membership facts rather than stored a second time.
     FeatureMembership {
+        membership: crate::MembershipId,
         member: SymbolId,
     },
     /// `Type::multiplicity`: the owned `Multiplicity` element. Its bounds are not repeated here;

@@ -1192,10 +1192,10 @@ impl<D> SemanticModel<D> {
     ) -> bool {
         let facts = self.storage.declaration_facts(member);
         match collection {
-            TypeDerivedFactCollection::OwnedFeatureMembership
-            | TypeDerivedFactCollection::Multiplicity
+            TypeDerivedFactCollection::Multiplicity
             | TypeDerivedFactCollection::OwnedConjugator => false,
-            TypeDerivedFactCollection::FeatureMembership
+            TypeDerivedFactCollection::OwnedFeatureMembership
+            | TypeDerivedFactCollection::FeatureMembership
             | TypeDerivedFactCollection::Feature
             | TypeDerivedFactCollection::InheritedMembership
             | TypeDerivedFactCollection::InheritedFeature => true,
@@ -1245,15 +1245,6 @@ impl<D> SemanticModel<D> {
             return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
-        let unavailable = match collection {
-            TypeDerivedFactCollection::OwnedFeatureMembership => {
-                Some(TypeDerivedFactPrerequisite::FeatureMembershipIdentity)
-            }
-            _ => None,
-        };
-        if let Some(prerequisite) = unavailable {
-            return self.resolved_outcome(TypeDerivedFactOutcome::Unsupported { prerequisite });
-        }
         if collection == TypeDerivedFactCollection::Multiplicity {
             let values = self
                 .storage
@@ -1292,38 +1283,47 @@ impl<D> SemanticModel<D> {
             return self
                 .resolved_outcome(TypeDerivedFactOutcome::Values(values.into_boxed_slice()));
         }
-        let inherited = self.inherited_feature_members(declaration);
         let members = match collection {
+            TypeDerivedFactCollection::OwnedFeatureMembership => {
+                self.owned_feature_members(declaration)
+            }
             TypeDerivedFactCollection::InheritedMembership
-            | TypeDerivedFactCollection::InheritedFeature => inherited,
+            | TypeDerivedFactCollection::InheritedFeature => {
+                self.inherited_feature_members(declaration)
+            }
             _ => self
                 .owned_feature_members(declaration)
                 .into_iter()
-                .chain(inherited)
+                .chain(self.inherited_feature_members(declaration))
                 .collect(),
         };
-        // `FeatureMembership`-valued collections still name their member element, never a
-        // fabricated Membership relationship identity: that identity remains unpublished, and its
-        // own derivation stays explicitly unsupported above.
+        // `FeatureMembership`-valued collections publish the canonical Membership relationship
+        // identity of each member's owning membership, alongside the member it owns.
         let membership_valued = matches!(
             collection,
-            TypeDerivedFactCollection::InheritedMembership
+            TypeDerivedFactCollection::OwnedFeatureMembership
+                | TypeDerivedFactCollection::InheritedMembership
                 | TypeDerivedFactCollection::FeatureMembership
         );
-        let values = self
-            .symbols(
-                members
-                    .into_iter()
-                    .filter(|member| self.type_derived_fact_selects(collection, *member)),
-            )
-            .into_vec()
+        // Canonical symbol order, one value per member (as `symbols` orders element results).
+        let mut selected = members
             .into_iter()
-            .map(|member| {
-                if membership_valued {
-                    TypeDerivedFactValue::FeatureMembership { member }
+            .filter(|member| self.type_derived_fact_selects(collection, *member))
+            .filter_map(|member| Some((self.symbol_id(member)?, member)))
+            .collect::<Vec<_>>();
+        selected.sort_by_key(|(symbol, _)| *symbol);
+        selected.dedup_by_key(|(symbol, _)| *symbol);
+        let values = selected
+            .into_iter()
+            .filter_map(|(symbol, member)| {
+                Some(if membership_valued {
+                    TypeDerivedFactValue::FeatureMembership {
+                        membership: crate::MembershipId::from_index(member.index())?,
+                        member: symbol,
+                    }
                 } else {
-                    TypeDerivedFactValue::Feature(member)
-                }
+                    TypeDerivedFactValue::Feature(symbol)
+                })
             })
             .collect::<Vec<_>>();
         self.resolved_outcome(TypeDerivedFactOutcome::Values(values.into_boxed_slice()))

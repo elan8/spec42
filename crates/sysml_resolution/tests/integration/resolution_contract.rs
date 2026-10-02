@@ -5614,7 +5614,7 @@ fn usage_may_time_vary_uses_effective_library_and_portion_facts_with_schedule_pa
 }
 
 #[test]
-fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequisite() {
+fn exact_type_derived_facts_publish_closure_values() {
     let published = detail_publication(
         &[ (
             "memory://model.sysml",
@@ -5624,20 +5624,12 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
     );
     let child = identity_of(&published, "memory://model.sysml", "Model::Child");
     let sized = identity_of(&published, "memory://model.sysml", "Model::Sized");
-    let unsupported = |symbol: SymbolId, collection, prerequisite| {
-        assert!(matches!(
-            published.type_derived_fact(symbol, collection).answer,
-            QueryAnswer::Resolved(TypeDerivedFactOutcome::Unsupported { prerequisite: actual })
-                if actual == prerequisite
-        ));
-    };
     let values =
         |symbol: SymbolId, collection| match published.type_derived_fact(symbol, collection).answer
         {
             QueryAnswer::Resolved(TypeDerivedFactOutcome::Values(values)) => values,
             other => panic!("expected published values, got {other:?}"),
         };
-    let member = |symbol: SymbolId| TypeDerivedFactValue::FeatureMembership { member: symbol };
     let inherited = identity_of(
         &published,
         "memory://model.sysml",
@@ -5647,14 +5639,23 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
     let output = identity_of(&published, "memory://model.sysml", "Model::Child::output");
     let endpoint = identity_of(&published, "memory://model.sysml", "Model::Child::endpoint");
 
-    // The Membership relationship identity itself is still unpublished, so only the
-    // owned-membership derivation -- whose normative result *is* that relationship -- stays
-    // explicitly unsupported.
-    unsupported(
-        child,
-        TypeDerivedFactCollection::OwnedFeatureMembership,
-        TypeDerivedFactPrerequisite::FeatureMembershipIdentity,
-    );
+    // `ownedFeatureMembership` publishes the canonical Membership relationship identity of each
+    // owned feature, which resolves back to the relationship that owns that feature.
+    let owned = values(child, TypeDerivedFactCollection::OwnedFeatureMembership);
+    assert_eq!(owned.len(), 3);
+    for value in owned.iter() {
+        let TypeDerivedFactValue::FeatureMembership { membership, member } = value else {
+            panic!("expected FeatureMembership values, got {value:?}");
+        };
+        let QueryAnswer::Resolved(relationship) = published.membership(*membership).answer else {
+            panic!("expected a resolvable FeatureMembership identity");
+        };
+        assert_eq!(relationship.member, *member);
+        assert_eq!(relationship.owning_namespace, Some(child));
+    }
+    assert!(!owned
+        .iter()
+        .any(|value| matches!(value, TypeDerivedFactValue::FeatureMembership { member, .. } if *member == inherited)));
     // `multiplicity` names the owned MultiplicityRange an authored `[1]` lowers to; a Type
     // that authors none has an empty value set.
     assert!(matches!(
@@ -5670,8 +5671,14 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
     );
 
     assert_eq!(
-        values(child, TypeDerivedFactCollection::InheritedMembership).into_vec(),
-        vec![member(inherited)]
+        values(child, TypeDerivedFactCollection::InheritedMembership)
+            .iter()
+            .map(|value| match value {
+                TypeDerivedFactValue::FeatureMembership { member, .. } => Some(*member),
+                _ => None,
+            })
+            .collect::<Vec<_>>(),
+        vec![Some(inherited)]
     );
     assert_eq!(
         values(child, TypeDerivedFactCollection::InheritedFeature).into_vec(),
@@ -5683,12 +5690,12 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
     ] {
         let published_values = values(child, collection);
         assert!(published_values.iter().any(|value| match value {
-            TypeDerivedFactValue::FeatureMembership { member } => member == &inherited,
+            TypeDerivedFactValue::FeatureMembership { member, .. } => member == &inherited,
             TypeDerivedFactValue::Feature(feature) => feature == &inherited,
             _ => false,
         }));
         assert!(published_values.iter().any(|value| match value {
-            TypeDerivedFactValue::FeatureMembership { member } => member == &input,
+            TypeDerivedFactValue::FeatureMembership { member, .. } => member == &input,
             TypeDerivedFactValue::Feature(feature) => feature == &input,
             _ => false,
         }));

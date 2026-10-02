@@ -245,8 +245,10 @@ use the closed
 
 It is evaluated only through `PublishedModel::type_derived_elements`. The resolver selects direct
 canonical Feature-membership member identities; the end-feature projection additionally reads the
-canonical `end` modifier fact. It does not materialize a public `FeatureMembership` relationship,
-infer inherited members, or recover a target from text.
+canonical `end` modifier fact. It does not infer inherited members or recover a target from text.
+The owning `FeatureMembership` relationships are the `deriveTypeOwnedFeatureMembership` fact, whose
+values carry each relationship's canonical `MembershipId`; a `type-derived-fact` target names the
+member that membership owns.
 `absent`, `incomplete`, and `unsupported` omit `target`.
 
 The remaining exact `Type` derivations use the closed `type-derived-fact` assertion. Its

@@ -5828,7 +5828,7 @@ fn compare_type_derived_fact_observation(
             },
         ) if values.iter().any(|value| match value {
             TypeDerivedFactValue::Feature(actual) => actual == expected,
-            TypeDerivedFactValue::FeatureMembership { member } => member == expected,
+            TypeDerivedFactValue::FeatureMembership { member, .. } => member == expected,
             TypeDerivedFactValue::Conjugator { original_type } => original_type == expected,
             TypeDerivedFactValue::Multiplicity { element } => element == expected,
         }) =>
