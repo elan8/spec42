@@ -20,6 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - A named `binding b bind x = y;` member now publishes its declared name as well; it was
     lowered as an anonymous binding.
 
+## [0.54.1] - 2026-10-02
+
+- **Repeated `#derivation` connections resolve quickly (#239).** Each metadata annotation
+  walked the specialization graph for every library feature value while looking up
+  `SemanticMetadata::baseType`. That lookup now happens once per model, so a requirements
+  model with hundreds of derivation connections resolves in seconds instead of minutes.
+
 ## [0.54.0] - 2026-10-01
 
 - **Requirement derivation, and `#` prefix metadata on connections (#221, #222, #223).** Pins
