@@ -1710,8 +1710,8 @@ impl<D> SemanticModel<D> {
             let kind = self.kind_of(id).ok_or(ResolutionError::InvalidStorage)?;
 
             // KerML 8.3.4.11.2 `validateMultiplicityRangeBoundResultTypes`: a model-level
-            // evaluable bound must evaluate to a natural number, so a negative literal bound is
-            // `multiplicity_bound_invalid`. Otherwise, a multiplicity whose literal bounds cross
+            // evaluable bound must evaluate to a natural number, so a negative or non-integer
+            // literal bound is `multiplicity_bound_invalid`. Otherwise, a multiplicity whose literal bounds cross
             // admits nothing at all. Both apply to the feature's own multiplicity and a connector
             // end's cross multiplicity. A non-literal bound's result type is not a published fact,
             // so its half of the rule stays unanswered.
@@ -1723,8 +1723,13 @@ impl<D> SemanticModel<D> {
                 .into_iter()
                 .flatten()
             {
-                let negative = |bound: MultiplicityBound| matches!(bound, MultiplicityBound::Literal(value) if value < 0);
-                let code = if negative(multiplicity.lower) || negative(multiplicity.upper) {
+                // Pilot `checkMultiplicityRange`: a model-level evaluable bound is valid only when
+                // `valueOf` yields a natural, so a negative or non-integer literal is rejected.
+                let not_natural = |bound: MultiplicityBound| {
+                    matches!(bound, MultiplicityBound::Literal(value) if value < 0)
+                        || bound == MultiplicityBound::NonIntegerLiteral
+                };
+                let code = if not_natural(multiplicity.lower) || not_natural(multiplicity.upper) {
                     DiagnosticCode::MultiplicityBoundInvalid
                 } else if let (
                     MultiplicityBound::Literal(lower),

@@ -352,7 +352,7 @@ fn bound_text(bound: MultiplicityBound) -> String {
         MultiplicityBound::Unbounded => "*".to_string(),
         MultiplicityBound::Literal(value) => value.to_string(),
         // The author wrote a non-literal bound. Rendering a number here would invent one.
-        MultiplicityBound::Expression => "…".to_string(),
+        MultiplicityBound::NonIntegerLiteral | MultiplicityBound::Expression => "…".to_string(),
     }
 }
 

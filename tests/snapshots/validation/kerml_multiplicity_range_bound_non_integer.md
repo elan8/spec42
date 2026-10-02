@@ -9,7 +9,6 @@ rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.11.2:validateMultiplicityRangeBoundResultTypes
 coverage_role=secondary
-blocked_by=semantic-multiplicity-bound-result-type
 type=file
 ~~~
 # SOURCE
@@ -42,6 +41,12 @@ package Multiplicities {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "multiplicity_bound_invalid")
+        (source "semantic")
+        (range (start 5 25) (end 5 30))
+      )
     )
   )
 )
@@ -58,7 +63,7 @@ package Multiplicities {
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Bounded")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
-    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (qualified-name "Multiplicities::Fractional"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (multiplicity (lower expression) (upper expression))))
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (qualified-name "Multiplicities::Fractional"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (multiplicity (lower non-integer-literal) (upper non-integer-literal))))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Fractional")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Fractional")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-rational) (ordinal 0))))) (kind kerml-literal-rational) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Fractional")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-rational) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Fractional")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-rational) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))

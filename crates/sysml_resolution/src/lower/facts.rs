@@ -104,6 +104,10 @@ pub(crate) enum MultiplicityBound {
     Unbounded,
     /// A bound that folds to a literal integer from literals alone (`[3]`, `[0..4]`).
     Literal(i64),
+    /// A bound written from literals alone whose value is not an integer (`[1.5]`, `["a"]`,
+    /// `[true]`, `[null]`). It is model-level evaluable, and what it evaluates to is not a
+    /// natural number (KerML 8.3.4.11.2 `validateMultiplicityRangeBoundResultTypes`).
+    NonIntegerLiteral,
     /// A bound authored as a non-literal expression (`[1..n]`, `[a#(0)]`). Published as an explicit
     /// non-literal fact -- its effective value needs operand resolution, which this fact family
     /// deliberately does not perform, and it is never recovered by re-reading authored text.
@@ -600,9 +604,18 @@ pub(crate) fn multiplicity_bound(expression: Option<&Node<Expression>>) -> Multi
         return MultiplicityBound::Unbounded;
     };
     match literal_bound_value(&expression.value) {
-        Some(value) => MultiplicityBound::Literal(value),
+        Some(LiteralBoundValue::Integer(value)) => MultiplicityBound::Literal(value),
+        Some(LiteralBoundValue::NonInteger) => MultiplicityBound::NonIntegerLiteral,
         None => MultiplicityBound::Expression,
     }
+}
+
+/// The value a literal-only multiplicity bound folds to.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum LiteralBoundValue {
+    Integer(i64),
+    /// A real, string, boolean or null literal: evaluable, but not an integer.
+    NonInteger,
 }
 
 /// Folds a multiplicity bound expression to a literal integer, or reports that it is not one.
@@ -612,9 +625,13 @@ pub(crate) fn multiplicity_bound(expression: Option<&Node<Expression>>) -> Multi
 /// Everything else -- a feature reference, an arithmetic expression, an index -- is published as
 /// `MultiplicityBound::Expression` rather than guessed at, because folding it needs operand
 /// resolution this fact family does not perform.
-pub(crate) fn literal_bound_value(expression: &Expression) -> Option<i64> {
+pub(crate) fn literal_bound_value(expression: &Expression) -> Option<LiteralBoundValue> {
     match expression {
-        Expression::LiteralInteger(value) => Some(*value),
+        Expression::LiteralInteger(value) => Some(LiteralBoundValue::Integer(*value)),
+        Expression::LiteralReal(_)
+        | Expression::LiteralString(_)
+        | Expression::LiteralBoolean(_)
+        | Expression::Null => Some(LiteralBoundValue::NonInteger),
         Expression::Sequence { operands, .. } => match operands.value.elements.as_slice() {
             [only] => literal_bound_value(&only.expression.value),
             _ => None,
@@ -622,12 +639,17 @@ pub(crate) fn literal_bound_value(expression: &Expression) -> Option<i64> {
         // A signed integer literal (`-1`, `+2`) is still a literal-only, model-level-evaluable
         // value; a negative result is a published fact the bound rule rejects.
         Expression::UnaryOp { op, operand } => {
-            let value = literal_bound_value(&operand.value)?;
-            match op {
-                sysml_v2_parser::ast::UnaryOperator::Plus => Some(value),
-                sysml_v2_parser::ast::UnaryOperator::Minus => value.checked_neg(),
+            let negate = match op {
+                sysml_v2_parser::ast::UnaryOperator::Plus => false,
+                sysml_v2_parser::ast::UnaryOperator::Minus => true,
                 sysml_v2_parser::ast::UnaryOperator::Not
-                | sysml_v2_parser::ast::UnaryOperator::BitNot => None,
+                | sysml_v2_parser::ast::UnaryOperator::BitNot => return None,
+            };
+            match literal_bound_value(&operand.value)? {
+                LiteralBoundValue::Integer(value) if negate => {
+                    value.checked_neg().map(LiteralBoundValue::Integer)
+                }
+                value => Some(value),
             }
         }
         _ => None,

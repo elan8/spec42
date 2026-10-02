@@ -878,7 +878,10 @@ impl<D> SemanticModel<D> {
         let (lower, upper) = match (multiplicity.lower, multiplicity.upper) {
             // An expression bound needs operand resolution to compare, which this fact family does
             // not perform, so the question stays unanswered on either side.
-            (MultiplicityBound::Expression, _) | (_, MultiplicityBound::Expression) => return None,
+            (MultiplicityBound::Expression | MultiplicityBound::NonIntegerLiteral, _)
+            | (_, MultiplicityBound::Expression | MultiplicityBound::NonIntegerLiteral) => {
+                return None
+            }
             (MultiplicityBound::Literal(lower), MultiplicityBound::Unbounded) => (lower, None),
             (MultiplicityBound::Literal(lower), MultiplicityBound::Literal(upper)) => {
                 (lower, Some(upper))

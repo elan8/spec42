@@ -1648,6 +1648,7 @@ fn write_bound(output: &mut dyn fmt::Write, bound: MultiplicityBound) -> fmt::Re
     match bound {
         MultiplicityBound::Unbounded => write!(output, "unbounded"),
         MultiplicityBound::Literal(value) => write!(output, "{value}"),
+        MultiplicityBound::NonIntegerLiteral => write!(output, "non-integer-literal"),
         MultiplicityBound::Expression => write!(output, "expression"),
     }
 }

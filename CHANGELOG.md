@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Non-integer literal multiplicity bounds are rejected.** A bound written from literals alone
+  that is not an integer (`[1.5]`, `["a"]`, `[true]`) is published as a `NonIntegerLiteral`
+  multiplicity bound and reported as `multiplicity_bound_invalid` (KerML 8.3.4.11.2).
+
 - **`X.metadata` resolves its referenced element.** A metadata access expression's qualified name
   now resolves (any Element) as a `metadataAccessTarget` relationship from its
   `MetadataAccessExpression`, so the expression is no longer reported as unsupported. The diagram

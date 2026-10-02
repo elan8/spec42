@@ -1221,6 +1221,7 @@ pub(crate) fn write_multiplicity_bound(
     match bound {
         MultiplicityBound::Unbounded => output.write_str("unbounded"),
         MultiplicityBound::Literal(value) => write!(output, "{value}"),
+        MultiplicityBound::NonIntegerLiteral => output.write_str("non-integer-literal"),
         MultiplicityBound::Expression => output.write_str("expression"),
     }
 }

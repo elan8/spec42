@@ -130,7 +130,7 @@ summary = "no canonical Expression::modelLevelEvaluable fact exists: deciding it
 id = "semantic-multiplicity-bound-result-type"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"
-summary = "multiplicity_bound_invalid covers negative literal bounds only: a non-literal or non-integer bound is published as MultiplicityBound::Expression with no result type, so the ScalarValues::Integer result-type half of validateMultiplicityRangeBoundResultTypes is unanswered"
+summary = "multiplicity_bound_invalid decides literal-only bounds (negative or non-integer values) but a non-literal bound is published as MultiplicityBound::Expression: its bound Expression owns no typed result and lowering resolves none of its operands, so whether its result specializes ScalarValues::Integer (validateMultiplicityRangeBoundResultTypes) is unanswered"
 
 [[issue]]
 id = "abstract-syntax-nonrepresentable-second-conjugation"

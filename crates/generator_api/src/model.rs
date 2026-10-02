@@ -2119,9 +2119,11 @@ fn bound(value: MultiplicityBound) -> Result<Option<String>, ModelQueryError> {
     match value {
         MultiplicityBound::Unbounded => Ok(None),
         MultiplicityBound::Literal(value) => Ok(Some(value.to_string())),
-        MultiplicityBound::Expression => Err(ModelQueryError::Unsupported(
-            "generator element detail cannot serialize a non-literal multiplicity bound".into(),
-        )),
+        MultiplicityBound::NonIntegerLiteral | MultiplicityBound::Expression => {
+            Err(ModelQueryError::Unsupported(
+                "generator element detail cannot serialize a non-literal multiplicity bound".into(),
+            ))
+        }
     }
 }
 fn scalar(value: &EvaluatedScalar) -> String {

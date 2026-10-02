@@ -459,6 +459,9 @@ impl<D> SemanticModel<D> {
             crate::lower::facts::MultiplicityBound::Literal(value) => {
                 MultiplicityBound::Literal(value)
             }
+            crate::lower::facts::MultiplicityBound::NonIntegerLiteral => {
+                MultiplicityBound::NonIntegerLiteral
+            }
             crate::lower::facts::MultiplicityBound::Expression => MultiplicityBound::Expression,
         };
         MultiplicityFacts::Declared {
