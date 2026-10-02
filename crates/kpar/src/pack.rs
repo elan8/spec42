@@ -118,11 +118,7 @@ impl PackOptions {
     pub fn domain_libraries_defaults(project: Project, repo_root: &Path) -> Self {
         Self {
             project,
-            source_roots: ["domain", "technical", "generic"]
-                .iter()
-                .map(|name| repo_root.join(name))
-                .filter(|p| p.is_dir())
-                .collect(),
+            source_roots: domain_library_source_roots(repo_root),
             named_source_roots: Vec::new(),
             excludes: default_domain_excludes(),
             timestamp: ArchiveTimestamp::default(),
@@ -141,6 +137,29 @@ impl PackOptions {
         }
         self
     }
+}
+
+/// Canonical domain-library roots, in archive-prefix order.
+///
+/// Current checkouts keep these directories under `model/`. Older checkouts and the pack
+/// tests keep them at the repository root. A `model/<name>` directory wins when both exist,
+/// because that is the layout the domain-library conventions declare. The archive prefix stays
+/// the directory's own name (`generic`, `technical`, `domain`), so either layout publishes the
+/// same KPAR paths.
+fn domain_library_source_roots(repo_root: &Path) -> Vec<PathBuf> {
+    ["domain", "technical", "generic"]
+        .into_iter()
+        .filter_map(|name| resolve_domain_library_root(repo_root, name))
+        .collect()
+}
+
+fn resolve_domain_library_root(repo_root: &Path, name: &str) -> Option<PathBuf> {
+    let under_model = repo_root.join("model").join(name);
+    if under_model.is_dir() {
+        return Some(under_model);
+    }
+    let at_root = repo_root.join(name);
+    at_root.is_dir().then_some(at_root)
 }
 
 pub fn default_domain_excludes() -> Vec<String> {
@@ -551,6 +570,65 @@ mod tests {
         assert!(out
             .join("technical/software/duplicate/SoftwareCore.sysml")
             .is_file());
+    }
+
+    #[test]
+    fn domain_libraries_defaults_pack_roots_nested_under_model() {
+        let repo = tempdir().expect("temp repo");
+        let monetary_units = repo
+            .path()
+            .join("model")
+            .join("generic")
+            .join("units")
+            .join("MonetaryUnits.sysml");
+        fs::create_dir_all(monetary_units.parent().unwrap()).expect("generic units dir");
+        fs::write(
+            &monetary_units,
+            "package MonetaryUnits { attribute <EUR> 'euro'; }",
+        )
+        .expect("write monetary units");
+
+        let software_core = repo
+            .path()
+            .join("model")
+            .join("technical")
+            .join("software")
+            .join("SoftwareCore.sysml");
+        fs::create_dir_all(software_core.parent().unwrap()).expect("software dir");
+        fs::write(&software_core, "package SoftwareCore {}").expect("write software");
+
+        let nested_example = repo
+            .path()
+            .join("model")
+            .join("technical")
+            .join("software")
+            .join("examples")
+            .join("Ignored.sysml");
+        fs::create_dir_all(nested_example.parent().unwrap()).expect("examples dir");
+        fs::write(&nested_example, "package Ignored {}").expect("write ignored example");
+
+        let stale_root = repo.path().join("generic").join("units").join("Stale.sysml");
+        fs::create_dir_all(stale_root.parent().unwrap()).expect("stale root dir");
+        fs::write(&stale_root, "package Stale {}").expect("write stale root source");
+
+        let options = PackOptions::domain_libraries_defaults(test_project(), repo.path());
+        let kpar_path = repo.path().join("elan8-domain-libraries-0.1.0.kpar");
+        build_kpar(&options, &kpar_path).expect("pack domain libraries");
+
+        let archive = open_kpar_path(&kpar_path).expect("open kpar");
+        assert_eq!(
+            archive.meta.index.get("MonetaryUnits"),
+            Some(&"generic/units/MonetaryUnits.sysml".to_string())
+        );
+        assert_eq!(
+            archive.meta.index.get("SoftwareCore"),
+            Some(&"technical/software/SoftwareCore.sysml".to_string())
+        );
+        assert!(!archive.meta.index.contains_key("Ignored"));
+        assert!(
+            !archive.meta.index.contains_key("Stale"),
+            "model/generic is the canonical root when a legacy generic/ directory also exists"
+        );
     }
 
     #[test]
