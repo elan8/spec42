@@ -145,6 +145,8 @@ pub enum Metaclass {
     DerivationConnectorUsage,
     Diagnostic,
     ElseActionUsage,
+    Expression,
+    Feature,
     FilterUsage,
     FlowPayload,
     ForLoopActionUsage,
@@ -154,6 +156,7 @@ pub enum Metaclass {
     InterfaceEndUsage,
     JoinNodeUsage,
     MergeNodeUsage,
+    MultiplicityRange,
     NeedUsage,
     ObjectiveUsage,
     ParameterUsage,
@@ -255,6 +258,8 @@ impl Metaclass {
             Self::DerivationConnectorUsage => "DerivationConnectorUsage",
             Self::Diagnostic => "Diagnostic",
             Self::ElseActionUsage => "ElseActionUsage",
+            Self::Expression => "Expression",
+            Self::Feature => "Feature",
             Self::FilterUsage => "FilterUsage",
             Self::FlowPayload => "FlowPayload",
             Self::ForLoopActionUsage => "ForLoopActionUsage",
@@ -264,6 +269,7 @@ impl Metaclass {
             Self::InterfaceEndUsage => "InterfaceEndUsage",
             Self::JoinNodeUsage => "JoinNodeUsage",
             Self::MergeNodeUsage => "MergeNodeUsage",
+            Self::MultiplicityRange => "MultiplicityRange",
             Self::NeedUsage => "NeedUsage",
             Self::ObjectiveUsage => "ObjectiveUsage",
             Self::ParameterUsage => "ParameterUsage",
@@ -360,6 +366,8 @@ impl Metaclass {
             "DerivationConnectorUsage" => Self::DerivationConnectorUsage,
             "Diagnostic" => Self::Diagnostic,
             "ElseActionUsage" => Self::ElseActionUsage,
+            "Expression" => Self::Expression,
+            "Feature" => Self::Feature,
             "FilterUsage" => Self::FilterUsage,
             "FlowPayload" => Self::FlowPayload,
             "ForLoopActionUsage" => Self::ForLoopActionUsage,
@@ -369,6 +377,7 @@ impl Metaclass {
             "InterfaceEndUsage" => Self::InterfaceEndUsage,
             "JoinNodeUsage" => Self::JoinNodeUsage,
             "MergeNodeUsage" => Self::MergeNodeUsage,
+            "MultiplicityRange" => Self::MultiplicityRange,
             "NeedUsage" => Self::NeedUsage,
             "ObjectiveUsage" => Self::ObjectiveUsage,
             "ParameterUsage" => Self::ParameterUsage,
@@ -1241,7 +1250,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x9b26_ea80_c1f0_5e3f,
+            SCHEMA_FINGERPRINT, 0x599c_5bf9_fcf8_fb0a,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1249,7 +1258,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x0b15_80b3_a614_ffb1,
+            COMPATIBILITY_TOKEN, 0xf1d3_80e2_e90b_d36e,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }
