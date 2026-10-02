@@ -36,6 +36,7 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::ItemDefinition => ElementKind::ItemDefinition,
         DeclarationKind::ItemUsage => ElementKind::ItemUsage,
         DeclarationKind::PortDefinition => ElementKind::PortDefinition,
+        DeclarationKind::ConjugatedPortDefinition => ElementKind::ConjugatedPortDefinition,
         DeclarationKind::PortUsage => ElementKind::PortUsage,
         DeclarationKind::OccurrenceDefinition => ElementKind::OccurrenceDefinition,
         DeclarationKind::OccurrenceUsage => ElementKind::OccurrenceUsage,
@@ -230,6 +231,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::ItemDefinition
         | DeclarationKind::ItemUsage
         | DeclarationKind::PortDefinition
+        | DeclarationKind::ConjugatedPortDefinition
         | DeclarationKind::PortUsage
         | DeclarationKind::OccurrenceDefinition
         | DeclarationKind::OccurrenceUsage
@@ -397,6 +399,7 @@ mod tests {
         DeclarationKind::RequirementDefinition,
         DeclarationKind::RequirementUsage,
         DeclarationKind::PortDefinition,
+        DeclarationKind::ConjugatedPortDefinition,
         DeclarationKind::PortUsage,
         DeclarationKind::ItemDefinition,
         DeclarationKind::ItemUsage,

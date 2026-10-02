@@ -76,6 +76,10 @@ pub(crate) enum DeclarationKind {
     /// binding, conformance, connector-end validation) are out of scope here; only ownership,
     /// specialization, and owned-member structure are lowered.
     PortDefinition,
+    /// The `ConjugatedPortDefinition` minted for every named `PortDefinition` (SysML 8.3.12.2):
+    /// named `~` + its name, owned under an `OwningMembership`, and the source of an implied
+    /// `PortConjugation` to it. It is never authored.
+    ConjugatedPortDefinition,
     /// A package/definition/usage-level `port` feature member (BNF PortUsage), e.g.
     /// `port source : ~InputPort;`. Mirrors PartUsage lowering. Its `:`/`:>` typing target may be
     /// conjugated (a leading `~`, e.g. `~InputPort`); the conjugation polarity is carried as an

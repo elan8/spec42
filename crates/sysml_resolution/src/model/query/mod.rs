@@ -1257,10 +1257,11 @@ impl<D> SemanticModel<D> {
                 .resolved_outcome(TypeDerivedFactOutcome::Values(values.into_boxed_slice()));
         }
         if collection == TypeDerivedFactCollection::OwnedConjugator {
-            // `ownedConjugator` is the one `Conjugation` a type owns (KerML 8.3.3.1.10); the
-            // lowering sources it at the conjugated type, so the authored reference *is* the
-            // owned relationship and its settled target is `originalType`.
-            let values = self
+            // `ownedConjugator` is the one `Conjugation` a type owns (KerML 8.3.3.1.10). An
+            // authored `conjugates` is sourced at the conjugated type, so the authored reference
+            // *is* the owned relationship and its settled target is `originalType`; a minted
+            // `ConjugatedPortDefinition` owns an implied `PortConjugation` instead.
+            let mut values = self
                 .storage
                 .references
                 .iter()
@@ -1280,6 +1281,17 @@ impl<D> SemanticModel<D> {
                     }
                 })
                 .collect::<Vec<_>>();
+            values.extend(
+                self.outgoing_implied_indices(declaration)
+                    .iter()
+                    .map(|index| &self.resolution.implied_relationships[*index as usize])
+                    .filter(|implied| implied.kind == ReferenceKind::Conjugation)
+                    .filter_map(|implied| {
+                        Some(TypeDerivedFactValue::Conjugator {
+                            original_type: self.symbol_id(implied.target)?,
+                        })
+                    }),
+            );
             return self
                 .resolved_outcome(TypeDerivedFactOutcome::Values(values.into_boxed_slice()));
         }

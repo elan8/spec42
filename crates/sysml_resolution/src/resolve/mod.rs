@@ -46,6 +46,7 @@ use crate::resolve::names::MembershipIndex;
 use crate::resolve::names::NameIndex;
 use crate::resolve::results::EffectiveNameFacts;
 use crate::resolve::results::EffectiveNameOutcome;
+use crate::resolve::results::EffectiveNameProvenance;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
@@ -1365,7 +1366,7 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
     let absent = EffectiveNameFacts {
         name: EffectiveNameOutcome::Absent,
         short_name: EffectiveNameOutcome::Absent,
-        derived_from_redefinition: false,
+        provenance: EffectiveNameProvenance::Declared,
     };
     let mut facts = vec![absent; declarations.len()];
     let mut settled = vec![false; declarations.len()];
@@ -1386,6 +1387,17 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
     }
 
     for (index, declaration) in declarations.iter().enumerate() {
+        if let Some(derived) = declaration_facts
+            .and_then(|facts| facts.get(index))
+            .and_then(|facts| facts.derived_name)
+        {
+            // A never-authored element's effective name is its derived name; it declares none.
+            facts[index].name = EffectiveNameOutcome::Resolved(derived);
+            facts[index].provenance = EffectiveNameProvenance::OriginalPortDefinition;
+            settled[index] = true;
+            queue.push_back(index);
+            continue;
+        }
         if !is_feature_declaration(declaration.kind) {
             settled[index] = true;
             queue.push_back(index);
@@ -1401,7 +1413,7 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
                     .map_or(EffectiveNameOutcome::Absent, EffectiveNameOutcome::Resolved),
                 short_name: short_name
                     .map_or(EffectiveNameOutcome::Absent, EffectiveNameOutcome::Resolved),
-                derived_from_redefinition: false,
+                provenance: EffectiveNameProvenance::Declared,
             };
             settled[index] = true;
             queue.push_back(index);
@@ -1427,14 +1439,14 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
             ResolutionStatus::NonConverged => {
                 facts[index].name = EffectiveNameOutcome::NonConverged;
                 facts[index].short_name = EffectiveNameOutcome::NonConverged;
-                facts[index].derived_from_redefinition = true;
+                facts[index].provenance = EffectiveNameProvenance::FirstRedefinition;
                 settled[index] = true;
                 queue.push_back(index);
             }
             _ => {
                 facts[index].name = EffectiveNameOutcome::Unresolved;
                 facts[index].short_name = EffectiveNameOutcome::Unresolved;
-                facts[index].derived_from_redefinition = true;
+                facts[index].provenance = EffectiveNameProvenance::FirstRedefinition;
                 settled[index] = true;
                 queue.push_back(index);
             }
@@ -1449,7 +1461,7 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
             facts[source] = EffectiveNameFacts {
                 name: facts[target].name,
                 short_name: facts[target].short_name,
-                derived_from_redefinition: true,
+                provenance: EffectiveNameProvenance::FirstRedefinition,
             };
             settled[source] = true;
             queue.push_back(source);
@@ -1460,7 +1472,7 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
             facts[index] = EffectiveNameFacts {
                 name: EffectiveNameOutcome::NonConverged,
                 short_name: EffectiveNameOutcome::NonConverged,
-                derived_from_redefinition: true,
+                provenance: EffectiveNameProvenance::FirstRedefinition,
             };
         }
     }
@@ -1793,6 +1805,7 @@ pub(crate) fn definition_usage_source_matches(metaclass: &str, kind: Declaration
                 | DeclarationKind::EnumerationDefinition
                 | DeclarationKind::RequirementDefinition
                 | DeclarationKind::PortDefinition
+                | DeclarationKind::ConjugatedPortDefinition
                 | DeclarationKind::ItemDefinition
                 | DeclarationKind::ActionDefinition
                 | DeclarationKind::StateDefinition
@@ -2143,6 +2156,7 @@ impl DeclarationDomain {
                     | DeclarationKind::EnumerationDefinition
                     | DeclarationKind::RequirementDefinition
                     | DeclarationKind::PortDefinition
+                    | DeclarationKind::ConjugatedPortDefinition
                     | DeclarationKind::ItemDefinition
                     | DeclarationKind::ActionDefinition
                     | DeclarationKind::StateDefinition

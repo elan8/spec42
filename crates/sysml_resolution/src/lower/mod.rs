@@ -309,6 +309,9 @@ impl SemanticModelBuilder {
             || facts
                 .short_name
                 .is_some_and(|id| id.index() >= self.symbols.len())
+            || facts
+                .derived_name
+                .is_some_and(|id| id.index() >= self.symbols.len())
         {
             return Err(ConstructionError::InvalidIdentity);
         }
@@ -2061,7 +2064,65 @@ impl SemanticModelBuilder {
         for element in &parsed.root.elements {
             self.lower_root_element(document, element)?;
         }
-        self.synthesize_multiplicities(document)
+        self.synthesize_multiplicities(document)?;
+        self.synthesize_conjugated_port_definitions(document)
+    }
+
+    /// Mints the `ConjugatedPortDefinition` every `PortDefinition` owns (SysML 8.3.12.2,
+    /// `PortDefinition::conjugatedPortDefinition`; the Pilot grammar's
+    /// `ConjugatedPortDefinitionMember`).
+    ///
+    /// It is an owned member under an `OwningMembership`, so `~P` typing and the port-conjugation
+    /// rules have an element to name. It declares no name: its effective name `~` + the original
+    /// definition's name is a derived fact (`derived_name`), so the declared/effective provenance
+    /// stays distinguishable. Its `PortConjugation` to the original definition is an implied
+    /// relationship settled with the other implied facts; nothing about the original definition is
+    /// copied. A conjugated port definition never mints one of its own
+    /// (`validateConjugatedPortDefinitionConjugatedPortDefinitionIsEmpty`). Minting runs after the
+    /// document walk, like the multiplicity ranges, so memoized per-document lowering agrees.
+    fn synthesize_conjugated_port_definitions(
+        &mut self,
+        document: DocumentIdx,
+    ) -> Result<(), ConstructionError> {
+        let originals = self
+            .declarations
+            .iter()
+            .enumerate()
+            .filter(|(_, declaration)| {
+                declaration.document == document
+                    && declaration.kind == DeclarationKind::PortDefinition
+            })
+            .map(|(index, declaration)| {
+                DeclarationId::from_index(index).map(|id| (id, declaration.name, declaration.span))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        for (original, name, span) in originals {
+            let derived_name = match name {
+                Some(name) => {
+                    let derived = format!("~{}", self.symbols.get(name));
+                    self.intern_declared_name(&derived)?
+                }
+                None => None,
+            };
+            let conjugated = self.push_typed_declaration(
+                document,
+                Some(original),
+                DeclarationKind::ConjugatedPortDefinition,
+                None,
+                span,
+                DeclarationFacts {
+                    derived_name,
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            self.push_membership(
+                conjugated,
+                MembershipKind::Owning,
+                Visibility::Default,
+                span,
+            )?;
+        }
+        Ok(())
     }
 
     /// Mints the anonymous Multiplicities the source implies: the `MultiplicityRange` every

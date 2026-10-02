@@ -57,6 +57,7 @@ package GeneratedDefinitions {
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::InterfaceDefinition"))) (kind interface-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::ItemDefinition"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::PortDefinition"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_definitions.md") (path (named (kind package) (name "GeneratedDefinitions")) (named (kind port-def) (name "PortDefinition")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (kind conjugated-port-def) (membership (kind owning) (visibility default)) (effective-identification (name "~PortDefinition") (short-name absent) (provenance original-port-definition)))
   )
   (references
   )
@@ -67,6 +68,7 @@ package GeneratedDefinitions {
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::InterfaceDefinition"))) (target (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::Interface"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::ItemDefinition"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::PortDefinition"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/generated_library_specialization_definitions.md") (path (named (kind package) (name "GeneratedDefinitions")) (named (kind port-def) (name "PortDefinition")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (target (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::PortDefinition"))) (provenance implied))
   )
   (evaluation
   )

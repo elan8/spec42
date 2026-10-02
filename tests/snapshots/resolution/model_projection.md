@@ -83,6 +83,7 @@ package Proj {
     (declaration (id (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::Note"))) (kind metadata-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::Note::text"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "String")))))
     (declaration (id (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::P"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/model_projection.md") (path (named (kind package) (name "Proj")) (named (kind port-def) (name "P")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (kind conjugated-port-def) (membership (kind owning) (visibility default)) (effective-identification (name "~P") (short-name absent) (provenance original-port-definition)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/model_projection.md") (path (named (kind package) (name "Proj")) (named (kind part-def) (name "Car")) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0))
@@ -176,6 +177,7 @@ package Proj {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::Note::text"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::Note::text"))) (target (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::Note"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::P"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/model_projection.md") (path (named (kind package) (name "Proj")) (named (kind port-def) (name "P")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (target (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::P"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/model_projection.md") (path (named (kind package) (name "Proj")) (named (kind part-def) (name "Car")) (anonymous (kind metadata) (ordinal 0)) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-literal-string) (ordinal 0))))) (state literal) (value (kind string) (value "v1")))
@@ -539,6 +541,7 @@ package Proj {
   (element (node (document "memory://snapshot/model_projection.md") (path (named (kind package) (name "Proj")) (named (kind part-def) (name "Engine")) (named (kind constraint) (name "positivePower")) (anonymous (kind kerml-literal-rational) (ordinal 0)))) (expression not-applicable))
   (element (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::Note")) (expression not-applicable))
   (element (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::Note::text")) (expression not-applicable))
+  (element (node (document "memory://snapshot/model_projection.md") (path (named (kind package) (name "Proj")) (named (kind port-def) (name "P")) (anonymous (kind conjugated-port-def) (ordinal 0)))) (expression not-applicable))
   (element (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::P")) (expression not-applicable))
   (element (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::Car")) (expression not-applicable) (metadata-annotations 1))
   (element (node (document "memory://snapshot/model_projection.md") (path (named (kind package) (name "Proj")) (named (kind part-def) (name "Car")) (anonymous (kind metadata) (ordinal 0)))) (expression not-applicable))
@@ -552,7 +555,7 @@ package Proj {
   (element (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::Car::right::p")) (expression not-applicable))
   (element (node (document "memory://snapshot/model_projection.md") (path (named (kind package) (name "Proj")) (named (kind part-def) (name "Car")) (anonymous (kind bare-connect) (ordinal 0)))) (expression not-applicable))
   (connector (node (document "memory://snapshot/model_projection.md") (path (named (kind package) (name "Proj")) (named (kind part-def) (name "Car")) (anonymous (kind bare-connect) (ordinal 0)))) (kind connection) (ends 2))
-  (truncation (elements-total 20) (elements-returned 20) (elements-incomplete 0))
+  (truncation (elements-total 21) (elements-returned 21) (elements-incomplete 0))
 )
 ~~~
 # NAVIGATION

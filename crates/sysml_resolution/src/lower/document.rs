@@ -271,6 +271,7 @@ impl SemanticModelBuilder {
             });
             self.declaration_facts.push(DeclarationFacts {
                 short_name: relocation.optional_symbol(facts.short_name)?,
+                derived_name: relocation.optional_symbol(facts.derived_name)?,
                 cross_feature_projection: facts
                     .cross_feature_projection
                     .map(|projection| {

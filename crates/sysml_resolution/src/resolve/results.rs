@@ -46,9 +46,20 @@ pub(crate) enum EffectiveNameOutcome {
 pub(crate) struct EffectiveNameFacts {
     pub(crate) name: EffectiveNameOutcome,
     pub(crate) short_name: EffectiveNameOutcome,
-    /// True only when both components come from the first redefined Feature rather than authored
-    /// identification. This preserves provenance without replacing the authored declaration name.
-    pub(crate) derived_from_redefinition: bool,
+    /// Where the effective identification comes from, preserved without replacing the authored
+    /// declaration name.
+    pub(crate) provenance: EffectiveNameProvenance,
+}
+
+/// The source of an element's effective identification.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum EffectiveNameProvenance {
+    /// The element's own authored identification, or none.
+    Declared,
+    /// Both components come from the first Feature it redefines (KerML `Feature::effectiveName`).
+    FirstRedefinition,
+    /// `~` + the original definition's name (SysML `ConjugatedPortDefinition::effectiveName`).
+    OriginalPortDefinition,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]

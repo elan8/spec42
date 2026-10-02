@@ -2209,7 +2209,10 @@ mod tests {
             resolution.effective_names[anonymous_length.index()].name,
             EffectiveNameOutcome::Resolved(length_name)
         );
-        assert!(resolution.effective_names[anonymous_length.index()].derived_from_redefinition);
+        assert_eq!(
+            resolution.effective_names[anonymous_length.index()].provenance,
+            crate::resolve::results::EffectiveNameProvenance::FirstRedefinition
+        );
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(2)),
             Some(ResolutionStatus::Resolved(anonymous_length))

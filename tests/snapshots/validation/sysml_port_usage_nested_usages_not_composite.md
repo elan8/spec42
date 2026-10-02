@@ -118,6 +118,7 @@ package Ports {
     (declaration (id (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (qualified-name "Ports::Holder::good::reading"))) (kind attribute) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (qualified-name "Ports::Message"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (qualified-name "Ports::Signal"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (path (named (kind package) (name "Ports")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (kind conjugated-port-def) (membership (kind owning) (visibility default)) (effective-identification (name "~Signal") (short-name absent) (provenance original-port-definition)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (qualified-name "Ports::Holder::bad"))) (kind featureTyping) (ordinal 0))
@@ -153,6 +154,7 @@ package Ports {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (qualified-name "Ports::Holder::directed::tx"))) (target (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (qualified-name "Ports::Holder::directed"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (qualified-name "Ports::Holder::good"))) (target (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (qualified-name "Ports::Holder"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (qualified-name "Ports::Holder::good::reading"))) (target (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (qualified-name "Ports::Holder::good"))) (provenance implied))
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (path (named (kind package) (name "Ports")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md") (qualified-name "Ports::Signal"))) (provenance implied))
   )
   (evaluation
   )

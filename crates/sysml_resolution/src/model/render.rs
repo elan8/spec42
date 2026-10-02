@@ -35,6 +35,7 @@ use crate::model::ReferenceKind;
 use crate::model::SymbolPathId;
 use crate::model::Visibility;
 use crate::resolve::results::EffectiveNameOutcome;
+use crate::resolve::results::EffectiveNameProvenance;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionStatus;
 use crate::Diagnostic;
@@ -1024,9 +1025,11 @@ fn write_effective_identification(
     let Some(facts) = model.resolution.effective_names.get(declaration.index()) else {
         return Ok(());
     };
-    if !facts.derived_from_redefinition {
-        return Ok(());
-    }
+    let provenance = match facts.provenance {
+        EffectiveNameProvenance::Declared => return Ok(()),
+        EffectiveNameProvenance::FirstRedefinition => "first-redefinition",
+        EffectiveNameProvenance::OriginalPortDefinition => "original-port-definition",
+    };
     output.write_str(" (effective-identification")?;
     match facts.name {
         EffectiveNameOutcome::Resolved(name) => {
@@ -1046,7 +1049,7 @@ fn write_effective_identification(
         EffectiveNameOutcome::Unresolved => output.write_str(" (short-name unresolved)")?,
         EffectiveNameOutcome::NonConverged => output.write_str(" (short-name non-converged)")?,
     }
-    output.write_str(" (provenance first-redefinition))")
+    write!(output, " (provenance {provenance}))")
 }
 
 fn write_constructor_expression(
@@ -2130,6 +2133,7 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::RequirementDefinition => "requirement-def",
         DeclarationKind::RequirementUsage => "requirement",
         DeclarationKind::PortDefinition => "port-def",
+        DeclarationKind::ConjugatedPortDefinition => "conjugated-port-def",
         DeclarationKind::PortUsage => "port",
         DeclarationKind::ItemDefinition => "item-def",
         DeclarationKind::ItemUsage => "item",

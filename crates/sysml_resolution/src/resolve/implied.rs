@@ -1140,6 +1140,7 @@ pub(crate) fn synthesize_implied_relationships(
             storage, resolution,
         )?,
     );
+    implied.extend(synthesize_port_conjugations(storage, &resolution.outcomes)?);
     implied.sort_by_key(|relationship| {
         (
             relationship.kind,
@@ -1149,6 +1150,55 @@ pub(crate) fn synthesize_implied_relationships(
     });
     implied.dedup();
     Ok(implied.into_boxed_slice())
+}
+
+/// Publishes the `PortConjugation` of every minted `ConjugatedPortDefinition` and the
+/// `ConjugatedPortTyping` type of every `~P` typing (SysML 8.3.12.2, 8.3.12.4).
+///
+/// A `ConjugatedPortDefinition`'s `ownedPortConjugator` targets its owning `PortDefinition`
+/// (`validateConjugatedPortDefinitionOriginalPortDefinition`), so the conjugation is implied from
+/// canonical ownership. A typing authored as `~P` keeps its authored reference to `P` (the
+/// `ConjugatedPortTyping::portDefinition`); its `type` is the `conjugatedPortDefinition` of `P`,
+/// published here as an implied FeatureTyping. A `~P` whose `P` is not a port definition with a
+/// minted conjugate implies nothing.
+pub(crate) fn synthesize_port_conjugations(
+    storage: &SemanticModelStorage,
+    outcomes: &[ResolutionStatus],
+) -> Result<Vec<ImpliedRelationship>, ResolutionError> {
+    let mut conjugate_of = std::collections::BTreeMap::new();
+    let mut implied = Vec::new();
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        if declaration.kind != DeclarationKind::ConjugatedPortDefinition {
+            continue;
+        }
+        let conjugated = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        let original = declaration.owner.ok_or(ResolutionError::InvalidStorage)?;
+        conjugate_of.insert(original, conjugated);
+        implied.push(ImpliedRelationship {
+            kind: ReferenceKind::Conjugation,
+            source: conjugated,
+            target: original,
+        });
+    }
+    if conjugate_of.is_empty() {
+        return Ok(implied);
+    }
+    for (reference, outcome) in storage.references.iter().zip(outcomes.iter()) {
+        if reference.kind != ReferenceKind::FeatureTyping || !reference.flags.conjugated {
+            continue;
+        }
+        let ResolutionStatus::Resolved(original) = *outcome else {
+            continue;
+        };
+        if let Some(conjugated) = conjugate_of.get(&original) {
+            implied.push(ImpliedRelationship {
+                kind: ReferenceKind::FeatureTyping,
+                source: reference.source,
+                target: *conjugated,
+            });
+        }
+    }
+    Ok(implied)
 }
 
 /// Synthesizes `checkFeatureValuationSpecialization` (KerML 8.3.3.3.4): a non-default
@@ -2585,9 +2635,13 @@ pub(crate) fn synthesize_generated_library_specializations(
     let (ancestors, cyclic) = build_ancestor_closures(&storage.declarations, references, outcomes)?;
     let owned_typings =
         OwnedTypingTargets::collect(storage.declarations.len(), references, outcomes);
+    let conjugated = conjugated_types(storage);
     let mut implied = Vec::new();
     for (index, declaration) in storage.declarations.iter().enumerate() {
         let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        if conjugated.contains(&source) {
+            continue;
+        }
         for metaclass in library_specialization_metaclasses(declaration.kind) {
             for rule in metaclass.rules() {
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
@@ -2659,9 +2713,13 @@ pub(crate) fn provisional_library_specializations(
     if !anchor_facts.has_resolved_anchor() {
         return Ok(Box::default());
     }
+    let conjugated = conjugated_types(storage);
     let mut implied = Vec::new();
     for (index, declaration) in storage.declarations.iter().enumerate() {
         let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        if conjugated.contains(&source) {
+            continue;
+        }
         for metaclass in library_specialization_metaclasses(declaration.kind) {
             for rule in metaclass.rules() {
                 let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
@@ -2709,6 +2767,31 @@ pub(crate) fn provisional_library_specializations(
     });
     implied.dedup();
     Ok(implied.into_boxed_slice())
+}
+
+/// The Types that own a `Conjugation`: every minted `ConjugatedPortDefinition` (its
+/// `PortConjugation`) and every Type authoring `conjugates`. A conjugated Type takes its general
+/// types from its original type alone, so it gets no implicit library specialization (KerML
+/// `validateSpecializationSpecificNotConjugated`; Pilot `TypeAdapter` computes implicit general
+/// types only for a Type that is not conjugated).
+fn conjugated_types(storage: &SemanticModelStorage) -> std::collections::BTreeSet<DeclarationId> {
+    let mut conjugated = storage
+        .references
+        .iter()
+        .filter(|reference| reference.kind == ReferenceKind::Conjugation)
+        .map(|reference| reference.source)
+        .collect::<std::collections::BTreeSet<_>>();
+    conjugated.extend(
+        storage
+            .declarations
+            .iter()
+            .enumerate()
+            .filter(|(_, declaration)| {
+                declaration.kind == DeclarationKind::ConjugatedPortDefinition
+            })
+            .filter_map(|(index, _)| DeclarationId::from_index(index).ok()),
+    );
+    conjugated
 }
 
 /// The concrete specialization relationship required by the source and target metaclasses.

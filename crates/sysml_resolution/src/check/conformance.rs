@@ -117,7 +117,7 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         K::AcceptActionUsage | K::SendActionUsage | K::TerminateActionUsage => (F::Action, Usage),
         K::StateDefinition => (F::State, Definition),
         K::StateUsage | K::ExhibitStateUsage => (F::State, Usage),
-        K::PortDefinition => (F::Port, Definition),
+        K::PortDefinition | K::ConjugatedPortDefinition => (F::Port, Definition),
         K::PortUsage => (F::Port, Usage),
         K::RequirementDefinition => (F::Requirement, Definition),
         K::RequirementUsage | K::ObjectiveRequirement => (F::Requirement, Usage),

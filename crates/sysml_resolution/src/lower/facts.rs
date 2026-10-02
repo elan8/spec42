@@ -283,6 +283,10 @@ impl DeclarationModifiers {
 pub(crate) struct DeclarationFacts {
     /// The `<shortName>` identification prefix, where the owning parser node has the field.
     pub(crate) short_name: Option<NameId>,
+    /// The effective name a never-authored element derives from its context, which it does not
+    /// declare: a `ConjugatedPortDefinition`'s `~` + its original definition's name (SysML
+    /// `ConjugatedPortDefinition::effectiveName`). `None` for every authored declaration.
+    pub(crate) derived_name: Option<NameId>,
     pub(crate) modifiers: DeclarationModifiers,
     pub(crate) portion_kind: Option<PortionKind>,
     pub(crate) direction: Option<ParameterDirection>,

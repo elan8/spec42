@@ -65,6 +65,7 @@ package Ports {
     (declaration (id (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Holder::inbound"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Signal")))))
     (declaration (id (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Signal"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (path (named (kind package) (name "Ports")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (kind conjugated-port-def) (membership (kind owning) (visibility default)) (effective-identification (name "~Signal") (short-name absent) (provenance original-port-definition)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Holder::inbound"))) (kind featureTyping) (ordinal 0))
@@ -74,6 +75,7 @@ package Ports {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Holder::inbound"))) (target (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Signal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Holder::inbound"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Holder::inbound"))) (target (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Holder"))) (provenance implied))
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (path (named (kind package) (name "Ports")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_port_usage_is_reference.md") (qualified-name "Ports::Signal"))) (provenance implied))
   )
   (evaluation
   )

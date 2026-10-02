@@ -93,6 +93,7 @@ package Structure {
     (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::step"))) (kind perform-action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Step")))))
     (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Payload"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (kind conjugated-port-def) (membership (kind owning) (visibility default)) (effective-identification (name "~Signal") (short-name absent) (provenance original-port-definition)))
     (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Step"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Voltage"))) (kind attribute-def) (membership (kind owning) (visibility default)))
   )
@@ -167,6 +168,7 @@ package Structure {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind part-def) (name "NotConnectable")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::payload"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable::step"))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::NotConnectable"))) (provenance implied))
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/connection_structure.md") (path (named (kind package) (name "Structure")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (target (node (document "memory://snapshot/connection_structure.md") (qualified-name "Structure::Signal"))) (provenance implied))
   )
   (evaluation
   )

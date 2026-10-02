@@ -70,6 +70,9 @@ element_kinds! {
     ItemDefinition,
     ItemUsage,
     PortDefinition,
+    /// The `ConjugatedPortDefinition` every `PortDefinition` owns, named `~` + its name, whose
+    /// `PortConjugation` makes it the conjugate of that definition. Never authored.
+    ConjugatedPortDefinition,
     PortUsage,
     OccurrenceDefinition,
     OccurrenceUsage,
@@ -294,6 +297,7 @@ impl ElementKind {
             K::ItemDefinition => &[K::OccurrenceDefinition, K::Structure],
             K::PartDefinition => &[K::ItemDefinition],
             K::PortDefinition => &[K::OccurrenceDefinition, K::Structure],
+            K::ConjugatedPortDefinition => &[K::PortDefinition],
             K::ConnectionDefinition => &[K::PartDefinition, K::AssociationStructure],
             K::InterfaceDefinition | K::AllocationDefinition => &[K::ConnectionDefinition],
             K::ActionDefinition => &[K::OccurrenceDefinition, K::Behavior],
