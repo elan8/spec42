@@ -1191,8 +1191,8 @@ impl<D> SemanticModel<D> {
             diagnostics.push(diagnostic);
             return Ok(());
         }
-        let source_context = self.enclosing(*source, |kind| is_state_kind(kind));
-        let target_context = self.enclosing(*target, |kind| is_state_kind(kind));
+        let source_context = self.enclosing(*source, is_state_kind);
+        let target_context = self.enclosing(*target, is_state_kind);
         if let (Some(source_context), Some(target_context)) = (source_context, target_context) {
             if source_context != target_context {
                 let mut diagnostic = self.declaration_diagnostic(
