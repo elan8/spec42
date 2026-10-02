@@ -607,7 +607,11 @@ mod tests {
         fs::create_dir_all(nested_example.parent().unwrap()).expect("examples dir");
         fs::write(&nested_example, "package Ignored {}").expect("write ignored example");
 
-        let stale_root = repo.path().join("generic").join("units").join("Stale.sysml");
+        let stale_root = repo
+            .path()
+            .join("generic")
+            .join("units")
+            .join("Stale.sysml");
         fs::create_dir_all(stale_root.parent().unwrap()).expect("stale root dir");
         fs::write(&stale_root, "package Stale {}").expect("write stale root source");
 
