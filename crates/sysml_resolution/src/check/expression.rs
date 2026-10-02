@@ -820,3 +820,82 @@ pub(crate) fn states_a_constraint(kind: DeclarationKind) -> bool {
             | DeclarationKind::RequireConstraintUsage
     )
 }
+
+/// The result type a multiplicity `bound` Expression has, relative to `ScalarValues::Integer`
+/// (KerML 8.3.4.11.2 `validateMultiplicityRangeBoundResultTypes`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum MultiplicityBoundResult {
+    /// The result specializes `ScalarValues::Integer`.
+    Integer,
+    /// The result is typed, and none of its types specializes `ScalarValues::Integer`.
+    NonInteger,
+    /// No result type is derived: an unsupported shape, an unresolved operand, an untyped
+    /// referent, or no admitted `ScalarValues::Integer`. Never a verdict.
+    Undecided,
+}
+
+impl<D> SemanticModel<D> {
+    /// The canonical result type of a multiplicity `bound` Expression with a non-literal form: a
+    /// lone feature reference is typed by its referent's types; `+`, `-`, `*` and signs over
+    /// integer literals and feature references are an Integer when every referent is one.
+    pub(crate) fn multiplicity_bound_result(
+        &self,
+        bound: DeclarationId,
+    ) -> Result<MultiplicityBoundResult, ResolutionError> {
+        use crate::lower::facts::MultiplicityBoundForm;
+        let form = self
+            .storage
+            .declaration_facts(bound)
+            .ok_or(ResolutionError::InvalidStorage)?
+            .multiplicity_bound_form;
+        let (
+            Some(
+                form @ (MultiplicityBoundForm::FeatureReference
+                | MultiplicityBoundForm::IntegerArithmetic),
+            ),
+            Some(integer),
+        ) = (form, self.expressions.anchors.integer)
+        else {
+            return Ok(MultiplicityBoundResult::Undecided);
+        };
+        let mut result = MultiplicityBoundResult::Integer;
+        for (id, _) in self.authored_references(bound, &[ReferenceKind::ExpressionOperand]) {
+            let Some(ResolutionStatus::Resolved(referent)) = self.resolution.outcome(id) else {
+                return Ok(MultiplicityBoundResult::Undecided);
+            };
+            // A referent that authors no typing, subsetting or redefinition is typed only by
+            // implied library defaults (e.g. `attribute n = mRef.flattenedSize;`): its real result
+            // type is that of its value, which is not derived here.
+            let types = self.types.feature_types(referent);
+            if types.is_empty()
+                || self
+                    .authored_references(
+                        referent,
+                        &[
+                            ReferenceKind::FeatureTyping,
+                            ReferenceKind::Subsetting,
+                            ReferenceKind::Redefinition,
+                            ReferenceKind::References,
+                        ],
+                    )
+                    .is_empty()
+            {
+                return Ok(MultiplicityBoundResult::Undecided);
+            }
+            if !types
+                .iter()
+                .any(|declared| conforms(&self.types, *declared, integer))
+            {
+                result = MultiplicityBoundResult::NonInteger;
+            }
+        }
+        // Integer arithmetic over a non-Integer operand dispatches to another library function
+        // whose result type is not derived here.
+        Ok(match (form, result) {
+            (MultiplicityBoundForm::IntegerArithmetic, MultiplicityBoundResult::NonInteger) => {
+                MultiplicityBoundResult::Undecided
+            }
+            _ => result,
+        })
+    }
+}

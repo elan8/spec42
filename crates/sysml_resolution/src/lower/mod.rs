@@ -2224,7 +2224,9 @@ impl SemanticModelBuilder {
                 let bounds = record
                     .bound_spans
                     .as_deref()
-                    .map_or([None, None], |bounds| [bounds.lower, bounds.upper]);
+                    .map_or([None, None], |bounds| {
+                        [bounds.lower.clone(), bounds.upper.clone()]
+                    });
                 Some(DeclarationId::from_index(index).map(|id| (id, record.span, bounds)))
             })
             .collect::<Result<Vec<_>, _>>()?;
@@ -2241,8 +2243,21 @@ impl SemanticModelBuilder {
             // `MultiplicityRange::bound`: each authored bound is an owned Expression, in source
             // order. Only its identity, ownership and result are minted here; the bound's value
             // stays the owner's `multiplicity` fact, and an unbounded `*` has no AST node to mint.
-            for (bound, kind) in bounds.into_iter().flatten() {
-                self.push_owned_expression(document, range, kind, bound)?;
+            // Its feature-reference operands are lowered as `FeatureReferenceExpression` operands
+            // of the bound, so its result type can be derived from their referents.
+            for site in bounds.into_iter().flatten() {
+                let (expression, _) =
+                    self.push_owned_expression(document, range, site.kind, site.span)?;
+                self.declaration_facts[expression.index()].multiplicity_bound_form =
+                    Some(site.form);
+                for operand in site.operands.iter().copied() {
+                    self.push_expression_operand_reference(
+                        document,
+                        expression,
+                        operand,
+                        crate::lower::facts::ExpressionOperandRole::FeatureReference,
+                    )?;
+                }
             }
         }
         // SysML 8.3.9.3: an `individual` OccurrenceDefinition owns an empty Multiplicity (the

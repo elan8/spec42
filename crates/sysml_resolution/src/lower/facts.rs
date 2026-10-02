@@ -151,8 +151,93 @@ pub(crate) struct MultiplicityRecord {
 /// `lower` is `None` for the single-bound form; `upper` is `None` for an unbounded `*`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct MultiplicityBoundSpans {
-    pub(crate) lower: Option<(Span, DeclarationKind)>,
-    pub(crate) upper: Option<(Span, DeclarationKind)>,
+    pub(crate) lower: Option<MultiplicityBoundSite>,
+    pub(crate) upper: Option<MultiplicityBoundSite>,
+}
+
+/// One authored bound expression of a multiplicity: where its `bound` Expression is minted, its
+/// metaclass, the form its result type is derived from, and the feature-reference operands
+/// lowering resolves for it (in source order).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct MultiplicityBoundSite {
+    pub(crate) span: Span,
+    pub(crate) kind: DeclarationKind,
+    pub(crate) form: MultiplicityBoundForm,
+    pub(crate) operands: Box<[sysml_v2_parser::ast::QualifiedReferenceId]>,
+}
+
+/// How the result type of a multiplicity `bound` Expression is derived (KerML 8.3.4.11.2
+/// `validateMultiplicityRangeBoundResultTypes`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum MultiplicityBoundForm {
+    /// Literal-only: decided by the owner's `MultiplicityBound` fact.
+    Literal,
+    /// A lone `FeatureReferenceExpression`: its result is typed by the referent's types.
+    FeatureReference,
+    /// Signs and `+`, `-`, `*` over integer literals and feature references: an
+    /// `IntegerFunctions` invocation whose result is an Integer when every operand is one.
+    IntegerArithmetic,
+    /// Any other shape: no result type is derived, and the rule stays unanswered.
+    Unsupported,
+}
+
+/// The result-type form of a bound expression, collecting its feature-reference operands.
+pub(crate) fn multiplicity_bound_form(
+    expression: &Expression,
+    operands: &mut Vec<sysml_v2_parser::ast::QualifiedReferenceId>,
+) -> MultiplicityBoundForm {
+    use sysml_v2_parser::ast::{BinaryOperator, UnaryOperator};
+    if literal_bound_value(expression).is_some() {
+        return MultiplicityBoundForm::Literal;
+    }
+    match expression {
+        Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
+            operands.push(*target);
+            MultiplicityBoundForm::FeatureReference
+        }
+        Expression::Sequence { operands: list, .. } => match list.value.elements.as_slice() {
+            [only] => multiplicity_bound_form(&only.expression.value, operands),
+            _ => MultiplicityBoundForm::Unsupported,
+        },
+        Expression::UnaryOp {
+            op: UnaryOperator::Plus | UnaryOperator::Minus,
+            operand,
+        } => integer_operand(&operand.value, operands),
+        Expression::BinaryOp {
+            op: BinaryOperator::Add | BinaryOperator::Sub | BinaryOperator::Mul,
+            left,
+            right,
+        } => match (
+            integer_operand(&left.value, operands),
+            integer_operand(&right.value, operands),
+        ) {
+            (
+                MultiplicityBoundForm::IntegerArithmetic,
+                MultiplicityBoundForm::IntegerArithmetic,
+            ) => MultiplicityBoundForm::IntegerArithmetic,
+            _ => MultiplicityBoundForm::Unsupported,
+        },
+        _ => MultiplicityBoundForm::Unsupported,
+    }
+}
+
+/// An operand of integer arithmetic: an integer literal, a feature reference, or nested integer
+/// arithmetic. Anything else makes the whole bound `Unsupported`.
+fn integer_operand(
+    expression: &Expression,
+    operands: &mut Vec<sysml_v2_parser::ast::QualifiedReferenceId>,
+) -> MultiplicityBoundForm {
+    match literal_bound_value(expression) {
+        Some(LiteralBoundValue::Integer(_)) => return MultiplicityBoundForm::IntegerArithmetic,
+        Some(LiteralBoundValue::NonInteger) => return MultiplicityBoundForm::Unsupported,
+        None => {}
+    }
+    match multiplicity_bound_form(expression, operands) {
+        MultiplicityBoundForm::FeatureReference | MultiplicityBoundForm::IntegerArithmetic => {
+            MultiplicityBoundForm::IntegerArithmetic
+        }
+        _ => MultiplicityBoundForm::Unsupported,
+    }
 }
 
 /// The KerML metaclass of an expression node that is an Expression element in its own right
@@ -391,6 +476,9 @@ pub(crate) struct DeclarationFacts {
     pub(crate) cross_feature_projection: Option<CrossFeatureProjection>,
     /// The canonical result Feature owned by this Expression.
     pub(crate) expression_result: Option<DeclarationId>,
+    /// On a `MultiplicityRange` `bound` Expression: the form its result type is derived from.
+    /// Its operands are the `ExpressionOperand` references it is the source of.
+    pub(crate) multiplicity_bound_form: Option<MultiplicityBoundForm>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -578,10 +666,14 @@ pub(crate) fn multiplicity_facts(
     // A bare `[3]` reaches the AST as one expression node in both slots; KerML makes that single
     // bound the `upperBound` (8.3.4.11, `lowerBound` is null when `bound` has one element).
     let site = |bound: &Node<Expression>| {
-        (
-            bound.span,
-            leaf_expression_kind(&bound.value).unwrap_or(DeclarationKind::KermlExpression),
-        )
+        let mut operands = Vec::new();
+        let form = multiplicity_bound_form(&bound.value, &mut operands);
+        MultiplicityBoundSite {
+            span: bound.span,
+            kind: leaf_expression_kind(&bound.value).unwrap_or(DeclarationKind::KermlExpression),
+            form,
+            operands: operands.into_boxed_slice(),
+        }
     };
     let upper_span = multiplicity.value.upper.as_deref().map(site);
     let lower_span = multiplicity
@@ -589,7 +681,7 @@ pub(crate) fn multiplicity_facts(
         .lower
         .as_deref()
         .map(site)
-        .filter(|lower| Some(lower.0) != upper_span.map(|upper| upper.0));
+        .filter(|lower| Some(lower.span) != upper_span.as_ref().map(|upper| upper.span));
     Some(MultiplicityRecord {
         lower: multiplicity_bound(multiplicity.value.lower.as_deref()),
         upper: multiplicity_bound(multiplicity.value.upper.as_deref()),

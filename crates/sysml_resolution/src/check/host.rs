@@ -1713,8 +1713,8 @@ impl<D> SemanticModel<D> {
             // evaluable bound must evaluate to a natural number, so a negative or non-integer
             // literal bound is `multiplicity_bound_invalid`. Otherwise, a multiplicity whose literal bounds cross
             // admits nothing at all. Both apply to the feature's own multiplicity and a connector
-            // end's cross multiplicity. A non-literal bound's result type is not a published fact,
-            // so its half of the rule stays unanswered.
+            // end's cross multiplicity. A non-literal bound is judged below, at its own
+            // `bound` Expression, by its derived result type.
             let facts = self
                 .storage
                 .declaration_facts(id)
@@ -1754,6 +1754,47 @@ impl<D> SemanticModel<D> {
                     location: DiagnosticLocation {
                         document: writer::document_identity(self, document).into(),
                         range: document_range(&self.storage, document, &multiplicity.span)?,
+                    },
+                    related: Box::default(),
+                });
+            }
+
+            // KerML 8.3.4.11.2 `validateMultiplicityRangeBoundResultTypes`, non-literal half
+            // (Pilot `checkMultiplicityRange`: `!b.isInteger`): a bound whose derived result type
+            // does not specialize `ScalarValues::Integer` is `multiplicity_bound_invalid`,
+            // reported at the multiplicity of the declaration owning the range. Literal bounds
+            // were judged above; an undecided result stays unanswered.
+            if self
+                .storage
+                .declaration_facts(id)
+                .is_some_and(|facts| facts.multiplicity_bound_form.is_some())
+                && self.multiplicity_bound_result(id)?
+                    == crate::check::expression::MultiplicityBoundResult::NonInteger
+            {
+                let owner = self
+                    .storage
+                    .declaration(id)
+                    .and_then(|bound| bound.owner)
+                    .and_then(|range| self.storage.declaration(range))
+                    .and_then(|range| range.owner)
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                let span = self
+                    .storage
+                    .declaration_facts(owner)
+                    .and_then(|facts| facts.multiplicity.as_ref())
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .span;
+                let code = DiagnosticCode::MultiplicityBoundInvalid;
+                diagnostics.push(Diagnostic {
+                    payload: None,
+                    message: code.describe().into(),
+                    code,
+                    severity: DiagnosticSeverity::Warning,
+                    origin: DiagnosticOrigin::Semantic,
+                    subject: self.symbol_id(owner),
+                    location: DiagnosticLocation {
+                        document: writer::document_identity(self, document).into(),
+                        range: document_range(&self.storage, document, &span)?,
                     },
                     related: Box::default(),
                 });

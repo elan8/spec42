@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Non-literal multiplicity bounds are type-checked.** A bound that references a feature (`[count]`)
+  or does integer arithmetic over feature references now resolves those names, and a bound whose
+  result is not an Integer (e.g. a `Real` feature) reports `multiplicity_bound_invalid`
+  (KerML 8.3.4.11.2).
+
 - **Filter conditions must be model-level evaluable.** A package or view `filter` whose condition
   references a feature featured by an ordinary type (so its value depends on an instance) reports
   `filter_condition_not_model_level_evaluable` (KerML 8.3.4.13.2).

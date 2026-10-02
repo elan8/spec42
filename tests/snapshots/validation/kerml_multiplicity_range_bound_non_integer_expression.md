@@ -10,7 +10,6 @@ expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.11.2:validateMultiplicityRangeBoundResultTypes
 coverage_role=secondary
 libraries=standard
-blocked_by=semantic-multiplicity-bound-result-type
 type=file
 ~~~
 # SOURCE
@@ -46,6 +45,12 @@ package Multiplicities {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "multiplicity_bound_invalid")
+        (source "semantic")
+        (range (start 8 22) (end 8 29))
+      )
     )
   )
 )
@@ -58,16 +63,22 @@ package Multiplicities {
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::Counted"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (multiplicity (lower expression) (upper expression))))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Counted")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Counted")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Counted")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Counted")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Counted")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "count")))))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Counted")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::Ratioed"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (multiplicity (lower expression) (upper expression))))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Ratioed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Ratioed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Ratioed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Ratioed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Ratioed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "ratio")))))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Ratioed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::count"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Natural")))))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::ratio"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Real")))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Counted")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "count")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::count")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Ratioed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "ratio")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::ratio")))))
     (reference (id (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::count"))) (kind featureTyping) (ordinal 0))
       (authored-target "ScalarValues::Natural")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Natural")))))
@@ -76,6 +87,8 @@ package Multiplicities {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")))))
   )
   (relationships
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Counted")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::count"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Counted")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
+    (relationship (kind expressionOperand) (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Ratioed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::ratio"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Ratioed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::count"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Natural"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::count"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::ratio"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::ratio"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Counted")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::naturals"))) (provenance implied))
@@ -218,6 +231,16 @@ package Multiplicities {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (range (start 5 23) (end 5 28)) (probe (position 5 23))
+    (reference (id (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Counted")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "count")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::count")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (range (start 8 23) (end 8 28)) (probe (position 8 23))
+    (reference (id (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Ratioed")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "ratio")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::ratio")))))
+    )
+  )
   (query (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (range (start 1 20) (end 1 41)) (probe (position 1 20))
     (reference (id (source (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer_expression.md") (qualified-name "Multiplicities::count"))) (kind featureTyping) (ordinal 0) (authored-target "ScalarValues::Natural")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Natural")))))
