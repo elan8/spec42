@@ -63,6 +63,7 @@ use source_identity::ContentDigest;
 use source_identity::SourceRole;
 use std::collections::hash_map::RandomState;
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::sync::Arc;
 use sysml_v2_parser::ast::CollectionOperator;
 use sysml_v2_parser::ast::CommentBody;
@@ -2065,7 +2066,77 @@ impl SemanticModelBuilder {
             self.lower_root_element(document, element)?;
         }
         self.synthesize_multiplicities(document)?;
-        self.synthesize_conjugated_port_definitions(document)
+        self.synthesize_conjugated_port_definitions(document)?;
+        self.derive_owned_cross_features(document)
+    }
+
+    /// KerML 8.3.3.3.4 `Feature::ownedCrossFeature` of every end Feature of `document` that does
+    /// not author one in the grammar's cross position:
+    ///
+    /// ```text
+    /// ownedCrossFeature = if not isEnd or owningType = null then null else
+    ///     let ownedMemberFeatures = ownedMember->selectByKind(Feature)->reject(f |
+    ///         f.oclIsKindOf(Multiplicity) or f.oclIsKindOf(MetadataFeature) or
+    ///         f.oclIsKindOf(BindingConnector) or
+    ///         f.owningMembership.oclIsKindOf(FeatureMembership) or
+    ///         f.owningMembership.oclIsKindOf(FeatureValue)) in
+    ///     if ownedMemberFeatures->isEmpty() then null else ownedMemberFeatures->first()
+    /// ```
+    ///
+    /// as the Pilot's `FeatureUtil.getOwnedCrossFeatureOf` evaluates it: the first owned Feature
+    /// under a plain OwningMembership, such as a body `member feature`. It runs after the document
+    /// walk, which pushes memberships in authored order, so memoized per-document lowering agrees.
+    fn derive_owned_cross_features(
+        &mut self,
+        document: DocumentIdx,
+    ) -> Result<(), ConstructionError> {
+        use sysml_contract::ElementKind;
+        let values: BTreeSet<DeclarationId> = self
+            .feature_values
+            .iter()
+            .map(|record| record.value)
+            .collect();
+        let mut first_by_owner: BTreeMap<DeclarationId, DeclarationId> = BTreeMap::new();
+        for membership in &self.memberships {
+            if membership.kind != MembershipKind::Owning || values.contains(&membership.member) {
+                continue;
+            }
+            let member = &self.declarations[membership.member.index()];
+            let Some(owner) = member.owner else {
+                continue;
+            };
+            let kind = crate::model::element_kind::element_kind(member.kind);
+            if member.document != document
+                || !kind.conforms_to(ElementKind::Feature)
+                || matches!(
+                    kind,
+                    ElementKind::Multiplicity
+                        | ElementKind::MultiplicityRange
+                        | ElementKind::MetadataUsage
+                        | ElementKind::BindingConnector
+                        | ElementKind::BindingConnectorAsUsage
+                )
+            {
+                continue;
+            }
+            first_by_owner.entry(owner).or_insert(membership.member);
+        }
+        for (end, cross_feature) in first_by_owner {
+            let end_declaration = &self.declarations[end.index()];
+            let owned_by_type = end_declaration.owner.is_some_and(|owner| {
+                crate::model::element_kind::element_kind(self.declarations[owner.index()].kind)
+                    .conforms_to(ElementKind::Type)
+            });
+            let facts = &mut self.declaration_facts[end.index()];
+            if facts.modifiers.end && owned_by_type && facts.cross_feature_projection.is_none() {
+                facts.cross_feature_projection =
+                    Some(crate::lower::facts::CrossFeatureProjection {
+                        cross_feature,
+                        owned_cross_feature: cross_feature,
+                    });
+            }
+        }
+        Ok(())
     }
 
     /// Mints the `ConjugatedPortDefinition` every `PortDefinition` owns (SysML 8.3.12.2,

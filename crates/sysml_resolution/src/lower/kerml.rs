@@ -343,9 +343,18 @@ impl SemanticModelBuilder {
                 ..DeclarationFacts::none()
             },
         )?;
+        // `'member' FeatureElement` is a KerML NonFeatureMember (BNF `NonFeatureMember`): an
+        // OwningMembership, so the feature is an ownedMember but not an ownedFeature. The parser
+        // records every KermlFeature's membership as a FeatureMembership; `is_member` is the
+        // authored syntax that decides the metaclass.
+        let membership_kind = if node.value.is_member {
+            MembershipKind::Owning
+        } else {
+            MembershipKind::Feature
+        };
         self.push_membership(
             declaration,
-            MembershipKind::Feature,
+            membership_kind,
             self.member_visibility(
                 &node.value.membership,
                 ParserMembershipKind::FeatureMembership,
