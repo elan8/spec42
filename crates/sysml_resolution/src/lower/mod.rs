@@ -352,20 +352,17 @@ impl SemanticModelBuilder {
         Ok(id)
     }
 
-    /// Records one `doc`/`comment`/`rep` annotation against the declaration it annotates.
-    ///
-    /// The parser attaches these as sibling body elements with no parent link, so the binding is
-    /// made by the lowering walk rather than read off the annotated node.
+    /// Records the authored body of one `doc`/`comment`/`rep` annotating element.
     pub(crate) fn push_documentation(
         &mut self,
-        declaration: DeclarationId,
+        element: DeclarationId,
         form: AnnotationForm,
         locale: Option<NameId>,
         language: Option<NameId>,
         text: NameId,
         span: Span,
     ) -> Result<(), ConstructionError> {
-        if declaration.index() >= self.declarations.len()
+        if element.index() >= self.declarations.len()
             || text.index() >= self.symbols.len()
             || locale.is_some_and(|id| id.index() >= self.symbols.len())
             || language.is_some_and(|id| id.index() >= self.symbols.len())
@@ -373,7 +370,7 @@ impl SemanticModelBuilder {
             return Err(ConstructionError::InvalidIdentity);
         }
         self.documentation.push(DocumentationRecord {
-            declaration,
+            element,
             form,
             locale,
             language,
@@ -544,7 +541,40 @@ impl SemanticModelBuilder {
         }
     }
 
-    /// Records a `doc /* ... */` annotation against the declaration whose body it heads.
+    /// Mints the annotating element (KerML `AnnotatingElement`) of one `doc`/`comment`/`rep`
+    /// member: a declaration of `kind`, optionally named by its `Identification`, owned by the
+    /// namespace `owner` it is written in under an `OwningMembership` (KerML `NonFeatureMember`).
+    fn push_annotating_element(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        kind: DeclarationKind,
+        identification: Option<&sysml_v2_parser::ast::Identification>,
+        span: Span,
+    ) -> Result<DeclarationId, ConstructionError> {
+        let (name, short_name) = match identification {
+            Some(identification) => (
+                self.intern_declaration_name(document, identification.name)?,
+                self.intern_short_name(document, identification.short_name)?,
+            ),
+            None => (None, None),
+        };
+        let element = self.push_typed_declaration(
+            document,
+            Some(owner),
+            kind,
+            name,
+            span,
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(element, MembershipKind::Owning, Visibility::Default, span)?;
+        Ok(element)
+    }
+
+    /// Lowers a `doc /* ... */` member of `declaration`'s body as a `Documentation` it owns.
     pub(crate) fn record_doc_comment(
         &mut self,
         document: DocumentIdx,
@@ -553,8 +583,15 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let locale = self.intern_string_literal(document, node.value.locale)?;
         let text = self.intern_comment_body(document, node.value.body)?;
-        self.push_documentation(
+        let element = self.push_annotating_element(
+            document,
             declaration,
+            DeclarationKind::Documentation,
+            node.value.identification.as_ref(),
+            node.span,
+        )?;
+        self.push_documentation(
+            element,
             AnnotationForm::Documentation,
             locale,
             None,
@@ -563,7 +600,9 @@ impl SemanticModelBuilder {
         )
     }
 
-    /// Records a `comment /* ... */` annotation against the declaration whose body it heads.
+    /// Lowers a `comment /* ... */` member of `declaration`'s body as a `Comment` it owns, with
+    /// one [`ReferenceKind::Annotation`] per `about` target: the Annotations the Comment owns
+    /// (KerML 8.3.2.3, `Comment = 'comment' ... 'about' ownedRelationship += Annotation`).
     pub(crate) fn record_comment_annotation(
         &mut self,
         document: DocumentIdx,
@@ -572,18 +611,43 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let locale = self.intern_string_literal(document, node.value.locale)?;
         let text = self.intern_comment_body(document, node.value.body)?;
-        self.push_documentation(
+        let element = self.push_annotating_element(
+            document,
             declaration,
+            DeclarationKind::Comment,
+            node.value.identification.as_ref(),
+            node.span,
+        )?;
+        self.push_documentation(
+            element,
             AnnotationForm::Comment,
             locale,
             None,
             text,
             node.span,
-        )
+        )?;
+        for target in &node.value.about_targets {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(*target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: element,
+                kind: ReferenceKind::Annotation,
+                document,
+                local: *target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        Ok(())
     }
 
-    /// Records a `rep <language> "..." /* ... */` annotation against the declaration whose body it
-    /// heads.
+    /// Lowers a `rep <language> "..." /* ... */` member of `declaration`'s body as a
+    /// `TextualRepresentation` it owns.
     pub(crate) fn record_textual_representation(
         &mut self,
         document: DocumentIdx,
@@ -592,8 +656,15 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let language = self.intern_string_literal(document, node.value.language)?;
         let text = self.intern_comment_body(document, node.value.body)?;
-        self.push_documentation(
+        let element = self.push_annotating_element(
+            document,
             declaration,
+            DeclarationKind::TextualRepresentation,
+            node.value.rep_identification.as_ref(),
+            node.span,
+        )?;
+        self.push_documentation(
+            element,
             AnnotationForm::TextualRepresentation,
             None,
             language,

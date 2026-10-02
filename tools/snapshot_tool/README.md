@@ -190,6 +190,11 @@ declaration forms of one metaclass is ambiguous rather than guessed:
   (outcome resolved))
 ```
 
+A relationship `kind` is one of `specialization`, `feature_typing`, `subsetting`,
+`redefinition`, `feature_chaining`, `type_featuring`, `connector_end`, `unioning`,
+`intersecting`, `differencing`, `disjoining`, or `annotation` (the Annotation a `comment ...
+about X` owns, from the Comment to its annotated element).
+
 The five exact pinned-XMI `Feature` derived-relationship collections have a separate compact
 assertion. `rule_id` is one of the five full canonical KerML IDs below; it selects the closed
 `sysml_query::FeatureDerivedRelationshipCollection` API directly, rather than deriving a query

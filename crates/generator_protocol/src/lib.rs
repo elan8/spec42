@@ -79,6 +79,7 @@ pub enum Metaclass {
     CalculationUsage,
     CaseDefinition,
     CaseUsage,
+    Comment,
     ConcernDefinition,
     ConcernUsage,
     ConnectionDefinition,
@@ -204,6 +205,7 @@ impl Metaclass {
             Self::ConnectionUsage => "ConnectionUsage",
             Self::ConstraintDefinition => "ConstraintDefinition",
             Self::ConstraintUsage => "ConstraintUsage",
+            Self::Comment => "Comment",
             Self::Documentation => "Documentation",
             Self::EnumerationDefinition => "EnumerationDefinition",
             Self::EnumerationUsage => "EnumerationUsage",
@@ -318,6 +320,7 @@ impl Metaclass {
             "ConnectionUsage" => Self::ConnectionUsage,
             "ConstraintDefinition" => Self::ConstraintDefinition,
             "ConstraintUsage" => Self::ConstraintUsage,
+            "Comment" => Self::Comment,
             "Documentation" => Self::Documentation,
             "EnumerationDefinition" => Self::EnumerationDefinition,
             "EnumerationUsage" => Self::EnumerationUsage,
@@ -1268,7 +1271,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x1e7e_09ae_2f6a_bed9,
+            SCHEMA_FINGERPRINT, 0x35c3_8e8b_f085_5a81,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1276,7 +1279,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x123b_ce79_cbcd_645f,
+            COMPATIBILITY_TOKEN, 0x3c53_4f42_c195_491d,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

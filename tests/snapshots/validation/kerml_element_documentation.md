@@ -47,7 +47,9 @@ package Model { action def Vehicle { doc /* vehicle documentation */ language "A
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8308ef4dbd1f4b2efa1b9163f5d950fec9338e6ed8fc278361cf021ea52aca4c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_element_documentation.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_element_documentation.md") (qualified-name "Model::Vehicle"))) (kind action-def) (membership (kind owning) (visibility default)) (documentation (doc (text " vehicle documentation ")) (rep (language "Alf") (text " vehicle implementation "))))
+    (declaration (id (node (document "memory://snapshot/kerml_element_documentation.md") (qualified-name "Model::Vehicle"))) (kind action-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_element_documentation.md") (path (named (kind package) (name "Model")) (named (kind action-def) (name "Vehicle")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " vehicle documentation "))))
+    (declaration (id (node (document "memory://snapshot/kerml_element_documentation.md") (path (named (kind package) (name "Model")) (named (kind action-def) (name "Vehicle")) (anonymous (kind textual-representation) (ordinal 0))))) (kind textual-representation) (membership (kind owning) (visibility default)) (documentation (rep (language "Alf") (text " vehicle implementation "))))
   )
   (references
   )

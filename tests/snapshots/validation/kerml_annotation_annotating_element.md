@@ -7,32 +7,33 @@ validation_rule=8.3.2.3.3 validateAnnotationAnnotatingElement, 8.3.2.3.3 validat
 source_expectation=accepted
 rule_family=validate
 expectation=by_construction
+evidence_reference=file:tests/snapshots/validation/kerml_annotation_annotated_element.md
 rule_id=kerml-1.0:8.3.2.3.3:validateAnnotationAnnotatingElement
 rule_id=kerml-1.0:8.3.2.3.3:validateAnnotationAnnotatedElementOwnership
-blocked_by=abstract-syntax-annotation-identity
 type=file
 ~~~
 # SOURCE
 ~~~kerml
-// Conforming: each annotating element below reaches its annotated element through exactly one
-// Annotation, in both authored directions -- a comment owned by the annotated element and a
-// comment that names its annotated element instead.
+// Conforming: every Annotation below is owned by its annotating Comment (its
+// owningAnnotatingElement) and owns no annotating element, and it is not owned by its annotated
+// element. A Documentation owned by `Thing` has no Annotation at all: its annotatedElement is its
+// owning namespace (KerML 8.3.2.3.2, Pilot ElementUtil.getAnnotatedElementOf).
 //
 // The two constraints are one structural well-formedness condition on Annotation and share this
 // fixture. Their violating side has no textual counterpart: KerML concrete syntax offers no way
 // to author an Annotation with neither annotating element or with both, so a source document
 // cannot express the invalid abstract-syntax shape.
-//
-// Note: the publication currently records the `comment about Thing` annotation against the
-// owning package rather than against Thing. That is an annotatedElement resolution question,
-// not a condition of these two constraints, and this fixture asserts no diagnostic either way.
 package Annotations {
     classifier Thing {
         doc /* Thing is annotated by a Documentation it owns. */
     }
+    classifier Other;
 
     comment about Thing
         /* Thing is annotated by a Comment it does not own. */
+
+    comment Note about Thing, Other
+        /* A named Comment owns one Annotation per annotated element. */
 }
 ~~~
 # EXPECTED DIAGNOSTICS
@@ -56,14 +57,30 @@ package Annotations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1e5988dd48f34568b4328642069a3795c0e8e7adf668e854e7c640658d894f0d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6a23e9bbff40f8f5233421bd49a4a521a5bf69bcccedbd6daff9ccd5adf89d2e"))
   (declarations
-    (declaration (id (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations"))) (kind package) (membership (kind owning) (visibility default)) (documentation (comment (text " Thing is annotated by a Comment it does not own. "))))
-    (declaration (id (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (documentation (doc (text " Thing is annotated by a Documentation it owns. "))))
+    (declaration (id (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (path (named (kind package) (name "Annotations")) (anonymous (kind comment) (ordinal 0))))) (kind comment) (membership (kind owning) (visibility default)) (documentation (comment (text " Thing is annotated by a Comment it does not own. "))) (authored (membership (kind owning) (visibility default)) (relationships (annotation (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Note"))) (kind comment) (membership (kind owning) (visibility default)) (documentation (comment (text " A named Comment owns one Annotation per annotated element. "))) (authored (membership (kind owning) (visibility default)) (relationships (annotation (reference "Thing")) (annotation (reference "Other")))))
+    (declaration (id (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Other"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (path (named (kind package) (name "Annotations")) (named (kind kerml-classifier) (name "Thing")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " Thing is annotated by a Documentation it owns. "))))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (path (named (kind package) (name "Annotations")) (anonymous (kind comment) (ordinal 0))))) (kind annotation) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Note"))) (kind annotation) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Thing")))))
+    (reference (id (source (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Note"))) (kind annotation) (ordinal 1))
+      (authored-target "Other")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Other")))))
   )
   (relationships
+    (relationship (kind annotation) (source (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (path (named (kind package) (name "Annotations")) (anonymous (kind comment) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (path (named (kind package) (name "Annotations")) (anonymous (kind comment) (ordinal 0))))) (kind annotation) (ordinal 0)))
+    (relationship (kind annotation) (source (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Note"))) (target (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Note"))) (kind annotation) (ordinal 0)))
+    (relationship (kind annotation) (source (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Note"))) (target (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Other"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Note"))) (kind annotation) (ordinal 1)))
   )
   (evaluation
   )
@@ -77,5 +94,20 @@ package Annotations {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/kerml_annotation_annotating_element.md") (range (start 15 18) (end 15 23)) (probe (position 15 18))
+    (reference (id (source (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (path (named (kind package) (name "Annotations")) (anonymous (kind comment) (ordinal 0))))) (kind annotation) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_annotation_annotating_element.md") (range (start 18 23) (end 18 28)) (probe (position 18 23))
+    (reference (id (source (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Note"))) (kind annotation) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Thing")))))
+    )
+  )
+  (query (document "memory://snapshot/kerml_annotation_annotating_element.md") (range (start 18 30) (end 18 35)) (probe (position 18 30))
+    (reference (id (source (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Note"))) (kind annotation) (ordinal 1) (authored-target "Other")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_annotation_annotating_element.md") (qualified-name "Annotations::Other")))))
+    )
+  )
 )
 ~~~

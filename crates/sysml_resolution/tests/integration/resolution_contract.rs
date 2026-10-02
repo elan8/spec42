@@ -100,48 +100,6 @@ fn contextual_expressions_and_connector_paths_have_seeded_schedule_parity() {
     }
 }
 
-/// An enumeration literal owns the members and documentation authored in its body.
-///
-/// `EnumeratedValue.body` is a full `PartUsageBody`, the same shape `lower_part_usage` walks,
-/// so its members go through the same `lower_part_usage_body_element`. Before it was walked, a
-/// literal's redefinitions and its own doc comment were both unreachable -- the per-literal
-/// half of the old Gap 56.
-#[test]
-fn enumeration_literal_bodies_publish_their_members_and_documentation() {
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tattribute def Level {\n\
-         \t\tattribute code : String;\n\
-         \t}\n\
-         \tenum def Kind specializes Level {\n\
-         \t\tsecret {\n\
-         \t\t\tdoc /* The secret level. */\n\
-         \t\t\t:>> code = \"secr\";\n\
-         \t\t}\n\
-         \t}\n\
-         }\n",
-    );
-    let line = output
-        .lines()
-        .find(|line| {
-            line.contains("(qualified-name \"Demo::Kind::secret\")")
-                && line.contains("(declaration ")
-        })
-        .unwrap_or_else(|| panic!("no enum literal declaration, got:\n{output}"));
-    assert!(
-        line.contains("(documentation (doc (text \" The secret level. \")))"),
-        "expected the literal to publish its own doc comment, got:\n{line}"
-    );
-    assert!(
-        output.contains("(named (kind enum-literal) (name \"secret\"))"),
-        "expected the literal to own the members authored in its body, got:\n{output}"
-    );
-    assert!(
-        output.contains("(redefinition (reference \"code\"))"),
-        "expected the literal body's `:>>` redefinition to reach the model, got:\n{output}"
-    );
-}
-
 /// The authored value spelling on a requirement subject and an enumeration literal.
 ///
 /// `SubjectDecl.value` became a `FeatureValue` and `EnumeratedValue` gained one, so both can

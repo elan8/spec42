@@ -206,6 +206,9 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         | K::ForLoop
         | K::ForLoopVariable
         | K::Dependency
+        | K::Comment
+        | K::Documentation
+        | K::TextualRepresentation
         | K::BareConnect
         | K::PerformParameterBinding
         | K::KermlType

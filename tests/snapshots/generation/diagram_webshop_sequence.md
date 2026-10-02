@@ -89,7 +89,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind part-def) (name "CatalogService")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-literal-string) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService::apiIn"))) (kind port) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CatalogService::catalogDbOut"))) (kind port) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (documentation (doc (text "\n         * Nominal (payment-approved) checkout. If payment is declined, the\n         * checkout ends with a rejection to the storefront and no order-created\n         * event is published; that branch is modeled in\n         * WebShopBehavior::OrderLifecycleStateMachine (transition `fail_payment`).\n         "))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::CheckoutFlow"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n         * Nominal (payment-approved) checkout. If payment is declined, the\n         * checkout ends with a rejection to the storefront and no order-created\n         * event is published; that branch is modeled in\n         * WebShopBehavior::OrderLifecycleStateMachine (transition `fail_payment`).\n         "))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "submitCheckout")) (succession (reference "forwardCheckout")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 1))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "forwardCheckout")) (succession (reference "authorizePayment")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "CheckoutFlow")) (anonymous (kind succession) (ordinal 2))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "authorizePayment")) (succession (reference "paymentApproved")))))
@@ -179,7 +180,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService::emailOut"))) (kind port) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::NotificationService::orderEventsIn"))) (kind port) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderCreatedEvent"))) (kind item-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Asynchronous fan-out of the order-created event after a successful checkout. "))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (qualified-name "WebShopArchitecture::OrderEventFanout"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " Asynchronous fan-out of the order-created event after a successful checkout. "))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "publishOrderCreated")) (succession (reference "createProjection")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 1))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "createProjection")) (succession (reference "deliverToInventory")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopArchitecture.sysml") (path (named (kind package) (name "WebShopArchitecture")) (named (kind occurrence-def) (name "OrderEventFanout")) (anonymous (kind succession) (ordinal 2))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "deliverToInventory")) (succession (reference "deliverToNotifications")))))
@@ -384,20 +386,30 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopBehavior.sysml") (qualified-name "WebShopBehavior::ShipmentConfirmed"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "WebShopArchitecture") (import (shape namespace) (recursive false))))))
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::CheckoutAvailabilityReq"))) (kind requirement-def) (membership (kind owning) (visibility default)) (documentation (doc (text " The public checkout API shall maintain at least 99.95% monthly availability. "))))
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "CheckoutAvailabilityReq")) (anonymous (kind require-constraint) (ordinal 0))))) (kind require-constraint) (membership (kind feature) (visibility default)) (documentation (doc (text " Availability budget for checkout stays above SLO. "))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::CheckoutAvailabilityReq"))) (kind requirement-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "CheckoutAvailabilityReq")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " The public checkout API shall maintain at least 99.95% monthly availability. "))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "CheckoutAvailabilityReq")) (anonymous (kind require-constraint) (ordinal 0))))) (kind require-constraint) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "CheckoutAvailabilityReq")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " Availability budget for checkout stays above SLO. "))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::CheckoutAvailabilityReq::apiGateway"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ApiGateway")))))
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::CheckoutLatencyReq"))) (kind requirement-def) (membership (kind owning) (visibility default)) (documentation (doc (text " The checkout path shall keep p95 end-user latency below 300 ms. "))))
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "CheckoutLatencyReq")) (anonymous (kind require-constraint) (ordinal 0))))) (kind require-constraint) (membership (kind feature) (visibility default)) (documentation (doc (text " p95 create-order latency remains within target. "))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::CheckoutLatencyReq"))) (kind requirement-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "CheckoutLatencyReq")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " The checkout path shall keep p95 end-user latency below 300 ms. "))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "CheckoutLatencyReq")) (anonymous (kind require-constraint) (ordinal 0))))) (kind require-constraint) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "CheckoutLatencyReq")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " p95 create-order latency remains within target. "))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::CheckoutLatencyReq::checkoutService"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "CheckoutService")))))
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::EventDurabilityReq"))) (kind requirement-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Order events shall be retained for replay and incident recovery. "))))
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "EventDurabilityReq")) (anonymous (kind require-constraint) (ordinal 0))))) (kind require-constraint) (membership (kind feature) (visibility default)) (documentation (doc (text " Topic retention remains at least seven days. "))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::EventDurabilityReq"))) (kind requirement-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "EventDurabilityReq")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " Order events shall be retained for replay and incident recovery. "))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "EventDurabilityReq")) (anonymous (kind require-constraint) (ordinal 0))))) (kind require-constraint) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "EventDurabilityReq")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " Topic retention remains at least seven days. "))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::EventDurabilityReq::ordersEventsTopic"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "OrdersEventsTopic")))))
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::PaymentReliabilityReq"))) (kind requirement-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Payment authorization calls shall meet the business reliability objective. "))))
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "PaymentReliabilityReq")) (anonymous (kind require-constraint) (ordinal 0))))) (kind require-constraint) (membership (kind feature) (visibility default)) (documentation (doc (text " Payment authorization success rate remains in target range. "))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::PaymentReliabilityReq"))) (kind requirement-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "PaymentReliabilityReq")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " Payment authorization calls shall meet the business reliability objective. "))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "PaymentReliabilityReq")) (anonymous (kind require-constraint) (ordinal 0))))) (kind require-constraint) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "PaymentReliabilityReq")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " Payment authorization success rate remains in target range. "))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::PaymentReliabilityReq::paymentsService"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PaymentsService")))))
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::SecurityBoundaryReq"))) (kind requirement-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Public traffic shall cross an explicit ingress boundary before business services. "))))
-    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "SecurityBoundaryReq")) (anonymous (kind require-constraint) (ordinal 0))))) (kind require-constraint) (membership (kind feature) (visibility default)) (documentation (doc (text " Only approved ingress paths expose checkout functionality. "))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::SecurityBoundaryReq"))) (kind requirement-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "SecurityBoundaryReq")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " Public traffic shall cross an explicit ingress boundary before business services. "))))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "SecurityBoundaryReq")) (anonymous (kind require-constraint) (ordinal 0))))) (kind require-constraint) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (path (named (kind package) (name "WebShopRequirements")) (named (kind requirement-def) (name "SecurityBoundaryReq")) (anonymous (kind require-constraint) (ordinal 0)) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " Only approved ingress paths expose checkout functionality. "))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/WebShopRequirements.sysml") (qualified-name "WebShopRequirements::SecurityBoundaryReq::apiGateway"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ApiGateway")))))
     (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (qualified-name "WebShopExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/webshop/webshop.sysml") (path (named (kind package) (name "WebShopExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "WebShopArchitecture") (import (shape namespace) (recursive false))))))
@@ -11130,6 +11142,15 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "document": 1,
       "range": [
+        187,
+        8,
+        192,
+        11
+      ]
+    },
+    {
+      "document": 1,
+      "range": [
         194,
         13,
         194,
@@ -12516,58 +12537,65 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "source-anchor",
-      "metaclass": "SuccessionAsUsage",
+      "metaclass": "Documentation",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 122,
+      "source": 56,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 125,
+      "source": 123,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 128,
+      "source": 126,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 131,
+      "source": 129,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 134,
+      "source": 132,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 137,
+      "source": 135,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 140,
+      "source": 138,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
-      "source": 143,
+      "source": 141,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "SuccessionAsUsage",
+      "ownerQualifiedName": "WebShopArchitecture::CheckoutFlow",
+      "source": 144,
       "sourceDomain": "workspace"
     },
     {
@@ -12721,12 +12749,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       "kind": "source-anchor",
       "metaclass": "ReferenceUsage",
       "ownerQualifiedName": "Performances::LiteralStringEvaluation",
-      "source": 146,
+      "source": 147,
       "sourceDomain": "standard-library"
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
+      "ordinal": 19,
       "relationshipKind": "containment",
       "source": 2
     },
@@ -12750,7 +12778,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
+      "ordinal": 20,
       "relationshipKind": "containment",
       "source": 3
     },
@@ -12912,85 +12940,91 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 30,
+      "ordinal": 17,
       "relationshipKind": "containment",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 39,
+      "ordinal": 31,
       "relationshipKind": "containment",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 41,
+      "ordinal": 40,
       "relationshipKind": "containment",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 43,
+      "ordinal": 42,
       "relationshipKind": "containment",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 45,
+      "ordinal": 44,
       "relationshipKind": "containment",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 47,
+      "ordinal": 46,
       "relationshipKind": "containment",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 49,
+      "ordinal": 48,
       "relationshipKind": "containment",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 51,
+      "ordinal": 50,
       "relationshipKind": "containment",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 69,
+      "ordinal": 52,
       "relationshipKind": "containment",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 80,
+      "ordinal": 70,
       "relationshipKind": "containment",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 82,
+      "ordinal": 81,
       "relationshipKind": "containment",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 84,
+      "ordinal": 83,
       "relationshipKind": "containment",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 96,
+      "ordinal": 85,
       "relationshipKind": "containment",
       "source": 9
     },
     {
       "kind": "relationship",
-      "ordinal": 112,
+      "ordinal": 97,
+      "relationshipKind": "containment",
+      "source": 9
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 113,
       "relationshipKind": "containment",
       "source": 9
     },
@@ -13194,13 +13228,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "containment",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 20,
+      "ordinal": 18,
       "relationshipKind": "containment",
       "source": 11
     },
@@ -13260,6 +13288,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
+      "ordinal": 30,
+      "relationshipKind": "containment",
+      "source": 11
+    },
+    {
+      "kind": "relationship",
       "ordinal": 34,
       "relationshipKind": "subsetting",
       "source": 11
@@ -13284,7 +13318,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 48,
+      "ordinal": 49,
       "relationshipKind": "flow",
       "source": 12
     },
@@ -13302,7 +13336,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 46,
+      "ordinal": 47,
       "relationshipKind": "flow",
       "source": 13
     },
@@ -13518,13 +13552,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 52,
-      "relationshipKind": "containment",
-      "source": 19
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 55,
+      "ordinal": 53,
       "relationshipKind": "containment",
       "source": 19
     },
@@ -13608,6 +13636,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
+      "ordinal": 69,
+      "relationshipKind": "containment",
+      "source": 19
+    },
+    {
+      "kind": "relationship",
       "ordinal": 151,
       "relationshipKind": "subsetting",
       "source": 19
@@ -13644,7 +13678,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 81,
+      "ordinal": 82,
       "relationshipKind": "flow",
       "source": 21
     },
@@ -13674,7 +13708,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 113,
+      "ordinal": 114,
       "relationshipKind": "flow",
       "source": 23
     },
@@ -13692,7 +13726,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 83,
+      "ordinal": 84,
       "relationshipKind": "flow",
       "source": 24
     },
@@ -13722,7 +13756,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 40,
+      "ordinal": 41,
       "relationshipKind": "flow",
       "source": 26
     },
@@ -13800,13 +13834,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 85,
-      "relationshipKind": "containment",
-      "source": 28
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 88,
+      "ordinal": 86,
       "relationshipKind": "containment",
       "source": 28
     },
@@ -13854,6 +13882,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
+      "ordinal": 96,
+      "relationshipKind": "containment",
+      "source": 28
+    },
+    {
+      "kind": "relationship",
       "ordinal": 247,
       "relationshipKind": "subsetting",
       "source": 28
@@ -13878,7 +13912,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 42,
+      "ordinal": 43,
       "relationshipKind": "flow",
       "source": 29
     },
@@ -13908,25 +13942,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 97,
+      "ordinal": 98,
       "relationshipKind": "containment",
       "source": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 100,
+      "ordinal": 101,
       "relationshipKind": "containment",
       "source": 31
     },
     {
       "kind": "relationship",
-      "ordinal": 103,
-      "relationshipKind": "containment",
-      "source": 31
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 106,
+      "ordinal": 104,
       "relationshipKind": "containment",
       "source": 31
     },
@@ -13957,6 +13985,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "kind": "relationship",
       "ordinal": 111,
+      "relationshipKind": "containment",
+      "source": 31
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 112,
       "relationshipKind": "containment",
       "source": 31
     },
@@ -14058,13 +14092,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 70,
-      "relationshipKind": "containment",
-      "source": 34
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 73,
+      "ordinal": 71,
       "relationshipKind": "containment",
       "source": 34
     },
@@ -14106,6 +14134,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
+      "ordinal": 80,
+      "relationshipKind": "containment",
+      "source": 34
+    },
+    {
+      "kind": "relationship",
       "ordinal": 198,
       "relationshipKind": "subsetting",
       "source": 34
@@ -14130,7 +14164,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 50,
+      "ordinal": 51,
       "relationshipKind": "flow",
       "source": 35
     },
@@ -14340,13 +14374,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 31,
-      "relationshipKind": "containment",
-      "source": 40
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
+      "ordinal": 32,
       "relationshipKind": "containment",
       "source": 40
     },
@@ -14371,6 +14399,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     {
       "kind": "relationship",
       "ordinal": 38,
+      "relationshipKind": "containment",
+      "source": 40
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 39,
       "relationshipKind": "containment",
       "source": 40
     },
@@ -14412,7 +14446,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 44,
+      "ordinal": 45,
       "relationshipKind": "flow",
       "source": 42
     },
@@ -14490,7 +14524,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 53,
+      "ordinal": 54,
       "relationshipKind": "containment",
       "source": 47
     },
@@ -14514,7 +14548,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 54,
+      "ordinal": 55,
       "relationshipKind": "containment",
       "source": 48
     },
@@ -14712,7 +14746,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 86,
+      "ordinal": 87,
       "relationshipKind": "containment",
       "source": 58
     },
@@ -14736,7 +14770,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 87,
+      "ordinal": 88,
       "relationshipKind": "containment",
       "source": 59
     },
@@ -14898,19 +14932,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 98,
+      "ordinal": 99,
       "relationshipKind": "containment",
       "source": 71
     },
     {
       "kind": "relationship",
-      "ordinal": 101,
+      "ordinal": 102,
       "relationshipKind": "containment",
       "source": 71
     },
     {
       "kind": "relationship",
-      "ordinal": 104,
+      "ordinal": 105,
       "relationshipKind": "containment",
       "source": 71
     },
@@ -14970,19 +15004,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 99,
+      "ordinal": 100,
       "relationshipKind": "containment",
       "source": 72
     },
     {
       "kind": "relationship",
-      "ordinal": 102,
+      "ordinal": 103,
       "relationshipKind": "containment",
       "source": 72
     },
     {
       "kind": "relationship",
-      "ordinal": 105,
+      "ordinal": 106,
       "relationshipKind": "containment",
       "source": 72
     },
@@ -15114,7 +15148,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 71,
+      "ordinal": 72,
       "relationshipKind": "containment",
       "source": 79
     },
@@ -15138,7 +15172,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 72,
+      "ordinal": 73,
       "relationshipKind": "containment",
       "source": 80
     },
@@ -15318,7 +15352,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 32,
+      "ordinal": 33,
       "relationshipKind": "containment",
       "source": 89
     },
@@ -15342,7 +15376,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     },
     {
       "kind": "relationship",
-      "ordinal": 33,
+      "ordinal": 34,
       "relationshipKind": "containment",
       "source": 90
     },
@@ -15427,173 +15461,173 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     "edges": [
       {
         "kind": "containment",
-        "navigation": 122,
+        "navigation": 123,
         "origin": 1,
         "provenance": "authored",
-        "reference": 164,
+        "reference": 165,
         "source": 0,
         "target": 1
       },
       {
         "kind": "succession",
-        "navigation": 123,
+        "navigation": 124,
         "origin": 1,
         "provenance": "implied",
-        "reference": 434,
-        "source": 11,
-        "target": 13
+        "reference": 436,
+        "source": 12,
+        "target": 14
       },
       {
         "kind": "containment",
-        "navigation": 125,
+        "navigation": 126,
         "origin": 2,
         "provenance": "authored",
-        "reference": 165,
+        "reference": 166,
         "source": 0,
         "target": 2
       },
       {
         "kind": "succession",
-        "navigation": 126,
+        "navigation": 127,
         "origin": 2,
         "provenance": "implied",
-        "reference": 319,
-        "source": 13,
-        "target": 15
+        "reference": 321,
+        "source": 14,
+        "target": 16
       },
       {
         "kind": "containment",
-        "navigation": 128,
+        "navigation": 129,
         "origin": 3,
         "provenance": "authored",
-        "reference": 166,
+        "reference": 167,
         "source": 0,
         "target": 3
       },
       {
         "kind": "succession",
-        "navigation": 129,
+        "navigation": 130,
         "origin": 3,
         "provenance": "implied",
-        "reference": 253,
-        "source": 15,
-        "target": 14
+        "reference": 255,
+        "source": 16,
+        "target": 15
       },
       {
         "kind": "containment",
-        "navigation": 131,
+        "navigation": 132,
         "origin": 4,
         "provenance": "authored",
-        "reference": 167,
+        "reference": 168,
         "source": 0,
         "target": 4
       },
       {
         "kind": "succession",
-        "navigation": 132,
+        "navigation": 133,
         "origin": 4,
         "provenance": "implied",
-        "reference": 362,
-        "source": 14,
-        "target": 9
+        "reference": 364,
+        "source": 15,
+        "target": 10
       },
       {
         "kind": "containment",
-        "navigation": 134,
+        "navigation": 135,
         "origin": 5,
         "provenance": "authored",
-        "reference": 168,
+        "reference": 169,
         "source": 0,
         "target": 5
       },
       {
         "kind": "succession",
-        "navigation": 135,
+        "navigation": 136,
         "origin": 5,
         "provenance": "implied",
-        "reference": 399,
-        "source": 9,
-        "target": 10
+        "reference": 401,
+        "source": 10,
+        "target": 11
       },
       {
         "kind": "containment",
-        "navigation": 137,
+        "navigation": 138,
         "origin": 6,
         "provenance": "authored",
-        "reference": 169,
+        "reference": 170,
         "source": 0,
         "target": 6
       },
       {
         "kind": "succession",
-        "navigation": 138,
+        "navigation": 139,
         "origin": 6,
         "provenance": "implied",
-        "reference": 409,
-        "source": 10,
-        "target": 17
+        "reference": 411,
+        "source": 11,
+        "target": 18
       },
       {
         "kind": "containment",
-        "navigation": 140,
+        "navigation": 141,
         "origin": 7,
         "provenance": "authored",
-        "reference": 170,
+        "reference": 171,
         "source": 0,
         "target": 7
       },
       {
         "kind": "succession",
-        "navigation": 141,
+        "navigation": 142,
         "origin": 7,
         "provenance": "implied",
-        "reference": 389,
-        "source": 17,
-        "target": 16
+        "reference": 391,
+        "source": 18,
+        "target": 17
       },
       {
         "kind": "containment",
-        "navigation": 143,
+        "navigation": 144,
         "origin": 8,
         "provenance": "authored",
-        "reference": 171,
+        "reference": 172,
         "source": 0,
         "target": 8
       },
       {
         "kind": "succession",
-        "navigation": 144,
+        "navigation": 145,
         "origin": 8,
         "provenance": "implied",
-        "reference": 263,
-        "source": 16,
-        "target": 12
+        "reference": 265,
+        "source": 17,
+        "target": 13
       },
       {
         "kind": "containment",
-        "navigation": 60,
-        "origin": 18,
+        "navigation": 56,
+        "origin": 9,
         "provenance": "authored",
-        "reference": 172,
+        "reference": 173,
         "source": 0,
-        "target": 18
+        "target": 9
+      },
+      {
+        "kind": "containment",
+        "navigation": 61,
+        "origin": 19,
+        "provenance": "authored",
+        "reference": 174,
+        "source": 0,
+        "target": 19
       },
       {
         "kind": "containment",
         "navigation": 16,
-        "origin": 27,
-        "provenance": "implied",
-        "reference": 220,
-        "source": 18,
-        "target": 27
-      },
-      {
-        "kind": "containment",
-        "navigation": 18,
         "origin": 28,
-        "provenance": "authored",
-        "reference": 142,
-        "source": 27,
+        "provenance": "implied",
+        "reference": 222,
+        "source": 19,
         "target": 28
       },
       {
@@ -15601,89 +15635,89 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 18,
         "origin": 29,
         "provenance": "authored",
-        "reference": 146,
+        "reference": 143,
         "source": 28,
         "target": 29
       },
       {
         "kind": "containment",
-        "navigation": 22,
-        "origin": 23,
-        "provenance": "implied",
-        "reference": 221,
-        "source": 18,
-        "target": 23
-      },
-      {
-        "kind": "containment",
-        "navigation": 21,
-        "origin": 24,
-        "provenance": "implied",
-        "reference": 222,
-        "source": 18,
-        "target": 24
-      },
-      {
-        "kind": "containment",
-        "navigation": 20,
-        "origin": 25,
-        "provenance": "implied",
-        "reference": 223,
-        "source": 18,
-        "target": 25
-      },
-      {
-        "kind": "containment",
-        "navigation": 19,
-        "origin": 26,
-        "provenance": "implied",
-        "reference": 224,
-        "source": 18,
-        "target": 26
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
+        "navigation": 18,
         "origin": 30,
-        "provenance": "implied",
-        "reference": 225,
-        "source": 18,
+        "provenance": "authored",
+        "reference": 147,
+        "source": 29,
         "target": 30
       },
       {
         "kind": "containment",
-        "navigation": 1,
-        "origin": 31,
+        "navigation": 22,
+        "origin": 24,
+        "provenance": "implied",
+        "reference": 223,
+        "source": 19,
+        "target": 24
+      },
+      {
+        "kind": "containment",
+        "navigation": 21,
+        "origin": 25,
+        "provenance": "implied",
+        "reference": 224,
+        "source": 19,
+        "target": 25
+      },
+      {
+        "kind": "containment",
+        "navigation": 20,
+        "origin": 26,
+        "provenance": "implied",
+        "reference": 225,
+        "source": 19,
+        "target": 26
+      },
+      {
+        "kind": "containment",
+        "navigation": 19,
+        "origin": 27,
         "provenance": "implied",
         "reference": 226,
-        "source": 18,
+        "source": 19,
+        "target": 27
+      },
+      {
+        "kind": "containment",
+        "navigation": 3,
+        "origin": 31,
+        "provenance": "implied",
+        "reference": 227,
+        "source": 19,
         "target": 31
       },
       {
         "kind": "containment",
-        "navigation": 63,
-        "origin": 19,
-        "provenance": "authored",
-        "reference": 227,
-        "source": 18,
-        "target": 19
-      },
-      {
-        "kind": "containment",
-        "navigation": 62,
-        "origin": 20,
-        "provenance": "authored",
+        "navigation": 1,
+        "origin": 32,
+        "provenance": "implied",
         "reference": 228,
-        "source": 18,
-        "target": 20
+        "source": 19,
+        "target": 32
       },
       {
         "kind": "containment",
         "navigation": 64,
-        "origin": 21,
+        "origin": 20,
         "provenance": "authored",
         "reference": 229,
-        "source": 18,
+        "source": 19,
+        "target": 20
+      },
+      {
+        "kind": "containment",
+        "navigation": 63,
+        "origin": 21,
+        "provenance": "authored",
+        "reference": 230,
+        "source": 19,
         "target": 21
       },
       {
@@ -15691,35 +15725,35 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 65,
         "origin": 22,
         "provenance": "authored",
-        "reference": 230,
-        "source": 18,
+        "reference": 231,
+        "source": 19,
         "target": 22
       },
       {
         "kind": "containment",
-        "navigation": 56,
-        "origin": 32,
+        "navigation": 66,
+        "origin": 23,
         "provenance": "authored",
-        "reference": 173,
+        "reference": 232,
+        "source": 19,
+        "target": 23
+      },
+      {
+        "kind": "containment",
+        "navigation": 57,
+        "origin": 33,
+        "provenance": "authored",
+        "reference": 175,
         "source": 0,
-        "target": 32
+        "target": 33
       },
       {
         "kind": "containment",
         "navigation": 11,
-        "origin": 37,
-        "provenance": "implied",
-        "reference": 411,
-        "source": 32,
-        "target": 37
-      },
-      {
-        "kind": "containment",
-        "navigation": 13,
         "origin": 38,
-        "provenance": "authored",
-        "reference": 574,
-        "source": 37,
+        "provenance": "implied",
+        "reference": 413,
+        "source": 33,
         "target": 38
       },
       {
@@ -15727,188 +15761,188 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 13,
         "origin": 39,
         "provenance": "authored",
-        "reference": 578,
+        "reference": 576,
         "source": 38,
         "target": 39
       },
       {
         "kind": "containment",
-        "navigation": 15,
-        "origin": 35,
-        "provenance": "implied",
-        "reference": 412,
-        "source": 32,
-        "target": 35
-      },
-      {
-        "kind": "containment",
-        "navigation": 14,
-        "origin": 36,
-        "provenance": "implied",
-        "reference": 413,
-        "source": 32,
-        "target": 36
-      },
-      {
-        "kind": "containment",
-        "navigation": 1,
+        "navigation": 13,
         "origin": 40,
-        "provenance": "implied",
-        "reference": 414,
-        "source": 32,
+        "provenance": "authored",
+        "reference": 580,
+        "source": 39,
         "target": 40
       },
       {
         "kind": "containment",
-        "navigation": 58,
-        "origin": 33,
-        "provenance": "authored",
+        "navigation": 15,
+        "origin": 36,
+        "provenance": "implied",
+        "reference": 414,
+        "source": 33,
+        "target": 36
+      },
+      {
+        "kind": "containment",
+        "navigation": 14,
+        "origin": 37,
+        "provenance": "implied",
         "reference": 415,
-        "source": 32,
-        "target": 33
+        "source": 33,
+        "target": 37
+      },
+      {
+        "kind": "containment",
+        "navigation": 1,
+        "origin": 41,
+        "provenance": "implied",
+        "reference": 416,
+        "source": 33,
+        "target": 41
       },
       {
         "kind": "containment",
         "navigation": 59,
         "origin": 34,
         "provenance": "authored",
-        "reference": 416,
-        "source": 32,
+        "reference": 417,
+        "source": 33,
         "target": 34
       },
       {
         "kind": "containment",
-        "navigation": 102,
-        "origin": 9,
+        "navigation": 60,
+        "origin": 35,
         "provenance": "authored",
-        "reference": 174,
-        "source": 0,
-        "target": 9
-      },
-      {
-        "kind": "flow",
-        "navigation": 103,
-        "origin": 9,
-        "provenance": "implied",
-        "reference": 308,
-        "source": 43,
-        "target": 72
+        "reference": 418,
+        "source": 33,
+        "target": 35
       },
       {
         "kind": "containment",
-        "navigation": 106,
+        "navigation": 103,
         "origin": 10,
         "provenance": "authored",
-        "reference": 175,
+        "reference": 176,
         "source": 0,
         "target": 10
       },
       {
         "kind": "flow",
-        "navigation": 107,
+        "navigation": 104,
         "origin": 10,
         "provenance": "implied",
-        "reference": 334,
-        "source": 71,
-        "target": 46
+        "reference": 310,
+        "source": 44,
+        "target": 73
       },
       {
         "kind": "containment",
-        "navigation": 86,
+        "navigation": 107,
         "origin": 11,
         "provenance": "authored",
-        "reference": 176,
+        "reference": 177,
         "source": 0,
         "target": 11
       },
       {
         "kind": "flow",
-        "navigation": 87,
+        "navigation": 108,
         "origin": 11,
         "provenance": "implied",
-        "reference": 423,
-        "source": 33,
-        "target": 20
+        "reference": 336,
+        "source": 72,
+        "target": 47
       },
       {
         "kind": "containment",
-        "navigation": 118,
+        "navigation": 87,
         "origin": 12,
         "provenance": "authored",
-        "reference": 177,
+        "reference": 178,
         "source": 0,
         "target": 12
       },
       {
         "kind": "flow",
-        "navigation": 119,
+        "navigation": 88,
         "origin": 12,
         "provenance": "implied",
-        "reference": 238,
-        "source": 22,
-        "target": 34
+        "reference": 425,
+        "source": 34,
+        "target": 21
       },
       {
         "kind": "containment",
-        "navigation": 90,
+        "navigation": 119,
         "origin": 13,
         "provenance": "authored",
-        "reference": 178,
+        "reference": 179,
         "source": 0,
         "target": 13
       },
       {
         "kind": "flow",
-        "navigation": 91,
+        "navigation": 120,
         "origin": 13,
         "provenance": "implied",
-        "reference": 235,
-        "source": 19,
-        "target": 45
+        "reference": 240,
+        "source": 23,
+        "target": 35
       },
       {
         "kind": "containment",
-        "navigation": 98,
+        "navigation": 91,
         "origin": 14,
         "provenance": "authored",
-        "reference": 179,
+        "reference": 180,
         "source": 0,
         "target": 14
       },
       {
         "kind": "flow",
-        "navigation": 99,
+        "navigation": 92,
         "origin": 14,
         "provenance": "implied",
-        "reference": 376,
-        "source": 60,
-        "target": 48
+        "reference": 237,
+        "source": 20,
+        "target": 46
       },
       {
         "kind": "containment",
-        "navigation": 66,
-        "origin": 41,
+        "navigation": 99,
+        "origin": 15,
         "provenance": "authored",
-        "reference": 180,
+        "reference": 181,
         "source": 0,
-        "target": 41
+        "target": 15
+      },
+      {
+        "kind": "flow",
+        "navigation": 100,
+        "origin": 15,
+        "provenance": "implied",
+        "reference": 378,
+        "source": 61,
+        "target": 49
+      },
+      {
+        "kind": "containment",
+        "navigation": 67,
+        "origin": 42,
+        "provenance": "authored",
+        "reference": 182,
+        "source": 0,
+        "target": 42
       },
       {
         "kind": "containment",
         "navigation": 23,
-        "origin": 56,
-        "provenance": "implied",
-        "reference": 274,
-        "source": 41,
-        "target": 56
-      },
-      {
-        "kind": "containment",
-        "navigation": 25,
         "origin": 57,
-        "provenance": "authored",
-        "reference": 436,
-        "source": 56,
+        "provenance": "implied",
+        "reference": 276,
+        "source": 42,
         "target": 57
       },
       {
@@ -15916,116 +15950,116 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 25,
         "origin": 58,
         "provenance": "authored",
-        "reference": 440,
+        "reference": 438,
         "source": 57,
         "target": 58
       },
       {
         "kind": "containment",
+        "navigation": 25,
+        "origin": 59,
+        "provenance": "authored",
+        "reference": 442,
+        "source": 58,
+        "target": 59
+      },
+      {
+        "kind": "containment",
         "navigation": 26,
-        "origin": 55,
+        "origin": 56,
         "provenance": "implied",
-        "reference": 275,
-        "source": 41,
-        "target": 55
+        "reference": 277,
+        "source": 42,
+        "target": 56
       },
       {
         "kind": "containment",
         "navigation": 27,
-        "origin": 51,
-        "provenance": "implied",
-        "reference": 276,
-        "source": 41,
-        "target": 51
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "origin": 49,
-        "provenance": "implied",
-        "reference": 277,
-        "source": 41,
-        "target": 49
-      },
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "origin": 50,
-        "provenance": "implied",
-        "reference": 278,
-        "source": 41,
-        "target": 50
-      },
-      {
-        "kind": "containment",
-        "navigation": 30,
         "origin": 52,
         "provenance": "implied",
-        "reference": 279,
-        "source": 41,
+        "reference": 278,
+        "source": 42,
         "target": 52
       },
       {
         "kind": "containment",
-        "navigation": 28,
-        "origin": 53,
+        "navigation": 3,
+        "origin": 50,
+        "provenance": "implied",
+        "reference": 279,
+        "source": 42,
+        "target": 50
+      },
+      {
+        "kind": "containment",
+        "navigation": 1,
+        "origin": 51,
         "provenance": "implied",
         "reference": 280,
-        "source": 41,
+        "source": 42,
+        "target": 51
+      },
+      {
+        "kind": "containment",
+        "navigation": 30,
+        "origin": 53,
+        "provenance": "implied",
+        "reference": 281,
+        "source": 42,
         "target": 53
       },
       {
         "kind": "containment",
-        "navigation": 29,
+        "navigation": 28,
         "origin": 54,
         "provenance": "implied",
-        "reference": 281,
-        "source": 41,
+        "reference": 282,
+        "source": 42,
         "target": 54
       },
       {
         "kind": "containment",
-        "navigation": 74,
-        "origin": 42,
-        "provenance": "authored",
-        "reference": 282,
-        "source": 41,
-        "target": 42
+        "navigation": 29,
+        "origin": 55,
+        "provenance": "implied",
+        "reference": 283,
+        "source": 42,
+        "target": 55
       },
       {
         "kind": "containment",
-        "navigation": 71,
+        "navigation": 75,
         "origin": 43,
         "provenance": "authored",
-        "reference": 283,
-        "source": 41,
+        "reference": 284,
+        "source": 42,
         "target": 43
       },
       {
         "kind": "containment",
-        "navigation": 69,
+        "navigation": 72,
         "origin": 44,
         "provenance": "authored",
-        "reference": 284,
-        "source": 41,
+        "reference": 285,
+        "source": 42,
         "target": 44
       },
       {
         "kind": "containment",
-        "navigation": 68,
+        "navigation": 70,
         "origin": 45,
         "provenance": "authored",
-        "reference": 285,
-        "source": 41,
+        "reference": 286,
+        "source": 42,
         "target": 45
       },
       {
         "kind": "containment",
-        "navigation": 72,
+        "navigation": 69,
         "origin": 46,
         "provenance": "authored",
-        "reference": 286,
-        "source": 41,
+        "reference": 287,
+        "source": 42,
         "target": 46
       },
       {
@@ -16033,44 +16067,44 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 73,
         "origin": 47,
         "provenance": "authored",
-        "reference": 287,
-        "source": 41,
+        "reference": 288,
+        "source": 42,
         "target": 47
       },
       {
         "kind": "containment",
-        "navigation": 70,
+        "navigation": 74,
         "origin": 48,
         "provenance": "authored",
-        "reference": 288,
-        "source": 41,
+        "reference": 289,
+        "source": 42,
         "target": 48
       },
       {
         "kind": "containment",
-        "navigation": 75,
-        "origin": 59,
+        "navigation": 71,
+        "origin": 49,
         "provenance": "authored",
-        "reference": 181,
+        "reference": 290,
+        "source": 42,
+        "target": 49
+      },
+      {
+        "kind": "containment",
+        "navigation": 76,
+        "origin": 60,
+        "provenance": "authored",
+        "reference": 183,
         "source": 0,
-        "target": 59
+        "target": 60
       },
       {
         "kind": "containment",
         "navigation": 31,
-        "origin": 67,
-        "provenance": "implied",
-        "reference": 364,
-        "source": 59,
-        "target": 67
-      },
-      {
-        "kind": "containment",
-        "navigation": 33,
         "origin": 68,
-        "provenance": "authored",
-        "reference": 540,
-        "source": 67,
+        "provenance": "implied",
+        "reference": 366,
+        "source": 60,
         "target": 68
       },
       {
@@ -16078,134 +16112,134 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 33,
         "origin": 69,
         "provenance": "authored",
-        "reference": 544,
+        "reference": 542,
         "source": 68,
         "target": 69
       },
       {
         "kind": "containment",
+        "navigation": 33,
+        "origin": 70,
+        "provenance": "authored",
+        "reference": 546,
+        "source": 69,
+        "target": 70
+      },
+      {
+        "kind": "containment",
         "navigation": 34,
-        "origin": 66,
+        "origin": 67,
         "provenance": "implied",
-        "reference": 365,
-        "source": 59,
-        "target": 66
+        "reference": 367,
+        "source": 60,
+        "target": 67
       },
       {
         "kind": "containment",
         "navigation": 36,
-        "origin": 64,
-        "provenance": "implied",
-        "reference": 366,
-        "source": 59,
-        "target": 64
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "origin": 62,
-        "provenance": "implied",
-        "reference": 367,
-        "source": 59,
-        "target": 62
-      },
-      {
-        "kind": "containment",
-        "navigation": 35,
         "origin": 65,
         "provenance": "implied",
         "reference": 368,
-        "source": 59,
+        "source": 60,
         "target": 65
       },
       {
         "kind": "containment",
-        "navigation": 1,
+        "navigation": 3,
         "origin": 63,
         "provenance": "implied",
         "reference": 369,
-        "source": 59,
+        "source": 60,
         "target": 63
       },
       {
         "kind": "containment",
-        "navigation": 78,
-        "origin": 60,
-        "provenance": "authored",
+        "navigation": 35,
+        "origin": 66,
+        "provenance": "implied",
         "reference": 370,
-        "source": 59,
-        "target": 60
+        "source": 60,
+        "target": 66
       },
       {
         "kind": "containment",
-        "navigation": 77,
+        "navigation": 1,
+        "origin": 64,
+        "provenance": "implied",
+        "reference": 371,
+        "source": 60,
+        "target": 64
+      },
+      {
+        "kind": "containment",
+        "navigation": 79,
         "origin": 61,
         "provenance": "authored",
-        "reference": 371,
-        "source": 59,
+        "reference": 372,
+        "source": 60,
         "target": 61
       },
       {
         "kind": "containment",
-        "navigation": 94,
-        "origin": 15,
+        "navigation": 78,
+        "origin": 62,
         "provenance": "authored",
-        "reference": 182,
-        "source": 0,
-        "target": 15
-      },
-      {
-        "kind": "flow",
-        "navigation": 95,
-        "origin": 15,
-        "provenance": "implied",
-        "reference": 295,
-        "source": 44,
-        "target": 61
+        "reference": 373,
+        "source": 60,
+        "target": 62
       },
       {
         "kind": "containment",
-        "navigation": 114,
+        "navigation": 95,
         "origin": 16,
         "provenance": "authored",
-        "reference": 183,
+        "reference": 184,
         "source": 0,
         "target": 16
       },
       {
         "kind": "flow",
-        "navigation": 115,
+        "navigation": 96,
         "origin": 16,
         "provenance": "implied",
-        "reference": 303,
-        "source": 42,
-        "target": 21
+        "reference": 297,
+        "source": 45,
+        "target": 62
       },
       {
         "kind": "containment",
-        "navigation": 79,
-        "origin": 70,
+        "navigation": 115,
+        "origin": 17,
         "provenance": "authored",
-        "reference": 184,
+        "reference": 185,
         "source": 0,
-        "target": 70
+        "target": 17
+      },
+      {
+        "kind": "flow",
+        "navigation": 116,
+        "origin": 17,
+        "provenance": "implied",
+        "reference": 305,
+        "source": 43,
+        "target": 22
+      },
+      {
+        "kind": "containment",
+        "navigation": 80,
+        "origin": 71,
+        "provenance": "authored",
+        "reference": 186,
+        "source": 0,
+        "target": 71
       },
       {
         "kind": "containment",
         "navigation": 37,
-        "origin": 79,
-        "provenance": "implied",
-        "reference": 321,
-        "source": 70,
-        "target": 79
-      },
-      {
-        "kind": "containment",
-        "navigation": 39,
         "origin": 80,
-        "provenance": "authored",
-        "reference": 473,
-        "source": 79,
+        "provenance": "implied",
+        "reference": 323,
+        "source": 71,
         "target": 80
       },
       {
@@ -16213,107 +16247,107 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 39,
         "origin": 81,
         "provenance": "authored",
-        "reference": 477,
+        "reference": 475,
         "source": 80,
         "target": 81
       },
       {
         "kind": "containment",
-        "navigation": 40,
-        "origin": 78,
-        "provenance": "implied",
-        "reference": 322,
-        "source": 70,
-        "target": 78
-      },
-      {
-        "kind": "containment",
-        "navigation": 3,
-        "origin": 73,
-        "provenance": "implied",
-        "reference": 323,
-        "source": 70,
-        "target": 73
-      },
-      {
-        "kind": "containment",
-        "navigation": 1,
-        "origin": 74,
-        "provenance": "implied",
-        "reference": 324,
-        "source": 70,
-        "target": 74
-      },
-      {
-        "kind": "containment",
-        "navigation": 42,
-        "origin": 75,
-        "provenance": "implied",
-        "reference": 325,
-        "source": 70,
-        "target": 75
-      },
-      {
-        "kind": "containment",
-        "navigation": 41,
-        "origin": 76,
-        "provenance": "implied",
-        "reference": 326,
-        "source": 70,
-        "target": 76
-      },
-      {
-        "kind": "containment",
-        "navigation": 43,
-        "origin": 77,
-        "provenance": "implied",
-        "reference": 327,
-        "source": 70,
-        "target": 77
-      },
-      {
-        "kind": "containment",
-        "navigation": 82,
-        "origin": 71,
-        "provenance": "authored",
-        "reference": 328,
-        "source": 70,
-        "target": 71
-      },
-      {
-        "kind": "containment",
-        "navigation": 81,
-        "origin": 72,
-        "provenance": "authored",
-        "reference": 329,
-        "source": 70,
-        "target": 72
-      },
-      {
-        "kind": "containment",
-        "navigation": 83,
+        "navigation": 39,
         "origin": 82,
         "provenance": "authored",
-        "reference": 185,
-        "source": 0,
+        "reference": 479,
+        "source": 81,
         "target": 82
       },
       {
         "kind": "containment",
-        "navigation": 44,
-        "origin": 89,
+        "navigation": 40,
+        "origin": 79,
         "provenance": "implied",
-        "reference": 339,
-        "source": 82,
-        "target": 89
+        "reference": 324,
+        "source": 71,
+        "target": 79
       },
       {
         "kind": "containment",
-        "navigation": 46,
-        "origin": 90,
+        "navigation": 3,
+        "origin": 74,
+        "provenance": "implied",
+        "reference": 325,
+        "source": 71,
+        "target": 74
+      },
+      {
+        "kind": "containment",
+        "navigation": 1,
+        "origin": 75,
+        "provenance": "implied",
+        "reference": 326,
+        "source": 71,
+        "target": 75
+      },
+      {
+        "kind": "containment",
+        "navigation": 42,
+        "origin": 76,
+        "provenance": "implied",
+        "reference": 327,
+        "source": 71,
+        "target": 76
+      },
+      {
+        "kind": "containment",
+        "navigation": 41,
+        "origin": 77,
+        "provenance": "implied",
+        "reference": 328,
+        "source": 71,
+        "target": 77
+      },
+      {
+        "kind": "containment",
+        "navigation": 43,
+        "origin": 78,
+        "provenance": "implied",
+        "reference": 329,
+        "source": 71,
+        "target": 78
+      },
+      {
+        "kind": "containment",
+        "navigation": 83,
+        "origin": 72,
         "provenance": "authored",
-        "reference": 504,
-        "source": 89,
+        "reference": 330,
+        "source": 71,
+        "target": 72
+      },
+      {
+        "kind": "containment",
+        "navigation": 82,
+        "origin": 73,
+        "provenance": "authored",
+        "reference": 331,
+        "source": 71,
+        "target": 73
+      },
+      {
+        "kind": "containment",
+        "navigation": 84,
+        "origin": 83,
+        "provenance": "authored",
+        "reference": 187,
+        "source": 0,
+        "target": 83
+      },
+      {
+        "kind": "containment",
+        "navigation": 44,
+        "origin": 90,
+        "provenance": "implied",
+        "reference": 341,
+        "source": 83,
         "target": 90
       },
       {
@@ -16321,26 +16355,26 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 46,
         "origin": 91,
         "provenance": "authored",
-        "reference": 516,
+        "reference": 506,
         "source": 90,
         "target": 91
       },
       {
         "kind": "containment",
-        "navigation": 47,
+        "navigation": 46,
         "origin": 92,
-        "provenance": "implied",
-        "reference": 340,
-        "source": 82,
+        "provenance": "authored",
+        "reference": 518,
+        "source": 91,
         "target": 92
       },
       {
         "kind": "containment",
-        "navigation": 49,
+        "navigation": 47,
         "origin": 93,
-        "provenance": "authored",
-        "reference": 505,
-        "source": 92,
+        "provenance": "implied",
+        "reference": 342,
+        "source": 83,
         "target": 93
       },
       {
@@ -16348,26 +16382,26 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 49,
         "origin": 94,
         "provenance": "authored",
-        "reference": 517,
+        "reference": 507,
         "source": 93,
         "target": 94
       },
       {
         "kind": "containment",
-        "navigation": 50,
+        "navigation": 49,
         "origin": 95,
-        "provenance": "implied",
-        "reference": 341,
-        "source": 82,
+        "provenance": "authored",
+        "reference": 519,
+        "source": 94,
         "target": 95
       },
       {
         "kind": "containment",
-        "navigation": 52,
+        "navigation": 50,
         "origin": 96,
-        "provenance": "authored",
-        "reference": 506,
-        "source": 95,
+        "provenance": "implied",
+        "reference": 343,
+        "source": 83,
         "target": 96
       },
       {
@@ -16375,81 +16409,90 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 52,
         "origin": 97,
         "provenance": "authored",
-        "reference": 518,
+        "reference": 508,
         "source": 96,
         "target": 97
       },
       {
         "kind": "containment",
+        "navigation": 52,
+        "origin": 98,
+        "provenance": "authored",
+        "reference": 520,
+        "source": 97,
+        "target": 98
+      },
+      {
+        "kind": "containment",
         "navigation": 7,
-        "origin": 86,
-        "provenance": "implied",
-        "reference": 342,
-        "source": 82,
-        "target": 86
-      },
-      {
-        "kind": "containment",
-        "navigation": 9,
-        "origin": 84,
-        "provenance": "implied",
-        "reference": 343,
-        "source": 82,
-        "target": 84
-      },
-      {
-        "kind": "containment",
-        "navigation": 5,
-        "origin": 85,
-        "provenance": "implied",
-        "reference": 344,
-        "source": 82,
-        "target": 85
-      },
-      {
-        "kind": "containment",
-        "navigation": 54,
         "origin": 87,
         "provenance": "implied",
-        "reference": 345,
-        "source": 82,
+        "reference": 344,
+        "source": 83,
         "target": 87
       },
       {
         "kind": "containment",
-        "navigation": 53,
-        "origin": 88,
+        "navigation": 9,
+        "origin": 85,
+        "provenance": "implied",
+        "reference": 345,
+        "source": 83,
+        "target": 85
+      },
+      {
+        "kind": "containment",
+        "navigation": 5,
+        "origin": 86,
         "provenance": "implied",
         "reference": 346,
-        "source": 82,
+        "source": 83,
+        "target": 86
+      },
+      {
+        "kind": "containment",
+        "navigation": 54,
+        "origin": 88,
+        "provenance": "implied",
+        "reference": 347,
+        "source": 83,
         "target": 88
       },
       {
         "kind": "containment",
-        "navigation": 85,
-        "origin": 83,
-        "provenance": "authored",
-        "reference": 347,
-        "source": 82,
-        "target": 83
+        "navigation": 53,
+        "origin": 89,
+        "provenance": "implied",
+        "reference": 348,
+        "source": 83,
+        "target": 89
       },
       {
         "kind": "containment",
-        "navigation": 110,
-        "origin": 17,
+        "navigation": 86,
+        "origin": 84,
         "provenance": "authored",
-        "reference": 186,
+        "reference": 349,
+        "source": 83,
+        "target": 84
+      },
+      {
+        "kind": "containment",
+        "navigation": 111,
+        "origin": 18,
+        "provenance": "authored",
+        "reference": 188,
         "source": 0,
-        "target": 17
+        "target": 18
       },
       {
         "kind": "flow",
-        "navigation": 111,
-        "origin": 17,
+        "navigation": 112,
+        "origin": 18,
         "provenance": "implied",
-        "reference": 300,
-        "source": 47,
-        "target": 83
+        "reference": 302,
+        "source": 48,
+        "target": 84
       }
     ],
     "exposedRoots": [
@@ -16458,7 +16501,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     "kind": "sequence-view",
     "metadata": {
       "messages": [
-        9,
         10,
         11,
         12,
@@ -16466,15 +16508,16 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         14,
         15,
         16,
-        17
+        17,
+        18
       ],
       "participants": [
-        18,
-        32,
-        41,
-        59,
-        70,
-        82
+        19,
+        33,
+        42,
+        60,
+        71,
+        83
       ]
     },
     "nodes": [
@@ -16483,19 +16526,18 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "parts",
             "members": [
-              18,
-              32,
-              41,
-              59,
-              70,
-              82
+              19,
+              33,
+              42,
+              60,
+              71,
+              83
             ],
             "provenance": "direct"
           },
           {
             "kind": "connections",
             "members": [
-              9,
               10,
               11,
               12,
@@ -16503,7 +16545,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
               14,
               15,
               16,
-              17
+              17,
+              18
             ],
             "provenance": "direct"
           }
@@ -16528,22 +16571,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 112,
-        "source": 122,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "metaclass": "SuccessionAsUsage",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 0,
         "reference": 113,
-        "source": 125,
+        "source": 123,
         "typing": {
           "status": "absent"
         }
@@ -16557,7 +16586,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "unsupported",
         "owner": 0,
         "reference": 114,
-        "source": 128,
+        "source": 126,
         "typing": {
           "status": "absent"
         }
@@ -16571,7 +16600,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "unsupported",
         "owner": 0,
         "reference": 115,
-        "source": 131,
+        "source": 129,
         "typing": {
           "status": "absent"
         }
@@ -16585,7 +16614,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "unsupported",
         "owner": 0,
         "reference": 116,
-        "source": 134,
+        "source": 132,
         "typing": {
           "status": "absent"
         }
@@ -16599,7 +16628,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "unsupported",
         "owner": 0,
         "reference": 117,
-        "source": 137,
+        "source": 135,
         "typing": {
           "status": "absent"
         }
@@ -16613,7 +16642,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "unsupported",
         "owner": 0,
         "reference": 118,
-        "source": 140,
+        "source": 138,
         "typing": {
           "status": "absent"
         }
@@ -16627,7 +16656,35 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "unsupported",
         "owner": 0,
         "reference": 119,
-        "source": 143,
+        "source": 141,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "SuccessionAsUsage",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 0,
+        "reference": 120,
+        "source": 144,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "Documentation",
+        "name": null,
+        "notationRole": "annotation",
+        "owner": 0,
+        "reference": 112,
+        "source": 56,
         "typing": {
           "status": "absent"
         }
@@ -16641,7 +16698,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 38,
-        "source": 102,
+        "source": 103,
         "typing": {
           "status": "absent"
         }
@@ -16655,7 +16712,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 39,
-        "source": 106,
+        "source": 107,
         "typing": {
           "status": "absent"
         }
@@ -16669,7 +16726,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 43,
-        "source": 86,
+        "source": 87,
         "typing": {
           "status": "absent"
         }
@@ -16683,7 +16740,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 18,
-        "source": 118,
+        "source": 119,
         "typing": {
           "status": "absent"
         }
@@ -16697,7 +16754,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 27,
-        "source": 90,
+        "source": 91,
         "typing": {
           "status": "absent"
         }
@@ -16711,7 +16768,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 33,
-        "source": 98,
+        "source": 99,
         "typing": {
           "status": "absent"
         }
@@ -16725,7 +16782,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 16,
-        "source": 94,
+        "source": 95,
         "typing": {
           "status": "absent"
         }
@@ -16739,7 +16796,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 17,
-        "source": 114,
+        "source": 115,
         "typing": {
           "status": "absent"
         }
@@ -16753,7 +16810,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 37,
-        "source": 110,
+        "source": 111,
         "typing": {
           "status": "absent"
         }
@@ -16763,29 +16820,29 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "attributes",
             "members": [
-              27,
-              30,
-              31
+              28,
+              31,
+              32
             ],
             "provenance": "inherited"
           },
           {
             "kind": "ports",
             "members": [
-              23,
               24,
               25,
-              26
+              26,
+              27
             ],
             "provenance": "inherited"
           },
           {
             "kind": "occurrences",
             "members": [
-              19,
               20,
               21,
-              22
+              22,
+              23
             ],
             "provenance": "direct"
           }
@@ -16797,7 +16854,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 11,
-        "source": 60,
+        "source": 61,
         "typing": {
           "status": "resolved",
           "types": [
@@ -16815,9 +16872,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "forwardSent",
         "notationRole": "usage",
-        "owner": 18,
+        "owner": 19,
         "reference": 12,
-        "source": 63,
+        "source": 64,
         "typing": {
           "status": "absent"
         }
@@ -16829,9 +16886,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "submitReceived",
         "notationRole": "usage",
-        "owner": 18,
+        "owner": 19,
         "reference": 15,
-        "source": 62,
+        "source": 63,
         "typing": {
           "status": "absent"
         }
@@ -16843,9 +16900,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "outcomeReceived",
         "notationRole": "usage",
-        "owner": 18,
+        "owner": 19,
         "reference": 14,
-        "source": 64,
+        "source": 65,
         "typing": {
           "status": "absent"
         }
@@ -16857,9 +16914,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "outcomeForwarded",
         "notationRole": "usage",
-        "owner": 18,
+        "owner": 19,
         "reference": 13,
-        "source": 65,
+        "source": 66,
         "typing": {
           "status": "absent"
         }
@@ -16871,7 +16928,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "catalogApiOut",
         "notationRole": "usage",
-        "owner": 18,
+        "owner": 19,
         "reference": 5,
         "source": 22,
         "typing": {
@@ -16885,7 +16942,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "checkoutApiOut",
         "notationRole": "usage",
-        "owner": 18,
+        "owner": 19,
         "reference": 6,
         "source": 21,
         "typing": {
@@ -16899,7 +16956,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "publicCatalogIn",
         "notationRole": "usage",
-        "owner": 18,
+        "owner": 19,
         "reference": 7,
         "source": 20,
         "typing": {
@@ -16913,7 +16970,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "publicCheckoutIn",
         "notationRole": "usage",
-        "owner": 18,
+        "owner": 19,
         "reference": 8,
         "source": 19,
         "typing": {
@@ -16927,7 +16984,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
-        "owner": 18,
+        "owner": 19,
         "reference": 109,
         "source": 16,
         "typing": {
@@ -16941,7 +16998,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "LiteralString",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 27,
+        "owner": 28,
         "reference": 110,
         "source": 18,
         "typing": {
@@ -16955,7 +17012,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 28,
+        "owner": 29,
         "reference": 111,
         "source": 18,
         "typing": {
@@ -16969,7 +17026,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": "serviceName",
         "notationRole": "usage",
-        "owner": 18,
+        "owner": 19,
         "reference": 56,
         "source": 3,
         "typing": {
@@ -16989,7 +17046,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": "moduleName",
         "notationRole": "usage",
-        "owner": 18,
+        "owner": 19,
         "reference": 86,
         "source": 1,
         "typing": {
@@ -17007,24 +17064,24 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "attributes",
             "members": [
-              37,
-              40
+              38,
+              41
             ],
             "provenance": "inherited"
           },
           {
             "kind": "ports",
             "members": [
-              35,
-              36
+              36,
+              37
             ],
             "provenance": "inherited"
           },
           {
             "kind": "occurrences",
             "members": [
-              33,
-              34
+              34,
+              35
             ],
             "provenance": "direct"
           }
@@ -17036,7 +17093,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 40,
-        "source": 56,
+        "source": 57,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17054,9 +17111,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "submitSent",
         "notationRole": "usage",
-        "owner": 32,
+        "owner": 33,
         "reference": 42,
-        "source": 58,
+        "source": 59,
         "typing": {
           "status": "absent"
         }
@@ -17068,9 +17125,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "outcomeReceived",
         "notationRole": "usage",
-        "owner": 32,
+        "owner": 33,
         "reference": 41,
-        "source": 59,
+        "source": 60,
         "typing": {
           "status": "absent"
         }
@@ -17082,7 +17139,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "catalogApiOut",
         "notationRole": "usage",
-        "owner": 32,
+        "owner": 33,
         "reference": 92,
         "source": 15,
         "typing": {
@@ -17096,7 +17153,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "checkoutApiOut",
         "notationRole": "usage",
-        "owner": 32,
+        "owner": 33,
         "reference": 93,
         "source": 14,
         "typing": {
@@ -17110,8 +17167,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
-        "owner": 32,
-        "reference": 138,
+        "owner": 33,
+        "reference": 139,
         "source": 11,
         "typing": {
           "status": "absent"
@@ -17122,20 +17179,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "conjugated": false,
         "direction": null,
         "metaclass": "LiteralString",
-        "name": null,
-        "notationRole": "unsupported",
-        "owner": 37,
-        "reference": 139,
-        "source": 13,
-        "typing": {
-          "status": "absent"
-        }
-      },
-      {
-        "compartments": [],
-        "conjugated": false,
-        "direction": null,
-        "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
         "owner": 38,
@@ -17149,10 +17192,24 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "compartments": [],
         "conjugated": false,
         "direction": null,
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 39,
+        "reference": 141,
+        "source": 13,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
         "metaclass": "AttributeUsage",
         "name": "moduleName",
         "notationRole": "usage",
-        "owner": 32,
+        "owner": 33,
         "reference": 86,
         "source": 1,
         "typing": {
@@ -17170,33 +17227,33 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "attributes",
             "members": [
-              49,
               50,
-              56
+              51,
+              57
             ],
             "provenance": "inherited"
           },
           {
             "kind": "ports",
             "members": [
-              51,
               52,
               53,
               54,
-              55
+              55,
+              56
             ],
             "provenance": "inherited"
           },
           {
             "kind": "occurrences",
             "members": [
-              42,
               43,
               44,
               45,
               46,
               47,
-              48
+              48,
+              49
             ],
             "provenance": "direct"
           }
@@ -17208,7 +17265,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 19,
-        "source": 66,
+        "source": 67,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17226,9 +17283,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "outcomeSent",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 42,
         "reference": 24,
-        "source": 74,
+        "source": 75,
         "typing": {
           "status": "absent"
         }
@@ -17240,9 +17297,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "reserveSent",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 42,
         "reference": 26,
-        "source": 71,
+        "source": 72,
         "typing": {
           "status": "absent"
         }
@@ -17254,9 +17311,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "authorizeSent",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 42,
         "reference": 21,
-        "source": 69,
+        "source": 70,
         "typing": {
           "status": "absent"
         }
@@ -17268,9 +17325,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "forwardReceived",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 42,
         "reference": 22,
-        "source": 68,
+        "source": 69,
         "typing": {
           "status": "absent"
         }
@@ -17282,9 +17339,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "reserveReturned",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 42,
         "reference": 25,
-        "source": 72,
+        "source": 73,
         "typing": {
           "status": "absent"
         }
@@ -17296,9 +17353,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "orderCreatedSent",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 42,
         "reference": 23,
-        "source": 73,
+        "source": 74,
         "typing": {
           "status": "absent"
         }
@@ -17310,9 +17367,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "authorizeReturned",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 42,
         "reference": 20,
-        "source": 70,
+        "source": 71,
         "typing": {
           "status": "absent"
         }
@@ -17324,7 +17381,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": "serviceName",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 42,
         "reference": 56,
         "source": 3,
         "typing": {
@@ -17344,7 +17401,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": "moduleName",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 42,
         "reference": 86,
         "source": 1,
         "typing": {
@@ -17364,7 +17421,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "ordersDbOut",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 42,
         "reference": 53,
         "source": 27,
         "typing": {
@@ -17378,7 +17435,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "orderEventsOut",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 42,
         "reference": 52,
         "source": 30,
         "typing": {
@@ -17392,7 +17449,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "paymentsApiOut",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 42,
         "reference": 54,
         "source": 28,
         "typing": {
@@ -17406,7 +17463,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "inventoryApiOut",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 42,
         "reference": 51,
         "source": 29,
         "typing": {
@@ -17420,7 +17477,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "apiIn",
         "notationRole": "usage",
-        "owner": 41,
+        "owner": 42,
         "reference": 50,
         "source": 26,
         "typing": {
@@ -17434,8 +17491,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
-        "owner": 41,
-        "reference": 120,
+        "owner": 42,
+        "reference": 121,
         "source": 23,
         "typing": {
           "status": "absent"
@@ -17448,8 +17505,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "LiteralString",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 56,
-        "reference": 121,
+        "owner": 57,
+        "reference": 122,
         "source": 25,
         "typing": {
           "status": "absent"
@@ -17462,8 +17519,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 57,
-        "reference": 122,
+        "owner": 58,
+        "reference": 123,
         "source": 25,
         "typing": {
           "status": "absent"
@@ -17474,26 +17531,26 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "attributes",
             "members": [
-              62,
               63,
-              67
+              64,
+              68
             ],
             "provenance": "inherited"
           },
           {
             "kind": "ports",
             "members": [
-              64,
               65,
-              66
+              66,
+              67
             ],
             "provenance": "inherited"
           },
           {
             "kind": "occurrences",
             "members": [
-              60,
-              61
+              61,
+              62
             ],
             "provenance": "direct"
           }
@@ -17505,7 +17562,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 34,
-        "source": 75,
+        "source": 76,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17523,9 +17580,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "authorizeAnswered",
         "notationRole": "usage",
-        "owner": 59,
+        "owner": 60,
         "reference": 35,
-        "source": 78,
+        "source": 79,
         "typing": {
           "status": "absent"
         }
@@ -17537,9 +17594,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "authorizeReceived",
         "notationRole": "usage",
-        "owner": 59,
+        "owner": 60,
         "reference": 36,
-        "source": 77,
+        "source": 78,
         "typing": {
           "status": "absent"
         }
@@ -17551,7 +17608,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": "serviceName",
         "notationRole": "usage",
-        "owner": 59,
+        "owner": 60,
         "reference": 56,
         "source": 3,
         "typing": {
@@ -17571,7 +17628,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": "moduleName",
         "notationRole": "usage",
-        "owner": 59,
+        "owner": 60,
         "reference": 86,
         "source": 1,
         "typing": {
@@ -17591,7 +17648,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "providerOut",
         "notationRole": "usage",
-        "owner": 59,
+        "owner": 60,
         "reference": 84,
         "source": 36,
         "typing": {
@@ -17605,7 +17662,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "paymentsDbOut",
         "notationRole": "usage",
-        "owner": 59,
+        "owner": 60,
         "reference": 83,
         "source": 35,
         "typing": {
@@ -17619,7 +17676,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "apiIn",
         "notationRole": "usage",
-        "owner": 59,
+        "owner": 60,
         "reference": 82,
         "source": 34,
         "typing": {
@@ -17633,8 +17690,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
-        "owner": 59,
-        "reference": 135,
+        "owner": 60,
+        "reference": 136,
         "source": 31,
         "typing": {
           "status": "absent"
@@ -17647,8 +17704,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "LiteralString",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 67,
-        "reference": 136,
+        "owner": 68,
+        "reference": 137,
         "source": 33,
         "typing": {
           "status": "absent"
@@ -17661,8 +17718,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 68,
-        "reference": 137,
+        "owner": 69,
+        "reference": 138,
         "source": 33,
         "typing": {
           "status": "absent"
@@ -17673,27 +17730,27 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "attributes",
             "members": [
-              73,
               74,
-              79
+              75,
+              80
             ],
             "provenance": "inherited"
           },
           {
             "kind": "ports",
             "members": [
-              75,
               76,
               77,
-              78
+              78,
+              79
             ],
             "provenance": "inherited"
           },
           {
             "kind": "occurrences",
             "members": [
-              71,
-              72
+              72,
+              73
             ],
             "provenance": "direct"
           }
@@ -17705,7 +17762,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 28,
-        "source": 79,
+        "source": 80,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17723,9 +17780,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "reserveAnswered",
         "notationRole": "usage",
-        "owner": 70,
+        "owner": 71,
         "reference": 29,
-        "source": 82,
+        "source": 83,
         "typing": {
           "status": "absent"
         }
@@ -17737,9 +17794,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "reserveReceived",
         "notationRole": "usage",
-        "owner": 70,
+        "owner": 71,
         "reference": 30,
-        "source": 81,
+        "source": 82,
         "typing": {
           "status": "absent"
         }
@@ -17751,7 +17808,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": "serviceName",
         "notationRole": "usage",
-        "owner": 70,
+        "owner": 71,
         "reference": 56,
         "source": 3,
         "typing": {
@@ -17771,7 +17828,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": "moduleName",
         "notationRole": "usage",
-        "owner": 70,
+        "owner": 71,
         "reference": 86,
         "source": 1,
         "typing": {
@@ -17791,7 +17848,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "orderEventsIn",
         "notationRole": "usage",
-        "owner": 70,
+        "owner": 71,
         "reference": 63,
         "source": 42,
         "typing": {
@@ -17805,7 +17862,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "inventoryDbOut",
         "notationRole": "usage",
-        "owner": 70,
+        "owner": 71,
         "reference": 62,
         "source": 41,
         "typing": {
@@ -17819,7 +17876,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "reservationEventsOut",
         "notationRole": "usage",
-        "owner": 70,
+        "owner": 71,
         "reference": 64,
         "source": 43,
         "typing": {
@@ -17833,7 +17890,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "apiIn",
         "notationRole": "usage",
-        "owner": 70,
+        "owner": 71,
         "reference": 61,
         "source": 40,
         "typing": {
@@ -17847,8 +17904,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
-        "owner": 70,
-        "reference": 123,
+        "owner": 71,
+        "reference": 124,
         "source": 37,
         "typing": {
           "status": "absent"
@@ -17861,8 +17918,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "LiteralString",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 79,
-        "reference": 124,
+        "owner": 80,
+        "reference": 125,
         "source": 39,
         "typing": {
           "status": "absent"
@@ -17875,8 +17932,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 80,
-        "reference": 125,
+        "owner": 81,
+        "reference": 126,
         "source": 39,
         "typing": {
           "status": "absent"
@@ -17887,27 +17944,27 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
           {
             "kind": "attributes",
             "members": [
-              84,
               85,
               86,
-              89,
-              92,
-              95
+              87,
+              90,
+              93,
+              96
             ],
             "provenance": "inherited"
           },
           {
             "kind": "ports",
             "members": [
-              87,
-              88
+              88,
+              89
             ],
             "provenance": "inherited"
           },
           {
             "kind": "occurrences",
             "members": [
-              83
+              84
             ],
             "provenance": "direct"
           }
@@ -17919,7 +17976,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "notationRole": "usage",
         "owner": 0,
         "reference": 31,
-        "source": 83,
+        "source": 84,
         "typing": {
           "status": "resolved",
           "types": [
@@ -17937,9 +17994,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "OccurrenceUsage",
         "name": "orderCreatedReceived",
         "notationRole": "usage",
-        "owner": 82,
+        "owner": 83,
         "reference": 32,
-        "source": 85,
+        "source": 86,
         "typing": {
           "status": "absent"
         }
@@ -17951,7 +18008,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": "partitions",
         "notationRole": "usage",
-        "owner": 82,
+        "owner": 83,
         "reference": 67,
         "source": 9,
         "typing": {
@@ -17971,7 +18028,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": "channelName",
         "notationRole": "usage",
-        "owner": 82,
+        "owner": 83,
         "reference": 66,
         "source": 5,
         "typing": {
@@ -17991,7 +18048,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": "retention",
         "notationRole": "usage",
-        "owner": 82,
+        "owner": 83,
         "reference": 68,
         "source": 7,
         "typing": {
@@ -18011,7 +18068,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "topicEgress",
         "notationRole": "usage",
-        "owner": 82,
+        "owner": 83,
         "reference": 74,
         "source": 54,
         "typing": {
@@ -18025,7 +18082,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "PortUsage",
         "name": "topicIngress",
         "notationRole": "usage",
-        "owner": 82,
+        "owner": 83,
         "reference": 75,
         "source": 53,
         "typing": {
@@ -18039,8 +18096,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
-        "owner": 82,
-        "reference": 126,
+        "owner": 83,
+        "reference": 127,
         "source": 44,
         "typing": {
           "status": "absent"
@@ -18053,8 +18110,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "LiteralString",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 89,
-        "reference": 129,
+        "owner": 90,
+        "reference": 130,
         "source": 46,
         "typing": {
           "status": "absent"
@@ -18067,8 +18124,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 90,
-        "reference": 132,
+        "owner": 91,
+        "reference": 133,
         "source": 46,
         "typing": {
           "status": "absent"
@@ -18081,8 +18138,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
-        "owner": 82,
-        "reference": 127,
+        "owner": 83,
+        "reference": 128,
         "source": 47,
         "typing": {
           "status": "absent"
@@ -18095,8 +18152,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "LiteralString",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 92,
-        "reference": 130,
+        "owner": 93,
+        "reference": 131,
         "source": 49,
         "typing": {
           "status": "absent"
@@ -18109,8 +18166,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 93,
-        "reference": 133,
+        "owner": 94,
+        "reference": 134,
         "source": 49,
         "typing": {
           "status": "absent"
@@ -18123,8 +18180,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "AttributeUsage",
         "name": null,
         "notationRole": "usage",
-        "owner": 82,
-        "reference": 128,
+        "owner": 83,
+        "reference": 129,
         "source": 50,
         "typing": {
           "status": "absent"
@@ -18137,8 +18194,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "LiteralString",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 95,
-        "reference": 131,
+        "owner": 96,
+        "reference": 132,
         "source": 52,
         "typing": {
           "status": "absent"
@@ -18151,8 +18208,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "metaclass": "Feature",
         "name": null,
         "notationRole": "unsupported",
-        "owner": 96,
-        "reference": 134,
+        "owner": 97,
+        "reference": 135,
         "source": 52,
         "typing": {
           "status": "absent"
@@ -18164,7 +18221,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 187,
+        "reference": 189,
         "source": 0,
         "target": {
           "reference": 98,
@@ -18175,21 +18232,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 188,
+        "reference": 190,
         "source": 1,
         "target": {
           "reference": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 123,
-        "provenance": "authored",
-        "reference": 196,
-        "source": 1,
-        "target": {
-          "node": 11,
           "status": "resolved"
         }
       },
@@ -18197,96 +18243,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "succession",
         "navigation": 124,
         "provenance": "authored",
-        "reference": 197,
-        "source": 1,
-        "target": {
-          "node": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 212,
-        "source": 1,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 189,
-        "source": 2,
-        "target": {
-          "reference": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 126,
-        "provenance": "authored",
         "reference": 198,
-        "source": 2,
+        "source": 1,
         "target": {
-          "node": 13,
+          "node": 12,
           "status": "resolved"
         }
       },
       {
         "kind": "succession",
-        "navigation": 127,
+        "navigation": 125,
         "provenance": "authored",
         "reference": 199,
-        "source": 2,
-        "target": {
-          "node": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 213,
-        "source": 2,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 190,
-        "source": 3,
-        "target": {
-          "reference": 100,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 129,
-        "provenance": "authored",
-        "reference": 200,
-        "source": 3,
-        "target": {
-          "node": 15,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "succession",
-        "navigation": 130,
-        "provenance": "authored",
-        "reference": 201,
-        "source": 3,
+        "source": 1,
         "target": {
           "node": 14,
           "status": "resolved"
@@ -18297,7 +18266,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 214,
-        "source": 3,
+        "source": 1,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -18308,7 +18277,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 191,
-        "source": 4,
+        "source": 2,
         "target": {
           "reference": 100,
           "status": "resolved"
@@ -18316,10 +18285,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 132,
+        "navigation": 127,
         "provenance": "authored",
-        "reference": 202,
-        "source": 4,
+        "reference": 200,
+        "source": 2,
         "target": {
           "node": 14,
           "status": "resolved"
@@ -18327,12 +18296,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 133,
+        "navigation": 128,
         "provenance": "authored",
-        "reference": 203,
-        "source": 4,
+        "reference": 201,
+        "source": 2,
         "target": {
-          "node": 9,
+          "node": 16,
           "status": "resolved"
         }
       },
@@ -18341,7 +18310,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 215,
-        "source": 4,
+        "source": 2,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -18352,7 +18321,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 192,
-        "source": 5,
+        "source": 3,
         "target": {
           "reference": 100,
           "status": "resolved"
@@ -18360,23 +18329,23 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 135,
+        "navigation": 130,
         "provenance": "authored",
-        "reference": 204,
-        "source": 5,
+        "reference": 202,
+        "source": 3,
         "target": {
-          "node": 9,
+          "node": 16,
           "status": "resolved"
         }
       },
       {
         "kind": "succession",
-        "navigation": 136,
+        "navigation": 131,
         "provenance": "authored",
-        "reference": 205,
-        "source": 5,
+        "reference": 203,
+        "source": 3,
         "target": {
-          "node": 10,
+          "node": 15,
           "status": "resolved"
         }
       },
@@ -18385,7 +18354,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 216,
-        "source": 5,
+        "source": 3,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -18396,7 +18365,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 193,
-        "source": 6,
+        "source": 4,
         "target": {
           "reference": 100,
           "status": "resolved"
@@ -18404,23 +18373,23 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 138,
+        "navigation": 133,
         "provenance": "authored",
-        "reference": 206,
-        "source": 6,
+        "reference": 204,
+        "source": 4,
         "target": {
-          "node": 10,
+          "node": 15,
           "status": "resolved"
         }
       },
       {
         "kind": "succession",
-        "navigation": 139,
+        "navigation": 134,
         "provenance": "authored",
-        "reference": 207,
-        "source": 6,
+        "reference": 205,
+        "source": 4,
         "target": {
-          "node": 17,
+          "node": 10,
           "status": "resolved"
         }
       },
@@ -18429,7 +18398,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 217,
-        "source": 6,
+        "source": 4,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -18440,7 +18409,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 194,
-        "source": 7,
+        "source": 5,
         "target": {
           "reference": 100,
           "status": "resolved"
@@ -18448,23 +18417,23 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 141,
+        "navigation": 136,
         "provenance": "authored",
-        "reference": 208,
-        "source": 7,
+        "reference": 206,
+        "source": 5,
         "target": {
-          "node": 17,
+          "node": 10,
           "status": "resolved"
         }
       },
       {
         "kind": "succession",
-        "navigation": 142,
+        "navigation": 137,
         "provenance": "authored",
-        "reference": 209,
-        "source": 7,
+        "reference": 207,
+        "source": 5,
         "target": {
-          "node": 16,
+          "node": 11,
           "status": "resolved"
         }
       },
@@ -18473,7 +18442,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 218,
-        "source": 7,
+        "source": 5,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -18484,7 +18453,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 195,
-        "source": 8,
+        "source": 6,
         "target": {
           "reference": 100,
           "status": "resolved"
@@ -18492,23 +18461,23 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "succession",
-        "navigation": 144,
+        "navigation": 139,
         "provenance": "authored",
-        "reference": 210,
-        "source": 8,
+        "reference": 208,
+        "source": 6,
         "target": {
-          "node": 16,
+          "node": 11,
           "status": "resolved"
         }
       },
       {
         "kind": "succession",
-        "navigation": 145,
+        "navigation": 140,
         "provenance": "authored",
-        "reference": 211,
-        "source": 8,
+        "reference": 209,
+        "source": 6,
         "target": {
-          "node": 12,
+          "node": 18,
           "status": "resolved"
         }
       },
@@ -18517,6 +18486,94 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 219,
+        "source": 6,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 196,
+        "source": 7,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 142,
+        "provenance": "authored",
+        "reference": 210,
+        "source": 7,
+        "target": {
+          "node": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 143,
+        "provenance": "authored",
+        "reference": 211,
+        "source": 7,
+        "target": {
+          "node": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 220,
+        "source": 7,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 197,
+        "source": 8,
+        "target": {
+          "reference": 100,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 145,
+        "provenance": "authored",
+        "reference": 212,
+        "source": 8,
+        "target": {
+          "node": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "succession",
+        "navigation": 146,
+        "provenance": "authored",
+        "reference": 213,
+        "source": 8,
+        "target": {
+          "node": 13,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 221,
         "source": 8,
         "target": {
           "node": 0,
@@ -18525,10 +18582,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "typing",
-        "navigation": 61,
+        "navigation": 62,
         "provenance": "authored",
-        "reference": 234,
-        "source": 18,
+        "reference": 236,
+        "source": 19,
         "target": {
           "reference": 1,
           "status": "resolved"
@@ -18538,8 +18595,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 231,
-        "source": 18,
+        "reference": 233,
+        "source": 19,
         "target": {
           "reference": 99,
           "status": "resolved"
@@ -18549,8 +18606,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 232,
-        "source": 18,
+        "reference": 234,
+        "source": 19,
         "target": {
           "reference": 103,
           "status": "resolved"
@@ -18560,8 +18617,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 233,
-        "source": 18,
+        "reference": 235,
+        "source": 19,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -18571,10 +18628,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": 17,
         "provenance": "authored",
-        "reference": 143,
-        "source": 27,
+        "reference": 144,
+        "source": 28,
         "target": {
-          "node": 30,
+          "node": 31,
           "status": "resolved"
         }
       },
@@ -18582,8 +18639,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 144,
-        "source": 27,
+        "reference": 145,
+        "source": 28,
         "target": {
           "reference": 94,
           "status": "resolved"
@@ -18593,8 +18650,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 145,
-        "source": 27,
+        "reference": 146,
+        "source": 28,
         "target": {
           "reference": 1,
           "status": "resolved"
@@ -18604,8 +18661,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 147,
-        "source": 28,
+        "reference": 148,
+        "source": 29,
         "target": {
           "reference": 104,
           "status": "resolved"
@@ -18615,8 +18672,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 148,
-        "source": 28,
+        "reference": 149,
+        "source": 29,
         "target": {
           "reference": 1,
           "status": "resolved"
@@ -18626,10 +18683,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 149,
-        "source": 29,
+        "reference": 150,
+        "source": 30,
         "target": {
-          "reference": 141,
+          "reference": 142,
           "status": "resolved"
         }
       },
@@ -18637,8 +18694,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 150,
-        "source": 29,
+        "reference": 151,
+        "source": 30,
         "target": {
           "reference": 95,
           "status": "resolved"
@@ -18648,21 +18705,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 151,
-        "source": 29,
-        "target": {
-          "node": 28,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 152,
-        "source": 23,
+        "source": 30,
         "target": {
-          "reference": 102,
+          "node": 29,
           "status": "resolved"
         }
       },
@@ -18671,7 +18717,18 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 153,
-        "source": 23,
+        "source": 24,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 154,
+        "source": 24,
         "target": {
           "reference": 105,
           "status": "resolved"
@@ -18681,21 +18738,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 154,
-        "source": 23,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 155,
         "source": 24,
         "target": {
-          "reference": 102,
+          "reference": 1,
           "status": "resolved"
         }
       },
@@ -18704,7 +18750,18 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 156,
-        "source": 24,
+        "source": 25,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 157,
+        "source": 25,
         "target": {
           "reference": 105,
           "status": "resolved"
@@ -18714,21 +18771,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 157,
-        "source": 24,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 158,
         "source": 25,
         "target": {
-          "reference": 102,
+          "reference": 1,
           "status": "resolved"
         }
       },
@@ -18737,7 +18783,18 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 159,
-        "source": 25,
+        "source": 26,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 160,
+        "source": 26,
         "target": {
           "reference": 105,
           "status": "resolved"
@@ -18747,21 +18804,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 160,
-        "source": 25,
-        "target": {
-          "reference": 1,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 161,
         "source": 26,
         "target": {
-          "reference": 102,
+          "reference": 1,
           "status": "resolved"
         }
       },
@@ -18770,7 +18816,18 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 162,
-        "source": 26,
+        "source": 27,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 163,
+        "source": 27,
         "target": {
           "reference": 105,
           "status": "resolved"
@@ -18780,8 +18837,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 163,
-        "source": 26,
+        "reference": 164,
+        "source": 27,
         "target": {
           "reference": 1,
           "status": "resolved"
@@ -18791,40 +18848,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 469,
-        "source": 30,
-        "target": {
-          "reference": 106,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 461,
-        "source": 30,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 465,
-        "source": 30,
-        "target": {
-          "reference": 55,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 569,
+        "reference": 471,
         "source": 31,
         "target": {
           "reference": 106,
@@ -18835,7 +18859,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 559,
+        "reference": 463,
         "source": 31,
         "target": {
           "reference": 94,
@@ -18846,1196 +18870,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 564,
+        "reference": 467,
         "source": 31,
-        "target": {
-          "reference": 85,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 236,
-        "source": 19,
-        "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 237,
-        "source": 19,
-        "target": {
-          "node": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 243,
-        "source": 20,
-        "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 244,
-        "source": 20,
-        "target": {
-          "node": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 241,
-        "source": 21,
-        "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 242,
-        "source": 21,
-        "target": {
-          "node": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 239,
-        "source": 22,
-        "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 240,
-        "source": 22,
-        "target": {
-          "node": 18,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 57,
-        "provenance": "authored",
-        "reference": 420,
-        "source": 32,
-        "target": {
-          "reference": 88,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 417,
-        "source": 32,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 418,
-        "source": 32,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 419,
-        "source": 32,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 12,
-        "provenance": "authored",
-        "reference": 575,
-        "source": 37,
-        "target": {
-          "node": 40,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 576,
-        "source": 37,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 577,
-        "source": 37,
-        "target": {
-          "reference": 88,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 579,
-        "source": 38,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 580,
-        "source": 38,
-        "target": {
-          "reference": 88,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 581,
-        "source": 39,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 582,
-        "source": 39,
-        "target": {
-          "reference": 95,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 583,
-        "source": 39,
-        "target": {
-          "node": 38,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 584,
-        "source": 35,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 585,
-        "source": 35,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 586,
-        "source": 35,
-        "target": {
-          "reference": 88,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 587,
-        "source": 36,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 588,
-        "source": 36,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 589,
-        "source": 36,
-        "target": {
-          "reference": 88,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 570,
-        "source": 40,
-        "target": {
-          "reference": 106,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 560,
-        "source": 40,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 565,
-        "source": 40,
-        "target": {
-          "reference": 85,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 424,
-        "source": 33,
-        "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 425,
-        "source": 33,
-        "target": {
-          "node": 32,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 421,
-        "source": 34,
-        "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 422,
-        "source": 34,
-        "target": {
-          "node": 32,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 103,
-        "provenance": "authored",
-        "reference": 391,
-        "source": 9,
-        "target": {
-          "reference": 87,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 104,
-        "provenance": "authored",
-        "reference": 392,
-        "source": 9,
-        "target": {
-          "node": 43,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 105,
-        "provenance": "authored",
-        "reference": 393,
-        "source": 9,
-        "target": {
-          "node": 72,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 394,
-        "source": 9,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 395,
-        "source": 9,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 396,
-        "source": 9,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 397,
-        "source": 9,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 398,
-        "source": 9,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 400,
-        "source": 9,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 107,
-        "provenance": "authored",
-        "reference": 401,
-        "source": 10,
-        "target": {
-          "reference": 87,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 108,
-        "provenance": "authored",
-        "reference": 402,
-        "source": 10,
-        "target": {
-          "node": 71,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 109,
-        "provenance": "authored",
-        "reference": 403,
-        "source": 10,
-        "target": {
-          "node": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 404,
-        "source": 10,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 405,
-        "source": 10,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 406,
-        "source": 10,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 407,
-        "source": 10,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 408,
-        "source": 10,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 410,
-        "source": 10,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 87,
-        "provenance": "authored",
-        "reference": 426,
-        "source": 11,
-        "target": {
-          "reference": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 88,
-        "provenance": "authored",
-        "reference": 427,
-        "source": 11,
-        "target": {
-          "node": 33,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 89,
-        "provenance": "authored",
-        "reference": 428,
-        "source": 11,
-        "target": {
-          "node": 20,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 429,
-        "source": 11,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 430,
-        "source": 11,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 431,
-        "source": 11,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 432,
-        "source": 11,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 433,
-        "source": 11,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 435,
-        "source": 11,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 119,
-        "provenance": "authored",
-        "reference": 265,
-        "source": 12,
-        "target": {
-          "reference": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 120,
-        "provenance": "authored",
-        "reference": 266,
-        "source": 12,
-        "target": {
-          "node": 22,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 121,
-        "provenance": "authored",
-        "reference": 267,
-        "source": 12,
-        "target": {
-          "node": 34,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 268,
-        "source": 12,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 269,
-        "source": 12,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 270,
-        "source": 12,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 271,
-        "source": 12,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 272,
-        "source": 12,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 273,
-        "source": 12,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 91,
-        "provenance": "authored",
-        "reference": 311,
-        "source": 13,
-        "target": {
-          "reference": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 92,
-        "provenance": "authored",
-        "reference": 312,
-        "source": 13,
-        "target": {
-          "node": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 93,
-        "provenance": "authored",
-        "reference": 313,
-        "source": 13,
-        "target": {
-          "node": 45,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 314,
-        "source": 13,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 315,
-        "source": 13,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 316,
-        "source": 13,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 317,
-        "source": 13,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 318,
-        "source": 13,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 320,
-        "source": 13,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 99,
-        "provenance": "authored",
-        "reference": 354,
-        "source": 14,
-        "target": {
-          "reference": 77,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 100,
-        "provenance": "authored",
-        "reference": 355,
-        "source": 14,
-        "target": {
-          "node": 60,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 101,
-        "provenance": "authored",
-        "reference": 356,
-        "source": 14,
-        "target": {
-          "node": 48,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 357,
-        "source": 14,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 358,
-        "source": 14,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 359,
-        "source": 14,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 360,
-        "source": 14,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 361,
-        "source": 14,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 363,
-        "source": 14,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 67,
-        "provenance": "authored",
-        "reference": 292,
-        "source": 41,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 289,
-        "source": 41,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 290,
-        "source": 41,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 291,
-        "source": 41,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 24,
-        "provenance": "authored",
-        "reference": 437,
-        "source": 56,
-        "target": {
-          "node": 49,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 438,
-        "source": 56,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 439,
-        "source": 56,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 441,
-        "source": 57,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 442,
-        "source": 57,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 443,
-        "source": 58,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 444,
-        "source": 58,
-        "target": {
-          "reference": 95,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 445,
-        "source": 58,
-        "target": {
-          "node": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 446,
-        "source": 55,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 447,
-        "source": 55,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 448,
-        "source": 55,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 455,
-        "source": 51,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 456,
-        "source": 51,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 457,
-        "source": 51,
-        "target": {
-          "reference": 46,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 4,
-        "provenance": "authored",
-        "reference": 470,
-        "source": 49,
-        "target": {
-          "reference": 106,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 462,
-        "source": 49,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 466,
-        "source": 49,
         "target": {
           "reference": 55,
           "status": "resolved"
@@ -20046,7 +18882,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": 2,
         "provenance": "authored",
         "reference": 571,
-        "source": 50,
+        "source": 32,
         "target": {
           "reference": 106,
           "status": "resolved"
@@ -20057,7 +18893,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 561,
-        "source": 50,
+        "source": 32,
         "target": {
           "reference": 94,
           "status": "resolved"
@@ -20068,7 +18904,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 566,
-        "source": 50,
+        "source": 32,
         "target": {
           "reference": 85,
           "status": "resolved"
@@ -20078,8 +18914,228 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 452,
-        "source": 52,
+        "reference": 238,
+        "source": 20,
+        "target": {
+          "reference": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 239,
+        "source": 20,
+        "target": {
+          "node": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 245,
+        "source": 21,
+        "target": {
+          "reference": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 246,
+        "source": 21,
+        "target": {
+          "node": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 243,
+        "source": 22,
+        "target": {
+          "reference": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 244,
+        "source": 22,
+        "target": {
+          "node": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 241,
+        "source": 23,
+        "target": {
+          "reference": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 242,
+        "source": 23,
+        "target": {
+          "node": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 58,
+        "provenance": "authored",
+        "reference": 422,
+        "source": 33,
+        "target": {
+          "reference": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 419,
+        "source": 33,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 420,
+        "source": 33,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 421,
+        "source": 33,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 12,
+        "provenance": "authored",
+        "reference": 577,
+        "source": 38,
+        "target": {
+          "node": 41,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 578,
+        "source": 38,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 579,
+        "source": 38,
+        "target": {
+          "reference": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 581,
+        "source": 39,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 582,
+        "source": 39,
+        "target": {
+          "reference": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 583,
+        "source": 40,
+        "target": {
+          "reference": 142,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 584,
+        "source": 40,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 585,
+        "source": 40,
+        "target": {
+          "node": 39,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 586,
+        "source": 36,
         "target": {
           "reference": 102,
           "status": "resolved"
@@ -20089,8 +19145,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 453,
-        "source": 52,
+        "reference": 587,
+        "source": 36,
         "target": {
           "reference": 105,
           "status": "resolved"
@@ -20100,10 +19156,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 454,
-        "source": 52,
+        "reference": 588,
+        "source": 36,
         "target": {
-          "reference": 46,
+          "reference": 88,
           "status": "resolved"
         }
       },
@@ -20111,8 +19167,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 458,
-        "source": 53,
+        "reference": 589,
+        "source": 37,
         "target": {
           "reference": 102,
           "status": "resolved"
@@ -20122,8 +19178,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 459,
-        "source": 53,
+        "reference": 590,
+        "source": 37,
         "target": {
           "reference": 105,
           "status": "resolved"
@@ -20133,10 +19189,824 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 460,
-        "source": 53,
+        "reference": 591,
+        "source": 37,
+        "target": {
+          "reference": 88,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 2,
+        "provenance": "authored",
+        "reference": 572,
+        "source": 41,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 562,
+        "source": 41,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 567,
+        "source": 41,
+        "target": {
+          "reference": 85,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 426,
+        "source": 34,
+        "target": {
+          "reference": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 427,
+        "source": 34,
+        "target": {
+          "node": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 423,
+        "source": 35,
+        "target": {
+          "reference": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 424,
+        "source": 35,
+        "target": {
+          "node": 33,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 104,
+        "provenance": "authored",
+        "reference": 393,
+        "source": 10,
+        "target": {
+          "reference": 87,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 105,
+        "provenance": "authored",
+        "reference": 394,
+        "source": 10,
+        "target": {
+          "node": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 106,
+        "provenance": "authored",
+        "reference": 395,
+        "source": 10,
+        "target": {
+          "node": 73,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 396,
+        "source": 10,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 397,
+        "source": 10,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 398,
+        "source": 10,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 399,
+        "source": 10,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 400,
+        "source": 10,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 402,
+        "source": 10,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 108,
+        "provenance": "authored",
+        "reference": 403,
+        "source": 11,
+        "target": {
+          "reference": 87,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 109,
+        "provenance": "authored",
+        "reference": 404,
+        "source": 11,
+        "target": {
+          "node": 72,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 110,
+        "provenance": "authored",
+        "reference": 405,
+        "source": 11,
+        "target": {
+          "node": 47,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 406,
+        "source": 11,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 407,
+        "source": 11,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 408,
+        "source": 11,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 409,
+        "source": 11,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 410,
+        "source": 11,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 412,
+        "source": 11,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 88,
+        "provenance": "authored",
+        "reference": 428,
+        "source": 12,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 89,
+        "provenance": "authored",
+        "reference": 429,
+        "source": 12,
+        "target": {
+          "node": 34,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 90,
+        "provenance": "authored",
+        "reference": 430,
+        "source": 12,
+        "target": {
+          "node": 21,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 431,
+        "source": 12,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 432,
+        "source": 12,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 433,
+        "source": 12,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 434,
+        "source": 12,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 435,
+        "source": 12,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 437,
+        "source": 12,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 120,
+        "provenance": "authored",
+        "reference": 267,
+        "source": 13,
+        "target": {
+          "reference": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 121,
+        "provenance": "authored",
+        "reference": 268,
+        "source": 13,
+        "target": {
+          "node": 23,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 122,
+        "provenance": "authored",
+        "reference": 269,
+        "source": 13,
+        "target": {
+          "node": 35,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 270,
+        "source": 13,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 271,
+        "source": 13,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 272,
+        "source": 13,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 273,
+        "source": 13,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 274,
+        "source": 13,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 275,
+        "source": 13,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 92,
+        "provenance": "authored",
+        "reference": 313,
+        "source": 14,
+        "target": {
+          "reference": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 93,
+        "provenance": "authored",
+        "reference": 314,
+        "source": 14,
+        "target": {
+          "node": 20,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 94,
+        "provenance": "authored",
+        "reference": 315,
+        "source": 14,
+        "target": {
+          "node": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 316,
+        "source": 14,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 317,
+        "source": 14,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 318,
+        "source": 14,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 319,
+        "source": 14,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 320,
+        "source": 14,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 322,
+        "source": 14,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 100,
+        "provenance": "authored",
+        "reference": 356,
+        "source": 15,
+        "target": {
+          "reference": 77,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 101,
+        "provenance": "authored",
+        "reference": 357,
+        "source": 15,
+        "target": {
+          "node": 61,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 102,
+        "provenance": "authored",
+        "reference": 358,
+        "source": 15,
+        "target": {
+          "node": 49,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 359,
+        "source": 15,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 360,
+        "source": 15,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 361,
+        "source": 15,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 362,
+        "source": 15,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 363,
+        "source": 15,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 365,
+        "source": 15,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 68,
+        "provenance": "authored",
+        "reference": 294,
+        "source": 42,
         "target": {
           "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 291,
+        "source": 42,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 292,
+        "source": 42,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 293,
+        "source": 42,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 24,
+        "provenance": "authored",
+        "reference": 439,
+        "source": 57,
+        "target": {
+          "node": 50,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 440,
+        "source": 57,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 441,
+        "source": 57,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 443,
+        "source": 58,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 444,
+        "source": 58,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 445,
+        "source": 59,
+        "target": {
+          "reference": 142,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 446,
+        "source": 59,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 447,
+        "source": 59,
+        "target": {
+          "node": 58,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 448,
+        "source": 56,
+        "target": {
+          "reference": 102,
           "status": "resolved"
         }
       },
@@ -20145,6 +20015,160 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 449,
+        "source": 56,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 450,
+        "source": 56,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 457,
+        "source": 52,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 458,
+        "source": 52,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 459,
+        "source": 52,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 4,
+        "provenance": "authored",
+        "reference": 472,
+        "source": 50,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 464,
+        "source": 50,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 468,
+        "source": 50,
+        "target": {
+          "reference": 55,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 2,
+        "provenance": "authored",
+        "reference": 573,
+        "source": 51,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 563,
+        "source": 51,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 568,
+        "source": 51,
+        "target": {
+          "reference": 85,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 454,
+        "source": 53,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 455,
+        "source": 53,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 456,
+        "source": 53,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 460,
         "source": 54,
         "target": {
           "reference": 102,
@@ -20155,7 +20179,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 450,
+        "reference": 461,
         "source": 54,
         "target": {
           "reference": 105,
@@ -20166,7 +20190,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 451,
+        "reference": 462,
         "source": 54,
         "target": {
           "reference": 46,
@@ -20177,21 +20201,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 304,
-        "source": 42,
+        "reference": 451,
+        "source": 55,
         "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 305,
-        "source": 42,
-        "target": {
-          "node": 41,
+          "reference": 102,
           "status": "resolved"
         }
       },
@@ -20199,7 +20212,29 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 309,
+        "reference": 452,
+        "source": 55,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 453,
+        "source": 55,
+        "target": {
+          "reference": 46,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 306,
         "source": 43,
         "target": {
           "reference": 101,
@@ -20210,10 +20245,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 310,
+        "reference": 307,
         "source": 43,
         "target": {
-          "node": 41,
+          "node": 42,
           "status": "resolved"
         }
       },
@@ -20221,7 +20256,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 296,
+        "reference": 311,
         "source": 44,
         "target": {
           "reference": 101,
@@ -20232,10 +20267,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 297,
+        "reference": 312,
         "source": 44,
         "target": {
-          "node": 41,
+          "node": 42,
           "status": "resolved"
         }
       },
@@ -20257,7 +20292,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "reference": 299,
         "source": 45,
         "target": {
-          "node": 41,
+          "node": 42,
           "status": "resolved"
         }
       },
@@ -20265,7 +20300,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 306,
+        "reference": 300,
         "source": 46,
         "target": {
           "reference": 101,
@@ -20274,34 +20309,12 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 307,
-        "source": 46,
-        "target": {
-          "node": 41,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
         "reference": 301,
-        "source": 47,
+        "source": 46,
         "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 302,
-        "source": 47,
-        "target": {
-          "node": 41,
+          "node": 42,
           "status": "resolved"
         }
       },
@@ -20309,7 +20322,29 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 293,
+        "reference": 308,
+        "source": 47,
+        "target": {
+          "reference": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 309,
+        "source": 47,
+        "target": {
+          "node": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 303,
         "source": 48,
         "target": {
           "reference": 101,
@@ -20320,19 +20355,41 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 294,
+        "reference": 304,
         "source": 48,
         "target": {
-          "node": 41,
+          "node": 42,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 295,
+        "source": 49,
+        "target": {
+          "reference": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 296,
+        "source": 49,
+        "target": {
+          "node": 42,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 76,
+        "navigation": 77,
         "provenance": "authored",
-        "reference": 375,
-        "source": 59,
+        "reference": 377,
+        "source": 60,
         "target": {
           "reference": 78,
           "status": "resolved"
@@ -20342,8 +20399,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 372,
-        "source": 59,
+        "reference": 374,
+        "source": 60,
         "target": {
           "reference": 99,
           "status": "resolved"
@@ -20353,8 +20410,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 373,
-        "source": 59,
+        "reference": 375,
+        "source": 60,
         "target": {
           "reference": 103,
           "status": "resolved"
@@ -20364,8 +20421,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 374,
-        "source": 59,
+        "reference": 376,
+        "source": 60,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -20375,10 +20432,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": 32,
         "provenance": "authored",
-        "reference": 541,
-        "source": 67,
+        "reference": 543,
+        "source": 68,
         "target": {
-          "node": 62,
+          "node": 63,
           "status": "resolved"
         }
       },
@@ -20386,8 +20443,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 542,
-        "source": 67,
+        "reference": 544,
+        "source": 68,
         "target": {
           "reference": 94,
           "status": "resolved"
@@ -20397,8 +20454,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 543,
-        "source": 67,
+        "reference": 545,
+        "source": 68,
         "target": {
           "reference": 78,
           "status": "resolved"
@@ -20408,8 +20465,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 545,
-        "source": 68,
+        "reference": 547,
+        "source": 69,
         "target": {
           "reference": 104,
           "status": "resolved"
@@ -20419,8 +20476,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 546,
-        "source": 68,
+        "reference": 548,
+        "source": 69,
         "target": {
           "reference": 78,
           "status": "resolved"
@@ -20430,10 +20487,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": null,
         "provenance": "implied",
-        "reference": 547,
-        "source": 69,
+        "reference": 549,
+        "source": 70,
         "target": {
-          "reference": 141,
+          "reference": 142,
           "status": "resolved"
         }
       },
@@ -20441,8 +20498,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 548,
-        "source": 69,
+        "reference": 550,
+        "source": 70,
         "target": {
           "reference": 95,
           "status": "resolved"
@@ -20452,10 +20509,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 549,
-        "source": 69,
+        "reference": 551,
+        "source": 70,
         "target": {
-          "node": 68,
+          "node": 69,
           "status": "resolved"
         }
       },
@@ -20463,8 +20520,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 550,
-        "source": 66,
+        "reference": 552,
+        "source": 67,
         "target": {
           "reference": 102,
           "status": "resolved"
@@ -20474,8 +20531,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 551,
-        "source": 66,
+        "reference": 553,
+        "source": 67,
         "target": {
           "reference": 105,
           "status": "resolved"
@@ -20485,8 +20542,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 552,
-        "source": 66,
+        "reference": 554,
+        "source": 67,
         "target": {
           "reference": 78,
           "status": "resolved"
@@ -20496,8 +20553,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 556,
-        "source": 64,
+        "reference": 558,
+        "source": 65,
         "target": {
           "reference": 102,
           "status": "resolved"
@@ -20507,8 +20564,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 557,
-        "source": 64,
+        "reference": 559,
+        "source": 65,
         "target": {
           "reference": 105,
           "status": "resolved"
@@ -20518,8 +20575,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 558,
-        "source": 64,
+        "reference": 560,
+        "source": 65,
         "target": {
           "reference": 78,
           "status": "resolved"
@@ -20529,8 +20586,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 471,
-        "source": 62,
+        "reference": 473,
+        "source": 63,
         "target": {
           "reference": 106,
           "status": "resolved"
@@ -20540,8 +20597,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 463,
-        "source": 62,
+        "reference": 465,
+        "source": 63,
         "target": {
           "reference": 94,
           "status": "resolved"
@@ -20551,8 +20608,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 467,
-        "source": 62,
+        "reference": 469,
+        "source": 63,
         "target": {
           "reference": 55,
           "status": "resolved"
@@ -20562,8 +20619,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 553,
-        "source": 65,
+        "reference": 555,
+        "source": 66,
         "target": {
           "reference": 102,
           "status": "resolved"
@@ -20573,8 +20630,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 554,
-        "source": 65,
+        "reference": 556,
+        "source": 66,
         "target": {
           "reference": 105,
           "status": "resolved"
@@ -20584,8 +20641,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 555,
-        "source": 65,
+        "reference": 557,
+        "source": 66,
         "target": {
           "reference": 78,
           "status": "resolved"
@@ -20595,8 +20652,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 572,
-        "source": 63,
+        "reference": 574,
+        "source": 64,
         "target": {
           "reference": 106,
           "status": "resolved"
@@ -20606,8 +20663,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 562,
-        "source": 63,
+        "reference": 564,
+        "source": 64,
         "target": {
           "reference": 94,
           "status": "resolved"
@@ -20617,32 +20674,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 567,
-        "source": 63,
+        "reference": 569,
+        "source": 64,
         "target": {
           "reference": 85,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 377,
-        "source": 60,
-        "target": {
-          "reference": 101,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 378,
-        "source": 60,
-        "target": {
-          "node": 59,
           "status": "resolved"
         }
       },
@@ -20664,40 +20699,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "reference": 380,
         "source": 61,
         "target": {
-          "node": 59,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 95,
-        "provenance": "authored",
-        "reference": 245,
-        "source": 15,
-        "target": {
-          "reference": 76,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 96,
-        "provenance": "authored",
-        "reference": 246,
-        "source": 15,
-        "target": {
-          "node": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 97,
-        "provenance": "authored",
-        "reference": 247,
-        "source": 15,
-        "target": {
-          "node": 61,
+          "node": 60,
           "status": "resolved"
         }
       },
@@ -20705,503 +20707,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 248,
-        "source": 15,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 249,
-        "source": 15,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 250,
-        "source": 15,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 251,
-        "source": 15,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 252,
-        "source": 15,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 254,
-        "source": 15,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowPayloadType",
-        "navigation": 115,
-        "provenance": "authored",
-        "reference": 255,
-        "source": 16,
-        "target": {
-          "reference": 44,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowSource",
-        "navigation": 116,
-        "provenance": "authored",
-        "reference": 256,
-        "source": 16,
-        "target": {
-          "node": 42,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "flowTarget",
-        "navigation": 117,
-        "provenance": "authored",
-        "reference": 257,
-        "source": 16,
-        "target": {
-          "node": 21,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 258,
-        "source": 16,
-        "target": {
-          "reference": 97,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 259,
-        "source": 16,
-        "target": {
-          "reference": 96,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 260,
-        "source": 16,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 261,
-        "source": 16,
-        "target": {
-          "reference": 108,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 262,
-        "source": 16,
-        "target": {
-          "reference": 107,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 264,
-        "source": 16,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 80,
-        "provenance": "authored",
-        "reference": 333,
-        "source": 70,
-        "target": {
-          "reference": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 330,
-        "source": 70,
-        "target": {
-          "reference": 99,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 331,
-        "source": 70,
-        "target": {
-          "reference": 103,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 332,
-        "source": 70,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 38,
-        "provenance": "authored",
-        "reference": 474,
-        "source": 79,
-        "target": {
-          "node": 73,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 475,
-        "source": 79,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 476,
-        "source": 79,
-        "target": {
-          "reference": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 478,
-        "source": 80,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 479,
-        "source": 80,
-        "target": {
-          "reference": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 480,
-        "source": 81,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 481,
-        "source": 81,
-        "target": {
-          "reference": 95,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 482,
-        "source": 81,
-        "target": {
-          "node": 80,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 483,
-        "source": 78,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 484,
-        "source": 78,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 485,
-        "source": 78,
-        "target": {
-          "reference": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 4,
-        "provenance": "authored",
-        "reference": 472,
-        "source": 73,
-        "target": {
-          "reference": 106,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 464,
-        "source": 73,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 468,
-        "source": 73,
-        "target": {
-          "reference": 55,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 2,
-        "provenance": "authored",
-        "reference": 573,
-        "source": 74,
-        "target": {
-          "reference": 106,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 563,
-        "source": 74,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 568,
-        "source": 74,
-        "target": {
-          "reference": 85,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 489,
-        "source": 75,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 490,
-        "source": 75,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 491,
-        "source": 75,
-        "target": {
-          "reference": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 486,
-        "source": 76,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 487,
-        "source": 76,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 488,
-        "source": 76,
-        "target": {
-          "reference": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 492,
-        "source": 77,
-        "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 493,
-        "source": 77,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 494,
-        "source": 77,
-        "target": {
-          "reference": 57,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 335,
-        "source": 71,
+        "reference": 381,
+        "source": 62,
         "target": {
           "reference": 101,
           "status": "resolved"
@@ -21211,10 +20718,538 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 336,
+        "reference": 382,
+        "source": 62,
+        "target": {
+          "node": 60,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 96,
+        "provenance": "authored",
+        "reference": 247,
+        "source": 16,
+        "target": {
+          "reference": 76,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 97,
+        "provenance": "authored",
+        "reference": 248,
+        "source": 16,
+        "target": {
+          "node": 45,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 98,
+        "provenance": "authored",
+        "reference": 249,
+        "source": 16,
+        "target": {
+          "node": 62,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 250,
+        "source": 16,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 251,
+        "source": 16,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 252,
+        "source": 16,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 253,
+        "source": 16,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 254,
+        "source": 16,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 256,
+        "source": 16,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowPayloadType",
+        "navigation": 116,
+        "provenance": "authored",
+        "reference": 257,
+        "source": 17,
+        "target": {
+          "reference": 44,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowSource",
+        "navigation": 117,
+        "provenance": "authored",
+        "reference": 258,
+        "source": 17,
+        "target": {
+          "node": 43,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "flowTarget",
+        "navigation": 118,
+        "provenance": "authored",
+        "reference": 259,
+        "source": 17,
+        "target": {
+          "node": 22,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 260,
+        "source": 17,
+        "target": {
+          "reference": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 261,
+        "source": 17,
+        "target": {
+          "reference": 96,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 262,
+        "source": 17,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 263,
+        "source": 17,
+        "target": {
+          "reference": 108,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 264,
+        "source": 17,
+        "target": {
+          "reference": 107,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 266,
+        "source": 17,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 81,
+        "provenance": "authored",
+        "reference": 335,
         "source": 71,
         "target": {
-          "node": 70,
+          "reference": 57,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 332,
+        "source": 71,
+        "target": {
+          "reference": 99,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 333,
+        "source": 71,
+        "target": {
+          "reference": 103,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 334,
+        "source": 71,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 38,
+        "provenance": "authored",
+        "reference": 476,
+        "source": 80,
+        "target": {
+          "node": 74,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 477,
+        "source": 80,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 478,
+        "source": 80,
+        "target": {
+          "reference": 57,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 480,
+        "source": 81,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 481,
+        "source": 81,
+        "target": {
+          "reference": 57,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 482,
+        "source": 82,
+        "target": {
+          "reference": 142,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 483,
+        "source": 82,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 484,
+        "source": 82,
+        "target": {
+          "node": 81,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 485,
+        "source": 79,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 486,
+        "source": 79,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 487,
+        "source": 79,
+        "target": {
+          "reference": 57,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 4,
+        "provenance": "authored",
+        "reference": 474,
+        "source": 74,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 466,
+        "source": 74,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 470,
+        "source": 74,
+        "target": {
+          "reference": 55,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 2,
+        "provenance": "authored",
+        "reference": 575,
+        "source": 75,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 565,
+        "source": 75,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 570,
+        "source": 75,
+        "target": {
+          "reference": 85,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 491,
+        "source": 76,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 492,
+        "source": 76,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 493,
+        "source": 76,
+        "target": {
+          "reference": 57,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 488,
+        "source": 77,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 489,
+        "source": 77,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 490,
+        "source": 77,
+        "target": {
+          "reference": 57,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 494,
+        "source": 78,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 495,
+        "source": 78,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 496,
+        "source": 78,
+        "target": {
+          "reference": 57,
           "status": "resolved"
         }
       },
@@ -21236,16 +21271,38 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "reference": 338,
         "source": 72,
         "target": {
-          "node": 70,
+          "node": 71,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 339,
+        "source": 73,
+        "target": {
+          "reference": 101,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 340,
+        "source": 73,
+        "target": {
+          "node": 71,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 84,
+        "navigation": 85,
         "provenance": "authored",
-        "reference": 351,
-        "source": 82,
+        "reference": 353,
+        "source": 83,
         "target": {
           "reference": 70,
           "status": "resolved"
@@ -21255,8 +21312,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 348,
-        "source": 82,
+        "reference": 350,
+        "source": 83,
         "target": {
           "reference": 99,
           "status": "resolved"
@@ -21266,8 +21323,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 349,
-        "source": 82,
+        "reference": 351,
+        "source": 83,
         "target": {
           "reference": 103,
           "status": "resolved"
@@ -21277,8 +21334,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 350,
-        "source": 82,
+        "reference": 352,
+        "source": 83,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -21288,96 +21345,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "redefinition",
         "navigation": 45,
         "provenance": "authored",
-        "reference": 507,
-        "source": 89,
-        "target": {
-          "node": 85,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 510,
-        "source": 89,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 513,
-        "source": 89,
-        "target": {
-          "reference": 70,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 519,
+        "reference": 509,
         "source": 90,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 522,
-        "source": 90,
-        "target": {
-          "reference": 70,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 525,
-        "source": 91,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 528,
-        "source": 91,
-        "target": {
-          "reference": 95,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 531,
-        "source": 91,
-        "target": {
-          "node": 90,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 48,
-        "provenance": "authored",
-        "reference": 508,
-        "source": 92,
         "target": {
           "node": 86,
           "status": "resolved"
@@ -21387,96 +21356,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 511,
-        "source": 92,
-        "target": {
-          "reference": 94,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 514,
-        "source": 92,
-        "target": {
-          "reference": 70,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 520,
-        "source": 93,
-        "target": {
-          "reference": 104,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 523,
-        "source": 93,
-        "target": {
-          "reference": 70,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 526,
-        "source": 94,
-        "target": {
-          "reference": 141,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 529,
-        "source": 94,
-        "target": {
-          "reference": 95,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 532,
-        "source": 94,
-        "target": {
-          "node": 93,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "redefinition",
-        "navigation": 51,
-        "provenance": "authored",
-        "reference": 509,
-        "source": 95,
-        "target": {
-          "node": 84,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 512,
-        "source": 95,
+        "source": 90,
         "target": {
           "reference": 94,
           "status": "resolved"
@@ -21487,7 +21368,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 515,
-        "source": 95,
+        "source": 90,
         "target": {
           "reference": 70,
           "status": "resolved"
@@ -21498,7 +21379,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 521,
-        "source": 96,
+        "source": 91,
         "target": {
           "reference": 104,
           "status": "resolved"
@@ -21509,7 +21390,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 524,
-        "source": 96,
+        "source": 91,
         "target": {
           "reference": 70,
           "status": "resolved"
@@ -21520,9 +21401,9 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 527,
-        "source": 97,
+        "source": 92,
         "target": {
-          "reference": 141,
+          "reference": 142,
           "status": "resolved"
         }
       },
@@ -21531,7 +21412,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 530,
-        "source": 97,
+        "source": 92,
         "target": {
           "reference": 95,
           "status": "resolved"
@@ -21542,20 +21423,20 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "navigation": null,
         "provenance": "implied",
         "reference": 533,
-        "source": 97,
+        "source": 92,
         "target": {
-          "node": 96,
+          "node": 91,
           "status": "resolved"
         }
       },
       {
-        "kind": "typing",
-        "navigation": 8,
+        "kind": "redefinition",
+        "navigation": 48,
         "provenance": "authored",
-        "reference": 503,
-        "source": 86,
+        "reference": 510,
+        "source": 93,
         "target": {
-          "reference": 106,
+          "node": 87,
           "status": "resolved"
         }
       },
@@ -21563,8 +21444,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 501,
-        "source": 86,
+        "reference": 513,
+        "source": 93,
         "target": {
           "reference": 94,
           "status": "resolved"
@@ -21574,8 +21455,184 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 502,
-        "source": 86,
+        "reference": 516,
+        "source": 93,
+        "target": {
+          "reference": 70,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 522,
+        "source": 94,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 525,
+        "source": 94,
+        "target": {
+          "reference": 70,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 528,
+        "source": 95,
+        "target": {
+          "reference": 142,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 531,
+        "source": 95,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 534,
+        "source": 95,
+        "target": {
+          "node": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": 51,
+        "provenance": "authored",
+        "reference": 511,
+        "source": 96,
+        "target": {
+          "node": 85,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 514,
+        "source": 96,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 517,
+        "source": 96,
+        "target": {
+          "reference": 70,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 523,
+        "source": 97,
+        "target": {
+          "reference": 104,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 526,
+        "source": 97,
+        "target": {
+          "reference": 70,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "redefinition",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 529,
+        "source": 98,
+        "target": {
+          "reference": 142,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 532,
+        "source": 98,
+        "target": {
+          "reference": 95,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 535,
+        "source": 98,
+        "target": {
+          "node": 97,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 8,
+        "provenance": "authored",
+        "reference": 505,
+        "source": 87,
+        "target": {
+          "reference": 106,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 503,
+        "source": 87,
+        "target": {
+          "reference": 94,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 504,
+        "source": 87,
         "target": {
           "reference": 65,
           "status": "resolved"
@@ -21585,8 +21642,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 500,
-        "source": 84,
+        "reference": 502,
+        "source": 85,
         "target": {
           "reference": 106,
           "status": "resolved"
@@ -21596,8 +21653,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 498,
-        "source": 84,
+        "reference": 500,
+        "source": 85,
         "target": {
           "reference": 94,
           "status": "resolved"
@@ -21607,8 +21664,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 499,
-        "source": 84,
+        "reference": 501,
+        "source": 85,
         "target": {
           "reference": 65,
           "status": "resolved"
@@ -21618,8 +21675,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typing",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 497,
-        "source": 85,
+        "reference": 499,
+        "source": 86,
         "target": {
           "reference": 106,
           "status": "resolved"
@@ -21629,8 +21686,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 495,
-        "source": 85,
+        "reference": 497,
+        "source": 86,
         "target": {
           "reference": 94,
           "status": "resolved"
@@ -21640,8 +21697,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 496,
-        "source": 85,
+        "reference": 498,
+        "source": 86,
         "target": {
           "reference": 65,
           "status": "resolved"
@@ -21651,32 +21708,10 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 534,
-        "source": 87,
+        "reference": 536,
+        "source": 88,
         "target": {
           "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 535,
-        "source": 87,
-        "target": {
-          "reference": 105,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 536,
-        "source": 87,
-        "target": {
-          "reference": 70,
           "status": "resolved"
         }
       },
@@ -21687,17 +21722,6 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "reference": 537,
         "source": 88,
         "target": {
-          "reference": 102,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 538,
-        "source": 88,
-        "target": {
           "reference": 105,
           "status": "resolved"
         }
@@ -21706,7 +21730,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 539,
+        "reference": 538,
         "source": 88,
         "target": {
           "reference": 70,
@@ -21717,8 +21741,41 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 352,
-        "source": 83,
+        "reference": 539,
+        "source": 89,
+        "target": {
+          "reference": 102,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 540,
+        "source": 89,
+        "target": {
+          "reference": 105,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 541,
+        "source": 89,
+        "target": {
+          "reference": 70,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 354,
+        "source": 84,
         "target": {
           "reference": 101,
           "status": "resolved"
@@ -21728,19 +21785,19 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 353,
-        "source": 83,
+        "reference": 355,
+        "source": 84,
         "target": {
-          "node": 82,
+          "node": 83,
           "status": "resolved"
         }
       },
       {
         "kind": "flowPayloadType",
-        "navigation": 111,
+        "navigation": 112,
         "provenance": "authored",
-        "reference": 381,
-        "source": 17,
+        "reference": 383,
+        "source": 18,
         "target": {
           "reference": 69,
           "status": "resolved"
@@ -21748,23 +21805,23 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
       },
       {
         "kind": "flowSource",
-        "navigation": 112,
+        "navigation": 113,
         "provenance": "authored",
-        "reference": 382,
-        "source": 17,
+        "reference": 384,
+        "source": 18,
         "target": {
-          "node": 47,
+          "node": 48,
           "status": "resolved"
         }
       },
       {
         "kind": "flowTarget",
-        "navigation": 113,
+        "navigation": 114,
         "provenance": "authored",
-        "reference": 383,
-        "source": 17,
+        "reference": 385,
+        "source": 18,
         "target": {
-          "node": 83,
+          "node": 84,
           "status": "resolved"
         }
       },
@@ -21772,8 +21829,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 384,
-        "source": 17,
+        "reference": 386,
+        "source": 18,
         "target": {
           "reference": 97,
           "status": "resolved"
@@ -21783,8 +21840,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 385,
-        "source": 17,
+        "reference": 387,
+        "source": 18,
         "target": {
           "reference": 96,
           "status": "resolved"
@@ -21794,8 +21851,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 386,
-        "source": 17,
+        "reference": 388,
+        "source": 18,
         "target": {
           "reference": 99,
           "status": "resolved"
@@ -21805,8 +21862,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 387,
-        "source": 17,
+        "reference": 389,
+        "source": 18,
         "target": {
           "reference": 108,
           "status": "resolved"
@@ -21816,8 +21873,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 388,
-        "source": 17,
+        "reference": 390,
+        "source": 18,
         "target": {
           "reference": 107,
           "status": "resolved"
@@ -21827,8 +21884,8 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 390,
-        "source": 17,
+        "reference": 392,
+        "source": 18,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -21838,173 +21895,173 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
     "scene": {
       "kind": "sequence",
       "lifelines": [
-        18,
-        32,
-        41,
-        59,
-        70,
-        82
+        19,
+        33,
+        42,
+        60,
+        71,
+        83
       ],
       "messages": [
         {
           "label": "reserveStock",
-          "navigation": 102,
-          "node": 9,
+          "navigation": 103,
+          "node": 10,
           "order": {
             "status": "resolved",
             "value": 5
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 41,
+            "lifeline": 42,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 70,
+            "lifeline": 71,
             "status": "resolved"
           }
         },
         {
           "label": "stockReserved",
-          "navigation": 106,
-          "node": 10,
+          "navigation": 107,
+          "node": 11,
           "order": {
             "status": "resolved",
             "value": 6
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 70,
+            "lifeline": 71,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 41,
+            "lifeline": 42,
             "status": "resolved"
           }
         },
         {
           "label": "submitCheckout",
-          "navigation": 86,
-          "node": 11,
+          "navigation": 87,
+          "node": 12,
           "order": {
             "status": "resolved",
             "value": 1
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 32,
+            "lifeline": 33,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 18,
+            "lifeline": 19,
             "status": "resolved"
           }
         },
         {
           "label": "checkoutOutcome",
-          "navigation": 118,
-          "node": 12,
+          "navigation": 119,
+          "node": 13,
           "order": {
             "status": "resolved",
             "value": 9
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 18,
+            "lifeline": 19,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 32,
+            "lifeline": 33,
             "status": "resolved"
           }
         },
         {
           "label": "forwardCheckout",
-          "navigation": 90,
-          "node": 13,
+          "navigation": 91,
+          "node": 14,
           "order": {
             "status": "resolved",
             "value": 2
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 18,
+            "lifeline": 19,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 41,
+            "lifeline": 42,
             "status": "resolved"
           }
         },
         {
           "label": "paymentApproved",
-          "navigation": 98,
-          "node": 14,
+          "navigation": 99,
+          "node": 15,
           "order": {
             "status": "resolved",
             "value": 4
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 59,
+            "lifeline": 60,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 41,
+            "lifeline": 42,
             "status": "resolved"
           }
         },
         {
           "label": "authorizePayment",
-          "navigation": 94,
-          "node": 15,
+          "navigation": 95,
+          "node": 16,
           "order": {
             "status": "resolved",
             "value": 3
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 41,
+            "lifeline": 42,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 59,
+            "lifeline": 60,
             "status": "resolved"
           }
         },
         {
           "label": "checkoutAccepted",
-          "navigation": 114,
-          "node": 16,
+          "navigation": 115,
+          "node": 17,
           "order": {
             "status": "resolved",
             "value": 8
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 41,
+            "lifeline": 42,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 18,
+            "lifeline": 19,
             "status": "resolved"
           }
         },
         {
           "label": "publishOrderCreated",
-          "navigation": 110,
-          "node": 17,
+          "navigation": 111,
+          "node": 18,
           "order": {
             "status": "resolved",
             "value": 7
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 41,
+            "lifeline": 42,
             "status": "resolved"
           },
           "target": {
-            "lifeline": 82,
+            "lifeline": 83,
             "status": "resolved"
           }
         }

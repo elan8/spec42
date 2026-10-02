@@ -1564,15 +1564,18 @@ impl<D> SemanticModel<D> {
                 Some(DeclarationKind::ViewUsage) => {
                     // A view with members that exposes nothing renders nothing. Reported as
                     // information: it is legal, and a view under construction passes through it.
-                    // The multiplicity a header `[m..n]` lowers to is not body content.
+                    // The multiplicity a header `[m..n]` lowers to, and the comments and
+                    // documentation annotating the view, are not body content.
                     let members = self
                         .child_declarations(id)
                         .iter()
                         .copied()
                         .filter(|child| {
                             self.kind_of(*child).is_none_or(|kind| {
-                                !crate::model::element_kind::element_kind(kind)
-                                    .conforms_to(sysml_contract::ElementKind::Multiplicity)
+                                let kind = crate::model::element_kind::element_kind(kind);
+                                !kind.conforms_to(sysml_contract::ElementKind::Multiplicity)
+                                    && !kind
+                                        .conforms_to(sysml_contract::ElementKind::AnnotatingElement)
                             })
                         })
                         .collect::<Vec<_>>();
@@ -1642,7 +1645,7 @@ impl<D> SemanticModel<D> {
             }
             let declaration = self
                 .storage
-                .declaration(record.declaration)
+                .declaration(record.element)
                 .ok_or(ResolutionError::InvalidStorage)?;
             if declaration.document != document {
                 continue;
@@ -1655,7 +1658,7 @@ impl<D> SemanticModel<D> {
                 code: DiagnosticCode::ViewpointRepLanguageUnresolved,
                 severity: DiagnosticSeverity::Warning,
                 origin: DiagnosticOrigin::Semantic,
-                subject: self.symbol_id(record.declaration),
+                subject: self.symbol_id(record.element),
                 location: DiagnosticLocation {
                     document: writer::document_identity(self, document).into(),
                     range: document_range(&self.storage, document, &record.span)?,

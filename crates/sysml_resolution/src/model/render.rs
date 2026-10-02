@@ -1279,7 +1279,7 @@ pub(crate) fn write_documentation(
         .storage
         .documentation
         .iter()
-        .filter(|record| record.declaration == declaration)
+        .filter(|record| record.element == declaration)
     {
         if !wrote_header {
             output.write_str(" (documentation")?;
@@ -2239,6 +2239,9 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::ForLoop => "for-loop",
         DeclarationKind::ForLoopVariable => "for-loop-variable",
         DeclarationKind::Dependency => "dependency",
+        DeclarationKind::Comment => "comment",
+        DeclarationKind::Documentation => "documentation",
+        DeclarationKind::TextualRepresentation => "textual-representation",
         DeclarationKind::ExtendedDefinition => "extended-definition",
         DeclarationKind::IndividualDefinition => "individual-definition",
         DeclarationKind::BareConnect => "bare-connect",
@@ -2299,6 +2302,7 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::TransitionEffect => "transitionEffect",
         ReferenceKind::MetadataAnnotation => "metadataAnnotation",
         ReferenceKind::MetadataAnnotationAbout => "metadataAnnotationAbout",
+        ReferenceKind::Annotation => "annotation",
         ReferenceKind::FilterMetadataTest => "filterMetadataTest",
         ReferenceKind::SatisfySource => "satisfySource",
         ReferenceKind::SatisfyTarget => "satisfyTarget",
@@ -2367,6 +2371,7 @@ pub(crate) fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::TransitionEffect => Some("transitionEffect"),
         ReferenceKind::MetadataAnnotation => Some("metadataAnnotation"),
         ReferenceKind::MetadataAnnotationAbout => Some("metadataAnnotationAbout"),
+        ReferenceKind::Annotation => Some("annotation"),
         ReferenceKind::FilterMetadataTest => Some("filterMetadataTest"),
         ReferenceKind::SatisfySource => Some("satisfySource"),
         ReferenceKind::SatisfyTarget => Some("satisfyTarget"),

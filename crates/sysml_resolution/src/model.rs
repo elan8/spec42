@@ -844,6 +844,16 @@ pub(crate) enum DeclarationKind {
     /// Its `RelationshipBody` members (doc/comment/metadata only) are walked through the shared
     /// `lower_relationship_body_elements` helper used by `Import`/`AliasDef`.
     Dependency,
+    /// A `comment` (or keyword-less `/* ... */`) annotating member: KerML `Comment`, owned by the
+    /// namespace it is written in under an `OwningMembership`. Its body and locale are its
+    /// `DocumentationRecord`; each `about` target is a `ReferenceKind::Annotation` sourced here.
+    Comment,
+    /// A `doc` annotating member: KerML `Documentation`, owned like a `Comment`; its owner is
+    /// its `documentedElement`.
+    Documentation,
+    /// A `rep` annotating member: KerML `TextualRepresentation`, owned like a `Comment`; its
+    /// owner is its `representedElement`.
+    TextualRepresentation,
     /// `#<keyword>+ def <Name> ...` (BNF ExtendedDefinition, `structure.rs` struct
     /// `ExtendedDefinition`, planning/UPSTREAM_PARSER_GAPS.md gap #12's short form), e.g. `#scenario def
     /// DeviceFailure { ... }`. Gap #12 tracked only the parser production landing upstream; this
@@ -1110,6 +1120,13 @@ pub(crate) enum ReferenceKind {
     /// the `about` relationship never collapses into typing or ordinary reference resolution in
     /// query output.
     MetadataAnnotationAbout,
+    /// One authored `about` target of a `comment ... about X, Y` (`ast::CommentAnnotation::
+    /// about_targets`): KerML `Annotation::annotatedElement` of an Annotation owned by the
+    /// Comment (its `owningAnnotatingElement`), sourced at the Comment declaration. Any element
+    /// may be annotated, so it resolves through the `DeclarationDomain::Any` lexical lookup like
+    /// `MetadataAnnotationAbout`. A Comment with no `about` clause has no Annotation: its
+    /// `annotatedElement` is its owning namespace.
+    Annotation,
     /// The metadata-def operand of an `@Name` metadata-classification test (`Expression::
     /// Classification`'s `metaclass`) found while walking a package-level `filter <expr>;`
     /// statement's condition (BNF `ElementFilterMember`, `ast::FilterMember`, distinct from the

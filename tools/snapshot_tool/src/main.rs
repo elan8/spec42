@@ -489,6 +489,7 @@ enum SemanticRelationshipKind {
     Intersecting,
     Differencing,
     Disjoining,
+    Annotation,
 }
 
 impl SemanticRelationshipKind {
@@ -505,8 +506,9 @@ impl SemanticRelationshipKind {
             "intersecting" => Ok(Self::Intersecting),
             "differencing" => Ok(Self::Differencing),
             "disjoining" => Ok(Self::Disjoining),
+            "annotation" => Ok(Self::Annotation),
             _ => Err(format!(
-                "{fixture}: unknown semantic relationship kind {value:?} (expected specialization, feature_typing, subsetting, redefinition, feature_chaining, type_featuring, connector_end, unioning, intersecting, differencing, or disjoining)"
+                "{fixture}: unknown semantic relationship kind {value:?} (expected specialization, feature_typing, subsetting, redefinition, feature_chaining, type_featuring, connector_end, unioning, intersecting, differencing, disjoining, or annotation)"
             )),
         }
     }
@@ -525,6 +527,7 @@ impl SemanticRelationshipKind {
             Self::Intersecting => "intersecting",
             Self::Differencing => "differencing",
             Self::Disjoining => "disjoining",
+            Self::Annotation => "annotation",
         }
     }
 }

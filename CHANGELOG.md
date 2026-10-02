@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Comments, documentation and textual representations are elements.** Every `comment`, `doc`
+  and `rep` member is published as a `Comment`/`Documentation`/`TextualRepresentation` element
+  owned by the namespace it is written in, carrying its body. Each `about` target of a comment is
+  an `annotation` relationship from the Comment to the named element, so `comment about Thing`
+  now annotates `Thing` rather than appearing as documentation of its package. The generator wire
+  `Metaclass` vocabulary gains `Comment` (compatibility token changed; guests must be rebuilt).
+
 - **Literal, null and metadata-access expressions are elements.** Every literal (`LiteralBoolean`,
   `LiteralInteger`, `LiteralRational`, `LiteralString`), `null`/`()` (`NullExpression`) and
   `X.metadata` (`MetadataAccessExpression`) is published as its own anonymous Expression of that

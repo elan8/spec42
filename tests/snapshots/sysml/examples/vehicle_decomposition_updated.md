@@ -88,7 +88,8 @@ package 'Vehicle Decomposition - Updated' {
 (semantic-model
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:100f0fb7e6be61521ca58d898f11873a026a2df72b8b7eacca12ab5796e534f6"))
   (declarations
-    (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (qualified-name "Vehicle Decomposition - Updated"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * Example from the SysML 1.6 spec, subclause 8.4.5 Constraining Decomposition,\n\t * updated for usage-focused approach.\n\t "))))
+    (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (qualified-name "Vehicle Decomposition - Updated"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (path (named (kind package) (name "Vehicle Decomposition - Updated")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * Example from the SysML 1.6 spec, subclause 8.4.5 Constraining Decomposition,\n\t * updated for usage-focused approach.\n\t "))))
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (qualified-name "Vehicle Decomposition - Updated::Chassis Assembly"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (qualified-name "Vehicle Decomposition - Updated::Cylinder"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_decomposition_updated.md") (qualified-name "Vehicle Decomposition - Updated::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))

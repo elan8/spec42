@@ -201,6 +201,13 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::NullExpression
         | ElementKind::MetadataAccessExpression
         | ElementKind::Invariant => "usage",
+
+        // Comments, documentation and textual representations annotate elements; they are
+        // neither types, features nor relationships.
+        ElementKind::AnnotatingElement
+        | ElementKind::Comment
+        | ElementKind::Documentation
+        | ElementKind::TextualRepresentation => "other",
     }
 }
 

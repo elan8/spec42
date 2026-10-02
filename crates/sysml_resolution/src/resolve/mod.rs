@@ -450,6 +450,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     | ReferenceKind::DependencySupplier
                     | ReferenceKind::PerformParameterTarget
                     | ReferenceKind::MetadataAnnotationAbout
+                    | ReferenceKind::Annotation
                     | ReferenceKind::FeatureChaining
                     | ReferenceKind::ExplicitRelationshipEndpoint
             )
@@ -1771,6 +1772,7 @@ pub(crate) fn supported_import_domain(
         | ReferenceKind::DependencySupplier
         | ReferenceKind::PerformParameterTarget
         | ReferenceKind::MetadataAnnotationAbout
+        | ReferenceKind::Annotation
         | ReferenceKind::FlowPayloadType => None,
     }
 }

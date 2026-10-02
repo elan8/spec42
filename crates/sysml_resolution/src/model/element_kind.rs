@@ -144,6 +144,9 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::Expose => ElementKind::Expose,
         DeclarationKind::Alias => ElementKind::Alias,
         DeclarationKind::Dependency => ElementKind::Dependency,
+        DeclarationKind::Comment => ElementKind::Comment,
+        DeclarationKind::Documentation => ElementKind::Documentation,
+        DeclarationKind::TextualRepresentation => ElementKind::TextualRepresentation,
 
         DeclarationKind::KermlType => ElementKind::Type,
         DeclarationKind::KermlClassifier => ElementKind::Classifier,
@@ -300,6 +303,9 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::Expose
         | DeclarationKind::Alias
         | DeclarationKind::Dependency
+        | DeclarationKind::Comment
+        | DeclarationKind::Documentation
+        | DeclarationKind::TextualRepresentation
         | DeclarationKind::KermlClassifier
         | DeclarationKind::ClassDefinition
         | DeclarationKind::KermlType
@@ -501,6 +507,9 @@ mod tests {
         DeclarationKind::ForLoop,
         DeclarationKind::ForLoopVariable,
         DeclarationKind::Dependency,
+        DeclarationKind::Comment,
+        DeclarationKind::Documentation,
+        DeclarationKind::TextualRepresentation,
         DeclarationKind::ExtendedDefinition,
         DeclarationKind::ExtendedUsage,
         DeclarationKind::IndividualDefinition,

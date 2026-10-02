@@ -439,14 +439,15 @@ pub(crate) enum AnnotationForm {
     TextualRepresentation,
 }
 
-/// One documentation/comment/textual-representation annotation bound to its annotated declaration.
+/// The authored body of one documentation/comment/textual-representation annotating element.
 ///
-/// The parser models these as *sibling* body elements with no parent link, so lowering binds the
-/// annotations at the head of a declaration's own body to that declaration. A declaration may
-/// carry several, which is why this is a table rather than a field on `DeclarationFacts`.
+/// `element` is the `Comment`/`Documentation`/`TextualRepresentation` declaration that owns the
+/// body, locale and language; the namespace that owns it (its declaration `owner`) is the element
+/// it documents or, for a comment with no `about` clause, annotates. A namespace may own several,
+/// which is why this is a table rather than a field on `DeclarationFacts`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct DocumentationRecord {
-    pub(crate) declaration: DeclarationId,
+    pub(crate) element: DeclarationId,
     pub(crate) form: AnnotationForm,
     pub(crate) locale: Option<NameId>,
     /// The `rep` language string; always `None` for the other two forms.

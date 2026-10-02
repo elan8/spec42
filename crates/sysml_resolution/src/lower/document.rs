@@ -343,7 +343,7 @@ impl SemanticModelBuilder {
         reserve(&mut self.documentation, lowered.documentation.len())?;
         for record in lowered.documentation.iter() {
             self.documentation.push(DocumentationRecord {
-                declaration: relocation.declaration(record.declaration)?,
+                element: relocation.declaration(record.element)?,
                 form: record.form,
                 locale: relocation.optional_symbol(record.locale)?,
                 language: relocation.optional_symbol(record.language)?,

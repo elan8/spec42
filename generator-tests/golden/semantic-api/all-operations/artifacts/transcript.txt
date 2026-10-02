@@ -1,9 +1,11 @@
 info: model_digest=<present> spec42_version=<present> semantic_api_version=0.2.0
 roots: 1 element(s)
   Coverage [Package] name=Coverage library=false
-find(None): 25 element(s)
+find(None): 27 element(s)
   Coverage [Package] name=Coverage library=false
+  Coverage:: [Documentation] name=<none> library=false
   Coverage::Component [PartDefinition] name=Component library=false
+  Coverage::Component:: [Documentation] name=<none> library=false
   Coverage::Component::mass [AttributeUsage] name=mass library=false
   Coverage::Engine [PartDefinition] name=Engine library=false
   Coverage::Engine::mass [AttributeUsage] name=mass library=false
@@ -32,7 +34,8 @@ find(PartDefinition): 4 element(s)
   Coverage::Engine [PartDefinition] name=Engine library=false
   Coverage::Powered [PartDefinition] name=Powered library=false
   Coverage::Vehicle [PartDefinition] name=Vehicle library=false
-children(Coverage): 7 element(s)
+children(Coverage): 8 element(s)
+  Coverage:: [Documentation] name=<none> library=false
   Coverage::Component [PartDefinition] name=Component library=false
   Coverage::Engine [PartDefinition] name=Engine library=false
   Coverage::Mass [AttributeDefinition] name=Mass library=false
@@ -44,13 +47,24 @@ element(Coverage): definition=false abstract=false derived=false end=false multi
 typed_by(Coverage): <untyped>
 relationships(Coverage): 0 edge(s)
 effective_features(Coverage): 0 element(s)
-children(Coverage::Component): 1 element(s)
+children(Coverage::): 0 element(s)
+element(Coverage::): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::): <untyped>
+relationships(Coverage::): 0 edge(s)
+effective_features(Coverage::): 0 element(s)
+children(Coverage::Component): 2 element(s)
+  Coverage::Component:: [Documentation] name=<none> library=false
   Coverage::Component::mass [AttributeUsage] name=mass library=false
 element(Coverage::Component): definition=true abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Component): <untyped>
 relationships(Coverage::Component): 0 edge(s)
 effective_features(Coverage::Component): 1 element(s)
   Coverage::Component::mass [AttributeUsage] name=mass library=false
+children(Coverage::Component::): 0 element(s)
+element(Coverage::Component::): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::Component::): <untyped>
+relationships(Coverage::Component::): 0 edge(s)
+effective_features(Coverage::Component::): 0 element(s)
 children(Coverage::Component::mass): 0 element(s)
 element(Coverage::Component::mass): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Component::mass): Coverage::Mass

@@ -184,6 +184,14 @@ element_kinds! {
     Alias,
     Dependency,
 
+    // --- Annotating elements ------------------------------------------------------------
+    /// The abstract KerML `AnnotatingElement` every comment, documentation and textual
+    /// representation specializes. No declaration is published with this kind.
+    AnnotatingElement,
+    Comment,
+    Documentation,
+    TextualRepresentation,
+
     // --- KerML types --------------------------------------------------------------------
     Type,
     Classifier,
@@ -240,7 +248,14 @@ impl ElementKind {
     pub fn direct_generals(self) -> &'static [ElementKind] {
         use ElementKind as K;
         match self {
-            K::Namespace | K::Import | K::Expose | K::Alias | K::Dependency => &[],
+            K::Namespace
+            | K::Import
+            | K::Expose
+            | K::Alias
+            | K::Dependency
+            | K::AnnotatingElement => &[],
+            K::Comment | K::TextualRepresentation => &[K::AnnotatingElement],
+            K::Documentation => &[K::Comment],
             K::Package => &[K::Namespace],
             K::LibraryPackage => &[K::Package],
 

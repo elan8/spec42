@@ -2024,7 +2024,8 @@ fn diagram_notation_role(kind: ElementKind) -> DiagramNotationRole {
         | Metaclass::ConjugatedPortDefinition => DiagramNotationRole::Definition,
         Metaclass::ReferenceUsage => DiagramNotationRole::ReferenceUsage,
         Metaclass::Package | Metaclass::Alias | Metaclass::Import => DiagramNotationRole::Namespace,
-        Metaclass::Documentation
+        Metaclass::Comment
+        | Metaclass::Documentation
         | Metaclass::MetadataUsage
         | Metaclass::TextualRepresentation
         | Metaclass::Diagnostic => DiagramNotationRole::Annotation,

@@ -73,12 +73,6 @@ owner = "spec42-snapshot"
 summary = "KerML LiteralExpression admits `*` (LiteralInfinity) wherever an expression is written, but the pinned sysml-v2-parser publishes no ast::Expression node for it (a `[*]` bound is an absent node, and `feature x = *;` is reported as an unsupported feature declaration), so lowering mints no LiteralInfinity element for checkLiteralInfinitySpecialization to be asserted against"
 
 [[issue]]
-id = "abstract-syntax-annotation-identity"
-kind = "abstract_syntax_coverage_gap"
-owner = "spec42-snapshot"
-summary = "KerML concrete syntax cannot author an Annotation with neither or both of ownedAnnotatingElement and owningAnnotatingElement, but no evidence can be cited: lowering publishes documentation/comment text as DocumentationRecord rows on a declaration, not as Annotation relationships with annotatingElement/annotatedElement identities, and `comment about Thing` is recorded against the owning package rather than Thing"
-
-[[issue]]
 id = "parser-gap-directed-control-node"
 kind = "parser_gap"
 owner = "sysml-v2-parser"
