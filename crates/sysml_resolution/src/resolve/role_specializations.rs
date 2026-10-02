@@ -26,6 +26,7 @@ use crate::lower::storage::SemanticModelStorage;
 use crate::model::element_kind::element_kind;
 use crate::model::element_kind::membership_role_with_trigger;
 use crate::model::DeclarationId;
+use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::resolve::implied::resolve_library_anchor_path;
 use crate::resolve::implied::LibrarySpecializationAnchor;
@@ -50,14 +51,31 @@ pub(crate) enum LibrarySpecializationRole {
     /// SysML 8.3.18.9 `checkTransitionUsageActionSpecialization`: a composite TransitionUsage
     /// owned by an ActionDefinition or ActionUsage whose `source` is not a StateUsage.
     ActionTransition,
+    /// KerML 8.3.3.3.4 `checkFeatureSuboccurrenceSpecialization`: a composite Feature with an
+    /// owned typing by a Class whose owning type is a Class or a Feature typed by a Class.
+    FeatureSuboccurrence,
+    /// KerML 8.3.3.3.4 `checkFeaturePortionSpecialization`: a portion Feature with an owned
+    /// typing by a Class whose owning type is a Class or a Feature typed by a Class.
+    FeaturePortion,
+    /// KerML 8.3.3.3.4 `checkFeatureSubobjectSpecialization`: a composite Feature with an owned
+    /// typing by a Structure whose owning type is a Structure or a Feature typed by a Structure.
+    FeatureSubobject,
+    /// SysML 8.3.9.4 `checkOccurrenceUsageSuboccurrenceSpecialization`: a composite
+    /// OccurrenceUsage whose owning type is a Class, an OccurrenceUsage, or a Feature typed by a
+    /// Class.
+    OccurrenceUsageSuboccurrence,
 }
 
 impl LibrarySpecializationRole {
-    pub(crate) const ALL: [Self; 4] = [
+    pub(crate) const ALL: [Self; 8] = [
         Self::ExclusiveState,
         Self::Substate,
         Self::StateTransition,
         Self::ActionTransition,
+        Self::FeatureSuboccurrence,
+        Self::FeaturePortion,
+        Self::FeatureSubobject,
+        Self::OccurrenceUsageSuboccurrence,
     ];
 
     /// The structural path of the library feature this role's occupant specializes.
@@ -67,6 +85,11 @@ impl LibrarySpecializationRole {
             Self::Substate => &["States", "StateAction", "substates"],
             Self::StateTransition => &["States", "StateAction", "stateTransitions"],
             Self::ActionTransition => &["Actions", "Action", "decisionTransitions"],
+            Self::FeatureSuboccurrence | Self::OccurrenceUsageSuboccurrence => {
+                &["Occurrences", "Occurrence", "suboccurrences"]
+            }
+            Self::FeaturePortion => &["Occurrences", "Occurrence", "portions"],
+            Self::FeatureSubobject => &["Objects", "Object", "subobjects"],
         }
     }
 
@@ -77,6 +100,12 @@ impl LibrarySpecializationRole {
             Self::Substate => SpecializationCheckKind::StateUsageSubstate,
             Self::StateTransition => SpecializationCheckKind::TransitionUsageState,
             Self::ActionTransition => SpecializationCheckKind::TransitionUsageAction,
+            Self::FeatureSuboccurrence => SpecializationCheckKind::FeatureSuboccurrence,
+            Self::FeaturePortion => SpecializationCheckKind::FeaturePortion,
+            Self::FeatureSubobject => SpecializationCheckKind::FeatureSubobject,
+            Self::OccurrenceUsageSuboccurrence => {
+                SpecializationCheckKind::OccurrenceUsageSuboccurrence
+            }
         }
     }
 
@@ -130,6 +159,9 @@ pub(crate) struct LibrarySpecializationRoleOccupants {
     /// A TransitionUsage whose role depends on a `source` that did not resolve to one
     /// declaration: both transition checks are unsettled rather than guessed.
     pub(crate) transitions_unsettled: bool,
+    /// A Feature whose own or owning feature's owned typing did not settle: the Feature
+    /// category checks are unsettled rather than guessed.
+    pub(crate) features_unsettled: bool,
 }
 
 /// Every declaration of the publication that plays a library-anchored specialization role, in
@@ -174,6 +206,39 @@ pub(crate) fn library_specialization_role_occupants(
         *slot = Some(if slot.is_some() { None } else { target });
     }
 
+    // The settled targets of each declaration's owned FeatureTyping (`ownedTyping.type`); an
+    // unsettled typing makes the declaration's type category unknown.
+    let mut owned_types: Vec<Vec<DeclarationId>> = vec![Vec::new(); count];
+    let mut typing_unsettled = vec![false; count];
+    for (index, reference) in storage.references.iter().enumerate() {
+        if reference.kind != ReferenceKind::FeatureTyping {
+            continue;
+        }
+        let slot = reference.source.index();
+        match outcomes.get(index) {
+            Some(ResolutionStatus::Resolved(target)) => owned_types
+                .get_mut(slot)
+                .ok_or(ResolutionError::InvalidStorage)?
+                .push(*target),
+            _ => {
+                *typing_unsettled
+                    .get_mut(slot)
+                    .ok_or(ResolutionError::InvalidStorage)? = true
+            }
+        }
+    }
+
+    // KerML `Feature::owningType` is the owning type of the Feature's owning FeatureMembership;
+    // a Feature owned through any other membership has none.
+    let mut feature_members = vec![false; count];
+    for membership in storage.memberships.iter() {
+        if membership.kind == MembershipKind::Feature {
+            *feature_members
+                .get_mut(membership.member.index())
+                .ok_or(ResolutionError::InvalidStorage)? = true;
+        }
+    }
+
     let kind_of = |id: DeclarationId| storage.declaration(id).map(|d| element_kind(d.kind));
     let conforms = |id: DeclarationId, general: ElementKind| {
         kind_of(id).is_some_and(|kind| kind.conforms_to(general))
@@ -182,6 +247,16 @@ pub(crate) fn library_specialization_role_occupants(
     for (index, declaration) in storage.declarations.iter().enumerate() {
         let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
         let kind = element_kind(declaration.kind);
+        if kind.conforms_to(ElementKind::Feature) && feature_members[index] {
+            feature_category_occupants(
+                storage,
+                &variant_members,
+                &owned_types,
+                &typing_unsettled,
+                source,
+                &mut result,
+            )?;
+        }
         let is_state = kind.conforms_to(ElementKind::StateUsage);
         let is_transition = kind.conforms_to(ElementKind::TransitionUsage);
         if !is_state && !is_transition {
@@ -249,6 +324,98 @@ pub(crate) fn library_specialization_role_occupants(
     Ok(result)
 }
 
+/// The KerML Feature category roles (`suboccurrence`, `portion`, `subobject`) and SysML's
+/// OccurrenceUsage suboccurrence role of one Feature, read from its effective composition, its
+/// `portion` fact, its owned typings, and its owning type's metaclass or owned typings, as the
+/// Pilot's `FeatureAdapter.isSuboccurrence`/`isPortion`/`isSubobject` and
+/// `OccurrenceUsageAdapter.isSuboccurrence` do over `ownedTyping`.
+fn feature_category_occupants(
+    storage: &SemanticModelStorage,
+    variant_members: &[bool],
+    owned_types: &[Vec<DeclarationId>],
+    typing_unsettled: &[bool],
+    source: DeclarationId,
+    result: &mut LibrarySpecializationRoleOccupants,
+) -> Result<(), ResolutionError> {
+    let declaration = storage
+        .declaration(source)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    let facts = storage
+        .declaration_facts(source)
+        .ok_or(ResolutionError::InvalidStorage)?;
+    let Some(owner) = crate::resolve::usage_composition::owning_type(storage, source) else {
+        return Ok(());
+    };
+    let composite =
+        crate::resolve::usage_composition::feature_is_composite(storage, variant_members, source);
+    let portion = facts.modifiers.portion || facts.portion_kind.is_some();
+    let is_occurrence_usage =
+        element_kind(declaration.kind).conforms_to(ElementKind::OccurrenceUsage);
+    if !composite && !portion {
+        return Ok(());
+    }
+    let typed_by = |feature: DeclarationId, general: ElementKind| {
+        owned_types.get(feature.index()).is_some_and(|types| {
+            types.iter().any(|ty| {
+                storage
+                    .declaration(*ty)
+                    .is_some_and(|ty| element_kind(ty.kind).conforms_to(general))
+            })
+        })
+    };
+    let owner_kind = element_kind(
+        storage
+            .declaration(owner)
+            .ok_or(ResolutionError::InvalidStorage)?
+            .kind,
+    );
+    let owner_is_feature = owner_kind.conforms_to(ElementKind::Feature);
+    // Whether the category of `feature`'s or its owner's typing is not yet known.
+    let unsettled = |feature: DeclarationId| {
+        typing_unsettled
+            .get(feature.index())
+            .copied()
+            .unwrap_or(true)
+    };
+    if unsettled(source) || (owner_is_feature && unsettled(owner)) {
+        result.features_unsettled = true;
+        return Ok(());
+    }
+    let owner_is = |general: ElementKind| {
+        owner_kind.conforms_to(general) || (owner_is_feature && typed_by(owner, general))
+    };
+    let typed_by_class = typed_by(source, ElementKind::Class);
+    let mut push = |role| {
+        result
+            .occupants
+            .push(LibrarySpecializationRoleOccupant { source, role })
+    };
+    // `Objects::Object::subobjects` subsets `suboccurrences`, so a subobject already satisfies the
+    // suboccurrence checks; like the Pilot's `getDefaultSupertype`, it gets only the narrower edge.
+    let subobject =
+        composite && typed_by(source, ElementKind::Structure) && owner_is(ElementKind::Structure);
+    if subobject {
+        push(LibrarySpecializationRole::FeatureSubobject);
+        if portion && typed_by_class && owner_is(ElementKind::Class) {
+            push(LibrarySpecializationRole::FeaturePortion);
+        }
+        return Ok(());
+    }
+    if composite && typed_by_class && owner_is(ElementKind::Class) {
+        push(LibrarySpecializationRole::FeatureSuboccurrence);
+    }
+    if portion && typed_by_class && owner_is(ElementKind::Class) {
+        push(LibrarySpecializationRole::FeaturePortion);
+    }
+    if composite
+        && is_occurrence_usage
+        && (owner_is(ElementKind::Class) || owner_kind.conforms_to(ElementKind::OccurrenceUsage))
+    {
+        push(LibrarySpecializationRole::OccurrenceUsageSuboccurrence);
+    }
+    Ok(())
+}
+
 /// Synthesizes the implied library specialization of every role occupant, as the Pilot's
 /// `addDefaultGeneralType` adds the role's default supertype. The library's own declaration of
 /// an anchor (`abstract state exclusiveStates` in the non-parallel `States::StateAction`) is the
@@ -257,21 +424,91 @@ pub(crate) fn library_specialization_role_occupants(
 pub(crate) fn synthesize_library_role_specializations(
     storage: &SemanticModelStorage,
     outcomes: &[ResolutionStatus],
+    implied_so_far: &[ImpliedRelationship],
     anchors: &LibrarySpecializationRoleAnchors,
 ) -> Result<Vec<ImpliedRelationship>, ResolutionError> {
     let occupants = library_specialization_role_occupants(storage, outcomes)?;
+    if occupants.occupants.is_empty() {
+        return Ok(Vec::new());
+    }
+    // The settled generalization edges an occupant already has, authored or implied so far: a
+    // role whose anchor is already a general of its occupant ("directly or indirectly") needs no
+    // further edge, and one whose anchor already specializes its occupant (a library feature that
+    // generalizes the anchor itself) would make a cycle.
+    let mut generals: Vec<Vec<DeclarationId>> = vec![Vec::new(); storage.declarations.len()];
+    for (index, reference) in storage.references.iter().enumerate() {
+        if !reference.kind.is_specialization() {
+            continue;
+        }
+        if let Some(ResolutionStatus::Resolved(target)) = outcomes.get(index) {
+            generals
+                .get_mut(reference.source.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .push(*target);
+        }
+    }
+    for relationship in implied_so_far {
+        if relationship.kind.is_specialization() {
+            generals
+                .get_mut(relationship.source.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .push(relationship.target);
+        }
+    }
+    // Per anchor, once: every declaration that already reaches it (reverse traversal) and every
+    // declaration it reaches, so each occupant is answered in constant time.
+    let count = storage.declarations.len();
+    let mut specifics: Vec<Vec<DeclarationId>> = vec![Vec::new(); count];
+    for (index, targets) in generals.iter().enumerate() {
+        let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        for target in targets {
+            specifics
+                .get_mut(target.index())
+                .ok_or(ResolutionError::InvalidStorage)?
+                .push(source);
+        }
+    }
+    let closure = |start: DeclarationId, edges: &[Vec<DeclarationId>]| {
+        let mut seen = vec![false; count];
+        let mut pending = vec![start];
+        while let Some(current) = pending.pop() {
+            if let Some(slot) = seen.get_mut(current.index()) {
+                if !*slot {
+                    *slot = true;
+                    if let Some(next) = edges.get(current.index()) {
+                        pending.extend(next.iter().copied());
+                    }
+                }
+            }
+        }
+        seen
+    };
+    let mut anchor_reach = std::collections::BTreeMap::new();
+    for role in LibrarySpecializationRole::ALL {
+        if let LibrarySpecializationAnchor::Resolved(anchor) = anchors.anchor(role) {
+            anchor_reach
+                .entry(*anchor)
+                .or_insert_with(|| (closure(*anchor, &specifics), closure(*anchor, &generals)));
+        }
+    }
     let mut implied = Vec::new();
     for occupant in occupants.occupants {
         let LibrarySpecializationAnchor::Resolved(anchor) = anchors.anchor(occupant.role) else {
             continue;
         };
-        if occupant.source != *anchor {
-            implied.push(ImpliedRelationship {
-                kind: ReferenceKind::Subsetting,
-                source: occupant.source,
-                target: *anchor,
-            });
+        let Some((reaching, reached)) = anchor_reach.get(anchor) else {
+            continue;
+        };
+        if reaching[occupant.source.index()] || reached[occupant.source.index()] {
+            continue;
         }
+        implied.push(ImpliedRelationship {
+            kind: ReferenceKind::Subsetting,
+            source: occupant.source,
+            target: *anchor,
+        });
     }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
     Ok(implied)
 }

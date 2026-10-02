@@ -2470,6 +2470,10 @@ impl<D> SemanticModel<D> {
                 | SpecializationCheckKind::StateUsageSubstate
                 | SpecializationCheckKind::TransitionUsageAction
                 | SpecializationCheckKind::TransitionUsageState
+                | SpecializationCheckKind::FeatureSuboccurrence
+                | SpecializationCheckKind::FeaturePortion
+                | SpecializationCheckKind::FeatureSubobject
+                | SpecializationCheckKind::OccurrenceUsageSuboccurrence
         ) {
             return self.resolved_outcome(self.library_role_specialization_check(kind));
         }
@@ -2526,9 +2530,7 @@ impl<D> SemanticModel<D> {
             SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
             SpecializationCheckKind::FeaturePortion
             | SpecializationCheckKind::FeatureSubobject
-            | SpecializationCheckKind::FeatureSuboccurrence => {
-                SpecializationCheckPrerequisite::FeatureModifiersOwnerTypingAndLibraryAnchor
-            }
+            | SpecializationCheckKind::FeatureSuboccurrence => unreachable!("handled above"),
             SpecializationCheckKind::FeatureValuation => unreachable!("handled above"),
             SpecializationCheckKind::MetadataFeatureSemantic => unreachable!("handled above"),
             SpecializationCheckKind::ConnectorBinaryObject
@@ -2576,9 +2578,7 @@ impl<D> SemanticModel<D> {
             SpecializationCheckKind::OccurrenceDefinitionMultiplicity => {
                 SpecializationCheckPrerequisite::IndividualMultiplicityAndLibraryAnchor
             }
-            SpecializationCheckKind::OccurrenceUsageSuboccurrence => {
-                SpecializationCheckPrerequisite::OccurrenceOwnerTypingAndLibraryAnchor
-            }
+            SpecializationCheckKind::OccurrenceUsageSuboccurrence => unreachable!("handled above"),
         };
         self.resolved_outcome(SpecializationCheckOutcome::Unsupported { prerequisite })
     }
@@ -2601,6 +2601,17 @@ impl<D> SemanticModel<D> {
                 kind,
                 SpecializationCheckKind::TransitionUsageAction
                     | SpecializationCheckKind::TransitionUsageState
+            )
+        {
+            return SpecializationCheckOutcome::Unresolved;
+        }
+        if occupants.features_unsettled
+            && matches!(
+                kind,
+                SpecializationCheckKind::FeatureSuboccurrence
+                    | SpecializationCheckKind::FeaturePortion
+                    | SpecializationCheckKind::FeatureSubobject
+                    | SpecializationCheckKind::OccurrenceUsageSuboccurrence
             )
         {
             return SpecializationCheckOutcome::Unresolved;

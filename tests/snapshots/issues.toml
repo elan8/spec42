@@ -67,18 +67,6 @@ owner = "spec42-libraries"
 summary = "checkJoinNodeSpecialization (clause 8.3.17.11) carries the OCL anchor Actions::Action::join, which the standard library does not publish; the constraint's own normative prose, the library (Actions::Action::joins), and the Pilot ImplicitGeneralizationMap all use Actions::Action::joins. Applying that correction needs an official OMG issue for library_anchor_corrections (specifications/README.md), and none is recorded yet."
 
 [[issue]]
-id = "lowering-gap-feature-category-metaclass-predicates"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "The canonical owned-typing relation publishes direct targets but not the KerML Class/Structure metaclass-subtyping facts, nor the derived Feature.type target needed for the owner-feature disjuncts, required by FeatureOccurrence, FeaturePortion, FeatureSubobject, and FeatureSuboccurrence specialization predicates."
-
-[[issue]]
-id = "lowering-gap-occurrence-usage-suboccurrence-category-facts"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "OccurrenceUsage lowering publishes composite ownership and direct typings, but not the KerML Class category fact or a derived owner-Feature typed-by-Class fact required by the complete checkOccurrenceUsageSuboccurrenceSpecialization predicate."
-
-[[issue]]
 id = "normative-specification-gap-include-use-case-specialization-body"
 kind = "normative_specification_gap"
 owner = "omg-specification"

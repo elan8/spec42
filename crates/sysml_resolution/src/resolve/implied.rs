@@ -1119,13 +1119,14 @@ pub(crate) fn synthesize_implied_relationships(
         resolution,
         &anchors.roles,
     )?);
-    implied.extend(
+    let role_specializations =
         crate::resolve::role_specializations::synthesize_library_role_specializations(
             storage,
             &resolution.outcomes,
+            &implied,
             &anchors.specialization_roles,
-        )?,
-    );
+        )?;
+    implied.extend(role_specializations);
     implied.extend(
         crate::resolve::role_redefinitions::synthesize_assignment_referent_redefinitions(
             storage, resolution,

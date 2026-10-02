@@ -124,11 +124,14 @@ package GeneralSubsetting {
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (path (named (kind package) (name "GeneralSubsetting")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 4))))) (target (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::bareModule"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (path (named (kind package) (name "GeneralSubsetting")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 4))))) (kind viewExpose) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::Chassis"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::Chassis::frontWheel"))) (target (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::Chassis"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::Chassis::frontWheel"))) (target (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::Chassis::frontWheel"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::Chassis::spareWheel"))) (target (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::Chassis"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::Chassis::spareWheel"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::Chassis::spareWheel"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::RacingChassis"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::RacingChassis::frontWheel"))) (target (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::RacingChassis"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::RacingChassis::frontWheel"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::RacingChassis::frontWheel"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::RoadWheel"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::Wheel"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
@@ -161,7 +164,9 @@ package GeneralSubsetting {
       (effective-type (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::RoadWheel")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::RoadWheel")) (scopes any))
@@ -171,8 +176,10 @@ package GeneralSubsetting {
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -184,7 +191,9 @@ package GeneralSubsetting {
       (effective-type (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::RoadWheel")) (source inherited) (from (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::Chassis::frontWheel"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::Chassis::frontWheel")) (scopes any feature))
@@ -195,8 +204,10 @@ package GeneralSubsetting {
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -214,7 +225,9 @@ package GeneralSubsetting {
       (effective-type (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::RoadWheel")) (source inherited) (from (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::Chassis::frontWheel"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting::Chassis::frontWheel")) (scopes any feature))
@@ -225,8 +238,10 @@ package GeneralSubsetting {
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -380,6 +395,14 @@ package GeneralSubsetting {
     {
       "uri": "memory://snapshot/diagram_general_authored_subsetting.md",
       "sourceDomain": "workspace"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/objects.md",
+      "sourceDomain": "standard-library"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/occurrences.md",
+      "sourceDomain": "standard-library"
     },
     {
       "uri": "memory://snapshot/sysml.library/parts.md",
@@ -563,10 +586,20 @@ package GeneralSubsetting {
     {
       "document": 1,
       "kind": "qualified-name",
+      "qualifiedName": "Objects::Object::subobjects"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
+    },
+    {
+      "document": 3,
+      "kind": "qualified-name",
       "qualifiedName": "Parts::Part"
     },
     {
-      "document": 1,
+      "document": 3,
       "kind": "qualified-name",
       "qualifiedName": "Parts::parts"
     },
@@ -597,6 +630,12 @@ package GeneralSubsetting {
     {
       "kind": "relationship",
       "ordinal": 5,
+      "relationshipKind": "subsetting",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 6,
       "relationshipKind": "typeFeaturing",
       "source": 1
     },
@@ -620,37 +659,49 @@ package GeneralSubsetting {
     },
     {
       "kind": "relationship",
-      "ordinal": 6,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
       "ordinal": 7,
       "relationshipKind": "subsetting",
       "source": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
       "ordinal": 8,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "subsetting",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
+      "relationshipKind": "subsetting",
       "source": 2
     },
     {
       "kind": "relationship",
       "ordinal": 15,
+      "relationshipKind": "subsetting",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "subsetting",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "subsetting",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 10,
+      "relationshipKind": "typeFeaturing",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
       "relationshipKind": "typeFeaturing",
       "source": 2
     },
@@ -674,13 +725,13 @@ package GeneralSubsetting {
     },
     {
       "kind": "relationship",
-      "ordinal": 11,
+      "ordinal": 13,
       "relationshipKind": "specializes",
       "source": 3
     },
     {
       "kind": "relationship",
-      "ordinal": 12,
+      "ordinal": 14,
       "relationshipKind": "specializes",
       "source": 3
     },
@@ -692,19 +743,25 @@ package GeneralSubsetting {
     },
     {
       "kind": "relationship",
-      "ordinal": 16,
+      "ordinal": 19,
       "relationshipKind": "redefinition",
       "source": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
+      "ordinal": 20,
       "relationshipKind": "subsetting",
       "source": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
+      "ordinal": 21,
+      "relationshipKind": "subsetting",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 22,
       "relationshipKind": "typeFeaturing",
       "source": 4
     },
@@ -716,13 +773,13 @@ package GeneralSubsetting {
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
+      "ordinal": 11,
       "relationshipKind": "specializes",
       "source": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 10,
+      "ordinal": 12,
       "relationshipKind": "specializes",
       "source": 5
     },
@@ -756,7 +813,7 @@ package GeneralSubsetting {
         "navigation": 4,
         "origin": 6,
         "provenance": "authored",
-        "reference": 11,
+        "reference": 13,
         "source": 5,
         "target": 6
       },
@@ -765,7 +822,7 @@ package GeneralSubsetting {
         "navigation": 5,
         "origin": 6,
         "provenance": "authored",
-        "reference": 16,
+        "reference": 19,
         "source": 6,
         "target": 8
       },
@@ -774,7 +831,7 @@ package GeneralSubsetting {
         "navigation": 6,
         "origin": 7,
         "provenance": "authored",
-        "reference": 12,
+        "reference": 14,
         "source": 5,
         "target": 7
       },
@@ -783,7 +840,7 @@ package GeneralSubsetting {
         "navigation": 7,
         "origin": 7,
         "provenance": "authored",
-        "reference": 18,
+        "reference": 21,
         "source": 7,
         "target": 6
       },
@@ -792,7 +849,7 @@ package GeneralSubsetting {
         "navigation": 2,
         "origin": 8,
         "provenance": "authored",
-        "reference": 34,
+        "reference": 40,
         "source": 8,
         "target": 4
       },
@@ -801,7 +858,7 @@ package GeneralSubsetting {
         "navigation": 9,
         "origin": 1,
         "provenance": "authored",
-        "reference": 27,
+        "reference": 32,
         "source": 1,
         "target": 5
       },
@@ -810,7 +867,7 @@ package GeneralSubsetting {
         "navigation": 6,
         "origin": 3,
         "provenance": "implied",
-        "reference": 25,
+        "reference": 30,
         "source": 1,
         "target": 3
       },
@@ -819,7 +876,7 @@ package GeneralSubsetting {
         "navigation": 7,
         "origin": 3,
         "provenance": "authored",
-        "reference": 20,
+        "reference": 22,
         "source": 3,
         "target": 6
       },
@@ -828,7 +885,7 @@ package GeneralSubsetting {
         "navigation": 10,
         "origin": 2,
         "provenance": "authored",
-        "reference": 26,
+        "reference": 31,
         "source": 1,
         "target": 2
       },
@@ -837,7 +894,7 @@ package GeneralSubsetting {
         "navigation": 11,
         "origin": 2,
         "provenance": "authored",
-        "reference": 30,
+        "reference": 35,
         "source": 2,
         "target": 6
       }
@@ -1022,10 +1079,10 @@ package GeneralSubsetting {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 37,
+        "reference": 43,
         "source": 4,
         "target": {
-          "reference": 9,
+          "reference": 11,
           "status": "resolved"
         }
       },
@@ -1033,10 +1090,10 @@ package GeneralSubsetting {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 38,
+        "reference": 44,
         "source": 0,
         "target": {
-          "reference": 10,
+          "reference": 12,
           "status": "resolved"
         }
       },
@@ -1044,10 +1101,10 @@ package GeneralSubsetting {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 13,
+        "reference": 15,
         "source": 5,
         "target": {
-          "reference": 9,
+          "reference": 11,
           "status": "resolved"
         }
       },
@@ -1055,7 +1112,7 @@ package GeneralSubsetting {
         "kind": "typing",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 17,
+        "reference": 20,
         "source": 6,
         "target": {
           "node": 8,
@@ -1066,10 +1123,21 @@ package GeneralSubsetting {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 14,
+        "reference": 16,
         "source": 6,
         "target": {
-          "reference": 10,
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 17,
+        "source": 6,
+        "target": {
+          "reference": 12,
           "status": "resolved"
         }
       },
@@ -1077,7 +1145,7 @@ package GeneralSubsetting {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 15,
+        "reference": 18,
         "source": 6,
         "target": {
           "node": 5,
@@ -1088,7 +1156,7 @@ package GeneralSubsetting {
         "kind": "subsetting",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 19,
+        "reference": 22,
         "source": 7,
         "target": {
           "node": 6,
@@ -1099,7 +1167,7 @@ package GeneralSubsetting {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 20,
+        "reference": 23,
         "source": 7,
         "target": {
           "reference": 10,
@@ -1107,10 +1175,21 @@ package GeneralSubsetting {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 24,
+        "source": 7,
+        "target": {
+          "reference": 12,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 23,
+        "reference": 28,
         "source": 7,
         "target": {
           "node": 5,
@@ -1121,7 +1200,7 @@ package GeneralSubsetting {
         "kind": "specializes",
         "navigation": 2,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 41,
         "source": 8,
         "target": {
           "node": 4,
@@ -1132,10 +1211,10 @@ package GeneralSubsetting {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 36,
+        "reference": 42,
         "source": 8,
         "target": {
-          "reference": 9,
+          "reference": 11,
           "status": "resolved"
         }
       },
@@ -1143,7 +1222,7 @@ package GeneralSubsetting {
         "kind": "specializes",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 33,
         "source": 1,
         "target": {
           "node": 5,
@@ -1154,10 +1233,10 @@ package GeneralSubsetting {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 29,
+        "reference": 34,
         "source": 1,
         "target": {
-          "reference": 9,
+          "reference": 11,
           "status": "resolved"
         }
       },
@@ -1165,7 +1244,7 @@ package GeneralSubsetting {
         "kind": "subsetting",
         "navigation": 7,
         "provenance": "authored",
-        "reference": 21,
+        "reference": 25,
         "source": 3,
         "target": {
           "node": 6,
@@ -1176,7 +1255,7 @@ package GeneralSubsetting {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 22,
+        "reference": 26,
         "source": 3,
         "target": {
           "reference": 10,
@@ -1184,10 +1263,21 @@ package GeneralSubsetting {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 27,
+        "source": 3,
+        "target": {
+          "reference": 12,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 24,
+        "reference": 29,
         "source": 3,
         "target": {
           "node": 5,
@@ -1198,7 +1288,7 @@ package GeneralSubsetting {
         "kind": "redefinition",
         "navigation": 11,
         "provenance": "authored",
-        "reference": 31,
+        "reference": 36,
         "source": 2,
         "target": {
           "node": 6,
@@ -1209,7 +1299,7 @@ package GeneralSubsetting {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 32,
+        "reference": 37,
         "source": 2,
         "target": {
           "reference": 10,
@@ -1217,10 +1307,21 @@ package GeneralSubsetting {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 38,
+        "source": 2,
+        "target": {
+          "reference": 12,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 33,
+        "reference": 39,
         "source": 2,
         "target": {
           "node": 1,

@@ -56,6 +56,21 @@ pub(crate) fn variant_member_flags(
     Ok(variant_members.into_boxed_slice())
 }
 
+/// The effective KerML `Feature::isComposite`: a SysML Usage's derived value, and a KerML
+/// Feature's authored `composite`.
+pub(crate) fn feature_is_composite(
+    storage: &SemanticModelStorage,
+    variant_members: &[bool],
+    feature: DeclarationId,
+) -> bool {
+    match usage_is_composite(storage, variant_members, feature) {
+        Some(composite) => composite,
+        None => storage
+            .declaration_facts(feature)
+            .is_some_and(|facts| facts.modifiers.composite),
+    }
+}
+
 /// The effective SysML `Usage::isComposite` (`not isReference`); `None` when `usage` is not a
 /// Usage. Synthesis that runs before the type index exists reads the same derivation.
 pub(crate) fn usage_is_composite(
