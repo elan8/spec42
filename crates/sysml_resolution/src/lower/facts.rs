@@ -1307,3 +1307,15 @@ pub(crate) struct InstantiationArgument {
     /// implied by its position instead.
     pub(crate) named: bool,
 }
+
+/// SysML `OccurrenceDefinition::isIndividual`: an `individual def`, or an occurrence-family
+/// definition carrying the `individual` prefix.
+pub(crate) fn is_individual_occurrence_definition(
+    kind: crate::model::DeclarationKind,
+    facts: &DeclarationFacts,
+) -> bool {
+    kind == crate::model::DeclarationKind::IndividualDefinition
+        || (facts.modifiers.individual
+            && crate::model::element_kind::element_kind(kind)
+                .conforms_to(sysml_contract::ElementKind::OccurrenceDefinition))
+}

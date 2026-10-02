@@ -157,7 +157,6 @@ pub enum SpecializationCheckPrerequisite {
     TransitionFeatureRolesAndLibraryAnchors,
     UseCaseOwnerAndLibraryAnchor,
     UsageVariationOwner,
-    IndividualMultiplicityAndLibraryAnchor,
     OccurrenceOwnerTypingAndLibraryAnchor,
 }
 

@@ -1861,7 +1861,9 @@ impl SemanticModelBuilder {
         self.synthesize_multiplicities(document)
     }
 
-    /// Mints the `MultiplicityRange` every authored `[m..n]` denotes (KerML 8.3.4.11).
+    /// Mints the anonymous Multiplicities the source implies: the `MultiplicityRange` every
+    /// authored `[m..n]` denotes (KerML 8.3.4.11), and the empty Multiplicity of an `individual`
+    /// definition.
     ///
     /// The range is an owned member of the declaration whose multiplicity it is, under an
     /// `OwningMembership`, so `Type::multiplicity` (`deriveTypeMultiplicity`) and the featuring
@@ -1907,6 +1909,42 @@ impl SemanticModelBuilder {
             for bound in bounds.into_iter().flatten() {
                 self.push_owned_expression(document, range, bound)?;
             }
+        }
+        // SysML 8.3.9.3: an `individual` OccurrenceDefinition owns an empty Multiplicity (the
+        // Pilot grammar's `EmptyMultiplicityMember` after the `individual` prefix), which
+        // `checkOccurrenceDefinitionMultiplicitySpecialization` requires to specialize
+        // `Base::zeroOrOne`.
+        let individuals = self
+            .declarations
+            .iter()
+            .zip(self.declaration_facts.iter())
+            .enumerate()
+            .filter(|(_, (declaration, facts))| {
+                declaration.document == document
+                    && crate::lower::facts::is_individual_occurrence_definition(
+                        declaration.kind,
+                        facts,
+                    )
+            })
+            .map(|(index, (declaration, _))| {
+                DeclarationId::from_index(index).map(|id| (id, declaration.span))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        for (owner, span) in individuals {
+            let multiplicity = self.push_typed_declaration(
+                document,
+                Some(owner),
+                DeclarationKind::KermlMultiplicity,
+                None,
+                span,
+                DeclarationFacts::none(),
+            )?;
+            self.push_membership(
+                multiplicity,
+                MembershipKind::Owning,
+                Visibility::Default,
+                span,
+            )?;
         }
         Ok(())
     }

@@ -64,10 +64,13 @@ pub(crate) enum LibrarySpecializationRole {
     /// OccurrenceUsage whose owning type is a Class, an OccurrenceUsage, or a Feature typed by a
     /// Class.
     OccurrenceUsageSuboccurrence,
+    /// SysML 8.3.9.3 `checkOccurrenceDefinitionMultiplicitySpecialization`: the `multiplicity` of
+    /// an `individual` OccurrenceDefinition.
+    IndividualMultiplicity,
 }
 
 impl LibrarySpecializationRole {
-    pub(crate) const ALL: [Self; 8] = [
+    pub(crate) const ALL: [Self; 9] = [
         Self::ExclusiveState,
         Self::Substate,
         Self::StateTransition,
@@ -76,6 +79,7 @@ impl LibrarySpecializationRole {
         Self::FeaturePortion,
         Self::FeatureSubobject,
         Self::OccurrenceUsageSuboccurrence,
+        Self::IndividualMultiplicity,
     ];
 
     /// The structural path of the library feature this role's occupant specializes.
@@ -90,6 +94,7 @@ impl LibrarySpecializationRole {
             }
             Self::FeaturePortion => &["Occurrences", "Occurrence", "portions"],
             Self::FeatureSubobject => &["Objects", "Object", "subobjects"],
+            Self::IndividualMultiplicity => &["Base", "zeroOrOne"],
         }
     }
 
@@ -105,6 +110,9 @@ impl LibrarySpecializationRole {
             Self::FeatureSubobject => SpecializationCheckKind::FeatureSubobject,
             Self::OccurrenceUsageSuboccurrence => {
                 SpecializationCheckKind::OccurrenceUsageSuboccurrence
+            }
+            Self::IndividualMultiplicity => {
+                SpecializationCheckKind::OccurrenceDefinitionMultiplicity
             }
         }
     }
@@ -247,6 +255,21 @@ pub(crate) fn library_specialization_role_occupants(
     for (index, declaration) in storage.declarations.iter().enumerate() {
         let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
         let kind = element_kind(declaration.kind);
+        if crate::lower::facts::is_individual_occurrence_definition(
+            declaration.kind,
+            storage
+                .declaration_facts(source)
+                .ok_or(ResolutionError::InvalidStorage)?,
+        ) {
+            // `isIndividual implies multiplicity <> null and multiplicity.specializesFromLibrary(
+            // 'Base::zeroOrOne')`; lowering mints the empty multiplicity, so it is never null.
+            if let Some(multiplicity) = storage.type_multiplicity(source) {
+                result.occupants.push(LibrarySpecializationRoleOccupant {
+                    source: multiplicity,
+                    role: LibrarySpecializationRole::IndividualMultiplicity,
+                });
+            }
+        }
         if kind.conforms_to(ElementKind::Feature) && feature_members[index] {
             feature_category_occupants(
                 storage,

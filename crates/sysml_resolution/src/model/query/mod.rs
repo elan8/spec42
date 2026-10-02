@@ -2482,6 +2482,7 @@ impl<D> SemanticModel<D> {
                 | SpecializationCheckKind::FeaturePortion
                 | SpecializationCheckKind::FeatureSubobject
                 | SpecializationCheckKind::OccurrenceUsageSuboccurrence
+                | SpecializationCheckKind::OccurrenceDefinitionMultiplicity
         ) {
             return self.resolved_outcome(self.library_role_specialization_check(kind));
         }
@@ -2583,10 +2584,10 @@ impl<D> SemanticModel<D> {
             }
             SpecializationCheckKind::UsageVariationDefinition
             | SpecializationCheckKind::UsageVariationUsage => unreachable!("handled above"),
-            SpecializationCheckKind::OccurrenceDefinitionMultiplicity => {
-                SpecializationCheckPrerequisite::IndividualMultiplicityAndLibraryAnchor
+            SpecializationCheckKind::OccurrenceDefinitionMultiplicity
+            | SpecializationCheckKind::OccurrenceUsageSuboccurrence => {
+                unreachable!("handled above")
             }
-            SpecializationCheckKind::OccurrenceUsageSuboccurrence => unreachable!("handled above"),
         };
         self.resolved_outcome(SpecializationCheckOutcome::Unsupported { prerequisite })
     }

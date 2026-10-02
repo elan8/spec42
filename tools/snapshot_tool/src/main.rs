@@ -1325,9 +1325,6 @@ fn parse_specialization_check_prerequisite(
             Ok(SpecializationCheckPrerequisite::UseCaseOwnerAndLibraryAnchor)
         }
         "usage_variation_owner" => Ok(SpecializationCheckPrerequisite::UsageVariationOwner),
-        "individual_multiplicity_and_library_anchor" => {
-            Ok(SpecializationCheckPrerequisite::IndividualMultiplicityAndLibraryAnchor)
-        }
         "occurrence_owner_typing_and_library_anchor" => {
             Ok(SpecializationCheckPrerequisite::OccurrenceOwnerTypingAndLibraryAnchor)
         }

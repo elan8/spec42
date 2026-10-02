@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-specialization-individual-multiplicity-library-anchor"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "OccurrenceDefinition individual modifier, multiplicity element, and zeroOrOne library anchor are not jointly published."
-
-[[issue]]
 id = "lowering-gap-type-feature-membership-identity"
 kind = "lowering_gap"
 owner = "spec42-semantic"

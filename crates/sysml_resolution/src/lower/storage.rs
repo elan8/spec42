@@ -129,8 +129,9 @@ impl SemanticModelStorage {
     }
 
     /// `Type::multiplicity` (KerML 8.3.3.1.10, `deriveTypeMultiplicity`): the first
-    /// `Multiplicity` `owner` owns, in `ownedMember` order. A header `[m..n]` precedes every body
-    /// member, so source position is that order.
+    /// `Multiplicity` `owner` owns, in `ownedMember` order. A header `[m..n]` and the empty
+    /// multiplicity of an `individual` definition precede every body member, so source position
+    /// is that order.
     pub(crate) fn type_multiplicity(&self, owner: DeclarationId) -> Option<DeclarationId> {
         self.declarations
             .iter()
