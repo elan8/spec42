@@ -97,12 +97,6 @@ owner = "spec42-semantic"
 summary = "crosses targets resolve and validateCrossSubsetting{CrossingFeature,CrossedFeature} are checked, but Feature::crossFeature (the second chaining feature of an end feature's owned CrossSubsetting) is not derived, so validateFeatureCrossFeatureType/Specialization and checkFeatureOwnedCrossFeatureTypeFeaturing have no operand; those fixtures also cross from non-end features, which the crossing-feature rule rejects, and must move to end features when the derivation lands. A FeatureChainExpression whose target is not featured by its argument's result settles as unresolved_reference in resolution rather than as a typed targetFeature for validateFeatureChainExpressionConformance."
 
 [[issue]]
-id = "lowering-metadata-feature-facts"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "validateMetadataFeatureAnnotatedElement compares each annotated element's abstract-syntax metaclass with the types of the metaclass's annotatedElement redefinitions (KerML::Classifier, SysML::PartUsage, ...), but no canonical mapping relates a published ElementKind to its reflective KerML/SysML library metaclass declaration, so metadata_annotated_element_incompatible cannot be decided"
-
-[[issue]]
 id = "lowering-result-expression-memberships"
 kind = "lowering_gap"
 owner = "spec42-semantic"

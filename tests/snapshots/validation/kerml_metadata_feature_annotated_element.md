@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.12.3:validateMetadataFeatureAnnotatedElement
-blocked_by=lowering-metadata-feature-facts
 libraries=standard
 type=file
 ~~~
@@ -49,6 +48,12 @@ package Metadata {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_metadata_feature_annotated_element.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "metadata_annotated_element_incompatible")
+        (source "semantic")
+        (range (start 12 4) (end 12 54))
+      )
     )
   )
 )

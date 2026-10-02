@@ -43,6 +43,12 @@ package Model {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_metadata_feature_semantic_specialization.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "metadata_annotated_element_incompatible")
+        (source "semantic")
+        (range (start 9 2) (end 9 31))
+      )
     )
   )
 )

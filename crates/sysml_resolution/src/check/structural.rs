@@ -241,6 +241,133 @@ impl<D> SemanticModel<D> {
         Ok(())
     }
 
+    /// KerML 8.3.4.12.3 `validateMetadataFeatureAnnotatedElement`, as the Pilot's
+    /// `checkMetadataFeature` decides it: the metadata feature's features that specialize
+    /// `Metaobjects::Metaobject::annotatedElement` (its own and its metaclass's, an inherited one
+    /// hidden by a redefinition, and only the non-abstract ones when any is) must include one
+    /// whose every type the reflective library metaclass of each annotated element specializes.
+    ///
+    /// Each input must be settled: an annotated element with no reflective metaclass in the
+    /// admitted library, an unresolved `about` target, or a missing `annotatedElement` anchor
+    /// leaves the question unanswered rather than reported.
+    fn collect_metadata_annotated_elements(
+        &self,
+        id: DeclarationId,
+        kind: DeclarationKind,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        use crate::index::types::ScopeBits;
+        use crate::resolve::implied::LibrarySpecializationAnchor;
+        if kind != DeclarationKind::MetadataUsage {
+            return Ok(());
+        }
+        let anchors = &self
+            .resolution
+            .library_specialization_anchors
+            .reflective_metaclasses;
+        let LibrarySpecializationAnchor::Resolved(annotated_element) = anchors.annotated_element
+        else {
+            return Ok(());
+        };
+        let specialization = self.types.specialization();
+        let specializes = |sub: DeclarationId, general: DeclarationId| {
+            sub == general || specialization.reaches(sub, general, ScopeBits::AnySpecialization)
+        };
+        // `type.feature`: the features owned by the metadata feature and by every type it
+        // specializes, less those another of them redefines.
+        let mut owners = vec![id];
+        owners.extend(
+            specialization
+                .entries(id)
+                .iter()
+                .filter(|(_, scopes)| scopes & ScopeBits::AnySpecialization.bit() != 0)
+                .map(|(ancestor, _)| *ancestor),
+        );
+        let candidates = owners
+            .iter()
+            .flat_map(|owner| self.child_declarations(*owner).iter().copied())
+            .filter(|feature| {
+                self.kind_of(*feature).is_some_and(is_feature_declaration)
+                    && self.memberships.get(*feature).is_some_and(|membership| {
+                        membership.kind == crate::model::MembershipKind::Feature
+                    })
+                    && specializes(*feature, annotated_element)
+            })
+            .collect::<Vec<_>>();
+        let visible = candidates
+            .iter()
+            .copied()
+            .filter(|feature| {
+                !candidates.iter().any(|other| {
+                    other != feature
+                        && specialization.reaches(*other, *feature, ScopeBits::Redefinition)
+                })
+            })
+            .collect::<Vec<_>>();
+        let is_abstract = |feature: DeclarationId| {
+            self.storage
+                .declaration_facts(feature)
+                .is_some_and(|facts| facts.modifiers.is_abstract)
+        };
+        let features = if visible.iter().any(|feature| !is_abstract(*feature)) {
+            visible
+                .into_iter()
+                .filter(|feature| !is_abstract(*feature))
+                .collect::<Vec<_>>()
+        } else {
+            visible
+        };
+        if features.is_empty() {
+            return Ok(());
+        }
+        // `annotatedElement`: each resolved `about` target, or the owner without an `about`.
+        let about = self.authored_references(id, &[ReferenceKind::MetadataAnnotationAbout]);
+        let mut annotated = Vec::new();
+        if about.is_empty() {
+            let Some(record) = self
+                .storage
+                .metadata_annotations
+                .iter()
+                .find(|record| record.annotation == id)
+            else {
+                return Ok(());
+            };
+            annotated.push(record.annotated_element);
+        } else {
+            for (reference_id, _) in about {
+                match self.resolution.outcome(reference_id) {
+                    Some(ResolutionStatus::Resolved(target)) => annotated.push(target),
+                    _ => continue,
+                }
+            }
+        }
+        for element in annotated {
+            let Some(element_kind) = self.kind_of(element) else {
+                continue;
+            };
+            let LibrarySpecializationAnchor::Resolved(metaclass) =
+                *anchors.metaclass(crate::model::element_kind::element_kind(element_kind))
+            else {
+                continue;
+            };
+            let admitted = features.iter().any(|feature| {
+                self.types
+                    .effective_types(*feature)
+                    .iter()
+                    .all(|(ty, _)| specializes(metaclass, *ty))
+            });
+            if !admitted {
+                diagnostics.push(self.declaration_diagnostic(
+                    id,
+                    DiagnosticCode::MetadataAnnotatedElementIncompatible,
+                    DiagnosticSeverity::Warning,
+                )?);
+                break;
+            }
+        }
+        Ok(())
+    }
+
     /// SysML 8.3.12.5 `validatePortDefinitionOwnedUsagesNotComposite` and 8.3.12.6
     /// `validatePortUsageNestedUsagesNotComposite`: every non-port usage a port definition owns
     /// or a port usage nests is referential.
@@ -400,6 +527,7 @@ impl<D> SemanticModel<D> {
                 )?);
             }
             self.collect_metadata_body_features(id, declaration.kind, diagnostics)?;
+            self.collect_metadata_annotated_elements(id, declaration.kind, diagnostics)?;
             self.collect_port_member_composition(id, declaration.kind, diagnostics)?;
             self.collect_parallel_state_subactions(id, declaration.kind, facts, diagnostics)?;
             self.collect_variation_owned_features(id, diagnostics)?;

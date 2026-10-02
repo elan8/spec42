@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Metadata annotated-element restrictions are checked.** A metadata feature whose metaclass
+  restricts `annotatedElement` (for example `SemanticMetadata`, which annotates only types) now
+  reports `metadata_annotated_element_incompatible` when it annotates an element of another
+  metaclass, comparing against the reflective `KerML`/`SysML` library metaclasses.
+
 - **Feature chains resolve through imports and check featured-within conformance.** Each `.` hop
   of a feature chain now also sees the previous feature's public imports, as a qualified name
   does, and a hop that is not featured within the previous chaining feature is reported as

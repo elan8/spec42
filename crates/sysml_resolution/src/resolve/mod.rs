@@ -9,6 +9,7 @@ pub(crate) mod library_seed;
 pub(crate) mod names;
 pub(crate) mod objective_redefinitions;
 pub(crate) mod parameter_positions;
+pub(crate) mod reflective_metaclasses;
 pub(crate) mod result_parameters;
 pub(crate) mod results;
 pub(crate) mod role_redefinitions;

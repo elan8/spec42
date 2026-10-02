@@ -767,6 +767,9 @@ pub(crate) struct LibrarySpecializationAnchorFacts {
     /// barrier.
     pub(crate) specialization_roles:
         crate::resolve::role_specializations::LibrarySpecializationRoleAnchors,
+    /// The reflective library metaclass of every element kind, settled at the same barrier.
+    pub(crate) reflective_metaclasses:
+        crate::resolve::reflective_metaclasses::ReflectiveMetaclassAnchors,
 }
 
 impl LibrarySpecializationAnchorFacts {
@@ -2493,6 +2496,8 @@ pub(crate) fn library_specialization_anchors(
         roles: LibraryRoleAnchors::resolve(storage),
         specialization_roles:
             crate::resolve::role_specializations::LibrarySpecializationRoleAnchors::resolve(storage),
+        reflective_metaclasses:
+            crate::resolve::reflective_metaclasses::ReflectiveMetaclassAnchors::resolve(storage),
     }
 }
 

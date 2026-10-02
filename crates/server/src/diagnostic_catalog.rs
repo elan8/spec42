@@ -960,6 +960,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "metadata_annotated_element_incompatible",
+        severity: "warning",
+        meaning: "A metadata feature annotates an element whose abstract-syntax metaclass is not admitted by the types of its metaclass's `annotatedElement` features (KerML validateMetadataFeatureAnnotatedElement).",
+        typical_fix: "Annotate an element of an admitted metaclass, or widen the metaclass's `annotatedElement` redefinition.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "port_owned_usage_composite",
         severity: "warning",
         meaning: "A port definition owns a composite non-port usage (SysML validatePortDefinitionOwnedUsagesNotComposite).",

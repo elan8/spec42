@@ -454,6 +454,9 @@ semantic_diagnostic_codes! {
     /// A feature owned by a metadata feature does not redefine a feature of the metaclass.
     MetadataBodyFeatureInvalid => "metadata_body_feature_invalid",
         "A feature owned by a metadata feature must redefine a feature of its metaclass.";
+    /// KerML 8.3.4.12.3 `validateMetadataFeatureAnnotatedElement`.
+    MetadataAnnotatedElementIncompatible => "metadata_annotated_element_incompatible",
+        "The annotating metaclass does not admit an element of this metaclass.";
     /// A non-port usage owned by a port definition is composite.
     PortOwnedUsageComposite => "port_owned_usage_composite",
         "A usage owned by a port definition must not be composite unless it is a port.";
