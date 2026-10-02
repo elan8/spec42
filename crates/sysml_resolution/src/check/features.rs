@@ -251,8 +251,71 @@ impl<D> SemanticModel<D> {
                     None,
                 )?);
             }
+            // `validateFeatureChainingFeatureConformance`: each hop after the first is featured
+            // within the hop before it. Only a chain whose every hop settled is decided, and only
+            // a decided `false` is reported.
+            if let Some(path) = self.resolution.member_access_paths.get(&id) {
+                let hops = path
+                    .iter()
+                    .map(|hop| match hop {
+                        ResolutionStatus::Resolved(target) => Some(*target),
+                        _ => None,
+                    })
+                    .collect::<Option<Vec<_>>>();
+                if let Some(hops) = hops {
+                    if hops
+                        .windows(2)
+                        .any(|pair| self.is_featured_within(pair[1], pair[0]) == Some(false))
+                    {
+                        diagnostics.push(self.reference_diagnostic(
+                            reference,
+                            DiagnosticCode::FeatureChainingNotFeaturedWithinPrevious,
+                            DiagnosticSeverity::Warning,
+                            None,
+                        )?);
+                    }
+                }
+            }
         }
         Ok(())
+    }
+
+    /// KerML `Feature::isFeaturedWithin(type)` for a non-null `type`: every featuring type of
+    /// `feature` is one `type` is compatible with, or `feature` is variable and `type`
+    /// specializes its owning type. `None` when an input is not settled -- a featuring row that
+    /// still needs the owner's `snapshots` feature, an undecidable compatibility, or an
+    /// unresolved variability -- so the question stays unanswered rather than guessed.
+    fn is_featured_within(&self, feature: DeclarationId, ty: DeclarationId) -> Option<bool> {
+        use crate::index::connector_context::is_compatible;
+        use crate::index::types::ScopeBits;
+        use crate::index::types::UsageTimeVariationOutcome;
+        if self.types.featuring_requires_snapshots(feature) {
+            return None;
+        }
+        let mut featured = true;
+        for (featuring, _) in self.types.featuring_types(feature) {
+            if !is_compatible(&self.types, ty, *featuring)? {
+                featured = false;
+            }
+        }
+        if featured {
+            return Some(true);
+        }
+        match self.types.feature_is_variable(&self.storage, feature) {
+            Some(UsageTimeVariationOutcome::Resolved(false)) | None => Some(false),
+            Some(UsageTimeVariationOutcome::Resolved(true)) => {
+                let owner = self.storage.declaration(feature)?.owner?;
+                Some(
+                    ty == owner
+                        || self.types.specialization().reaches(
+                            ty,
+                            owner,
+                            ScopeBits::AnySpecialization,
+                        ),
+                )
+            }
+            Some(_) => None,
+        }
     }
 
     /// Whether `declaration` is an `OccurrenceDefinition` with `isIndividual = true`.

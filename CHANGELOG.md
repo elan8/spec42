@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Feature chains resolve through imports and check featured-within conformance.** Each `.` hop
+  of a feature chain now also sees the previous feature's public imports, as a qualified name
+  does, and a hop that is not featured within the previous chaining feature is reported as
+  `feature_chaining_not_featured_within_previous` (KerML validateFeatureChainingFeatureConformance).
+
 - **Non-integer literal multiplicity bounds are rejected.** A bound written from literals alone
   that is not an integer (`[1.5]`, `["a"]`, `[true]`) is published as a `NonIntegerLiteral`
   multiplicity bound and reported as `multiplicity_bound_invalid` (KerML 8.3.4.11.2).

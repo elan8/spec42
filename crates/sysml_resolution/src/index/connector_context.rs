@@ -207,7 +207,7 @@ fn all_featuring_types(types: &TypeIndex, feature: DeclarationId) -> Vec<Declara
 /// when its precondition could apply (both Features, neither specializing the other) the answer
 /// is `None` and the connector receives no context featuring type rather than a possibly
 /// different innermost one.
-fn is_compatible(
+pub(crate) fn is_compatible(
     types: &TypeIndex,
     subtype: DeclarationId,
     supertype: DeclarationId,

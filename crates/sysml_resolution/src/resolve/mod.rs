@@ -2412,7 +2412,8 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
 /// source declaration's owned scope and then walking its enclosing-namespace chain. This lets a
 /// constraint/calc expression reach its own parameters without changing the enclosing-scope result
 /// for sources that own no declarations. Each subsequent segment first uses the previous segment's
-/// directly owned members, then its effective-type members when no direct member shadows them.
+/// directly owned members, then its effective-type members when no direct member shadows them,
+/// then the members its public imports bring in.
 /// The latter reuses `inherited_names`, which by the time this runs has already been extended from
 /// canonical effective typing
 /// (`extend_inherited_names_with_effective_types`): `inherited_names.candidates(Some(usage), name)`
@@ -2589,13 +2590,23 @@ pub(crate) fn resolve_member_access_reference_with_path<R: ResolutionReferenceFa
         let candidate = scratch.candidates[0];
         scratch.next_candidates.clear();
         record_lookup(scratch.work)?;
+        // A hop names one of the previous hop's visible memberships, the same tiers a qualified
+        // name traverses: owned, then inherited (including effective-type members), then the
+        // namespace's public imports. Featured-within conformance is a separate rule over the
+        // settled hop (`feature_chaining_not_featured_within_previous`), not a lookup filter.
         let direct = indexes.direct_names.candidates(Some(candidate), *segment);
+        let inherited = indexes
+            .inherited_names
+            .map_or(&[][..], |names| names.candidates(Some(candidate), *segment));
         if !direct.is_empty() {
             scratch.next_candidates.extend_from_slice(direct);
-        } else if let Some(inherited) = indexes.inherited_names {
+        } else if !inherited.is_empty() {
+            scratch.next_candidates.extend_from_slice(inherited);
+        } else if let Some(imports) = indexes.exported_imports {
+            record_lookup(scratch.work)?;
             scratch
                 .next_candidates
-                .extend_from_slice(inherited.candidates(Some(candidate), *segment));
+                .extend_from_slice(imports.candidates(Some(candidate), *segment));
         }
         scratch.next_candidates.sort_unstable();
         scratch.next_candidates.dedup();

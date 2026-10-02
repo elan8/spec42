@@ -149,9 +149,3 @@ id = "lowering-gap-binding-connector-accept-receiver-endpoints"
 kind = "lowering_gap"
 owner = "spec42-semantic"
 summary = "checkAcceptActionUsageReceiverBindingConnector binds the AcceptActionUsage's second parameter (`receiver`) to the second parameter of its TriggerInvocationExpression payload argument. `accept when|at|after` now lowers its TriggerInvocationExpression element with its kind, but the accept action still owns no payload or receiver parameter (AcceptParameterPart's PayloadParameterMember / `via` NodeParameterMember), and the expression's second parameter is not owned: the grammar gives a TriggerExpression one ArgumentMember, and the Pilot's addReceiverBinding binds only an owned second parameter (TypeUtil.getOwnedParameterOf(target, 1)), so which Feature the OCL's invocation.parameter->at(2) (an inherited TriggerWhen/At/After::receiver) denotes as a binding end needs a normative decision before it can be lowered."
-
-[[issue]]
-id = "semantic-feature-chaining-featured-within"
-kind = "semantic_not_implemented"
-owner = "spec42-semantic"
-summary = "feature_chaining_not_featured_within_previous does not exist: the member-access resolver looks each `.` hop up only among the owned and inherited members of the previous hop's types, so a chaining feature not featured within the previous one is reported unresolved_reference instead of resolving; a settled violation needs a hop visible through the previous hop's imports, which that resolver does not consult"

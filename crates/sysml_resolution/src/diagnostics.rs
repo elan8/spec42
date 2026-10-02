@@ -575,6 +575,9 @@ semantic_diagnostic_codes! {
     /// KerML 8.3.3.3.4 `validateFeatureChainingFeaturesNotSelf`.
     FeatureChainingIncludesSelf => "feature_chaining_includes_self",
         "A feature cannot be one of its own chaining features.";
+    /// KerML 8.3.3.3.4 `validateFeatureChainingFeatureConformance`.
+    FeatureChainingNotFeaturedWithinPrevious => "feature_chaining_not_featured_within_previous",
+        "Each chaining feature after the first must be featured within the previous one.";
     /// A type owns exactly one `unions`, `intersects` or `differences` operand.
     ///
     /// KerML requires zero or at least two: a union, intersection or difference of one type is

@@ -603,6 +603,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "feature_chaining_not_featured_within_previous",
+        severity: "warning",
+        meaning: "A dotted feature chain names a chaining feature whose featuring types the previous chaining feature does not conform to, typically one reached through an import (KerML validateFeatureChainingFeatureConformance).",
+        typical_fix: "Chain through a feature of the previous feature's type.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "feature_value_overrides_non_default",
         severity: "warning",
         meaning: "A feature with a value redefines (directly or indirectly) a feature whose value is bound with `=` or `:=` rather than given as a `default`, so the bound value cannot be overridden (KerML validateFeatureValueOverriding).",
