@@ -4331,9 +4331,15 @@ fn namespace_derived_elements_project_canonical_membership_and_import_facts() {
         ElementKind::Import,
         "the owned-import derivation returns the canonical lowered import declaration"
     );
+    // A part definition is a Type, and so a Namespace, with no owned members here.
+    assert!(settled(
+        published.namespace_derived_elements(owned, NamespaceDerivedElementCollection::OwnedMember)
+    )
+    .is_empty());
+    // An Import is a Relationship, not a Namespace.
     assert!(matches!(
         published
-            .namespace_derived_elements(owned, NamespaceDerivedElementCollection::OwnedMember,)
+            .namespace_derived_elements(imports[0], NamespaceDerivedElementCollection::OwnedMember)
             .answer,
         QueryAnswer::Unsupported
     ));

@@ -3217,7 +3217,9 @@ mod tests {
 
         assert!(index.is_public(DeclarationId(0)));
         assert!(index.is_public(DeclarationId(1)));
-        assert!(!index.is_public(DeclarationId(2)));
+        // A Membership defaults to public whatever kind of Namespace owns it; only an Import
+        // defaults to private.
+        assert!(index.is_public(DeclarationId(2)));
         assert!(!index.is_public(DeclarationId(3)));
     }
 

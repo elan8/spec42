@@ -2127,12 +2127,10 @@ impl DeclarationDomain {
     pub(crate) fn accepts(self, kind: DeclarationKind) -> bool {
         match self {
             Self::Any => true,
-            Self::Namespace => matches!(
-                kind,
-                DeclarationKind::Namespace
-                    | DeclarationKind::Package
-                    | DeclarationKind::LibraryPackage
-            ),
+            // Every element whose metaclass is a KerML `Namespace`: packages, but also every
+            // `Type` and `Feature`, whose memberships a NamespaceImport imports alike.
+            Self::Namespace => crate::model::element_kind::element_kind(kind)
+                .conforms_to(sysml_contract::ElementKind::Namespace),
             // An alias is a transparent proxy: whether it is Type-domain-compatible is a property
             // of its (possibly not-yet-resolved) ultimate target, not of the alias declaration
             // itself, so it is provisionally accepted here. `synthesize_implied_alias_bindings`

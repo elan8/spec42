@@ -213,7 +213,7 @@ probe unresolved_reference.md 5 25
           (qualified-name "Broken::size::")
           (location (document "memory://snapshot/unresolved_reference.md") (range (start 5 21) (end 5 38)) (role Declaration))
           (declaration (range (start 5 21) (end 5 38)))
-          (membership (kind owning) (visibility private) (provenance default))
+          (membership (kind owning) (visibility public) (provenance default))
           (evaluation unresolved-operand)
           (relationship (kind "expressionOperand") (provenance authored) (authored "undefinedName") (target unresolved))
           (incoming (kind "typeFeaturing") (peer "Broken::size::::") (provenance implied))

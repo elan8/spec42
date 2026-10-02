@@ -169,23 +169,12 @@ impl MembershipIndex {
                 Visibility::Public => EffectiveVisibility::Public,
                 Visibility::Private => EffectiveVisibility::Private,
                 Visibility::Protected => EffectiveVisibility::Protected,
+                // KerML 8.3.2.4: `Import::visibility` defaults to private, and
+                // `Membership::visibility` to public whatever kind of Namespace owns it.
                 Visibility::Default if membership.kind == MembershipKind::Import => {
                     EffectiveVisibility::Private
                 }
-                Visibility::Default => match declaration.owner {
-                    None => EffectiveVisibility::Public,
-                    Some(owner)
-                        if declarations.get(owner.index()).is_some_and(|owner| {
-                            matches!(
-                                owner.kind,
-                                DeclarationKind::Package | DeclarationKind::LibraryPackage
-                            )
-                        }) =>
-                    {
-                        EffectiveVisibility::Public
-                    }
-                    Some(_) => EffectiveVisibility::Private,
-                },
+                Visibility::Default => EffectiveVisibility::Public,
             };
             *slot = Some(EffectiveMembership {
                 visibility,
@@ -705,15 +694,23 @@ fn extend_from_namespace(
     }
 }
 
-/// `owner index -> its child declarations that are publicly-visible namespaces`. Only a public
+/// `owner index -> its child declarations that are publicly-visible packages`. Only a public
 /// nested namespace is importable, so a recursive import never descends through a private one.
+///
+/// KerML recursion also descends into every public Type and Feature, taking the *first* visible
+/// membership of a name; that needs ordered import results, which the merged import index does
+/// not own yet (issue `resolution-recursive-import-type-namespaces`), so recursion stays within
+/// package-like namespaces rather than reporting spurious ambiguity.
 fn public_namespace_children(
     declarations: &[Declaration],
     memberships: &MembershipIndex,
 ) -> Vec<Vec<DeclarationId>> {
     let mut children = vec![Vec::new(); declarations.len()];
     for (index, declaration) in declarations.iter().enumerate() {
-        if !DeclarationDomain::Namespace.accepts(declaration.kind) {
+        if !matches!(
+            declaration.kind,
+            DeclarationKind::Namespace | DeclarationKind::Package | DeclarationKind::LibraryPackage
+        ) {
             continue;
         }
         let Ok(child) = DeclarationId::from_index(index) else {

@@ -354,7 +354,7 @@ probe element_details.md 22 15
           (qualified-name "Details::Vehicle::wheel")
           (location (document "memory://snapshot/element_details.md") (range (start 8 13) (end 8 18)) (role Declaration))
           (declaration (range (start 8 8) (end 8 30)))
-          (membership (kind feature) (visibility private) (provenance default))
+          (membership (kind feature) (visibility public) (provenance default))
           (multiplicity (lower 4) (upper 4) (ordered false) (nonunique false))
           (relationship (kind "featureTyping") (provenance authored) (authored "Wheel") (target resolved))
           (relationship (kind "typeFeaturing") (provenance implied) (target resolved))
