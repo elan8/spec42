@@ -5,6 +5,7 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=kerml-1.0:8.3.4.12.3:checkMetadataFeatureSemanticSpecialization
+coverage_role=secondary
 libraries=standard
 ~~~
 # SOURCE

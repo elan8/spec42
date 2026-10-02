@@ -5,6 +5,7 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=kerml-1.0:8.3.4.12.3:checkMetadataFeatureSemanticSpecialization
+coverage_role=secondary
 libraries=standard
 ~~~
 # SOURCE
@@ -30,6 +31,8 @@ package Model {
   (relationship (kind subsetting) (source "Model::first") (target "DerivationConnections::derivations") (provenance implied) (outcome resolved))
   (relationship (kind subsetting) (source "Model::second") (target "DerivationConnections::derivations") (provenance implied) (outcome resolved))
   (relationship (kind subsetting) (source "Model::first::originalEnd") (target "DerivationConnections::originalRequirements") (provenance implied) (outcome resolved))
+  (relationship (kind subsetting) (source "Model::first::derivedEnd") (target "DerivationConnections::derivedRequirements") (provenance implied) (outcome resolved))
+  (relationship (kind subsetting) (source "Model::second::originalEnd") (target "DerivationConnections::originalRequirements") (provenance implied) (outcome resolved))
   (relationship (kind subsetting) (source "Model::second::derivedEnd") (target "DerivationConnections::derivedRequirements") (provenance implied) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
