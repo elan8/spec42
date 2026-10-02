@@ -577,6 +577,7 @@ impl SemanticModelBuilder {
         node: &Node<Transition>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -585,7 +586,10 @@ impl SemanticModelBuilder {
             node.span,
             // `ast::Transition` carries no modifier, multiplicity, direction, or short name; its
             // source/target/trigger/guard/effect facts are lowered as references.
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -1011,6 +1015,7 @@ impl SemanticModelBuilder {
         node: &Node<ParserStateUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1018,6 +1023,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
                     individual: node.value.is_individual,
@@ -1073,6 +1079,7 @@ impl SemanticModelBuilder {
             return Ok(());
         }
         let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1080,6 +1087,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
                     individual: node.value.is_individual,

@@ -658,7 +658,8 @@ fn outline_symbol_from_element(
             SyntaxOutlineKind::VerificationDef,
         ),
         PBE::AnalysisCaseUsage(p) => Some(SyntaxOutlineNode {
-            name: declaration_name_text(document, Some(p.name)).unwrap_or_default(),
+            name: declaration_name_text(document, p.name).unwrap_or_default(),
+            short_name: declaration_name_text(document, p.short_name),
             kind: SyntaxOutlineKind::AnalysisUsage,
             typed_by: super::closure_targets::reference_text(document, p.type_name),
             range,
@@ -666,7 +667,8 @@ fn outline_symbol_from_element(
             ..SyntaxOutlineNode::bare(range)
         }),
         PBE::VerificationCaseUsage(p) => Some(SyntaxOutlineNode {
-            name: declaration_name_text(document, Some(p.name)).unwrap_or_default(),
+            name: declaration_name_text(document, p.name).unwrap_or_default(),
+            short_name: declaration_name_text(document, p.short_name),
             kind: SyntaxOutlineKind::VerificationUsage,
             typed_by: super::closure_targets::reference_text(document, p.type_name),
             range,
@@ -706,7 +708,8 @@ fn outline_symbol_from_element(
         }
         PBE::ViewUsage(p) => Some(outline_view_usage(document, p)),
         PBE::ViewpointUsage(p) => Some(SyntaxOutlineNode {
-            name: declaration_name_text(document, Some(p.name)).unwrap_or_default(),
+            name: declaration_name_text(document, p.name).unwrap_or_default(),
+            short_name: declaration_name_text(document, p.short_name),
             kind: SyntaxOutlineKind::ViewpointUsage,
             range,
             selection_range: range,
@@ -715,6 +718,7 @@ fn outline_symbol_from_element(
         }),
         PBE::RenderingUsage(p) => Some(SyntaxOutlineNode {
             name: declaration_name_text(document, p.name).unwrap_or_default(),
+            short_name: declaration_name_text(document, p.short_name),
             kind: SyntaxOutlineKind::RenderingUsage,
             range,
             selection_range: range,
