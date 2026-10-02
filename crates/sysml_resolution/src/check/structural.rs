@@ -30,7 +30,6 @@ use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;
-use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::resolve::is_feature_declaration;
 use crate::resolve::is_usage_declaration;
@@ -154,13 +153,13 @@ impl<D> SemanticModel<D> {
         Ok(false)
     }
 
-    /// Whether a declaration is a feature of its owner rather than an owned type.
-    pub(crate) fn is_feature_member(&self, declaration: DeclarationId) -> bool {
+    /// Whether a declaration is a KerML `Feature` by metamodel category, independent of the
+    /// membership that owns it (a body `metadata` usage is a Feature owned through an
+    /// OwningMembership).
+    pub(crate) fn is_feature(&self, declaration: DeclarationId) -> bool {
         self.storage
-            .memberships
-            .iter()
-            .find(|membership| membership.member == declaration)
-            .is_some_and(|membership| membership.kind == MembershipKind::Feature)
+            .declaration(declaration)
+            .is_some_and(|value| crate::resolve::is_feature_declaration(value.kind))
     }
 
     /// Whether a declaration is an end feature.
@@ -820,7 +819,7 @@ impl<D> SemanticModel<D> {
                 .types
                 .featuring_types(feature)
                 .iter()
-                .any(|(featuring_type, _)| self.is_feature_member(*featuring_type))
+                .any(|(featuring_type, _)| self.is_feature(*featuring_type))
     }
 
     /// KerML 8.3.3.3.10 `validateSubsettingFeaturingTypes`: a subsetted feature with featuring
@@ -963,7 +962,7 @@ impl<D> SemanticModel<D> {
         }
         let redefining = self.types.featuring_type(source)?;
         let redefined = self.types.featuring_type(target)?;
-        if self.is_feature_member(redefining) || self.is_feature_member(redefined) {
+        if self.is_feature(redefining) || self.is_feature(redefined) {
             return None;
         }
         match self.conformance(

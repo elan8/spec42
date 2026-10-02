@@ -89,7 +89,7 @@ impl SemanticModelBuilder {
         )?;
         self.push_membership(
             declaration,
-            MembershipKind::Feature,
+            MembershipKind::Owning,
             self.member_visibility(
                 &node.value.membership,
                 ParserMembershipKind::FeatureMembership,
@@ -285,7 +285,7 @@ impl SemanticModelBuilder {
         )?;
         self.push_membership(
             annotation,
-            MembershipKind::Feature,
+            MembershipKind::Owning,
             Visibility::Default,
             node.span,
         )?;

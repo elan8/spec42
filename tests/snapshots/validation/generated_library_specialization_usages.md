@@ -110,7 +110,7 @@ package GeneratedUsages {
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::FlowUsage"))) (kind flow) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::InterfaceUsage"))) (kind interface-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::ItemUsage"))) (kind item) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::MetadataUsage"))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::MetadataUsage"))) (kind metadata) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::OccurrenceUsage"))) (kind occurrence) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::PartUsage"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::PortUsage"))) (kind port) (membership (kind feature) (visibility default)))
