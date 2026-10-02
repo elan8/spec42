@@ -2010,6 +2010,29 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
         });
     };
 
+    // Only values that redefine SemanticMetadata::baseType can supply the projection.
+    // Select them once before testing owner conformance: walking the specialization graph
+    // for every unrelated library feature value, for every annotation, dominates large models.
+    // Preserve feature-value order so the first applicable value remains the canonical choice.
+    let base_type_redefinitions = storage
+        .references
+        .iter()
+        .enumerate()
+        .filter_map(|(index, reference)| {
+            (reference.kind == ReferenceKind::Redefinition
+                && AuthoredReferenceId::from_index(index)
+                    .ok()
+                    .is_some_and(|id| {
+                        resolution.outcome(id) == Some(ResolutionStatus::Resolved(base_type))
+                    }))
+            .then_some(reference.source)
+        })
+        .collect::<std::collections::BTreeSet<_>>();
+    let base_type_values = storage
+        .feature_values
+        .iter()
+        .filter(|candidate| base_type_redefinitions.contains(&candidate.declaration))
+        .collect::<Vec<_>>();
     let mut projections = Vec::new();
     let mut implied = Vec::new();
     let mut status = SemanticMetadataProjectionStatus::Complete;
@@ -2050,7 +2073,7 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
             }
         }
         let mut value = None;
-        for candidate in storage.feature_values.iter() {
+        for candidate in base_type_values.iter().copied() {
             let Some(owner) = storage
                 .declaration(candidate.declaration)
                 .and_then(|decl| decl.owner)
@@ -2060,21 +2083,7 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
             if matches!(
                 settled_specializes(storage, resolution, metadata_type, owner)?,
                 SettledSpecialization::Conforms
-            ) && storage
-                .references
-                .iter()
-                .enumerate()
-                .any(|(index, reference)| {
-                    reference.source == candidate.declaration
-                        && reference.kind == ReferenceKind::Redefinition
-                        && AuthoredReferenceId::from_index(index)
-                            .ok()
-                            .is_some_and(|id| {
-                                resolution.outcome(id)
-                                    == Some(ResolutionStatus::Resolved(base_type))
-                            })
-                })
-            {
+            ) {
                 value = Some(candidate);
                 break;
             }
