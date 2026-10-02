@@ -409,6 +409,30 @@ impl<D> SemanticModel<D> {
             if filter.document != document {
                 continue;
             }
+            // Every form is an ElementFilterMembership, whose condition must be model-level
+            // evaluable; only a settled `NotEvaluable` is reported.
+            if crate::index::expressions::model_level_evaluability(
+                &self.storage,
+                &self.types,
+                &self.expressions.anchors,
+                &filter.evaluability,
+            ) == crate::index::expressions::ModelLevelEvaluability::NotEvaluable
+            {
+                let code = DiagnosticCode::FilterConditionNotModelLevelEvaluable;
+                diagnostics.push(Diagnostic {
+                    payload: None,
+                    message: code.describe().into(),
+                    code,
+                    severity: DiagnosticSeverity::Warning,
+                    origin: DiagnosticOrigin::Semantic,
+                    subject: self.symbol_id(filter.owner),
+                    location: DiagnosticLocation {
+                        document: writer::document_identity(self, document).into(),
+                        range: document_range(&self.storage, document, &filter.span)?,
+                    },
+                    related: Box::default(),
+                });
+            }
             // A view filter and a package-level import filter are the same Boolean question at two
             // sites, and each keeps its own code because a consumer suppresses them separately.
             let code = match filter.form {

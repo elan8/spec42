@@ -639,6 +639,9 @@ semantic_diagnostic_codes! {
     /// A view filter's condition evaluates to something other than a Boolean.
     NonBooleanViewFilter => "view_filter_non_boolean",
         "A view filter condition must evaluate to a Boolean.";
+    /// KerML 8.3.4.13.2 `validateElementFilterMembershipConditionIsModelLevelEvaluable`.
+    FilterConditionNotModelLevelEvaluable => "filter_condition_not_model_level_evaluable",
+        "A filter condition must be model-level evaluable.";
     /// A calculation invocation supplies fewer arguments than the callee has parameters to bind.
     CalculationArgumentsIncomplete => "calculation_binding_mismatch",
         "This invocation supplies fewer arguments than the calculation has parameters.";

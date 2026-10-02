@@ -708,6 +708,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "filter_condition_not_model_level_evaluable",
+        severity: "warning",
+        meaning: "A package or view filter condition references a feature whose value depends on an instance, such as a feature featured by a non-metaclass type, so it cannot be evaluated on the model itself (KerML validateElementFilterMembershipConditionIsModelLevelEvaluable).",
+        typical_fix: "Filter on metadata, literals, or features of a metaclass or metadata feature.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "calculation_binding_mismatch",
         severity: "warning",
         meaning: "A calculation invocation does not match declared parameter count or binding.",

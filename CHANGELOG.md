@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Filter conditions must be model-level evaluable.** A package or view `filter` whose condition
+  references a feature featured by an ordinary type (so its value depends on an instance) reports
+  `filter_condition_not_model_level_evaluable` (KerML 8.3.4.13.2).
+
 - **Metadata annotated-element restrictions are checked.** A metadata feature whose metaclass
   restricts `annotatedElement` (for example `SemanticMetadata`, which annotates only types) now
   reports `metadata_annotated_element_incompatible` when it annotates an element of another

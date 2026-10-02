@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.13.2:validateElementFilterMembershipConditionIsModelLevelEvaluable
-blocked_by=semantic-filter-condition-not-model-level-evaluable
 type=file
 ~~~
 # SOURCE
@@ -42,7 +41,7 @@ package Filters {
         (severity warning)
         (code "filter_condition_not_model_level_evaluable")
         (source "semantic")
-        (range (start 16 8) (end 16 28))
+        (range (start 16 15) (end 16 27))
       )
     )
   )
@@ -53,6 +52,12 @@ package Filters {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_element_filter_membership_condition_is_model_level_evaluable.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "filter_condition_not_model_level_evaluable")
+        (source "semantic")
+        (range (start 16 15) (end 16 27))
+      )
     )
   )
 )
