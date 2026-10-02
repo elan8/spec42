@@ -1112,6 +1112,11 @@ pub(crate) fn synthesize_implied_relationships(
         &resolution.outcomes,
         &membership_featurings,
     )?);
+    implied.extend(synthesize_multiplicity_type_featurings(
+        storage,
+        &resolution.outcomes,
+        &membership_featurings,
+    )?);
     implied.extend(membership_featurings.into_vec());
     implied.extend(synthesize_feature_valuation_specializations(storage)?.into_vec());
     implied.extend(synthesize_library_role_redefinitions(
@@ -3157,28 +3162,104 @@ pub(crate) fn is_owning_type_kind(kind: DeclarationKind) -> bool {
 /// [`synthesize_feature_membership_type_featurings`]; a featureWithValue with neither (for example
 /// a `var` Feature, whose `snapshots` featuring is not lowered) implies nothing rather than a
 /// guessed featuring type.
+/// The settled `featuringType`s of every Feature that has one, from authored `featured by`
+/// references and the FeatureMembership featurings, plus the Features that author any
+/// `featured by` (whose featuring is then never implied).
+struct SettledFeaturings {
+    featuring: std::collections::BTreeMap<DeclarationId, Vec<DeclarationId>>,
+    authored_sources: std::collections::BTreeSet<DeclarationId>,
+}
+
+impl SettledFeaturings {
+    fn collect(
+        storage: &SemanticModelStorage,
+        outcomes: &[ResolutionStatus],
+        membership_featurings: &[ImpliedRelationship],
+    ) -> Self {
+        let mut featuring = std::collections::BTreeMap::<DeclarationId, Vec<DeclarationId>>::new();
+        let mut authored_sources = std::collections::BTreeSet::new();
+        for (reference, outcome) in storage.references.iter().zip(outcomes.iter()) {
+            if reference.kind != ReferenceKind::TypeFeaturing {
+                continue;
+            }
+            authored_sources.insert(reference.source);
+            if let ResolutionStatus::Resolved(target) = *outcome {
+                featuring.entry(reference.source).or_default().push(target);
+            }
+        }
+        for relationship in membership_featurings {
+            featuring
+                .entry(relationship.source)
+                .or_default()
+                .push(relationship.target);
+        }
+        Self {
+            featuring,
+            authored_sources,
+        }
+    }
+}
+
+/// `checkMultiplicityTypeFeaturing` (KerML 8.3.3.1.9) and
+/// `checkMultiplicityRangeExpressionTypeFeaturing` (8.3.4.11.2): a Multiplicity owned by a
+/// Feature, and each `bound` Expression of a MultiplicityRange so owned, is featured by that
+/// Feature's `featuringType`s (Pilot `MultiplicityAdapter`, `ExpressionAdapter.
+/// addImplicitFeaturingTypesIfNecessary`). A Multiplicity outside a Feature has none.
+pub(crate) fn synthesize_multiplicity_type_featurings(
+    storage: &SemanticModelStorage,
+    outcomes: &[ResolutionStatus],
+    membership_featurings: &[ImpliedRelationship],
+) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
+    let settled = SettledFeaturings::collect(storage, outcomes, membership_featurings);
+    let owning_feature = |multiplicity: DeclarationId| {
+        let owner = storage.declaration(multiplicity)?.owner?;
+        crate::resolve::is_feature_declaration(storage.declaration(owner)?.kind).then_some(owner)
+    };
+    let mut implied = Vec::new();
+    for (index, declaration) in storage.declarations.iter().enumerate() {
+        let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        if settled.authored_sources.contains(&source) {
+            continue;
+        }
+        let multiplicity = match declaration.kind {
+            DeclarationKind::KermlMultiplicity | DeclarationKind::KermlMultiplicityRange => source,
+            DeclarationKind::KermlExpression => match declaration.owner {
+                Some(range)
+                    if storage.declaration(range).is_some_and(|range| {
+                        range.kind == DeclarationKind::KermlMultiplicityRange
+                    }) =>
+                {
+                    range
+                }
+                _ => continue,
+            },
+            _ => continue,
+        };
+        let Some(types) =
+            owning_feature(multiplicity).and_then(|feature| settled.featuring.get(&feature))
+        else {
+            continue;
+        };
+        implied.extend(types.iter().map(|target| ImpliedRelationship {
+            kind: ReferenceKind::TypeFeaturing,
+            source,
+            target: *target,
+        }));
+    }
+    implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
+    implied.dedup();
+    Ok(implied.into_boxed_slice())
+}
+
 pub(crate) fn synthesize_feature_value_expression_type_featurings(
     storage: &SemanticModelStorage,
     outcomes: &[ResolutionStatus],
     membership_featurings: &[ImpliedRelationship],
 ) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
-    let mut featuring = std::collections::BTreeMap::<DeclarationId, Vec<DeclarationId>>::new();
-    let mut authored_sources = std::collections::BTreeSet::new();
-    for (reference, outcome) in storage.references.iter().zip(outcomes.iter()) {
-        if reference.kind != ReferenceKind::TypeFeaturing {
-            continue;
-        }
-        authored_sources.insert(reference.source);
-        if let ResolutionStatus::Resolved(target) = *outcome {
-            featuring.entry(reference.source).or_default().push(target);
-        }
-    }
-    for relationship in membership_featurings {
-        featuring
-            .entry(relationship.source)
-            .or_default()
-            .push(relationship.target);
-    }
+    let SettledFeaturings {
+        featuring,
+        authored_sources,
+    } = SettledFeaturings::collect(storage, outcomes, membership_featurings);
     let mut implied = Vec::new();
     for value in storage.feature_values.iter() {
         if authored_sources.contains(&value.value) {

@@ -5830,7 +5830,7 @@ fn compare_type_derived_fact_observation(
             TypeDerivedFactValue::Feature(actual) => actual == expected,
             TypeDerivedFactValue::FeatureMembership { member } => member == expected,
             TypeDerivedFactValue::Conjugator { original_type } => original_type == expected,
-            TypeDerivedFactValue::Multiplicity(_) => false,
+            TypeDerivedFactValue::Multiplicity { element } => element == expected,
         }) =>
         {
             Ok(())
@@ -5844,7 +5844,7 @@ fn compare_type_derived_fact_observation(
         ) if expectation.collection == TypeDerivedFactCollection::Multiplicity
             && values
                 .iter()
-                .any(|value| matches!(value, TypeDerivedFactValue::Multiplicity(_))) =>
+                .any(|value| matches!(value, TypeDerivedFactValue::Multiplicity { .. })) =>
         {
             Ok(())
         }

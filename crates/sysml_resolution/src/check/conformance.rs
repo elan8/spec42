@@ -220,6 +220,7 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         | K::KermlPredicate
         | K::KermlInteraction
         | K::KermlMultiplicity
+        | K::KermlMultiplicityRange
         | K::KermlFeature
         | K::KermlStep
         | K::KermlExpression

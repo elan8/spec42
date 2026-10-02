@@ -50,6 +50,7 @@ package 'Opaque Action Example' {
     (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Boolean")))))
     (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors"))) (kind action-def) (membership (kind owning) (visibility default)) (documentation (rep (language "Alf") (text " \n\t\t\t * for (sensor in sensors) {\n\t\t\t *     if (sensor.ready) {\n\t\t\t *         Update(sensor);\n\t\t\t *     }\n\t\t\t * }\n\t\t\t "))))
     (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in) (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Sensor") (direction in)))))
+    (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (path (named (kind package) (name "Opaque Action Example")) (named (kind action-def) (name "UpdateSensors")) (named (kind parameter) (name "sensors")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor::ready"))) (kind featureTyping) (ordinal 0))
@@ -63,6 +64,7 @@ package 'Opaque Action Example' {
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (target (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor::ready"))) (target (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors::sensors"))) (target (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/22_opaque_action_example.md") (path (named (kind package) (name "Opaque Action Example")) (named (kind action-def) (name "UpdateSensors")) (named (kind parameter) (name "sensors")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (target (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors"))) (provenance implied))
   )
   (evaluation
   )
@@ -82,6 +84,9 @@ package 'Opaque Action Example' {
       (type (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor")) (provenance authored))
       (effective-type (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor")) (source direct))
       (supertype (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (path (named (kind package) (name "Opaque Action Example")) (named (kind action-def) (name "UpdateSensors")) (named (kind parameter) (name "sensors")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::UpdateSensors")))
     )
 )
 ~~~

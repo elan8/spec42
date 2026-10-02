@@ -202,7 +202,13 @@ impl<D> SemanticModel<D> {
             let Some(member_kind) = self.kind_of(member) else {
                 continue;
             };
-            if !is_feature_declaration(member_kind) {
+            // `ownedFeature`: a Feature owned through a FeatureMembership. A multiplicity is an
+            // ownedMember under an OwningMembership, not a body feature.
+            if !is_feature_declaration(member_kind)
+                || self.memberships.get(member).is_none_or(|membership| {
+                    membership.kind != crate::model::MembershipKind::Feature
+                })
+            {
                 continue;
             }
             let redefined = self.settled_targets(member, &[ReferenceKind::Redefinition]);

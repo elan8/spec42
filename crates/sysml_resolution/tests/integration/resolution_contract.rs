@@ -5697,11 +5697,13 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
         TypeDerivedFactCollection::OwnedFeatureMembership,
         TypeDerivedFactPrerequisite::FeatureMembershipIdentity,
     );
-    unsupported(
-        sized,
-        TypeDerivedFactCollection::Multiplicity,
-        TypeDerivedFactPrerequisite::MultiplicityIdentity,
-    );
+    // `multiplicity` names the owned MultiplicityRange an authored `[1]` lowers to; a Type
+    // that authors none has an empty value set.
+    assert!(matches!(
+        values(sized, TypeDerivedFactCollection::Multiplicity).as_ref(),
+        [TypeDerivedFactValue::Multiplicity { element }] if *element != sized
+    ));
+    assert!(values(child, TypeDerivedFactCollection::Multiplicity).is_empty());
     // `ownedConjugator` is answered from the authored `conjugation` reference; a type that
     // declares none has an empty value set, not a missing prerequisite.
     assert!(

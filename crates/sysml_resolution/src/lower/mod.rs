@@ -603,6 +603,44 @@ impl SemanticModelBuilder {
     }
 
     /// Constructs the canonical value Expression and result Feature for a `FeatureValue` clause.
+    /// Mints one anonymous `Expression` under an `OwningMembership` of `owner`, with its `out`
+    /// result parameter, and returns `(expression, result)`.
+    fn push_owned_expression(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        span: Span,
+    ) -> Result<(DeclarationId, DeclarationId), ConstructionError> {
+        let expression = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::KermlExpression,
+            None,
+            span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            expression,
+            MembershipKind::Owning,
+            Visibility::Default,
+            span,
+        )?;
+        let result = self.push_typed_declaration(
+            document,
+            Some(expression),
+            DeclarationKind::KermlFeature,
+            None,
+            span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::Out),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(result, MembershipKind::Feature, Visibility::Default, span)?;
+        self.declaration_facts[expression.index()].expression_result = Some(result);
+        Ok((expression, result))
+    }
+
     pub(crate) fn record_feature_value(
         &mut self,
         document: DocumentIdx,
@@ -613,38 +651,8 @@ impl SemanticModelBuilder {
             ParserFeatureValueKind::Bind => FeatureValueKind::Bind,
             ParserFeatureValueKind::Assign => FeatureValueKind::Assign,
         };
-        let expression = self.push_typed_declaration(
-            document,
-            Some(declaration),
-            DeclarationKind::KermlExpression,
-            None,
-            value.value.expression.span,
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            expression,
-            MembershipKind::Owning,
-            Visibility::Default,
-            value.value.expression.span,
-        )?;
-        let result = self.push_typed_declaration(
-            document,
-            Some(expression),
-            DeclarationKind::KermlFeature,
-            None,
-            value.value.expression.span,
-            DeclarationFacts {
-                direction: Some(ParameterDirection::Out),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            result,
-            MembershipKind::Feature,
-            Visibility::Default,
-            value.value.expression.span,
-        )?;
-        self.declaration_facts[expression.index()].expression_result = Some(result);
+        let (expression, result) =
+            self.push_owned_expression(document, declaration, value.value.expression.span)?;
         if matches!(
             value.value.expression.value,
             Expression::MemberAccess { .. } | Expression::FeatureChainRef(_)
@@ -1849,6 +1857,56 @@ impl SemanticModelBuilder {
         );
         for element in &parsed.root.elements {
             self.lower_root_element(document, element)?;
+        }
+        self.synthesize_multiplicities(document)
+    }
+
+    /// Mints the `MultiplicityRange` every authored `[m..n]` denotes (KerML 8.3.4.11).
+    ///
+    /// The range is an owned member of the declaration whose multiplicity it is, under an
+    /// `OwningMembership`, so `Type::multiplicity` (`deriveTypeMultiplicity`) and the featuring
+    /// rules have an element to name. Its bounds are deliberately not copied: the owning
+    /// declaration's authored `multiplicity` fact remains their single owner, reached through the
+    /// range's owner. Minting runs after the document walk, so no membership override pending for
+    /// an authored member can leak onto a range, and anonymous ordinals of every other kind are
+    /// unaffected (they are keyed by kind).
+    fn synthesize_multiplicities(
+        &mut self,
+        document: DocumentIdx,
+    ) -> Result<(), ConstructionError> {
+        let owners = self
+            .declarations
+            .iter()
+            .zip(self.declaration_facts.iter())
+            .enumerate()
+            .filter(|(_, (declaration, facts))| {
+                declaration.document == document && facts.multiplicity.is_some()
+            })
+            .filter_map(|(index, (_, facts))| {
+                let record = facts.multiplicity.as_ref()?;
+                let bounds = record
+                    .bound_spans
+                    .as_deref()
+                    .map_or([None, None], |bounds| [bounds.lower, bounds.upper]);
+                Some(DeclarationId::from_index(index).map(|id| (id, record.span, bounds)))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        for (owner, span, bounds) in owners {
+            let range = self.push_typed_declaration(
+                document,
+                Some(owner),
+                DeclarationKind::KermlMultiplicityRange,
+                None,
+                span,
+                DeclarationFacts::none(),
+            )?;
+            self.push_membership(range, MembershipKind::Owning, Visibility::Default, span)?;
+            // `MultiplicityRange::bound`: each authored bound is an owned Expression, in source
+            // order. Only its identity, ownership and result are minted here; the bound's value
+            // stays the owner's `multiplicity` fact, and an unbounded `*` has no AST node to mint.
+            for bound in bounds.into_iter().flatten() {
+                self.push_owned_expression(document, range, bound)?;
+            }
         }
         Ok(())
     }

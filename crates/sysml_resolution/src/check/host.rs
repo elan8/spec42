@@ -1564,7 +1564,18 @@ impl<D> SemanticModel<D> {
                 Some(DeclarationKind::ViewUsage) => {
                     // A view with members that exposes nothing renders nothing. Reported as
                     // information: it is legal, and a view under construction passes through it.
-                    let members = self.child_declarations(id);
+                    // The multiplicity a header `[m..n]` lowers to is not body content.
+                    let members = self
+                        .child_declarations(id)
+                        .iter()
+                        .copied()
+                        .filter(|child| {
+                            self.kind_of(*child).is_none_or(|kind| {
+                                !crate::model::element_kind::element_kind(kind)
+                                    .conforms_to(sysml_contract::ElementKind::Multiplicity)
+                            })
+                        })
+                        .collect::<Vec<_>>();
                     let owner_is_rendering = self
                         .storage
                         .declaration(id)

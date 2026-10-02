@@ -133,6 +133,20 @@ pub(crate) struct MultiplicityRecord {
     pub(crate) lower: MultiplicityBound,
     pub(crate) upper: MultiplicityBound,
     pub(crate) span: Span,
+    /// The source spans of the authored bound expressions, in source order, which the owned
+    /// `MultiplicityRange`'s `bound` Expressions are minted at. Boxed because almost every
+    /// declaration carries no multiplicity, and `None` for a `[*]`, whose sole bound is the
+    /// unbounded `*` the parser publishes no expression node for.
+    pub(crate) bound_spans: Option<Box<MultiplicityBoundSpans>>,
+}
+
+/// The source spans of a multiplicity's authored bound expressions (`lowerBound`, `upperBound`).
+///
+/// `lower` is `None` for the single-bound form; `upper` is `None` for an unbounded `*`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct MultiplicityBoundSpans {
+    pub(crate) lower: Option<Span>,
+    pub(crate) upper: Option<Span>,
 }
 
 /// The `snapshot`/`timeslice` portion prefix on an occurrence usage (`ast::OccurrencePortionKind`).
@@ -534,10 +548,25 @@ pub(crate) fn multiplicity_facts(
     multiplicity: Option<&Node<Multiplicity>>,
 ) -> Option<MultiplicityRecord> {
     let multiplicity = multiplicity?;
+    // A bare `[3]` reaches the AST as one expression node in both slots; KerML makes that single
+    // bound the `upperBound` (8.3.4.11, `lowerBound` is null when `bound` has one element).
+    let upper_span = multiplicity.value.upper.as_deref().map(|bound| bound.span);
+    let lower_span = multiplicity
+        .value
+        .lower
+        .as_deref()
+        .map(|bound| bound.span)
+        .filter(|span| Some(*span) != upper_span);
     Some(MultiplicityRecord {
         lower: multiplicity_bound(multiplicity.value.lower.as_deref()),
         upper: multiplicity_bound(multiplicity.value.upper.as_deref()),
         span: multiplicity.value.span,
+        bound_spans: (lower_span.is_some() || upper_span.is_some()).then(|| {
+            Box::new(MultiplicityBoundSpans {
+                lower: lower_span,
+                upper: upper_span,
+            })
+        }),
     })
 }
 

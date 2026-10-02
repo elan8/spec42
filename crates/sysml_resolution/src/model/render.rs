@@ -2214,6 +2214,7 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::KermlPredicate => "kerml-predicate",
         DeclarationKind::KermlInteraction => "kerml-interaction",
         DeclarationKind::KermlMultiplicity => "kerml-multiplicity",
+        DeclarationKind::KermlMultiplicityRange => "kerml-multiplicity-range",
         DeclarationKind::KermlType => "kerml-type",
         DeclarationKind::KermlStep => "kerml-step",
         DeclarationKind::KermlExpression => "kerml-expression",

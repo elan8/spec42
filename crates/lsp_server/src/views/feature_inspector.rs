@@ -131,7 +131,8 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::Function
         | ElementKind::Predicate
         | ElementKind::Interaction
-        | ElementKind::Multiplicity => "definition",
+        | ElementKind::Multiplicity
+        | ElementKind::MultiplicityRange => "definition",
 
         ElementKind::ConnectionUsage
         | ElementKind::InterfaceUsage

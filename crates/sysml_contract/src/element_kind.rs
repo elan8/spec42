@@ -198,6 +198,9 @@ element_kinds! {
     Predicate,
     Interaction,
     Multiplicity,
+    /// The KerML `MultiplicityRange` an authored `[m..n]` lowers to, owned by the declaration
+    /// it bounds.
+    MultiplicityRange,
 
     // --- KerML features -----------------------------------------------------------------
     Feature,
@@ -246,6 +249,7 @@ impl ElementKind {
             K::Interaction => &[K::Association, K::Behavior],
             K::Feature => &[K::Type],
             K::Multiplicity | K::Step | K::Connector => &[K::Feature],
+            K::MultiplicityRange => &[K::Multiplicity],
             K::Expression => &[K::Step],
             K::BooleanExpression => &[K::Expression],
             K::Invariant => &[K::BooleanExpression],

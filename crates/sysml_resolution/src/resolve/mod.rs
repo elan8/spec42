@@ -1947,6 +1947,7 @@ pub(crate) fn is_feature_declaration(kind: DeclarationKind) -> bool {
             crate::model::element_kind::element_kind(kind),
             sysml_contract::ElementKind::Feature
                 | sysml_contract::ElementKind::Multiplicity
+                | sysml_contract::ElementKind::MultiplicityRange
                 | sysml_contract::ElementKind::Step
                 | sysml_contract::ElementKind::Expression
                 | sysml_contract::ElementKind::BooleanExpression

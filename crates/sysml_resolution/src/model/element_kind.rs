@@ -160,6 +160,7 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::KermlPredicate => ElementKind::Predicate,
         DeclarationKind::KermlInteraction => ElementKind::Interaction,
         DeclarationKind::KermlMultiplicity => ElementKind::Multiplicity,
+        DeclarationKind::KermlMultiplicityRange => ElementKind::MultiplicityRange,
 
         DeclarationKind::KermlFeature => ElementKind::Feature,
         // An association or connector end is a `Feature` under an `EndFeatureMembership`.
@@ -306,6 +307,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::KermlPredicate
         | DeclarationKind::KermlInteraction
         | DeclarationKind::KermlMultiplicity
+        | DeclarationKind::KermlMultiplicityRange
         | DeclarationKind::KermlFeature
         | DeclarationKind::KermlStep
         | DeclarationKind::KermlExpression
@@ -464,6 +466,7 @@ mod tests {
         DeclarationKind::KermlPredicate,
         DeclarationKind::KermlInteraction,
         DeclarationKind::KermlMultiplicity,
+        DeclarationKind::KermlMultiplicityRange,
         DeclarationKind::KermlFeature,
         DeclarationKind::KermlStep,
         DeclarationKind::KermlExpression,

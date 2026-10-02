@@ -684,6 +684,11 @@ pub(crate) enum DeclarationKind {
     /// Both spellings reach `ast::KermlClassifierDecl` (the bare form as a `;` body), so both
     /// lower as resolvable declarations.
     KermlMultiplicity,
+    /// The anonymous KerML `MultiplicityRange` owned by every declaration that authors a
+    /// `[m..n]` multiplicity (KerML 8.3.4.11, `deriveTypeMultiplicity`). It is minted once per
+    /// authored multiplicity at the end of the document walk; its bounds are not duplicated here
+    /// but remain the owning declaration's authored `multiplicity` fact.
+    KermlMultiplicityRange,
 
     // --- KerML feature members (`KermlFeatureMember`) ------------------------------------
     //

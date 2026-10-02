@@ -83,6 +83,7 @@ part def Camera {
     (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera::imagingSubsystem"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/camera.md") (path (named (kind part-def) (name "Camera")) (named (kind part) (name "imagingSubsystem")) (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "takePicture::shoot")))))
     (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera::takePicture"))) (kind perform-action) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "PictureTaking::takePicture")))))
+    (declaration (id (node (document "memory://snapshot/camera.md") (path (named (kind part-def) (name "Camera")) (named (kind perform-action) (name "takePicture")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/camera.md") (path (named (kind part-def) (name "Camera")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -104,6 +105,7 @@ part def Camera {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/camera.md") (qualified-name "Camera::imagingSubsystem"))) (target (node (document "memory://snapshot/camera.md") (qualified-name "Camera"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/camera.md") (path (named (kind part-def) (name "Camera")) (named (kind part) (name "imagingSubsystem")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/camera.md") (qualified-name "Camera::imagingSubsystem"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/camera.md") (qualified-name "Camera::takePicture"))) (target (node (document "memory://snapshot/camera.md") (qualified-name "Camera"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/camera.md") (path (named (kind part-def) (name "Camera")) (named (kind perform-action) (name "takePicture")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (target (node (document "memory://snapshot/camera.md") (qualified-name "Camera"))) (provenance implied))
   )
   (evaluation
   )
@@ -125,6 +127,9 @@ part def Camera {
       (featured-by (node (document "memory://snapshot/camera.md") (qualified-name "Camera::imagingSubsystem")))
     )
     (declaration (id (node (document "memory://snapshot/camera.md") (qualified-name "Camera::takePicture")))
+      (featured-by (node (document "memory://snapshot/camera.md") (qualified-name "Camera")))
+    )
+    (declaration (id (node (document "memory://snapshot/camera.md") (path (named (kind part-def) (name "Camera")) (named (kind perform-action) (name "takePicture")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/camera.md") (qualified-name "Camera")))
     )
 )

@@ -1249,13 +1249,21 @@ impl<D> SemanticModel<D> {
             TypeDerivedFactCollection::OwnedFeatureMembership => {
                 Some(TypeDerivedFactPrerequisite::FeatureMembershipIdentity)
             }
-            TypeDerivedFactCollection::Multiplicity => {
-                Some(TypeDerivedFactPrerequisite::MultiplicityIdentity)
-            }
             _ => None,
         };
         if let Some(prerequisite) = unavailable {
             return self.resolved_outcome(TypeDerivedFactOutcome::Unsupported { prerequisite });
+        }
+        if collection == TypeDerivedFactCollection::Multiplicity {
+            let values = self
+                .storage
+                .type_multiplicity(declaration)
+                .and_then(|element| self.symbol_id(element))
+                .map(|element| TypeDerivedFactValue::Multiplicity { element })
+                .into_iter()
+                .collect::<Vec<_>>();
+            return self
+                .resolved_outcome(TypeDerivedFactOutcome::Values(values.into_boxed_slice()));
         }
         if collection == TypeDerivedFactCollection::OwnedConjugator {
             // `ownedConjugator` is the one `Conjugation` a type owns (KerML 8.3.3.1.10); the

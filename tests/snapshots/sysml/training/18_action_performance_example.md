@@ -76,6 +76,7 @@ package 'Action Performance Example' {
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera::i"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Imager")))))
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (path (named (kind package) (name "Action Performance Example")) (named (kind part) (name "camera")) (named (kind part) (name "i")) (anonymous (kind perform-action) (ordinal 0))))) (kind perform-action) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "takePhoto::shoot")))))
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera::takePhoto"))) (kind perform-action) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded))))
+    (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (path (named (kind package) (name "Action Performance Example")) (named (kind part) (name "camera")) (named (kind perform-action) (name "takePhoto")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/18_action_performance_example.md") (path (named (kind package) (name "Action Performance Example")) (anonymous (kind import) (ordinal 0))))) (kind namespaceImport) (ordinal 0))
@@ -106,6 +107,7 @@ package 'Action Performance Example' {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera::i"))) (target (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/18_action_performance_example.md") (path (named (kind package) (name "Action Performance Example")) (named (kind part) (name "camera")) (named (kind part) (name "i")) (anonymous (kind perform-action) (ordinal 0))))) (target (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera::i"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera::takePhoto"))) (target (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/18_action_performance_example.md") (path (named (kind package) (name "Action Performance Example")) (named (kind part) (name "camera")) (named (kind perform-action) (name "takePhoto")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (target (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera"))) (provenance implied))
   )
   (evaluation
   )
@@ -147,6 +149,9 @@ package 'Action Performance Example' {
       (featured-by (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera::i")))
     )
     (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera::takePhoto")))
+      (featured-by (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera")))
+    )
+    (declaration (id (node (document "memory://snapshot/18_action_performance_example.md") (path (named (kind package) (name "Action Performance Example")) (named (kind part) (name "camera")) (named (kind perform-action) (name "takePhoto")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/18_action_performance_example.md") (qualified-name "Action Performance Example::camera")))
     )
 )

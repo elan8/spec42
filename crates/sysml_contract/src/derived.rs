@@ -59,7 +59,6 @@ pub enum TypeDerivedFactPrerequisite {
     FeatureMembershipIdentity,
     FeatureMembershipIdentityAndInheritedClosure,
     InheritedMembershipClosure,
-    MultiplicityIdentity,
     ConjugationRelationshipIdentity,
     RuleNotPublished,
 }

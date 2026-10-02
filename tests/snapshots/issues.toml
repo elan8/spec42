@@ -13,12 +13,6 @@ owner = "spec42-semantic"
 summary = "FeatureMembership is compact declaration-aligned storage (one membership row per member), not an independently addressable relationship identity, so deriveTypeOwnedFeatureMembership cannot publish its normative relationship result. Publishing Membership relationships as identities is a storage representation change that design.md admits only with the standard-library benchmark set."
 
 [[issue]]
-id = "lowering-gap-type-multiplicity-identity"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "Multiplicity remains an authored fact on its owning declaration; only an explicit `multiplicity` member lowers as a KermlMultiplicity declaration. deriveTypeMultiplicity needs every `[m..n]` lowered as an owned anonymous Multiplicity(Range) element (owningMembership, bounds) while the declaration keeps its authored fact; that adds an owned member to every multiplicity in the corpus, so it is a representation change needing the standard-library benchmark and an audit of owned-member consumers."
-
-[[issue]]
 id = "lowering-gap-redefinition-flow-end-library-anchors"
 kind = "lowering_gap"
 owner = "spec42-semantic"
@@ -29,18 +23,6 @@ id = "lowering-gap-redefinition-view-rendering-membership"
 kind = "lowering_gap"
 owner = "spec42-semantic"
 summary = "The pinned parser's ViewRenderingUsage AST drops whether the `rendering` keyword was written and parses the ReferenceSubsetting shorthand target (`render asTreeDiagram;`) as a declared name, so lowering cannot publish the ViewRenderingMembership RenderingUsage (or its reference) faithfully for checkRenderingUsageRedefinition; `render` members stay unsupported syntax."
-
-[[issue]]
-id = "lowering-gap-type-featuring-multiplicity-owner"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "No owned Multiplicity element exists for a `[m..n]` (see lowering-gap-type-multiplicity-identity), so checkMultiplicityTypeFeaturing has no source. Once lowered, the implied featuring is the owning Feature's featuringTypes (Pilot MultiplicityAdapter), derivable like synthesize_feature_value_expression_type_featurings."
-
-[[issue]]
-id = "lowering-gap-type-featuring-multiplicity-range-bounds"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "MultiplicityRange bound expressions are not lowered as owned Expressions of an owned MultiplicityRange (see lowering-gap-type-multiplicity-identity), so checkMultiplicityRangeExpressionTypeFeaturing has no source; the Pilot (ExpressionAdapter.addImplicitFeaturingTypesIfNecessary) features a bound with the range's owning Feature's featuringTypes, or the owning end's for an owned cross feature."
 
 [[issue]]
 id = "lowering-gap-binding-connector-satisfy-requirement-endpoints"

@@ -121,6 +121,7 @@ package Camera {
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager::focusedImage"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Image")))))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager::photo"))) (kind item) (membership (kind feature) (visibility default)) (facts (direction out)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Picture")) (subsetting (reference "photos")))))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::photos"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Picture")))))
+    (declaration (id (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "photos")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene"))) (kind item) (membership (kind feature) (visibility default)) (facts (modifiers reference)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Scene")))))
   )
   (references
@@ -173,6 +174,7 @@ package Camera {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager::focusedImage"))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager::photo"))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::photos"))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "photos")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene"))) (target (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera"))) (provenance implied))
   )
   (evaluation
@@ -221,6 +223,9 @@ package Camera {
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::photos")))
       (featured-by (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera")))
       (subtype (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::imager::photo")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/17_camera.md") (path (named (kind package) (name "Camera")) (named (kind part) (name "camera")) (named (kind part) (name "photos")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera")))
     )
     (declaration (id (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera::scene")))
       (featured-by (node (document "memory://snapshot/17_camera.md") (qualified-name "Camera::camera")))

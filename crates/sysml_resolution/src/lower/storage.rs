@@ -128,6 +128,25 @@ impl SemanticModelStorage {
         self.declaration_facts.get(id.index())
     }
 
+    /// `Type::multiplicity` (KerML 8.3.3.1.10, `deriveTypeMultiplicity`): the first
+    /// `Multiplicity` `owner` owns, in `ownedMember` order. A header `[m..n]` precedes every body
+    /// member, so source position is that order.
+    pub(crate) fn type_multiplicity(&self, owner: DeclarationId) -> Option<DeclarationId> {
+        self.declarations
+            .iter()
+            .enumerate()
+            .filter(|(_, candidate)| {
+                candidate.owner == Some(owner)
+                    && matches!(
+                        candidate.kind,
+                        crate::model::DeclarationKind::KermlMultiplicity
+                            | crate::model::DeclarationKind::KermlMultiplicityRange
+                    )
+            })
+            .min_by_key(|(index, candidate)| (candidate.span.offset, *index))
+            .and_then(|(index, _)| DeclarationId::from_index(index).ok())
+    }
+
     pub(crate) fn symbol(&self, id: NameId) -> Option<&str> {
         self.symbols.get(id)
     }
