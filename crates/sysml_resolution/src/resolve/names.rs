@@ -1,6 +1,7 @@
 //! Phase 3: the name and scope indexes the solver looks names up in.
 
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 use crate::index::documents::record_visited_index_entries;
 use crate::lower::facts::Declaration;
@@ -540,19 +541,27 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             ReferenceKind::NamespaceImport => {
                 // `::*` re-exports the target's own members; `::*::**` additionally re-exports the
                 // members of every namespace nested under it.
-                let owners = if reference.flags().recursive {
-                    recursive_import_owners(recursive_children.as_deref().unwrap_or(&[]), target)
+                if reference.flags().recursive {
+                    extend_from_recursive_namespaces(
+                        &mut entries,
+                        &mut exported_entries,
+                        exported_names,
+                        previous_exported_imports,
+                        import_owner,
+                        &recursive_import_owners(
+                            recursive_children.as_deref().unwrap_or(&[]),
+                            target,
+                        ),
+                        import_is_public,
+                    );
                 } else {
-                    vec![target]
-                };
-                for owner in owners {
                     extend_from_namespace(
                         &mut entries,
                         &mut exported_entries,
                         exported_names,
                         previous_exported_imports,
                         import_owner,
-                        owner,
+                        target,
                         import_is_public,
                     );
                 }
@@ -576,20 +585,18 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                 // `::**` also re-exports the members of the target namespace and of every namespace
                 // nested under it. The named membership itself is added above.
                 if reference.flags().recursive {
-                    for owner in recursive_import_owners(
-                        recursive_children.as_deref().unwrap_or(&[]),
-                        target,
-                    ) {
-                        extend_from_namespace(
-                            &mut entries,
-                            &mut exported_entries,
-                            exported_names,
-                            previous_exported_imports,
-                            import_owner,
-                            owner,
-                            import_is_public,
-                        );
-                    }
+                    extend_from_recursive_namespaces(
+                        &mut entries,
+                        &mut exported_entries,
+                        exported_names,
+                        previous_exported_imports,
+                        import_owner,
+                        &recursive_import_owners(
+                            recursive_children.as_deref().unwrap_or(&[]),
+                            target,
+                        ),
+                        import_is_public,
+                    );
                 }
             }
             ReferenceKind::FilterImport
@@ -694,23 +701,58 @@ fn extend_from_namespace(
     }
 }
 
-/// `owner index -> its child declarations that are publicly-visible packages`. Only a public
-/// nested namespace is importable, so a recursive import never descends through a private one.
+/// Re-exports the namespaces a recursive import reaches, in recursion order, giving each name
+/// only the candidates of the *first* reached namespace that has it.
 ///
-/// KerML recursion also descends into every public Type and Feature, taking the *first* visible
-/// membership of a name; that needs ordered import results, which the merged import index does
-/// not own yet (issue `resolution-recursive-import-type-namespaces`), so recursion stays within
-/// package-like namespaces rather than reporting spurious ambiguity.
+/// KerML 8.3.2.4 (and the Pilot's `KerMLScope.resolveIfUnvisited`/`resolveRecursive`): a
+/// recursive NamespaceImport resolves a name in the imported namespace first and only otherwise
+/// descends, depth first and in ownership order, into its public owned Namespaces, stopping at
+/// the first one that has a visible membership of that name. A deeper same-named member is
+/// therefore hidden by a shallower or earlier one rather than ambiguous with it.
+#[allow(clippy::too_many_arguments)]
+fn extend_from_recursive_namespaces(
+    entries: &mut Vec<(NameKey, DeclarationId)>,
+    exported_entries: &mut Vec<(NameKey, DeclarationId)>,
+    exported_names: &NameIndex,
+    previous_exported_imports: &NameIndex,
+    import_owner: Option<DeclarationId>,
+    namespaces: &[DeclarationId],
+    import_is_public: bool,
+) {
+    let mut taken = HashSet::new();
+    let mut reached = Vec::new();
+    for namespace in namespaces.iter().copied() {
+        reached.clear();
+        for index in [exported_names, previous_exported_imports] {
+            for (name, candidates) in index.entries_for_owner(Some(namespace)) {
+                if taken.contains(&name) {
+                    continue;
+                }
+                reached.push(name);
+                extend_import_entries(
+                    entries,
+                    exported_entries,
+                    import_owner,
+                    name,
+                    candidates,
+                    import_is_public,
+                );
+            }
+        }
+        taken.extend(reached.iter().copied());
+    }
+}
+
+/// `owner index -> its publicly-visible owned Namespaces`, in source order. Every Package, Type
+/// and Feature is a Namespace, and a recursive import descends through each public one; only a
+/// public owned namespace is importable, so recursion never descends through a private one.
 fn public_namespace_children(
     declarations: &[Declaration],
     memberships: &MembershipIndex,
 ) -> Vec<Vec<DeclarationId>> {
     let mut children = vec![Vec::new(); declarations.len()];
     for (index, declaration) in declarations.iter().enumerate() {
-        if !matches!(
-            declaration.kind,
-            DeclarationKind::Namespace | DeclarationKind::Package | DeclarationKind::LibraryPackage
-        ) {
+        if !DeclarationDomain::Namespace.accepts(declaration.kind) {
             continue;
         }
         let Ok(child) = DeclarationId::from_index(index) else {
@@ -726,12 +768,20 @@ fn public_namespace_children(
             slot.push(child);
         }
     }
+    for slot in &mut children {
+        slot.sort_by_key(|child| {
+            declarations
+                .get(child.index())
+                .map(|declaration| (declaration.document, declaration.span.offset, *child))
+        });
+    }
     children
 }
 
-/// `target` plus every namespace nested under it, following only the public-namespace edges in
-/// `children`. Package ownership is a tree; the visited guard is defensive against malformed
-/// storage rather than expected cycles.
+/// `target` followed by every namespace nested under it in recursion order: depth first, each
+/// namespace before its owned namespaces, siblings in source order, following only the
+/// public-namespace edges in `children`. Ownership is a tree; the visited guard is defensive
+/// against malformed storage rather than expected cycles.
 fn recursive_import_owners(
     children: &[Vec<DeclarationId>],
     target: DeclarationId,
@@ -749,7 +799,7 @@ fn recursive_import_owners(
         }
         owners.push(current);
         if let Some(next) = children.get(current.index()) {
-            stack.extend(next.iter().copied());
+            stack.extend(next.iter().rev().copied());
         }
     }
     owners

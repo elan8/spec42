@@ -83,22 +83,6 @@ package Imports {
         (severity error)
         (code "ambiguous_reference")
         (source "semantic")
-        (range (start 35 13) (end 35 14))
-        (related-information
-          (related
-            (uri "memory://snapshot/imports.md")
-            (range (start 10 2) (end 12 3))
-          )
-          (related
-            (uri "memory://snapshot/imports.md")
-            (range (start 14 3) (end 14 11))
-          )
-        )
-      )
-      (diagnostic
-        (severity error)
-        (code "ambiguous_reference")
-        (source "semantic")
         (range (start 43 13) (end 43 14))
         (related-information
           (related
@@ -171,12 +155,13 @@ package Imports {
       (outcome (status ambiguous) (candidates (node (document "memory://snapshot/imports.md") (qualified-name "Imports::P::A")) (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::A")))))
     (reference (id (source (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::Y"))) (kind specialization) (ordinal 0))
       (authored-target "D")
-      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::D")) (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q1::D")))))
+      (outcome (status resolved) (target (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::D")))))
     (reference (id (source (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::Z"))) (kind specialization) (ordinal 0))
       (authored-target "F")
       (outcome (status resolved) (target (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q2::F")))))
   )
   (relationships
+    (relationship (kind specialization) (source (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::Y"))) (target (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::D"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::Y"))) (kind specialization) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::Z"))) (target (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q2::F"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::Z"))) (kind specialization) (ordinal 0)))
   )
   (evaluation
@@ -186,8 +171,14 @@ package Imports {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::D")))
+      (subtype (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::Y")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q2::F")))
       (subtype (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::Z")) (scopes any subclassification))
+    )
+    (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::Y")))
+      (supertype (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::D")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::Z")))
       (supertype (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q2::F")) (scopes any subclassification))
@@ -234,7 +225,7 @@ package Imports {
   )
   (query (document "memory://snapshot/imports.md") (range (start 35 13) (end 35 14)) (probe (position 35 13))
     (reference (id (source (node (document "memory://snapshot/imports.md") (qualified-name "Imports::S::Y"))) (kind specialization) (ordinal 0) (authored-target "D")
-      (outcome (status ambiguous) (candidates (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::D")) (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::Q1::D")))))
+      (outcome (status resolved) (target (node (document "memory://snapshot/imports.md") (qualified-name "Imports::Q::D")))))
     )
   )
   (query (document "memory://snapshot/imports.md") (range (start 36 13) (end 36 14)) (probe (position 36 13))
