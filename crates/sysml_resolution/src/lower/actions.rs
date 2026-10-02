@@ -1621,6 +1621,9 @@ impl SemanticModelBuilder {
             }
             _ => TriggerArgument::Other,
         };
+        if let TriggerArgument::Literal(_) = argument_fact {
+            self.lower_leaf_expression(document, expression, argument)?;
+        }
         if argument_fact == TriggerArgument::Other {
             self.lower_constraint_expression(document, expression, family, argument)?;
         }

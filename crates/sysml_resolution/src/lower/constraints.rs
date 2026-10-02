@@ -71,7 +71,16 @@ impl SemanticModelBuilder {
             | Expression::LiteralReal(_)
             | Expression::LiteralBoolean(_)
             | Expression::LiteralString(_)
-            | Expression::Null => Ok(()),
+            | Expression::Null => self
+                .lower_leaf_expression(document, declaration, node)
+                .map(drop),
+            Expression::MetadataAccess(_) => {
+                // The MetadataAccessExpression element is minted; its referenced element is not
+                // lowered yet, so the node stays reported as unsupported.
+                self.lower_leaf_expression(document, declaration, node)?;
+                self.push_unsupported(document, family, node.span);
+                Ok(())
+            }
             Expression::Bracket { base, operands, .. } => {
                 self.lower_unit_token(document, declaration, operands)?;
                 self.lower_constraint_expression(document, declaration, family, base)
@@ -246,7 +255,16 @@ impl SemanticModelBuilder {
             | Expression::LiteralReal(_)
             | Expression::LiteralBoolean(_)
             | Expression::LiteralString(_)
-            | Expression::Null => Ok(()),
+            | Expression::Null => self
+                .lower_leaf_expression(document, declaration, node)
+                .map(drop),
+            Expression::MetadataAccess(_) => {
+                // The MetadataAccessExpression element is minted; its referenced element is not
+                // lowered yet, so the node stays reported as unsupported.
+                self.lower_leaf_expression(document, declaration, node)?;
+                self.push_unsupported(document, family, node.span);
+                Ok(())
+            }
             Expression::Bracket { base, operands, .. } => {
                 self.lower_unit_token(document, declaration, operands)?;
                 self.lower_calc_expression(document, declaration, family, base)
@@ -453,7 +471,9 @@ impl SemanticModelBuilder {
             Expression::LiteralInteger(_)
             | Expression::LiteralReal(_)
             | Expression::LiteralBoolean(_)
-            | Expression::LiteralString(_) => Ok(()),
+            | Expression::LiteralString(_) => self
+                .lower_leaf_expression(document, declaration, node)
+                .map(drop),
             Expression::Bracket { base, operands, .. } => {
                 self.lower_unit_token(document, declaration, operands)?;
                 self.lower_filter_expression(document, declaration, base)

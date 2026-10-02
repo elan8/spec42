@@ -61,7 +61,9 @@ package Filters {
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_boolean.md") (qualified-name "Filters"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_boolean.md") (qualified-name "Filters::Accepted"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_boolean.md") (path (named (kind package) (name "Filters")) (named (kind package) (name "Accepted")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (kind kerml-literal-boolean) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_boolean.md") (qualified-name "Filters::Rejected"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_boolean.md") (path (named (kind package) (name "Filters")) (named (kind package) (name "Rejected")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
   )
   (references
   )

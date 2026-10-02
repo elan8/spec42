@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Literal, null and metadata-access expressions are elements.** Every literal (`LiteralBoolean`,
+  `LiteralInteger`, `LiteralRational`, `LiteralString`), `null`/`()` (`NullExpression`) and
+  `X.metadata` (`MetadataAccessExpression`) is published as its own anonymous Expression of that
+  metaclass -- a FeatureValue's value Expression, a multiplicity bound, an operator argument, or a
+  node nested in a body -- and specializes its `Performances` library anchor
+  (`literalIntegerEvaluations`, ...). The generator wire `Metaclass` vocabulary gains these
+  metaclasses (compatibility token changed; guests must be rebuilt).
+
 - **Conjugated specific types.** The new `specialization_specific_conjugated` error checks KerML
   `validateSpecializationSpecificNotConjugated` for owned specializations and standalone KerML
   relationship declarations (`subclassifier C specializes B;` where `C` conjugates a type).

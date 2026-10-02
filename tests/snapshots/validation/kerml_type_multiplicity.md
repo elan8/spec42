@@ -45,14 +45,14 @@ package Model {
     (declaration (id (node (document "memory://snapshot/kerml_type_multiplicity.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_multiplicity.md") (qualified-name "Model::Sized"))) (kind kerml-type) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 1) (upper 1))))
     (declaration (id (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
-    (declaration (id (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
+    (declaration (id (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/kerml_type_multiplicity.md") (qualified-name "Model::Unsized"))) (kind kerml-type) (membership (kind owning) (visibility default)))
   )
   (references
   )
   (relationships
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
   )
@@ -61,8 +61,8 @@ package Model {
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
-      (featured-by (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+    (declaration (id (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_type_multiplicity.md") (path (named (kind package) (name "Model")) (named (kind kerml-type) (name "Sized")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
     )
 )
 ~~~

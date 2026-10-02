@@ -207,6 +207,15 @@ element_kinds! {
     Step,
     Expression,
     BooleanExpression,
+    /// The abstract KerML `LiteralExpression` every literal metaclass specializes. No
+    /// declaration is published with this kind.
+    LiteralExpression,
+    LiteralBoolean,
+    LiteralInteger,
+    LiteralRational,
+    LiteralString,
+    NullExpression,
+    MetadataAccessExpression,
     Connector,
     BindingConnector,
     /// The KerML `Succession` metaclass. Every published succession is a SysML
@@ -251,7 +260,13 @@ impl ElementKind {
             K::Multiplicity | K::Step | K::Connector => &[K::Feature],
             K::MultiplicityRange => &[K::Multiplicity],
             K::Expression => &[K::Step],
-            K::BooleanExpression => &[K::Expression],
+            K::BooleanExpression
+            | K::LiteralExpression
+            | K::NullExpression
+            | K::MetadataAccessExpression => &[K::Expression],
+            K::LiteralBoolean | K::LiteralInteger | K::LiteralRational | K::LiteralString => {
+                &[K::LiteralExpression]
+            }
             K::Invariant => &[K::BooleanExpression],
             K::BindingConnector | K::Succession => &[K::Connector],
 

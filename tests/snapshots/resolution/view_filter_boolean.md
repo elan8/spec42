@@ -30,6 +30,12 @@ package Views {
         (range (start 3 9) (end 3 10))
       )
       (diagnostic
+        (severity information)
+        (code "view_expose_empty")
+        (source "semantic")
+        (range (start 5 1) (end 7 2))
+      )
+      (diagnostic
         (severity warning)
         (code "invalid_import_filter")
         (source "semantic")
@@ -46,9 +52,13 @@ package Views {
   (declarations
     (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (qualified-name "Views"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (qualified-name "Views::Imported"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (path (named (kind package) (name "Views")) (named (kind package) (name "Imported")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (qualified-name "Views::Overview"))) (kind view-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (path (named (kind package) (name "Views")) (named (kind view-def) (name "Overview")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (qualified-name "Views::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (qualified-name "Views::summary"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Overview")))))
+    (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (path (named (kind package) (name "Views")) (named (kind view) (name "summary")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (path (named (kind package) (name "Views")) (named (kind view) (name "summary")) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/view_filter_boolean.md") (qualified-name "Views::summary"))) (kind featureTyping) (ordinal 0))

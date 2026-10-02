@@ -193,6 +193,13 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::Step
         | ElementKind::Expression
         | ElementKind::BooleanExpression
+        | ElementKind::LiteralExpression
+        | ElementKind::LiteralBoolean
+        | ElementKind::LiteralInteger
+        | ElementKind::LiteralRational
+        | ElementKind::LiteralString
+        | ElementKind::NullExpression
+        | ElementKind::MetadataAccessExpression
         | ElementKind::Invariant => "usage",
     }
 }

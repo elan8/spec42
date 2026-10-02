@@ -168,6 +168,12 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::KermlStep => ElementKind::Step,
         DeclarationKind::KermlExpression => ElementKind::Expression,
         DeclarationKind::KermlBooleanExpression => ElementKind::BooleanExpression,
+        DeclarationKind::KermlLiteralBoolean => ElementKind::LiteralBoolean,
+        DeclarationKind::KermlLiteralInteger => ElementKind::LiteralInteger,
+        DeclarationKind::KermlLiteralRational => ElementKind::LiteralRational,
+        DeclarationKind::KermlLiteralString => ElementKind::LiteralString,
+        DeclarationKind::KermlNullExpression => ElementKind::NullExpression,
+        DeclarationKind::KermlMetadataAccessExpression => ElementKind::MetadataAccessExpression,
         DeclarationKind::KermlConnector => ElementKind::Connector,
         DeclarationKind::KermlBinding => ElementKind::BindingConnector,
         DeclarationKind::KermlInvariant => ElementKind::Invariant,
@@ -312,6 +318,12 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::KermlStep
         | DeclarationKind::KermlExpression
         | DeclarationKind::KermlBooleanExpression
+        | DeclarationKind::KermlLiteralBoolean
+        | DeclarationKind::KermlLiteralInteger
+        | DeclarationKind::KermlLiteralRational
+        | DeclarationKind::KermlLiteralString
+        | DeclarationKind::KermlNullExpression
+        | DeclarationKind::KermlMetadataAccessExpression
         | DeclarationKind::KermlConnector
         | DeclarationKind::KermlBinding
         | DeclarationKind::KermlInvariant => None,
@@ -471,6 +483,12 @@ mod tests {
         DeclarationKind::KermlStep,
         DeclarationKind::KermlExpression,
         DeclarationKind::KermlBooleanExpression,
+        DeclarationKind::KermlLiteralBoolean,
+        DeclarationKind::KermlLiteralInteger,
+        DeclarationKind::KermlLiteralRational,
+        DeclarationKind::KermlLiteralString,
+        DeclarationKind::KermlNullExpression,
+        DeclarationKind::KermlMetadataAccessExpression,
         DeclarationKind::DefaultReferenceUsage,
         DeclarationKind::KermlConnector,
         DeclarationKind::KermlBinding,

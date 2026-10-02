@@ -1952,6 +1952,12 @@ pub(crate) fn is_feature_declaration(kind: DeclarationKind) -> bool {
                 | sysml_contract::ElementKind::Step
                 | sysml_contract::ElementKind::Expression
                 | sysml_contract::ElementKind::BooleanExpression
+                | sysml_contract::ElementKind::LiteralBoolean
+                | sysml_contract::ElementKind::LiteralInteger
+                | sysml_contract::ElementKind::LiteralRational
+                | sysml_contract::ElementKind::LiteralString
+                | sysml_contract::ElementKind::NullExpression
+                | sysml_contract::ElementKind::MetadataAccessExpression
                 | sysml_contract::ElementKind::Connector
                 | sysml_contract::ElementKind::BindingConnector
                 | sysml_contract::ElementKind::Invariant

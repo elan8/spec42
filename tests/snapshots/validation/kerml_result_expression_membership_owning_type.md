@@ -52,7 +52,9 @@ package Results {
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results::Computing"))) (kind kerml-function) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results::Object"))) (kind kerml-structure) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
   )
   (references
   )

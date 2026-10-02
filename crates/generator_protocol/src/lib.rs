@@ -155,9 +155,15 @@ pub enum Metaclass {
     Import,
     InterfaceEndUsage,
     JoinNodeUsage,
+    LiteralBoolean,
+    LiteralInteger,
+    LiteralRational,
+    LiteralString,
     MergeNodeUsage,
+    MetadataAccessExpression,
     MultiplicityRange,
     NeedUsage,
+    NullExpression,
     ObjectiveUsage,
     ParameterUsage,
     PurposeUsage,
@@ -268,6 +274,12 @@ impl Metaclass {
             Self::Import => "Import",
             Self::InterfaceEndUsage => "InterfaceEndUsage",
             Self::JoinNodeUsage => "JoinNodeUsage",
+            Self::LiteralBoolean => "LiteralBoolean",
+            Self::LiteralInteger => "LiteralInteger",
+            Self::LiteralRational => "LiteralRational",
+            Self::LiteralString => "LiteralString",
+            Self::MetadataAccessExpression => "MetadataAccessExpression",
+            Self::NullExpression => "NullExpression",
             Self::MergeNodeUsage => "MergeNodeUsage",
             Self::MultiplicityRange => "MultiplicityRange",
             Self::NeedUsage => "NeedUsage",
@@ -376,6 +388,12 @@ impl Metaclass {
             "Import" => Self::Import,
             "InterfaceEndUsage" => Self::InterfaceEndUsage,
             "JoinNodeUsage" => Self::JoinNodeUsage,
+            "LiteralBoolean" => Self::LiteralBoolean,
+            "LiteralInteger" => Self::LiteralInteger,
+            "LiteralRational" => Self::LiteralRational,
+            "LiteralString" => Self::LiteralString,
+            "MetadataAccessExpression" => Self::MetadataAccessExpression,
+            "NullExpression" => Self::NullExpression,
             "MergeNodeUsage" => Self::MergeNodeUsage,
             "MultiplicityRange" => Self::MultiplicityRange,
             "NeedUsage" => Self::NeedUsage,
@@ -1250,7 +1268,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x599c_5bf9_fcf8_fb0a,
+            SCHEMA_FINGERPRINT, 0x1e7e_09ae_2f6a_bed9,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1258,7 +1276,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xf1d3_80e2_e90b_d36e,
+            COMPATIBILITY_TOKEN, 0x123b_ce79_cbcd_645f,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

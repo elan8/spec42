@@ -3223,16 +3223,20 @@ pub(crate) fn synthesize_multiplicity_type_featurings(
         }
         let multiplicity = match declaration.kind {
             DeclarationKind::KermlMultiplicity | DeclarationKind::KermlMultiplicityRange => source,
-            DeclarationKind::KermlExpression => match declaration.owner {
-                Some(range)
-                    if storage.declaration(range).is_some_and(|range| {
-                        range.kind == DeclarationKind::KermlMultiplicityRange
-                    }) =>
-                {
-                    range
+            kind if element_kind::element_kind(kind)
+                .conforms_to(sysml_contract::ElementKind::Expression) =>
+            {
+                match declaration.owner {
+                    Some(range)
+                        if storage.declaration(range).is_some_and(|range| {
+                            range.kind == DeclarationKind::KermlMultiplicityRange
+                        }) =>
+                    {
+                        range
+                    }
+                    _ => continue,
                 }
-                _ => continue,
-            },
+            }
             _ => continue,
         };
         let Some(types) =

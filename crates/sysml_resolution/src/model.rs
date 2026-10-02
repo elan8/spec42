@@ -710,6 +710,18 @@ pub(crate) enum DeclarationKind {
     /// `bool earlierFirstIncomingTransferSort : IncomingTransferSort { ... }`. KerML
     /// `BooleanExpression`.
     KermlBooleanExpression,
+    /// A `true`/`false` literal written inside an expression. KerML `LiteralBoolean`.
+    KermlLiteralBoolean,
+    /// An integer literal written inside an expression. KerML `LiteralInteger`.
+    KermlLiteralInteger,
+    /// A real literal written inside an expression. KerML `LiteralRational`.
+    KermlLiteralRational,
+    /// A string literal written inside an expression. KerML `LiteralString`.
+    KermlLiteralString,
+    /// `null` or `()` written inside an expression. KerML `NullExpression`.
+    KermlNullExpression,
+    /// `X.metadata` written inside an expression. KerML `MetadataAccessExpression`.
+    KermlMetadataAccessExpression,
     /// A keyword-less `<name> = <expr>;` / `<name> : <Type>;` binding (`DefaultReferenceUsage`,
     /// BNF §8.2.2.6 / Spec §7.6.4), e.g. `baseType = Atom meta KerML::Classifier;` (KerML
     /// `metaclass` body) or the anonymous leading-redefinition form `:>> dimension =

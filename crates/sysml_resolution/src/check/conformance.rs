@@ -225,6 +225,12 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         | K::KermlStep
         | K::KermlExpression
         | K::KermlBooleanExpression
+        | K::KermlLiteralBoolean
+        | K::KermlLiteralInteger
+        | K::KermlLiteralRational
+        | K::KermlLiteralString
+        | K::KermlNullExpression
+        | K::KermlMetadataAccessExpression
         | K::KermlConnector
         | K::KermlBinding
         | K::KermlInvariant

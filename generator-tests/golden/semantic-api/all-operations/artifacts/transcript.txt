@@ -9,7 +9,7 @@ find(None): 25 element(s)
   Coverage::Engine::mass [AttributeUsage] name=mass library=false
   Coverage::Engine::speed [AttributeUsage] name=speed library=false
   Coverage::Engine::speed:: [MultiplicityRange] name=<none> library=false
-  Coverage::Engine::speed:::: [Expression] name=<none> library=false
+  Coverage::Engine::speed:::: [LiteralInteger] name=<none> library=false
   Coverage::Engine::speed:::::: [Feature] name=<none> library=false
   Coverage::Mass [AttributeDefinition] name=Mass library=false
   Coverage::Powered [PartDefinition] name=Powered library=false
@@ -18,12 +18,12 @@ find(None): 25 element(s)
   Coverage::Vehicle [PartDefinition] name=Vehicle library=false
   Coverage::Vehicle::engine [PartUsage] name=engine library=false
   Coverage::Vehicle::engine:: [MultiplicityRange] name=<none> library=false
-  Coverage::Vehicle::engine:::: [Expression] name=<none> library=false
+  Coverage::Vehicle::engine:::: [LiteralInteger] name=<none> library=false
   Coverage::Vehicle::engine:::::: [Feature] name=<none> library=false
   Coverage::Vehicle::spare [PartUsage] name=spare library=false
   Coverage::Vehicle::spare:: [MultiplicityRange] name=<none> library=false
-  Coverage::Vehicle::spare:::: [Expression] name=<none> library=false
-  Coverage::Vehicle::spare:::: [Expression] name=<none> library=false
+  Coverage::Vehicle::spare:::: [LiteralInteger] name=<none> library=false
+  Coverage::Vehicle::spare:::: [LiteralInteger] name=<none> library=false
   Coverage::Vehicle::spare:::::: [Feature] name=<none> library=false
   Coverage::Vehicle::spare:::::: [Feature] name=<none> library=false
   Coverage::vehicle [PartUsage] name=vehicle library=false
@@ -85,7 +85,7 @@ relationships(Coverage::Engine::speed): 2 edge(s)
   typing Coverage::Engine::speed -> Coverage::Speed implied=false
 effective_features(Coverage::Engine::speed): 0 element(s)
 children(Coverage::Engine::speed::): 1 element(s)
-  Coverage::Engine::speed:::: [Expression] name=<none> library=false
+  Coverage::Engine::speed:::: [LiteralInteger] name=<none> library=false
 element(Coverage::Engine::speed::): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Engine::speed::): <untyped>
 relationships(Coverage::Engine::speed::): 1 edge(s)
@@ -153,7 +153,7 @@ effective_features(Coverage::Vehicle::engine): 3 element(s)
   Coverage::Engine::speed [AttributeUsage] name=speed library=false
   Coverage::Powered::power [AttributeUsage] name=power library=false
 children(Coverage::Vehicle::engine::): 1 element(s)
-  Coverage::Vehicle::engine:::: [Expression] name=<none> library=false
+  Coverage::Vehicle::engine:::: [LiteralInteger] name=<none> library=false
 element(Coverage::Vehicle::engine::): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Vehicle::engine::): <untyped>
 relationships(Coverage::Vehicle::engine::): 1 edge(s)
@@ -185,8 +185,8 @@ effective_features(Coverage::Vehicle::spare): 3 element(s)
   Coverage::Engine::speed [AttributeUsage] name=speed library=false
   Coverage::Powered::power [AttributeUsage] name=power library=false
 children(Coverage::Vehicle::spare::): 2 element(s)
-  Coverage::Vehicle::spare:::: [Expression] name=<none> library=false
-  Coverage::Vehicle::spare:::: [Expression] name=<none> library=false
+  Coverage::Vehicle::spare:::: [LiteralInteger] name=<none> library=false
+  Coverage::Vehicle::spare:::: [LiteralInteger] name=<none> library=false
 element(Coverage::Vehicle::spare::): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Vehicle::spare::): <untyped>
 relationships(Coverage::Vehicle::spare::): 1 edge(s)

@@ -609,12 +609,13 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentIdx,
         owner: DeclarationId,
+        kind: DeclarationKind,
         span: Span,
     ) -> Result<(DeclarationId, DeclarationId), ConstructionError> {
         let expression = self.push_typed_declaration(
             document,
             Some(owner),
-            DeclarationKind::KermlExpression,
+            kind,
             None,
             span,
             DeclarationFacts::none(),
@@ -651,8 +652,17 @@ impl SemanticModelBuilder {
             ParserFeatureValueKind::Bind => FeatureValueKind::Bind,
             ParserFeatureValueKind::Assign => FeatureValueKind::Assign,
         };
-        let (expression, result) =
-            self.push_owned_expression(document, declaration, value.value.expression.span)?;
+        // A literal, null or metadata-access value is itself the value Expression, an instance
+        // of that metaclass.
+        let expression_kind =
+            crate::lower::facts::leaf_expression_kind(&value.value.expression.value)
+                .unwrap_or(DeclarationKind::KermlExpression);
+        let (expression, result) = self.push_owned_expression(
+            document,
+            declaration,
+            expression_kind,
+            value.value.expression.span,
+        )?;
         if matches!(
             value.value.expression.value,
             Expression::MemberAccess { .. } | Expression::FeatureChainRef(_)
@@ -762,12 +772,13 @@ impl SemanticModelBuilder {
         document: DocumentIdx,
         expression: DeclarationId,
         ordinal: u32,
+        kind: DeclarationKind,
         span: Span,
     ) -> Result<(), ConstructionError> {
         let argument = self.push_typed_declaration(
             document,
             Some(expression),
-            DeclarationKind::KermlExpression,
+            kind,
             None,
             span,
             DeclarationFacts::none(),
@@ -804,16 +815,25 @@ impl SemanticModelBuilder {
         result: DeclarationId,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
+        // Each argument is minted at its operand's span, as an instance of the operand's leaf
+        // metaclass when it is a literal, null or metadata access.
+        let site = |operand: &Node<Expression>| {
+            (
+                operand.span,
+                crate::lower::facts::leaf_expression_kind(&operand.value)
+                    .unwrap_or(DeclarationKind::KermlExpression),
+            )
+        };
         let (kind, spans) = match &node.value {
             Expression::Index { base, operands, .. } => (
                 OperatorExpressionKind::Index,
-                std::iter::once(base.span)
+                std::iter::once(site(base))
                     .chain(
                         operands
                             .value
                             .elements
                             .iter()
-                            .map(|element| element.expression.span),
+                            .map(|element| site(&element.expression)),
                     )
                     .collect::<Vec<_>>(),
             ),
@@ -826,7 +846,10 @@ impl SemanticModelBuilder {
                     .span;
                 (
                     OperatorExpressionKind::Select,
-                    vec![base.span, selector_span],
+                    vec![
+                        site(base),
+                        (selector_span, DeclarationKind::KermlExpression),
+                    ],
                 )
             }
             Expression::CollectionOp {
@@ -837,8 +860,8 @@ impl SemanticModelBuilder {
                 ..
             } => (
                 OperatorExpressionKind::Select,
-                std::iter::once(base.span)
-                    .chain(args.iter().map(|argument| argument.value.span))
+                std::iter::once(site(base))
+                    .chain(args.iter().map(|argument| site(&argument.value)))
                     .collect::<Vec<_>>(),
             ),
             _ => return Ok(()),
@@ -848,11 +871,12 @@ impl SemanticModelBuilder {
             result,
             kind,
         });
-        for (ordinal, span) in spans.into_iter().enumerate() {
+        for (ordinal, (span, kind)) in spans.into_iter().enumerate() {
             self.push_expression_argument(
                 document,
                 expression,
                 u32::try_from(ordinal).map_err(|_| ConstructionError::Capacity)?,
+                kind,
                 span,
             )?;
         }
@@ -1410,10 +1434,14 @@ impl SemanticModelBuilder {
             .declarations
             .get(site.index())
             .is_some_and(|declaration| {
-                declaration.kind == DeclarationKind::KermlExpression
+                crate::model::element_kind::element_kind(declaration.kind)
+                    .conforms_to(sysml_contract::ElementKind::Expression)
                     && declaration.span == node.span
             });
         let kind = match (top_level, &node.value) {
+            // A metadata access is its own element (see `Self::lower_leaf_expression`), but the
+            // membership owning its referenced element is not lowered.
+            (_, Expression::MetadataAccess(_)) => UnloweredExpression::Parameters,
             (
                 true,
                 Expression::FeatureRef(_)
@@ -1426,6 +1454,66 @@ impl SemanticModelBuilder {
         };
         self.unlowered_expressions
             .push(crate::lower::facts::UnloweredExpressionSite { site, kind });
+    }
+
+    /// Mints the element a leaf expression node `node` -- a literal, a null or a metadata access
+    /// (see [`crate::lower::facts::leaf_expression_kind`]) -- written at the evaluation site
+    /// `site` is an instance of, and returns it; `None` for any other node.
+    ///
+    /// The element is an anonymous Expression of its own metaclass under an `OwningMembership` of
+    /// the innermost instantiation it is nested in at `site` (or of `site` itself), exactly as
+    /// [`Self::enter_instantiation`] places a nested instantiation. It owns no result parameter:
+    /// a LiteralExpression's `result` is the one it inherits from its library type. A node that
+    /// already has its element -- the top-level node of a FeatureValue (its value Expression) or
+    /// an operand an operator expression minted as its argument -- is not minted twice.
+    pub(crate) fn lower_leaf_expression(
+        &mut self,
+        document: DocumentIdx,
+        site: DeclarationId,
+        node: &Node<Expression>,
+    ) -> Result<Option<DeclarationId>, ConstructionError> {
+        let Some(kind) = crate::lower::facts::leaf_expression_kind(&node.value) else {
+            return Ok(None);
+        };
+        let is_minted = |declaration: DeclarationId| {
+            self.declarations
+                .get(declaration.index())
+                .is_some_and(|declaration| declaration.span == node.span)
+        };
+        let site_is_value = self
+            .declarations
+            .get(site.index())
+            .is_some_and(|declaration| declaration.kind == kind && declaration.span == node.span);
+        if site_is_value {
+            return Ok(Some(site));
+        }
+        if let Some(argument) = self
+            .expression_arguments
+            .iter()
+            .find(|argument| argument.expression == site && is_minted(argument.argument))
+        {
+            return Ok(Some(argument.argument));
+        }
+        let owner = self
+            .instantiation_scopes
+            .last()
+            .filter(|scope| scope.site == site)
+            .map_or(site, |scope| scope.element);
+        let element = self.push_typed_declaration(
+            document,
+            Some(owner),
+            kind,
+            None,
+            node.span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            element,
+            MembershipKind::Owning,
+            Visibility::Default,
+            node.span,
+        )?;
+        Ok(Some(element))
     }
 
     /// Closes the instantiation scope [`Self::enter_instantiation`] opened, if it opened one.
@@ -1906,8 +1994,8 @@ impl SemanticModelBuilder {
             // `MultiplicityRange::bound`: each authored bound is an owned Expression, in source
             // order. Only its identity, ownership and result are minted here; the bound's value
             // stays the owner's `multiplicity` fact, and an unbounded `*` has no AST node to mint.
-            for bound in bounds.into_iter().flatten() {
-                self.push_owned_expression(document, range, bound)?;
+            for (bound, kind) in bounds.into_iter().flatten() {
+                self.push_owned_expression(document, range, kind, bound)?;
             }
         }
         // SysML 8.3.9.3: an `individual` OccurrenceDefinition owns an empty Multiplicity (the

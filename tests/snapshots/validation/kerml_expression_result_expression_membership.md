@@ -52,7 +52,10 @@ package Expressions {
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_expression_membership.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_expression_membership.md") (qualified-name "Expressions::One"))) (kind kerml-expression) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_expression_result_expression_membership.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-expression) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_expression_membership.md") (qualified-name "Expressions::Two"))) (kind kerml-expression) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_expression_result_expression_membership.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-expression) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_expression_result_expression_membership.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-expression) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
   )
   (references
   )

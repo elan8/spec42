@@ -140,13 +140,30 @@ pub(crate) struct MultiplicityRecord {
     pub(crate) bound_spans: Option<Box<MultiplicityBoundSpans>>,
 }
 
-/// The source spans of a multiplicity's authored bound expressions (`lowerBound`, `upperBound`).
+/// The authored bound expressions of a multiplicity (`lowerBound`, `upperBound`): the source span
+/// each `bound` Expression is minted at, and its Expression metaclass.
 ///
 /// `lower` is `None` for the single-bound form; `upper` is `None` for an unbounded `*`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct MultiplicityBoundSpans {
-    pub(crate) lower: Option<Span>,
-    pub(crate) upper: Option<Span>,
+    pub(crate) lower: Option<(Span, DeclarationKind)>,
+    pub(crate) upper: Option<(Span, DeclarationKind)>,
+}
+
+/// The KerML metaclass of an expression node that is an Expression element in its own right
+/// without owning any further structure: a literal (`LiteralBoolean`, `LiteralInteger`,
+/// `LiteralRational`, `LiteralString`), a `NullExpression` (`null` or `()`), or a
+/// `MetadataAccessExpression` (`X.metadata`). `None` for every other node.
+pub(crate) fn leaf_expression_kind(expression: &Expression) -> Option<DeclarationKind> {
+    Some(match expression {
+        Expression::LiteralBoolean(_) => DeclarationKind::KermlLiteralBoolean,
+        Expression::LiteralInteger(_) => DeclarationKind::KermlLiteralInteger,
+        Expression::LiteralReal(_) => DeclarationKind::KermlLiteralRational,
+        Expression::LiteralString(_) => DeclarationKind::KermlLiteralString,
+        Expression::Null => DeclarationKind::KermlNullExpression,
+        Expression::MetadataAccess(_) => DeclarationKind::KermlMetadataAccessExpression,
+        _ => return None,
+    })
 }
 
 /// The `snapshot`/`timeslice` portion prefix on an occurrence usage (`ast::OccurrencePortionKind`).
@@ -550,13 +567,19 @@ pub(crate) fn multiplicity_facts(
     let multiplicity = multiplicity?;
     // A bare `[3]` reaches the AST as one expression node in both slots; KerML makes that single
     // bound the `upperBound` (8.3.4.11, `lowerBound` is null when `bound` has one element).
-    let upper_span = multiplicity.value.upper.as_deref().map(|bound| bound.span);
+    let site = |bound: &Node<Expression>| {
+        (
+            bound.span,
+            leaf_expression_kind(&bound.value).unwrap_or(DeclarationKind::KermlExpression),
+        )
+    };
+    let upper_span = multiplicity.value.upper.as_deref().map(site);
     let lower_span = multiplicity
         .value
         .lower
         .as_deref()
-        .map(|bound| bound.span)
-        .filter(|span| Some(*span) != upper_span);
+        .map(site)
+        .filter(|lower| Some(lower.0) != upper_span.map(|upper| upper.0));
     Some(MultiplicityRecord {
         lower: multiplicity_bound(multiplicity.value.lower.as_deref()),
         upper: multiplicity_bound(multiplicity.value.upper.as_deref()),
@@ -1276,8 +1299,10 @@ pub(crate) enum UnloweredExpression {
     /// chain nested in another expression, or written directly in a constraint, calculation,
     /// guard or other body), so neither it, its `result` nor its parameters exist.
     Element,
-    /// The expression is the value Expression of a FeatureValue, with its `result`, but its
-    /// operand parameters (an OperatorExpression's `ArgumentMember`s) are not lowered.
+    /// The expression is its own element -- the value Expression of a FeatureValue, with its
+    /// `result`, or a MetadataAccessExpression -- but its owned operands (an
+    /// OperatorExpression's `ArgumentMember`s, a metadata access's referenced element) are not
+    /// lowered.
     Parameters,
 }
 

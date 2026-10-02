@@ -2092,10 +2092,17 @@ fn diagram_notation_role(kind: ElementKind) -> DiagramNotationRole {
         | Metaclass::VerdictUsage
         | Metaclass::VerifyUsage
         | Metaclass::WhileLoopActionUsage => DiagramNotationRole::Usage,
-        // KerML multiplicity ranges and their bound expressions have no SysML diagram notation.
-        Metaclass::Expression | Metaclass::Feature | Metaclass::MultiplicityRange => {
-            DiagramNotationRole::Unsupported
-        }
+        // KerML multiplicity ranges, their bound expressions and the literal, null and
+        // metadata-access expressions written inside an expression have no SysML diagram notation.
+        Metaclass::Expression
+        | Metaclass::Feature
+        | Metaclass::MultiplicityRange
+        | Metaclass::LiteralBoolean
+        | Metaclass::LiteralInteger
+        | Metaclass::LiteralRational
+        | Metaclass::LiteralString
+        | Metaclass::MetadataAccessExpression
+        | Metaclass::NullExpression => DiagramNotationRole::Unsupported,
         Metaclass::Unrecognized(_) => DiagramNotationRole::Unsupported,
     }
 }

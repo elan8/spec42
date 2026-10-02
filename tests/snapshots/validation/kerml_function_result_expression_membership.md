@@ -52,7 +52,10 @@ package Functions {
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::One"))) (kind kerml-function) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::Two"))) (kind kerml-function) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
   )
   (references
   )
