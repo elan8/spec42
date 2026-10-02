@@ -46,7 +46,9 @@ the complete owned `SMG`, `DIAGNOSTICS`, and `NAVIGATION` renderings, including 
 state embedded in `SMG`, before checking or writing goldens. Sequential output is the canonical rendering only after
 this parity check succeeds; there is no strategy override that can bypass it.
 
-Fixtures are evaluated concurrently with Rayon’s bounded global worker pool. Results are sorted by
+Standard-library source admission finishes before the fixture worker pool runs. Workers share
+the admitted documents immutably; admission errors affect only fixtures requesting that library.
+Fixtures are evaluated concurrently with Rayon’s bounded worker pool. Results are sorted by
 path, errors and stale paths are reported in that order, and update writes occur only after the
 complete worker batch succeeds.
 
