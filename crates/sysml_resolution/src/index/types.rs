@@ -1078,12 +1078,23 @@ pub(crate) fn saturate(
     count: usize,
 ) -> Result<Vec<Vec<(DeclarationId, u8)>>, ResolutionError> {
     let mut closure = direct.to_vec();
-    let mut next: Vec<Vec<(DeclarationId, u8)>> = vec![Vec::new(); count];
+    // Each pass is a Jacobi step `closure'[i] = direct[i] + closure[parents of i]`. A row whose
+    // parents' rows did not change in the previous pass would recompute to exactly its current
+    // value, so only rows with a changed parent are recomputed; updates are committed after the
+    // pass, keeping every pass identical to the full step and the result the same fixed point.
+    let mut changed = vec![true; count];
+    let mut row = Vec::new();
+    let mut updates: Vec<(usize, Vec<(DeclarationId, u8)>)> = Vec::new();
     let pass_limit = count.checked_add(1).ok_or(ResolutionError::Capacity)?;
     for _ in 0..pass_limit {
-        let mut changed = false;
+        updates.clear();
         for index in 0..count {
-            let row = &mut next[index];
+            if !direct[index]
+                .iter()
+                .any(|(parent, _)| changed[parent.index()])
+            {
+                continue;
+            }
             row.clear();
             for (parent, parent_scopes) in &direct[index] {
                 row.push((*parent, *parent_scopes));
@@ -1094,14 +1105,18 @@ pub(crate) fn saturate(
                     }
                 }
             }
-            merge_scopes(row);
-            if *row != closure[index] {
-                changed = true;
+            merge_scopes(&mut row);
+            if row != closure[index] {
+                updates.push((index, row.clone()));
             }
         }
-        std::mem::swap(&mut closure, &mut next);
-        if !changed {
+        changed.fill(false);
+        if updates.is_empty() {
             break;
+        }
+        for (index, updated) in updates.drain(..) {
+            changed[index] = true;
+            closure[index] = updated;
         }
     }
     Ok(closure)

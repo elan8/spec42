@@ -1,5 +1,7 @@
 //! Phase 3: the name and scope indexes the solver looks names up in.
 
+use std::collections::HashMap;
+
 use crate::index::documents::record_visited_index_entries;
 use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
@@ -74,7 +76,7 @@ impl EffectiveScopeIndex {
         declarations: usize,
         direct: &NameIndex,
         imported: &NameIndex,
-        inherited: &NameIndex,
+        inherited: &InheritedNameIndex,
     ) -> Result<Self, ResolutionError> {
         let mut ranges = Vec::with_capacity(declarations.saturating_add(1));
         let mut members = Vec::new();
@@ -85,10 +87,13 @@ impl EffectiveScopeIndex {
                 Some(DeclarationId::from_index(slot - 1).map_err(|_| ResolutionError::Capacity)?)
             };
             let mut scope_members = Vec::new();
-            for index in [direct, imported, inherited] {
+            for index in [direct, imported] {
                 for (_, candidates) in index.entries_for_owner(owner) {
                     scope_members.extend_from_slice(candidates);
                 }
+            }
+            for (_, candidates) in inherited.entries_for_owner(owner) {
+                scope_members.extend_from_slice(candidates);
             }
             scope_members.sort_unstable();
             scope_members.dedup();
@@ -289,6 +294,51 @@ pub(crate) fn name_entry_sort_key((key, candidate): &(NameKey, DeclarationId)) -
     (owner << 64) | (u128::from(key.name.0) << 32) | u128::from(candidate.0)
 }
 
+/// Ancestor-scoped inherited-member lookup, keyed by `(child declaration, name)`.
+///
+/// Every child with a non-empty ancestor closure maps to the representative child that shares its
+/// closure; the entries are stored once per distinct closure. Lookups are observably identical to
+/// a per-child materialization.
+#[derive(Debug)]
+pub(crate) struct InheritedNameIndex {
+    representative: Box<[Option<DeclarationId>]>,
+    names: NameIndex,
+}
+
+impl InheritedNameIndex {
+    pub(crate) fn empty() -> Result<Self, ResolutionError> {
+        Ok(Self {
+            representative: Box::default(),
+            names: NameIndex::build(Vec::new())?,
+        })
+    }
+
+    fn representative(&self, owner: Option<DeclarationId>) -> Option<DeclarationId> {
+        owner.and_then(|owner| self.representative.get(owner.index()).copied().flatten())
+    }
+
+    pub(crate) fn candidates(
+        &self,
+        owner: Option<DeclarationId>,
+        name: NameId,
+    ) -> &[DeclarationId] {
+        match self.representative(owner) {
+            Some(representative) => self.names.candidates(Some(representative), name),
+            None => &[],
+        }
+    }
+
+    pub(crate) fn entries_for_owner(
+        &self,
+        owner: Option<DeclarationId>,
+    ) -> impl Iterator<Item = (NameId, &[DeclarationId])> {
+        let representative = self.representative(owner);
+        representative
+            .into_iter()
+            .flat_map(move |representative| self.names.entries_for_owner(Some(representative)))
+    }
+}
+
 /// Builds the ancestor-scoped inherited-member lookup index: for each non-cyclic declaration with
 /// a non-empty ancestor closure, every name directly owned by any ancestor becomes a candidate for
 /// that declaration. `NameIndex::build` sorts and dedups `(owner, name, candidate)` triples, so a
@@ -300,7 +350,7 @@ pub(crate) fn build_inherited_name_index(
     declarations: &[Declaration],
     direct_names: &NameIndex,
     ancestor_closures: &[Box<[DeclarationId]>],
-) -> Result<NameIndex, ResolutionError> {
+) -> Result<InheritedNameIndex, ResolutionError> {
     build_inherited_name_index_for_scopes(declarations, direct_names, ancestor_closures, None)
 }
 
@@ -309,7 +359,15 @@ pub(crate) fn build_inherited_name_index_for_scopes(
     direct_names: &NameIndex,
     ancestor_closures: &[Box<[DeclarationId]>],
     scope_filter: Option<&std::collections::BTreeSet<DeclarationId>>,
-) -> Result<NameIndex, ResolutionError> {
+) -> Result<InheritedNameIndex, ResolutionError> {
+    // The visible inherited members of a child are a function of its ancestor closure alone: the
+    // candidates come from `direct_names` of the closure's members, and shadowing compares only
+    // the candidates' owners against *their* ancestor closures. Children with identical closures
+    // (for example the many anonymous MultiplicityRanges and bound Expressions that all
+    // specialize the same library types) therefore share one entry set, materialized once under
+    // the lowest-indexed such child as its representative.
+    let mut representative = vec![None; ancestor_closures.len()];
+    let mut representatives: HashMap<&[DeclarationId], DeclarationId> = HashMap::new();
     let mut entries = Vec::new();
     for (index, ancestors) in ancestor_closures.iter().enumerate() {
         if ancestors.is_empty() {
@@ -318,6 +376,16 @@ pub(crate) fn build_inherited_name_index_for_scopes(
         let child = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
         if scope_filter.is_some_and(|filter| !filter.contains(&child)) {
             continue;
+        }
+        match representatives.entry(&ancestors[..]) {
+            std::collections::hash_map::Entry::Occupied(shared) => {
+                representative[index] = Some(*shared.get());
+                continue;
+            }
+            std::collections::hash_map::Entry::Vacant(slot) => {
+                slot.insert(child);
+                representative[index] = Some(child);
+            }
         }
         for &ancestor in ancestors.iter() {
             for (name, candidates) in direct_names.entries_for_owner(Some(ancestor)) {
@@ -371,7 +439,10 @@ pub(crate) fn build_inherited_name_index_for_scopes(
         }
         cursor = end;
     }
-    NameIndex::build(visible)
+    Ok(InheritedNameIndex {
+        representative: representative.into_boxed_slice(),
+        names: NameIndex::build(visible)?,
+    })
 }
 
 pub(crate) fn build_direct_name_index(

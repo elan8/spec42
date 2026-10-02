@@ -1172,7 +1172,7 @@ mod tests {
             member_access_paths: Default::default(),
             outcomes: Box::new([]),
             ambiguous_candidates: Box::new([]),
-            inherited_names: NameIndex::build(Vec::new()).unwrap(),
+            inherited_names: crate::resolve::names::InheritedNameIndex::empty().unwrap(),
             effective_names: Box::new([]),
             solver_status: status,
             implied_relationships: Box::new([]),

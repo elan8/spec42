@@ -39,6 +39,7 @@ use crate::resolve::names::build_inherited_name_index_for_scopes;
 use crate::resolve::names::lookup_lexical_into;
 use crate::resolve::names::CandidateRange;
 use crate::resolve::names::FirstScopePolicy;
+use crate::resolve::names::InheritedNameIndex;
 use crate::resolve::names::LookupTarget;
 use crate::resolve::names::MembershipIndex;
 use crate::resolve::names::NameIndex;
@@ -588,7 +589,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         SolverStatus::NonConverged
     };
 
-    let mut inherited_names = NameIndex::build(Vec::new())?;
+    let mut inherited_names = InheritedNameIndex::empty()?;
     if converged {
         for index in subclass_slots.iter().copied() {
             work.downstream_evaluations = work
@@ -2185,7 +2186,7 @@ pub(crate) struct ResolutionIndexes<'a> {
     /// Ancestor-scoped inherited-member lookup, keyed by `(child type declaration, name)`. Absent
     /// for the Subclassification pass itself (it is built from Subclassification's own settled
     /// outcomes) and present for reference kinds resolved afterward, such as FeatureTyping.
-    pub(crate) inherited_names: Option<&'a NameIndex>,
+    pub(crate) inherited_names: Option<&'a InheritedNameIndex>,
 }
 
 pub(crate) struct ResolutionScratch<'a> {

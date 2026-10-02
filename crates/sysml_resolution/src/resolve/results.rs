@@ -8,7 +8,7 @@ use crate::model::ReferenceKind;
 use crate::resolve::implied::LibrarySpecializationAnchor;
 use crate::resolve::implied::LibrarySpecializationAnchorFacts;
 use crate::resolve::names::CandidateRange;
-use crate::resolve::names::NameIndex;
+use crate::resolve::names::InheritedNameIndex;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum ResolutionError {
@@ -287,7 +287,7 @@ pub(crate) struct ResolutionResults {
     pub(crate) member_access_paths:
         std::collections::BTreeMap<AuthoredReferenceId, Box<[ResolutionStatus]>>,
     pub(crate) ambiguous_candidates: Box<[DeclarationId]>,
-    pub(crate) inherited_names: NameIndex,
+    pub(crate) inherited_names: InheritedNameIndex,
     pub(crate) effective_names: Box<[EffectiveNameFacts]>,
     pub(crate) solver_status: SolverStatus,
     pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
