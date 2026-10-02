@@ -2529,6 +2529,8 @@ pub(crate) fn synthesize_generated_library_specializations(
     anchor_facts: &LibrarySpecializationAnchorFacts,
 ) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
     let (ancestors, cyclic) = build_ancestor_closures(&storage.declarations, references, outcomes)?;
+    let owned_typings =
+        OwnedTypingTargets::collect(storage.declarations.len(), references, outcomes);
     let mut implied = Vec::new();
     for (index, declaration) in storage.declarations.iter().enumerate() {
         let source = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
@@ -2555,7 +2557,10 @@ pub(crate) fn synthesize_generated_library_specializations(
             }
             for rule in metaclass.conditional_rules() {
                 if !conditional_library_specialization_predicate_holds_with_resolution(
-                    storage, source, rule, references, outcomes,
+                    storage,
+                    source,
+                    rule,
+                    &owned_typings,
                 ) {
                     continue;
                 }
@@ -2821,26 +2826,25 @@ pub(crate) fn conditional_library_specialization_predicate_holds_with_resolution
     storage: &SemanticModelStorage,
     source: DeclarationId,
     rule: &ConditionalLibrarySpecializationRule,
-    references: &[AuthoredReference],
-    outcomes: &[ResolutionStatus],
+    owned_typings: &OwnedTypingTargets,
 ) -> bool {
     match rule.predicate {
         LibrarySpecializationPredicate::OwnedTypingDataType => {
-            direct_owned_typing_targets(storage, source, references, outcomes).any(|target| {
+            owned_typings.of(storage, source).any(|target| {
                 storage
                     .declaration(target)
                     .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlDataType)
             })
         }
         LibrarySpecializationPredicate::OwnedTypingClass => {
-            direct_owned_typing_targets(storage, source, references, outcomes).any(|target| {
+            owned_typings.of(storage, source).any(|target| {
                 storage
                     .declaration(target)
                     .is_some_and(|declaration| declaration_kind_is_class(declaration.kind))
             })
         }
         LibrarySpecializationPredicate::OwnedTypingStructure => {
-            direct_owned_typing_targets(storage, source, references, outcomes).any(|target| {
+            owned_typings.of(storage, source).any(|target| {
                 storage
                     .declaration(target)
                     .is_some_and(|declaration| declaration_kind_is_structure(declaration.kind))
@@ -2861,9 +2865,7 @@ pub(crate) fn conditional_library_specialization_predicate_holds_with_resolution
                     })
             }),
         LibrarySpecializationPredicate::ConnectorAssociationStructure => {
-            declaration_has_direct_association_structure_typing(
-                storage, source, references, outcomes,
-            )
+            declaration_has_direct_association_structure_typing(storage, source, owned_typings)
         }
         _ => conditional_library_specialization_predicate_holds(storage, source, rule),
     }
@@ -2876,36 +2878,56 @@ pub(crate) fn conditional_library_specialization_predicate_holds_with_resolution
 pub(crate) fn declaration_has_direct_association_structure_typing(
     storage: &SemanticModelStorage,
     source: DeclarationId,
-    references: &[AuthoredReference],
-    outcomes: &[ResolutionStatus],
+    owned_typings: &OwnedTypingTargets,
 ) -> bool {
     storage
         .declaration(source)
         .is_some_and(|declaration| declaration.kind == DeclarationKind::KermlConnector)
-        && direct_owned_typing_targets(storage, source, references, outcomes).any(|target| {
+        && owned_typings.of(storage, source).any(|target| {
             storage.declaration(target).is_some_and(|declaration| {
                 declaration.kind == DeclarationKind::KermlAssociationStructure
             })
         })
 }
 
-pub(crate) fn direct_owned_typing_targets<'a>(
-    storage: &'a SemanticModelStorage,
-    source: DeclarationId,
-    references: &'a [AuthoredReference],
-    outcomes: &'a [ResolutionStatus],
-) -> impl Iterator<Item = DeclarationId> + 'a {
-    references
-        .iter()
-        .enumerate()
-        .filter(move |(_, reference)| {
-            reference.source == source && reference.kind == ReferenceKind::FeatureTyping
-        })
-        .filter_map(move |(index, _)| match outcomes.get(index) {
-            Some(ResolutionStatus::Resolved(target)) => Some(*target),
-            _ => None,
-        })
-        .filter(move |target| storage.declaration(*target).is_some())
+/// The settled targets of every declaration's direct authored `FeatureTyping`s, in authored
+/// order, indexed by source once per synthesis rather than rescanned per predicate.
+pub(crate) struct OwnedTypingTargets {
+    by_source: Vec<Vec<DeclarationId>>,
+}
+
+impl OwnedTypingTargets {
+    pub(crate) fn collect(
+        declaration_count: usize,
+        references: &[AuthoredReference],
+        outcomes: &[ResolutionStatus],
+    ) -> Self {
+        let mut by_source = vec![Vec::new(); declaration_count];
+        for (reference, outcome) in references.iter().zip(outcomes) {
+            if reference.kind != ReferenceKind::FeatureTyping {
+                continue;
+            }
+            if let (ResolutionStatus::Resolved(target), Some(slot)) =
+                (outcome, by_source.get_mut(reference.source.index()))
+            {
+                slot.push(*target);
+            }
+        }
+        Self { by_source }
+    }
+
+    fn of<'a>(
+        &'a self,
+        storage: &'a SemanticModelStorage,
+        source: DeclarationId,
+    ) -> impl Iterator<Item = DeclarationId> + 'a {
+        self.by_source
+            .get(source.index())
+            .into_iter()
+            .flatten()
+            .copied()
+            .filter(move |target| storage.declaration(*target).is_some())
+    }
 }
 
 /// KerML's static metaclass test for the concrete declaration kinds represented by this model.

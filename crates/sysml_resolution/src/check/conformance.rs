@@ -533,10 +533,10 @@ impl<D> SemanticModel<D> {
                 // Counted over authored references rather than settled operands: whether the
                 // author wrote one target does not depend on whether it resolved.
                 let mut authored = self
-                    .storage
-                    .references
+                    .outgoing_reference_ids(id)
                     .iter()
-                    .filter(|reference| reference.source == id && reference.kind == kind);
+                    .filter_map(|reference| self.storage.references.get(reference.index()))
+                    .filter(|reference| reference.kind == kind);
                 let Some(only) = authored.next() else {
                     continue;
                 };
