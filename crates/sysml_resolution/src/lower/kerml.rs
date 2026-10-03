@@ -599,8 +599,7 @@ impl SemanticModelBuilder {
             span,
             import: None,
         })?;
-        if source == owner
-            && matches!(kind, ReferenceKind::FlowSource | ReferenceKind::FlowTarget)
+        if source == owner && matches!(kind, ReferenceKind::FlowSource | ReferenceKind::FlowTarget)
         {
             self.mint_flow_end(document, owner, reference, end.span)?;
         } else if source == owner {
@@ -659,7 +658,12 @@ impl SemanticModelBuilder {
             span,
             DeclarationFacts::none(),
         )?;
-        self.push_membership(flow_feature, MembershipKind::Feature, Visibility::Default, span)?;
+        self.push_membership(
+            flow_feature,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
         Ok(())
     }
 

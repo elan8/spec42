@@ -24,7 +24,6 @@ use std::collections::BTreeSet;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::element_kind::element_kind;
 use crate::model::element_kind::membership_role;
-use crate::ElementKind;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::ReferenceKind;
@@ -35,6 +34,7 @@ use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
 use crate::resolve::results::ResolutionResults;
 use crate::resolve::results::ResolutionStatus;
+use crate::ElementKind;
 use crate::MembershipRole;
 use crate::StateSubactionKind;
 

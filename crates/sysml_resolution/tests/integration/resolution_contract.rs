@@ -3483,12 +3483,10 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
         "memory://redefinition-rule-family.sysml",
         "package Model { classifier Parent { feature shared; } classifier Child :> Parent { feature shared; } }",
     )]);
-    let expected = [
-        (
-            RedefinitionCheckKind::RenderingUsage,
-            RedefinitionCheckPrerequisite::ViewRenderingMembership,
-        ),
-    ];
+    let expected = [(
+        RedefinitionCheckKind::RenderingUsage,
+        RedefinitionCheckPrerequisite::ViewRenderingMembership,
+    )];
 
     for (rule, prerequisite) in expected {
         assert_eq!(

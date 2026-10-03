@@ -377,8 +377,8 @@ impl<D> SemanticModel<D> {
                 // target's types.
                 OwnedEndFeature::Bare(_) | OwnedEndFeature::Flow { .. } => {
                     match self.end_related_feature(end) {
-                    EndRelatedFeature::Resolved(target) => target,
-                    EndRelatedFeature::Unsettled | EndRelatedFeature::Absent => return None,
+                        EndRelatedFeature::Resolved(target) => target,
+                        EndRelatedFeature::Unsettled | EndRelatedFeature::Absent => return None,
                     }
                 }
             };
@@ -401,15 +401,16 @@ impl<D> SemanticModel<D> {
             OwnedEndFeature::Declared(declaration) => {
                 self.declaration_diagnostic(declaration, code, DiagnosticSeverity::Warning)
             }
-            OwnedEndFeature::Bare(reference) | OwnedEndFeature::Flow { reference, .. } => self.reference_diagnostic(
-                self.storage
-                    .references
-                    .get(reference.index())
-                    .ok_or(ResolutionError::InvalidStorage)?,
-                code,
-                DiagnosticSeverity::Warning,
-                None,
-            ),
+            OwnedEndFeature::Bare(reference) | OwnedEndFeature::Flow { reference, .. } => self
+                .reference_diagnostic(
+                    self.storage
+                        .references
+                        .get(reference.index())
+                        .ok_or(ResolutionError::InvalidStorage)?,
+                    code,
+                    DiagnosticSeverity::Warning,
+                    None,
+                ),
         }
     }
 }
