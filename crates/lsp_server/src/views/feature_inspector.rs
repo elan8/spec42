@@ -191,6 +191,7 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::JoinNode
         | ElementKind::FinalState
         | ElementKind::Feature
+        | ElementKind::FlowEnd
         | ElementKind::Step
         | ElementKind::Expression
         | ElementKind::BooleanExpression

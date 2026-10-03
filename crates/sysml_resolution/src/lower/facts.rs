@@ -501,6 +501,13 @@ pub(crate) enum OwnedEndFeature {
     /// Feature is not minted as a declaration, so the end is represented by the authored
     /// ReferenceSubsetting reference its owner carries for it.
     Bare(AuthoredReferenceId),
+    /// A flow's `from`/`to` endpoint: the minted `FlowEnd` declaration together with the flow's
+    /// authored FlowSource/FlowTarget `reference`, which remains the single authored endpoint
+    /// fact (the end's relatedFeature derives from it).
+    Flow {
+        end: DeclarationId,
+        reference: AuthoredReferenceId,
+    },
 }
 
 /// An [`OwnedEndFeature`] together with the Type owning it.

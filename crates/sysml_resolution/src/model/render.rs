@@ -2237,6 +2237,7 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::KermlBinding => "kerml-binding",
         DeclarationKind::KermlInvariant => "kerml-invariant",
         DeclarationKind::KermlEnd => "kerml-end",
+        DeclarationKind::FlowEnd => "flow-end",
         DeclarationKind::Assign => "assign",
         DeclarationKind::While => "while",
         DeclarationKind::Loop => "loop",

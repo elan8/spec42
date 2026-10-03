@@ -2097,6 +2097,7 @@ fn diagram_notation_role(kind: ElementKind) -> DiagramNotationRole {
         // metadata-access expressions written inside an expression have no SysML diagram notation.
         Metaclass::Expression
         | Metaclass::Feature
+        | Metaclass::FlowEnd
         | Metaclass::MultiplicityRange
         | Metaclass::LiteralBoolean
         | Metaclass::LiteralInteger

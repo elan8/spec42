@@ -17,6 +17,7 @@ use crate::lower::facts::RelationshipFlags;
 use crate::lower::facts::SuccessionEndMultiplicities;
 use crate::lower::facts::UnsupportedFamily;
 use crate::lower::SemanticModelBuilder;
+use crate::model::AuthoredReferenceId;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
@@ -598,13 +599,67 @@ impl SemanticModelBuilder {
             span,
             import: None,
         })?;
-        if source == owner {
+        if source == owner
+            && matches!(kind, ReferenceKind::FlowSource | ReferenceKind::FlowTarget)
+        {
+            self.mint_flow_end(document, owner, reference, end.span)?;
+        } else if source == owner {
             // A bare end mints no end Feature declaration; its reference is the end.
             self.owned_end_features.push(OwnedEndRecord {
                 owner,
                 end: OwnedEndFeature::Bare(reference),
             });
         }
+        Ok(())
+    }
+
+    /// Mints the `FlowEnd` a flow's bare `from`/`to` endpoint denotes (KerML 8.3.4.9; SysML
+    /// `FlowEnd = FlowEndSubsetting? FlowFeatureMember`, Pilot `FlowEndAdapter`): an anonymous
+    /// end Feature owned by the flow, which owns one anonymous flow feature. Neither element is
+    /// authored as a declaration; the endpoint itself stays the flow's single authored
+    /// FlowSource/FlowTarget `reference`, which the end record links to rather than copies.
+    fn mint_flow_end(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        reference: AuthoredReferenceId,
+        span: sysml_v2_parser::ast::Span,
+    ) -> Result<(), ConstructionError> {
+        let positional_end = self.next_positional_end_ordinal(owner)?;
+        let flow_end = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::FlowEnd,
+            None,
+            span,
+            DeclarationFacts {
+                positional_end: Some(positional_end),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(flow_end, MembershipKind::Feature, Visibility::Default, span)?;
+        // `push_typed_declaration` recorded the positional end as a plain declared end; a flow
+        // end is instead linked to the authored endpoint reference it stands for.
+        let record = self
+            .owned_end_features
+            .last_mut()
+            .filter(|record| {
+                record.owner == owner && record.end == OwnedEndFeature::Declared(flow_end)
+            })
+            .ok_or(ConstructionError::InvalidIdentity)?;
+        record.end = OwnedEndFeature::Flow {
+            end: flow_end,
+            reference,
+        };
+        let flow_feature = self.push_typed_declaration(
+            document,
+            Some(flow_end),
+            DeclarationKind::KermlFeature,
+            None,
+            span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(flow_feature, MembershipKind::Feature, Visibility::Default, span)?;
         Ok(())
     }
 

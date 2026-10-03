@@ -38,6 +38,10 @@ package SequenceOutside {
     (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::delivery"))) (kind flow) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (flowSource (reference "sender::sent")) (flowTarget (reference "SequenceOutside::external::received")))))
+    (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 0))))) (kind flow-end) (membership (kind feature) (visibility default)) (facts (positional-end 0)))
+    (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 1))))) (kind flow-end) (membership (kind feature) (visibility default)) (facts (positional-end 1)))
+    (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::sender"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::sender::sent"))) (kind occurrence) (membership (kind feature) (visibility default)) (facts (modifiers event)))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::external"))) (kind part) (membership (kind feature) (visibility default)))
@@ -74,6 +78,12 @@ package SequenceOutside {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::delivery"))) (target (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::delivery"))) (target (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::flowTransfers"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::delivery"))) (target (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::transfers"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::delivery"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 1))))) (target (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::delivery"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 1))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::sender"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::sender"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::sender"))) (target (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction"))) (provenance implied))
@@ -97,7 +107,7 @@ package SequenceOutside {
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::delivery")))
-      (positional-ends (authored 0) (effective 2))
+      (positional-ends (authored 2) (effective 2))
       (featured-by (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction")))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
@@ -132,6 +142,24 @@ package SequenceOutside {
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::Transfer")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::flowTransfers")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/transfers.md") (qualified-name "Transfers::transfers")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::delivery")))
+    )
+    (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::delivery")))
+    )
+    (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (named (kind occurrence-def) (name "Interaction")) (named (kind flow) (name "delivery")) (anonymous (kind flow-end) (ordinal 1)))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction::sender")))
       (featured-by (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside::Interaction")))
@@ -258,6 +286,10 @@ package SequenceOutside {
       "sourceDomain": "workspace"
     },
     {
+      "uri": "memory://snapshot/sysml.library/base.md",
+      "sourceDomain": "standard-library"
+    },
+    {
       "uri": "memory://snapshot/sysml.library/flows.md",
       "sourceDomain": "standard-library"
     },
@@ -353,6 +385,16 @@ package SequenceOutside {
     {
       "document": 0,
       "kind": "qualified-name",
+      "qualifiedName": "SequenceOutside::Interaction::delivery::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
+      "qualifiedName": "SequenceOutside::Interaction::delivery::::"
+    },
+    {
+      "document": 0,
+      "kind": "qualified-name",
       "qualifiedName": "SequenceOutside::Interaction::sender"
     },
     {
@@ -373,42 +415,75 @@ package SequenceOutside {
     {
       "document": 1,
       "kind": "qualified-name",
+      "qualifiedName": "Base::things"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
       "qualifiedName": "Flows::flows"
     },
     {
-      "document": 1,
+      "document": 2,
       "kind": "qualified-name",
       "qualifiedName": "Flows::messages"
     },
     {
-      "document": 2,
+      "document": 3,
       "kind": "qualified-name",
       "qualifiedName": "Occurrences::Occurrence"
     },
     {
-      "document": 2,
+      "document": 3,
       "kind": "qualified-name",
       "qualifiedName": "Occurrences::Occurrence::suboccurrences"
     },
     {
-      "document": 2,
+      "document": 3,
       "kind": "qualified-name",
       "qualifiedName": "Occurrences::occurrences"
     },
     {
-      "document": 3,
+      "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "Parts::parts"
     },
     {
-      "document": 4,
+      "document": 5,
       "kind": "qualified-name",
       "qualifiedName": "Transfers::flowTransfers"
     },
     {
-      "document": 4,
+      "document": 5,
       "kind": "qualified-name",
       "qualifiedName": "Transfers::transfers"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "SequenceOutside::Interaction::delivery",
+      "source": 4,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "FlowEnd",
+      "ownerQualifiedName": "SequenceOutside::Interaction::delivery",
+      "source": 5,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "SequenceOutside::Interaction::delivery::",
+      "source": 4,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "Feature",
+      "ownerQualifiedName": "SequenceOutside::Interaction::delivery::",
+      "source": 5,
+      "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
@@ -427,6 +502,18 @@ package SequenceOutside {
       "ordinal": 0,
       "relationshipKind": "specializes",
       "source": 0
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
+      "relationshipKind": "containment",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 5,
+      "relationshipKind": "containment",
+      "source": 1
     },
     {
       "kind": "relationship",
@@ -478,43 +565,91 @@ package SequenceOutside {
     },
     {
       "kind": "relationship",
-      "ordinal": 1,
+      "ordinal": 4,
       "relationshipKind": "containment",
       "source": 2
     },
     {
       "kind": "relationship",
+      "ordinal": 6,
+      "relationshipKind": "containment",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 14,
+      "relationshipKind": "typeFeaturing",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
+      "relationshipKind": "typeFeaturing",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 15,
+      "relationshipKind": "subsetting",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "subsetting",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
+      "relationshipKind": "typeFeaturing",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 19,
+      "relationshipKind": "typeFeaturing",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 1,
+      "relationshipKind": "containment",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
       "ordinal": 1,
       "relationshipKind": "subsetting",
-      "source": 2
+      "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 2,
       "relationshipKind": "subsetting",
-      "source": 2
+      "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 3,
       "relationshipKind": "typeFeaturing",
-      "source": 2
+      "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 4,
       "relationshipKind": "subsetting",
-      "source": 3
+      "source": 5
     },
     {
       "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "typeFeaturing",
-      "source": 3
+      "source": 5
     }
   ],
   "selectedView": {
-    "reference": 5,
+    "reference": 7,
     "kind": "sequence-view",
     "name": "selected",
     "source": 6
@@ -532,29 +667,65 @@ package SequenceOutside {
       {
         "kind": "containment",
         "navigation": 1,
-        "origin": 2,
+        "origin": 6,
         "provenance": "authored",
-        "reference": 14,
+        "reference": 21,
         "source": 0,
-        "target": 2
+        "target": 6
       },
       {
         "kind": "containment",
         "navigation": 2,
-        "origin": 3,
+        "origin": 7,
         "provenance": "authored",
-        "reference": 25,
-        "source": 2,
-        "target": 3
+        "reference": 42,
+        "source": 6,
+        "target": 7
       },
       {
         "kind": "containment",
         "navigation": 3,
         "origin": 1,
         "provenance": "authored",
-        "reference": 15,
+        "reference": 22,
         "source": 0,
         "target": 1
+      },
+      {
+        "kind": "containment",
+        "navigation": 4,
+        "origin": 2,
+        "provenance": "authored",
+        "reference": 24,
+        "source": 1,
+        "target": 2
+      },
+      {
+        "kind": "containment",
+        "navigation": 4,
+        "origin": 3,
+        "provenance": "authored",
+        "reference": 34,
+        "source": 2,
+        "target": 3
+      },
+      {
+        "kind": "containment",
+        "navigation": 5,
+        "origin": 4,
+        "provenance": "authored",
+        "reference": 25,
+        "source": 1,
+        "target": 4
+      },
+      {
+        "kind": "containment",
+        "navigation": 5,
+        "origin": 5,
+        "provenance": "authored",
+        "reference": 35,
+        "source": 4,
+        "target": 5
       }
     ],
     "exposedRoots": [
@@ -566,7 +737,7 @@ package SequenceOutside {
         1
       ],
       "participants": [
-        2
+        6
       ]
     },
     "nodes": [
@@ -575,7 +746,7 @@ package SequenceOutside {
           {
             "kind": "parts",
             "members": [
-              2
+              6
             ],
             "provenance": "direct"
           },
@@ -614,11 +785,67 @@ package SequenceOutside {
         }
       },
       {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "FlowEnd",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 1,
+        "reference": 17,
+        "source": 4,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 2,
+        "reference": 19,
+        "source": 4,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "FlowEnd",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 1,
+        "reference": 18,
+        "source": 5,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
+        "compartments": [],
+        "conjugated": false,
+        "direction": null,
+        "metaclass": "Feature",
+        "name": null,
+        "notationRole": "unsupported",
+        "owner": 4,
+        "reference": 20,
+        "source": 5,
+        "typing": {
+          "status": "absent"
+        }
+      },
+      {
         "compartments": [
           {
             "kind": "occurrences",
             "members": [
-              3
+              7
             ],
             "provenance": "direct"
           }
@@ -629,7 +856,7 @@ package SequenceOutside {
         "name": "sender",
         "notationRole": "usage",
         "owner": 0,
-        "reference": 2,
+        "reference": 4,
         "source": 1,
         "typing": {
           "status": "absent"
@@ -642,8 +869,8 @@ package SequenceOutside {
         "metaclass": "OccurrenceUsage",
         "name": "sent",
         "notationRole": "usage",
-        "owner": 2,
-        "reference": 3,
+        "owner": 6,
+        "reference": 5,
         "source": 2,
         "typing": {
           "status": "absent"
@@ -655,32 +882,32 @@ package SequenceOutside {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 16,
+        "reference": 23,
         "source": 0,
         "target": {
-          "reference": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 26,
-        "source": 2,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 27,
-        "source": 2,
-        "target": {
           "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 43,
+        "source": 6,
+        "target": {
+          "reference": 12,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 44,
+        "source": 6,
+        "target": {
+          "reference": 14,
           "status": "resolved"
         }
       },
@@ -688,8 +915,8 @@ package SequenceOutside {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 28,
-        "source": 2,
+        "reference": 45,
+        "source": 6,
         "target": {
           "node": 0,
           "status": "resolved"
@@ -699,10 +926,10 @@ package SequenceOutside {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 29,
-        "source": 3,
+        "reference": 46,
+        "source": 7,
         "target": {
-          "reference": 10,
+          "reference": 13,
           "status": "resolved"
         }
       },
@@ -710,10 +937,10 @@ package SequenceOutside {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 30,
-        "source": 3,
+        "reference": 47,
+        "source": 7,
         "target": {
-          "node": 2,
+          "node": 6,
           "status": "resolved"
         }
       },
@@ -721,10 +948,10 @@ package SequenceOutside {
         "kind": "flowSource",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 17,
+        "reference": 26,
         "source": 1,
         "target": {
-          "node": 3,
+          "node": 7,
           "status": "resolved"
         }
       },
@@ -732,29 +959,7 @@ package SequenceOutside {
         "kind": "flowTarget",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 18,
-        "source": 1,
-        "target": {
-          "reference": 4,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 19,
-        "source": 1,
-        "target": {
-          "reference": 7,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 20,
+        "reference": 27,
         "source": 1,
         "target": {
           "reference": 6,
@@ -765,7 +970,18 @@ package SequenceOutside {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 21,
+        "reference": 28,
+        "source": 1,
+        "target": {
+          "reference": 10,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 29,
         "source": 1,
         "target": {
           "reference": 9,
@@ -776,18 +992,7 @@ package SequenceOutside {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 22,
-        "source": 1,
-        "target": {
-          "reference": 13,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 23,
+        "reference": 30,
         "source": 1,
         "target": {
           "reference": 12,
@@ -795,13 +1000,101 @@ package SequenceOutside {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 31,
+        "source": 1,
+        "target": {
+          "reference": 16,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 32,
+        "source": 1,
+        "target": {
+          "reference": 15,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 24,
+        "reference": 33,
         "source": 1,
         "target": {
           "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 36,
+        "source": 2,
+        "target": {
+          "node": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 38,
+        "source": 3,
+        "target": {
+          "reference": 8,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 40,
+        "source": 3,
+        "target": {
+          "node": 2,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 37,
+        "source": 4,
+        "target": {
+          "node": 1,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 39,
+        "source": 5,
+        "target": {
+          "reference": 8,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 41,
+        "source": 5,
+        "target": {
+          "node": 4,
           "status": "resolved"
         }
       }
@@ -809,7 +1102,7 @@ package SequenceOutside {
     "scene": {
       "kind": "sequence",
       "lifelines": [
-        2
+        6
       ],
       "messages": [
         {
@@ -822,7 +1115,7 @@ package SequenceOutside {
           },
           "provenance": "authored",
           "source": {
-            "lifeline": 2,
+            "lifeline": 6,
             "status": "resolved"
           },
           "target": {

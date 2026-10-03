@@ -169,6 +169,7 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::KermlFeature => ElementKind::Feature,
         // An association or connector end is a `Feature` under an `EndFeatureMembership`.
         DeclarationKind::KermlEnd => ElementKind::Feature,
+        DeclarationKind::FlowEnd => ElementKind::FlowEnd,
         DeclarationKind::KermlStep => ElementKind::Step,
         DeclarationKind::KermlExpression => ElementKind::Expression,
         DeclarationKind::KermlBooleanExpression => ElementKind::BooleanExpression,
@@ -211,7 +212,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         DeclarationKind::ParameterUsage | DeclarationKind::PerformParameterBinding => {
             Some(MembershipRole::Parameter)
         }
-        DeclarationKind::KermlEnd => Some(MembershipRole::EndFeature),
+        DeclarationKind::KermlEnd | DeclarationKind::FlowEnd => Some(MembershipRole::EndFeature),
         DeclarationKind::AssumeConstraintUsage => Some(MembershipRole::RequirementConstraint(
             RequirementConstraintKind::Assumption,
         )),
@@ -503,6 +504,7 @@ mod tests {
         DeclarationKind::KermlBinding,
         DeclarationKind::KermlInvariant,
         DeclarationKind::KermlEnd,
+        DeclarationKind::FlowEnd,
         DeclarationKind::Assign,
         DeclarationKind::While,
         DeclarationKind::Loop,

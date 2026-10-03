@@ -778,6 +778,11 @@ pub(crate) enum DeclarationKind {
     /// the existing `lower_kerml_feature_member` (itself owned by this end declaration, not the
     /// enclosing `assoc`/type). The end's own multiplicity is not modeled as a distinct fact here.
     KermlEnd,
+    /// The KerML `FlowEnd` minted for each `from`/`to` endpoint of a flow (KerML 8.3.4.9,
+    /// SysML `FlowEnd = FlowEndSubsetting? FlowFeatureMember`). Anonymous, owned by the flow as
+    /// an end Feature, it owns one anonymous flow feature (`KermlFeature`). Never authored as a
+    /// declaration: its endpoint is the flow's authored FlowSource/FlowTarget reference.
+    FlowEnd,
     /// An anonymous feature synthesized for an `assign <target> := <value>;` reassignment
     /// statement (BNF `AssignStmt`, `ast::AssignStmt`, `is_then` covering both the plain and
     /// `then assign ...;` spellings) found in an action def/usage body, mirroring `Bind`'s

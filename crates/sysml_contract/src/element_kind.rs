@@ -233,6 +233,9 @@ element_kinds! {
     /// `SuccessionAsUsage`, which specializes it; no declaration is published with this kind.
     Succession,
     Invariant,
+    /// The KerML `FlowEnd` a flow's `from`/`to` endpoint lowers to: an end Feature owning the
+    /// flow feature that redefines the endpoint's last segment.
+    FlowEnd,
 }
 
 impl ElementKind {
@@ -286,6 +289,7 @@ impl ElementKind {
                 &[K::LiteralExpression]
             }
             K::Invariant => &[K::BooleanExpression],
+            K::FlowEnd => &[K::Feature],
             K::BindingConnector | K::Succession => &[K::Connector],
 
             // SysML definitions.

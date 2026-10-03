@@ -375,10 +375,12 @@ impl<D> SemanticModel<D> {
                 OwnedEndFeature::Declared(feature) => feature,
                 // A bare end's implicit end feature reference-subsets its target, so it has the
                 // target's types.
-                OwnedEndFeature::Bare(_) => match self.end_related_feature(end) {
+                OwnedEndFeature::Bare(_) | OwnedEndFeature::Flow { .. } => {
+                    match self.end_related_feature(end) {
                     EndRelatedFeature::Resolved(target) => target,
                     EndRelatedFeature::Unsettled | EndRelatedFeature::Absent => return None,
-                },
+                    }
+                }
             };
             if self.specialization_hierarchy_is_unsettled(feature) {
                 return None;
@@ -399,7 +401,7 @@ impl<D> SemanticModel<D> {
             OwnedEndFeature::Declared(declaration) => {
                 self.declaration_diagnostic(declaration, code, DiagnosticSeverity::Warning)
             }
-            OwnedEndFeature::Bare(reference) => self.reference_diagnostic(
+            OwnedEndFeature::Bare(reference) | OwnedEndFeature::Flow { reference, .. } => self.reference_diagnostic(
                 self.storage
                     .references
                     .get(reference.index())

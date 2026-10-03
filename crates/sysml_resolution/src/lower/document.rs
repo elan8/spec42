@@ -561,6 +561,10 @@ impl SemanticModelBuilder {
                     OwnedEndFeature::Bare(reference) => {
                         OwnedEndFeature::Bare(relocation.reference(reference)?)
                     }
+                    OwnedEndFeature::Flow { end, reference } => OwnedEndFeature::Flow {
+                        end: relocation.declaration(end)?,
+                        reference: relocation.reference(reference)?,
+                    },
                 },
             });
         }

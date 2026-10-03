@@ -79,7 +79,9 @@ where
     I: IntoIterator<Item = AuthoredReferenceId>,
 {
     let reference = match end {
-        OwnedEndFeature::Bare(reference) => Some(reference),
+        OwnedEndFeature::Bare(reference) | OwnedEndFeature::Flow { reference, .. } => {
+            Some(reference)
+        }
         OwnedEndFeature::Declared(declaration) => {
             outgoing(declaration).into_iter().find(|reference| {
                 storage

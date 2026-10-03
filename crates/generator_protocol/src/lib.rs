@@ -149,6 +149,7 @@ pub enum Metaclass {
     Expression,
     Feature,
     FilterUsage,
+    FlowEnd,
     FlowPayload,
     ForLoopActionUsage,
     ForkNodeUsage,
@@ -269,6 +270,7 @@ impl Metaclass {
             Self::Expression => "Expression",
             Self::Feature => "Feature",
             Self::FilterUsage => "FilterUsage",
+            Self::FlowEnd => "FlowEnd",
             Self::FlowPayload => "FlowPayload",
             Self::ForLoopActionUsage => "ForLoopActionUsage",
             Self::ForkNodeUsage => "ForkNodeUsage",
@@ -384,6 +386,7 @@ impl Metaclass {
             "Expression" => Self::Expression,
             "Feature" => Self::Feature,
             "FilterUsage" => Self::FilterUsage,
+            "FlowEnd" => Self::FlowEnd,
             "FlowPayload" => Self::FlowPayload,
             "ForLoopActionUsage" => Self::ForLoopActionUsage,
             "ForkNodeUsage" => Self::ForkNodeUsage,
@@ -1271,7 +1274,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x35c3_8e8b_f085_5a81,
+            SCHEMA_FINGERPRINT, 0xc48d_ac59_4277_e819,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1279,7 +1282,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0x3c53_4f42_c195_491d,
+            COMPATIBILITY_TOKEN, 0xc248_84b6_18a3_0bfa,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }
