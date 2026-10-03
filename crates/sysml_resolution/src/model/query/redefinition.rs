@@ -82,9 +82,7 @@ impl<D> SemanticModel<D> {
                 self.feature_chain_source_target_check()
             }
             RedefinitionCheckKind::FeatureEnd => self.feature_end_check(),
-            RedefinitionCheckKind::FeatureFlowFeature => RedefinitionCheckOutcome::Unsupported {
-                prerequisite: RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors,
-            },
+            RedefinitionCheckKind::FeatureFlowFeature => self.library_role_check(kind),
             RedefinitionCheckKind::FeatureOwnedCrossFeatureSpecialization => {
                 self.owned_cross_feature_redefinition_check()
             }

@@ -22,7 +22,9 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
 use crate::lower::storage::SemanticModelStorage;
+use crate::model::element_kind::element_kind;
 use crate::model::element_kind::membership_role;
+use crate::ElementKind;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::ReferenceKind;
@@ -57,10 +59,16 @@ pub(crate) enum LibraryRedefinitionRole {
     /// SysML 8.3.17.5 `checkAssignmentActionUsageAccessedFeatureRedefinition`: the first owned
     /// Feature of the `startingAt` Feature.
     AssignmentAccessedFeature,
+    /// KerML 8.3.4.9 `checkFeatureFlowFeatureRedefinition`: the flow feature of a flow's first
+    /// `FlowEnd` (end Feature index 0).
+    FlowFeatureSourceOutput,
+    /// KerML 8.3.4.9 `checkFeatureFlowFeatureRedefinition`: the flow feature of a flow's second
+    /// `FlowEnd` (end Feature index 1).
+    FlowFeatureTargetInput,
 }
 
 impl LibraryRedefinitionRole {
-    pub(crate) const ALL: [Self; 7] = [
+    pub(crate) const ALL: [Self; 9] = [
         Self::ForLoopVariable,
         Self::FeatureChainSourceTarget,
         Self::StateEntryAction,
@@ -68,6 +76,8 @@ impl LibraryRedefinitionRole {
         Self::StateExitAction,
         Self::AssignmentStartingAt,
         Self::AssignmentAccessedFeature,
+        Self::FlowFeatureSourceOutput,
+        Self::FlowFeatureTargetInput,
     ];
 
     /// The structural path of the library feature this role's occupant redefines, outermost
@@ -95,6 +105,8 @@ impl LibraryRedefinitionRole {
                 "startingAt",
                 "accessedFeature",
             ],
+            Self::FlowFeatureSourceOutput => &["Transfers", "Transfer", "source", "sourceOutput"],
+            Self::FlowFeatureTargetInput => &["Transfers", "Transfer", "target", "targetInput"],
         }
     }
 
@@ -109,6 +121,9 @@ impl LibraryRedefinitionRole {
             Self::AssignmentStartingAt => RedefinitionCheckKind::AssignmentActionUsageStartingAt,
             Self::AssignmentAccessedFeature => {
                 RedefinitionCheckKind::AssignmentActionUsageAccessedFeature
+            }
+            Self::FlowFeatureSourceOutput | Self::FlowFeatureTargetInput => {
+                RedefinitionCheckKind::FeatureFlowFeature
             }
         }
     }
@@ -200,6 +215,32 @@ pub(crate) fn library_role_occupants(
                 StateSubactionKind::Do => LibraryRedefinitionRole::StateDoAction,
                 StateSubactionKind::Exit => LibraryRedefinitionRole::StateExitAction,
             },
+            // The flow feature a `FlowEnd` owns, when that end is end Feature 0 or 1 of a Feature
+            // (Pilot `FlowEndAdapter.addFlowFeatureRedefinition`).
+            (DeclarationKind::KermlFeature, _) => {
+                let Some(flow_end) = declaration.owner else {
+                    continue;
+                };
+                let end = storage
+                    .declaration(flow_end)
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                if end.kind != DeclarationKind::FlowEnd {
+                    continue;
+                }
+                let flow_is_feature = end
+                    .owner
+                    .and_then(|flow| storage.declaration(flow))
+                    .is_some_and(|flow| element_kind(flow.kind).conforms_to(ElementKind::Feature));
+                let position = storage
+                    .declaration_facts(flow_end)
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .positional_end;
+                match (flow_is_feature, position) {
+                    (true, Some(0)) => LibraryRedefinitionRole::FlowFeatureSourceOutput,
+                    (true, Some(1)) => LibraryRedefinitionRole::FlowFeatureTargetInput,
+                    _ => continue,
+                }
+            }
             _ => continue,
         };
         occupants.push(LibraryRoleOccupant { source, role });

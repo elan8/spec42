@@ -173,7 +173,6 @@ pub enum SpecializationCheckOutcome {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RedefinitionCheckPrerequisite {
     RuleNotPublished,
-    FlowEndOrdinalAndLibraryAnchors,
     /// Some grammar-defined parameter -- of an operator expression, or of a `send`, `accept`,
     /// `assign`, `if`, loop, transition or `terminate` usage -- is not lowered, so the positional
     /// obligations it carries are not facts of the publication.

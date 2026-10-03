@@ -3485,10 +3485,6 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
     )]);
     let expected = [
         (
-            RedefinitionCheckKind::FeatureFlowFeature,
-            RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors,
-        ),
-        (
             RedefinitionCheckKind::RenderingUsage,
             RedefinitionCheckPrerequisite::ViewRenderingMembership,
         ),

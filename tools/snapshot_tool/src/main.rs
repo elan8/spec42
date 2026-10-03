@@ -1252,9 +1252,6 @@ fn parse_redefinition_check_prerequisite(
     fixture: &str,
 ) -> Result<RedefinitionCheckPrerequisite, String> {
     match value {
-        "flow_end_ordinal_and_library_anchors" => {
-            Ok(RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors)
-        }
         "grammar_parameters" => Ok(RedefinitionCheckPrerequisite::GrammarParameters),
         "expression_elements" => Ok(RedefinitionCheckPrerequisite::ExpressionElements),
         "state_subaction_membership_and_kind" => {
