@@ -32,7 +32,7 @@ package RequirementDefinitionDerivedFacts {
   (requirement-derived-fact (rule_id "sysml-2.0:8.3.21.8:deriveRequirementDefinitionActorParameter") (source "RequirementDefinitionDerivedFacts::Requirement") (target "RequirementDefinitionDerivedFacts::Requirement::actor") (outcome resolved))
   (requirement-derived-fact (rule_id "sysml-2.0:8.3.21.8:deriveRequirementDefinitionSubjectParameter") (source "RequirementDefinitionDerivedFacts::Requirement") (target "RequirementDefinitionDerivedFacts::Requirement::subject") (outcome resolved))
   (requirement-derived-fact (rule_id "sysml-2.0:8.3.21.8:deriveRequirementDefinitionFramedConcern") (source "RequirementDefinitionDerivedFacts::Requirement") (target "RequirementDefinitionDerivedFacts::Requirement::concern") (outcome resolved))
-  (requirement-derived-fact (rule_id "sysml-2.0:8.3.21.8:deriveRequirementDefinitionText") (source "RequirementDefinitionDerivedFacts::Requirement") (text " requirement definition text ") (outcome text)))
+  (requirement-derived-fact (rule_id "sysml-2.0:8.3.21.8:deriveRequirementDefinitionText") (source "RequirementDefinitionDerivedFacts::Requirement") (text "requirement definition text ") (outcome text)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
@@ -50,7 +50,7 @@ package RequirementDefinitionDerivedFacts {
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (qualified-name "RequirementDefinitionDerivedFacts"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (qualified-name "RequirementDefinitionDerivedFacts::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (qualified-name "RequirementDefinitionDerivedFacts::Requirement"))) (kind requirement-def) (membership (kind owning) (visibility default)) (documentation (doc (text " requirement definition text "))))
+    (declaration (id (node (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (qualified-name "RequirementDefinitionDerivedFacts::Requirement"))) (kind requirement-def) (membership (kind owning) (visibility default)) (documentation (doc (text "requirement definition text "))))
     (declaration (id (node (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (qualified-name "RequirementDefinitionDerivedFacts::Requirement::actor"))) (kind requirement-actor) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
     (declaration (id (node (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (qualified-name "RequirementDefinitionDerivedFacts::Requirement::concern"))) (kind frame) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_requirement_definition_derived_facts.md") (qualified-name "RequirementDefinitionDerivedFacts::Requirement::subject"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))

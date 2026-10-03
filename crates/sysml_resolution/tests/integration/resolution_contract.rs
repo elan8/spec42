@@ -129,7 +129,7 @@ fn enumeration_literal_bodies_publish_their_members_and_documentation() {
         })
         .unwrap_or_else(|| panic!("no enum literal declaration, got:\n{output}"));
     assert!(
-        line.contains("(documentation (doc (text \" The secret level. \")))"),
+        line.contains("(documentation (doc (text \"The secret level. \")))"),
         "expected the literal to publish its own doc comment, got:\n{line}"
     );
     assert!(
@@ -3365,13 +3365,12 @@ fn a_non_literal_multiplicity_bound_is_published_as_an_expression() {
 }
 
 /// A `doc` body element annotates the declaration owning that body, and the recorded text is
-/// the raw content between the comment delimiters -- the parser performs no leading-`*`
-/// stripping or dedent, so neither does this fact.
+/// the body processed per KerML 8.2.3.3.2 note 1 (leading white space after `/*` removed).
 #[test]
 fn doc_comments_bind_to_the_declaration_owning_their_body() {
     let sexpr = semantic_sexpr_for("package P { part def Wheel { doc /* a wheel */ } }");
     assert!(
-        sexpr.contains(r#"(documentation (doc (text " a wheel ")))"#),
+        sexpr.contains(r#"(documentation (doc (text "a wheel ")))"#),
         "expected the doc comment bound to the part def, got: {sexpr}"
     );
 }
@@ -4502,7 +4501,7 @@ fn derived_element_documentation_filters_canonical_typed_forms() {
     assert_eq!(documentation[0].form, AnnotationForm::Documentation);
     assert_eq!(
         published.text(documentation[0].text).unwrap_or_default(),
-        " vehicle documentation "
+        "vehicle documentation "
     );
     assert!(documentation[0].language.is_none());
 
@@ -4518,7 +4517,46 @@ fn derived_element_documentation_filters_canonical_typed_forms() {
     assert_eq!(representations[0].language.as_deref(), Some("Alf"));
     assert_eq!(
         published.text(representations[0].text).unwrap_or_default(),
-        " vehicle implementation "
+        "vehicle implementation "
+    );
+}
+
+/// Comment, documentation, and textual-representation bodies publish the text KerML 8.2.3.3.2
+/// note 1 defines, not the authored bytes: the continuation `*` and the indentation before it
+/// are removed, while line structure (paragraphs, list items) survives -- spec42 issue #210.
+#[test]
+fn derived_element_documentation_publishes_processed_comment_bodies() {
+    let source = "package Model {\n    view overview {\n        doc /* The system consists of the airframe\n             * and the flight controller.\n             *\n             * - patrol\n             * - search */\n        comment /*\n           * first\n           *   indented\n           */\n        language \"Alf\" /*\n            *  x = 1;\n            */\n    }\n}";
+    let published = detail_publication(
+        &[("memory://model.sysml", source)],
+        ConstructionSchedule::Sequential,
+    );
+    let overview = identity_of(&published, "memory://model.sysml", "Model::overview");
+    let body = |collection| {
+        let records = settled(published.element_derived_documentation(overview, collection));
+        assert_eq!(records.len(), 1, "{collection:?}");
+        published
+            .text(records[0].text)
+            .unwrap_or_default()
+            .to_string()
+    };
+    assert_eq!(
+        body(ElementDerivedDocumentationCollection::Documentation),
+        "The system consists of the airframe\nand the flight controller.\n\n- patrol\n- search "
+    );
+    let inspection = settled(published.inspect(overview));
+    let comment = inspection
+        .documentation
+        .iter()
+        .find(|record| record.form == AnnotationForm::Comment)
+        .expect("expected the comment annotation");
+    assert_eq!(
+        published.text(comment.text).unwrap_or_default(),
+        "first\n  indented\n"
+    );
+    assert_eq!(
+        body(ElementDerivedDocumentationCollection::TextualRepresentation),
+        " x = 1;\n"
     );
 }
 
