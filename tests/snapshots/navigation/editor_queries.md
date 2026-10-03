@@ -131,7 +131,7 @@ probe editor_queries.md 10 17 rename=Base
           (qualified-name "Use::Child::x")
           (location (document "memory://snapshot/editor_queries.md") (range (start 10 13) (end 10 14)) (role Declaration))
           (declaration (range (start 10 8) (end 10 23)))
-          (membership (kind feature) (visibility private) (provenance default))
+          (membership (kind feature) (visibility public) (provenance default))
           (relationship (kind "featureTyping") (provenance authored) (authored "Other") (target resolved))
           (relationship (kind "typeFeaturing") (provenance implied) (target resolved))
           (typing (outcome resolved) (target "Types::Other"))

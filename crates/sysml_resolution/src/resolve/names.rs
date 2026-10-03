@@ -164,23 +164,12 @@ impl MembershipIndex {
                 Visibility::Public => EffectiveVisibility::Public,
                 Visibility::Private => EffectiveVisibility::Private,
                 Visibility::Protected => EffectiveVisibility::Protected,
+                // KerML/SysML: a membership without authored visibility is public, whatever kind
+                // of namespace owns it; only an import defaults to private (spec42 issue #231).
                 Visibility::Default if membership.kind == MembershipKind::Import => {
                     EffectiveVisibility::Private
                 }
-                Visibility::Default => match declaration.owner {
-                    None => EffectiveVisibility::Public,
-                    Some(owner)
-                        if declarations.get(owner.index()).is_some_and(|owner| {
-                            matches!(
-                                owner.kind,
-                                DeclarationKind::Package | DeclarationKind::LibraryPackage
-                            )
-                        }) =>
-                    {
-                        EffectiveVisibility::Public
-                    }
-                    Some(_) => EffectiveVisibility::Private,
-                },
+                Visibility::Default => EffectiveVisibility::Public,
             };
             *slot = Some(EffectiveMembership {
                 visibility,
