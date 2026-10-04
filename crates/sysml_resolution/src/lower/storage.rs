@@ -116,6 +116,50 @@ impl ParsedSources {
 }
 
 impl SemanticModelStorage {
+    /// Every `(owner, expression)` ResultExpressionMembership, in lowering (authored) order.
+    pub(crate) fn result_expressions(
+        &self,
+    ) -> impl Iterator<Item = (DeclarationId, DeclarationId)> + '_ {
+        self.memberships
+            .iter()
+            .filter(|membership| membership.role == Some(crate::MembershipRole::ResultExpression))
+            .filter_map(|membership| {
+                Some((
+                    self.declaration(membership.member)?.owner?,
+                    membership.member,
+                ))
+            })
+    }
+
+    /// Each Function's or Expression's result expression, indexed by owner: the first it owns
+    /// (the Pilot's `getOwnedFeatureByMembershipIn(ResultExpressionMembership)`). The owner's
+    /// expression body is that element's; the owner holds none of its own.
+    pub(crate) fn result_expression_of(&self) -> Box<[Option<DeclarationId>]> {
+        let mut bodies = vec![None; self.declarations.len()];
+        for (owner, expression) in self.result_expressions() {
+            if let Some(slot) = bodies.get_mut(owner.index()) {
+                slot.get_or_insert(expression);
+            }
+        }
+        bodies.into_boxed_slice()
+    }
+
+    /// The Expression that gives each declaration its value, indexed by declaration: its first
+    /// FeatureValue's value Expression, else its result expression.
+    ///
+    /// Evaluation is keyed to that Expression element; this is the one bridge from the valued
+    /// declaration to it, so no consumer evaluates an expression at its owner or picks a
+    /// different one.
+    pub(crate) fn value_expressions(&self) -> Box<[Option<DeclarationId>]> {
+        let mut values = self.result_expression_of();
+        for value in self.feature_values.iter().rev() {
+            if let Some(slot) = values.get_mut(value.declaration.index()) {
+                *slot = Some(value.value);
+            }
+        }
+        values
+    }
+
     /// The implicit multiplicities introduced by individual-definition syntax. Their existing
     /// declaration ownership and this explicit role are the sole relationship representation.
     pub(crate) fn individual_multiplicities(&self) -> impl Iterator<Item = DeclarationId> + '_ {

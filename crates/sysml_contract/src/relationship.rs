@@ -203,8 +203,6 @@ pub enum SatisfyPolarity {
 /// Why a named binding-connector validation could not be evaluated from canonical facts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BindingConnectorValidationPrerequisite {
-    ExpressionResultEndpointFacts,
-    FunctionResultEndpointFacts,
     AcceptActionUsageReceiverEndpointFacts,
     SatisfyRequirementUsageEndpointFacts,
     /// The exact pinned OCL body is `TBD`, so OMG has not supplied an evaluable predicate.

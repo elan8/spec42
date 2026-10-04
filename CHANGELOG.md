@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Body result expressions are elements.** A calculation, constraint, function or KerML type
+  body expression is now its own Expression, owned through a `ResultExpressionMembership` (role
+  `result-expression`) with its own result, and owns its evaluation, operand references and
+  nested expressions; the owner's value and expression body are derived from it. The implied
+  binding connector between the owner's result and the result expression's result is published,
+  so `checkExpressionResultBindingConnector` and `checkFunctionResultBindingConnector` are decided
+  (KerML 8.3.4.7.3/4).
+
 - **Result expression memberships are checked.** A function, calculation or constraint body with
   more than one result expression reports `function_multiple_result_expressions`, an expression
   body `expression_multiple_result_expressions`, and a result expression in the body of a type

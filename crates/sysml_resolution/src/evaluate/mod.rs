@@ -126,15 +126,11 @@ pub(crate) fn compute_evaluation(
         .filter(|(_, shape)| !matches!(shape, ExpressionEvalShape::Unsupported))
         .map(|(pending, _)| pending.declaration)
         .collect();
-    // Operand references resolve to the valued Feature, while evaluation is owned by its value
+    // Operand references resolve to the valued declaration (a Feature with a value, or a
+    // Function or Expression with a result expression), while evaluation is owned by its value
     // Expression. This projection is the one canonical bridge between those identity domains;
-    // the fixed point never duplicates an outcome onto the Feature.
-    let value_expression_by_feature: std::collections::BTreeMap<DeclarationId, DeclarationId> =
-        storage
-            .feature_values
-            .iter()
-            .map(|value| (value.declaration, value.value))
-            .collect();
+    // the fixed point never duplicates an outcome onto the valued declaration.
+    let value_expressions = storage.value_expressions();
 
     let mut outcomes: std::collections::BTreeMap<DeclarationId, EvaluatedValue> =
         Default::default();
@@ -162,9 +158,10 @@ pub(crate) fn compute_evaluation(
                 match targets.and_then(|targets| targets.get(ordinal as usize).copied().flatten()) {
                     None => Some(EvaluatedValue::UnresolvedOperand),
                     Some(target) => {
-                        let target = value_expression_by_feature
-                            .get(&target)
+                        let target = value_expressions
+                            .get(target.index())
                             .copied()
+                            .flatten()
                             .unwrap_or(target);
                         match outcomes.get(&target) {
                             Some(value) => Some(value.clone()),

@@ -289,13 +289,7 @@ pub(crate) fn write_metadata_annotations(
             output.write_str(" (value (redefines ")?;
             write_target(model, *redefinition, output)?;
             output.write_char(')')?;
-            let value_declaration = model
-                .storage
-                .feature_values
-                .iter()
-                .find(|record| record.declaration == *child)
-                .map(|record| record.value)
-                .unwrap_or(*child);
+            let value_declaration = model.value_expression(*child).unwrap_or(*child);
             match model.resolved_expressions.row(value_declaration) {
                 Some(row) => {
                     write!(output, " (outcome {})", row.outcome.as_str())?;

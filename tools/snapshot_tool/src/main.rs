@@ -1190,12 +1190,6 @@ fn parse_binding_connector_prerequisite(
     fixture: &str,
 ) -> Result<BindingConnectorValidationPrerequisite, String> {
     match value {
-        "expression_result_endpoint_facts" => {
-            Ok(BindingConnectorValidationPrerequisite::ExpressionResultEndpointFacts)
-        }
-        "function_result_endpoint_facts" => {
-            Ok(BindingConnectorValidationPrerequisite::FunctionResultEndpointFacts)
-        }
         "accept_action_usage_receiver_endpoint_facts" => {
             Ok(BindingConnectorValidationPrerequisite::AcceptActionUsageReceiverEndpointFacts)
         }

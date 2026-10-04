@@ -707,14 +707,15 @@ impl SemanticModelBuilder {
                         )?;
                     }
                     ConstraintDefBodyElement::Expression(expression) => {
-                        self.count_result_expression(declaration)?;
+                        let element =
+                            self.mint_result_expression(document, declaration, expression)?;
                         self.push_evaluation_fact(
-                            declaration,
+                            element,
                             self.constraint_expression_site(document, &expression.value),
                         );
                         self.lower_constraint_expression(
                             document,
-                            declaration,
+                            element,
                             UnsupportedFamily::ConstraintDefinitionMember,
                             expression,
                         )?
@@ -1093,14 +1094,15 @@ impl SemanticModelBuilder {
                         )?;
                     }
                     CalcDefBodyElement::Expression(expression) => {
-                        self.count_result_expression(declaration)?;
+                        let element =
+                            self.mint_result_expression(document, declaration, expression)?;
                         self.push_evaluation_fact(
-                            declaration,
+                            element,
                             self.calc_expression_site(document, &expression.value),
                         );
                         self.lower_calc_expression(
                             document,
-                            declaration,
+                            element,
                             UnsupportedFamily::CalcDefinitionMember,
                             expression,
                         )?

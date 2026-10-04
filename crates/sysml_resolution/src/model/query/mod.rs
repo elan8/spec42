@@ -3500,7 +3500,7 @@ impl<D> SemanticModel<D> {
                                 })
                         })?;
                 let element = self.symbol_id(*child)?;
-                let value_declaration = self.feature_value_expression(*child).unwrap_or(*child);
+                let value_declaration = self.value_expression(*child).unwrap_or(*child);
                 Some(MetadataAnnotationValue {
                     redefined_feature: self.settled_relationship_target(*redefinition),
                     value: self
@@ -3569,15 +3569,6 @@ impl<D> SemanticModel<D> {
             }
         }
         !any_resolved && record.annotated_element == element
-    }
-
-    /// The synthesized expression declaration holding one feature's authored `= value`, if any.
-    fn feature_value_expression(&self, feature: DeclarationId) -> Option<DeclarationId> {
-        self.storage
-            .feature_values
-            .iter()
-            .find(|record| record.declaration == feature)
-            .map(|record| record.value)
     }
 
     /// One authored reference's settled target, as the public [`RelationshipTarget`].

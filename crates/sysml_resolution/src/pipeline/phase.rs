@@ -603,12 +603,14 @@ impl Evaluated {
             &self.resolution.inherited_names,
         )?;
         let facts = ElementFactIndex::build(&self.storage, &self.resolution, &self.evaluation)?;
-        let bindings = BindingConnectorIndex::build(&self.storage, &self.resolution)?;
         // A barrier product, not a solver family: every type fact here is derived from settled
         // outcomes and feeds nothing back into scope, imports or inheritance. The resolver's own
         // ancestor closure for inherited names stays separate and unchanged -- widening that one
         // would silently change name resolution.
         let types = TypeIndex::build(&self.storage, &self.resolution)?;
+        // Result binding connectors relate a Function's or Expression's result, which may be
+        // inherited over the settled type closure.
+        let bindings = BindingConnectorIndex::build(&self.storage, &self.resolution, &types)?;
         // Expression facts read the type closure and the settled evaluation, so they name those
         // three inputs rather than borrowing a model that does not exist yet.
         let expressions = ExpressionIndex::build(

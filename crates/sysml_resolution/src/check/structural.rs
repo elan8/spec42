@@ -42,6 +42,7 @@ use crate::DiagnosticCode;
 use crate::DiagnosticLocation;
 use crate::DiagnosticOrigin;
 use crate::DiagnosticSeverity;
+use crate::MembershipRole;
 
 /// Whether a declaration is a connection-like definition: one whose members include connector
 /// ends.
@@ -368,8 +369,8 @@ impl<D> SemanticModel<D> {
         Ok(())
     }
 
-    /// The ResultExpressionMembership rules over the owner's counted result expressions
-    /// (`DeclarationFacts::result_expression_count`), reported at the owner:
+    /// The ResultExpressionMembership rules over the result expressions the owner owns (members
+    /// whose membership role is `ResultExpression`), reported at the owner:
     /// KerML 8.3.4.7.4 `validateFunctionResultExpressionMembership` and 8.3.4.7.3
     /// `validateExpressionResultExpressionMembership` (at most one), and 8.3.4.7.7
     /// `validateResultExpressionMembershipOwningType` (the owner is a Function or an Expression).
@@ -377,12 +378,17 @@ impl<D> SemanticModel<D> {
         &self,
         id: DeclarationId,
         kind: DeclarationKind,
-        facts: &DeclarationFacts,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         use crate::model::element_kind::element_kind;
         use sysml_contract::ElementKind;
-        let count = facts.result_expression_count;
+        let count = self
+            .child_declarations(id)
+            .iter()
+            .filter(|member| {
+                self.effective_membership_role(**member) == Some(MembershipRole::ResultExpression)
+            })
+            .count();
         if count == 0 {
             return Ok(());
         }
@@ -596,7 +602,7 @@ impl<D> SemanticModel<D> {
             self.collect_metadata_annotated_elements(id, declaration.kind, diagnostics)?;
             self.collect_port_member_composition(id, declaration.kind, diagnostics)?;
             self.collect_owned_multiplicities(id, declaration.kind, diagnostics)?;
-            self.collect_result_expression_memberships(id, declaration.kind, facts, diagnostics)?;
+            self.collect_result_expression_memberships(id, declaration.kind, diagnostics)?;
             // SysML 8.3.17.6 `validateControlNodeIsComposite`: a control node is composite. The
             // effective `isComposite` is the canonical usage derivation, so a directed control
             // node (`in fork g;`, a `ControlNodePrefix` direction) is referential.

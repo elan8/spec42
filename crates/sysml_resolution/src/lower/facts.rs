@@ -459,16 +459,11 @@ pub(crate) struct DeclarationFacts {
     /// intentionally absent when recovery makes the authored collection incomplete, so generated
     /// specialization predicates cannot turn a partial lowering into a positive result.
     pub(crate) owned_end_feature_count: Option<u32>,
-    /// The number of ResultExpressionMemberships this declaration owns: one per result expression
-    /// authored as a member of its body (KerML `ResultExpressionMember`, SysML
-    /// `ResultExpressionMember` of a calculation, constraint or case body). Such an expression is
-    /// evaluated at the owner (an evaluation site), so it is counted here rather than minted as an
-    /// element. Body recovery can only hide members, so the count is a lower bound.
-    pub(crate) result_expression_count: u32,
-    /// Whether `result_expression_count` may be short of the authored ResultExpressionMemberships:
-    /// body recovery hid a member, or the body is a case-family body whose expression members the
-    /// parser cannot yet tell from shredded `include` members (so none of them is counted). Only
-    /// a declaration without this flag has an exactly known result-expression set.
+    /// Whether the result expressions this declaration owns (each an Expression under a
+    /// ResultExpressionMembership) may be short of the authored ResultExpressionMemberships: body
+    /// recovery hid a member, or the body is a case-family body whose expression members the
+    /// parser cannot yet tell from shredded `include` members (so none of them is lowered as a
+    /// result expression). Only a declaration without this flag has an exactly known set.
     pub(crate) result_expressions_incomplete: bool,
     /// The number of PayloadFeatures a Flow owns: one per authored `of ...` payload clause,
     /// present on every `DeclarationKind::Flow` and absent elsewhere. Payload features are not

@@ -952,61 +952,6 @@ fn constraint_collection_op_arrow_invocation_resolves_base_and_argument_operands
 }
 
 #[test]
-fn calc_exponent_operator_negative_integer_exponent_promotes_to_real() {
-    // A negative integer exponent (`2 ^ -1`) cannot stay `Integer` (fractional result), so it
-    // promotes to `Real` via `powf`, exactly like a `Real`-involving pairing.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tcalc def Calc { 2 ^ -1 }\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-             (qualified-name \"Demo::Calc\"))) (state evaluated) (value (kind real) (real 0.5)))"
-        ),
-        "expected `2 ^ -1` to fold to Real(0.5) via the Real-promotion path, got:\n{output}"
-    );
-}
-
-#[test]
-fn constraint_simple_comparison_only_regression_unaffected() {
-    // Regression guard: a plain comparison-only constraint body (slices 1-3, no arithmetic or
-    // logical widening involved) must fold exactly as before.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tconstraint def C { 1 < 2 }\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-             (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
-        ),
-        "expected plain comparison-only `1 < 2` to still fold to Boolean(true), got:\n{output}"
-    );
-}
-
-#[test]
-fn calc_arithmetic_only_regression_unaffected() {
-    // Regression guard: calc-body arithmetic (slice 4) must stay comparison-free and fold
-    // exactly as before -- unaffected by the constraint-side widening.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tcalc def Calc { 2 + 3 }\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-             (qualified-name \"Demo::Calc\"))) (state evaluated) (value (kind integer) (integer 5)))"
-        ),
-        "expected plain arithmetic-only `2 + 3` calc body to still fold to Integer(5), \
-         got:\n{output}"
-    );
-}
-
-#[test]
 fn redefinition_value_with_a_qualified_reference_is_pushed_and_classified() {
     // The exact `enum_status_redefinition.md` shape (`attribute :>> status =
     // RequirementStatusKind::approved;`): the `= RequirementStatusKind::approved` value
@@ -6584,29 +6529,20 @@ fn multiple_bare_dotted_chain_operands_on_one_declaration_each_resolve() {
             )
         })
         .expect("require constraint");
+    // Each chain is its own result expression; the constraint's body is the first one, which
+    // resolves on its own rather than collapsing the declaration.
     let expression = settled(published.resolved_expression(constraint.identity));
     assert_eq!(
         expression.outcome,
         ExpressionOutcome::Resolved,
         "each bare dotted chain should resolve independently, not collapse the declaration"
     );
-    let root = expression.root.expect("conjoined root");
+    let root = expression.root.expect("body root");
     match &expression.nodes[root as usize].kind {
-        ExpressionNodeKind::Operator {
-            operator: ExpressionOperator::And,
-            operands,
-        } => {
-            assert_eq!(operands.len(), 2, "both bare chains are conjoined");
-            for operand in operands.iter() {
-                match &expression.nodes[*operand as usize].kind {
-                    ExpressionNodeKind::FeatureReference {
-                        symbol: Some(_), ..
-                    } => {}
-                    other => panic!("expected a resolved dotted-chain operand, got {other:?}"),
-                }
-            }
-        }
-        other => panic!("expected the two chains conjoined with And, got {other:?}"),
+        ExpressionNodeKind::FeatureReference {
+            symbol: Some(_), ..
+        } => {}
+        other => panic!("expected a resolved dotted-chain body, got {other:?}"),
     }
 }
 

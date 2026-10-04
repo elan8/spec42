@@ -96,6 +96,10 @@ impl ResolvedExpressionRow {
 #[derive(Debug)]
 pub(crate) struct ResolvedExpressionIndex {
     rows: Box<[Option<ResolvedExpressionRow>]>,
+    /// Each Function's or Expression's result expression
+    /// ([`crate::lower::storage::SemanticModelStorage::result_expression_of`]): the owner's
+    /// expression body is that element's row.
+    bodies: Box<[Option<DeclarationId>]>,
     pub(crate) contextual:
         std::collections::BTreeMap<(DeclarationId, DeclarationId), ContextualExpressionRow>,
 }
@@ -186,6 +190,16 @@ impl ResolvedExpressionIndex {
             }
         }
 
+        // A Function or Expression's body is its result expression's row.
+        let bodies = inputs.storage.result_expression_of();
+        let body = |declaration: DeclarationId| -> Option<&ResolvedExpressionRow> {
+            rows.get(declaration.index())
+                .and_then(Option::as_ref)
+                .or_else(|| {
+                    let expression = bodies.get(declaration.index()).copied().flatten()?;
+                    rows.get(expression.index()).and_then(Option::as_ref)
+                })
+        };
         // Retain only substitution identities an expression can actually consume. Scope
         // members unrelated to bodies or operand bindings need no contextual map entry.
         let mut expression_elements = vec![false; count];
@@ -193,11 +207,10 @@ impl ResolvedExpressionIndex {
         for index in 0..count {
             let declaration =
                 DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            expression_elements[index] = rows[index].is_some()
+            expression_elements[index] = body(declaration).is_some()
                 || inputs.types.specialization.entries(declaration).iter().any(
                     |(ancestor, scopes)| {
-                        scopes & ScopeBits::Redefinition.bit() != 0
-                            && rows[ancestor.index()].is_some()
+                        scopes & ScopeBits::Redefinition.bit() != 0 && body(*ancestor).is_some()
                     },
                 );
             relevant[index] = expression_elements[index];
@@ -252,7 +265,7 @@ impl ResolvedExpressionIndex {
                 }
                 let effective = effective[0];
                 let mut origins = Vec::new();
-                if rows[effective.index()].is_some() {
+                if body(effective).is_some() {
                     origins.push(effective);
                 } else {
                     origins.extend(
@@ -263,7 +276,7 @@ impl ResolvedExpressionIndex {
                             .iter()
                             .filter(|(_, scopes)| scopes & ScopeBits::Redefinition.bit() != 0)
                             .map(|(ancestor, _)| *ancestor)
-                            .filter(|ancestor| rows[ancestor.index()].is_some()),
+                            .filter(|ancestor| body(*ancestor).is_some()),
                     );
                     let all = origins.clone();
                     origins.retain(|general| {
@@ -310,10 +323,7 @@ impl ResolvedExpressionIndex {
                 {
                     continue;
                 }
-                let mut row = rows[origin.index()]
-                    .as_ref()
-                    .ok_or(ResolutionError::InvalidStorage)?
-                    .clone();
+                let mut row = body(origin).ok_or(ResolutionError::InvalidStorage)?.clone();
                 let mut ambiguous = Vec::new();
                 let mut unresolved = false;
                 for node in row.nodes.iter_mut() {
@@ -419,6 +429,7 @@ impl ResolvedExpressionIndex {
         }
         Ok(Self {
             rows: rows.into_boxed_slice(),
+            bodies,
             contextual,
         })
     }
@@ -427,6 +438,13 @@ impl ResolvedExpressionIndex {
         self.rows
             .get(declaration.index())
             .and_then(|row| row.as_ref())
+    }
+
+    /// The expression body of `declaration`: its own row, or for a Function or Expression the
+    /// row of its result expression.
+    pub(crate) fn body(&self, declaration: DeclarationId) -> Option<&ResolvedExpressionRow> {
+        self.row(declaration)
+            .or_else(|| self.row(self.bodies.get(declaration.index()).copied().flatten()?))
     }
 }
 
@@ -953,7 +971,7 @@ impl<D> SemanticModel<D> {
         declaration: DeclarationId,
         element: SymbolId,
     ) -> Option<PublishedExpression> {
-        let Some(row) = self.resolved_expressions.row(declaration) else {
+        let Some(row) = self.resolved_expressions.body(declaration) else {
             return Some(PublishedExpression {
                 element,
                 outcome: ExpressionOutcome::NotApplicable,

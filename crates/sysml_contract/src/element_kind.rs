@@ -441,6 +441,8 @@ pub enum MembershipRole {
     ReturnParameter,
     /// `EndFeatureMembership` -- an association or connector end.
     EndFeature,
+    /// `ResultExpressionMembership` -- the result expression of a function or expression body.
+    ResultExpression,
 }
 
 impl MembershipRole {
@@ -464,6 +466,7 @@ impl MembershipRole {
             Self::Parameter => "parameter",
             Self::ReturnParameter => "return-parameter",
             Self::EndFeature => "end-feature",
+            Self::ResultExpression => "result-expression",
         }
     }
 }
@@ -570,6 +573,7 @@ mod tests {
             MembershipRole::Parameter,
             MembershipRole::ReturnParameter,
             MembershipRole::EndFeature,
+            MembershipRole::ResultExpression,
         ];
         let names = roles
             .iter()

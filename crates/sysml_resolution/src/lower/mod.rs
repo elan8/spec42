@@ -714,6 +714,7 @@ impl SemanticModelBuilder {
         document: DocumentIdx,
         owner: DeclarationId,
         kind: DeclarationKind,
+        role: Option<MembershipRole>,
         span: Span,
     ) -> Result<(DeclarationId, DeclarationId), ConstructionError> {
         let expression = self.push_typed_declaration(
@@ -724,12 +725,21 @@ impl SemanticModelBuilder {
             span,
             DeclarationFacts::none(),
         )?;
-        self.push_membership(
-            expression,
-            MembershipKind::Owning,
-            Visibility::Default,
-            span,
-        )?;
+        match role {
+            Some(role) => self.push_role_membership(
+                expression,
+                MembershipKind::Feature,
+                Visibility::Default,
+                role,
+                span,
+            )?,
+            None => self.push_membership(
+                expression,
+                MembershipKind::Owning,
+                Visibility::Default,
+                span,
+            )?,
+        }
         let result = self.push_typed_declaration(
             document,
             Some(expression),
@@ -756,19 +766,59 @@ impl SemanticModelBuilder {
             ParserFeatureValueKind::Bind => FeatureValueKind::Bind,
             ParserFeatureValueKind::Assign => FeatureValueKind::Assign,
         };
+        let (expression, result) =
+            self.mint_value_expression(document, declaration, None, &value.value.expression)?;
+        let endpoints = FeatureValueEndpoints { expression, result };
+        self.push_feature_value(
+            declaration,
+            endpoints,
+            kind,
+            value.value.is_default,
+            value.value.has_operator,
+            value.value.span,
+        )?;
+        Ok(endpoints)
+    }
+
+    /// Mints the result expression `node` authored as a member of `owner`'s body (KerML and
+    /// SysML `ResultExpressionMember`): an Expression owned through a ResultExpressionMembership
+    /// with its own `out` result, minted exactly as a FeatureValue's value Expression is. It is
+    /// the evaluation site of `node`; `owner`'s value is derived from it
+    /// ([`crate::lower::storage::SemanticModelStorage::value_expressions`]), never evaluated at
+    /// `owner` itself.
+    pub(crate) fn mint_result_expression(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        node: &Node<Expression>,
+    ) -> Result<DeclarationId, ConstructionError> {
+        let (expression, _) = self.mint_value_expression(
+            document,
+            owner,
+            Some(MembershipRole::ResultExpression),
+            node,
+        )?;
+        Ok(expression)
+    }
+
+    /// Mints the Expression element whose value `node` is -- a FeatureValue's value or a result
+    /// expression -- owned by `owner` (through `role`, or an OwningMembership), with its own `out`
+    /// result and the records its top-level node shape needs. Returns the expression and result.
+    fn mint_value_expression(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        role: Option<MembershipRole>,
+        node: &Node<Expression>,
+    ) -> Result<(DeclarationId, DeclarationId), ConstructionError> {
         // A literal, null or metadata-access value is itself the value Expression, an instance
         // of that metaclass.
-        let expression_kind =
-            crate::lower::facts::leaf_expression_kind(&value.value.expression.value)
-                .unwrap_or(DeclarationKind::KermlExpression);
-        let (expression, result) = self.push_owned_expression(
-            document,
-            declaration,
-            expression_kind,
-            value.value.expression.span,
-        )?;
+        let expression_kind = crate::lower::facts::leaf_expression_kind(&node.value)
+            .unwrap_or(DeclarationKind::KermlExpression);
+        let (expression, result) =
+            self.push_owned_expression(document, owner, expression_kind, role, node.span)?;
         if matches!(
-            value.value.expression.value,
+            node.value,
             Expression::MemberAccess { .. } | Expression::FeatureChainRef(_)
         ) {
             let input_parameter = self.push_typed_declaration(
@@ -776,7 +826,7 @@ impl SemanticModelBuilder {
                 Some(expression),
                 DeclarationKind::KermlFeature,
                 None,
-                value.value.expression.span,
+                node.span,
                 DeclarationFacts {
                     direction: Some(ParameterDirection::In),
                     ..DeclarationFacts::none()
@@ -786,35 +836,35 @@ impl SemanticModelBuilder {
                 input_parameter,
                 MembershipKind::Feature,
                 Visibility::Default,
-                value.value.expression.span,
+                node.span,
             )?;
             let source_target = self.push_typed_declaration(
                 document,
                 Some(input_parameter),
                 DeclarationKind::KermlFeature,
                 None,
-                value.value.expression.span,
+                node.span,
                 DeclarationFacts::none(),
             )?;
             self.push_membership(
                 source_target,
                 MembershipKind::Feature,
                 Visibility::Default,
-                value.value.expression.span,
+                node.span,
             )?;
             let subsetting_chain = self.push_typed_declaration(
                 document,
                 Some(expression),
                 DeclarationKind::KermlFeature,
                 None,
-                value.value.expression.span,
+                node.span,
                 DeclarationFacts::none(),
             )?;
             self.push_membership(
                 subsetting_chain,
                 MembershipKind::Owning,
                 Visibility::Default,
-                value.value.expression.span,
+                node.span,
             )?;
             self.feature_chain_expressions
                 .push(FeatureChainExpressionRecord {
@@ -825,16 +875,16 @@ impl SemanticModelBuilder {
                     subsetting_chain,
                 });
         }
-        if matches!(value.value.expression.value, Expression::FeatureRef(_)) {
+        if matches!(node.value, Expression::FeatureRef(_)) {
             self.feature_reference_expressions
                 .push(FeatureReferenceExpressionRecord { expression, result });
         }
-        self.record_operator_expression(document, expression, result, &value.value.expression)?;
-        if matches!(value.value.expression.value, Expression::Constructor { .. }) {
+        self.record_operator_expression(document, expression, result, node)?;
+        if matches!(node.value, Expression::Constructor { .. }) {
             self.constructor_expressions
                 .push(ConstructorExpressionRecord { expression, result });
         }
-        let instantiation = match &value.value.expression.value {
+        let instantiation = match &node.value {
             Expression::Invocation { callee, .. }
                 if matches!(
                     callee.value,
@@ -856,19 +906,10 @@ impl SemanticModelBuilder {
                 expression,
                 container,
                 form,
-                span: value.value.expression.span,
+                span: node.span,
             });
         }
-        let endpoints = FeatureValueEndpoints { expression, result };
-        self.push_feature_value(
-            declaration,
-            endpoints,
-            kind,
-            value.value.is_default,
-            value.value.has_operator,
-            value.value.span,
-        )?;
-        Ok(endpoints)
+        Ok((expression, result))
     }
 
     fn push_expression_argument(
@@ -1943,24 +1984,7 @@ impl SemanticModelBuilder {
         });
     }
 
-    /// Records one ResultExpressionMembership owned by `owner`: a result expression authored as a
-    /// member of its body (`DeclarationFacts::result_expression_count`).
-    pub(crate) fn count_result_expression(
-        &mut self,
-        owner: DeclarationId,
-    ) -> Result<(), ConstructionError> {
-        let facts = self
-            .declaration_facts
-            .get_mut(owner.index())
-            .ok_or(ConstructionError::InvalidMembership)?;
-        facts.result_expression_count = facts
-            .result_expression_count
-            .checked_add(1)
-            .ok_or(ConstructionError::Capacity)?;
-        Ok(())
-    }
-
-    /// Records that `owner`'s ResultExpressionMemberships are not all counted
+    /// Records that `owner`'s ResultExpressionMemberships are not all lowered
     /// (`DeclarationFacts::result_expressions_incomplete`).
     pub(crate) fn mark_result_expressions_incomplete(
         &mut self,
@@ -2305,7 +2329,7 @@ impl SemanticModelBuilder {
             // of the bound, so its result type can be derived from their referents.
             for site in bounds.into_iter().flatten() {
                 let (expression, _) =
-                    self.push_owned_expression(document, range, site.kind, site.span)?;
+                    self.push_owned_expression(document, range, site.kind, None, site.span)?;
                 self.declaration_facts[expression.index()].multiplicity_bound_form =
                     Some(site.form);
                 for operand in site.operands.iter().copied() {

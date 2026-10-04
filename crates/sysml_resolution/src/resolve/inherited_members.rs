@@ -103,6 +103,24 @@ pub(crate) fn derive_inherited_members<F>(
 where
     F: Fn(DeclarationId) -> Vec<DeclarationId>,
 {
+    let count = owned_members.owned.len();
+    derive_inherited_members_from(owned_members, generals, authored, 0..count)
+}
+
+/// [`derive_inherited_members`], deriving only `roots` and the supertypes they reach.
+///
+/// A declaration's member depends only on its own supertype closure, so each root's entry equals
+/// the full derivation's; entries for declarations no root reaches stay `Absent` and must not be
+/// read.
+pub(crate) fn derive_inherited_members_from<F>(
+    owned_members: &OwnedMembers,
+    generals: F,
+    authored: &BTreeSet<(DeclarationId, DeclarationId)>,
+    roots: impl IntoIterator<Item = usize>,
+) -> Result<Vec<InheritedMember>, ResolutionError>
+where
+    F: Fn(DeclarationId) -> Vec<DeclarationId>,
+{
     const UNVISITED: u8 = 0;
     const IN_PROGRESS: u8 = 1;
     const DONE: u8 = 2;
@@ -115,8 +133,8 @@ where
     let mut redefines: std::collections::BTreeMap<DeclarationId, BTreeSet<DeclarationId>> =
         std::collections::BTreeMap::new();
     let mut stack = Vec::new();
-    for root in 0..count {
-        if state[root] != UNVISITED {
+    for root in roots {
+        if state.get(root) != Some(&UNVISITED) {
             continue;
         }
         stack.push((root, false));

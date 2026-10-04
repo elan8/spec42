@@ -50,6 +50,10 @@ pub(crate) enum ImpliedBindingRule {
     /// `checkInvocationExpressionBehaviorBindingConnector` (KerML 8.3.4.8.8): an invocation of a
     /// non-Function binds the expression itself to its `result`.
     InvocationExpressionBehavior,
+    /// `checkExpressionResultBindingConnector` / `checkFunctionResultBindingConnector` (KerML
+    /// 8.3.4.7.3/4): a Function or Expression binds the `result` of its result expression to its
+    /// own `result` (the Pilot's `TypeAdapter.addResultBinding`).
+    ResultExpression,
     /// `checkTransitionUsageSourceBindingConnector` (SysML 8.3.18.9): a TransitionUsage binds its
     /// `source` to its first input parameter.
     TransitionUsageSource,
@@ -111,6 +115,23 @@ pub(crate) struct BindingConnectorIndex {
     /// Implying rules with at least one applicable owner whose endpoint facts are unresolved, so
     /// the rule's implied connector could not be published.
     pub(crate) undecided: Box<[BindingConnectorCheckKind]>,
+    /// Every Function or Expression that owns a result expression, with its settled result.
+    pub(crate) result_expression_owners: Box<[ResultExpressionOwner]>,
+}
+
+/// One Function or Expression that owns at least one result expression (KerML
+/// `ResultExpressionMembership`), with the endpoints its result binding connectors relate.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct ResultExpressionOwner {
+    /// The rule that applies to the owner: `FunctionResult` for a Function, `ExpressionResult`
+    /// for an Expression.
+    pub(crate) rule: BindingConnectorCheckKind,
+    pub(crate) owner: DeclarationId,
+    /// The owner's `result` parameter, owned or inherited (`TypeUtil.getResultParameterOf`);
+    /// `None` when it is not settled (absent, ambiguous, or over an unsettled specialization).
+    pub(crate) result: Option<DeclarationId>,
+    /// The `result` of each result expression the owner owns, in authored order.
+    pub(crate) expression_results: Box<[DeclarationId]>,
 }
 
 #[derive(Debug, Default)]
@@ -150,6 +171,7 @@ impl BindingConnectorIndex {
     pub(crate) fn build(
         storage: &SemanticModelStorage,
         resolution: &ResolutionResults,
+        types: &types::TypeIndex,
     ) -> Result<Self, ResolutionError> {
         let mut ends = std::collections::BTreeMap::<
             DeclarationId,
@@ -192,10 +214,33 @@ impl BindingConnectorIndex {
             .collect::<Vec<_>>();
         let mut undecided = Vec::new();
         implied_binding_connectors(storage, resolution, &mut facts, &mut undecided);
+        let result_expression_owners = result_expression_owners(storage, resolution, types)?;
+        for owner in result_expression_owners.iter() {
+            // The Pilot binds the first result expression only
+            // (`TypeAdapter.createResultConnector`); the rule then checks every membership.
+            match (owner.result, owner.expression_results.first()) {
+                (Some(result), Some(expression_result)) => facts.push(BindingConnectorFact {
+                    origin: BindingConnectorOrigin::Implied {
+                        owner: owner.owner,
+                        rule: ImpliedBindingRule::ResultExpression,
+                    },
+                    source: BindingEndpointFact::Resolved(*expression_result),
+                    target: BindingEndpointFact::Resolved(result),
+                    provenance: types::FactProvenance::Implied,
+                }),
+                (None, _) => {
+                    if !undecided.contains(&owner.rule) {
+                        undecided.push(owner.rule);
+                    }
+                }
+                (Some(_), None) => {}
+            }
+        }
         facts.sort();
         Ok(Self {
             facts: facts.into_boxed_slice(),
             undecided: undecided.into_boxed_slice(),
+            result_expression_owners: result_expression_owners.into_boxed_slice(),
         })
     }
 
@@ -252,16 +297,10 @@ impl BindingConnectorIndex {
                     BindingConnectorValidationOutcome::Violated
                 }
             }
-            BindingConnectorCheckKind::ExpressionResult => result_expression_binding_outcome(
-                storage,
-                rule,
-                BindingConnectorValidationPrerequisite::ExpressionResultEndpointFacts,
-            ),
-            BindingConnectorCheckKind::FunctionResult => result_expression_binding_outcome(
-                storage,
-                rule,
-                BindingConnectorValidationPrerequisite::FunctionResultEndpointFacts,
-            ),
+            BindingConnectorCheckKind::ExpressionResult
+            | BindingConnectorCheckKind::FunctionResult => {
+                self.result_expression_binding_outcome(storage, rule)
+            }
             BindingConnectorCheckKind::ConstructorExpressionResultDefaultValueTbd => {
                 BindingConnectorValidationOutcome::Unsupported {
                     prerequisite: BindingConnectorValidationPrerequisite::NormativeSpecificationTbd,
@@ -288,46 +327,196 @@ impl BindingConnectorIndex {
     }
 }
 
-/// `checkExpressionResultBindingConnector` (KerML 8.3.4.7.3) and
-/// `checkFunctionResultBindingConnector` (8.3.4.7.4): every ResultExpressionMembership of an
-/// instance of the rule's metaclass has a binding connector between the owner's `result` and the
-/// result expression's `result`.
-///
-/// The OCL quantifies over each owner's ResultExpressionMemberships. A result expression is
-/// evaluated at its owner rather than published as an Expression element with its own result
-/// parameter, so a non-empty membership set has no endpoint facts and stays explicitly
-/// unsupported. The rule is decided only where it holds vacuously: every applicable owner's
-/// membership set is exactly known (`result_expressions_incomplete` unset) and empty. A set that
-/// is not exactly known leaves the rule unresolved.
-fn result_expression_binding_outcome(
+impl BindingConnectorIndex {
+    /// `checkExpressionResultBindingConnector` (KerML 8.3.4.7.3) and
+    /// `checkFunctionResultBindingConnector` (8.3.4.7.4): every ResultExpressionMembership of an
+    /// instance of the rule's metaclass has an owned binding connector between the owner's
+    /// `result` and the result expression's `result`.
+    ///
+    /// The connectors are the implied ones published from `result_expression_owners` and any
+    /// the owner authors. An owner whose result is not settled, or whose result-expression set is
+    /// not exactly known (`result_expressions_incomplete`), leaves the rule unresolved.
+    fn result_expression_binding_outcome(
+        &self,
+        storage: &SemanticModelStorage,
+        rule: BindingConnectorCheckKind,
+    ) -> BindingConnectorValidationOutcome {
+        let Some(metaclass) = crate::resolve::implied::binding_connector_check_rule(rule)
+            .and_then(|rule| sysml_contract::ElementKind::parse(rule.metaclass))
+        else {
+            return BindingConnectorValidationOutcome::Unsupported {
+                prerequisite: BindingConnectorValidationPrerequisite::RuleNotPublished,
+            };
+        };
+        if self.undecided.contains(&rule) {
+            return BindingConnectorValidationOutcome::Unresolved;
+        }
+        let incomplete = storage
+            .declarations
+            .iter()
+            .zip(storage.declaration_facts.iter())
+            .any(|(declaration, facts)| {
+                facts.result_expressions_incomplete
+                    && crate::model::element_kind::element_kind(declaration.kind)
+                        .conforms_to(metaclass)
+            });
+        if incomplete {
+            return BindingConnectorValidationOutcome::Unresolved;
+        }
+        let owned_by = |fact: &BindingConnectorFact, owner: DeclarationId| match fact.origin {
+            BindingConnectorOrigin::Implied {
+                owner: implied_owner,
+                rule: ImpliedBindingRule::ResultExpression,
+            } => implied_owner == owner,
+            BindingConnectorOrigin::Authored(connector) => storage
+                .declaration(connector)
+                .is_some_and(|connector| connector.owner == Some(owner)),
+            BindingConnectorOrigin::Implied { .. } => false,
+        };
+        let satisfied = self
+            .result_expression_owners
+            .iter()
+            .filter(|owner| owner.rule == rule)
+            .all(|owner| {
+                let Some(result) = owner.result else {
+                    return false;
+                };
+                owner.expression_results.iter().all(|expression_result| {
+                    self.facts.iter().any(|fact| {
+                        owned_by(fact, owner.owner) && fact.relates(result, *expression_result)
+                    })
+                })
+            });
+        if satisfied {
+            BindingConnectorValidationOutcome::Satisfied
+        } else {
+            BindingConnectorValidationOutcome::Violated
+        }
+    }
+}
+
+/// Every Function or Expression that owns a result expression, in owner order, with its result
+/// (`TypeUtil.getResultParameterOf`: the owned result parameter, else the one inherited over the
+/// settled direct supertypes, through the same derivation `checkFeatureResultRedefinition`
+/// pairs results with) and its result expressions' results.
+fn result_expression_owners(
     storage: &SemanticModelStorage,
-    rule: BindingConnectorCheckKind,
-    prerequisite: BindingConnectorValidationPrerequisite,
-) -> BindingConnectorValidationOutcome {
-    let Some(metaclass) = crate::resolve::implied::binding_connector_check_rule(rule)
-        .and_then(|rule| sysml_contract::ElementKind::parse(rule.metaclass))
-    else {
-        return BindingConnectorValidationOutcome::Unsupported { prerequisite };
+    resolution: &ResolutionResults,
+    types: &types::TypeIndex,
+) -> Result<Vec<ResultExpressionOwner>, ResolutionError> {
+    use crate::resolve::inherited_members::derive_inherited_members_from;
+    use crate::resolve::inherited_members::InheritedMember;
+    use crate::resolve::result_parameters::owned_result_parameters;
+    let mut owners = std::collections::BTreeMap::<DeclarationId, Vec<DeclarationId>>::new();
+    for (owner, expression) in storage.result_expressions() {
+        let result = storage
+            .declaration_facts(expression)
+            .and_then(|facts| facts.expression_result)
+            .ok_or(ResolutionError::InvalidStorage)?;
+        owners.entry(owner).or_default().push(result);
+    }
+    let rule_of = |owner: DeclarationId| {
+        let kind = crate::model::element_kind::element_kind(storage.declaration(owner)?.kind);
+        if kind.conforms_to(sysml_contract::ElementKind::Function) {
+            Some(BindingConnectorCheckKind::FunctionResult)
+        } else if kind.conforms_to(sysml_contract::ElementKind::Expression) {
+            Some(BindingConnectorCheckKind::ExpressionResult)
+        } else {
+            None
+        }
     };
-    let mut incomplete = false;
-    for (declaration, facts) in storage
-        .declarations
-        .iter()
-        .zip(storage.declaration_facts.iter())
-    {
-        if !crate::model::element_kind::element_kind(declaration.kind).conforms_to(metaclass) {
-            continue;
-        }
-        if facts.result_expression_count > 0 {
-            return BindingConnectorValidationOutcome::Unsupported { prerequisite };
-        }
-        incomplete |= facts.result_expressions_incomplete;
+    owners.retain(|owner, _| rule_of(*owner).is_some());
+    if owners.is_empty() {
+        return Ok(Vec::new());
     }
-    if incomplete {
-        BindingConnectorValidationOutcome::Unresolved
-    } else {
-        BindingConnectorValidationOutcome::Satisfied
+    let owned = owned_result_parameters(storage)?;
+    let inheriting = owners
+        .keys()
+        .copied()
+        .filter(|owner| owned.owned(*owner).is_none())
+        .collect::<Vec<_>>();
+    let mut inherited = Vec::new();
+    let mut unsettled_specialization = Vec::new();
+    if !inheriting.is_empty() {
+        // The derivation reads only the authored redefinitions of owned result parameters.
+        let mut is_result = vec![false; storage.declarations.len()];
+        for (_, result) in owned.iter() {
+            if let Some(slot) = is_result.get_mut(result.index()) {
+                *slot = true;
+            }
+        }
+        let mut authored = std::collections::BTreeSet::new();
+        unsettled_specialization = vec![false; storage.declarations.len()];
+        for (reference, outcome) in storage.references.iter().zip(resolution.outcomes.iter()) {
+            match outcome {
+                ResolutionStatus::Resolved(target) => {
+                    if reference.kind == ReferenceKind::Redefinition
+                        && is_result
+                            .get(reference.source.index())
+                            .copied()
+                            .unwrap_or(false)
+                    {
+                        authored.insert((reference.source, *target));
+                    }
+                }
+                _ if types::edge_scopes(reference.kind).is_some() => {
+                    if let Some(slot) = unsettled_specialization.get_mut(reference.source.index()) {
+                        *slot = true;
+                    }
+                }
+                _ => {}
+            }
+        }
+        let generals = |declaration: DeclarationId| {
+            let mut generals = types
+                .supertypes(declaration)
+                .iter()
+                .map(|(general, _)| *general)
+                .collect::<Vec<_>>();
+            generals.sort();
+            generals.dedup();
+            generals
+        };
+        inherited = derive_inherited_members_from(
+            &owned,
+            generals,
+            &authored,
+            inheriting.iter().map(|owner| owner.index()),
+        )?;
     }
+    let unsettled = |owner: DeclarationId| {
+        std::iter::once(owner)
+            .chain(
+                types
+                    .specialization()
+                    .scoped_ancestors(owner)
+                    .map(|(ancestor, _)| ancestor),
+            )
+            .any(|declaration| {
+                unsettled_specialization
+                    .get(declaration.index())
+                    .copied()
+                    .unwrap_or(false)
+            })
+    };
+    Ok(owners
+        .into_iter()
+        .filter_map(|(owner, expression_results)| {
+            let result = match owned.owned(owner) {
+                Some(result) => Some(result),
+                None => match inherited.get(owner.index()) {
+                    Some(InheritedMember::Resolved(result)) if !unsettled(owner) => Some(*result),
+                    _ => None,
+                },
+            };
+            Some(ResultExpressionOwner {
+                rule: rule_of(owner)?,
+                owner,
+                result,
+                expression_results: expression_results.into_boxed_slice(),
+            })
+        })
+        .collect())
 }
 
 /// One binding connector a normative rule requires: its canonical origin and related features.

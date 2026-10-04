@@ -2148,11 +2148,15 @@ impl<D> SemanticModel<D> {
                     | DeclarationKind::AssertConstraintUsage
                     | DeclarationKind::RequireConstraintUsage
             )
-        }) && self
-            .storage
-            .evaluation_facts
-            .iter()
-            .any(|fact| fact.declaration == id)
+        }) && {
+            // A constraint's body expression is its result expression, which owns the
+            // evaluation; `evaluation_for` reads it through the same bridge.
+            let value = self.value_expression(id);
+            self.storage
+                .evaluation_facts
+                .iter()
+                .any(|fact| fact.declaration == id || Some(fact.declaration) == value)
+        }
     }
 }
 

@@ -1905,15 +1905,12 @@ impl SemanticModelBuilder {
                 UseCaseDefBodyElement::FlowUsage(node) => {
                     self.lower_flow_usage(document, owner, node)?;
                 }
-                // Bare result expression in an analysis/case body (validation `10a`: `vehicle.
-                // mass`) -- mirrors `CalcDefBodyElement::Expression`'s identical shape: the
-                // expression is the enclosing case-family declaration's own evaluated result, not
-                // a new nested declaration, so it is classified/lowered directly at `owner` through
-                // the same `classify_expression`/`lower_calc_expression` pipeline a calc def's
-                // bare body expression uses.
+                // Bare expression in an analysis/case body (validation `10a`: `vehicle.mass`).
+                // Unlike `CalcDefBodyElement::Expression`, it is not minted as a result
+                // expression: the parser still shreds `include` members into stray expressions
+                // here, so this may not be a ResultExpressionMember. It stays evaluated at
+                // `owner`, whose result-expression set is marked incomplete.
                 UseCaseDefBodyElement::Expression(expression) => {
-                    // Not counted: the parser still shreds `include` members into stray
-                    // expressions here, so this may not be a ResultExpressionMember.
                     self.mark_result_expressions_incomplete(owner)?;
                     self.push_evaluation_fact(
                         owner,

@@ -88,6 +88,9 @@ pub(crate) struct ElementFactIndex {
     /// alternative was a linear search of the evaluation table per inspected element, which made
     /// inspecting one element cost the size of the model.
     pub(crate) evaluation: Box<[Option<u32>]>,
+    /// The Expression that gives each declaration its value
+    /// ([`SemanticModelStorage::value_expressions`]), indexed by declaration.
+    pub(crate) value_expressions: Box<[Option<DeclarationId>]>,
 }
 
 /// Builds the contiguous per-declaration ranges of an ordered view of a record table.
@@ -232,6 +235,7 @@ impl ElementFactIndex {
         }
 
         Ok(Self {
+            value_expressions: storage.value_expressions(),
             documentation: ranges_by_declaration(declarations, documentation_owners.into_iter()),
             documentation_order: documentation_order.into_boxed_slice(),
             feature_values: ranges_by_declaration(
@@ -632,17 +636,10 @@ impl<D> SemanticModel<D> {
             .copied()
             .flatten()
             .or_else(|| {
-                slice_range(
-                    &self.facts.feature_value_order,
-                    &self.facts.feature_values,
-                    id,
-                )
-                .first()
-                .and_then(|index| self.storage.feature_values.get(*index as usize))
-                .and_then(|value| {
+                self.value_expression(id).and_then(|expression| {
                     self.facts
                         .evaluation
-                        .get(value.value.index())
+                        .get(expression.index())
                         .copied()
                         .flatten()
                 })
@@ -657,15 +654,18 @@ impl<D> SemanticModel<D> {
         &self,
         id: DeclarationId,
     ) -> &[crate::index::expressions::SettledUnit] {
-        let expression = slice_range(
-            &self.facts.feature_value_order,
-            &self.facts.feature_values,
-            id,
-        )
-        .first()
-        .and_then(|index| self.storage.feature_values.get(*index as usize))
-        .map_or(id, |value| value.value);
-        self.expressions.units(expression)
+        self.expressions
+            .units(self.value_expression(id).unwrap_or(id))
+    }
+
+    /// The Expression that gives `id` its value: its FeatureValue's value Expression or its
+    /// result expression ([`SemanticModelStorage::value_expressions`]).
+    pub(crate) fn value_expression(&self, id: DeclarationId) -> Option<DeclarationId> {
+        self.facts
+            .value_expressions
+            .get(id.index())
+            .copied()
+            .flatten()
     }
 
     /// The authored and implied references this declaration is the source of, in canonical order.

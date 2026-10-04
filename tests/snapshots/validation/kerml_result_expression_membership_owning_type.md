@@ -57,30 +57,48 @@ package Results {
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results::Computing"))) (kind kerml-function) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind feature) (visibility default) (role result-expression)) (facts (expression-result (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results::Object"))) (kind kerml-structure) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind feature) (visibility default) (role result-expression)) (facts (expression-result (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
   )
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results::Computing"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results::Object"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results::Computing"))) (state literal) (value (kind integer) (integer 1)))
-    (evaluated (declaration (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results::Object"))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
   )
 )
 ~~~
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results::Computing")))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results::Object")))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
+    )
 )
 ~~~
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results::Computing"))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (qualified-name "Results::Object"))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-function) (name "Computing")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_result_expression_membership_owning_type.md") (path (named (kind package) (name "Results")) (named (kind kerml-structure) (name "Object")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
 )
 ~~~
 # NAVIGATION
