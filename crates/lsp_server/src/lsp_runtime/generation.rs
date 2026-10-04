@@ -682,33 +682,14 @@ mod tests {
             .diagram_views(Arc::clone(&publication))
             .expect("diagram catalog");
         let handle = catalog.views[0].handle.clone();
-        // Other publications push the one the handle came from out of the model cache. Eviction
-        // takes the smallest digest, so how many it takes depends on digest values; publish until
-        // it is gone, within a bound.
-        for ordinal in 0..64 {
-            if !service
-                .models
-                .lock()
-                .unwrap()
-                .contains_key(&publication.publication().model_digest())
-            {
-                break;
-            }
-            let other = sysml_query::Services::new()
-                .publication
-                .publish(
-                    &[SourceService::new()
-                        .admit(
-                            &format!("file:///lsp-generator-tests/other{ordinal}.sysml"),
-                            format!("package Other{ordinal};\n"),
-                            SourceKind::Workspace,
-                        )
-                        .expect("uri")],
-                    [],
-                )
-                .expect("published model");
-            service.diagram_views(other).expect("catalog");
-        }
+        // Evict the view the handle came from. `evict_one` takes the smallest digest, so whether
+        // other publications push this one out depends on digest values (which move with every
+        // semantic contract version); remove it directly so the test does not depend on them.
+        service
+            .models
+            .lock()
+            .unwrap()
+            .remove(&publication.publication().model_digest());
         let cached = service.models.lock().unwrap();
         assert!(
             !cached.contains_key(&publication.publication().model_digest()),
