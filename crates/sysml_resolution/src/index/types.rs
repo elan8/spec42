@@ -319,6 +319,11 @@ pub(crate) struct TypeIndex {
     /// scopes each edge belongs to. The transitive answer lives in the closure; this is the one
     /// hop a type hierarchy view expands at a time.
     pub(crate) supertypes: Rows<(DeclarationId, u8)>,
+    /// The same direct supertypes in KerML `ownedSpecialization` order (authored edges in
+    /// reference order, then implied ones), deduplicated
+    /// ([`crate::resolve::end_features::ordered_direct_generals`]). The positional derivations
+    /// (`Type::endFeature`, parameter positions) read this order; `supertypes` is identity-ordered.
+    pub(crate) ordered_generals: Box<[Box<[DeclarationId]>]>,
     /// Direct specializers per declaration: the reverse of the direct specialization edges, tagged
     /// with the scopes each edge belongs to.
     ///
@@ -362,7 +367,7 @@ pub(crate) struct TypeIndex {
     /// KerML `Type::endFeature` per declaration, each entry keyed by its position.
     ///
     /// Derived by [`crate::resolve::end_features::derive_end_features`] over the published direct
-    /// supertypes, visited in identity order: the owned ends in authored order, then each direct
+    /// supertypes, visited in `ownedSpecialization` order (`ordered_generals`): the owned ends in authored order, then each direct
     /// supertype's ends past the owned count (the owned ends redefine those at their positions,
     /// `checkFeatureEndRedefinition`).
     pub(crate) end_features: Rows<(u32, OwnedEndFeature)>,
@@ -438,6 +443,7 @@ impl TypeIndex {
         let mut direct_featuring = Vec::new();
         let mut chaining = Vec::new();
         let mut supertypes = Vec::new();
+        let mut ordered_edges = Vec::new();
         let mut subtypes = Vec::new();
         let mut edge = |source: DeclarationId,
                         target: DeclarationId,
@@ -445,6 +451,7 @@ impl TypeIndex {
                         provenance: FactProvenance| {
             if let Some(scopes) = edge_scopes(kind) {
                 supertypes.push((source, (target, scopes)));
+                ordered_edges.push((source, target));
                 subtypes.push((target, (source, scopes)));
             }
             if kind == ReferenceKind::FeatureTyping {
@@ -483,6 +490,11 @@ impl TypeIndex {
         let direct_featuring = Rows::build(count, direct_featuring)?;
         let chaining = Rows::build(count, chaining)?;
         let supertypes = Rows::build(count, supertypes)?;
+        let ordered_generals =
+            crate::resolve::end_features::ordered_direct_generals(count, ordered_edges)?
+                .into_iter()
+                .map(Vec::into_boxed_slice)
+                .collect::<Box<[_]>>();
         let subtypes = Rows::build(count, subtypes)?;
 
         // Effective typing walks the feature-specialization chain and collects what each feature
@@ -617,13 +629,14 @@ impl TypeIndex {
             }
         }
         let variant_members = crate::resolve::usage_composition::variant_member_flags(storage)?;
-        let end_features = derive_end_features(storage, &supertypes)?;
+        let end_features = derive_end_features(storage, &ordered_generals)?;
 
         Ok(Self {
             variant_members,
             specialization,
             direct_types,
             supertypes,
+            ordered_generals,
             subtypes,
             effective_types,
             featuring,
@@ -854,6 +867,15 @@ impl TypeIndex {
         self.supertypes.row(declaration)
     }
 
+    /// `declaration`'s direct supertypes in `ownedSpecialization` order; see
+    /// [`TypeIndex::ordered_generals`].
+    pub(crate) fn ordered_generals(&self, declaration: DeclarationId) -> &[DeclarationId] {
+        self.ordered_generals
+            .get(declaration.index())
+            .map(|row| &**row)
+            .unwrap_or_default()
+    }
+
     /// Declarations that directly specialize `declaration`, with the scopes of each edge.
     pub(crate) fn subtypes(&self, declaration: DeclarationId) -> &[(DeclarationId, u8)] {
         self.subtypes.row(declaration)
@@ -967,17 +989,19 @@ impl TypeIndex {
 /// Derives every declaration's KerML `Type::endFeature` row; see [`TypeIndex::end_features`].
 fn derive_end_features(
     storage: &SemanticModelStorage,
-    supertypes: &Rows<(DeclarationId, u8)>,
+    ordered_generals: &[Box<[DeclarationId]>],
 ) -> Result<Rows<(u32, OwnedEndFeature)>, ResolutionError> {
     let count = storage.declarations.len();
     let ends = crate::resolve::end_features::derive_end_features(
         count,
         &storage.owned_end_features,
         |declaration| {
-            supertypes
-                .row(declaration)
+            ordered_generals
+                .get(declaration.index())
+                .map(|row| &**row)
+                .unwrap_or_default()
                 .iter()
-                .map(|(general, _)| *general)
+                .copied()
         },
     )?;
     let mut pairs = Vec::new();

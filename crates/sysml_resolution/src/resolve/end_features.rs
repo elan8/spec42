@@ -105,6 +105,31 @@ pub(crate) fn owned_ends_of(owned: &[OwnedEndRecord], owner: DeclarationId) -> &
     &owned[start..end]
 }
 
+/// Every declaration's direct supertypes in KerML `ownedSpecialization` order, indexed by
+/// declaration: `edges` are the settled `(specific, general)` specialization edges, authored ones in
+/// canonical reference (authored) order followed by implied ones, and a general reached by two
+/// edges keeps its first position.
+///
+/// The positional derivations ([`derive_positional_features`]) inherit members in this order, as
+/// KerML `Type::inheritedMemberships` does, so the order is a semantic input rather than an
+/// incidental one: ordering by identity would let an implied or library supertype that happens to
+/// sort first displace the authored one at a position.
+pub(crate) fn ordered_direct_generals(
+    count: usize,
+    edges: impl IntoIterator<Item = (DeclarationId, DeclarationId)>,
+) -> Result<Vec<Vec<DeclarationId>>, ResolutionError> {
+    let mut generals = vec![Vec::new(); count];
+    for (specific, general) in edges {
+        let row = generals
+            .get_mut(specific.index())
+            .ok_or(ResolutionError::InvalidStorage)?;
+        if !row.contains(&general) {
+            row.push(general);
+        }
+    }
+    Ok(generals)
+}
+
 /// Derives every declaration's KerML `Type::endFeature`, indexed by declaration: the shared
 /// positional derivation ([`derive_positional_features`]) over the owned end collection.
 pub(crate) fn derive_end_features<F, I>(
@@ -285,17 +310,7 @@ pub(crate) fn synthesize_positional_end_redefinitions(
     if owned.is_empty() {
         return Ok(Vec::new());
     }
-    let mut generals = vec![BTreeSet::new(); count];
-    for (specific, general) in type_edges {
-        generals
-            .get_mut(specific.index())
-            .ok_or(ResolutionError::InvalidStorage)?
-            .insert(general);
-    }
-    let generals = generals
-        .into_iter()
-        .map(|set| set.into_iter().collect::<Vec<_>>())
-        .collect::<Vec<_>>();
+    let generals = ordered_direct_generals(count, type_edges)?;
     let generals_of = |declaration: DeclarationId| {
         generals
             .get(declaration.index())

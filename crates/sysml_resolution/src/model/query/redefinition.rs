@@ -352,17 +352,10 @@ impl<D> SemanticModel<D> {
         authored
     }
 
-    /// The deduplicated direct supertypes of `declaration` in this publication.
+    /// The deduplicated direct supertypes of `declaration` in this publication, in the
+    /// `ownedSpecialization` order the positional derivations and their syntheses read.
     fn direct_generals(&self, declaration: DeclarationId) -> Vec<DeclarationId> {
-        let mut generals = self
-            .types
-            .supertypes(declaration)
-            .iter()
-            .map(|(general, _)| *general)
-            .collect::<Vec<_>>();
-        generals.sort();
-        generals.dedup();
-        generals
+        self.types.ordered_generals(declaration).to_vec()
     }
 
     /// KerML `checkConstructorExpressionResultFeatureRedefinition`: each owned Feature of a

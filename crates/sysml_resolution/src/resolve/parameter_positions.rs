@@ -26,6 +26,7 @@ use crate::model::DeclarationKind;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::resolve::end_features::derive_positional_features;
+use crate::resolve::end_features::ordered_direct_generals;
 use crate::resolve::result_parameters::owned_result_parameters;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
@@ -216,17 +217,11 @@ pub(crate) fn synthesize_parameter_redefinitions(
     type_edges: impl IntoIterator<Item = (DeclarationId, DeclarationId)>,
     authored: &BTreeSet<(DeclarationId, DeclarationId)>,
 ) -> Result<Vec<ImpliedRelationship>, ResolutionError> {
-    let mut generals = vec![BTreeSet::new(); storage.declarations.len()];
-    for (specific, general) in type_edges {
-        generals
-            .get_mut(specific.index())
-            .ok_or(ResolutionError::InvalidStorage)?
-            .insert(general);
-    }
+    let generals = ordered_direct_generals(storage.declarations.len(), type_edges)?;
     let generals_of = |declaration: DeclarationId| {
         generals
             .get(declaration.index())
-            .map(|set| set.iter().copied().collect())
+            .cloned()
             .unwrap_or_default()
     };
     let mut implied = Vec::new();
