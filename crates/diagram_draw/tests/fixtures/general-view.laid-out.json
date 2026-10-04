@@ -1,0 +1,140 @@
+{
+  "title": "General",
+  "view": "general-view",
+  "meta": null,
+  "nodes": [
+    {
+      "id": "P::Vehicle",
+      "label": "Vehicle",
+      "kind": "part def",
+      "sourcePath": null,
+      "uri": null,
+      "range": null,
+      "attributes": {
+        "attributes": [
+          "mass"
+        ],
+        "qualifiedName": "",
+        "isPackage": false,
+        "notationRole": "definition"
+      },
+      "compartments": {
+        "header": {
+          "stereotype": "part def",
+          "name": "Vehicle"
+        },
+        "typedByName": null,
+        "attributes": [
+          {
+            "name": "mass",
+            "displayText": "mass"
+          }
+        ],
+        "parts": [],
+        "ports": [],
+        "collapsibleSections": []
+      },
+      "width": 200,
+      "height": 74,
+      "$H": 277,
+      "x": 100,
+      "y": 331
+    },
+    {
+      "id": "P::vehicle",
+      "label": "vehicle",
+      "kind": "part",
+      "sourcePath": null,
+      "uri": null,
+      "range": null,
+      "attributes": {
+        "partType": "Vehicle",
+        "qualifiedName": "",
+        "isPackage": false,
+        "notationRole": "usage"
+      },
+      "compartments": {
+        "header": {
+          "stereotype": "part",
+          "name": "vehicle"
+        },
+        "typedByName": "Vehicle",
+        "attributes": [],
+        "parts": [],
+        "ports": [],
+        "collapsibleSections": []
+      },
+      "width": 200,
+      "height": 51,
+      "$H": 279,
+      "x": 100,
+      "y": 100
+    }
+  ],
+  "edges": [
+    {
+      "id": "typed",
+      "source": "P::vehicle",
+      "target": "P::Vehicle",
+      "label": "typing",
+      "edgeKind": "typing",
+      "attributes": {
+        "relationType": "typing"
+      },
+      "sourceNode": {
+        "id": "P::vehicle",
+        "label": "vehicle",
+        "kind": "part",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "partType": "Vehicle",
+          "qualifiedName": "",
+          "isPackage": false,
+          "notationRole": "usage"
+        }
+      },
+      "targetNode": {
+        "id": "P::Vehicle",
+        "label": "Vehicle",
+        "kind": "part def",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "attributes": [
+            "mass"
+          ],
+          "qualifiedName": "",
+          "isPackage": false,
+          "notationRole": "definition"
+        }
+      },
+      "layout": {
+        "id": "typed",
+        "sources": [
+          "P::vehicle"
+        ],
+        "targets": [
+          "P::Vehicle"
+        ],
+        "sections": [
+          {
+            "id": "typed_s0",
+            "startPoint": {
+              "x": 200,
+              "y": 151
+            },
+            "endPoint": {
+              "x": 200,
+              "y": 331
+            },
+            "incomingShape": "P::vehicle",
+            "outgoingShape": "P::Vehicle"
+          }
+        ]
+      }
+    }
+  ]
+}

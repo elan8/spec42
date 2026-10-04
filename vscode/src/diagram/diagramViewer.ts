@@ -1,5 +1,3 @@
-import * as fs from "fs/promises";
-import * as path from "path";
 import * as vscode from "vscode";
 import { State } from "vscode-languageclient/node";
 import type { LspClientHandles } from "../activation/lspClient";
@@ -15,10 +13,9 @@ import {
   isPathInsideWorkspace,
   parseDiagramProduct,
   parseDiagramViewCatalog,
-  parseLspGenerationResult,
+  parseLspDiagramResult,
   parseSourceNavigation,
   reconcileDelayMs,
-  selectSingleDiagramJson,
   visibleSourceColumn,
 } from "./diagramViewerCore";
 
@@ -27,12 +24,7 @@ export const DIAGRAM_VIEW_ID = "spec42DiagramView";
 type RenderedArtifact = {
   product: DiagramProduct;
   productJson: string;
-  modulePrepareMs: number;
-  guestExecutionUs: number;
-  preparedReused: boolean;
-  compilationCacheHits: number;
-  compilationCacheMisses: number;
-  compilationCacheError: string | null;
+  durationUs: number;
 };
 
 /** A payload the webview can draw without any further round trip. */
@@ -47,21 +39,6 @@ type RenderMessage = {
   loading?: boolean;
   error?: string;
 };
-
-export type DiagramViewerDependencies = {
-  resolvePluginPath: (context: vscode.ExtensionContext) => string;
-};
-
-function pluginPath(context: vscode.ExtensionContext): string {
-  const configured = vscode.workspace.getConfiguration("spec42.diagramViewer").get<string>("pluginPath", "").trim();
-  if (configured) {
-    const root = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? process.cwd();
-    return path.isAbsolute(configured) ? configured : path.resolve(root, configured);
-  }
-  return path.join(context.extensionPath, "generators", "diagram.wasm");
-}
-
-const defaultDependencies: DiagramViewerDependencies = { resolvePluginPath: pluginPath };
 
 const PUBLICATION_DEBOUNCE_MS = 250;
 const DIGEST_MISMATCH_RETRIES = 2;
@@ -98,6 +75,7 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   private lastArtifact: RenderedArtifact | undefined;
   private generation = 0;
   private activeAbort: AbortController | undefined;
+  private activeDrawCancellation: vscode.CancellationTokenSource | undefined;
   private webviewReady = false;
   private pendingRender: RenderMessage | undefined;
   private publicationDebounce: ReturnType<typeof setTimeout> | undefined;
@@ -117,7 +95,6 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
   constructor(
     private readonly context: vscode.ExtensionContext,
     private readonly handles: LspClientHandles,
-    private readonly dependencies: DiagramViewerDependencies = defaultDependencies
   ) {
     this.disposables.push(
       this.handles.client.onNotification("spec42/publicationChanged", (params: unknown) => {
@@ -140,6 +117,8 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     if (this.reconcileTimer) clearTimeout(this.reconcileTimer);
     if (this.webviewWatchdog) clearTimeout(this.webviewWatchdog);
     this.activeAbort?.abort();
+    this.activeDrawCancellation?.cancel();
+    this.activeDrawCancellation?.dispose();
     for (const disposable of this.disposables.splice(0)) disposable.dispose();
   }
 
@@ -289,6 +268,9 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     if (kind === "openSource") {
       void this.navigate(message);
     }
+    if (kind === "drawRequest") {
+      void this.requestDraw(message);
+    }
   }
 
   /** A workspace model file to anchor `spec42/diagramViews` on; the catalog it returns is
@@ -321,6 +303,67 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     return parseDiagramViewCatalog(
       await this.handles.client.sendRequest("spec42/diagramViews", { modelUri: anchorUri }),
     );
+  }
+
+  /** Forwards a webview "drawRequest" to `spec42/draw` and posts back "drawResponse" or
+   * "drawError". Cancellation is advisory: a new request cancels whichever one is in flight,
+   * but the webview is what actually decides whether a response is still current -- it tracks
+   * its own request id and re-checks the echoed identity/revision. There is no client drawing
+   * fallback when this fails. */
+  private async requestDraw(message: unknown): Promise<void> {
+    const requestId = (message as { requestId?: unknown }).requestId;
+    const modelDigest = (message as { modelDigest?: unknown }).modelDigest;
+    const viewHandle = (message as { viewHandle?: unknown }).viewHandle;
+    const presentationRevision = (message as { presentationRevision?: unknown }).presentationRevision;
+    const product = (message as { product?: unknown }).product;
+    const width = (message as { width?: unknown }).width;
+    const height = (message as { height?: unknown }).height;
+    const colorScheme = (message as { colorScheme?: unknown }).colorScheme;
+    const disclosure = (message as { disclosure?: unknown }).disclosure;
+    if (
+      typeof requestId !== "number" ||
+      typeof modelDigest !== "string" ||
+      typeof viewHandle !== "string" ||
+      typeof presentationRevision !== "number" ||
+      product === undefined
+    ) {
+      return;
+    }
+
+    this.activeDrawCancellation?.cancel();
+    this.activeDrawCancellation?.dispose();
+    const cancellation = new vscode.CancellationTokenSource();
+    this.activeDrawCancellation = cancellation;
+
+    try {
+      const result = await this.handles.client.sendRequest(
+        "spec42/draw",
+        { modelDigest, viewHandle, presentationRevision, product, width, height, colorScheme, disclosure },
+        cancellation.token,
+      );
+      if (cancellation.token.isCancellationRequested) return;
+      const drawn = result as {
+        modelDigest: string;
+        viewHandle: string;
+        presentationRevision: number;
+        svg: string;
+      };
+      void this.view?.webview.postMessage({
+        type: "drawResponse",
+        requestId,
+        modelDigest: drawn.modelDigest,
+        viewHandle: drawn.viewHandle,
+        presentationRevision: drawn.presentationRevision,
+        svg: drawn.svg,
+      });
+    } catch (error) {
+      if (cancellation.token.isCancellationRequested) return;
+      void this.view?.webview.postMessage({
+        type: "drawError",
+        requestId,
+        message: describeError(error),
+      });
+    }
   }
 
   private async regenerate(
@@ -527,28 +570,19 @@ export class DiagramViewProvider implements vscode.WebviewViewProvider, vscode.D
     handle: string,
     signal: AbortSignal
   ): Promise<RenderedArtifact> {
-    const plugin = this.dependencies.resolvePluginPath(this.context);
-    let module: Buffer;
-    try { module = await fs.readFile(plugin); }
-    catch { throw new Error(`Compatible diagram plugin not found at ${plugin}. Configure spec42.diagramViewer.pluginPath.`); }
-    if (signal.aborted) throw new Error("generation was cancelled");
-    const result = parseLspGenerationResult(await this.handles.client.sendRequest("spec42/generate", {
-      generatorBase64: module.toString("base64"),
+    const result = parseLspDiagramResult(await this.handles.client.sendRequest("spec42/diagram", {
       modelUri: document.uri.toString(),
-      args: [handle],
+      handle,
       ...(expectedModelDigest ? { expectedModelDigest } : {}),
     }));
     if (signal.aborted) throw new Error("generation was cancelled");
-    const artifactName = selectSingleDiagramJson(result.artifacts.map((artifact) => artifact.path));
-    const selected = result.artifacts.find((artifact) => artifact.path === artifactName);
-    if (!selected) throw new Error("Spec42 omitted the selected diagram artifact.");
-    const productJson = Buffer.from(selected.content).toString("utf8");
+    const productJson = result.productJson;
     const product = parseDiagramProduct(productJson);
     if (product.modelDigest !== result.modelDigest) {
       throw new Error("Generated diagram model digest does not match the current LSP publication.");
     }
     if (product.selectedView.kind !== view) throw new Error("Generated diagram view does not match the requested view.");
-    return { product, productJson, ...result.timings };
+    return { product, productJson, durationUs: result.durationUs };
   }
 
   private async saveExport(format: "svg" | "png", data: string): Promise<void> {

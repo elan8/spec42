@@ -146,7 +146,29 @@ regenerating the lockfile through the normal dependency workflow.
   annotating element with `keyword_span: None`. Keeping trivia out of the AST is a defensible
   design; the entry stays so the ceiling on documentation fidelity is not rediscovered.
 
+- Bare n-ary `connect (e1, e2, e3)` (`NaryConnectorPart` as the ConnectionUsage alternative
+  `'connect' ConnectorPart`) recovers as `recovered_part_def_body_element` in a part definition
+  body. The part-body dispatcher uses binary-only `connect_`, while named
+  `connection … connect (e1, e2, e3)` parses through `connect_ends`. Evidence:
+  `tests/snapshots/syntax/nary_bare_connect.md` and `tests/snapshots/syntax/connect_and_bind.md`.
+
 ### Closed by grammar, not by the parser
+
+Gaps 76, 77, 78 and 52 were recorded as parser gaps because Spec42 fixtures used spellings the
+pinned textual BNF does not contain. The compiler corpus now authors the productions instead
+(`docs/reference/TEXTUAL-SYNTAX-INVENTORY.md`).
+
+- Gap 76. `IfNode` (SysML BNF 1123-1138) has no `then` keyword; `ActionBodyParameter` is always a
+  braced body. `if true { a1; } else { a2; }` is the production. The shorthand `if <cond> then
+  <a> else <b>;` is not a parser omission.
+- Gap 77. `EffectBehaviorMember` (`do`) precedes `then` in `TransitionUsage` (BNF 1277-1286).
+  `transition first idle do notify then running;` is the production; `then … do …` is not.
+- Gap 78. `BasicDefinitionPrefix` / `RefPrefix` are the exclusive slot `abstract` | `variation`
+  (BNF 219, 278). Dual-keyword `abstract variation` is `abstract-syntax-nonrepresentable-abstract-variation`.
+  Bare `variation` spellings parse; remaining variation rules are semantic/lowering blockers.
+- Gap 52. SysML `RefPrefix` has `constant` and no `var`/`variable` keyword. KerML `var` remains
+  in `BasicFeaturePrefix`. Assignment validation now authors constant vs non-constant SysML
+  attributes (`semantic-assignment-action-usage`).
 
 Two violating sides this document used to attribute to gap 64 are grammar exclusions. KerML's
 `ConjugationPart = ( 'conjugates' | '~' ) OwnedConjugation` (BNF 462) admits one clause per type

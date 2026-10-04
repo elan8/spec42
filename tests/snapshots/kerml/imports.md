@@ -61,7 +61,7 @@ package Imports {
         (severity error)
         (code "recovered_package_body_element")
         (source "parser")
-        (range (start 16 3) (end 19 2))
+        (range (start 16 3) (end 18 4))
       )
       (diagnostic
         (severity error)

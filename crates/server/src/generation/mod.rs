@@ -173,16 +173,14 @@ pub fn run_generate(cli: &Cli, args: &GenerateArgs) -> Result<ExitCode, String> 
         return Err("generate supports only text and json output".to_owned());
     }
 
-    let module_bytes = match fs::read(&args.generator) {
+    let generator = &args.generator;
+    let module_bytes = match fs::read(generator) {
         Ok(bytes) => bytes,
         Err(error) => {
             emit_simple_failure(
                 args.format,
                 GenerationStatus::ArtifactInvalid,
-                &format!(
-                    "failed to read generator {}: {error}",
-                    args.generator.display()
-                ),
+                &format!("failed to read generator {}: {error}", generator.display()),
             )?;
             return Ok(ExitCode::from(EXIT_API_INCOMPATIBLE));
         }

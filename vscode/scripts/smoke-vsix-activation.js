@@ -52,8 +52,46 @@ function resolveSingleFileGlob(input, cwd) {
   return candidates[0];
 }
 
+// The VS Code CLI runs Electron in Node mode, which intermittently aborts on CI runners
+// ("FATAL ERROR: v8::ToLocalChecked Empty MaybeLocal") and then hangs. Bound each attempt and
+// retry, so a crash neither stalls the job nor fails it outright.
+const CODE_CLI_TIMEOUT_MS = 120_000;
+const CODE_CLI_ATTEMPTS = 3;
+
 function runCodeCli(cliPath, args) {
-  cp.execFileSync(cliPath, args, { stdio: "inherit" });
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      cp.execFileSync(cliPath, args, { stdio: "inherit", timeout: CODE_CLI_TIMEOUT_MS });
+      return;
+    } catch (error) {
+      if (attempt >= CODE_CLI_ATTEMPTS) {
+        throw error;
+      }
+      console.warn(
+        `VS Code CLI attempt ${attempt}/${CODE_CLI_ATTEMPTS} failed (${error.message}); retrying`
+      );
+    }
+  }
+}
+
+// Confirms the install from the extensions directory itself instead of launching the CLI
+// again: VS Code unpacks an extension into `<publisher>.<name>-<version>`.
+function assertExtensionInstalled(extensionsDir, extensionId) {
+  const prefix = `${extensionId.toLowerCase()}-`;
+  const entries = fs.readdirSync(extensionsDir);
+  const installed = entries.filter(
+    (entry) =>
+      entry.toLowerCase().startsWith(prefix) &&
+      fs.existsSync(path.join(extensionsDir, entry, "package.json"))
+  );
+  if (installed.length !== 1) {
+    throw new Error(
+      `expected exactly one installed ${extensionId} in ${extensionsDir}, found: ${
+        entries.join(", ") || "(empty)"
+      }`
+    );
+  }
+  console.log(`Installed extension: ${installed[0]}`);
 }
 
 function resolveCodeCliPath(vscodeExecutablePath) {
@@ -169,14 +207,7 @@ async function main() {
     vsixPath,
     "--force",
   ]);
-  runCodeCli(codeCliPath, [
-    "--user-data-dir",
-    tempUserDataDir,
-    "--extensions-dir",
-    tempExtensionsDir,
-    "--list-extensions",
-    "--show-versions",
-  ]);
+  assertExtensionInstalled(tempExtensionsDir, extensionId);
 
   const extensionTestsEnv = {
     ...process.env,

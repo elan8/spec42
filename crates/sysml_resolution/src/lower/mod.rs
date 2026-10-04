@@ -352,6 +352,32 @@ impl SemanticModelBuilder {
                 *count = count.checked_add(1).ok_or(ConstructionError::Capacity)?;
             }
         }
+        // SysML 8.4.5.1 maps individual definition syntax to an anonymous nested
+        // Multiplicity. Its library subsetting belongs to resolution, not authored facts.
+        if self.declaration_facts[id.index()].modifiers.individual
+            && crate::model::metaclass::is_occurrence_definition(kind)
+        {
+            let multiplicity = self.push_typed_declaration(
+                document,
+                Some(id),
+                DeclarationKind::KermlMultiplicity,
+                None,
+                span,
+                DeclarationFacts {
+                    is_individual_multiplicity: true,
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            // This implicit owning membership must not consume a pending authored
+            // membership-role override belonging to the enclosing definition.
+            self.memberships.push(MembershipRecord {
+                member: multiplicity,
+                kind: MembershipKind::Owning,
+                visibility: Visibility::Default,
+                role: None,
+                span,
+            });
+        }
         debug_assert_eq!(self.declarations.len(), self.declaration_facts.len());
         Ok(id)
     }
@@ -2260,42 +2286,6 @@ impl SemanticModelBuilder {
                 }
             }
         }
-        // SysML 8.3.9.3: an `individual` OccurrenceDefinition owns an empty Multiplicity (the
-        // Pilot grammar's `EmptyMultiplicityMember` after the `individual` prefix), which
-        // `checkOccurrenceDefinitionMultiplicitySpecialization` requires to specialize
-        // `Base::zeroOrOne`.
-        let individuals = self
-            .declarations
-            .iter()
-            .zip(self.declaration_facts.iter())
-            .enumerate()
-            .filter(|(_, (declaration, facts))| {
-                declaration.document == document
-                    && crate::lower::facts::is_individual_occurrence_definition(
-                        declaration.kind,
-                        facts,
-                    )
-            })
-            .map(|(index, (declaration, _))| {
-                DeclarationId::from_index(index).map(|id| (id, declaration.span))
-            })
-            .collect::<Result<Vec<_>, _>>()?;
-        for (owner, span) in individuals {
-            let multiplicity = self.push_typed_declaration(
-                document,
-                Some(owner),
-                DeclarationKind::KermlMultiplicity,
-                None,
-                span,
-                DeclarationFacts::none(),
-            )?;
-            self.push_membership(
-                multiplicity,
-                MembershipKind::Owning,
-                Visibility::Default,
-                span,
-            )?;
-        }
         Ok(())
     }
 
@@ -2784,8 +2774,9 @@ impl SemanticModelBuilder {
     /// Lowers a view body's `expose <target>;` member.
     ///
     /// Mirrors [`Self::lower_import`]'s shape -- the production carries the same `ImportTarget` --
-    /// minus the import facts: an expose selects what a view shows rather than bringing names into
-    /// a scope, so its target is an ordinary authored reference with no import conformance.
+    /// while retaining the shape on the authored reference. An expose selects what a view shows
+    /// rather than bringing names into a scope, so it has no import-conformance facts, but its
+    /// membership / namespace / filtered shape is required by `ViewUsage::exposedElement`.
     pub(crate) fn lower_expose(
         &mut self,
         document: DocumentIdx,
@@ -2806,15 +2797,32 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
-        // The target is an ordinary authored reference. What a `::*` or `::**` suffix would
-        // *expand* to is not a fact this publication holds -- there is no published expose
-        // expansion -- so the reference states what the author named and nothing more.
+        let flags = match &node.value.target.shape {
+            ImportShape::Membership { recursive_suffix } => RelationshipFlags {
+                recursive: recursive_suffix.is_some(),
+                ..RelationshipFlags::default()
+            },
+            ImportShape::Namespace {
+                recursive_suffix, ..
+            } => RelationshipFlags {
+                recursive: recursive_suffix.is_some(),
+                wildcard: true,
+                ..RelationshipFlags::default()
+            },
+            ImportShape::Filter {
+                recursive_suffix, ..
+            } => RelationshipFlags {
+                recursive: recursive_suffix.is_some(),
+                filtered: true,
+                ..RelationshipFlags::default()
+            },
+        };
         self.push_reference(PendingReference {
             source: declaration,
             kind: ReferenceKind::ViewExpose,
             document,
             local: node.value.target.reference,
-            flags: RelationshipFlags::default(),
+            flags,
             span: node.value.target.span,
             import: None,
         })?;
@@ -3129,17 +3137,21 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.identification.name)?;
         let short_name = self.intern_short_name(document, node.identification.short_name)?;
+        let (is_abstract, variation) =
+            definition_prefix_node_modifiers(node.value.definition_prefix.as_ref());
         let declaration = self.push_typed_declaration(
             document,
             owner,
-            DeclarationKind::IndividualDefinition,
+            DeclarationKind::OccurrenceDefinition,
             name,
             node.span,
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    // `individual def` is this declaration's own form; the `individual` prefix
-                    // modifier belongs to the usages and definitions that carry `is_individual`.
+                    // SysML 8.2.2.9.1 maps IndividualDefinition to OccurrenceDefinition.
+                    individual: true,
+                    is_abstract,
+                    variation,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()

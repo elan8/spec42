@@ -1146,6 +1146,9 @@ fn host_crates_keep_their_declared_dependency_sets() {
         set(&[
             "base64",
             "clap",
+            "diagram_draw",
+            "diagram_layout",
+            "diagram_product",
             "generator_api",
             "generator_host",
             "glob",
@@ -1169,7 +1172,13 @@ fn host_crates_keep_their_declared_dependency_sets() {
             "tracing",
             "tracing-subscriber",
         ]),
-        "lsp_server is the editor host and owns no batch path: it must not depend on `workspace`"
+        "lsp_server is the editor host and owns no batch path: it must not depend on \
+         `workspace`; `diagram_layout` is the native layout boundary behind `spec42/layout` \
+         (#119), `diagram_draw` is the native SVG path behind `spec42/draw` (#176) and \
+         `diagram_product` builds the diagram product behind `spec42/diagram` (#212). \
+         `SPEC42_LAYOUT_ENGINE=legacy` declines those requests; there is no client drawing \
+         fallback. `lsp_server` cannot depend on `server` (the launch-only edge runs the other \
+         way)"
     );
     assert!(
         !normal_dependencies("lsp_server").contains("workspace"),
@@ -1179,21 +1188,20 @@ fn host_crates_keep_their_declared_dependency_sets() {
         normal_dependencies("server"),
         set(&[
             "clap",
-            "diagram_layout",
+            "diagram_draw",
+            "diagram_product",
             "directories",
             "generator_api",
             "generator_host",
             "kpar",
             "library_catalog",
             "lsp_server",
-            "rquickjs",
             "serde",
             "serde_json",
             "sha2",
             "sysml_diagnostics",
             "sysml_query",
             "tempfile",
-            "thiserror",
             "tokio",
             "toml",
             "tower-lsp",
@@ -1201,7 +1209,139 @@ fn host_crates_keep_their_declared_dependency_sets() {
             "zip",
         ]),
         "server reaches validation through `workspace`; `lsp_server` is the launch-only edge; \
-         `diagram_layout` is the optional native layout boundary behind native-layout-shadow"
+         `diagram_draw` is the native prepare+layout+SVG path for headless export (#176) and \
+         `diagram_product` builds the diagram product for `spec42 diagram` (#212); \
+         `diagram_layout`/`elkrs` reach the binary through `diagram_draw` and `lsp_server`"
+    );
+}
+
+/// Shared crates that used to be pinned independently in several manifests.
+const WORKSPACE_HOISTED_CRATES: &[&str] = &["insta", "sha2", "tempfile", "toml", "walkdir", "zip"];
+
+/// Manifests that legitimately pin a hoisted crate outside workspace inheritance -- a fixture
+/// simulating an independent project, for example. Empty today; a real exception belongs here,
+/// named and relative to the repository root, rather than as a special case in the scan below.
+const MANIFEST_SCAN_EXEMPTIONS: &[&str] = &[];
+
+fn workspace_dependency_keys(manifest: &toml::Value) -> BTreeSet<String> {
+    manifest
+        .get("workspace")
+        .and_then(|workspace| workspace.get("dependencies"))
+        .and_then(toml::Value::as_table)
+        .map(|table| table.keys().cloned().collect())
+        .unwrap_or_default()
+}
+
+/// Every `Cargo.toml` in the repository, except the root workspace manifest itself (read
+/// separately as the source of truth for what is hoisted).
+///
+/// This walks the whole tree rather than just `crates/` and `tools/`, so the nested `fuzz`,
+/// `generator-plugins`, `generator-tests/plugins` and `zed` workspaces are covered too. Each of
+/// those declares its own `[workspace]` and so cannot inherit the root's
+/// `[workspace.dependencies]`, but a version pinned directly in one of them is exactly the drift
+/// this rule exists to catch.
+fn repository_manifests(root: &Path) -> Vec<PathBuf> {
+    fn walk(dir: &Path, out: &mut Vec<PathBuf>) {
+        let Ok(entries) = fs::read_dir(dir) else {
+            return;
+        };
+        for entry in entries.flatten() {
+            if entry.file_type().map_or(true, |kind| kind.is_symlink()) {
+                continue;
+            }
+            let path = entry.path();
+            let name = entry.file_name();
+            let name = name.to_string_lossy();
+            if path.is_dir() {
+                if matches!(
+                    name.as_ref(),
+                    "target" | ".git" | ".claude" | ".cache" | "node_modules"
+                ) {
+                    continue;
+                }
+                walk(&path, out);
+            } else if name == "Cargo.toml" {
+                out.push(path);
+            }
+        }
+    }
+    let mut out = Vec::new();
+    walk(root, &mut out);
+    let workspace_manifest = root.join("Cargo.toml");
+    out.retain(|manifest| *manifest != workspace_manifest);
+    out.sort();
+    out
+}
+
+/// The package name a dependency entry actually names: the table key, unless the entry renames
+/// itself with an explicit `package = "..."` (`toml2 = { package = "toml", workspace = true }`).
+fn dependency_package_name(key: &str, value: &toml::Value) -> String {
+    value
+        .get("package")
+        .and_then(toml::Value::as_str)
+        .unwrap_or(key)
+        .to_owned()
+}
+
+fn dependency_inherits_workspace(value: &toml::Value) -> bool {
+    value
+        .get("workspace")
+        .and_then(toml::Value::as_bool)
+        .unwrap_or(false)
+}
+
+/// `walkdir` / `sha2` / `tempfile` / `toml` / `zip` (and `insta`) are declared once in the root
+/// workspace and inherited. A member that pins its own version is the drift this rule exists to
+/// catch -- table form (`[dependencies.zip]`) and a `package = "..."` rename included, since this
+/// parses every manifest as TOML rather than matching against dependency lines as text.
+#[test]
+fn shared_dependencies_are_inherited_from_the_workspace() {
+    let root = repository_root();
+    let workspace_toml: toml::Value = fs::read_to_string(root.join("Cargo.toml"))
+        .expect("root Cargo.toml")
+        .parse()
+        .expect("parse root Cargo.toml");
+    let workspace_keys = workspace_dependency_keys(&workspace_toml);
+    for name in WORKSPACE_HOISTED_CRATES {
+        assert!(
+            workspace_keys.contains(*name),
+            "`{name}` must be declared in [workspace.dependencies] so member crates cannot drift"
+        );
+    }
+
+    let mut offenders = Vec::new();
+    for manifest in repository_manifests(&root) {
+        let relative = manifest
+            .strip_prefix(&root)
+            .unwrap_or(&manifest)
+            .to_string_lossy()
+            .replace('\\', "/");
+        if MANIFEST_SCAN_EXEMPTIONS.contains(&relative.as_str()) {
+            continue;
+        }
+        let source = fs::read_to_string(&manifest).expect("member Cargo.toml");
+        let parsed: toml::Value = source
+            .parse()
+            .unwrap_or_else(|error| panic!("parse {relative}: {error}"));
+        for table_name in ["dependencies", "dev-dependencies", "build-dependencies"] {
+            let Some(table) = parsed.get(table_name).and_then(toml::Value::as_table) else {
+                continue;
+            };
+            for (key, value) in table {
+                let name = dependency_package_name(key, value);
+                if !WORKSPACE_HOISTED_CRATES.contains(&name.as_str()) {
+                    continue;
+                }
+                if !dependency_inherits_workspace(value) {
+                    offenders.push(format!("{relative}: [{table_name}] {key} ({name})"));
+                }
+            }
+        }
+    }
+    assert!(
+        offenders.is_empty(),
+        "shared crates must be inherited with `workspace = true`; pinned copies:\n  {}",
+        offenders.join("\n  ")
     );
 }
 
@@ -1251,28 +1391,12 @@ const HOST_TEXT_ENTRY_POINT_ALLOWLIST: &[(&str, &str)] = &[
         "store_document_text_fast",
     ),
     (
-        "crates/lsp_server/src/session/handle.rs",
-        "refresh_document",
-    ),
-    (
         "crates/lsp_server/src/session/services.rs",
         "parse_scanned_entry",
     ),
     (
         "crates/lsp_server/src/session/services.rs",
-        "store_document_text",
-    ),
-    (
-        "crates/lsp_server/src/session/services.rs",
         "store_document_text_fast",
-    ),
-    (
-        "crates/lsp_server/src/session/services.rs",
-        "refresh_document",
-    ),
-    (
-        "crates/lsp_server/src/lsp_runtime/documents/sync.rs",
-        "watched_file_content_already_current",
     ),
     // Text projection: slicing a range the authority settled out of the text it settled it over.
     (

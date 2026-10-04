@@ -3,8 +3,8 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use crate::{
     ElementDetails, ElementKind, ElementSearch, ElementSource, FeatureDirection,
     PublishedResolution, QueryAnswer, QueryOutcome, RelationshipOutcome, RelationshipProvenance,
-    RelationshipTarget, SourceLocation, SymbolEntry, SymbolId, ViewSelectionObstacle,
-    ViewSelectionOutcome,
+    RelationshipTarget, SourceLocation, SymbolEntry, SymbolId, ViewExposureObstacle,
+    ViewSelectionObstacle, ViewSelectionOutcome,
 };
 
 pub use sysml_contract::{
@@ -454,7 +454,28 @@ impl PublishedResolution {
             .query_outcome(QueryAnswer::Resolved(catalog.into_boxed_slice()))
     }
 
+    /// The projection of `view` as its first catalogued kind. A view typed by more than one
+    /// standard view definition has one catalog entry per kind; `diagram_view_of_kind` projects a
+    /// chosen one.
     pub fn diagram_view(&self, view: SymbolId) -> QueryOutcome<DiagramViewProjection> {
+        self.project_diagram_view(view, None)
+    }
+
+    /// The projection of `view` as the catalogued `kind`: `Unresolved` if `view` is not
+    /// catalogued with that kind.
+    pub fn diagram_view_of_kind(
+        &self,
+        view: SymbolId,
+        kind: DiagramViewKind,
+    ) -> QueryOutcome<DiagramViewProjection> {
+        self.project_diagram_view(view, Some(kind))
+    }
+
+    fn project_diagram_view(
+        &self,
+        view: SymbolId,
+        kind: Option<DiagramViewKind>,
+    ) -> QueryOutcome<DiagramViewProjection> {
         let catalog = match self.diagram_view_catalog().answer {
             QueryAnswer::Resolved(value) => value,
             QueryAnswer::Ambiguous(_) => {
@@ -471,7 +492,7 @@ impl PublishedResolution {
         };
         let Some(view_entry) = catalog
             .iter()
-            .find(|entry| entry.semantic_id == view)
+            .find(|entry| entry.semantic_id == view && kind.is_none_or(|kind| entry.kind == kind))
             .cloned()
         else {
             return self.model.query_outcome(QueryAnswer::Unresolved);
@@ -482,57 +503,57 @@ impl PublishedResolution {
             .diagram_entries_for(ElementSource::Workspace)
             .into_keys()
             .collect::<BTreeSet<_>>();
-        let mut roots = BTreeSet::new();
         let mut reasons = BTreeSet::new();
-        for expose in all
-            .values()
-            .filter(|entry| entry.owner == Some(view) && entry.kind == ElementKind::Expose)
-        {
-            match self.inspect(expose.identity).answer {
-                QueryAnswer::Resolved(inspection) => {
-                    for relationship in inspection
-                        .relationships
-                        .iter()
-                        .filter(|relationship| relationship.kind == "viewExpose")
-                    {
-                        match &relationship.target {
-                            RelationshipTarget::Resolved(target) => {
-                                roots.insert(*target);
-                            }
-                            RelationshipTarget::Ambiguous(_) => {
-                                reasons.insert(DiagramIncompleteReason::ExposureAmbiguous {
-                                    exposure: expose.identity,
-                                });
-                            }
-                            RelationshipTarget::Unresolved => {
-                                reasons.insert(DiagramIncompleteReason::ExposureUnresolved {
-                                    exposure: expose.identity,
-                                });
-                            }
-                            RelationshipTarget::Unsupported => {
-                                reasons.insert(DiagramIncompleteReason::ExposureUnsupported {
-                                    exposure: expose.identity,
-                                });
-                            }
-                        }
-                    }
-                }
-                QueryAnswer::Unresolved => {
-                    reasons.insert(DiagramIncompleteReason::ExposureUnresolved {
-                        exposure: expose.identity,
-                    });
-                }
-                QueryAnswer::Ambiguous(_) => {
-                    reasons.insert(DiagramIncompleteReason::ExposureAmbiguous {
-                        exposure: expose.identity,
-                    });
-                }
-                _ => {
-                    reasons.insert(DiagramIncompleteReason::ExposureUnsupported {
-                        exposure: expose.identity,
-                    });
-                }
+        let exposed = match self.view_exposed_elements(view).answer {
+            QueryAnswer::Resolved(exposed) => exposed,
+            QueryAnswer::Ambiguous(_) => {
+                return self
+                    .model
+                    .query_outcome(QueryAnswer::Ambiguous(Box::new([])));
             }
+            QueryAnswer::Unsupported => return self.model.query_outcome(QueryAnswer::Unsupported),
+            QueryAnswer::Unresolved => return self.model.query_outcome(QueryAnswer::Unresolved),
+            QueryAnswer::Recovery => return self.model.query_outcome(QueryAnswer::Recovery),
+            QueryAnswer::Incomplete => return self.model.query_outcome(QueryAnswer::Incomplete),
+        };
+        let exposed_set = exposed.elements.iter().copied().collect::<BTreeSet<_>>();
+        // A recursive expose also exposes everything nested in its target. Those elements are
+        // drawn inside their exposed owner, so only an element with no exposed ancestor is a root.
+        let roots = exposed_set
+            .iter()
+            .copied()
+            .filter(|element| {
+                let mut owner = all.get(element).and_then(|entry| entry.owner);
+                while let Some(current) = owner {
+                    if exposed_set.contains(&current) {
+                        return false;
+                    }
+                    owner = all.get(&current).and_then(|entry| entry.owner);
+                }
+                true
+            })
+            .collect::<BTreeSet<_>>();
+        for obstacle in exposed.obstacles {
+            reasons.insert(match obstacle {
+                ViewExposureObstacle::ExposureUnresolved { exposure } => {
+                    DiagramIncompleteReason::ExposureUnresolved { exposure }
+                }
+                ViewExposureObstacle::ExposureAmbiguous { exposure, .. } => {
+                    DiagramIncompleteReason::ExposureAmbiguous { exposure }
+                }
+                ViewExposureObstacle::ExposureUnsupported { exposure } => {
+                    DiagramIncompleteReason::ExposureUnsupported { exposure }
+                }
+                ViewExposureObstacle::FilterUnresolved { .. } => {
+                    DiagramIncompleteReason::ViewFilterUnresolved
+                }
+                ViewExposureObstacle::FilterAmbiguous { .. } => {
+                    DiagramIncompleteReason::ViewFilterAmbiguous
+                }
+                ViewExposureObstacle::FilterUnsupported { .. } => {
+                    DiagramIncompleteReason::ViewFilterUnsupported
+                }
+            });
         }
 
         let mut direct_children = BTreeMap::<SymbolId, Vec<SymbolId>>::new();
@@ -554,9 +575,6 @@ impl PublishedResolution {
         >::new();
         let mut queue = VecDeque::new();
         for root in &roots {
-            if !self.diagram_candidate_selected(view, *root, &mut reasons) {
-                continue;
-            }
             // The scene id of an occurrence is published text, so the boundary token is taken
             // here, once, where the publication is in hand.
             let Some(token) = self.symbol_token(*root) else {
@@ -716,6 +734,8 @@ impl PublishedResolution {
                                 &element.occurrence_id,
                                 *target,
                                 &elements,
+                                relationship.authored.as_deref(),
+                                |identity| self.symbol_name(identity),
                             ))
                         }
                         RelationshipTarget::Ambiguous(candidates) => {
@@ -732,6 +752,8 @@ impl PublishedResolution {
                                             &element.occurrence_id,
                                             *candidate,
                                             &elements,
+                                            relationship.authored.as_deref(),
+                                            |identity| self.symbol_name(identity),
                                         )
                                     })
                                     .collect::<Vec<_>>()
@@ -822,6 +844,75 @@ impl PublishedResolution {
                 edges.push(edge);
                 continue;
             }
+            // A `bind a = b.c` usage publishes `bindSource` plus one `memberAccessOperand` for the
+            // dotted side. Those are the binding's two ends. Counting only the member-access
+            // operand makes a delegation look like an unresolved `connectorEnd`.
+            if view_entry.kind == DiagramViewKind::Interconnection
+                && is_binding_connector(element.kind)
+            {
+                let mut ends = outgoing
+                    .iter()
+                    .filter(|relationship| {
+                        matches!(
+                            relationship.kind,
+                            DiagramRelationshipKind::BindSource
+                                | DiagramRelationshipKind::BindTarget
+                                | DiagramRelationshipKind::MemberAccessOperand
+                        )
+                    })
+                    .copied()
+                    .collect::<Vec<_>>();
+                // `relationships` above is sorted by "{source}#{kind_name}:{ordinal}" for
+                // deterministic overall output, which reorders these two ends by kind name
+                // ("bindTarget" < "memberAccessOperand") whenever the dotted side and the plain
+                // side have different kinds -- e.g. `bind inner.nested = boundary;` would then
+                // report `boundary` as the source. `ordinal` does not help: it is each
+                // relationship's position among the *resolved* facts the authority publishes,
+                // which for a dotted chain reflects when member-access resolution finished, not
+                // when `left` was lowered relative to `right` -- empirically the plain `right`
+                // operand's simple reference can resolve (and so get a lower ordinal) before the
+                // dotted `left` operand's chain does. `left` is always textually to the left of
+                // `right` in `bind left = right`, though, so sorting by each end's own authored
+                // source position -- which does not depend on resolution timing -- recovers the
+                // source/target roles reliably regardless of which kind each end ended up as.
+                ends.sort_by_key(|relationship| {
+                    relationship
+                        .source_location
+                        .map(|location| (location.document, location.range.start))
+                });
+                match ends.as_slice() {
+                    [first, second] => {
+                        match (
+                            resolved_target(&first.target),
+                            resolved_target(&second.target),
+                        ) {
+                            (Some(source), Some(target)) => {
+                                edges.push(edge_from_relationships(
+                                    origin as u32,
+                                    source,
+                                    target,
+                                    DiagramEdgeKind::Connector,
+                                    &ends,
+                                ));
+                            }
+                            _ => {
+                                for end in &ends {
+                                    if resolved_target(&end.target).is_none() {
+                                        reasons
+                                            .insert(connector_end_incomplete_reason(&end.target));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    [] => {}
+                    _ => {
+                        reasons.insert(DiagramIncompleteReason::RelationshipUnresolved {
+                            relationship: DiagramRelationshipKind::ConnectorEnd,
+                        });
+                    }
+                }
+            }
             // A `connect a to b` usage publishes its two ends as `connectorEnd` relationships; the
             // dotted `connect a.b to c.d` form publishes them as `memberAccessOperand` on the same
             // connection usage. Compose one Connector edge from whichever pair the usage carries so
@@ -830,9 +921,10 @@ impl PublishedResolution {
             {
                 // The dotted `connect a.b to c.d` ends and the typed incomplete reasons are an
                 // Interconnection View concern; other views keep the prior plain-`connectorEnd`
-                // behaviour untouched.
+                // behaviour untouched. Binding connectors are composed above from their own ends.
                 let dotted_ends = view_entry.kind == DiagramViewKind::Interconnection
-                    && is_connector_edge_element(element.kind);
+                    && is_connector_edge_element(element.kind)
+                    && !is_binding_connector(element.kind);
                 let ends = outgoing
                     .iter()
                     .filter(|relationship| {
@@ -1096,31 +1188,74 @@ fn semantic_reference(
     }
 }
 
-fn contextual_endpoint(
+/// How much of an authored feature-chain (`propulsion::propulsionUnit1::cmd`) appears, in
+/// order, along one occurrence's name path. Shared-prefix scoring alone ties when several
+/// usages of the same definition contribute the same terminal `semantic_id` (four
+/// `PropulsionUnit::cmd` ports) and the connector itself does not sit under a distinguishing
+/// ancestor; the authored intermediates break that tie.
+fn authored_chain_score(authored: Option<&str>, names: &[&str]) -> usize {
+    let Some(authored) = authored.filter(|text| !text.is_empty()) else {
+        return 0;
+    };
+    let segments = authored
+        .split("::")
+        .filter(|segment| !segment.is_empty() && *segment != "$");
+    let mut matched = 0;
+    let mut names = names.iter();
+    for segment in segments {
+        loop {
+            match names.next() {
+                Some(name) if *name == segment => {
+                    matched += 1;
+                    break;
+                }
+                Some(_) => continue,
+                None => return matched,
+            }
+        }
+    }
+    matched
+}
+
+fn contextual_endpoint<'a>(
     source: &DiagramOccurrenceIdentity,
     semantic_id: SymbolId,
     elements: &[DiagramElement],
+    authored: Option<&str>,
+    symbol_name: impl Fn(SymbolId) -> Option<&'a str>,
 ) -> DiagramRelationshipEndpoint {
     let mut candidates = elements
         .iter()
         .filter(|element| element.semantic_id == semantic_id)
         .map(|element| {
+            let names = element
+                .occurrence_id
+                .semantic_path
+                .iter()
+                .filter_map(|identity| symbol_name(*identity))
+                .collect::<Vec<_>>();
+            let authored_match = authored_chain_score(authored, &names);
             let shared = source
                 .semantic_path
                 .iter()
                 .zip(element.occurrence_id.semantic_path.iter())
                 .take_while(|(left, right)| left == right)
                 .count();
-            (shared, element.occurrence_id.clone())
+            (authored_match, shared, element.occurrence_id.clone())
         })
         .collect::<Vec<_>>();
     candidates.sort();
-    let occurrence = match candidates.last().map(|candidate| candidate.0) {
+    let occurrence = match candidates
+        .last()
+        .map(|candidate| (candidate.0, candidate.1))
+    {
         None => DiagramEndpointOccurrence::OutsideProjection,
         Some(best) => {
             let best = candidates
                 .into_iter()
-                .filter_map(|(shared, occurrence)| (shared == best).then_some(occurrence))
+                .filter_map(|(authored_match, shared, occurrence)| {
+                    (authored_match == best.0 && shared == best.1).then_some(occurrence)
+                })
                 .collect::<Vec<_>>();
             if let [occurrence] = best.as_slice() {
                 DiagramEndpointOccurrence::Resolved(occurrence.clone())
@@ -1698,6 +1833,13 @@ fn is_interconnection_node(kind: ElementKind) -> bool {
 /// Whether an element is one of the connector usages the Interconnection View draws as an edge
 /// rather than a node. Its `memberAccessOperand` references are its connector ends (the dotted
 /// `connect a.b to c.d` spelling), not expression operands.
+fn is_binding_connector(kind: ElementKind) -> bool {
+    matches!(
+        kind,
+        ElementKind::BindingConnectorAsUsage | ElementKind::BindingConnector
+    )
+}
+
 fn is_connector_edge_element(kind: ElementKind) -> bool {
     matches!(
         kind,
@@ -1771,7 +1913,10 @@ impl DiagramViewProjection {
 mod tests {
     use std::collections::BTreeSet;
 
-    use super::{canonical_sequence_order, compartment_kind, usable_value, DiagramCompartmentKind};
+    use super::{
+        authored_chain_score, canonical_sequence_order, compartment_kind, usable_value,
+        DiagramCompartmentKind,
+    };
     use crate::{
         ElementKind, PublicationCompleteness, PublicationObstacle, QueryAnswer, QueryOutcome,
     };
@@ -1855,5 +2000,21 @@ mod tests {
         let messages = BTreeSet::from([0, 1, 2]);
         let order = canonical_sequence_order(&messages, [(0, 1), (1, 0)]);
         assert_eq!(order, [(2, 1)].into_iter().collect());
+    }
+
+    #[test]
+    fn authored_chain_score_uses_intermediate_segments() {
+        let unit1 = ["vehicle", "propulsion", "propulsionUnit1", "cmd"];
+        let unit2 = ["vehicle", "propulsion", "propulsionUnit2", "cmd"];
+        assert_eq!(
+            authored_chain_score(Some("propulsion::propulsionUnit1::cmd"), &unit1),
+            3
+        );
+        assert_eq!(
+            authored_chain_score(Some("propulsion::propulsionUnit1::cmd"), &unit2),
+            1
+        );
+        assert_eq!(authored_chain_score(Some("pcb"), &["left", "pcb"]), 1);
+        assert_eq!(authored_chain_score(None, &unit1), 0);
     }
 }

@@ -1,0 +1,322 @@
+{
+  "prepared": {
+    "title": "Order",
+    "view": "state-transition-view",
+    "nodes": [
+      {
+        "id": "init",
+        "label": "Initial",
+        "kind": "initial",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "qualifiedName": "init"
+        }
+      },
+      {
+        "id": "processing",
+        "label": "Processing",
+        "kind": "state",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "qualifiedName": "processing",
+          "entry": "begin",
+          "do": "process",
+          "exit": "finish"
+        }
+      },
+      {
+        "id": "shipped",
+        "label": "Shipped",
+        "kind": "composite",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "qualifiedName": "shipped",
+          "regions": [
+            {
+              "id": "r1",
+              "name": "packing"
+            },
+            {
+              "id": "r2",
+              "name": "labeling"
+            }
+          ]
+        }
+      },
+      {
+        "id": "done",
+        "label": "Done",
+        "kind": "final",
+        "sourcePath": null,
+        "uri": null,
+        "range": null,
+        "attributes": {
+          "qualifiedName": "done"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "transition-0",
+        "source": "init",
+        "target": "processing",
+        "label": "start",
+        "attributes": {
+          "selfLoop": false,
+          "relationType": "transition"
+        }
+      },
+      {
+        "id": "transition-1",
+        "source": "processing",
+        "target": "processing",
+        "label": "[timeout]",
+        "attributes": {
+          "selfLoop": true,
+          "relationType": "transition",
+          "guard": "timeout"
+        }
+      },
+      {
+        "id": "transition-2",
+        "source": "processing",
+        "target": "shipped",
+        "label": "notify",
+        "attributes": {
+          "selfLoop": false,
+          "relationType": "transition",
+          "effect": "notify"
+        }
+      },
+      {
+        "id": "transition-3",
+        "source": "shipped",
+        "target": "done",
+        "label": "accept delivered / send archive",
+        "attributes": {
+          "selfLoop": false,
+          "relationType": "transition",
+          "accept": "delivered",
+          "send": "archive"
+        }
+      }
+    ],
+    "meta": {
+      "selectedDiagramId": "",
+      "selectedDiagramName": "Order",
+      "layoutDirection": "horizontal",
+      "stateMachine": {
+        "name": "Order",
+        "states": [
+          {
+            "id": "init",
+            "name": "Initial",
+            "type": "initial"
+          },
+          {
+            "id": "processing",
+            "name": "Processing",
+            "type": "state",
+            "entry": "begin",
+            "do": "process",
+            "exit": "finish"
+          },
+          {
+            "id": "shipped",
+            "name": "Shipped",
+            "type": "composite"
+          },
+          {
+            "id": "done",
+            "name": "Done",
+            "type": "final"
+          }
+        ],
+        "regions": [
+          {
+            "id": "r1",
+            "name": "packing",
+            "parentId": "shipped"
+          },
+          {
+            "id": "r2",
+            "name": "labeling",
+            "parentId": "shipped"
+          }
+        ],
+        "transitions": [
+          {
+            "source": "init",
+            "target": "processing",
+            "label": "start"
+          },
+          {
+            "source": "processing",
+            "target": "processing",
+            "guard": "timeout"
+          },
+          {
+            "source": "processing",
+            "target": "shipped",
+            "effect": "notify"
+          },
+          {
+            "source": "shipped",
+            "target": "done",
+            "accept": "delivered",
+            "send": "archive"
+          }
+        ]
+      },
+      "parentContext": "Order"
+    }
+  },
+  "behaviorLayout": {
+    "positions": {
+      "init": {
+        "x": 90,
+        "y": 243,
+        "width": 34,
+        "height": 34
+      },
+      "processing": {
+        "x": 622,
+        "y": 170,
+        "width": 240,
+        "height": 180
+      },
+      "shipped": {
+        "x": 1366,
+        "y": 100,
+        "width": 340,
+        "height": 320
+      },
+      "done": {
+        "x": 2360,
+        "y": 243,
+        "width": 34,
+        "height": 34
+      }
+    },
+    "edgeSectionsById": {
+      "transition-0": [
+        {
+          "id": "transition-0_s0",
+          "startPoint": {
+            "x": 124,
+            "y": 260
+          },
+          "endPoint": {
+            "x": 622,
+            "y": 260
+          },
+          "incomingShape": "init",
+          "outgoingShape": "processing"
+        }
+      ],
+      "transition-1": [
+        {
+          "id": "transition-1_s0",
+          "startPoint": {
+            "x": 702,
+            "y": 170
+          },
+          "endPoint": {
+            "x": 782,
+            "y": 170
+          },
+          "bendPoints": [
+            {
+              "x": 702,
+              "y": 160
+            },
+            {
+              "x": 782,
+              "y": 160
+            }
+          ],
+          "incomingShape": "processing",
+          "outgoingShape": "processing"
+        }
+      ],
+      "transition-2": [
+        {
+          "id": "transition-2_s0",
+          "startPoint": {
+            "x": 862,
+            "y": 260
+          },
+          "endPoint": {
+            "x": 1366,
+            "y": 260
+          },
+          "incomingShape": "processing",
+          "outgoingShape": "shipped"
+        }
+      ],
+      "transition-3": [
+        {
+          "id": "transition-3_s0",
+          "startPoint": {
+            "x": 1706,
+            "y": 260
+          },
+          "endPoint": {
+            "x": 2360,
+            "y": 260
+          },
+          "incomingShape": "shipped",
+          "outgoingShape": "done"
+        }
+      ]
+    },
+    "edgeLabelsById": {
+      "transition-0": [
+        {
+          "id": "transition-0::label",
+          "text": "start",
+          "x": 354,
+          "y": 273,
+          "width": 38,
+          "height": 16
+        }
+      ],
+      "transition-1": [
+        {
+          "id": "transition-1::label",
+          "text": "[timeout]",
+          "x": 711,
+          "y": 132,
+          "width": 62,
+          "height": 16
+        }
+      ],
+      "transition-2": [
+        {
+          "id": "transition-2::label",
+          "text": "notify",
+          "x": 1092,
+          "y": 273,
+          "width": 44,
+          "height": 16
+        }
+      ],
+      "transition-3": [
+        {
+          "id": "transition-3::label",
+          "text": "accept delivered / send archive",
+          "x": 1936,
+          "y": 273,
+          "width": 194,
+          "height": 16
+        }
+      ]
+    }
+  }
+}

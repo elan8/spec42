@@ -2,9 +2,11 @@ mod capabilities;
 pub(crate) mod custom;
 mod diagnostics;
 mod documents;
+mod draw;
 mod features;
 mod generation;
 mod hierarchy;
+mod layout;
 mod lifecycle;
 mod navigation;
 mod project_registry;
@@ -21,15 +23,17 @@ use tower_lsp::{Client, LanguageServer, LspService, Server};
 
 use crate::host::config::Spec42Config;
 use crate::session::state::ServerState;
-use crate::session::RuntimeConfig;
+use crate::session::{RuntimeConfig, WorkspaceHandle};
 use crate::views::dto;
 use custom::{
     sysml_feature_inspector_result, sysml_library_search_result, sysml_server_stats_result,
 };
+use draw::{canvas_size, DrawEngine, DrawParams, DrawResult};
 use generation::{
-    DiagramViewsParams, DiagramViewsResult, GenerateParams, GenerateResult, GeneratorService,
-    StateTransitionViewsParams, StateTransitionViewsResult,
+    DiagramParams, DiagramResult, DiagramViewsParams, DiagramViewsResult, GenerateParams,
+    GenerateResult, GeneratorService, StateTransitionViewsParams, StateTransitionViewsResult,
 };
+use layout::{legacy_engine_requested, LayoutEngine, LayoutParams, LayoutResult};
 use project_registry::ProjectRegistry;
 
 struct Backend {
@@ -42,7 +46,7 @@ struct Backend {
     /// everywhere else without touching the actor. LSP guarantees
     /// `initialize` precedes every other request.
     runtime_config: Arc<std::sync::OnceLock<RuntimeConfig>>,
-    generator_service: Arc<std::result::Result<GeneratorService, String>>,
+    generator_service: Arc<GeneratorService>,
 }
 
 #[tower_lsp::async_trait]
@@ -137,11 +141,19 @@ impl LanguageServer for Backend {
             handles.push(handle);
         }
         for handle in handles {
-            documents::did_close(&self.client, &handle, params.clone()).await;
+            documents::did_close(
+                &self.client,
+                &handle,
+                &self.config,
+                &self.runtime_config,
+                params.clone(),
+            )
+            .await;
         }
     }
 
     async fn did_change_watched_files(&self, params: DidChangeWatchedFilesParams) {
+        let mut ordinary_changes = Vec::new();
         for change in params.changes {
             if change
                 .uri
@@ -160,20 +172,35 @@ impl LanguageServer for Backend {
                 .await;
                 continue;
             }
-            let Some(handle) = self.projects.handle_for_uri(&change.uri).await else {
+            ordinary_changes.push(change);
+        }
+        self.publish_grouped_file_events(ordinary_changes).await;
+    }
+
+    /// A rename reported this way is one user action, not two independent filesystem events: the
+    /// old and new halves rebuild in the same batch this dispatches, so a dependant's diagnostics
+    /// never observe the gap between a delete and a create the way two separate watched-file
+    /// notifications could. The declared capability filter admits only file-pattern matches, so a
+    /// folder rename (reported as one URI covering unlisted children) never reaches this handler;
+    /// the filesystem watcher's per-file delete/create pairs remain the path for those.
+    async fn did_rename_files(&self, params: RenameFilesParams) {
+        let mut events = Vec::new();
+        for rename in params.files {
+            let (Ok(old_uri), Ok(new_uri)) =
+                (Url::parse(&rename.old_uri), Url::parse(&rename.new_uri))
+            else {
                 continue;
             };
-            documents::did_change_watched_files(
-                &self.client,
-                &handle,
-                &self.config,
-                &self.runtime_config,
-                DidChangeWatchedFilesParams {
-                    changes: vec![change],
-                },
-            )
-            .await;
+            events.push(FileEvent {
+                uri: old_uri,
+                typ: FileChangeType::DELETED,
+            });
+            events.push(FileEvent {
+                uri: new_uri,
+                typ: FileChangeType::CREATED,
+            });
         }
+        self.publish_grouped_file_events(events).await;
     }
 
     async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
@@ -516,6 +543,37 @@ impl LanguageServer for Backend {
 }
 
 impl Backend {
+    /// Groups file-change events by the project they resolve to and applies each project's group
+    /// as one batch, so one file operation on many URIs becomes one semantic publication per
+    /// project rather than one per event. Shared by `did_change_watched_files` and
+    /// `did_rename_files`, which differ only in how they derive their `FileEvent`s.
+    async fn publish_grouped_file_events(&self, changes: Vec<FileEvent>) {
+        let mut grouped: Vec<(WorkspaceHandle, Vec<FileEvent>)> = Vec::new();
+        for change in changes {
+            let Some(handle) = self.projects.handle_for_uri(&change.uri).await else {
+                continue;
+            };
+            if let Some((_, events)) = grouped
+                .iter_mut()
+                .find(|(candidate, _)| candidate.same_session(&handle))
+            {
+                events.push(change);
+            } else {
+                grouped.push((handle, vec![change]));
+            }
+        }
+        for (handle, changes) in grouped {
+            documents::did_change_watched_files(
+                &self.client,
+                &handle,
+                &self.config,
+                &self.runtime_config,
+                DidChangeWatchedFilesParams { changes },
+            )
+            .await;
+        }
+    }
+
     fn state_for_uri(&self, uri: &Url) -> Result<Arc<ServerState>> {
         if let Some(error) = self.projects.admission_error_for_uri(uri) {
             return Err(tower_lsp::jsonrpc::Error::invalid_params(error));
@@ -592,10 +650,6 @@ impl Backend {
             .map_err(tower_lsp::jsonrpc::Error::invalid_params)?;
         let service = Arc::clone(&self.generator_service);
         tokio::task::spawn_blocking(move || {
-            let service = service
-                .as_ref()
-                .as_ref()
-                .map_err(|message| message.clone())?;
             service.generate(
                 &module_bytes,
                 publication,
@@ -630,20 +684,14 @@ impl Backend {
         }
         let publication = Arc::clone(state.session.current());
         let service = Arc::clone(&self.generator_service);
-        tokio::task::spawn_blocking(move || {
-            let service = service
-                .as_ref()
-                .as_ref()
-                .map_err(|message| message.clone())?;
-            service.state_transition_views(publication)
-        })
-        .await
-        .map_err(|error| {
-            tower_lsp::jsonrpc::Error::invalid_params(format!(
-                "state-transition catalog worker did not complete: {error}"
-            ))
-        })?
-        .map_err(tower_lsp::jsonrpc::Error::invalid_params)
+        tokio::task::spawn_blocking(move || service.state_transition_views(publication))
+            .await
+            .map_err(|error| {
+                tower_lsp::jsonrpc::Error::invalid_params(format!(
+                    "state-transition catalog worker did not complete: {error}"
+                ))
+            })?
+            .map_err(tower_lsp::jsonrpc::Error::invalid_params)
     }
 
     async fn spec42_diagram_views(&self, params: DiagramViewsParams) -> Result<DiagramViewsResult> {
@@ -661,20 +709,121 @@ impl Backend {
         }
         let publication = Arc::clone(state.session.current());
         let service = Arc::clone(&self.generator_service);
+        tokio::task::spawn_blocking(move || service.diagram_views(publication))
+            .await
+            .map_err(|error| {
+                tower_lsp::jsonrpc::Error::invalid_params(format!(
+                    "diagram catalog worker did not complete: {error}"
+                ))
+            })?
+            .map_err(tower_lsp::jsonrpc::Error::invalid_params)
+    }
+
+    async fn spec42_diagram(&self, params: DiagramParams) -> Result<DiagramResult> {
+        let model_uri = Url::parse(&params.model_uri).map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!("invalid model URI: {error}"))
+        })?;
+        let state = self.state_for_uri(&model_uri)?;
+        if !state
+            .index
+            .contains_key(&crate::common::util::normalize_file_uri(&model_uri))
+        {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "model URI is not part of the current workspace publication",
+            ));
+        }
+        let publication = Arc::clone(state.session.current());
+        let service = Arc::clone(&self.generator_service);
         tokio::task::spawn_blocking(move || {
-            let service = service
-                .as_ref()
-                .as_ref()
-                .map_err(|message| message.clone())?;
-            service.diagram_views(publication)
+            service.diagram(
+                publication,
+                &params.handle,
+                params.expected_model_digest.as_deref(),
+            )
         })
         .await
         .map_err(|error| {
             tower_lsp::jsonrpc::Error::invalid_params(format!(
-                "diagram catalog worker did not complete: {error}"
+                "diagram worker did not complete: {error}"
             ))
         })?
         .map_err(tower_lsp::jsonrpc::Error::invalid_params)
+    }
+
+    async fn spec42_layout(&self, params: LayoutParams) -> Result<LayoutResult> {
+        if legacy_engine_requested() {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "SPEC42_LAYOUT_ENGINE=legacy: native layout is disabled on this server",
+            ));
+        }
+        let LayoutParams {
+            model_digest,
+            view_handle,
+            presentation_revision,
+            graph,
+        } = params;
+        let layout = tokio::task::spawn_blocking(move || diagram_layout::layout_value(&graph))
+            .await
+            .map_err(|error| {
+                tower_lsp::jsonrpc::Error::invalid_params(format!(
+                    "layout worker did not complete: {error}"
+                ))
+            })?
+            .map_err(|error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()))?;
+        Ok(LayoutResult {
+            model_digest,
+            view_handle,
+            presentation_revision,
+            layout,
+            engine: LayoutEngine::Native,
+        })
+    }
+
+    async fn spec42_draw(&self, params: DrawParams) -> Result<DrawResult> {
+        if legacy_engine_requested() {
+            return Err(tower_lsp::jsonrpc::Error::invalid_params(
+                "SPEC42_LAYOUT_ENGINE=legacy: native drawing is disabled on this server; there \
+                 is no client drawing fallback",
+            ));
+        }
+        let DrawParams {
+            model_digest,
+            view_handle,
+            presentation_revision,
+            product,
+            width,
+            height,
+            color_scheme,
+            disclosure,
+        } = params;
+        let width = canvas_size(width, 960.0);
+        let height = canvas_size(height, 640.0);
+        let scheme = color_scheme.unwrap_or_else(|| "light".into());
+        let disclosure = disclosure.unwrap_or_default();
+        let svg = tokio::task::spawn_blocking(move || {
+            let theme = diagram_draw::theme::theme_for_scheme(&scheme);
+            diagram_draw::render_svg_from_payload_with_options(
+                &product,
+                theme,
+                width,
+                height,
+                Some(&disclosure),
+            )
+        })
+        .await
+        .map_err(|error| {
+            tower_lsp::jsonrpc::Error::invalid_params(format!(
+                "draw worker did not complete: {error}"
+            ))
+        })?
+        .map_err(|error| tower_lsp::jsonrpc::Error::invalid_params(error.to_string()))?;
+        Ok(DrawResult {
+            model_digest,
+            view_handle,
+            presentation_revision,
+            svg,
+            engine: DrawEngine::Native,
+        })
     }
 
     async fn sysml_library_search(
@@ -765,6 +914,9 @@ pub async fn run(config: Arc<Spec42Config>, server_name: &str) {
     .custom_method("sysml/librarySearch", Backend::sysml_library_search)
     .custom_method("spec42/generate", Backend::spec42_generate)
     .custom_method("spec42/diagramViews", Backend::spec42_diagram_views)
+    .custom_method("spec42/diagram", Backend::spec42_diagram)
+    .custom_method("spec42/layout", Backend::spec42_layout)
+    .custom_method("spec42/draw", Backend::spec42_draw)
     .custom_method(
         "spec42/stateTransitionViews",
         Backend::spec42_state_transition_views,

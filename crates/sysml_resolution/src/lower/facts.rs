@@ -43,6 +43,10 @@ pub(crate) struct RelationshipFlags {
     pub(crate) implied: bool,
     pub(crate) recursive: bool,
     pub(crate) wildcard: bool,
+    /// The authored target uses the bracketed filtered-import shape. View exposes retain this
+    /// separately from namespace wildcards so the exposed-element query can report the shape as
+    /// unsupported instead of treating its resolved namespace as an explicitly exposed element.
+    pub(crate) filtered: bool,
     pub(crate) direction: Option<ParameterDirection>,
     /// Mirrors the `variation` keyword prefix (BNF `BasicDefinitionPrefix`, `DefinitionPrefix::
     /// Variation`) on the owning `part`/`part def` declaration whose `FeatureTyping`/
@@ -384,6 +388,9 @@ pub(crate) struct DeclarationFacts {
     /// own multiplicity is never authored in this production, so it is kept apart from
     /// `multiplicity`.
     pub(crate) cross_multiplicity: Option<MultiplicityRecord>,
+    /// The owned reference subsetting of a short `render target` member. `None` means an inline
+    /// `render rendering` declaration for members with the ViewRendering role.
+    pub(crate) view_rendering_reference: Option<AuthoredReferenceId>,
     /// Authored negation for a declaration whose exact metaclass owns an `isNegated` fact.
     ///
     /// Satisfy, assert, and invariant spell the polarity at different grammar positions, but
@@ -479,6 +486,8 @@ pub(crate) struct DeclarationFacts {
     /// On a `MultiplicityRange` `bound` Expression: the form its result type is derived from.
     /// Its operands are the `ExpressionOperand` references it is the source of.
     pub(crate) multiplicity_bound_form: Option<MultiplicityBoundForm>,
+    /// This declaration is the implicit Multiplicity required by individual syntax.
+    pub(crate) is_individual_multiplicity: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -1458,16 +1467,4 @@ pub(crate) struct InstantiationArgument {
     /// The author named the parameter (`f(x = a)`); a positional argument's redefinition is
     /// implied by its position instead.
     pub(crate) named: bool,
-}
-
-/// SysML `OccurrenceDefinition::isIndividual`: an `individual def`, or an occurrence-family
-/// definition carrying the `individual` prefix.
-pub(crate) fn is_individual_occurrence_definition(
-    kind: crate::model::DeclarationKind,
-    facts: &DeclarationFacts,
-) -> bool {
-    kind == crate::model::DeclarationKind::IndividualDefinition
-        || (facts.modifiers.individual
-            && crate::model::element_kind::element_kind(kind)
-                .conforms_to(sysml_contract::ElementKind::OccurrenceDefinition))
 }

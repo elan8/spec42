@@ -3,7 +3,7 @@
 description=Sequence view preserves a resolved message endpoint outside its lifeline set as typed incomplete state
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=sequence-view
 viewDocument=diagram_sequence_outside_lifeline.md
 viewQualifiedName=SequenceOutside::selected
@@ -285,7 +285,7 @@ package SequenceOutside {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:605be914e5dd4a5965a661498b7210fe0ea677a335dcd45dc239f5cf2990bf2c",
+  "modelDigest": "blake3:a3b23a900eddcc8abfe8a9d25550deed620e341bb44c72e139730679b8030589",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_outside_lifeline.md",

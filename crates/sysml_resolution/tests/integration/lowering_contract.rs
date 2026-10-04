@@ -1292,34 +1292,6 @@ fn extended_definition_lowers_owned_members_and_specialization() {
 }
 
 #[test]
-fn individual_def_lowers_to_a_declaration_with_specialization() {
-    // `PackageBodyElement::IndividualDef` dispatches into the new `lower_individual_def`,
-    // mirroring `lower_item_def`/`lower_class_def`.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tpart def Base;\n\
-         \tindividual def Widget :> Base {\n\
-         \t\tattribute mass : Real;\n\
-         \t}\n\
-         }\n",
-    );
-    assert!(
-        output.contains("(qualified-name \"Demo::Widget\"))) (kind individual-definition)"),
-        "expected an individual-definition declaration, got:\n{output}"
-    );
-    assert!(
-        output.contains("(qualified-name \"Demo::Widget::mass\"))) (kind attribute)"),
-        "expected Widget's nested attribute usage declaration, got:\n{output}"
-    );
-    assert!(
-        output.contains(
-            "(kind specialization) (source (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Widget\"))) (target (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::Base\")))"
-        ),
-        "expected Widget's specialization reference to Base to resolve, got:\n{output}"
-    );
-}
-
-#[test]
 fn item_usage_nested_inside_port_def_lowers_to_a_declaration() {
     // `PortDefBodyElement::ItemDef`/`ItemUsage` and `PortBodyElement::ItemUsage` dispatch
     // into the already-existing `lower_item_def`/`lower_item_usage`. A `port def` body's

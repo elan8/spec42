@@ -41,24 +41,6 @@ package Ports {
   (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md"
     (diagnostics
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 6 8) (end 8 9))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 11 8) (end 14 9))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 17 8) (end 19 9))
-      )
-      (diagnostic
         (severity warning)
         (code "port_nested_usage_composite")
         (source "semantic")
@@ -73,24 +55,6 @@ package Ports {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_port_usage_nested_usages_not_composite.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 6 8) (end 8 9))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 11 8) (end 14 9))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 17 8) (end 19 9))
-      )
       (diagnostic
         (severity warning)
         (code "port_nested_usage_composite")

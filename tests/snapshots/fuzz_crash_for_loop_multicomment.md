@@ -22,9 +22,15 @@ perform action doS : Dff {     for y // ndent g {
     (diagnostics
       (diagnostic
         (severity error)
+        (code "missing_semicolon")
+        (source "parser")
+        (range (start 2 4) (end 3 0))
+      )
+      (diagnostic
+        (severity error)
         (code "recovered_action_body_element")
         (source "parser")
-        (range (start 2 4) (end 7 4))
+        (range (start 3 0) (end 7 4))
       )
       (diagnostic
         (severity error)

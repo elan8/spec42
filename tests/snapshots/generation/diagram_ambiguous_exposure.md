@@ -3,7 +3,7 @@
 description=Ambiguous exposure remains explicit and admits no guessed scope
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=general-view
 viewDocument=diagram_ambiguous_exposure.md
 viewQualifiedName=AmbiguousExample::selected
@@ -158,7 +158,7 @@ package AmbiguousExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:46be1bb114f30ce52a7ae3f6c137c12e220f377f972e666da1b208736a9a9f4c",
+  "modelDigest": "blake3:e53ad18ff1a388f0622127dd68127e9484a5ec882627a4e97404119d64f546d1",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_ambiguous_exposure.md",

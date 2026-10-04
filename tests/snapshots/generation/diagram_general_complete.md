@@ -3,7 +3,7 @@
 description=General view projects exposed ownership and published relationships
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=general-view
 viewDocument=diagram_general_complete.md
 viewQualifiedName=GeneralExample::selected
@@ -145,7 +145,7 @@ package GeneralExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:5565d92e064e203a99c996ec1229602bba3dcf6d246d199a8086167ff359dc7d",
+  "modelDigest": "blake3:410a72c6046dc6115daf5b433f8861cca5472f0a5b18a889a161e0bef765d969",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_complete.md",

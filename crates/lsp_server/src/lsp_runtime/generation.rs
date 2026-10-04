@@ -81,6 +81,26 @@ pub(crate) struct StateTransitionViewsParams {
 
 pub(crate) type DiagramViewsParams = StateTransitionViewsParams;
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub(crate) struct DiagramParams {
+    pub(crate) model_uri: String,
+    /// A handle from `spec42/diagramViews` on the same publication.
+    pub(crate) handle: String,
+    pub(crate) expected_model_digest: Option<String>,
+}
+
+/// `spec42/diagram`: the schema-5 diagram product of one catalog view, built natively.
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct DiagramResult {
+    pub(crate) model_digest: String,
+    pub(crate) semantic_status: language_service::dto::SemanticResultStatus,
+    /// The product exactly as `diagram.json` (see the `diagram_product` crate).
+    pub(crate) product_json: String,
+    pub(crate) duration_us: u128,
+}
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DiagramViewsResult {
@@ -233,7 +253,9 @@ pub(crate) struct StateTransitionSourceChoice {
 }
 
 pub(crate) struct GeneratorService {
-    runtime: Arc<GeneratorRuntime>,
+    /// Runs Wasm generators (`spec42/generate`). Diagrams and the view catalog do not need it, so a
+    /// runtime that fails to start only disables plugin generation.
+    runtime: std::result::Result<Arc<GeneratorRuntime>, String>,
     /// Entries are keyed by the digest of the exact core Wasm bytes. `PreparedGenerator` already
     /// belongs to this service's engine, so no path, timestamp, or external identity participates.
     prepared: Mutex<HashMap<String, Arc<PreparedGenerator>>>,
@@ -244,16 +266,46 @@ pub(crate) struct GeneratorService {
 }
 
 impl GeneratorService {
-    pub(crate) fn new() -> Result<Self, String> {
+    pub(crate) fn new() -> Self {
         let runtime = GeneratorRuntime::with_options(RuntimeOptions {
             fuel_metering: false,
             compilation_cache: true,
         })
-        .map_err(|error| error.to_string())?;
-        Ok(Self {
-            runtime: Arc::new(runtime),
+        .map(Arc::new)
+        .map_err(|error| format!("the generator runtime is unavailable: {error}"));
+        Self {
+            runtime,
             prepared: Mutex::new(HashMap::new()),
             models: Mutex::new(HashMap::new()),
+        }
+    }
+
+    pub(crate) fn diagram(
+        &self,
+        publication: Arc<PublishedModel>,
+        handle: &str,
+        expected_model_digest: Option<&str>,
+    ) -> Result<DiagramResult, String> {
+        let started = Instant::now();
+        // Catalog handles are scoped to the model view that minted them: reuse the cached one.
+        let model = self.model_for(publication)?;
+        let model_digest = model.model_digest();
+        if let Some(expected) = expected_model_digest {
+            if expected != model_digest {
+                return Err("the semantic publication changed while selecting a view; choose the view again".to_owned());
+            }
+        }
+        let projection = model
+            .diagram_view(handle)
+            .map_err(|error| error.to_string())?;
+        let product = diagram_product::diagram_product_json(&projection)?;
+        Ok(DiagramResult {
+            model_digest,
+            semantic_status: language_service::dto::SemanticResultStatus::from_publication(
+                model.publication_completeness(),
+            ),
+            product_json: String::from_utf8(product).expect("serde_json writes UTF-8"),
+            duration_us: started.elapsed().as_micros(),
         })
     }
 
@@ -283,6 +335,14 @@ impl GeneratorService {
             )
             .map_err(|error| error.to_string())?,
         );
+        // A catalog handle is valid only on the model view that minted it, and this cache may
+        // evict and rebuild the view of a publication that is still current. Handles are
+        // deterministic per publication, so minting both catalogs on every view keeps a handle
+        // from `spec42/diagramViews` or `spec42/stateTransitionViews` valid for the whole
+        // publication. A catalog that cannot be listed mints nothing and reports its error when
+        // requested.
+        let _ = model.diagram_views();
+        let _ = model.state_transition_views();
         let mut models = self
             .models
             .lock()
@@ -310,6 +370,7 @@ impl GeneratorService {
                 module_bytes.len()
             ));
         }
+        let runtime = self.runtime.as_ref().map_err(Clone::clone)?;
         let digest = format!("sha256:{:x}", Sha256::digest(module_bytes));
         let prepare_started = Instant::now();
         let cached = {
@@ -325,7 +386,7 @@ impl GeneratorService {
             // Wasmtime preparation can compile the module. Do not serialize that work behind the
             // cache mutex; after construction, recheck in case another request won the race.
             let candidate = Arc::new(
-                self.runtime
+                runtime
                     .prepare(module_bytes)
                     .map_err(|error| error.to_string())?,
             );
@@ -351,8 +412,7 @@ impl GeneratorService {
                 return Err("the semantic publication changed while selecting a view; choose the view again".to_owned());
             }
         }
-        let execution = self
-            .runtime
+        let execution = runtime
             .execute_prepared(
                 &prepared,
                 model,
@@ -388,10 +448,10 @@ impl GeneratorService {
                 module_prepare_ms,
                 guest_execution_us: execution.duration.as_micros(),
                 prepared_reused,
-                compilation_cache_enabled: self.runtime.compilation_cache_enabled(),
-                compilation_cache_hits: self.runtime.compilation_cache_hits(),
-                compilation_cache_misses: self.runtime.compilation_cache_misses(),
-                compilation_cache_error: self.runtime.compilation_cache_error().map(str::to_owned),
+                compilation_cache_enabled: runtime.compilation_cache_enabled(),
+                compilation_cache_hits: runtime.compilation_cache_hits(),
+                compilation_cache_misses: runtime.compilation_cache_misses(),
+                compilation_cache_error: runtime.compilation_cache_error().map(str::to_owned),
             },
         })
     }
@@ -539,17 +599,9 @@ mod tests {
         .expect("valid guest")
     }
 
-    fn repository_diagram_generator() -> Vec<u8> {
-        std::fs::read(
-            std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-                .join("../../generator-plugins/target/wasm32-unknown-unknown/release/spec42_diagram_generator.wasm"),
-        )
-        .expect("repository diagram generator; run scripts/build-repository-generator-plugins.sh")
-    }
-
     #[test]
     fn reuses_prepared_module_without_changing_results() {
-        let service = GeneratorService::new().expect("generator service");
+        let service = GeneratorService::new();
         let module = empty_generator("same");
         let cold = service
             .generate(&module, publication(), &[], None)
@@ -579,8 +631,8 @@ mod tests {
     }
 
     #[test]
-    fn catalog_handle_remains_valid_for_generation_on_the_same_publication() {
-        let service = GeneratorService::new().expect("generator service");
+    fn catalog_handle_yields_the_native_diagram_product_on_the_same_publication() {
+        let service = GeneratorService::new();
         let publication = state_transition_publication();
         let catalog = service
             .diagram_views(Arc::clone(&publication))
@@ -591,37 +643,18 @@ mod tests {
                 catalog.views.len()
             );
         };
+        assert_eq!(view.kind, DiagramViewKind::StateTransitionView);
 
-        let generation_model = service
-            .model_for(Arc::clone(&publication))
-            .expect("generation model adapter");
-        let projection = generation_model
-            .diagram_view(&view.handle)
-            .expect("catalog handle must remain valid for guest generation");
-
-        let generated = service
-            .generate(
-                &repository_diagram_generator(),
+        let diagram = service
+            .diagram(
                 Arc::clone(&publication),
-                std::slice::from_ref(&view.handle),
+                &view.handle,
                 Some(&catalog.model_digest),
             )
-            .expect("catalog handle must survive through actual guest execution");
-        let artifact = generated
-            .artifacts
-            .iter()
-            .find(|artifact| artifact.path == "diagram.json")
-            .expect("diagram artifact");
+            .expect("a catalog handle stays valid for the diagram request");
         let product: serde_json::Value =
-            serde_json::from_slice(&artifact.content).expect("diagram JSON product");
-
-        assert_eq!(projection.model_digest, catalog.model_digest);
-        assert_eq!(catalog.views.len(), 1);
-        assert_eq!(catalog.views[0].kind, DiagramViewKind::StateTransitionView);
-        assert_eq!(
-            diagram_reference(projection.view.reference.clone()),
-            view.reference
-        );
+            serde_json::from_str(&diagram.product_json).expect("diagram JSON product");
+        assert_eq!(diagram.model_digest, catalog.model_digest);
         assert_eq!(product["modelDigest"], catalog.model_digest);
         assert_eq!(product["selectedView"]["kind"], "state-transition-view");
         let selected_reference = product["selectedView"]["reference"]
@@ -631,10 +664,52 @@ mod tests {
             product["references"][selected_reference]["kind"],
             "qualified-name"
         );
-        assert!(!String::from_utf8_lossy(&artifact.content).contains("element/v1"));
         assert!(product["projection"]["nodes"]
             .as_array()
             .is_some_and(|nodes| !nodes.is_empty()));
+
+        let stale = service
+            .diagram(publication, &view.handle, Some("blake3:stale"))
+            .expect_err("a stale catalog selection must not project");
+        assert!(stale.contains("publication changed"));
+    }
+
+    #[test]
+    fn a_catalog_handle_survives_eviction_of_its_model_view() {
+        let service = GeneratorService::new();
+        let publication = state_transition_publication();
+        let catalog = service
+            .diagram_views(Arc::clone(&publication))
+            .expect("diagram catalog");
+        let handle = catalog.views[0].handle.clone();
+        // Other publications push the one the handle came from out of the model cache.
+        for ordinal in 0..MAX_MODEL_VIEWS {
+            let other = sysml_query::Services::new()
+                .publication
+                .publish(
+                    &[SourceService::new()
+                        .admit(
+                            &format!("file:///lsp-generator-tests/other{ordinal}.sysml"),
+                            format!("package Other{ordinal};\n"),
+                            SourceKind::Workspace,
+                        )
+                        .expect("uri")],
+                    [],
+                )
+                .expect("published model");
+            service.diagram_views(other).expect("catalog");
+        }
+        let cached = service.models.lock().unwrap();
+        assert!(
+            !cached.contains_key(&publication.publication().model_digest()),
+            "the handle's model view was evicted"
+        );
+        drop(cached);
+
+        let diagram = service
+            .diagram(publication, &handle, Some(&catalog.model_digest))
+            .expect("the handle stays valid for its still-current publication");
+        assert_eq!(diagram.model_digest, catalog.model_digest);
     }
 
     #[test]

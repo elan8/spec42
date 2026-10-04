@@ -12,45 +12,47 @@ pub use sysml_resolution::{
     AuthoredValue, BindingConnector, BindingConnectorCheckKind, BindingConnectorValidationOutcome,
     BindingConnectorValidationPrerequisite, BuildMeasurements, Conformance, ConformanceObstacle,
     ConnectedElement, ConnectorEndpoint, ConnectorKind, DefinitionUsageDerivedKind,
-    DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivedElementOwner,
-    Diagnostic, DiagnosticCategory, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin,
-    DiagnosticSeverity, DiagramCompartment, DiagramCompartmentKind, DiagramCompartmentProvenance,
-    DiagramEdge, DiagramEdgeKind, DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence,
-    DiagramIncompleteReason, DiagramOccurrenceIdentity, DiagramRelationship,
-    DiagramRelationshipEndpoint, DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene,
-    DiagramSemanticReference, DiagramSequenceEndpoint, DiagramSequenceMessage,
-    DiagramSequenceOrder, DiagramSequenceScene, DiagramStateTransition,
-    DiagramStateTransitionScene, DiagramStateVertex, DiagramStateVertexKind,
-    DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind, DiagramViewProjection,
-    DocumentId, DocumentToken, Documentation, EffectiveType, EffectiveTypeEntry,
-    EffectiveTypeOrigin, EffectiveTyping, ElementDerivedDocumentationCollection, ElementDetails,
-    ElementDetailsAt, ElementEvaluation, ElementInspection, ElementInspectionAt, ElementKind,
-    ElementModifier, ElementRelationship, ElementSearch, ElementSource, EvaluatedScalar,
-    EvaluationFailure, EvaluationState, ExpectedMeasurement, ExpressionNode, ExpressionNodeKind,
-    ExpressionOperator, ExpressionOutcome, FeatureDerivedRelationshipCollection, FeatureDirection,
-    InheritedFeature, LibrarySpecializationAnchorBranch, MembershipFacts, MembershipId,
-    MembershipKind, MembershipRelationship, MembershipRole, MetadataAnnotationForm,
-    MetadataAnnotationValue, MultiplicityBound, MultiplicityFacts,
-    NamespaceDerivedElementCollection, NamespaceImportDerivedElement, NavigationTarget,
-    OccurrenceRole, PortionKind, ProjectedElement, ProjectionEnvelope, ProjectionPhase,
-    ProjectionTruncation, PublicationCompleteness, PublicationIdentity, PublicationModelDigest,
-    PublicationObstacle, PublishedConnectionGraph, PublishedConnector, PublishedConnectorEnd,
-    PublishedDiagnostics, PublishedElement, PublishedExpression, PublishedMetadataAnnotation,
-    PublishedModelProjection, QualifiedElementReference, QualifiedReferenceOutcome,
-    QualifiedReferenceTarget, QueryAnswer, QueryOutcome, RedefinitionCheckKind,
-    RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, ReferenceAt, ReferencedDetails,
-    RelatedLocation, RelationshipFamily, RelationshipOutcome, RelationshipProvenance,
-    RelationshipTarget, RenameOutcome, RequirementConstraintKind, RequirementDerivedFactCollection,
-    RequirementDerivedFactKind, RequirementDerivedFactOutcome, RequirementDerivedFactPrerequisite,
-    RequirementUsageTyping, RequirementVerification, ResolvedUnit, SatisfyEndpoint,
-    SatisfyPolarity, SatisfyRelationship, SourceLocation, SpecializationCheckKind,
-    SpecializationCheckOutcome, SpecializationCheckPrerequisite, SpecializationScope,
-    StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId, SymbolToken, TextId,
-    TextPosition, TextRange, TypeDerivedElementCollection, TypeDerivedFactCollection,
-    TypeDerivedFactKind, TypeDerivedFactOutcome, TypeDerivedFactPrerequisite, TypeDerivedFactValue,
-    TypeDerivedRelationshipCollection, TypeFeaturingCheckKind, TypeFeaturingCheckOutcome,
-    TypeFeaturingCheckPrerequisite, TypeReference, UnitResolution, ValueKind, VerificationOutcome,
-    VerificationRequirement, Visibility, VisibilityProvenance, VisibleMemberRef, VisibleMembers,
+    DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivationEndpoint,
+    DerivationRelationship, DerivedElementOwner, Diagnostic, DiagnosticCategory, DiagnosticCode,
+    DiagnosticLocation, DiagnosticOrigin, DiagnosticSeverity, DiagramCompartment,
+    DiagramCompartmentKind, DiagramCompartmentProvenance, DiagramEdge, DiagramEdgeKind,
+    DiagramElement, DiagramElementTyping, DiagramEndpointOccurrence, DiagramIncompleteReason,
+    DiagramOccurrenceIdentity, DiagramRelationship, DiagramRelationshipEndpoint,
+    DiagramRelationshipKind, DiagramRelationshipTarget, DiagramScene, DiagramSemanticReference,
+    DiagramSequenceEndpoint, DiagramSequenceMessage, DiagramSequenceOrder, DiagramSequenceScene,
+    DiagramStateTransition, DiagramStateTransitionScene, DiagramStateVertex,
+    DiagramStateVertexKind, DiagramTransitionFeature, DiagramViewCatalogEntry, DiagramViewKind,
+    DiagramViewProjection, DocumentId, DocumentToken, Documentation, EffectiveType,
+    EffectiveTypeEntry, EffectiveTypeOrigin, EffectiveTyping,
+    ElementDerivedDocumentationCollection, ElementDetails, ElementDetailsAt, ElementEvaluation,
+    ElementInspection, ElementInspectionAt, ElementKind, ElementModifier, ElementRelationship,
+    ElementSearch, ElementSource, EvaluatedScalar, EvaluationFailure, EvaluationState,
+    ExpectedMeasurement, ExpressionNode, ExpressionNodeKind, ExpressionOperator, ExpressionOutcome,
+    FeatureDerivedRelationshipCollection, FeatureDirection, InheritedFeature,
+    LibrarySpecializationAnchorBranch, MembershipFacts, MembershipId, MembershipKind,
+    MembershipRelationship, MembershipRole, MetadataAnnotationForm, MetadataAnnotationValue,
+    MultiplicityBound, MultiplicityFacts, NamespaceDerivedElementCollection,
+    NamespaceImportDerivedElement, NavigationTarget, OccurrenceRole, PortionKind, ProjectedElement,
+    ProjectionEnvelope, ProjectionPhase, ProjectionTruncation, PublicationCompleteness,
+    PublicationIdentity, PublicationModelDigest, PublicationObstacle, PublishedConnectionGraph,
+    PublishedConnector, PublishedConnectorEnd, PublishedDiagnostics, PublishedElement,
+    PublishedExpression, PublishedMetadataAnnotation, PublishedModelProjection,
+    QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceTarget, QueryAnswer,
+    QueryOutcome, RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite,
+    ReferenceAt, ReferencedDetails, RelatedLocation, RelationshipFamily, RelationshipOutcome,
+    RelationshipProvenance, RelationshipTarget, RenameOutcome, RequirementConstraintKind,
+    RequirementDerivedFactCollection, RequirementDerivedFactKind, RequirementDerivedFactOutcome,
+    RequirementDerivedFactPrerequisite, RequirementUsageTyping, RequirementVerification,
+    ResolvedUnit, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship, SourceLocation,
+    SpecializationCheckKind, SpecializationCheckOutcome, SpecializationCheckPrerequisite,
+    SpecializationScope, StateSubactionKind, SubsettingConformance, SymbolEntry, SymbolId,
+    SymbolToken, TextId, TextPosition, TextRange, TypeDerivedElementCollection,
+    TypeDerivedFactCollection, TypeDerivedFactKind, TypeDerivedFactOutcome,
+    TypeDerivedFactPrerequisite, TypeDerivedFactValue, TypeDerivedRelationshipCollection,
+    TypeFeaturingCheckKind, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
+    TypeReference, UnitResolution, ValueKind, VerificationOutcome, VerificationRequirement,
+    ViewExposedElements, ViewExposureObstacle, Visibility, VisibilityProvenance, VisibleMemberRef,
+    VisibleMembers,
 };
 
 pub use sysml_resolution::source::RootDigest;
@@ -300,8 +302,20 @@ impl DiagramQueries<'_> {
         self.model.diagram_view_catalog()
     }
 
+    /// The view as its first catalogued kind; see `view_of_kind`.
     pub fn view(&self, identity: SymbolId) -> QueryOutcome<DiagramViewProjection> {
         self.model.diagram_view(identity)
+    }
+
+    /// The view as one of its catalogued kinds. A view typed by several standard view definitions
+    /// (`view v : GeneralView, InterconnectionView`) has a catalog entry, and a projection, per
+    /// kind.
+    pub fn view_of_kind(
+        &self,
+        identity: SymbolId,
+        kind: DiagramViewKind,
+    ) -> QueryOutcome<DiagramViewProjection> {
+        self.model.diagram_view_of_kind(identity, kind)
     }
 
     /// The display name of one catalogued view, borrowed from the publication.
@@ -661,6 +675,13 @@ impl InspectionQueries<'_> {
         self.model.inspect(symbol)
     }
 
+    /// The canonical `ViewUsage::exposedElement` result for any view usage, independent of the
+    /// diagram catalog. Elements are deduplicated in canonical identity order; obstacles retain
+    /// unresolved or unsupported expose and filter facts alongside the usable subset.
+    pub fn exposed_elements(&self, view: SymbolId) -> QueryOutcome<ViewExposedElements> {
+        self.model.view_exposed_elements(view)
+    }
+
     /// Resolves a canonical Membership relationship identity without substituting its member
     /// element.
     pub fn membership(&self, identity: MembershipId) -> QueryOutcome<MembershipRelationship> {
@@ -738,6 +759,12 @@ impl InspectionQueries<'_> {
     /// Workspace-authored satisfy statements, with directional ends and explicit outcomes.
     pub fn satisfy_relationships(&self) -> QueryOutcome<Box<[SatisfyRelationship]>> {
         self.model.satisfy_relationships()
+    }
+
+    /// Workspace requirement derivations (`RequirementDerivation` library): the original and
+    /// derived requirement ends of each `DerivationConnections::Derivation` connection usage.
+    pub fn derivation_relationships(&self) -> QueryOutcome<Box<[DerivationRelationship]>> {
+        self.model.derivation_relationships()
     }
 
     /// One exact Feature relationship collection from the canonical relationship store.

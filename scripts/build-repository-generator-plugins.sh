@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds repository-owned WebAssembly plugins and optionally stages them for extension packaging.
+# Builds the repository-owned WebAssembly generator plugins (the SDK example).
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -29,13 +29,4 @@ RUSTFLAGS="${RUSTFLAGS:-} --remap-path-prefix=${root_native}=/spec42 --remap-pat
   --release \
   --target wasm32-unknown-unknown
 
-if [[ "${SPEC42_PACKAGE_REPOSITORY_GENERATORS:-1}" == "1" ]]; then
-  mkdir -p "$root/vscode/generators"
-  cp \
-    "$root/generator-plugins/target/wasm32-unknown-unknown/release/spec42_diagram_generator.wasm" \
-    "$root/vscode/generators/diagram.wasm"
-
-  echo "repository plugins built; refreshed vscode/generators/diagram.wasm"
-else
-  echo "repository plugins built without refreshing packaged artifacts"
-fi
+echo "repository plugins built"

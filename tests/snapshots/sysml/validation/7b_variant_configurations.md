@@ -164,42 +164,6 @@ package '7b-Variant Configurations' {
         (range (start 4 16) (end 4 40))
       )
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 40 5) (end 40 34))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 45 4) (end 45 35))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 46 4) (end 46 35))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 51 5) (end 51 44))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 55 3) (end 57 4))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 56 4) (end 56 46))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

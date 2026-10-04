@@ -354,6 +354,27 @@ The runner obtains the import identity only from `PublishedModel::namespace_impo
 it never gives an anonymous import a made-up display name. `target` outcome and provenance use the
 same closed relationship contract as other semantic assertions.
 
+`deriveViewUsageExposedElement` uses `view-exposed-element`. The query is available for every view
+usage, including views that are not typed by a standard diagram view definition. A resolved
+assertion requires that the named target occurs in the canonical, filtered exposed-element set;
+an `absent` assertion with a target requires that it does not occur. `absent` without a target
+requires an empty set. `incomplete` asserts that the query retained at least one typed expose or
+filter obstacle:
+
+```sexpr
+(view-exposed-element
+  (rule_id "sysml-2.0:8.3.26.11:deriveViewUsageExposedElement")
+  (source "Model::requirements")
+  (target "Model::Requirements::Mass")
+  (outcome resolved))
+```
+
+Namespace exposes expand the target's owned members and public imported memberships; the target
+may be any Namespace, so `expose vehicle::*` on a part usage exposes its features. Only an authored
+`private` or `protected` visibility hides a member. A recursive expose descends into every exposed
+member. Inherited memberships are not expanded. Results are deduplicated and ordered by canonical
+symbol identity before the view's effective filter conditions are applied.
+
 `outcome` is one of `resolved`, `unresolved`, `ambiguous`, `unsupported`, `absent`, or
 `incomplete`; no outcome is inferred from diagnostic text. A typed blocker whose diagnostic or
 semantic expectation starts passing is `stale` and fails, requiring `blocked_by` and eventually
@@ -440,10 +461,11 @@ sequential/parallel parity.
 
 ## Generator snapshots
 
-A fixture with `type=generate` selects a repository-owned WebAssembly plugin in `META`. Plugin
-selection is closed: fixtures cannot provide filesystem paths. Conformance fixtures use the
-canonical `conformance:<name>` form (the legacy bare name remains accepted), while diagram
-fixtures use `repository:diagram`:
+A fixture with `type=generate` selects a generator in `META`. Selection is closed: fixtures cannot
+provide filesystem paths. Conformance fixtures run a repository-owned WebAssembly plugin, named in
+the canonical `conformance:<name>` form (the legacy bare name remains accepted). Diagram fixtures
+use `native:diagram`, Spec42's built-in diagram product (`crates/diagram_product`), exactly as the
+LSP and `spec42 diagram` produce it:
 
 ```markdown
 # META
@@ -456,11 +478,11 @@ plugin=conformance:requirements_csv
 
 Diagram fixtures select one authored view with its source-document name, KerML qualified name and
 typed view kind. The semantic query owner resolves that readable reference to the canonical opaque
-identity; the runner then finds the identical catalog entry and passes its opaque handle to the
-guest. It never guesses from a display label or embeds the identity encoding in fixture metadata:
+identity; the runner then finds the identical catalog entry and projects its opaque handle. It
+never guesses from a display label or embeds the identity encoding in fixture metadata:
 
 ```ini
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=general-view
 viewDocument=model.sysml
 viewQualifiedName=Example::selected
@@ -471,7 +493,7 @@ name is normalized by the same `SourceDocument` constructor used to admit fixtur
 qualified name is resolved only within that document. Unresolved, wrong-kind and ambiguous
 references are errors rather than fallback selections.
 
-The runner executes that plugin against both the sequential and parallel immutable publications.
+The runner executes that generator against both the sequential and parallel immutable publications.
 Outcome, diagnostics, artifact paths, and exact artifact bytes must agree before the canonical
 result is written. Generated files are captured in memory rather than applied to the filesystem:
 

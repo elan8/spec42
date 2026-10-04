@@ -117,7 +117,7 @@ enum LibrarySelection {
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum GeneratorPlugin {
     Conformance(String),
-    RepositoryDiagram,
+    NativeDiagram,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -326,6 +326,7 @@ struct SemanticExpectations {
     element_derived_documentation: Vec<ElementDerivedDocumentationExpectation>,
     namespace_derived_elements: Vec<NamespaceDerivedElementExpectation>,
     namespace_import_derived_elements: Vec<NamespaceImportDerivedElementExpectation>,
+    view_exposed_elements: Vec<ViewExposedElementExpectation>,
     binding_connector_checks: Vec<BindingConnectorCheckExpectation>,
     redefinition_checks: Vec<RedefinitionCheckExpectation>,
     specialization_checks: Vec<SpecializationCheckExpectation>,
@@ -1076,6 +1077,13 @@ struct NamespaceImportDerivedElementExpectation {
     target: Option<String>,
     provenance: Option<RelationshipProvenance>,
     outcome: SemanticRelationshipOutcome,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct ViewExposedElementExpectation {
+    source: String,
+    target: Option<String>,
+    outcome: NamespaceDerivedElementOutcome,
 }
 
 /// An exact named BindingConnector check selected by the manifest-owned query family.
@@ -3360,6 +3368,7 @@ fn parse_expected_semantics_with_manifest(
     let mut element_derived_documentation = Vec::new();
     let mut namespace_derived_elements = Vec::new();
     let mut namespace_import_derived_elements = Vec::new();
+    let mut view_exposed_elements = Vec::new();
     let mut binding_connector_checks = Vec::new();
     let mut redefinition_checks = Vec::new();
     let mut specialization_checks = Vec::new();
@@ -3406,6 +3415,9 @@ fn parse_expected_semantics_with_manifest(
             "namespace-import-derived-element" => namespace_import_derived_elements.push(
                 parse_namespace_import_derived_element_expectation(item, fallback_name, manifest)?,
             ),
+            "view-exposed-element" => view_exposed_elements.push(
+                parse_view_exposed_element_expectation(item, fallback_name, manifest)?,
+            ),
             "binding-connector-check" => binding_connector_checks.push(
                 parse_binding_connector_check_expectation(item, fallback_name, manifest)?,
             ),
@@ -3436,6 +3448,7 @@ fn parse_expected_semantics_with_manifest(
         && element_derived_documentation.is_empty()
         && namespace_derived_elements.is_empty()
         && namespace_import_derived_elements.is_empty()
+        && view_exposed_elements.is_empty()
         && binding_connector_checks.is_empty()
         && redefinition_checks.is_empty()
         && specialization_checks.is_empty()
@@ -3457,6 +3470,7 @@ fn parse_expected_semantics_with_manifest(
         element_derived_documentation,
         namespace_derived_elements,
         namespace_import_derived_elements,
+        view_exposed_elements,
         binding_connector_checks,
         redefinition_checks,
         specialization_checks,
@@ -4352,6 +4366,75 @@ fn parse_namespace_import_derived_element_expectation(
     })
 }
 
+fn parse_view_exposed_element_expectation(
+    expression: &AuthoredSexpr,
+    fallback_name: &str,
+    manifest: Option<&ConstraintManifest>,
+) -> Result<ViewExposedElementExpectation, String> {
+    let AuthoredSexpr::List(items) = expression else {
+        return Err(format!(
+            "{fallback_name}: View exposed-element expectation must be a list"
+        ));
+    };
+    let fields = parse_semantic_assertion_fields(
+        &items[1..],
+        &["rule_id", "source", "target", "outcome"],
+        "semantic View exposed element",
+        fallback_name,
+    )?;
+    let rule_id = fields.get("rule_id").ok_or_else(|| {
+        format!("{fallback_name}: semantic View exposed element requires rule_id")
+    })?;
+    let entry = manifest
+        .ok_or_else(|| {
+            format!("{fallback_name}: semantic View exposed element requires a loaded manifest")
+        })?
+        .find_rule(rule_id)
+        .ok_or_else(|| {
+            format!(
+                "{fallback_name}: semantic View exposed element rule_id {rule_id:?} is absent from the manifest"
+            )
+        })?;
+    if entry.metaclass != "ViewUsage" || entry.constraint != "deriveViewUsageExposedElement" {
+        return Err(format!(
+            "{fallback_name}: semantic View exposed element rule_id {rule_id:?} does not select deriveViewUsageExposedElement"
+        ));
+    }
+    let source = fields
+        .get("source")
+        .filter(|value| !value.is_empty())
+        .cloned()
+        .ok_or_else(|| format!("{fallback_name}: semantic View exposed element requires source"))?;
+    let outcome = NamespaceDerivedElementOutcome::parse(
+        fields.get("outcome").ok_or_else(|| {
+            format!("{fallback_name}: semantic View exposed element requires outcome")
+        })?,
+        fallback_name,
+    )?;
+    let target = fields.get("target").cloned();
+    match outcome {
+        NamespaceDerivedElementOutcome::Resolved if target.as_deref().is_none_or(str::is_empty) => {
+            return Err(format!(
+                "{fallback_name}: resolved semantic View exposed element requires target"
+            ));
+        }
+        NamespaceDerivedElementOutcome::Incomplete
+        | NamespaceDerivedElementOutcome::Unsupported
+            if target.is_some() =>
+        {
+            return Err(format!(
+                "{fallback_name}: {outcome:?} semantic View exposed element must not declare target"
+            ));
+        }
+        _ => {}
+    }
+    Ok(ViewExposedElementExpectation {
+        source,
+        target,
+        outcome,
+    })
+}
+
 fn parse_binding_connector_check_expectation(
     expression: &AuthoredSexpr,
     fallback_name: &str,
@@ -4665,6 +4748,7 @@ struct SemanticExpectationObservations {
     element_derived_documentation: Vec<ElementDerivedDocumentationObservation>,
     namespace_derived_elements: Vec<NamespaceDerivedElementObservation>,
     namespace_import_derived_elements: Vec<SemanticRelationshipObservation>,
+    view_exposed_elements: Vec<NamespaceDerivedElementObservation>,
     binding_connector_checks: Vec<BindingConnectorCheckObservation>,
     redefinition_checks: Vec<RedefinitionCheckObservation>,
     specialization_checks: Vec<SpecializationCheckObservation>,
@@ -4816,6 +4900,11 @@ fn observe_semantic_expectations(
             .namespace_import_derived_elements
             .iter()
             .map(|expectation| observe_namespace_import_derived_element(model, expectation))
+            .collect::<Result<_, _>>()?,
+        view_exposed_elements: expectations
+            .view_exposed_elements
+            .iter()
+            .map(|expectation| observe_view_exposed_element(model, expectation))
             .collect::<Result<_, _>>()?,
         binding_connector_checks: expectations
             .binding_connector_checks
@@ -5313,6 +5402,46 @@ fn observe_namespace_import_derived_element(
     )
 }
 
+fn observe_view_exposed_element(
+    model: &PublishedModel,
+    expectation: &ViewExposedElementExpectation,
+) -> Result<NamespaceDerivedElementObservation, String> {
+    let source = match resolve_semantic_identity(model, &expectation.source) {
+        Ok(source) => source,
+        Err(SemanticIdentityStatus::Incomplete) => {
+            return Ok(NamespaceDerivedElementObservation::Incomplete)
+        }
+        Err(status) => return Err(format!("source reference is {}", status.description())),
+    };
+    let exposed = match snapshot_answer(model.inspection().exposed_elements(source)) {
+        QueryAnswer::Resolved(exposed) => exposed,
+        QueryAnswer::Incomplete => return Ok(NamespaceDerivedElementObservation::Incomplete),
+        QueryAnswer::Unsupported => return Ok(NamespaceDerivedElementObservation::Unsupported),
+        QueryAnswer::Unresolved => {
+            return Err("View exposed-element query is unresolved".to_string())
+        }
+        QueryAnswer::Ambiguous(_) => {
+            return Err("View exposed-element query is ambiguous".to_string())
+        }
+        QueryAnswer::Recovery => return Err("View exposed-element query is recovery".to_string()),
+    };
+    if !exposed.obstacles.is_empty() {
+        return Ok(NamespaceDerivedElementObservation::Incomplete);
+    }
+    let expected = expectation
+        .target
+        .as_deref()
+        .map(|target| {
+            resolve_semantic_identity(model, target)
+                .map_err(|status| format!("target reference is {}", status.description()))
+        })
+        .transpose()?;
+    Ok(NamespaceDerivedElementObservation::Values {
+        values: exposed.elements,
+        expected,
+    })
+}
+
 fn observe_binding_connector_check(
     model: &PublishedModel,
     expectation: &BindingConnectorCheckExpectation,
@@ -5577,6 +5706,13 @@ fn compare_semantic_expectations(
         )?;
     }
     for (expectation, observation) in expectations
+        .view_exposed_elements
+        .iter()
+        .zip(&observations.view_exposed_elements)
+    {
+        compare_view_exposed_element_observation(expectation, observation)?;
+    }
+    for (expectation, observation) in expectations
         .binding_connector_checks
         .iter()
         .zip(&observations.binding_connector_checks)
@@ -5770,6 +5906,47 @@ fn compare_namespace_derived_element_observation(
     }
 }
 
+fn compare_view_exposed_element_observation(
+    expectation: &ViewExposedElementExpectation,
+    observation: &NamespaceDerivedElementObservation,
+) -> Result<(), String> {
+    match (expectation.outcome, observation) {
+        (
+            NamespaceDerivedElementOutcome::Incomplete,
+            NamespaceDerivedElementObservation::Incomplete,
+        )
+        | (
+            NamespaceDerivedElementOutcome::Unsupported,
+            NamespaceDerivedElementObservation::Unsupported,
+        ) => Ok(()),
+        (
+            NamespaceDerivedElementOutcome::Absent,
+            NamespaceDerivedElementObservation::Values {
+                values,
+                expected: None,
+            },
+        ) if values.is_empty() => Ok(()),
+        (
+            NamespaceDerivedElementOutcome::Absent,
+            NamespaceDerivedElementObservation::Values {
+                values,
+                expected: Some(expected),
+            },
+        ) if !values.iter().any(|actual| actual == expected) => Ok(()),
+        (
+            NamespaceDerivedElementOutcome::Resolved,
+            NamespaceDerivedElementObservation::Values {
+                values,
+                expected: Some(expected),
+            },
+        ) if values.iter().any(|actual| actual == expected) => Ok(()),
+        _ => Err(format!(
+            "semantic View exposed-element expectation for {} did not match its typed outcome",
+            expectation.source
+        )),
+    }
+}
+
 fn compare_type_derived_element_observation(
     expectation: &TypeDerivedElementExpectation,
     observation: &TypeDerivedElementObservation,
@@ -5837,6 +6014,7 @@ fn compare_type_derived_fact_observation(
             TypeDerivedFactObservation::Outcome {
                 value: TypeDerivedFactOutcome::Values(values),
                 expected: None,
+                ..
             },
         ) if expectation.collection == TypeDerivedFactCollection::Multiplicity
             && values
@@ -6734,15 +6912,6 @@ fn execute_generation(
     request: &GenerationRequest,
     fixture_path: &Path,
 ) -> Result<GeneratedArtifacts, String> {
-    let plugin_path = generator_plugin_path(&request.plugin);
-    let module = fs::read(&plugin_path).map_err(|error| {
-        format!(
-            "{}: failed to read generator plugin `{}` at {}: {error}; run scripts/build-generator-plugins.sh",
-            fixture_path.display(),
-            generator_plugin_label(&request.plugin),
-            plugin_path.display()
-        )
-    })?;
     let model_digest = publication.publication().model_digest();
     let model = Arc::new(
         GeneratorModelView::new(
@@ -6764,6 +6933,22 @@ fn execute_generation(
         "snapshot evidence must record the exact publication completeness"
     );
     let args = generation_arguments(request, &publication, &model, fixture_path)?;
+    let name = match &request.plugin {
+        // The diagram product is built natively, as the LSP and CLI build it.
+        GeneratorPlugin::NativeDiagram => {
+            return native_diagram_artifacts(&model, &args, fixture_path)
+        }
+        GeneratorPlugin::Conformance(name) => name,
+    };
+    let plugin_path = conformance_plugin_path(name);
+    let module = fs::read(&plugin_path).map_err(|error| {
+        format!(
+            "{}: failed to read generator plugin `{}` at {}: {error}; run scripts/build-generator-plugins.sh",
+            fixture_path.display(),
+            generator_plugin_label(&request.plugin),
+            plugin_path.display()
+        )
+    })?;
     let runtime = GeneratorRuntime::new().map_err(|error| {
         format!(
             "{}: generator runtime failed: {error}",
@@ -6803,20 +6988,43 @@ fn execute_generation(
 fn generator_plugin_label(plugin: &GeneratorPlugin) -> String {
     match plugin {
         GeneratorPlugin::Conformance(name) => format!("conformance:{name}"),
-        GeneratorPlugin::RepositoryDiagram => "repository:diagram".to_string(),
+        GeneratorPlugin::NativeDiagram => "native:diagram".to_string(),
     }
 }
 
-fn generator_plugin_path(plugin: &GeneratorPlugin) -> PathBuf {
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
-    match plugin {
-        GeneratorPlugin::Conformance(name) => root
-            .join("generator-tests/plugins/target/wasm32-unknown-unknown/release")
-            .join(format!("spec42_conformance_{name}.wasm")),
-        GeneratorPlugin::RepositoryDiagram => root
-            .join("generator-plugins/target/wasm32-unknown-unknown/release")
-            .join("spec42_diagram_generator.wasm"),
-    }
+fn conformance_plugin_path(name: &str) -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../generator-tests/plugins/target/wasm32-unknown-unknown/release")
+        .join(format!("spec42_conformance_{name}.wasm"))
+}
+
+/// `diagram.json` for the catalog view whose handle is `args[0]`.
+fn native_diagram_artifacts(
+    model: &GeneratorModelView,
+    args: &[String],
+    fixture_path: &Path,
+) -> Result<GeneratedArtifacts, String> {
+    let [handle] = args else {
+        return Err(format!(
+            "{}: diagram generation requires exactly one view selection",
+            fixture_path.display()
+        ));
+    };
+    let projection = model
+        .diagram_view(handle)
+        .map_err(|error| format!("{}: diagram view failed: {error}", fixture_path.display()))?;
+    let product = diagram_product::diagram_product_json(&projection).map_err(|error| {
+        format!(
+            "{}: diagram product failed: {error}",
+            fixture_path.display()
+        )
+    })?;
+    let mut artifacts = GeneratedArtifacts::default();
+    artifacts.insert_utf8(
+        diagram_product::ARTIFACT_PATH,
+        String::from_utf8(product).expect("serde_json writes UTF-8"),
+    )?;
+    Ok(artifacts)
 }
 
 fn generation_arguments(
@@ -7421,9 +7629,9 @@ fn parse_fixture_meta(fixture: &str, fallback_name: &str) -> Result<FixtureMeta,
                     ))
                 }
             };
-            if diagram_selection.is_some() && plugin != GeneratorPlugin::RepositoryDiagram {
+            if diagram_selection.is_some() && plugin != GeneratorPlugin::NativeDiagram {
                 return Err(format!(
-                    "{fallback_name}: typed view selection is only valid with plugin=repository:diagram"
+                    "{fallback_name}: typed view selection is only valid with plugin=native:diagram"
                 ));
             }
             Some(GenerationRequest {
@@ -7529,8 +7737,8 @@ fn parse_meta_bool(value: &str, key: &str, fallback_name: &str) -> Result<bool, 
 }
 
 fn parse_generator_plugin(value: &str, fallback_name: &str) -> Result<GeneratorPlugin, String> {
-    if value == "repository:diagram" {
-        return Ok(GeneratorPlugin::RepositoryDiagram);
+    if value == "native:diagram" {
+        return Ok(GeneratorPlugin::NativeDiagram);
     }
     let name = value.strip_prefix("conformance:").unwrap_or(value);
     if name.is_empty()
@@ -8241,6 +8449,7 @@ mod tests {
                 element_derived_documentation: Vec::new(),
                 namespace_derived_elements: Vec::new(),
                 namespace_import_derived_elements: Vec::new(),
+                view_exposed_elements: Vec::new(),
                 binding_connector_checks: Vec::new(),
                 redefinition_checks: Vec::new(),
                 specialization_checks: Vec::new(),
@@ -9625,13 +9834,13 @@ mod tests {
 
     #[test]
     fn parses_closed_typed_diagram_selection() {
-        let diagram = "# META\n~~~ini\ntype=generate\nplugin=repository:diagram\nviewKind=general-view\nviewDocument=model.sysml\nviewQualifiedName=Example::selected\n~~~\n";
+        let diagram = "# META\n~~~ini\ntype=generate\nplugin=native:diagram\nviewKind=general-view\nviewDocument=model.sysml\nviewQualifiedName=Example::selected\n~~~\n";
         assert_eq!(
             parse_fixture_meta(diagram, "fixture.md")
                 .unwrap()
                 .generation,
             Some(GenerationRequest {
-                plugin: GeneratorPlugin::RepositoryDiagram,
+                plugin: GeneratorPlugin::NativeDiagram,
                 diagram_selection: Some(DiagramSelection {
                     kind: "general-view".to_string(),
                     document: "model.sysml".to_string(),
@@ -9736,12 +9945,12 @@ mod tests {
     fn rejects_invalid_generator_selection_metadata() {
         for (meta, expected) in [
             (
-                "type=generate\nplugin=repository:diagram\nviewKind=general-view",
+                "type=generate\nplugin=native:diagram\nviewKind=general-view",
                 "must be specified together",
             ),
             (
                 "type=generate\nplugin=requirements_csv\nviewKind=general-view\nviewDocument=model.sysml\nviewQualifiedName=Example::selected",
-                "only valid with plugin=repository:diagram",
+                "only valid with plugin=native:diagram",
             ),
             ("type=generate\nplugin=../../escape", "unknown or unsafe"),
             (
@@ -9757,9 +9966,7 @@ mod tests {
 
     #[test]
     fn repository_plugin_paths_are_closed() {
-        assert!(generator_plugin_path(&GeneratorPlugin::RepositoryDiagram)
-            .ends_with("generator-plugins/target/wasm32-unknown-unknown/release/spec42_diagram_generator.wasm"));
-        assert!(generator_plugin_path(&GeneratorPlugin::Conformance("example".to_string()))
+        assert!(conformance_plugin_path("example")
             .ends_with("generator-tests/plugins/target/wasm32-unknown-unknown/release/spec42_conformance_example.wasm"));
     }
 

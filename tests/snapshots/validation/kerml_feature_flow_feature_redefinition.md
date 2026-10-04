@@ -32,18 +32,6 @@ package FlowFeatureRedefinition {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_flow_feature_redefinition.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 5 20) (end 5 42))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 6 22) (end 6 43))
-      )
     )
   )
 )

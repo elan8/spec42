@@ -3,7 +3,7 @@
 description=Sequence view projects authoritative participants and flow facts
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=sequence-view
 viewDocument=diagram_sequence_complete.md
 viewQualifiedName=SequenceExample::selected
@@ -489,7 +489,7 @@ package SequenceExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:c9bdd0f238c652cc4fa39804aef1436e1ae5172ca54c70b9b4dfea9213289581",
+  "modelDigest": "blake3:18789fa9043a66226bf9cc9869d1b38aa3a8f08fd34d82d8268c7a886f1bc28d",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_complete.md",

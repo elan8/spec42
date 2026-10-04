@@ -3,7 +3,7 @@
 description=Browser view keeps unresolved exposure explicit
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=browser-view
 viewDocument=diagram_browser_unresolved.md
 viewQualifiedName=BrowserNegative::selected
@@ -136,7 +136,7 @@ package BrowserNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:a4def427f29691f77746801ffc1ac91523e6fcb21affc5010a4f4789061237c5",
+  "modelDigest": "blake3:b015d422c6ae8085a6c91ce87ac9a4a0dc806f72b6b2ab8e27d18cab2680bee7",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_browser_unresolved.md",

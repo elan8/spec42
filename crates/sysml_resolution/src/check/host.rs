@@ -543,13 +543,12 @@ impl<D> SemanticModel<D> {
     // Connection conformance
     // ------------------------------------------------------------------------------------------
 
-    /// Reports connectors whose ends are not connectable, and ports that connect to nothing.
+    /// Reports connectors whose ends are not connectable.
     pub(crate) fn collect_connection_structure(
         &self,
         declared: &[DeclarationId],
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        let mut connected_ends: BTreeSet<DeclarationId> = BTreeSet::new();
         for id in declared.iter().copied() {
             let declaration = self
                 .storage
@@ -565,7 +564,6 @@ impl<D> SemanticModel<D> {
                     continue;
                 };
                 settled.push((target, *reference));
-                connected_ends.insert(target);
             }
             if settled.len() < 2 {
                 // One settled end states no relationship to judge; the other end is already its
@@ -667,67 +665,8 @@ impl<D> SemanticModel<D> {
             }
         }
 
-        self.collect_unconnected_ports(declared, &connected_ends, diagnostics)?;
         self.collect_interface_ends(declared, diagnostics)?;
         self.collect_binding_connectors(declared, diagnostics)?;
-        Ok(())
-    }
-
-    /// Reports ports that no connector, flow or binding names.
-    ///
-    /// A port that redefines or subsets another states a refinement of a connected feature rather
-    /// than a new endpoint, so it is not reported: the feature it specializes carries the
-    /// connection.
-    pub(crate) fn collect_unconnected_ports(
-        &self,
-        declared: &[DeclarationId],
-        connected: &BTreeSet<DeclarationId>,
-        diagnostics: &mut Vec<Diagnostic>,
-    ) -> Result<(), ResolutionError> {
-        for id in declared.iter().copied() {
-            if self.kind_of(id) != Some(DeclarationKind::PortUsage) {
-                continue;
-            }
-            if connected.contains(&id) {
-                continue;
-            }
-            if !self
-                .authored_references(
-                    id,
-                    &[
-                        ReferenceKind::Redefinition,
-                        ReferenceKind::Subsetting,
-                        ReferenceKind::References,
-                    ],
-                )
-                .is_empty()
-            {
-                continue;
-            }
-            // A port named by any endpoint-bearing reference is connected, whatever the spelling.
-            if self.reverse_references.references(id).iter().any(|id| {
-                matches!(
-                    self.storage.references[id.index()].kind,
-                    ReferenceKind::ConnectorEnd
-                        | ReferenceKind::MemberAccessOperand
-                        | ReferenceKind::FlowSource
-                        | ReferenceKind::FlowTarget
-                        | ReferenceKind::BindSource
-                        | ReferenceKind::BindTarget
-                )
-            }) {
-                continue;
-            }
-            diagnostics.push(self.declaration_message_diagnostic(
-                id,
-                DiagnosticCode::UnconnectedPort,
-                DiagnosticSeverity::Information,
-                Some(format!(
-                    "Port '{}' takes part in no connection.",
-                    self.display_name(id)
-                )),
-            )?);
-        }
         Ok(())
     }
 
@@ -1566,6 +1505,8 @@ impl<D> SemanticModel<D> {
                     // information: it is legal, and a view under construction passes through it.
                     // The multiplicity a header `[m..n]` lowers to, and the comments and
                     // documentation annotating the view, are not body content.
+                    // The view's own `ValuePart` expression (`view v = w;`) is owned by the view
+                    // but is not a body member either.
                     let members = self
                         .child_declarations(id)
                         .iter()
@@ -1576,7 +1517,11 @@ impl<D> SemanticModel<D> {
                                 !kind.conforms_to(sysml_contract::ElementKind::Multiplicity)
                                     && !kind
                                         .conforms_to(sysml_contract::ElementKind::AnnotatingElement)
-                            })
+                            }) && !self
+                                .storage
+                                .feature_values
+                                .iter()
+                                .any(|value| value.declaration == id && value.value == *child)
                         })
                         .collect::<Vec<_>>();
                     let owner_is_rendering = self
@@ -1623,19 +1568,79 @@ impl<D> SemanticModel<D> {
                         )?);
                     }
                 }
-                Some(DeclarationKind::RenderingUsage) => self.collect_target_kind(
-                    id,
-                    &[ReferenceKind::FeatureTyping],
-                    |kind| {
-                        matches!(
-                            kind,
-                            DeclarationKind::RenderingDefinition | DeclarationKind::RenderingUsage
-                        )
-                    },
-                    DiagnosticCode::ViewRenderingInvalidTarget,
-                    diagnostics,
-                )?,
+                Some(DeclarationKind::RenderingUsage) => {
+                    self.collect_target_kind(
+                        id,
+                        &[ReferenceKind::FeatureTyping],
+                        |kind| {
+                            matches!(
+                                kind,
+                                DeclarationKind::RenderingDefinition
+                                    | DeclarationKind::RenderingUsage
+                            )
+                        },
+                        DiagnosticCode::ViewRenderingInvalidTarget,
+                        diagnostics,
+                    )?;
+                    if self.effective_membership_role(id)
+                        == Some(crate::MembershipRole::ViewRendering)
+                    {
+                        let owner = self
+                            .storage
+                            .declaration(id)
+                            .and_then(|declaration| declaration.owner);
+                        if !owner
+                            .and_then(|owner| self.kind_of(owner))
+                            .is_some_and(|kind| {
+                                matches!(
+                                    kind,
+                                    DeclarationKind::ViewDefinition | DeclarationKind::ViewUsage
+                                )
+                            })
+                        {
+                            diagnostics.push(self.declaration_diagnostic(
+                                id,
+                                DiagnosticCode::ViewRenderingInvalidOwner,
+                                DiagnosticSeverity::Warning,
+                            )?);
+                        }
+                        if let Some(reference_id) = self
+                            .storage
+                            .declaration_facts(id)
+                            .and_then(|facts| facts.view_rendering_reference)
+                        {
+                            if let Some(target) = self.settled_target(reference_id) {
+                                if self.kind_of(target) != Some(DeclarationKind::RenderingUsage) {
+                                    let reference = &self.storage.references[reference_id.index()];
+                                    diagnostics.push(self.reference_diagnostic(
+                                        reference,
+                                        DiagnosticCode::ViewRenderingInvalidTarget,
+                                        DiagnosticSeverity::Warning,
+                                        Some(target),
+                                    )?);
+                                }
+                            }
+                        }
+                    }
+                }
                 _ => {}
+            }
+            if matches!(
+                self.kind_of(id),
+                Some(DeclarationKind::ViewDefinition | DeclarationKind::ViewUsage)
+            ) {
+                let mut renderings = self.owned_feature_members(id).into_iter().filter(|member| {
+                    self.effective_membership_role(*member)
+                        == Some(crate::MembershipRole::ViewRendering)
+                });
+                renderings.next();
+                for extra in renderings {
+                    diagnostics.push(self.declaration_diagnostic(
+                        extra,
+                        DiagnosticCode::ViewMultipleRenderings,
+                        DiagnosticSeverity::Warning,
+                    )?);
+                }
             }
         }
 

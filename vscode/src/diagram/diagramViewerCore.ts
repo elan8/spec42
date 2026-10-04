@@ -1,9 +1,7 @@
 import * as path from "path";
+import type { DiagramProduct } from "../generated/diagram-product/DiagramProduct";
 
-export type GenerationReport = {
-  status: string;
-  model_digest: string;
-};
+export type { DiagramProduct } from "../generated/diagram-product/DiagramProduct";
 
 export type SourceNavigation = {
   uri: string;
@@ -39,70 +37,15 @@ export type DiagramSemanticReference =
   | { kind: "source-anchor"; document: string; ownerQualifiedName: string | null; metaclass: string; sourceDomain: string; range: unknown }
   | { kind: "relationship"; document: string; sourceQualifiedName: string; relationshipKind: string; ordinal: number; sourceDomain: string };
 
-export type DiagramScene =
-  | { kind: "general" }
-  | { kind: "interconnection" }
-  | { kind: "action-flow" }
-  | { kind: "sequence" }
-  | { kind: "browser" }
-  | { kind: "grid" }
-  | { kind: "geometry" }
-  | {
-      kind: "state-transition";
-      frame: { id: string; label: string; navigation: number } | null;
-      vertices: Array<{ id: string; label: string; kind: "initial" | "state" | "final"; navigation: number }>;
-      transitions: Array<{
-        id: string;
-        label: string | null;
-        source: number;
-        target: number;
-        trigger: Record<string, unknown>;
-        guard: Record<string, unknown>;
-        effect: Record<string, unknown>;
-        provenance: "authored" | "implied";
-        navigation: number;
-      }>;
-    };
-
-export type DiagramProduct = {
-  schemaVersion: 5;
-  modelDigest: string;
-  documents: Array<{ uri: string; sourceDomain: string }>;
-  sources: Array<{ document: number; range: [number, number, number, number] }>;
-  references: Array<Record<string, unknown>>;
-  selectedView: { reference: number; kind: DiagramViewId; name: string; source: number };
-  completeness: {
-    status: "complete" | "incomplete";
-    reasons: Array<{ code: string; [key: string]: unknown }>;
-  };
-  projection: {
-    kind: DiagramViewId;
-    exposedRoots: number[];
-    nodes: unknown[];
-    relationships: unknown[];
-    edges: unknown[];
-    metadata: Record<string, unknown>;
-    scene: DiagramScene;
-  };
-};
-
 const NOTATION_ROLES = new Set([
   "definition", "usage", "reference-usage", "namespace", "annotation", "unsupported",
 ]);
 
-export type LspGenerationResult = {
+/** `spec42/diagram`: the natively built diagram product of one catalog view. */
+export type LspDiagramResult = {
   modelDigest: string;
-  generatorDigest: string;
-  artifacts: Array<{ path: string; content: number[] }>;
-  timings: {
-    modulePrepareMs: number;
-    guestExecutionUs: number;
-    preparedReused: boolean;
-    compilationCacheEnabled: boolean;
-    compilationCacheHits: number;
-    compilationCacheMisses: number;
-    compilationCacheError: string | null;
-  };
+  productJson: string;
+  durationUs: number;
 };
 
 export type StateTransitionViewChoice = {
@@ -295,84 +238,18 @@ export function parseStateTransitionViewCatalog(value: unknown): StateTransition
   return { modelDigest: candidate.modelDigest, views };
 }
 
-export function parseLspGenerationResult(value: unknown): LspGenerationResult {
-  if (!value || typeof value !== "object") throw new Error("Spec42 returned an invalid generation result.");
+export function parseLspDiagramResult(value: unknown): LspDiagramResult {
+  if (!value || typeof value !== "object") throw new Error("Spec42 returned an invalid diagram result.");
   const candidate = value as Record<string, unknown>;
-  if (typeof candidate.modelDigest !== "string" || typeof candidate.generatorDigest !== "string" || !Array.isArray(candidate.artifacts)) {
-    throw new Error("Spec42 generation result is missing identity or artifacts.");
-  }
-  const artifacts = candidate.artifacts.map((entry) => {
-    if (!entry || typeof entry !== "object") throw new Error("Spec42 returned an invalid artifact.");
-    const artifact = entry as Record<string, unknown>;
-    if (typeof artifact.path !== "string" || !Array.isArray(artifact.content) ||
-        artifact.content.some((byte) => !Number.isInteger(byte) || byte < 0 || byte > 255)) {
-      throw new Error("Spec42 returned malformed artifact bytes.");
-    }
-    return { path: artifact.path, content: artifact.content as number[] };
-  });
-  const timings = candidate.timings as Record<string, unknown> | undefined;
-  if (!timings || typeof timings.modulePrepareMs !== "number" || typeof timings.guestExecutionUs !== "number" ||
-      typeof timings.preparedReused !== "boolean" || typeof timings.compilationCacheEnabled !== "boolean" ||
-      typeof timings.compilationCacheHits !== "number" || typeof timings.compilationCacheMisses !== "number" ||
-      (timings.compilationCacheError !== null && typeof timings.compilationCacheError !== "string")) {
-    throw new Error("Spec42 generation result is missing timing information.");
+  if (typeof candidate.modelDigest !== "string" || typeof candidate.productJson !== "string" ||
+      typeof candidate.durationUs !== "number") {
+    throw new Error("Spec42 diagram result is missing its model digest or product.");
   }
   return {
     modelDigest: candidate.modelDigest,
-    generatorDigest: candidate.generatorDigest,
-    artifacts,
-    timings: timings as LspGenerationResult["timings"],
+    productJson: candidate.productJson,
+    durationUs: candidate.durationUs,
   };
-}
-
-export function buildGenerateArgv(
-  pluginPath: string,
-  modelPath: string,
-  outputPath: string,
-  workspaceRoot: string,
-  libraryPaths: string[]
-): string[] {
-  const args = [
-    "generate",
-    pluginPath,
-    modelPath,
-    "--output",
-    outputPath,
-    "--format",
-    "json",
-    "--timeout-seconds",
-    "30",
-    "--max-files",
-    "16",
-    "--max-total-bytes",
-    String(16 * 1024 * 1024),
-  ];
-  if (workspaceRoot) {
-    args.push("--workspace-root", workspaceRoot);
-  }
-  for (const libraryPath of libraryPaths) {
-    args.push("--library-path", libraryPath);
-  }
-  return args;
-}
-
-export function parseGenerationReport(value: unknown): GenerationReport {
-  if (!value || typeof value !== "object") {
-    throw new Error("Spec42 returned an invalid generation report.");
-  }
-  const candidate = value as Record<string, unknown>;
-  if (typeof candidate.status !== "string" || typeof candidate.model_digest !== "string") {
-    throw new Error("Spec42 generation report is missing status or model_digest.");
-  }
-  return { status: candidate.status, model_digest: candidate.model_digest };
-}
-
-export function selectSingleDiagramJson(paths: string[]): string {
-  const jsonPaths = paths.filter((candidate) => path.extname(candidate).toLowerCase() === ".json" && !candidate.startsWith(".spec42-"));
-  if (jsonPaths.length !== 1) {
-    throw new Error(`Expected exactly one diagram JSON artifact, but generator produced ${jsonPaths.length}.`);
-  }
-  return jsonPaths[0];
 }
 
 export function parseDiagramProduct(text: string): DiagramProduct {

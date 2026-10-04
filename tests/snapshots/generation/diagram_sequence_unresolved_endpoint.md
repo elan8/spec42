@@ -3,7 +3,7 @@
 description=Sequence view preserves an unresolved message endpoint as typed incomplete state
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=sequence-view
 viewDocument=diagram_sequence_unresolved_endpoint.md
 viewQualifiedName=SequenceUnresolved::selected
@@ -295,7 +295,7 @@ package SequenceUnresolved {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:0cdc5b2b6368b695c124ccdf6ff98e0167d780cadb141c03134a660782b9ceac",
+  "modelDigest": "blake3:eb1986969bbae59cec894d2830ebfa0ba0ec8a666ad2f550bb591b638a13f946",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_unresolved_endpoint.md",

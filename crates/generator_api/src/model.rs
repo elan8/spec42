@@ -129,9 +129,40 @@ pub enum RequirementUsageTypingSummary {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SatisfyEndpointSummary {
     Resolved(ElementSummary),
+    /// A feature chain (`satisfy R by a.b.c`), every hop resolved; see
+    /// `sysml_query::resolved_slice::SatisfyEndpoint::FeatureChain`.
+    FeatureChain {
+        path: Vec<ElementSummary>,
+        authored: String,
+    },
     Ambiguous(Vec<ElementSummary>),
     Unresolved,
     Unsupported,
+}
+
+/// The target of one requirement derivation end; see
+/// `sysml_query::resolved_slice::DerivationEndpoint`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum DerivationEndpointSummary {
+    Resolved(ElementSummary),
+    FeatureChain {
+        path: Vec<ElementSummary>,
+        authored: String,
+    },
+    Ambiguous(Vec<ElementSummary>),
+    Unresolved,
+    Unsupported,
+}
+
+/// One requirement derivation connection with its classified ends.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DerivationRelationshipSummary {
+    pub semantic_id: String,
+    pub original: Vec<DerivationEndpointSummary>,
+    pub derived: Vec<DerivationEndpointSummary>,
+    pub unclassified: Vec<DerivationEndpointSummary>,
+    pub provenance: TypingProvenanceSummary,
+    pub recovered: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -210,6 +241,9 @@ pub struct GeneratorModelView {
     completeness: sysml_query::resolved_slice::PublicationCompleteness,
     by_identity: HashMap<SymbolId, RegisteredElement>,
     handles: Mutex<HashMap<String, SymbolId>>,
+    /// The catalogued kind of each diagram catalog handle. A view typed by several standard view
+    /// definitions has one catalog entry, and one handle, per kind.
+    diagram_handle_kinds: Mutex<HashMap<String, sysml_query::resolved_slice::DiagramViewKind>>,
 }
 
 impl std::fmt::Debug for GeneratorModelView {
@@ -251,6 +285,7 @@ impl GeneratorModelView {
             completeness,
             by_identity,
             handles: Mutex::new(HashMap::new()),
+            diagram_handle_kinds: Mutex::new(HashMap::new()),
         })
     }
 
@@ -520,6 +555,86 @@ impl GeneratorModelView {
         Ok(values)
     }
 
+    /// Workspace requirement derivations (`RequirementDerivation` library) with their ends
+    /// classified as original, derived or unclassified.
+    pub fn derivation_relationships(
+        &self,
+    ) -> Result<Vec<DerivationRelationshipSummary>, ModelQueryError> {
+        use sysml_query::resolved_slice::{DerivationEndpoint as OwnedEndpoint, QueryAnswer};
+        let query = self.model.inspection().derivation_relationships();
+        let recovered = !query.completeness.is_complete();
+        let relationships = match query.answer {
+            QueryAnswer::Resolved(values) => values,
+            QueryAnswer::Unsupported => {
+                return Err(ModelQueryError::Unsupported(
+                    "derivation relationships".into(),
+                ))
+            }
+            QueryAnswer::Unresolved => {
+                return Err(ModelQueryError::Unresolved(
+                    "derivation relationships".into(),
+                ))
+            }
+            QueryAnswer::Ambiguous(_) => {
+                return Err(ModelQueryError::Ambiguous(
+                    "derivation relationships".into(),
+                ))
+            }
+            QueryAnswer::Recovery => {
+                return Err(ModelQueryError::Unresolved(
+                    "derivation relationships are in parser recovery".into(),
+                ))
+            }
+            QueryAnswer::Incomplete => return Err(ModelQueryError::Incomplete),
+        };
+        let endpoint =
+            |value: &OwnedEndpoint| -> Result<DerivationEndpointSummary, ModelQueryError> {
+                Ok(match value {
+                    OwnedEndpoint::Resolved(identity) => {
+                        DerivationEndpointSummary::Resolved(self.summary(identity)?)
+                    }
+                    OwnedEndpoint::FeatureChain { path, authored } => {
+                        DerivationEndpointSummary::FeatureChain {
+                            path: path
+                                .iter()
+                                .map(|hop| self.summary(hop))
+                                .collect::<Result<Vec<_>, _>>()?,
+                            authored: authored.to_string(),
+                        }
+                    }
+                    OwnedEndpoint::Ambiguous(values) => DerivationEndpointSummary::Ambiguous(
+                        values
+                            .iter()
+                            .map(|value| self.summary(value))
+                            .collect::<Result<Vec<_>, _>>()?,
+                    ),
+                    OwnedEndpoint::Unresolved => DerivationEndpointSummary::Unresolved,
+                    OwnedEndpoint::Unsupported => DerivationEndpointSummary::Unsupported,
+                })
+            };
+        let ends = |values: &[OwnedEndpoint]| -> Result<Vec<_>, ModelQueryError> {
+            values.iter().map(endpoint).collect()
+        };
+        let values = relationships
+            .iter()
+            .map(|relationship| {
+                Ok(DerivationRelationshipSummary {
+                    semantic_id: self.token(relationship.identity),
+                    original: ends(&relationship.original)?,
+                    derived: ends(&relationship.derived)?,
+                    unclassified: ends(&relationship.unclassified)?,
+                    provenance: match relationship.provenance {
+                        RelationshipProvenance::Authored => TypingProvenanceSummary::Authored,
+                        RelationshipProvenance::Implied => TypingProvenanceSummary::Implied,
+                    },
+                    recovered,
+                })
+            })
+            .collect::<Result<Vec<_>, ModelQueryError>>()?;
+        self.enforce_limit(values.len())?;
+        Ok(values)
+    }
+
     pub fn satisfy_relationships(
         &self,
     ) -> Result<Vec<SatisfyRelationshipSummary>, ModelQueryError> {
@@ -554,6 +669,15 @@ impl GeneratorModelView {
             Ok(match value {
                 OwnedEndpoint::Resolved(identity) => {
                     SatisfyEndpointSummary::Resolved(self.summary(identity)?)
+                }
+                OwnedEndpoint::FeatureChain { path, authored } => {
+                    SatisfyEndpointSummary::FeatureChain {
+                        path: path
+                            .iter()
+                            .map(|hop| self.summary(hop))
+                            .collect::<Result<Vec<_>, _>>()?,
+                        authored: authored.to_string(),
+                    }
                 }
                 OwnedEndpoint::Ambiguous(values) => SatisfyEndpointSummary::Ambiguous(
                     values
@@ -677,11 +801,17 @@ impl GeneratorModelView {
         let mut values = catalog
             .iter()
             .map(|entry| {
-                let handle = handle_from_semantic_id(&self.token(entry.semantic_id));
+                // One handle per (view, kind). It also resolves to the view element, as an element
+                // handle does.
+                let handle = diagram_handle(&self.token(entry.semantic_id), entry.kind);
                 self.handles
                     .lock()
                     .expect("generator handle index poisoned")
                     .insert(handle.clone(), entry.semantic_id);
+                self.diagram_handle_kinds
+                    .lock()
+                    .expect("generator handle index poisoned")
+                    .insert(handle.clone(), entry.kind);
                 Ok(DiagramViewSummary {
                     handle,
                     kind: diagram_kind(entry.kind),
@@ -712,7 +842,21 @@ impl GeneratorModelView {
 
     pub fn diagram_view(&self, handle: &str) -> Result<DiagramViewProjection, ModelQueryError> {
         let identity = self.resolve_handle(handle)?;
-        let projection = outcome(self.model.diagrams().view(identity), "diagram view")?;
+        let kind = self
+            .diagram_handle_kinds
+            .lock()
+            .expect("generator handle index poisoned")
+            .get(handle)
+            .copied();
+        // A catalog handle projects its catalogued kind; any other view handle (a state-transition
+        // view's, an element's) projects the view's first kind.
+        let projection = match kind {
+            Some(kind) => outcome(
+                self.model.diagrams().view_of_kind(identity, kind),
+                "diagram view",
+            )?,
+            None => outcome(self.model.diagrams().view(identity), "diagram view")?,
+        };
         let view = DiagramViewSummary {
             handle: handle.to_owned(),
             reference: self.diagram_reference(projection.view.semantic_id)?,
@@ -1962,6 +2106,16 @@ fn outcome<T>(value: QueryOutcome<T>, operation: &str) -> Result<T, ModelQueryEr
         ))),
         QueryAnswer::Incomplete => Err(ModelQueryError::Incomplete),
     }
+}
+
+/// The catalog handle of `view` (a boundary token) as one of its diagram kinds.
+fn diagram_handle(view: &str, kind: sysml_query::resolved_slice::DiagramViewKind) -> String {
+    let mut hash = Sha256::new();
+    hash.update(b"spec42-generator-diagram-handle-v1\0");
+    hash.update(view.as_bytes());
+    hash.update(b"\0");
+    hash.update(format!("{:?}", diagram_kind(kind)).as_bytes());
+    format!("h:{:x}", hash.finalize())
 }
 
 fn handle_from_semantic_id(id: &str) -> String {

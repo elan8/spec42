@@ -1,4 +1,4 @@
-﻿[package]
+[package]
 name = "sysml_tokens"
 version.workspace = true
 edition.workspace = true

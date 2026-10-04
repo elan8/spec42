@@ -8,8 +8,8 @@
 
 use crate::details::{
     ConnectedElement, EffectiveTypeEntry, EffectiveTyping, ElementDetails, ElementDetailsAt,
-    InheritedFeature, ReferencedDetails, RelationshipFamily, RelationshipOutcome, ViewSelection,
-    ViewSelectionObstacle, ViewSelectionOutcome,
+    InheritedFeature, ReferencedDetails, RelationshipFamily, RelationshipOutcome, ViewRendering,
+    ViewSelection, ViewSelectionObstacle, ViewSelectionOutcome,
 };
 use crate::evaluation::{AnalysisEvaluation, EvaluatedScalar, EvaluationState};
 use crate::index::documents::leaf_ranges_containing;
@@ -137,6 +137,94 @@ pub(crate) fn is_verdict_bearing(kind: ElementKind) -> bool {
 }
 
 impl<D> SemanticModel<D> {
+    pub(crate) fn view_rendering(&self, view: SymbolId) -> QueryOutcome<Option<ViewRendering>> {
+        let view_id = match self.single_declaration(view) {
+            Ok(id) => id,
+            Err(outcome) => return outcome,
+        };
+        if !matches!(
+            self.storage
+                .declaration(view_id)
+                .map(|declaration| declaration.kind),
+            Some(
+                crate::model::DeclarationKind::ViewDefinition
+                    | crate::model::DeclarationKind::ViewUsage
+            )
+        ) {
+            return self.query_outcome(QueryAnswer::Unsupported);
+        }
+        let members = self
+            .effective_usage_members(view_id)
+            .into_iter()
+            .filter(|member| {
+                self.effective_membership_role(*member)
+                    == Some(crate::MembershipRole::ViewRendering)
+            });
+        let mut renderings = Vec::new();
+        let mut unsettled = false;
+        let mut ambiguous = false;
+        for member in members {
+            let Some(owned_rendering) = self.symbol_id(member) else {
+                unsettled = true;
+                continue;
+            };
+            let Some(membership) = crate::MembershipId::from_index(member.index()) else {
+                unsettled = true;
+                continue;
+            };
+            let referenced = match self
+                .storage
+                .declaration_facts(member)
+                .and_then(|facts| facts.view_rendering_reference)
+            {
+                None => vec![member],
+                Some(reference) => match self.resolution.outcome(reference) {
+                    Some(ResolutionStatus::Resolved(target)) => vec![target],
+                    Some(ResolutionStatus::Ambiguous(range)) => {
+                        ambiguous = true;
+                        self.resolution.ambiguous_candidates(range).to_vec()
+                    }
+                    _ => {
+                        unsettled = true;
+                        Vec::new()
+                    }
+                },
+            };
+            for target in referenced {
+                if !self.storage.declaration(target).is_some_and(|declaration| {
+                    declaration.kind == crate::model::DeclarationKind::RenderingUsage
+                }) {
+                    unsettled = true;
+                    continue;
+                }
+                let Some(referenced_rendering) = self.symbol_id(target) else {
+                    unsettled = true;
+                    continue;
+                };
+                renderings.push(ViewRendering {
+                    membership,
+                    owned_rendering,
+                    referenced_rendering,
+                    owned_body_members: self
+                        .symbols(self.child_declarations(member).iter().copied()),
+                    body_members: self.symbols(self.child_declarations(target).iter().copied()),
+                });
+            }
+        }
+        match (renderings.len(), unsettled, ambiguous) {
+            (0, false, false) => self.resolved_outcome(None),
+            (1, false, false) => self.resolved_outcome(renderings.pop()),
+            (_, true, _) => self.query_outcome(QueryAnswer::Unresolved),
+            _ => self.query_outcome(QueryAnswer::Ambiguous(
+                renderings
+                    .into_iter()
+                    .map(Some)
+                    .collect::<Vec<_>>()
+                    .into_boxed_slice(),
+            )),
+        }
+    }
+
     pub(crate) fn view_selection(
         &self,
         view: SymbolId,
@@ -386,6 +474,16 @@ impl<D> SemanticModel<D> {
             subsetting,
             redefinition,
             inspection,
+            conjugated: self.typing_is_conjugated(id),
+        })
+    }
+
+    /// `port p : ~T` carries the conjugation on the feature-typing reference. The resolved target
+    /// is still `T`.
+    fn typing_is_conjugated(&self, id: DeclarationId) -> bool {
+        self.outgoing_reference_ids(id).iter().any(|reference_id| {
+            let reference = &self.storage.references[reference_id.index()];
+            reference.kind == ReferenceKind::FeatureTyping && reference.flags.conjugated
         })
     }
 

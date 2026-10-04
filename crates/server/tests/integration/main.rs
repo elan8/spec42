@@ -8,14 +8,15 @@ mod robot_vacuum_fixture;
 
 mod cli_ai_tools;
 mod cli_bundle;
-mod diagram_generator_smoke;
+mod derivation_relationships;
+mod diagram_smoke;
 mod examples_are_clean;
 mod generator_cli;
+mod headless_native_draw;
 mod init_scaffold;
 mod kitchen_timer_check;
 mod kpar_domain_libraries_embed_smoke;
 mod kpar_stdlib_embed_smoke;
-mod layout_shadow_corpus;
 mod multi_file_check;
 mod robot_vacuum_check;
 mod stdlib_bundle_ratchet;

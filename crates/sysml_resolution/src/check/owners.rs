@@ -292,6 +292,10 @@ impl<D> SemanticModel<D> {
             };
             types.push(target);
         }
+        // `@T` publishes both its `MetadataAnnotation` and a `FeatureTyping` reference to the same
+        // type; `Feature::type` is the set of distinct types.
+        types.sort_unstable();
+        types.dedup();
         let metaclasses = types
             .iter()
             .filter(|target| self.metaclass_conforms(**target, ElementKind::Metaclass))

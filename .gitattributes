@@ -21,5 +21,14 @@ docs/generation/** text eol=lf
 # "# GENERATED\n"; autocrlf would rewrite every fixture and fail both.
 tests/snapshots/** text eol=lf
 
+# The pinned BNF is hashed byte-for-byte into the generated syntax coverage inventory
+# (`scripts/generate-textual-syntax-inventory.mjs`), and the inventory itself is
+# byte-compared against a freshly regenerated (LF) copy. Without this, a checkout that
+# autocrlf-converts the vendored grammar to CRLF bakes a platform-dependent hash into the
+# committed inventory, which then fails `--check` on any checkout that keeps it LF.
+tools/sysml_reference/*.kebnf text eol=lf
+docs/reference/textual-syntax-coverage.json text eol=lf
+docs/reference/TEXTUAL-SYNTAX-INVENTORY.md text eol=lf
+
 # Shell scripts must stay LF -- a CRLF shebang line is exit 127 on Linux.
 *.sh text eol=lf

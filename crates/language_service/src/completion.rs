@@ -733,7 +733,6 @@ fn element_kind_to_completion_kind(kind: ElementKind) -> CompletionItemKindDto {
         ElementKind::PartDefinition
         | ElementKind::ItemDefinition
         | ElementKind::OccurrenceDefinition
-        | ElementKind::IndividualDefinition
         | ElementKind::Definition
         | ElementKind::Usage
         | ElementKind::Class

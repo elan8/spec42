@@ -3,7 +3,7 @@
 description=Geometry view preserves exposed elements and reports absent geometry facts
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=geometry-view
 viewDocument=diagram_geometry_incomplete.md
 viewQualifiedName=GeometryExample::selected
@@ -121,7 +121,7 @@ package GeometryExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:ae9a06181ad2ed5cb971a9db19f141999f2c3a1b28dc288781552a53754ef325",
+  "modelDigest": "blake3:d4a41228eaab073ed60ed12e4238b819bcf8131e6689e6e136c5eb7d03327352",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_geometry_incomplete.md",

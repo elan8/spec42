@@ -257,7 +257,7 @@ package VehicleTanks {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (named (kind class-def) (name "Vehicle")) (named (kind kerml-feature) (name "tanks")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (named (kind class-def) (name "Vehicle")) (named (kind kerml-feature) (name "tanks")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (named (kind class-def) (name "Vehicle")) (named (kind kerml-feature) (name "fuelCapacity")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (named (kind class-def) (name "Vehicle")) (named (kind kerml-feature) (name "fuelCapacity")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -420,7 +420,7 @@ package VehicleTanks {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (named (kind class-def) (name "Vehicle")) (named (kind kerml-feature) (name "fuelCapacity")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/vehicle_tanks.md") (path (named (kind package) (name "VehicleTanks")) (named (kind class-def) (name "Vehicle")) (named (kind kerml-feature) (name "fuelCapacity")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (unsupported (feature-reference "tanks::capacity" (target (node (document "memory://snapshot/vehicle_tanks.md") (qualified-name "VehicleTanks::Tank::capacity"))))))
 )
 ~~~
 # CONNECTIONS

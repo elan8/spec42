@@ -1,32 +1,17 @@
 import * as d3 from "d3";
 import { resolveDiagramTheme } from "./theme";
 import type { PreparedView } from "./prepare";
-import { addActionFlowMarkers, renderActionFlowView } from "./views/action-flow";
-import { renderSequenceView, addSequenceMarkers } from "./views/sequence";
-import { addStateTransitionMarkers, renderStateTransitionView } from "./views/state-transition";
-import { renderBrowserView, renderGeometryView, renderGridView } from "./views/standard-views-render";
+import type { PreparedNode } from "./prepare";
 import {
-  addMarkers,
   applyFit,
-  contentBounds,
+  contentBoundsFromViewBox,
   exportSvg,
 } from "./render/export";
-import {
-  drawEdges,
-  drawGeneralPackageContainers,
-  drawInterconnectionPortOverlays,
-  drawIbdViewFrame,
-  drawInterconnectionContainers,
-  drawNodes,
-  shouldDrawIbdViewFrame,
-} from "./render/drawing";
-import { layoutPrepared } from "./render/layout";
-import { contentBoundsFromExtents, type ContentBounds } from "./render/types";
-import type { DisclosureState, RenderOptions } from "./render/types";
-import { installDiagramTooltips } from "./render/diagram-tooltip";
-import { installNodeChromeStyles } from "./render/node-chrome-style";
+import { isNativeDiagramView, type ContentBounds, type DisclosureState, type RenderOptions } from "./render/types";
+import { installNativeSvgTooltips } from "./render/diagram-tooltip";
 
 export type { DisclosureState, RenderOptions } from "./render/types";
+export { isNativeDiagramView, NATIVE_DIAGRAM_VIEWS } from "./render/types";
 
 export interface RenderController {
   reset: () => void;
@@ -36,51 +21,17 @@ export interface RenderController {
   getDisclosureState: () => DisclosureState;
 }
 
-import type { PreparedNode } from "./prepare";
+const INERT_MESSAGE = "This diagram is drawn by the Spec42 language server. Reconnect to render it.";
 
-export async function renderVisualization(
-  target: HTMLElement,
-  prepared: PreparedView,
-  options: RenderOptions = {},
-): Promise<RenderController> {
-  const renderStartedAt = Date.now();
-  target.innerHTML = "";
-  const theme = resolveDiagramTheme(options.theme);
-  const width = Math.max(720, target.clientWidth || 960);
-  const height = Math.max(480, target.clientHeight || 640);
-  const svg = d3
-    .select(target)
-    .append("svg")
-    .attr("class", "sysml-viz-svg")
-    .attr("width", "100%")
-    .attr("height", "100%")
-    .attr("viewBox", `0 0 ${width} ${height}`)
-    .attr("role", "img")
-    .attr("aria-label", prepared.title || "SysML view")
-    .style("touch-action", "none")
-    .style("cursor", "grab");
-  if (theme.colorScheme === "light" || theme.colorScheme === "dark" || theme.colorScheme === "auto") {
-    const scheme =
-      theme.colorScheme === "auto"
-        ? typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)")?.matches
-          ? "dark"
-          : "light"
-        : theme.colorScheme;
-    svg.attr("data-color-scheme", scheme);
-  }
-  svg.append("rect").attr("class", "viz-bg").attr("width", width).attr("height", height);
-  svg
-    .select(".viz-bg")
-    .attr("fill", theme.canvasBackground);
-  addMarkers(svg, theme);
-  installNodeChromeStyles(svg, theme);
-
-  const root = svg.append("g").attr("class", "viz-root");
-  const delegateZoom = options.delegateZoom === true;
+function installZoom(
+  svg: d3.Selection<SVGSVGElement, unknown, null, undefined>,
+  root: d3.Selection<SVGGElement, unknown, null, undefined>,
+  delegateZoom: boolean,
+): d3.ZoomBehavior<SVGSVGElement, unknown> {
   const zoom = d3.zoom<SVGSVGElement, unknown>()
     .scaleExtent([0.08, 5])
     .on("start", () => svg.style("cursor", "grabbing"))
-    .on("zoom", (event: any) => {
+    .on("zoom", (event: { transform: d3.ZoomTransform }) => {
       root.attr("transform", event.transform.toString());
     })
     .on("end", () => svg.style("cursor", "grab"));
@@ -88,7 +39,7 @@ export async function renderVisualization(
     svg
       .call(zoom)
       .on("dblclick.zoom", null)
-      .on("wheel.zoom", function(event: WheelEvent) {
+      .on("wheel.zoom", function (event: WheelEvent) {
         event.preventDefault();
         event.stopPropagation();
         const mouse = d3.pointer(event, this as SVGSVGElement);
@@ -103,241 +54,251 @@ export async function renderVisualization(
           .call(zoom.transform, d3.zoomIdentity.translate(translateX, translateY).scale(newScale));
       });
   }
+  return zoom;
+}
 
-  const view = prepared.view;
-  const isInterconnectionView = view === "interconnection-view";
-  const isBehaviorView =
-    view === "action-flow-view" ||
-    view === "state-transition-view" ||
-    view === "sequence-view" ||
-    view === "browser-view" ||
-    view === "grid-view" ||
-    view === "geometry-view";
+const canvasOwners = new WeakMap<HTMLElement, object>();
 
-  let bounds: ContentBounds;
-  let generalRenderGeneration = 0;
-  let fitView = (): void => undefined;
-  let getDisclosureState = (): DisclosureState => ({ expandedNodeIds: [], sectionStates: [] });
-  if (view === "action-flow-view") {
-    addActionFlowMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
-    const drawStartedAt = Date.now();
-    bounds = contentBoundsFromExtents(await renderActionFlowView({ root, prepared, theme, width, height, options }));
-    options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
-  } else if (view === "state-transition-view") {
-    addStateTransitionMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
-    const drawStartedAt = Date.now();
-    bounds = contentBoundsFromExtents(await renderStateTransitionView({ root, prepared, theme, width, height, options }));
-    options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
-  } else if (view === "sequence-view") {
-    addSequenceMarkers(svg.select("defs").empty() ? svg.append("defs") : svg.select("defs"), theme);
-    const drawStartedAt = Date.now();
-    bounds = contentBoundsFromExtents(renderSequenceView({ root, prepared, theme, width, height, options }));
-    options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
-  } else if (view === "browser-view") {
-    const drawStartedAt = Date.now();
-    bounds = contentBoundsFromExtents(renderBrowserView({ root, prepared, theme, width, height, options }));
-    options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
-  } else if (view === "grid-view") {
-    const drawStartedAt = Date.now();
-    bounds = contentBoundsFromExtents(renderGridView({ root, prepared, theme, width, height, options }));
-    options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
-  } else if (view === "geometry-view") {
-    const drawStartedAt = Date.now();
-    bounds = contentBoundsFromExtents(renderGeometryView({ root, prepared, theme, width, height, options }));
-    options.onPerformance?.("sharedRenderer:draw", { view, drawMs: Date.now() - drawStartedAt });
-  } else {
-    const layoutStartedAt = Date.now();
-    const layout = await layoutPrepared(prepared);
-    const layoutMs = Date.now() - layoutStartedAt;
-    const drawStartedAt = Date.now();
-    if (isInterconnectionView) {
-      if (shouldDrawIbdViewFrame(prepared)) {
-        drawIbdViewFrame(root, prepared, contentBounds(layout), theme);
-      }
-      drawInterconnectionContainers(root, prepared, layout.nodes, theme, layout.interconnectionLayout);
-      drawNodes(root, layout.nodes, options, isInterconnectionView, theme, layout.interconnectionLayout);
-      drawEdges(root, layout.edges, isInterconnectionView, theme, layout.interconnectionLayout);
-      drawInterconnectionPortOverlays(root);
-    } else {
-      // Expansion and compartment disclosure are renderer-owned presentation state. They live for
-      // the lifetime of this controller, so redraws inside one instance preserve what the viewer
-      // opened. The projection below is the single place that state reaches layout and drawing.
-      const sectionKey = (nodeId: string, key: string) => `${nodeId}\u0000${key}`;
-      const expanded = new Set(options.disclosureState?.expandedNodeIds ?? []);
-      const sectionState = new Map<string, boolean>(
-        (options.disclosureState?.sectionStates ?? []).map((state) => [
-          sectionKey(state.nodeId, state.sectionKey),
-          state.expanded,
-        ]),
-      );
-      getDisclosureState = () => ({
-        expandedNodeIds: [...expanded],
-        sectionStates: [...sectionState].map(([key, expandedState]) => {
-          const separator = key.indexOf("\u0000");
-          return {
-            nodeId: key.slice(0, separator),
-            sectionKey: key.slice(separator + 1),
-            expanded: expandedState,
-          };
-        }),
-      });
-      const roots = new Set(Array.isArray(prepared.meta?.exposedRoots) ? prepared.meta?.exposedRoots as string[] : []);
-      const ownerOf = (node: PreparedNode): string | undefined => {
-        const owner = node.attributes?.owner;
-        return typeof owner === "number" ? `n:${owner}` : undefined;
+function claimCanvas(target: HTMLElement, owner: object): void {
+  canvasOwners.set(target, owner);
+}
+
+function clearCanvasIfOwner(target: HTMLElement, owner: object): void {
+  if (canvasOwners.get(target) !== owner) return;
+  target.innerHTML = "";
+  canvasOwners.delete(target);
+}
+
+function inertController(target: HTMLElement, disclosure: DisclosureState, message = INERT_MESSAGE): RenderController {
+  const owner = {};
+  claimCanvas(target, owner);
+  target.replaceChildren();
+  const empty = target.ownerDocument.createElement("div");
+  empty.className = "empty";
+  empty.textContent = message;
+  target.appendChild(empty);
+  return {
+    reset: () => undefined,
+    exportSvg: () => {
+      throw new Error("Wait for the diagram to finish rendering before exporting it.");
+    },
+    destroy: () => {
+      clearCanvasIfOwner(target, owner);
+    },
+    getFitTransform: () => d3.zoomIdentity,
+    getDisclosureState: () => disclosure,
+  };
+}
+
+function nodeById(prepared: PreparedView, id: string): PreparedNode | undefined {
+  return prepared.nodes.find((node) => node.id === id);
+}
+
+async function renderNativeSvgView(
+  target: HTMLElement,
+  prepared: PreparedView,
+  options: RenderOptions,
+): Promise<RenderController> {
+  const theme = resolveDiagramTheme(options.theme);
+  const width = Math.max(720, target.clientWidth || 960);
+  const height = Math.max(480, target.clientHeight || 640);
+  const scheme = theme.colorScheme === "dark" ? "dark" : "light";
+  const expanded = new Set(options.disclosureState?.expandedNodeIds ?? []);
+  const sectionState = new Map<string, boolean>(
+    (options.disclosureState?.sectionStates ?? []).map((state) => [
+      `${state.nodeId}\u0000${state.sectionKey}`,
+      state.expanded,
+    ]),
+  );
+  const getDisclosureState = (): DisclosureState => ({
+    expandedNodeIds: [...expanded],
+    sectionStates: [...sectionState].map(([key, value]) => {
+      const separator = key.indexOf("\u0000");
+      return {
+        nodeId: key.slice(0, separator),
+        sectionKey: key.slice(separator + 1),
+        expanded: value,
       };
-      const owners = new Set(
-        prepared.nodes.map(ownerOf).filter((value): value is string => Boolean(value)),
-      );
-      const compartmentSectionStateFor = (nodeId: string): Record<string, boolean> | undefined => {
-        const prefix = `${nodeId}\u0000`;
-        let state: Record<string, boolean> | undefined;
-        for (const [key, value] of sectionState) {
-          if (!key.startsWith(prefix)) continue;
-          state = state ?? {};
-          state[key.slice(prefix.length)] = value;
-        }
-        return state;
-      };
-      const visibleProjection = (): PreparedView => {
-        const visible = new Set<string>();
-        const visit = (node: PreparedNode): boolean => {
-          if (visible.has(node.id)) return true;
-          const owner = ownerOf(node);
-          if (!owner) {
-            if (roots.size === 0 || roots.has(node.id)) visible.add(node.id);
-            return visible.has(node.id);
-          }
-          const parent = prepared.nodes.find((candidate) => candidate.id === owner);
-          if (!parent || !visit(parent) || !expanded.has(owner)) return false;
-          visible.add(node.id);
-          return true;
-        };
-        prepared.nodes.forEach(visit);
-        return {
-          ...prepared,
-          nodes: prepared.nodes.filter((node) => visible.has(node.id)).map((node) => {
-            const isExpanded = expanded.has(node.id);
-            const attributes: Record<string, unknown> = { ...node.attributes };
-            if (owners.has(node.id)) {
-              attributes.disclosure = isExpanded ? "expanded" : "collapsed";
-            }
-            if (isExpanded) {
-              // Members that are now drawn as their own nodes are dropped from the compartment so
-              // the same membership is not shown twice; members that never become nodes (inherited
-              // features in particular) stay listed.
-              const typed = Array.isArray(node.attributes?.typedCompartments)
-                ? (node.attributes.typedCompartments as Array<Record<string, unknown>>)
-                : [];
-              attributes.typedCompartments = typed
-                .map((compartment) => {
-                  const members = Array.isArray(compartment.members) ? compartment.members : [];
-                  return {
-                    ...compartment,
-                    members: members.filter((member) => {
-                      const id = member && typeof member === "object"
-                        ? (member as Record<string, unknown>).id
-                        : undefined;
-                      return !(typeof id === "string" && visible.has(id));
-                    }),
-                  };
-                })
-                .filter((compartment) => (compartment.members as unknown[]).length > 0);
-            }
-            const sections = compartmentSectionStateFor(node.id);
-            if (sections) attributes.compartmentSectionState = sections;
-            return { ...node, attributes };
-          }),
-          edges: prepared.edges.filter((edge) => visible.has(edge.source) && visible.has(edge.target)),
-        };
-      };
-      const disclosure = {
-        toggleNode: (nodeId: string): void => {
-          if (expanded.has(nodeId)) expanded.delete(nodeId);
-          else expanded.add(nodeId);
-          void redrawGeneral({ refocusNodeControl: nodeId }, true);
-        },
-        toggleSection: (nodeId: string, key: string, currentlyExpanded: boolean): void => {
-          sectionState.set(sectionKey(nodeId, key), !currentlyExpanded);
-          void redrawGeneral({ refocusSection: { nodeId, key } }, true);
-        },
-      };
-      const generalOptions: RenderOptions = { ...options, disclosure };
-      const restoreFocus = (selector: string): void => {
-        const element = target.querySelector<SVGGElement>(selector);
-        if (element && typeof (element as unknown as HTMLElement).focus === "function") {
-          (element as unknown as HTMLElement).focus();
-        }
-      };
-      const redrawGeneral = async (
-        focus?: { refocusNodeControl?: string; refocusSection?: { nodeId: string; key: string } },
-        fitAfter = false,
-      ): Promise<void> => {
-        const generation = ++generalRenderGeneration;
-        const visible = visibleProjection();
-        const nextLayout = await layoutPrepared(visible);
-        if (generation !== generalRenderGeneration) return;
-        root.selectAll("*").remove();
-        drawGeneralPackageContainers(root, visible, nextLayout.nodes, theme);
-        drawEdges(root, nextLayout.edges, false, theme);
-        drawNodes(root, nextLayout.nodes, generalOptions, false, theme);
-        bounds = contentBounds(nextLayout);
-        if (fitAfter) fitView();
-        if (focus?.refocusNodeControl) {
-          restoreFocus(`[data-node-id="${focus.refocusNodeControl}"] .general-node-toggle`);
-        } else if (focus?.refocusSection) {
-          restoreFocus(
-            `[data-node-id="${focus.refocusSection.nodeId}"] [data-compartment-key="${focus.refocusSection.key}"]`,
-          );
-        }
-      };
-      await redrawGeneral();
-    }
-    options.onPerformance?.("sharedRenderer:layout", {
-      view,
-      layoutMs,
-      nodeCount: prepared.nodes.length,
-      edgeCount: prepared.edges.length,
-    });
-    options.onPerformance?.("sharedRenderer:draw", {
-      view,
-      drawMs: Date.now() - drawStartedAt,
-      laidOutNodes: layout.nodes.length,
-      laidOutEdges: layout.edges.length,
-    });
-    if (isInterconnectionView) bounds = contentBounds(layout);
+    }),
+  });
+
+  const { requestDraw, productIdentity, product } = options;
+  if (!requestDraw || !productIdentity || product === undefined) {
+    return inertController(target, getDisclosureState());
   }
 
+  let renderGeneration = 0;
+  let activeAbort: AbortController | undefined;
+  let destroyTooltips = (): void => undefined;
   let lastFitTransform = d3.zoomIdentity;
-  fitView = () => {
-    lastFitTransform = applyFit(
-      svg,
-      zoom,
-      root,
-      bounds,
-      width,
-      height,
-      isInterconnectionView || isBehaviorView,
-      delegateZoom,
-    );
+  let lastBounds: ContentBounds = { x: 0, y: 0, width: 100, height: 100 };
+  let fitView = (): void => undefined;
+  let lastSvg: string | null = null;
+  const canvasOwner = {};
+
+  const superseded = (generation?: number): boolean =>
+    options.abortSignal?.aborted === true
+    || activeAbort?.signal.aborted === true
+    || (generation !== undefined && generation !== renderGeneration);
+
+  const restoreFocus = (selector: string): void => {
+    const element = target.querySelector<SVGGElement>(selector);
+    if (element && typeof (element as unknown as HTMLElement).focus === "function") {
+      (element as unknown as HTMLElement).focus();
+    }
   };
-  fitView();
-  const destroyTooltips = installDiagramTooltips(target, prepared, theme);
-  options.onPerformance?.("sharedRenderer:render", {
-    view,
-    totalMs: Date.now() - renderStartedAt,
-    nodeCount: prepared.nodes.length,
-    edgeCount: prepared.edges.length,
-  });
+
+  const mount = (svgMarkup: string, generation: number): void => {
+    if (superseded(generation)) return;
+    destroyTooltips();
+    claimCanvas(target, canvasOwner);
+    target.innerHTML = svgMarkup;
+    const svgNode = target.querySelector<SVGSVGElement>("svg.sysml-viz-svg");
+    const rootNode = svgNode?.querySelector<SVGGElement>("g.viz-root");
+    if (!svgNode || !rootNode) return;
+    svgNode.setAttribute("data-color-scheme", scheme);
+    const svg = d3.select(svgNode);
+    const root = d3.select(rootNode);
+    const contentBounds = contentBoundsFromViewBox(svgNode);
+    svg.attr("viewBox", `0 0 ${width} ${height}`);
+    svg.select(".viz-bg").attr("width", width).attr("height", height);
+    const zoom = installZoom(svg, root, options.delegateZoom === true);
+    lastBounds = contentBounds;
+    fitView = () => {
+      lastFitTransform = applyFit(
+        svg,
+        zoom,
+        root,
+        contentBounds,
+        width,
+        height,
+        prepared.view === "interconnection-view"
+          || prepared.view === "action-flow-view"
+          || prepared.view === "state-transition-view"
+          || prepared.view === "sequence-view"
+          || prepared.view === "browser-view"
+          || prepared.view === "grid-view"
+          || prepared.view === "geometry-view",
+        options.delegateZoom === true,
+      );
+    };
+    fitView();
+    destroyTooltips = installNativeSvgTooltips(target, theme);
+  };
+
+  const redraw = async (
+    focus?: { refocusNodeControl?: string; refocusSection?: { nodeId: string; key: string } },
+  ): Promise<void> => {
+    const generation = ++renderGeneration;
+    activeAbort?.abort();
+    const abort = new AbortController();
+    activeAbort = abort;
+    if (options.abortSignal?.aborted) {
+      abort.abort();
+    } else {
+      options.abortSignal?.addEventListener("abort", () => abort.abort(), { once: true });
+    }
+    if (superseded(generation)) return;
+    const svgMarkup = await requestDraw(
+      productIdentity,
+      generation,
+      {
+        product,
+        width,
+        height,
+        colorScheme: scheme,
+        disclosure: getDisclosureState(),
+      },
+      abort.signal,
+    );
+    if (superseded(generation)) return;
+    if (!svgMarkup) {
+      if (lastSvg) return;
+      claimCanvas(target, canvasOwner);
+      target.replaceChildren();
+      const empty = target.ownerDocument.createElement("div");
+      empty.className = "empty";
+      empty.textContent = INERT_MESSAGE;
+      target.appendChild(empty);
+      return;
+    }
+    lastSvg = svgMarkup;
+    mount(svgMarkup, generation);
+    if (superseded(generation)) return;
+    if (focus?.refocusNodeControl) {
+      restoreFocus(`[data-node-id="${focus.refocusNodeControl}"] .general-node-toggle`);
+    } else if (focus?.refocusSection) {
+      restoreFocus(
+        `[data-node-id="${focus.refocusSection.nodeId}"] [data-compartment-key="${focus.refocusSection.key}"]`,
+      );
+    }
+  };
+
+  const onActivate = (event: Event): void => {
+    const origin = event.target instanceof Element ? event.target : null;
+    if (!origin || !target.contains(origin)) return;
+    if (event instanceof KeyboardEvent && event.key !== "Enter" && event.key !== " ") return;
+    if (event instanceof KeyboardEvent) event.preventDefault();
+
+    const section = origin.closest<SVGGElement>(".sysml-compartment-toggle");
+    if (section) {
+      event.stopPropagation();
+      const nodeId = section.closest("[data-node-id]")?.getAttribute("data-node-id") ?? "";
+      const key = section.getAttribute("data-compartment-key") ?? "";
+      if (!nodeId || !key) return;
+      const currentlyExpanded = section.getAttribute("aria-expanded") !== "false";
+      sectionState.set(`${nodeId}\u0000${key}`, !currentlyExpanded);
+      void redraw({ refocusSection: { nodeId, key } });
+      return;
+    }
+    const toggle = origin.closest<SVGGElement>(".general-node-toggle");
+    if (toggle) {
+      event.stopPropagation();
+      const nodeId = toggle.closest("[data-node-id]")?.getAttribute("data-node-id") ?? "";
+      if (!nodeId) return;
+      if (expanded.has(nodeId)) expanded.delete(nodeId);
+      else expanded.add(nodeId);
+      void redraw({ refocusNodeControl: nodeId });
+      return;
+    }
+    if (!(event instanceof MouseEvent)) return;
+    const nodeGroup = origin.closest<SVGGElement>("[data-node-id]");
+    if (!nodeGroup || origin.closest(".sysml-disclosure")) return;
+    const node = nodeById(prepared, nodeGroup.getAttribute("data-node-id") ?? "");
+    if (node) options.onNodeClick?.(node);
+  };
+
+  target.addEventListener("click", onActivate);
+  target.addEventListener("keydown", onActivate);
+  await redraw();
 
   return {
     reset: () => fitView(),
     getFitTransform: () => lastFitTransform,
     getDisclosureState,
-    exportSvg: () => exportSvg(svg.node() as SVGSVGElement, bounds),
+    exportSvg: () => {
+      const svgNode = target.querySelector<SVGSVGElement>("svg.sysml-viz-svg");
+      if (!svgNode) throw new Error("Wait for the diagram to finish rendering before exporting it.");
+      return exportSvg(svgNode, lastBounds);
+    },
     destroy: () => {
+      renderGeneration += 1;
+      activeAbort?.abort();
       destroyTooltips();
-      target.innerHTML = "";
+      target.removeEventListener("click", onActivate);
+      target.removeEventListener("keydown", onActivate);
+      clearCanvasIfOwner(target, canvasOwner);
     },
   };
+}
+
+export async function renderVisualization(
+  target: HTMLElement,
+  prepared: PreparedView,
+  options: RenderOptions = {},
+): Promise<RenderController> {
+  if (!isNativeDiagramView(prepared.view)) {
+    return inertController(target, { expandedNodeIds: [], sectionStates: [] }, `Unsupported view: ${prepared.view}`);
+  }
+  return renderNativeSvgView(target, prepared, options);
 }

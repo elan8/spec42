@@ -355,6 +355,165 @@ fn every_short_name_carrying_declaration_publishes_it() {
             "Demo::E::red",
             "r",
         ),
+        (
+            "use case usage",
+            // `UseCaseUsage` had no `short_name` field in the parser AST at all until this fix
+            // (sysml-v2-parser#144) -- a different, more severe gap than the other rows here,
+            // whose nodes already carried the field but whose lowering dropped it.
+            "package Demo {\n\tuse case <u> uc;\n}\n",
+            "Demo::uc",
+            "u",
+        ),
+        (
+            "verification usage",
+            "package Demo {\n\tverification def VD;\n\tverification <v> ver : VD;\n}\n",
+            "Demo::ver",
+            "v",
+        ),
+        (
+            "verification usage in a part body",
+            "package Demo {\n\tverification def VD;\n\tpart def P {\n\t\tverification <v> ver : VD;\n\t}\n}\n",
+            "Demo::P::ver",
+            "v",
+        ),
+        (
+            "analysis usage",
+            "package Demo {\n\tanalysis <a> ana;\n}\n",
+            "Demo::ana",
+            "a",
+        ),
+        (
+            "case usage",
+            "package Demo {\n\tcase <c> cs;\n}\n",
+            "Demo::cs",
+            "c",
+        ),
+        (
+            "concern usage",
+            "package Demo {\n\tconcern <c> conc;\n}\n",
+            "Demo::conc",
+            "c",
+        ),
+        (
+            "concern definition",
+            "package Demo {\n\tconcern def <c> Conc;\n}\n",
+            "Demo::Conc",
+            "c",
+        ),
+        (
+            "state usage",
+            "package Demo {\n\tstate <s> st;\n}\n",
+            "Demo::st",
+            "s",
+        ),
+        (
+            "exhibit state",
+            "package Demo {\n\tpart def P {\n\t\texhibit state <x> ex;\n\t}\n}\n",
+            "Demo::P::ex",
+            "x",
+        ),
+        (
+            "viewpoint usage",
+            "package Demo {\n\tviewpoint <v> vp;\n}\n",
+            "Demo::vp",
+            "v",
+        ),
+        (
+            "rendering usage",
+            "package Demo {\n\trendering <r> rn;\n}\n",
+            "Demo::rn",
+            "r",
+        ),
+        (
+            "enumeration usage",
+            "package Demo {\n\tenum def E { e1; }\n\tpart def P {\n\t\tenum <e> en : E;\n\t}\n}\n",
+            "Demo::P::en",
+            "e",
+        ),
+        (
+            "allocation usage",
+            "package Demo {\n\tallocation def A;\n\tallocation <a> al : A;\n}\n",
+            "Demo::al",
+            "a",
+        ),
+        (
+            "interface usage",
+            "package Demo {\n\tinterface def I;\n\tpart def P {\n\t\tinterface <i> ifc : I;\n\t}\n}\n",
+            "Demo::P::ifc",
+            "i",
+        ),
+        (
+            "metadata usage in a part body",
+            "package Demo {\n\tmetadata def M;\n\tpart def P {\n\t\tmetadata <m> md : M;\n\t}\n}\n",
+            "Demo::P::md",
+            "m",
+        ),
+        (
+            "assert constraint",
+            "package Demo {\n\tpart def P {\n\t\tassert constraint <c> ac;\n\t}\n}\n",
+            "Demo::P::ac",
+            "c",
+        ),
+        (
+            "succession usage",
+            "package Demo {\n\tpart def P {\n\t\taction s1;\n\t\taction s2;\n\t\tsuccession <s> sc first s1 then s2;\n\t}\n}\n",
+            "Demo::P::sc",
+            "s",
+        ),
+        (
+            "binding connector",
+            "package Demo {\n\tpart def P {\n\t\tpart a;\n\t\tpart b;\n\t\tbinding <b> bd bind a = b;\n\t}\n}\n",
+            "Demo::P::bd",
+            "b",
+        ),
+        (
+            "transition usage",
+            "package Demo {\n\tstate def S {\n\t\tstate s1;\n\t\tstate s2;\n\t\ttransition <t> tr first s1 then s2;\n\t}\n}\n",
+            "Demo::S::tr",
+            "t",
+        ),
+        (
+            "directed parameter",
+            "package Demo {\n\taction def A {\n\t\tin <x> inp;\n\t}\n}\n",
+            "Demo::A::inp",
+            "x",
+        ),
+        (
+            "stakeholder declaration",
+            "package Demo {\n\tpart def T;\n\trequirement def R {\n\t\tstakeholder <s> sh : T;\n\t}\n}\n",
+            "Demo::R::sh",
+            "s",
+        ),
+        (
+            "concern usage in a part definition body",
+            "package Demo {\n\tconcern def C;\n\tpart def P {\n\t\tconcern <c> conc : C;\n\t}\n}\n",
+            "Demo::P::conc",
+            "c",
+        ),
+        (
+            "concern usage in a part usage body",
+            "package Demo {\n\tconcern def C;\n\tpart p {\n\t\tconcern <c> conc : C;\n\t}\n}\n",
+            "Demo::p::conc",
+            "c",
+        ),
+        (
+            "case usage in a part usage body",
+            "package Demo {\n\tcase def K;\n\tpart p {\n\t\tcase <k> cs : K;\n\t}\n}\n",
+            "Demo::p::cs",
+            "k",
+        ),
+        (
+            "return ref",
+            "package Demo {\n\tuse case def U {\n\t\treturn ref <r> res { }\n\t}\n}\n",
+            "Demo::U::res",
+            "r",
+        ),
+        (
+            "dependency",
+            "package Demo {\n\tpart def A;\n\tpart def B;\n\tdependency <d> dep from A to B;\n}\n",
+            "Demo::dep",
+            "d",
+        ),
     ] {
         let output = build_semantic_sexpr(source);
         let expected = format!("(qualified-name \"{qualified_name}\")");
@@ -4585,6 +4744,72 @@ fn view_selection_applies_inherited_metadata_disjunctions_and_conjoins_condition
     );
 }
 
+#[test]
+fn view_rendering_resolves_short_inline_and_inherited_memberships() {
+    let document = "memory://renderings.sysml";
+    let published = detail_publication(
+        &[(
+            document,
+            concat!(
+                "package P {\n",
+                "  metadata def Tag;\n",
+                "  rendering def Tree;\n",
+                "  rendering shared : Tree { rendering nested : Tree; }\n",
+                "  view def Base { render shared { @Tag; rendering local : Tree; } }\n",
+                "  view inherited : Base;\n",
+                "  view inline { render rendering own : Tree { @Tag; rendering child : Tree; } }\n",
+                "  view empty;\n",
+                "  view broken { render missing; }\n",
+                "  view duplicate { render shared; render rendering second : Tree; }\n",
+                "}\n",
+            ),
+        )],
+        ConstructionSchedule::Sequential,
+    );
+    let shared = identity_of(&published, document, "P::shared");
+    let inherited = identity_of(&published, document, "P::inherited");
+    let inherited_rendering =
+        settled(published.view_rendering(inherited)).expect("inherited rendering");
+    assert_eq!(inherited_rendering.referenced_rendering, shared);
+    assert_ne!(inherited_rendering.owned_rendering, shared);
+    assert_eq!(inherited_rendering.owned_body_members.len(), 2);
+    assert_eq!(inherited_rendering.body_members.len(), 1);
+    assert_eq!(
+        settled(published.element_details(inherited_rendering.owned_rendering))
+            .metadata
+            .len(),
+        1
+    );
+
+    let inline = identity_of(&published, document, "P::inline");
+    let inline_rendering = settled(published.view_rendering(inline)).expect("inline rendering");
+    assert_eq!(
+        inline_rendering.owned_rendering,
+        inline_rendering.referenced_rendering
+    );
+    assert_eq!(inline_rendering.body_members.len(), 2);
+    assert_eq!(inline_rendering.owned_body_members.len(), 2);
+    assert_eq!(
+        details_of(&published, document, "P::inline::own")
+            .metadata
+            .len(),
+        1
+    );
+
+    let empty = identity_of(&published, document, "P::empty");
+    assert!(settled(published.view_rendering(empty)).is_none());
+    let broken = identity_of(&published, document, "P::broken");
+    assert!(matches!(
+        published.view_rendering(broken).answer,
+        QueryAnswer::Unresolved
+    ));
+    let duplicate = identity_of(&published, document, "P::duplicate");
+    assert!(matches!(
+        published.view_rendering(duplicate).answer,
+        QueryAnswer::Ambiguous(_)
+    ));
+}
+
 /// Inherited features carry the type that declares them, and a redefinition replaces the
 /// feature it redefines even when the redefining feature is anonymous.
 #[test]
@@ -4718,6 +4943,121 @@ fn metadata_annotations_publish_form_about_and_body_values() {
         .find(|annotation| matches!(annotation.about.as_ref(), [RelationshipTarget::Unresolved]))
         .expect("the orphan annotation is still published under its owner");
     assert_eq!(orphan.form, MetadataAnnotationForm::Usage);
+}
+
+/// Spec42 issue #201 (L-06): a `comment`'s `Identification` used to be read nowhere -- only its
+/// `locale` and body text were interned as a `DocumentationRecord` keyed by the *owner*
+/// declaration -- so a named comment never became a real, referenceable declaration, and a later
+/// `metadata ... about aboutP;` reference had no `aboutP` to resolve to.
+#[test]
+fn named_comment_resolves_as_a_metadata_about_target() {
+    let published = detail_publication(
+        &[(
+            "memory://comment_about.sysml",
+            "package P {\n\
+             \tmetadata def Role;\n\
+             \tpart p {\n\
+             \t\tcomment aboutP about p /* text */\n\
+             \t\tmetadata role : Role about aboutP;\n\
+             \t}\n\
+             }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+
+    let comment = identity_of(&published, "memory://comment_about.sysml", "P::p::aboutP");
+    let annotations = settled(published.metadata_annotations(comment));
+    let annotation = annotations
+        .iter()
+        .find(|annotation| annotation.form == MetadataAnnotationForm::Usage)
+        .expect("the metadata usage annotation binds to its about target, the named comment");
+    assert_eq!(
+        annotation.about.as_ref(),
+        [RelationshipTarget::Resolved(comment)]
+    );
+}
+
+/// Spec42 issue #201 (L-07): `metadata m : Tag;` nested inside an `item`/`attribute` body parses
+/// as `AnnotatingMember::MetadataAnnotation` (`lower_metadata_annotation`), a different lowering
+/// path than the identical syntax at package/part/action body level (`lower_metadata_usage`).
+/// Only the latter pushed a `FeatureTyping` reference, so `family(id, Typing)` -- and so
+/// `relationships.typing` in the export projection -- reported `NotApplicable` for the former,
+/// even though `metadata_annotations()`'s own `definition` field (which reads the
+/// `MetadataAnnotation`-kind reference, not `FeatureTyping`) resolved fine throughout.
+#[test]
+fn metadata_annotation_nested_in_an_item_body_exports_resolved_typing() {
+    let published = detail_publication(
+        &[(
+            "memory://marker.sysml",
+            "package P {\n\
+             \tmetadata def Tag;\n\
+             \titem holder {\n\
+             \t\tmetadata role : Tag;\n\
+             \t}\n\
+             }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+
+    let holder = identity_of(&published, "memory://marker.sysml", "P::holder");
+    let role = settled(published.document_symbols("memory://marker.sysml"))
+        .iter()
+        .find(|entry| published.symbol_name(entry.identity) == Some("role"))
+        .expect("the nested metadata usage")
+        .identity;
+
+    let details = settled(published.element_details(role));
+    assert_eq!(details.typing.outcome, RelationshipOutcome::Resolved);
+    assert_eq!(names(&details.typing.targets), vec!["Tag"]);
+
+    // The pre-existing `metadata_annotations()` consumer must keep working unchanged: it reads
+    // the `MetadataAnnotation`-kind reference this fix leaves untouched, not `FeatureTyping`.
+    let annotations = settled(published.metadata_annotations(holder));
+    let annotation = annotations
+        .iter()
+        .find(|annotation| annotation.form == MetadataAnnotationForm::AnnotatingMember)
+        .expect("the annotation is still published for its owner");
+    assert!(matches!(
+        annotation.definition,
+        RelationshipTarget::Resolved(_)
+    ));
+}
+
+/// Spec42 issue #201 (L-08): a `MetadataBodyUsage` (`order = 1;` inside a metadata usage body)
+/// used to publish with an empty name and a qualified name ending in `::`, even though the
+/// redefinition it authors resolves fine -- the token `order` is both the redefinition target
+/// and, per this fix, the declaration's own name, matching what an export consumer needs to find
+/// it by name at all.
+#[test]
+fn metadata_body_usage_redefinition_token_names_the_declaration() {
+    let published = detail_publication(
+        &[(
+            "memory://order.sysml",
+            "package P {\n\
+             \tmetadata def Section {\n\
+             \t\tattribute order : Integer;\n\
+             \t}\n\
+             \tpart def Component;\n\
+             \tpart pump : Component {\n\
+             \t\tmetadata section : Section {\n\
+             \t\t\torder = 1;\n\
+             \t\t}\n\
+             \t}\n\
+             }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+
+    let order = details_of(
+        &published,
+        "memory://order.sysml",
+        "P::pump::section::order",
+    );
+    assert_eq!(order.redefinition.outcome, RelationshipOutcome::Resolved);
+    assert_eq!(
+        published.qualified_name(order.redefinition.targets[0].identity),
+        Some("P::Section::order")
+    );
 }
 
 /// Both directions are published, so an inspector never has to scan the model to find what
@@ -6133,4 +6473,278 @@ fn anonymous_members_resolve_by_owner_kind_and_ordinal() {
         QualifiedReferenceOutcome::Ambiguous(candidates) => assert_eq!(candidates.len(), 2),
         other => panic!("expected while/loop ordinal collision to be ambiguous, got {other:?}"),
     }
+}
+#[test]
+fn conjugated_port_usage_exports_a_conjugation_fact_distinct_from_its_type() {
+    let published = build(
+        BuildRequest::new(
+            vec![SourceInput::new(
+                "memory://model.sysml",
+                concat!(
+                    "package Model { ",
+                    "port def Cmd { out item sig; } ",
+                    "part def Box { port plain : Cmd; port flipped : ~Cmd; } ",
+                    "}",
+                )
+                .to_owned(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let plain = details_of(&published, "memory://model.sysml", "Model::Box::plain");
+    let flipped = details_of(&published, "memory://model.sysml", "Model::Box::flipped");
+    assert!(!plain.conjugated);
+    assert!(flipped.conjugated);
+    assert_eq!(plain.typing.outcome, RelationshipOutcome::Resolved);
+    assert_eq!(flipped.typing.outcome, RelationshipOutcome::Resolved);
+    assert_eq!(
+        plain.typing.targets[0].identity, flipped.typing.targets[0].identity,
+        "conjugation does not change the resolved port definition"
+    );
+}
+
+#[test]
+fn dotted_constraint_operand_exports_a_resolved_comparison() {
+    let published = build(
+        BuildRequest::new(
+            vec![SourceInput::new(
+                "memory://model.sysml",
+                concat!(
+                    "package Model { ",
+                    "part def Subject { attribute error; } ",
+                    "requirement def Limit { ",
+                    "subject s : Subject; ",
+                    "attribute maximum; ",
+                    "require constraint { s.error <= maximum } ",
+                    "} ",
+                    "}",
+                )
+                .to_owned(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let symbols = settled(published.document_symbols("memory://model.sysml"));
+    let constraint = symbols
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.kind,
+                ElementKind::ConstraintUsage | ElementKind::AssertConstraintUsage
+            )
+        })
+        .expect("require constraint");
+    let expression = settled(published.resolved_expression(constraint.identity));
+    assert_eq!(expression.outcome, ExpressionOutcome::Resolved);
+    let root = expression.root.expect("comparison root");
+    match &expression.nodes[root as usize].kind {
+        ExpressionNodeKind::Operator {
+            operator: ExpressionOperator::LessOrEqual,
+            operands,
+        } => {
+            assert_eq!(operands.len(), 2);
+            for operand in operands.iter() {
+                match &expression.nodes[*operand as usize].kind {
+                    ExpressionNodeKind::FeatureReference {
+                        symbol: Some(_), ..
+                    } => {}
+                    other => panic!("expected a resolved operand, got {other:?}"),
+                }
+            }
+        }
+        other => panic!("expected a <= operator, got {other:?}"),
+    }
+}
+
+/// Two separate bare dotted-chain boolean expressions on one declaration used to collapse the
+/// whole declaration to `Unsupported`: the root-expression lookup required *exactly one*
+/// remaining `MemberAccessOperand` candidate across the whole declaration, so as soon as a second
+/// bare chain existed anywhere on it, neither pending's root ever matched.
+#[test]
+fn multiple_bare_dotted_chain_operands_on_one_declaration_each_resolve() {
+    let published = build(
+        BuildRequest::new(
+            vec![SourceInput::new(
+                "memory://model.sysml",
+                concat!(
+                    "package Model { ",
+                    "part def Subject { attribute enabled; } ",
+                    "part def Trigger { attribute ready; } ",
+                    "requirement def Check { ",
+                    "subject s : Subject; ",
+                    "ref t : Trigger; ",
+                    "require constraint { s.enabled; t.ready; } ",
+                    "} ",
+                    "}",
+                )
+                .to_owned(),
+                SourceKind::Workspace,
+            )],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let symbols = settled(published.document_symbols("memory://model.sysml"));
+    let constraint = symbols
+        .iter()
+        .find(|entry| {
+            matches!(
+                entry.kind,
+                ElementKind::ConstraintUsage | ElementKind::AssertConstraintUsage
+            )
+        })
+        .expect("require constraint");
+    let expression = settled(published.resolved_expression(constraint.identity));
+    assert_eq!(
+        expression.outcome,
+        ExpressionOutcome::Resolved,
+        "each bare dotted chain should resolve independently, not collapse the declaration"
+    );
+    let root = expression.root.expect("conjoined root");
+    match &expression.nodes[root as usize].kind {
+        ExpressionNodeKind::Operator {
+            operator: ExpressionOperator::And,
+            operands,
+        } => {
+            assert_eq!(operands.len(), 2, "both bare chains are conjoined");
+            for operand in operands.iter() {
+                match &expression.nodes[*operand as usize].kind {
+                    ExpressionNodeKind::FeatureReference {
+                        symbol: Some(_), ..
+                    } => {}
+                    other => panic!("expected a resolved dotted-chain operand, got {other:?}"),
+                }
+            }
+        }
+        other => panic!("expected the two chains conjoined with And, got {other:?}"),
+    }
+}
+
+#[test]
+fn redefined_derivation_ends_name_the_standard_features_and_prefix_metadata_invents_none() {
+    let library = r#"
+        standard library package DerivationConnections {
+            requirement originalRequirements[*];
+            requirement derivedRequirements[*];
+            abstract connection def Derivation {
+                ref requirement originalRequirement[1] :>> originalRequirements;
+                ref requirement :>> derivedRequirements[1..*];
+            }
+        }
+    "#;
+    let workspace = r#"
+        package Model {
+            private import DerivationConnections::*;
+            requirement def Need;
+            requirement def Child;
+            #derivation connection {
+                end #original ::> Need;
+                end #derive ::> Child;
+            }
+            connection placed : Derivation {
+                end :>> originalRequirement ::> Need;
+                end :>> derivedRequirements ::> Child;
+            }
+        }
+    "#;
+    let published = build(
+        BuildRequest::new(
+            vec![
+                SourceInput::new(
+                    "memory://library.sysml",
+                    library.to_owned(),
+                    SourceKind::StandardLibrary,
+                ),
+                SourceInput::new(
+                    "memory://model.sysml",
+                    workspace.to_owned(),
+                    SourceKind::Workspace,
+                ),
+            ],
+            ConstructionSchedule::Sequential,
+            "contract-v1",
+        )
+        .unwrap(),
+    )
+    .unwrap();
+    let derivation = identity_of(
+        &published,
+        "memory://library.sysml",
+        "DerivationConnections::Derivation",
+    );
+    let original = identity_of(
+        &published,
+        "memory://library.sysml",
+        "DerivationConnections::Derivation::originalRequirement",
+    );
+    let model = settled(published.document_symbols("memory://model.sysml"));
+    // `#derivation`, `#original` and `#derive` are prefix metadata (SysML BNF 1699), not
+    // grammar roles. This library has no `RequirementDerivation` metadata definitions, so they
+    // resolve to nothing and imply nothing: the connection is a usage that specializes no
+    // `Derivation`, and its anonymous ends are not renamed after the standard features.
+    let specializes_derivation = model.iter().any(|entry| {
+        settled(published.element_details(entry.identity))
+            .outgoing
+            .iter()
+            .any(|edge| edge.kind == "specialization" && edge.peer.identity == derivation)
+    });
+    assert!(
+        !specializes_derivation,
+        "prefix metadata that does not resolve must not specialize Derivation"
+    );
+    let invented_names = model
+        .iter()
+        .filter(|entry| {
+            matches!(
+                published.symbol_name(entry.identity),
+                Some("originalRequirement" | "derivedRequirements")
+            ) && !published
+                .qualified_name(entry.identity)
+                .unwrap_or("")
+                .contains("placed")
+        })
+        .count();
+    assert_eq!(
+        invented_names, 0,
+        "no end is named after a standard feature"
+    );
+
+    let placed_original = details_of(
+        &published,
+        "memory://model.sysml",
+        "Model::placed::originalRequirement",
+    );
+    assert_eq!(
+        placed_original.redefinition.outcome,
+        RelationshipOutcome::Resolved
+    );
+    assert_eq!(placed_original.redefinition.targets[0].identity, original);
+    let placed_derived = details_of(
+        &published,
+        "memory://model.sysml",
+        "Model::placed::derivedRequirements",
+    );
+    assert_eq!(
+        placed_derived.redefinition.outcome,
+        RelationshipOutcome::Resolved
+    );
+    assert!(
+        placed_derived.redefinition.targets.iter().any(|target| {
+            published.symbol_name(target.identity) == Some("derivedRequirements")
+                || published.qualified_name(target.identity)
+                    == Some("DerivationConnections::Derivation::")
+        }),
+        "redefined derived end target: {:?}",
+        placed_derived.redefinition.targets
+    );
 }

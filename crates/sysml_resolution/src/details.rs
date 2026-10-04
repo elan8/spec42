@@ -108,6 +108,21 @@ pub struct ViewSelection {
     pub outcome: ViewSelectionOutcome,
 }
 
+/// The rendering selected by a view through a direct or inherited rendering membership.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ViewRendering {
+    pub membership: crate::MembershipId,
+    /// The RenderingUsage owned by the ViewRenderingMembership.
+    pub owned_rendering: crate::SymbolId,
+    /// The owned usage itself for inline form, or the settled reference for short form.
+    pub referenced_rendering: crate::SymbolId,
+    /// Declarations in the owned usage body, including additions in short form.
+    pub owned_body_members: Box<[crate::SymbolId]>,
+    /// Declarations in the referenced RenderingUsage body. Metadata on either usage is available
+    /// through `element_details` on its symbol.
+    pub body_members: Box<[crate::SymbolId]>,
+}
+
 /// One settled relationship between an element and a peer, in one direction.
 ///
 /// `kind` is the relationship's canonical name (`typing`, `specialization`, `subsetting`, ...),
@@ -150,6 +165,11 @@ pub struct ElementDetails {
     pub outgoing: Box<[ConnectedElement]>,
     pub evaluation: ElementEvaluation,
     pub analysis: AnalysisEvaluation,
+    /// Whether an authored feature typing conjugates its target (`port p : ~T`).
+    ///
+    /// The typing target is the original port definition either way. This is the polarity the
+    /// author wrote, kept apart from the target's qualified name.
+    pub conjugated: bool,
 }
 
 /// What a reference at a source position resolves to, in full detail.

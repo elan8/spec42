@@ -1,4 +1,4 @@
-﻿[workspace]
+[workspace]
 resolver = "2"
 members = [
   "crates/generator_api",
@@ -6,6 +6,8 @@ members = [
   "crates/generator_host",
   "crates/generator_protocol",
   "crates/generator_sdk",
+  "crates/diagram_draw",
+  "crates/diagram_product",
   "crates/diagram_layout",
   "crates/language_service",
   "crates/library_catalog",
@@ -23,14 +25,13 @@ members = [
   "crates/session_actor",
   "tools/snapshot_tool",
   "tools/constraint_manifest",
-  "tools/elkrs_parity",
   "tools/query_bench",
   "tools/resolution_benchmark",
   "tools/semantic_benchmark",
 ]
 
 [workspace.package]
-version = "0.52.0"
+version = "0.54.1"
 edition = "2021"
 authors = ["Elan8"]
 license = "MIT"
@@ -49,9 +50,14 @@ clap = { version = "4", features = ["derive"] }
 petgraph = { version = "0.8", features = ["serde-1"] }
 sha2 = "0.10"
 blake3 = "1"
-sysml-v2-parser = { git = "https://github.com/elan8/sysml-v2-parser.git", rev = "9f00caf353581a3c0ccc13676c5d8829f90708b3", features = ["serde"] }
+sysml-v2-parser = { git = "https://github.com/elan8/sysml-v2-parser.git", rev = "3ccf83ea5f7ccc39e94bfbb164abc8601fed92c0", features = ["serde"] }
 ts-rs = { version = "11", features = ["serde-compat", "serde-json-impl"] }
 zstd = "0.13"
+toml = "0.8"
+walkdir = "2"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+insta = "1"
+tempfile = "3.27.0"
 
 # The resolver and the parser do real work in every integration test; unoptimised they make
 # a cold standard-library build 3-5x slower. opt-level 1 costs ~3s on an incremental rebuild.

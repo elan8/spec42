@@ -289,6 +289,226 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `join_node_multiple_outgoing`, `merge_node_multiple_outgoing`). Succession end multiplicities
   (`first [m] a then [n] b`) are now published facts.
 
+## [0.54.1] - 2026-10-02
+
+- **Short names are published wherever SysML's `Identification` allows them (#236).** A short name
+  (`<'V1'>`) is legal on every definition and usage, but on `verification`, `analysis`, `case`,
+  `state`, `exhibit state`, `concern` (and `concern def`), `viewpoint`, `rendering`, `enum`,
+  `allocation`, `interface`, `metadata`, `assert constraint`, `succession`, `binding`,
+  `transition`, directed parameters (`in`/`out`/`inout`), `stakeholder` and `dependency` it made
+  the declaration fail to parse (`unsupported_grammar_form`, or an `unexpected keyword` error
+  inside a body), so the element dropped out of the model. Each of these now publishes its short
+  name, which also resolves as a name. Short-name-only (`verification <'V1'> : V;`) and
+  anonymous declarations are accepted too, and `concern`/`case` usages are modelled inside part
+  bodies. Pins sysml-v2-parser `3ccf83ea` (elan8/sysml-v2-parser#157 and #160).
+  - A named `binding b bind x = y;` member now publishes its declared name as well; it was
+    lowered as an anonymous binding.
+
+- **Repeated `#derivation` connections resolve quickly (#239).** Each metadata annotation
+  walked the specialization graph for every library feature value while looking up
+  `SemanticMetadata::baseType`. That lookup now happens once per model, so a requirements
+  model with hundreds of derivation connections resolves in seconds instead of minutes.
+
+## [0.54.0] - 2026-10-01
+
+- **Requirement derivation, and `#` prefix metadata on connections (#221, #222, #223).** Pins
+  `elan8/sysml-v2-parser` to the `ConnectionUsage` prefix migration (elan8/sysml-v2-parser#152).
+  - `#derivation`, `#original`, `#derive` (and `#multicausation`, `#cause`, `#effect`, ...) are
+    lowered as ordinary prefix metadata, whose `SemanticMetadata` `baseType` specializes the
+    annotated connection or end (a `#derivation connection def` specializes `Derivation`; an
+    `#original` end subsets `originalRequirements`). The hard-coded derivation shorthand
+    (`synthesize_derivation_shorthand`) is gone, so the metadata now resolves through
+    `RequirementDerivation` like any other: a model that uses it without importing the library
+    reports `unresolved_reference`, and ends keep their authored name (`end #original r1 : Req1`).
+  - A `#derivation connection` (or any prefixed connection) inside a part usage body is modelled
+    instead of reported as `unsupported_part_usage_member` (#221).
+  - A `def`-less `connection d { end … }` is a `ConnectionUsage`, not a `ConnectionDefinition`
+    (#222). Connection usages carry their full prefix, typing, multiplicity, `nonunique` and
+    specialization clauses; standard-library connection features (`Connections::connections`,
+    `DerivationConnections::derivations`, ...) are usages too, so a connector now implicitly
+    *subsets* `connections` instead of being typed by it.
+  - New `derivation_relationships()` query (`sysml_query`, `generator_api`, generator protocol
+    operation `DerivationRelationships`): each `DerivationConnections::Derivation` connection
+    usage with its `original`, `derived` and `unclassified` ends, with the same outcome shape as
+    satisfy ends, including feature chains (#223). The generator compatibility token moves.
+
+- **A feature-chain satisfying element resolves (#213).** `satisfy R by a.b` names a feature chain
+  (SysML v2 8.2.2.21.2), and the chain as a whole is the satisfying feature (8.3.21.10). It used to
+  publish `SatisfyEndpoint::Unsupported`; it now publishes `SatisfyEndpoint::FeatureChain` with the
+  feature each segment resolves to, in order (`a`, then `b`), and the authored segments. A chain
+  with an unresolved hop is `Unresolved`. The dotted operand keeps its `satisfyTarget` reference
+  kind (it was `memberAccessOperand`), resolved hop by hop.
+  - Generator ABI: `SatisfyEndpoint` gains `FeatureChain { path, authored }`. The wire schema
+    fingerprint and compatibility token move, so every guest must be rebuilt.
+- **`satisfy requirement r : R by x` publishes its requirement (#220).** The inline-declaration
+  form of satisfy published its requirement end as `Unsupported` and dropped its `: R` typing. The
+  satisfy usage is itself the declared requirement usage (SysML v2 8.4.17.3), so its requirement
+  end is now the usage itself, typed by `R`. The satisfy usage's own specialization clauses
+  (`:`, `:>`, `:>>`, `::>`, `crosses`) are lowered in both forms.
+
+- **Interconnection connectors show their name or type (#215).** A connector is labelled with its
+  authored name, else its type (`: PowerLink`); an anonymous, untyped `connect a to b` stays
+  unlabelled instead of reading `connector`. Labels inside a container part are placed again:
+  only the container's name header is an obstacle, not its whole box. A label with no clear place
+  still falls back to the connector tooltip.
+
+- **Formatter layout converges when a protected line ends in extra carriage returns.**
+  A line that begins inside an unrestricted name, string, or block comment is copied
+  verbatim. The line splitter removed only one trailing `\r`, so the next pass treated
+  another as a CRLF ending and `format(format(text))` never settled. Nightly
+  `sysml_formatter` fuzzing failed on that input
+  ([run 36654784316](https://github.com/elan8/spec42/actions/runs/36654784316)).
+
+- **Wasmtime 48.0.3.** `generator_host` was on 47.0.4, which is affected by
+  [RUSTSEC-2026-0315](https://rustsec.org/advisories/RUSTSEC-2026-0315) and
+  [RUSTSEC-2026-0316](https://rustsec.org/advisories/RUSTSEC-2026-0316). 48.0.3 is in
+  the patched range for both, so the nightly full-tree `cargo audit` passes again.
+
+- **`brace-expansion` 2.1.7 in the VS Code extension.** The extension shipped 2.1.4 (through
+  `vscode-languageclient` → `minimatch`), which is affected by
+  [GHSA-q2hr-2g5m-vwhr](https://github.com/advisories/GHSA-q2hr-2g5m-vwhr),
+  [GHSA-qhr7-859c-m2p7](https://github.com/advisories/GHSA-qhr7-859c-m2p7) and
+  [GHSA-6j4f-fj2g-mc7p](https://github.com/advisories/GHSA-6j4f-fj2g-mc7p). 2.1.7 is in
+  `minimatch`'s range and patched for all three, so the nightly npm audit of shipped packages
+  passes again.
+
+- **Graphical notation inventory matches the `2026-04` release tip.** The coverage JSON
+  now records `subsetting` as supported, the same status the markdown inventory and the
+  generator already used.
+
+- **Nested view usages are modelled.** A `view` nested in a view usage or view definition body
+  (`view def D { view intro; }`, `view doc : D { view :>> intro { ... } }`) used to fail to parse
+  (`missing_body_or_semicolon`) and swallow the rest of the body. It now lowers as an owned view
+  declaration, recursively, with its typing, `:>>`/`redefines`/`:>` relationships, multiplicity,
+  and `expose` members, and implicitly subsets `View::subviews`.
+
+- **View usages publish their whole declaration.** Every typing target (`view v : A, B;` used to
+  publish only `A`), `::>`/`references` and `=>`/`crosses` relationships, the full
+  `OccurrenceUsagePrefix` (`abstract`, `variation`, `derived`, `constant`, a direction,
+  `individual`, a portion kind, `#Tag` extension keywords), and a value (`view v = w;`) now lower
+  exactly as they do for part usages. Anonymous declarations (`view;`, `view : V;`) and these
+  forms parsed as errors before. Pins `elan8/sysml-v2-parser@6097d83` (`main`: `#147` fixing
+  `#146`, and `#149` fixing `#148`).
+
+- **Diagrams are built natively; the diagram Wasm plugin is gone.** The diagram product (the
+  schema-5 `diagram.json` that `diagram_draw` renders) is now the `diagram_product` crate, called
+  directly by the LSP, the CLI and the snapshot tool. Output is byte-identical to the former
+  plugin across every diagram snapshot.
+  - New `spec42 diagram <path>` lists the model's diagram views; `--view <qualified name>` renders
+    one as SVG, or as its diagram product with `--format json`. `--kind` and `--document` select
+    among catalog entries that share a qualified name.
+  - New LSP request `spec42/diagram` (`modelUri`, `handle`, optional `expectedModelDigest`) returns
+    the product for a `spec42/diagramViews` handle. The VS Code diagram view uses it instead of
+    sending `diagram.wasm` through `spec42/generate`.
+  - A view typed by several standard view definitions (`view v : GeneralView,
+    InterconnectionView`) renders as each kind. Its catalog entries used to share one handle, so
+    every entry projected the first kind. Catalog handles are now per (view, kind).
+  - A catalog handle stays valid for as long as its publication is current, including after the
+    LSP's model-view cache has evicted and rebuilt that publication's view.
+  - Removed: `generator-plugins/diagram`, `generators/diagram.wasm` in the VSIX and in the CLI
+    platform archives (added in 0.53.1), the bundled-plugin lookup in `spec42 generate`, and the
+    `spec42.diagramViewer.pluginPath` setting. `spec42 generate` and the generator ABI are
+    unchanged for other plugins.
+
+## [0.53.1] - 2026-09-24
+
+- **CLI platform archives include the diagram Wasm plugin.** Each `spec42-<version>-<platform>`
+  archive now ships `generators/diagram.wasm` beside the `spec42` binary, the same plugin the
+  VSIX packages. `spec42 generate generators/diagram.wasm <model>` finds that file next to the
+  executable when it is not in the working directory.
+
+## [0.53.0] - 2026-09-24
+
+- **`use case` usages accept a short name.** `UseCaseUsage` had no `short_name` field at all in
+  the parser AST, unlike every sibling usage kind, so `use case <'S-01'> prepareEquipment { ... }`
+  fell through to opaque body-element recovery instead of parsing. Pins
+  `elan8/sysml-v2-parser@f60951e` (`main`), which includes the merged short-name support
+  (`#144`) and the later stack-overflow probes (`#142`, `#145`). Those probes do not change
+  the AST.
+
+- **Three metadata/comment/redefinition export gaps fixed (#201).** A named `comment` (`comment
+  aboutP about p /* ... */`) now mints a real, referenceable declaration, so a later `metadata ...
+  about aboutP;` reference resolves instead of reporting `This reference does not resolve`. A
+  marker `metadata m : Tag;` nested in an `item`/`attribute` body now publishes resolved typing in
+  `model-export`, matching the identical syntax at package/part/action body level (both lowering
+  paths now push a `FeatureTyping` reference). A `MetadataBodyUsage` redefinition (`order = 1;`
+  inside a metadata usage body) now publishes its redefinition token as its own name, instead of an
+  empty name and a qualified name ending in `::`.
+
+- **Native diagram layout pins the elkrs crossings fix.** `crates/diagram_layout` now depends on
+  `elan8/elkrs` at `84f95ae55688fe1e0d269d3a5080edf61b218c87` (merge of
+  `fix-hierarchy-crossing-port-panic`). That revision no longer panics when a hierarchy-crossing
+  edge uses a container port.
+
+- **Model export and interconnection views keep derivation, conjugation, constraint
+  equations, and delegation bindings.** A `#derivation` connection specializes
+  `DerivationConnections::Derivation`, and its `#original` / `#derive` ends are named
+  `originalRequirement` and `derivedRequirements` and redefine those library features.
+  An unlabeled `end :>> name` publishes that name and its redefinition. A conjugated port
+  (`port p : ~T`) exports `conjugated: true` beside the original type. Comparison
+  constraints whose operands are dotted feature chains export as resolved operator trees.
+  An interconnection view composes `bind a = b.c` from its two ends instead of reporting
+  the dotted end as an unresolved connector.
+
+- **Project diagnostics stay attached to the files on disk (#187, #188, #189, #190, #191, #192).**
+  Closing an editor tab replaces an unsaved buffer with the on-disk source when that file exists,
+  and refreshes dependent diagnostics. Watched-file events are grouped by project, so a
+  delete/create rename is one semantic publication with no intermediate "file missing" error;
+  unchanged save echoes are skipped. Renaming a `.sysml`/`.kerml` file from the VS Code Explorer
+  uses `workspace/didRenameFiles` on that same path. A part usage used as the type of another part
+  usage is an error with a related declaration location. The `unconnected_port` information
+  diagnostic is retired.
+
+- **Diagrams are drawn in Rust and served as SVG (#176, #181).** `diagram_draw` prepares and
+  draws General, Interconnection, Sequence, Action-Flow, and State-Transition views, plus Browser,
+  Grid, and Geometry. The webview mounts that SVG over `spec42/draw` and keeps zoom, pan,
+  tooltips, and click-to-source; disclosure toggles ask the server to redraw. Headless
+  `spec42 diagrams export` no longer uses QuickJS or ELK.js. Browser hierarchy collapse is
+  presentation state on the draw request. `SPEC42_LAYOUT_ENGINE=legacy` declines the native draw
+  and layout requests.
+
+- **Interactive diagram relayout runs in the language server (#118, #119).** Disclosure changes
+  send a versioned `spec42/layout` request. The server lays the client-supplied graph out with
+  `elkrs` and echoes the model digest, view handle, and presentation revision so a late response
+  is dropped. A new request cancels the one in flight. `elkrs` is in the default `spec42` binary.
+
+- **Owned feature memberships publish canonical identities (#178).** Type feature-membership
+  derivations return `MembershipId` values, including `deriveTypeOwnedFeatureMembership`.
+
+- **Wrap in package applies to bare root members (#65).** A file whose top-level members or
+  imports have no package, library package, or namespace wrapper offers the action. Applying it
+  wraps the document in `package Generated`.
+
+- **The bundled standard library keeps only upstream diagnostics (#135).** Spec42-owned
+  diagnostics on the 2026-04 bundle are resolved, including SelfLink cycle equivalence,
+  `crosses sameThing.self`, inherited `ref item` / `ref action` members, connector-end
+  `references` in the owning namespace, `satisfy … by that`, and effective typing through
+  `references` / `crosses`. The artifact ratchet admits all 94 standard-library documents. The
+  two remaining errors are the upstream SI `MagneticDipoleMomentUnit` ambiguities.
+
+- **Textual SysML/KerML grammar audit against the pinned BNF (#194).** Spec42 now keeps a
+  production-level inventory (`docs/reference/TEXTUAL-SYNTAX-INVENTORY.md`) versioned with the
+  parser revision and the bundled 2026-04 kebnf. Several validation fixtures that blamed parser
+  gaps were using spellings the grammar does not contain (`if … then`, `then … do`, `abstract
+  variation`, SysML `var`, KerML `connector … specializes`); they now author the productions,
+  and dual-keyword `abstract variation` is an explicit grammar exclusion. Ports, connections,
+  interfaces, and actions have dedicated accept/reject snapshots: SysML `connect`/`bind` parse,
+  KerML `connector … from` / `binding … of` in a SysML fence recover, and the keyword-less n-ary
+  `connect (e1, e2, e3)` alternative recovers in a part definition body while named
+  `connection … connect (…)` parses. States, requirements, items, and flows have accept/reject
+  snapshots: `entry`/`do`/`exit`, `parallel`, `satisfy`, `flow`/`message`, and `item def` parse;
+  missing terminators recover; `state s initial` is not a StateDefBody production and is
+  `unsupported_state_definition_member`.
+
+- **Workspace dependency hygiene and incremental-vs-full publication parity (#43).** `walkdir`,
+  `sha2`, `toml`, and `zip` are declared once in `[workspace.dependencies]` and inherited by
+  member crates. A deterministic edit-sequence harness in `sysml_resolution` proves a warm
+  (incremental memo) publication is the cold (full) one for identity, model digest, and
+  diagnostics after each edit, and snapshots that sequence with `insta`.
+
+- Individual definitions now publish their implicit multiplicity and specialization to
+  `Base::zeroOrOne`, including the `individual def` shorthand and specialized definition kinds.
+
 - **Semantic tokens use parser name spans and can be traced from the editor (#35).** Definition
   names come from `Identification` rather than a first-line text search; transition /
   satisfy / dependency members keep source, accept, and target spans instead of painting the

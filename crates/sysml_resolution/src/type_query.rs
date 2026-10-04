@@ -14,7 +14,7 @@ pub use sysml_contract::{
     TypeDerivedRelationshipCollection, TypeFeaturingCheckOutcome, TypeFeaturingCheckPrerequisite,
 };
 
-/// A future canonical value of one exact Type derived-fact query.
+/// One canonical value of an exact Type derived-fact query.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TypeDerivedFactValue {
     Feature(SymbolId),

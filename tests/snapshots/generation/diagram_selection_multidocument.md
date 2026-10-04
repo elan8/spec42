@@ -3,7 +3,7 @@
 description=Qualified selection chooses one of several views distributed across documents
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=general-view
 viewDocument=structure.sysml
 viewQualifiedName=StructureModel::selected
@@ -254,7 +254,7 @@ package BehaviorModel {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:b58256bba691da18e8db637f8a8fb4e470825adc60028891ee1e7fcd75ab5ac6",
+  "modelDigest": "blake3:4b2f64167d8df0328eb565a68eb12ed8862f71d74c9ae0fbdc4cbb6b55f6497a",
   "documents": [
     {
       "uri": "memory://snapshot/structure.sysml",

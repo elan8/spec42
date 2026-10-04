@@ -20,7 +20,6 @@ if (!fs.existsSync(vsixPath)) {
 }
 
 const requiredEntries = new Set([
-  "extension/generators/diagram.wasm",
   "extension/package.json",
 ]);
 

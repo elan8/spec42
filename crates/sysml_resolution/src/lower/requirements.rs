@@ -40,7 +40,8 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<ReturnRef>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -48,6 +49,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     reference: true,
                     ..DeclarationModifiers::default()
@@ -147,6 +149,7 @@ impl SemanticModelBuilder {
         node: &Node<StakeholderMember>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.declaration_name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -154,7 +157,10 @@ impl SemanticModelBuilder {
             name,
             node.span,
             // `ast::StakeholderMember` carries no modifier, multiplicity, direction, or short name.
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -469,11 +475,12 @@ impl SemanticModelBuilder {
     /// fabricate a subject. The `assert` prefix and the `not` negation (`negated`) do not
     /// change how the references resolve.
     ///
-    /// Out of scope, left as an explicit `family` unsupported diagnostic: the
-    /// `'requirement' UsageDeclaration` alternative (`SatisfiedRequirement::Declaration`, which
-    /// declares a new requirement inline rather than referencing an existing one -- a meaningfully
-    /// different construct, not merely an unresolved reference) and the members of the
-    /// `RequirementBody` the usage owns.
+    /// The `'requirement' UsageDeclaration` alternative (`SatisfiedRequirement::Declaration`)
+    /// declares the satisfied requirement inline: the satisfy usage *is* that requirement usage
+    /// (8.4.17.3), named by the declaration and typed by the shared `FeatureSpecializationPart`.
+    /// It carries no `SatisfySource` reference, and the satisfy projection publishes the usage
+    /// itself as the satisfied requirement. Out of scope, left as an explicit `family`
+    /// unsupported diagnostic: the members of the `RequirementBody` the usage owns.
     pub(crate) fn lower_satisfy(
         &mut self,
         document: DocumentIdx,
@@ -524,6 +531,23 @@ impl SemanticModelBuilder {
                 subject.value.reference,
             )?;
         }
+        // The satisfy usage's own `FeatureSpecializationPart`, shared by both requirement
+        // alternatives (the parser keeps it beside them): `satisfy requirement r : R by x` types
+        // the declared requirement usage `r` by `R` (8.4.17.3).
+        if let Some(typing) = &node.value.typing {
+            self.lower_typing_relationship_impl(document, declaration, typing, false, None)?;
+        }
+        for relationship in [
+            node.value.subsets.as_ref(),
+            node.value.redefines.as_ref(),
+            node.value.references.as_ref(),
+            node.value.crosses.as_ref(),
+        ]
+        .into_iter()
+        .flatten()
+        {
+            self.lower_subsetting_relationship(document, declaration, relationship)?;
+        }
         self.lower_requirement_shaped_body(document, declaration, &node.value.body, family)
     }
 
@@ -559,6 +583,24 @@ impl SemanticModelBuilder {
                     &[reference],
                     span,
                 )?;
+            } else if matches!(
+                kind,
+                ReferenceKind::SatisfySource | ReferenceKind::SatisfyTarget
+            ) {
+                // `satisfy R by a.b`: the `by` operand is a feature chain (SysML 8.2.2.21.2,
+                // `SatisfactionReferenceExpression` -> `FeatureChainMember` ->
+                // `OwnedFeatureChain`), and the chain as a whole is the satisfying feature
+                // (8.3.21.10). It keeps its satisfy role and is marked dotted, so the resolver
+                // walks it hop by hop (`member_access_slots`) and the satisfy projection
+                // publishes the chain.
+                let id = self.push_member_access_reference_with_kind(
+                    declaration,
+                    document,
+                    kind,
+                    &[reference],
+                    span,
+                )?;
+                self.references[id.index()].flags.dotted = true;
             } else {
                 self.push_member_access_reference(declaration, document, &[reference], span)?;
             }
@@ -742,6 +784,7 @@ impl SemanticModelBuilder {
                 modifiers: DeclarationModifiers {
                     is_abstract,
                     variation,
+                    individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()
@@ -1059,6 +1102,10 @@ impl SemanticModelBuilder {
             node.span,
             DeclarationFacts {
                 short_name,
+                modifiers: DeclarationModifiers {
+                    individual: node.value.is_individual,
+                    ..DeclarationModifiers::default()
+                },
                 ..DeclarationFacts::none()
             },
         )?;
@@ -1093,16 +1140,20 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserViewpointUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
             DeclarationKind::ViewpointUsage,
             name,
             node.span,
-            // No modifier, multiplicity, or short-name field on `ast::ViewpointUsage`; its
+            // No modifier or multiplicity field on `ast::ViewpointUsage`; its
             // `subsets`/`redefines` clauses are relationships, pushed below rather than facts.
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -1174,8 +1225,9 @@ impl SemanticModelBuilder {
         } else {
             (DeclarationKind::ConcernUsage, MembershipKind::Feature)
         };
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
         // `ast::ConcernUsage` carries no direction or short name.
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1183,8 +1235,10 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
+                    individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
@@ -1327,6 +1381,7 @@ impl SemanticModelBuilder {
                 modifiers: DeclarationModifiers {
                     is_abstract,
                     variation,
+                    individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()
@@ -1364,7 +1419,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserAnalysisCaseUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1372,6 +1428,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: occurrence_prefix_modifiers(&node.value.prefix),
                 ..DeclarationFacts::none()
             },
@@ -1426,7 +1483,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserCaseUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1434,6 +1492,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
                     ..DeclarationModifiers::default()
@@ -1493,7 +1552,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserUseCaseUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1501,6 +1561,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
                     ..DeclarationModifiers::default()
@@ -1557,7 +1618,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserVerificationCaseUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1565,6 +1627,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
                     ..DeclarationModifiers::default()
@@ -1638,6 +1701,7 @@ impl SemanticModelBuilder {
                 modifiers: DeclarationModifiers {
                     is_abstract,
                     variation,
+                    individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()
@@ -1689,6 +1753,7 @@ impl SemanticModelBuilder {
                 modifiers: DeclarationModifiers {
                     is_abstract,
                     variation,
+                    individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()

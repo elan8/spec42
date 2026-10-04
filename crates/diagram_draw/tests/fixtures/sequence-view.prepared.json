@@ -1,0 +1,100 @@
+{
+  "title": "Checkout",
+  "view": "sequence-view",
+  "nodes": [
+    {
+      "id": "buyer",
+      "label": "Buyer",
+      "kind": "sequence-view",
+      "sourcePath": null,
+      "uri": null,
+      "range": null,
+      "attributes": {
+        "qualifiedName": "buyer"
+      }
+    },
+    {
+      "id": "store",
+      "label": "Store",
+      "kind": "sequence-view",
+      "sourcePath": null,
+      "uri": null,
+      "range": null,
+      "attributes": {
+        "qualifiedName": "store"
+      }
+    }
+  ],
+  "edges": [],
+  "meta": {
+    "selectedDiagramName": "Checkout",
+    "sequenceDiagram": {
+      "name": "Checkout",
+      "nodes": [
+        {
+          "id": "buyer",
+          "name": "Buyer"
+        },
+        {
+          "id": "store",
+          "name": "Store"
+        }
+      ],
+      "lifelines": [
+        {
+          "id": "buyer",
+          "name": "Buyer"
+        },
+        {
+          "id": "store",
+          "name": "Store"
+        }
+      ],
+      "messages": [
+        {
+          "id": "m1",
+          "source": "buyer",
+          "target": "store",
+          "name": "placeOrder",
+          "order": 1
+        },
+        {
+          "id": "m2",
+          "source": "store",
+          "target": "store",
+          "name": "validate",
+          "order": 2
+        },
+        {
+          "id": "m3",
+          "source": "store",
+          "target": "buyer",
+          "name": "confirmed",
+          "kind": "reply",
+          "order": 3
+        }
+      ],
+      "activations": [
+        {
+          "on_lifeline": "store",
+          "start_message": "m1",
+          "finish_message": "m3"
+        }
+      ],
+      "fragments": [
+        {
+          "kind": "alt",
+          "operands": [
+            {
+              "guard": "success",
+              "message_ids": [
+                "m1"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "parentContext": "Checkout"
+  }
+}

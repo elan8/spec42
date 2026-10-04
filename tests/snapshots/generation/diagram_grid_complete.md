@@ -3,7 +3,7 @@
 description=Grid view projects typed rows and relationship columns
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=grid-view
 viewDocument=diagram_grid_complete.md
 viewQualifiedName=GridExample::selected
@@ -169,7 +169,7 @@ package GridExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:3a056a7746776a916ccab4ef6d9717f4ab12ec46b054ff375c80e2748b8183f4",
+  "modelDigest": "blake3:a25414068b7c861547c8c8e11c315e6a5018a6783dd3b7340b7783e15163b119",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_grid_complete.md",

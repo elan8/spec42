@@ -3,7 +3,7 @@
 description=Sequence view exposes cyclic message ordering as an incomplete typed scene
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=sequence-view
 viewDocument=diagram_sequence_ordering_cycle.md
 viewQualifiedName=SequenceCycle::selected
@@ -489,7 +489,7 @@ package SequenceCycle {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:2fc64e0b4e6ef0a4dc73b28c632a7ab7311db43403b97480e01e80d25858369f",
+  "modelDigest": "blake3:7cf062814b4bef6a346232df8204d32895758f178da99e4d8ebf74ac4b9b8ba5",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_ordering_cycle.md",

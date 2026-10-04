@@ -3,7 +3,7 @@
 description=Sequence view keeps unresolved exposure explicit
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=sequence-view
 viewDocument=diagram_sequence_unresolved.md
 viewQualifiedName=SequenceNegative::selected
@@ -136,7 +136,7 @@ package SequenceNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:cf13f5a9cc23e00ba250f96c109039b7916a1c7febb5c06841a61d1d9e6cee6c",
+  "modelDigest": "blake3:44af99205aa8a798d1a76a967d3a4caf33eca2e7b843e39e635ba0cb7fe73c4d",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_unresolved.md",

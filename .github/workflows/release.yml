@@ -23,7 +23,7 @@ env:
 jobs:
   preflight:
     name: Release preflight checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
         with:
@@ -55,7 +55,7 @@ jobs:
           echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
 
       - name: Restore SysML stdlib bundle cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         id: stdlib-cache
         with:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
@@ -67,7 +67,7 @@ jobs:
 
       - name: Save SysML stdlib bundle cache
         if: steps.stdlib-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
@@ -82,7 +82,7 @@ jobs:
           echo "SPEC42_KPAR_LIBRARY_BUNDLE_METHOD=${{ github.workspace }}/.cache/elan8-method-libraries-${METHOD_VERSION}.kpar" >> $GITHUB_ENV
 
       - name: Restore KPAR library bundles cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         id: kpar-libraries-cache
         with:
           path: |
@@ -96,17 +96,17 @@ jobs:
 
       - name: Save KPAR library bundles cache
         if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
             .cache/elan8-method-libraries-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}.kpar
           key: kpar-libraries-domain-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}-method-${{ env.SPEC42_METHOD_LIBRARIES_VERSION }}
 
-      # Rust integration and lib tests execute the real diagram guest; build the
-      # repository generator plugins first, matching scripts/minici.sh.
+      # Generator tests execute the repository example guest; build it first, matching
+      # scripts/minici.sh.
       - name: Build repository generator plugins
-        run: SPEC42_PACKAGE_REPOSITORY_GENERATORS=0 scripts/build-repository-generator-plugins.sh
+        run: scripts/build-repository-generator-plugins.sh
 
       - name: Rust tests
         run: |
@@ -132,7 +132,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - runner: ubuntu-latest
+          - runner: ubuntu-24.04
             os_name: linux
             target: x86_64-unknown-linux-gnu
             package_dir: linux-x64
@@ -188,7 +188,7 @@ jobs:
           echo "SPEC42_STDLIB_KPAR_DIR=${{ github.workspace }}/.cache/sysml-stdlib-kpar-${VERSION}" >> $GITHUB_ENV
 
       - name: Restore SysML stdlib bundle cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         id: stdlib-cache
         with:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
@@ -201,7 +201,7 @@ jobs:
 
       - name: Save SysML stdlib bundle cache
         if: steps.stdlib-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: .cache/sysml-stdlib-kpar-${{ env.SPEC42_STDLIB_VERSION }}
           key: sysml-stdlib-${{ env.SPEC42_STDLIB_VERSION }}
@@ -217,7 +217,7 @@ jobs:
           echo "SPEC42_KPAR_LIBRARY_BUNDLE_METHOD=${{ github.workspace }}/.cache/elan8-method-libraries-${METHOD_VERSION}.kpar" >> $GITHUB_ENV
 
       - name: Restore KPAR library bundles cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         id: kpar-libraries-cache
         with:
           path: |
@@ -232,7 +232,7 @@ jobs:
 
       - name: Save KPAR library bundles cache
         if: steps.kpar-libraries-cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             .cache/elan8-domain-libraries-${{ env.SPEC42_DOMAIN_LIBRARIES_VERSION }}.kpar
@@ -259,7 +259,9 @@ jobs:
           $version = "${{ steps.version.outputs.version }}"
           $archive = "${{ env.BINARY_NAME }}-$version-${{ matrix.package_dir }}.zip"
           $releaseDir = "target/${{ matrix.target }}/release"
-          Compress-Archive -Path "$releaseDir/${{ env.BINARY_NAME }}.exe" -DestinationPath $archive
+          New-Item -ItemType Directory -Force -Path staging | Out-Null
+          Copy-Item "$releaseDir/${{ env.BINARY_NAME }}.exe" "staging/${{ env.BINARY_NAME }}.exe"
+          Compress-Archive -Path "staging/${{ env.BINARY_NAME }}.exe" -DestinationPath $archive
           echo "ARCHIVE_NAME=$archive" >> $env:GITHUB_ENV
         shell: pwsh
 
@@ -271,7 +273,7 @@ jobs:
 
   package-extension-with-server:
     name: Package extension with server (all platforms)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [preflight, build-server]
     steps:
       - name: Resolve tag and version
@@ -298,10 +300,10 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           BIN="${{ env.BINARY_NAME }}"
           mkdir -p vscode/server/linux-x64 vscode/server/darwin-x64 vscode/server/darwin-arm64 vscode/server/win32-x64
-          tar -xzf "artifacts/server/server-linux-x64/${BIN}-${VERSION}-linux-x64.tar.gz" -C vscode/server/linux-x64
-          tar -xzf "artifacts/server/server-darwin-x64/${BIN}-${VERSION}-darwin-x64.tar.gz" -C vscode/server/darwin-x64
-          tar -xzf "artifacts/server/server-darwin-arm64/${BIN}-${VERSION}-darwin-arm64.tar.gz" -C vscode/server/darwin-arm64
-          unzip -o -j "artifacts/server/server-win32-x64/${BIN}-${VERSION}-win32-x64.zip" -d vscode/server/win32-x64
+          tar -xzf "artifacts/server/server-linux-x64/${BIN}-${VERSION}-linux-x64.tar.gz" -C vscode/server/linux-x64 "$BIN"
+          tar -xzf "artifacts/server/server-darwin-x64/${BIN}-${VERSION}-darwin-x64.tar.gz" -C vscode/server/darwin-x64 "$BIN"
+          tar -xzf "artifacts/server/server-darwin-arm64/${BIN}-${VERSION}-darwin-arm64.tar.gz" -C vscode/server/darwin-arm64 "$BIN"
+          unzip -o -j "artifacts/server/server-win32-x64/${BIN}-${VERSION}-win32-x64.zip" "${BIN}.exe" -d vscode/server/win32-x64
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -348,7 +350,7 @@ jobs:
 
   build-zed-extension:
     name: Build Zed extension
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [preflight]
     steps:
       - name: Resolve tag and version
@@ -404,7 +406,7 @@ jobs:
 
   create-release:
     name: Create GitHub Release
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [preflight, build-server, package-extension-with-server, build-zed-extension]
     permissions:
       contents: write
@@ -488,7 +490,7 @@ jobs:
 
           ## Included Artifacts
 
-          - Platform archives include \`spec42\`.
+          - Platform archives include \`spec42\`; \`spec42 diagram\` renders diagram views natively.
           - The VS Code .vsix includes the matching language server binary.
           - The Zed extension can download the matching server binary automatically when no configured or PATH-installed \`spec42\` binary is found.
           - \`SHA256SUMS.txt\` contains checksums for all attached artifacts.
@@ -512,7 +514,7 @@ jobs:
   publish-zed-extension:
     name: Bump Zed extension registry
     needs: [create-release]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:

@@ -111,6 +111,47 @@ fn diagram_views_returns_the_webshop_catalog_over_the_lsp() {
         ]
     );
 
+    // A catalog handle yields the natively built diagram product on the same publication.
+    let pipeline = views
+        .iter()
+        .find(|view| view["name"] == "checkoutPipeline")
+        .unwrap_or_else(|| panic!("checkoutPipeline view: {response}"));
+    let diagram = session.request(
+        "spec42/diagram",
+        serde_json::json!({
+            "modelUri": views_uri,
+            "handle": pipeline["handle"],
+            "expectedModelDigest": response["result"]["modelDigest"],
+        }),
+    );
+    assert!(diagram.get("error").is_none(), "LSP response: {diagram}");
+    assert_eq!(
+        diagram["result"]["modelDigest"], response["result"]["modelDigest"],
+        "LSP response: {diagram}"
+    );
+    let product: serde_json::Value = serde_json::from_str(
+        diagram["result"]["productJson"]
+            .as_str()
+            .unwrap_or_else(|| panic!("product JSON: {diagram}")),
+    )
+    .expect("the product is JSON");
+    assert_eq!(product["schemaVersion"], 5);
+    assert_eq!(product["selectedView"]["name"], "checkoutPipeline");
+    assert_eq!(product["modelDigest"], response["result"]["modelDigest"]);
+
+    let stale = session.request(
+        "spec42/diagram",
+        serde_json::json!({
+            "modelUri": views_uri,
+            "handle": pipeline["handle"],
+            "expectedModelDigest": "blake3:stale",
+        }),
+    );
+    assert!(
+        stale.get("error").is_some(),
+        "a stale selection is refused: {stale}"
+    );
+
     assert_eq!(
         models.len(),
         5,

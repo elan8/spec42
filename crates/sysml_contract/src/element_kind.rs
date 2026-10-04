@@ -76,11 +76,6 @@ element_kinds! {
     PortUsage,
     OccurrenceDefinition,
     OccurrenceUsage,
-    /// The standalone `individual def` form.
-    ///
-    /// The OMG has no such metaclass -- it is an `OccurrenceDefinition` with `isIndividual` set --
-    /// but that flag is not published for this form, so collapsing would erase the keyword.
-    IndividualDefinition,
     ConnectionDefinition,
     ConnectionUsage,
     InterfaceDefinition,
@@ -297,7 +292,6 @@ impl ElementKind {
             K::AttributeDefinition => &[K::Definition, K::DataType],
             K::EnumerationDefinition => &[K::AttributeDefinition],
             K::OccurrenceDefinition => &[K::Definition, K::Class],
-            K::IndividualDefinition => &[K::OccurrenceDefinition],
             K::ItemDefinition => &[K::OccurrenceDefinition, K::Structure],
             K::PartDefinition => &[K::ItemDefinition],
             K::PortDefinition => &[K::OccurrenceDefinition, K::Structure],
@@ -427,6 +421,8 @@ pub enum MembershipRole {
     RequirementVerification,
     /// `ObjectiveMembership` -- the objective requirement of a case.
     Objective,
+    /// `ViewRenderingMembership` -- the rendering selected by a view definition or usage.
+    ViewRendering,
     /// `TransitionFeatureMembership` with `kind = trigger` -- the accept action that triggers a
     /// transition.
     TransitionTriggerAction,
@@ -456,6 +452,7 @@ impl MembershipRole {
             Self::FramedConcern => "framed-concern",
             Self::RequirementVerification => "requirement-verification",
             Self::Objective => "objective",
+            Self::ViewRendering => "view-rendering",
             Self::TransitionTriggerAction => "transition-trigger-action",
             Self::Variant => "variant",
             Self::Parameter => "parameter",
@@ -559,6 +556,7 @@ mod tests {
             MembershipRole::Actor,
             MembershipRole::FramedConcern,
             MembershipRole::RequirementVerification,
+            MembershipRole::ViewRendering,
             MembershipRole::TransitionTriggerAction,
             MembershipRole::Variant,
             MembershipRole::Parameter,

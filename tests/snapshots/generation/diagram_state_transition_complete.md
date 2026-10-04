@@ -3,7 +3,7 @@
 description=State transition view projects states initial final and transitions
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=state-transition-view
 viewDocument=diagram_state_transition_complete.md
 viewQualifiedName=StateExample::selected
@@ -452,7 +452,7 @@ package StateExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:cfde2cc65d8d9fb4820fb8cda51c393894290b89af274d747b177759708d88e8",
+  "modelDigest": "blake3:ac376e7195d2ee2991f56b098937a78f5a4b7acb08badf075ae270f5b9700516",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_state_transition_complete.md",

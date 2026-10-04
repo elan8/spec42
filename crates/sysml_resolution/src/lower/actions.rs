@@ -772,6 +772,7 @@ impl SemanticModelBuilder {
         node: &Node<FirstStmt>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.succession_name)?;
+        let short_name = self.intern_short_name(document, node.value.succession_short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -779,6 +780,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 // The succession feature's own multiplicity (`succession [n] first ... then ...`).
                 multiplicity: multiplicity_facts(node.value.succession_multiplicity.as_ref()),
                 // The per-end `first [m]`/`then [n]` multiplicities belong to the connector ends,
@@ -1836,6 +1838,7 @@ impl SemanticModelBuilder {
         node: &Node<SuccessionUsage>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_short_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -1843,6 +1846,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 succession_end_multiplicities: SuccessionEndMultiplicities::authored(
                     multiplicity_facts(node.value.source_multiplicity.as_ref()),
@@ -2178,6 +2182,7 @@ impl SemanticModelBuilder {
                 modifiers: DeclarationModifiers {
                     is_abstract,
                     variation,
+                    individual: node.value.is_individual,
                     ..DeclarationModifiers::default()
                 },
                 ..DeclarationFacts::none()

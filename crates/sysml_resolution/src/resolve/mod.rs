@@ -178,7 +178,16 @@ pub(crate) fn resolve_dense<R: ResolutionReferenceFact>(
     paths: &SymbolPathArena,
     references: &[R],
     starting_state: ResolutionStartingState<'_>,
-) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
+) -> Result<
+    (
+        NameIndex,
+        NameIndex,
+        NameIndex,
+        MembershipIndex,
+        ResolutionResults,
+    ),
+    ResolutionError,
+> {
     let supported_import_count = references
         .iter()
         .filter(|reference| supported_import_domain(*reference).is_some())
@@ -211,7 +220,16 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     references: &[R],
     pass_limit: usize,
     starting_state: ResolutionStartingState<'_>,
-) -> Result<(NameIndex, NameIndex, MembershipIndex, ResolutionResults), ResolutionError> {
+) -> Result<
+    (
+        NameIndex,
+        NameIndex,
+        NameIndex,
+        MembershipIndex,
+        ResolutionResults,
+    ),
+    ResolutionError,
+> {
     let ResolutionStartingState {
         provisional_relationships,
         settled_outcomes: seed,
@@ -461,7 +479,10 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             .then(|| {
                 !(matches!(
                     reference.kind(),
-                    ReferenceKind::FeatureChaining | ReferenceKind::ExplicitRelationshipEndpoint
+                    ReferenceKind::FeatureChaining
+                        | ReferenceKind::ExplicitRelationshipEndpoint
+                        | ReferenceKind::SatisfySource
+                        | ReferenceKind::SatisfyTarget
                 ) && reference.flags().dotted)
             })
             .unwrap_or(false)
@@ -501,6 +522,8 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                             | ReferenceKind::Redefinition
                             | ReferenceKind::FeatureInverting
                             | ReferenceKind::FeatureChaining
+                            | ReferenceKind::SatisfySource
+                            | ReferenceKind::SatisfyTarget
                     )))
             .then_some(index)
         })
@@ -1302,6 +1325,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
     Ok((
         direct_names,
         effective_imports,
+        exported_imports,
         memberships,
         ResolutionResults {
             member_access_paths: member_access_paths
@@ -1827,7 +1851,6 @@ pub(crate) fn definition_usage_source_matches(metaclass: &str, kind: Declaration
                 | DeclarationKind::CalcDefinition
                 | DeclarationKind::ClassDefinition
                 | DeclarationKind::ExtendedDefinition
-                | DeclarationKind::IndividualDefinition
         ),
         "Usage" => is_usage_declaration(kind),
         _ => false,

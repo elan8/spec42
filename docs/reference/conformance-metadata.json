@@ -1,6 +1,6 @@
 {
   "languageCoverage": [
-    { "area": "SysML/KerML parsing", "status": "partial", "notes": "Pinned parser coverage; release gating follows tested editor and validation workflows." },
+    { "area": "SysML/KerML parsing", "status": "partial", "notes": "Pinned parser plus production-level textual inventory in docs/reference/TEXTUAL-SYNTAX-INVENTORY.md; supported forms have executable accept/reject examples, remaining productions are untested or explicit grammar exclusions." },
     { "area": "Workspace imports and library resolution", "status": "supported", "notes": "Bundled standard library, custom roots, domain libraries, and optional Sysand dependency roots." },
     { "area": "Formatting, rename, navigation", "status": "release-gating", "notes": "Daily editing workflows tracked in supported workflows." }
   ],

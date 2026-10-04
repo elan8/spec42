@@ -28,12 +28,6 @@ package OwnedBySpecializations {
 (fixture-diagnostics
   (document "memory://snapshot/generated_conditional_owned_by_specializations.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 2 8) (end 2 25))
-      )
     )
   )
 )

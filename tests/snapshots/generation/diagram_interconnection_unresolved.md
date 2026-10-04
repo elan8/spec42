@@ -3,7 +3,7 @@
 description=Interconnection view keeps unresolved exposure explicit
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=interconnection-view
 viewDocument=diagram_interconnection_unresolved.md
 viewQualifiedName=InterconnectionNegative::selected
@@ -136,7 +136,7 @@ package InterconnectionNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:87d2ef967cc5f0fd8038d680e45c2764396926f63f578961040ce097f22d9616",
+  "modelDigest": "blake3:eae7348bce2e8e040e94521fad0652cbc0bcaa89e3b2cb96e600012b2a530ec3",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_unresolved.md",

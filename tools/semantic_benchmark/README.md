@@ -55,3 +55,24 @@ than summed worker CPU time. Schema version 2 records a dependency-complete dige
 workspace and library inputs, the exact schedule/library/filter configuration, commit and dirty-tree
 state, Rust toolchain, build profile, OS/architecture, and logical parallelism. The benchmark retains
 every sample and reports min/p25/median/p75/p95/max so warmup and host variance remain visible.
+
+## Connection scaling probe (Windows)
+
+From the repository root, run:
+
+```powershell
+./scripts/benchmark-connections.ps1
+./scripts/benchmark-connections.ps1 -ReuseLibrary
+```
+
+The probe holds 400 requirement usages constant and adds 0, 25, 100, and 400 binary connections,
+comparing ordinary connections with `#derivation` connections whose ends use `#original` and
+`#derive`. Both variants import the same domain library and admit the checked-in standard libraries.
+Override `-Requirements`, `-Connections`, and `-Iterations` to vary the scale. `-ReuseLibrary`
+reuses the publication service across samples within each case; its first sample is cold.
+
+The script builds offline in release mode, generates SOURCE-only inputs under a fresh directory in
+`target`, and feeds them to this harness. It prints median build and phase times and retains full
+JSON reports and generated inputs for inspection. These synthetic inputs are timing probes; the
+standalone semantic snapshot corpus verifies relationship correctness separately. No host-specific
+timing assertion gates CI.

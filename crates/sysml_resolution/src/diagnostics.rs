@@ -672,11 +672,6 @@ semantic_diagnostic_codes! {
     FlowDirectionIncompatible => "flow_direction_incompatible",
         "These connected ports mirror the same direction, so nothing can flow between them.";
     }
-    Advisory {
-    /// A declared port takes part in no connection.
-    UnconnectedPort => "unconnected_port",
-        "This port takes part in no connection.";
-    }
     Validation {
     /// Connected elements are neither ports nor a pair of structural parts.
     ConnectionContextInvalid => "connection_context_invalid",
@@ -792,7 +787,13 @@ semantic_diagnostic_codes! {
         "This view declares a body but exposes no members.";
     /// A rendering member is typed by something that is not a rendering definition.
     ViewRenderingInvalidTarget => "view_rendering_invalid_target",
-        "A rendering member must be typed by a rendering definition or usage.";
+        "A rendering member must reference a rendering usage or be typed by a rendering definition or usage.";
+    /// A render membership is owned outside a view definition or usage.
+    ViewRenderingInvalidOwner => "view_rendering_invalid_owner",
+        "A render member must be owned by a view definition or usage.";
+    /// A view directly owns more than one render membership.
+    ViewMultipleRenderings => "view_multiple_renderings",
+        "A view definition or usage may own at most one render member.";
     }
     Unresolved {
     /// A textual representation declares no language identifier.

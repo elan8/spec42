@@ -3,7 +3,7 @@
 description=General View draws authored subclassification, subsetting, redefinition, and feature typing between two projected elements (SysML 8.2.3.6); implied library subsetting stays off the canvas
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=general-view
 viewDocument=diagram_general_authored_subsetting.md
 viewQualifiedName=GeneralSubsetting::selected
@@ -390,7 +390,7 @@ package GeneralSubsetting {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:56160af87967c704c70d6c1a9c50801e87fbe893665826dd188bc8bca767b4e0",
+  "modelDigest": "blake3:f03de4ce91299ee5424e4b5ac2976b41293674df78a39fbea5b0ad3036df8ffc",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_authored_subsetting.md",

@@ -3,7 +3,7 @@
 description=An authored view with no exposure produces a valid empty projection
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=browser-view
 viewDocument=diagram_empty_valid.md
 viewQualifiedName=EmptyExample::selected
@@ -117,7 +117,7 @@ package EmptyExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:c164ccdbf80792f57ef5066af3968089805197ac3d9098b12c3874508ada9540",
+  "modelDigest": "blake3:e8322e4aee91be6fc11a9f13124bb49a1dad5a837608c6ff051cb871adaebed2",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_empty_valid.md",

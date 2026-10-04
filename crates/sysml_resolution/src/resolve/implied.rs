@@ -575,6 +575,12 @@ pub(crate) fn library_specialization_metaclasses(
         }
         _ => {}
     }
+    // An occurrence definition of any family takes OccurrenceDefinition's rules (its `individual`
+    // `life` key), as the Pilot's definition adapters inherit `OccurrenceDefinitionAdapter`.
+    if crate::model::metaclass::is_occurrence_definition(kind) && primary != "OccurrenceDefinition"
+    {
+        metaclasses.push(ApplicableRuleMetaclass::all("OccurrenceDefinition"));
+    }
     metaclasses.sort_unstable();
     metaclasses.dedup();
     metaclasses
@@ -705,6 +711,7 @@ pub(crate) fn library_anchor_packages() -> Vec<&'static str> {
                 .iter()
                 .map(|rule| rule.anchor),
         )
+        .chain(std::iter::once(INDIVIDUAL_MULTIPLICITY_ANCHOR))
         .filter_map(|anchor| anchor.split("::").next())
         .chain(LibraryRedefinitionRole::anchor_packages())
         .chain(crate::resolve::role_specializations::LibrarySpecializationRole::anchor_packages())
@@ -2393,6 +2400,29 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
         });
     };
 
+    // Only values that redefine SemanticMetadata::baseType can supply the projection.
+    // Select them once before testing owner conformance: walking the specialization graph
+    // for every unrelated library feature value, for every annotation, dominates large models.
+    // Preserve feature-value order so the first applicable value remains the canonical choice.
+    let base_type_redefinitions = storage
+        .references
+        .iter()
+        .enumerate()
+        .filter_map(|(index, reference)| {
+            (reference.kind == ReferenceKind::Redefinition
+                && AuthoredReferenceId::from_index(index)
+                    .ok()
+                    .is_some_and(|id| {
+                        resolution.outcome(id) == Some(ResolutionStatus::Resolved(base_type))
+                    }))
+            .then_some(reference.source)
+        })
+        .collect::<std::collections::BTreeSet<_>>();
+    let base_type_values = storage
+        .feature_values
+        .iter()
+        .filter(|candidate| base_type_redefinitions.contains(&candidate.declaration))
+        .collect::<Vec<_>>();
     let mut projections = Vec::new();
     let mut implied = Vec::new();
     let mut status = SemanticMetadataProjectionStatus::Complete;
@@ -2433,7 +2463,7 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
             }
         }
         let mut value = None;
-        for candidate in storage.feature_values.iter() {
+        for candidate in base_type_values.iter().copied() {
             let Some(owner) = storage
                 .declaration(candidate.declaration)
                 .and_then(|decl| decl.owner)
@@ -2443,21 +2473,7 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
             if matches!(
                 settled_specializes(storage, resolution, metadata_type, owner)?,
                 SettledSpecialization::Conforms
-            ) && storage
-                .references
-                .iter()
-                .enumerate()
-                .any(|(index, reference)| {
-                    reference.source == candidate.declaration
-                        && reference.kind == ReferenceKind::Redefinition
-                        && AuthoredReferenceId::from_index(index)
-                            .ok()
-                            .is_some_and(|id| {
-                                resolution.outcome(id)
-                                    == Some(ResolutionStatus::Resolved(base_type))
-                            })
-                })
-            {
+            ) {
                 value = Some(candidate);
                 break;
             }
@@ -2551,6 +2567,9 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
     })
 }
 
+/// SysML 8.3.9.3, checkOccurrenceDefinitionMultiplicitySpecialization.
+pub(crate) const INDIVIDUAL_MULTIPLICITY_ANCHOR: &str = "Base::zeroOrOne";
+
 pub(crate) fn library_specialization_anchors(
     storage: &SemanticModelStorage,
 ) -> LibrarySpecializationAnchorFacts {
@@ -2588,6 +2607,16 @@ pub(crate) fn library_specialization_anchors(
                 rule.anchor,
             )
         }))
+        .chain(
+            specialization_check_rule(SpecializationCheckKind::OccurrenceDefinitionMultiplicity)
+                .map(|rule| {
+                    (
+                        rule.rule_id,
+                        LibrarySpecializationAnchorBranch::Default,
+                        INDIVIDUAL_MULTIPLICITY_ANCHOR,
+                    )
+                }),
+        )
         .map(|(rule_id, branch, anchor)| {
             (
                 LibrarySpecializationAnchorKey {
@@ -2752,6 +2781,18 @@ pub(crate) fn synthesize_generated_library_specializations(
             }
         }
     }
+    if let Some(LibrarySpecializationAnchor::Resolved(anchor)) =
+        specialization_check_rule(SpecializationCheckKind::OccurrenceDefinitionMultiplicity)
+            .and_then(|rule| anchor_facts.outcome(rule.rule_id))
+    {
+        for source in storage.individual_multiplicities() {
+            implied.push(ImpliedRelationship {
+                kind: ReferenceKind::Subsetting,
+                source,
+                target: *anchor,
+            });
+        }
+    }
     implied.sort_by_key(|relationship| (relationship.source.0, relationship.target.0));
     implied.dedup();
     Ok(implied.into_boxed_slice())
@@ -2899,7 +2940,8 @@ pub(crate) fn conditional_library_specialization_predicate_holds(
     };
     match rule.predicate {
         LibrarySpecializationPredicate::IsIndividual => {
-            declaration.kind == DeclarationKind::OccurrenceDefinition && facts.modifiers.individual
+            crate::model::metaclass::is_occurrence_definition(declaration.kind)
+                && facts.modifiers.individual
         }
         LibrarySpecializationPredicate::PortionKindSnapshot => {
             declaration.kind == DeclarationKind::OccurrenceUsage

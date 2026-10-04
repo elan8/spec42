@@ -3,7 +3,7 @@
 description=General view keeps unresolved exposure explicit
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=general-view
 viewDocument=diagram_general_unresolved.md
 viewQualifiedName=GeneralNegative::selected
@@ -136,7 +136,7 @@ package GeneralNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:d3889f230974ecff654fe1acf2aec1ed7487f76f53b0a39cacc1f2089e60c506",
+  "modelDigest": "blake3:463dff8d0535216b245f7273eaef26f01baa0cbb3c143356bd7d988418f32abf",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_unresolved.md",

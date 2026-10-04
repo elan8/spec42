@@ -42,6 +42,21 @@ impl Guest for RequirementTraceabilityCsv {
 fn endpoint(value: SatisfyEndpoint) -> (String, &'static str) {
     match value {
         SatisfyEndpoint::Resolved(value) => (value.qualified_name, "resolved"),
+        // `droneInstance.communication` in `Pkg`: `Pkg::droneInstance.communication`.
+        SatisfyEndpoint::FeatureChain { path, .. } => (
+            path.iter()
+                .enumerate()
+                .map(|(index, hop)| {
+                    if index == 0 {
+                        hop.qualified_name.clone()
+                    } else {
+                        hop.name.clone().unwrap_or_default()
+                    }
+                })
+                .collect::<Vec<_>>()
+                .join("."),
+            "resolved",
+        ),
         SatisfyEndpoint::Ambiguous(values) => (
             values.into_iter().map(|value| value.qualified_name).collect::<Vec<_>>().join("|"),
             "ambiguous",

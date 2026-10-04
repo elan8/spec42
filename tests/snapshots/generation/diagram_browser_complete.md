@@ -3,7 +3,7 @@
 description=Browser view projects canonical membership tree
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=browser-view
 viewDocument=diagram_browser_complete.md
 viewQualifiedName=BrowserExample::selected
@@ -169,7 +169,7 @@ package BrowserExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:b61d63bd27169e7101d6b6ea524086105ad90364cadf0f64da5e8480d427ea8b",
+  "modelDigest": "blake3:558c24f93375a48ba5bcdc66257858d86460e07e37de474a73c8c80c00586272",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_browser_complete.md",

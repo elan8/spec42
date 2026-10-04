@@ -117,7 +117,13 @@ package FeatureAdvancedCoverage {
         (severity error)
         (code "recovered_package_body_element")
         (source "parser")
-        (range (start 25 4) (end 28 4))
+        (range (start 25 4) (end 25 17))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 27 4) (end 27 20))
       )
       (diagnostic
         (severity warning)

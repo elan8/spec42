@@ -3,7 +3,7 @@
 description=Diagram node typing is authored FeatureTyping, not the implied library effective-type closure
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=general-view
 viewDocument=diagram_direct_typing.md
 viewQualifiedName=DirectTypingExample::selected
@@ -230,7 +230,7 @@ package DirectTypingExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:64b2828ea216c0f34cf8c7ea59c066a5b3f1c9b5b62ed72ce89ed9ba28923843",
+  "modelDigest": "blake3:d25d6ce9654ba98e10dc76ac4149273f03750cfd09714a091f538ac7395219bf",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_direct_typing.md",

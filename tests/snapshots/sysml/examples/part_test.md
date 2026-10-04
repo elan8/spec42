@@ -67,28 +67,10 @@ package PartTest {
   (document "memory://snapshot/part_test.md"
     (diagnostics
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 6 2) (end 6 22))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
         (range (start 9 10) (end 9 31))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 18 2) (end 21 3))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 20 6) (end 20 17))
       )
       (diagnostic
         (severity warning)
@@ -101,18 +83,6 @@ package PartTest {
         (code "unresolved_reference")
         (source "semantic")
         (range (start 24 25) (end 24 39))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 44 2) (end 44 14))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 45 2) (end 45 18))
       )
       (diagnostic
         (severity error)

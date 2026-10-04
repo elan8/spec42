@@ -3,8 +3,8 @@
   "semanticApiVersion": "0.2.0",
   "namespace": "spec42:generator-abi/5",
   "importModule": "spec42",
-  "schemaFingerprint": "0xc48dac594277e819",
-  "compatibilityToken": "0xc24884b618a30bfa",
+  "schemaFingerprint": "0x8c7bd77046f00f9b",
+  "compatibilityToken": "0xf75b208069d30879",
   "operations": [
     { "name": "Info", "code": 0, "request": "()", "response": "ModelInfo" },
     { "name": "Roots", "code": 1, "request": "()", "response": "Vec<ElementSummary>" },
@@ -18,7 +18,8 @@
     { "name": "SatisfyRelationships", "code": 9, "request": "()", "response": "Vec<SatisfyRelationship>" },
     { "name": "RequirementVerifications", "code": 10, "request": "()", "response": "Vec<RequirementVerification>" },
     { "name": "DiagramViews", "code": 11, "request": "()", "response": "Vec<DiagramViewSummary>" },
-    { "name": "DiagramView", "code": 12, "request": "String", "response": "DiagramViewProjection" }
+    { "name": "DiagramView", "code": 12, "request": "String", "response": "DiagramViewProjection" },
+    { "name": "DerivationRelationships", "code": 13, "request": "()", "response": "Vec<DerivationRelationship>" }
   ],
   "diagnosticLevels": [
     { "name": "Debug", "code": 0 },

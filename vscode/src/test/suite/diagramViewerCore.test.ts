@@ -3,7 +3,6 @@ import { describe, it } from "node:test";
 import {
   allDiagramViewOptions,
   authoredDiagramViewOptions,
-  buildGenerateArgv,
   diagramRenderIsStale,
   diagramViewsForDocument,
   diagramViewKindForHandle,
@@ -11,13 +10,11 @@ import {
   isPathInsideWorkspace,
   parseDiagramProduct,
   parseDiagramViewCatalog,
-  parseGenerationReport,
-  parseLspGenerationResult,
+  parseLspDiagramResult,
   parseStateTransitionViewCatalog,
   parseSourceNavigation,
   reconcileDelayMs,
   resolveDiagramSelection,
-  selectSingleDiagramJson,
   visibleSourceColumn,
 } from "../../diagram/diagramViewerCore";
 import { isEmptyIncompleteDiagramProduct } from "../../diagram/diagramProductState";
@@ -32,51 +29,18 @@ describe("diagram viewer core", () => {
     assert.equal(visibleSourceColumn("file:///workspace/missing.sysml", editors), undefined);
   });
 
-  it("builds a bounded saved-file generation invocation", () => {
-    assert.deepEqual(buildGenerateArgv("/plugin.wasm", "/w/model.sysml", "/tmp/out", "/w", ["/lib"]), [
-      "generate", "/plugin.wasm", "/w/model.sysml", "--output", "/tmp/out", "--format", "json",
-      "--timeout-seconds", "30", "--max-files", "16", "--max-total-bytes", "16777216",
-      "--workspace-root", "/w", "--library-path", "/lib",
-    ]);
-  });
-
-  it("requires the authoritative digest in the report", () => {
-    assert.deepEqual(parseGenerationReport({ status: "generated", model_digest: "sha256:abc" }), {
-      status: "generated", model_digest: "sha256:abc",
-    });
-    assert.throws(() => parseGenerationReport({ status: "generated" }));
-  });
-
-  it("declares all renderer views at the plugin boundary", () => {
+  it("declares all renderer views", () => {
     assert.deepEqual(DIAGRAM_VIEWS.map((view) => view.id), [
       "general-view", "interconnection-view", "action-flow-view", "state-transition-view",
       "sequence-view", "browser-view", "grid-view", "geometry-view",
     ]);
   });
 
-  it("selects exactly one diagram JSON artifact", () => {
-    assert.equal(selectSingleDiagramJson(["diagram.json", ".spec42-generator-manifest.json"]), "diagram.json");
-    assert.throws(() => selectSingleDiagramJson([]));
-    assert.throws(() => selectSingleDiagramJson(["a.json", "b.json"]));
-  });
-
-  it("validates persistent LSP artifacts and timing identity", () => {
-    const value = {
-      modelDigest: "blake3:model",
-      generatorDigest: "sha256:guest",
-      artifacts: [{ path: "diagram.json", content: [123, 125] }],
-      timings: {
-        modulePrepareMs: 0,
-        guestExecutionUs: 1000,
-        preparedReused: true,
-        compilationCacheEnabled: true,
-        compilationCacheHits: 1,
-        compilationCacheMisses: 0,
-        compilationCacheError: null,
-      },
-    };
-    assert.deepEqual(parseLspGenerationResult(value), value);
-    assert.throws(() => parseLspGenerationResult({ ...value, artifacts: [{ path: "diagram.json", content: [256] }] }));
+  it("validates the native diagram result", () => {
+    const value = { modelDigest: "blake3:model", productJson: "{}", durationUs: 1000 };
+    assert.deepEqual(parseLspDiagramResult(value), value);
+    assert.throws(() => parseLspDiagramResult({ modelDigest: "blake3:model", durationUs: 1 }));
+    assert.throws(() => parseLspDiagramResult(null));
   });
 
   it("validates typed state-transition view choices", () => {

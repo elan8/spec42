@@ -44,7 +44,7 @@ package RequirementTest {
         (severity error)
         (code "recovered_requirement_body_element")
         (source "parser")
-        (range (start 15 2) (end 16 1))
+        (range (start 15 2) (end 15 30))
       )
       (diagnostic
         (severity information)

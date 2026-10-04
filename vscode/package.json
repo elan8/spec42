@@ -4,7 +4,7 @@
   "publisher": "Elan8",
   "icon": "logo/logo.png",
   "description": "Open, local-first SysML v2 and KerML tooling with live editing and the same analysis engine for CI and assistants.",
-  "version": "0.52.0",
+  "version": "0.54.1",
   "license": "MIT",
   "keywords": [
     "sysml",
@@ -539,11 +539,6 @@
           "default": "spec42",
           "description": "Path to the Spec42 server binary (or 'spec42' if on PATH)."
         },
-        "spec42.diagramViewer.pluginPath": {
-          "type": "string",
-          "default": "",
-          "description": "Path to a compatible Spec42 diagram Wasm plugin. When empty, the extension uses its packaged generators/diagram.wasm artifact."
-        },
         "spec42.libraryPaths": {
           "type": "array",
           "items": {
@@ -628,10 +623,8 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run build:diagram-generator && npm run stage:package-content && npm run build:headless-renderer && npm run compile",
-    "build:diagram-generator": "../scripts/build-repository-generator-plugins.sh",
+    "vscode:prepublish": "npm run stage:package-content && npm run compile",
     "stage:package-content": "node scripts/stage-package-content.js",
-    "build:headless-renderer": "node scripts/build-headless-renderer.js",
     "build:extension": "node scripts/build-extension.js",
     "build:diagram-webview": "node scripts/build-diagram-webview.js",
     "compile": "npm run typecheck && tsc -p ./ && npm run build:extension && npm run build:diagram-webview",
@@ -654,12 +647,18 @@
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.4.1",
     "@vscode/vsce": "^3.2.2",
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.25.12",
     "typescript": "~5.6.0",
     "yauzl": "^2.10.0"
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.0",
     "vscode-languageserver-protocol": "^3.17.0"
+  },
+  "overrides": {
+    "mocha": {
+      "diff": "^8.0.4",
+      "serialize-javascript": "^7.0.5"
+    }
   }
 }

@@ -1142,6 +1142,7 @@ pub(crate) fn write_declaration_facts(
         && facts.positional_end.is_none()
         && facts.cross_feature_projection.is_none()
         && facts.expression_result.is_none()
+        && !facts.is_individual_multiplicity
     {
         return Ok(());
     }
@@ -1208,6 +1209,14 @@ pub(crate) fn write_declaration_facts(
         output.write_str(") (owned-cross-feature ")?;
         write_node_identity(model, projection.owned_cross_feature, output)?;
         output.write_str("))")?;
+    }
+    if facts.is_individual_multiplicity {
+        output.write_str(" (origin individual-multiplicity)")?;
+    }
+    if let Some(multiplicity) = model.storage.individual_multiplicity(declaration) {
+        output.write_str(" (individual-multiplicity ")?;
+        write_node_identity(model, multiplicity, output)?;
+        output.write_char(')')?;
     }
     if let Some(result) = facts.expression_result {
         output.write_str(" (expression-result ")?;
@@ -2249,7 +2258,6 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::Documentation => "documentation",
         DeclarationKind::TextualRepresentation => "textual-representation",
         DeclarationKind::ExtendedDefinition => "extended-definition",
-        DeclarationKind::IndividualDefinition => "individual-definition",
         DeclarationKind::BareConnect => "bare-connect",
         DeclarationKind::PerformParameterBinding => "perform-parameter-binding",
     }

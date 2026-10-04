@@ -3,7 +3,7 @@
 description=General view distinguishes authored and implied relationship provenance
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=general-view
 viewDocument=diagram_relationship_provenance.md
 viewQualifiedName=ProvenanceExample::selected
@@ -266,7 +266,7 @@ package ProvenanceExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:3b2b1504866c23a5657f18cb9bbdae13504f6f130d769472c0e9921ba8805180",
+  "modelDigest": "blake3:e6149432933b9aa07deae385cfe63b468f653b6ffe7832d48ba4a462e284708b",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_relationship_provenance.md",

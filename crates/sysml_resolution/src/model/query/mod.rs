@@ -72,6 +72,7 @@ use crate::resolve::implied::GENERATED_LIBRARY_REDEFINITION_RULES;
 use crate::resolve::is_action_usage_declaration;
 use crate::resolve::is_usage_declaration;
 use crate::resolve::names::lookup_lexical_into;
+use crate::resolve::names::EffectiveVisibility;
 use crate::resolve::names::FirstScopePolicy;
 use crate::resolve::names::LookupTarget;
 use crate::resolve::requirement_derived_membership_role;
@@ -91,6 +92,7 @@ use crate::traceability::BindingEndpoint;
 use crate::traceability::SatisfyEndpoint;
 use crate::traceability::SatisfyPolarity;
 use crate::traceability::SatisfyRelationship;
+use crate::traceability::{DerivationEndpoint, DerivationRelationship};
 use crate::type_query::Conformance;
 use crate::type_query::ConformanceObstacle;
 use crate::type_query::EffectiveType;
@@ -143,6 +145,10 @@ use crate::SymbolId;
 use crate::SymbolToken;
 use crate::TextPosition;
 use crate::TextRange;
+use crate::ViewExposedElements;
+use crate::ViewExposureObstacle;
+use crate::ViewSelectionObstacle;
+use crate::ViewSelectionOutcome;
 
 use source_identity::PublicationModelDigest;
 use source_identity::RootDigest;
@@ -1896,6 +1902,54 @@ impl<D> SemanticModel<D> {
             });
         };
         let _normative_rule = (rule.rule_id, rule.metaclass);
+        if kind == SpecializationCheckKind::OccurrenceDefinitionMultiplicity {
+            let mut violated = false;
+            let mut unresolved = false;
+            for (index, (declaration, facts)) in self
+                .storage
+                .declarations
+                .iter()
+                .zip(self.storage.declaration_facts.iter())
+                .enumerate()
+            {
+                if !crate::model::metaclass::is_occurrence_definition(declaration.kind)
+                    || !facts.modifiers.individual
+                {
+                    continue;
+                }
+                let Some(multiplicity) = self
+                    .storage
+                    .individual_multiplicity(DeclarationId(index as u32))
+                else {
+                    violated = true;
+                    continue;
+                };
+                let Some(crate::resolve::implied::LibrarySpecializationAnchor::Resolved(anchor)) =
+                    self.resolution
+                        .library_specialization_anchors
+                        .outcome(rule.rule_id)
+                else {
+                    unresolved = true;
+                    continue;
+                };
+                match self.conformance(
+                    multiplicity,
+                    *anchor,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => violated = true,
+                    Conformance::Indeterminate(_) => unresolved = true,
+                }
+            }
+            return self.resolved_outcome(if violated {
+                SpecializationCheckOutcome::Violated
+            } else if unresolved {
+                SpecializationCheckOutcome::Unresolved
+            } else {
+                SpecializationCheckOutcome::Satisfied
+            });
+        }
         if kind == SpecializationCheckKind::FeatureCrossing {
             let outcome = if self
                 .storage
@@ -2494,7 +2548,6 @@ impl<D> SemanticModel<D> {
                 | SpecializationCheckKind::FeaturePortion
                 | SpecializationCheckKind::FeatureSubobject
                 | SpecializationCheckKind::OccurrenceUsageSuboccurrence
-                | SpecializationCheckKind::OccurrenceDefinitionMultiplicity
         ) {
             return self.resolved_outcome(self.library_role_specialization_check(kind));
         }
@@ -2777,6 +2830,206 @@ impl<D> SemanticModel<D> {
         self.resolved_outcome(values)
     }
 
+    /// Projects `ViewUsage::exposedElement` from owned expose members and effective filters.
+    /// Namespace exposes expand their importable members; the target namespace itself is not an
+    /// exposed element merely because it is the reference's resolution target.
+    pub(crate) fn view_exposed_elements(
+        &self,
+        symbol: SymbolId,
+    ) -> QueryOutcome<ViewExposedElements> {
+        let view = match self.single_declaration(symbol) {
+            Ok(declaration) => declaration,
+            Err(outcome) => return outcome,
+        };
+        if self
+            .storage
+            .declaration(view)
+            .is_none_or(|value| value.kind != DeclarationKind::ViewUsage)
+        {
+            return self.query_outcome(QueryAnswer::Unsupported);
+        }
+
+        let mut candidates = std::collections::BTreeSet::new();
+        let mut obstacles = std::collections::BTreeSet::new();
+        for exposure in self
+            .child_declarations(view)
+            .iter()
+            .copied()
+            .filter(|candidate| {
+                self.storage
+                    .declaration(*candidate)
+                    .is_some_and(|value| value.kind == DeclarationKind::Expose)
+            })
+        {
+            let Some(exposure_symbol) = self.symbol_id(exposure) else {
+                return self.query_outcome(QueryAnswer::Unsupported);
+            };
+            let references = self
+                .outgoing_reference_ids(exposure)
+                .iter()
+                .copied()
+                .filter(|reference| {
+                    self.storage.references[reference.index()].kind == ReferenceKind::ViewExpose
+                })
+                .collect::<Vec<_>>();
+            let [reference_id] = references.as_slice() else {
+                obstacles.insert(ViewExposureObstacle::ExposureUnsupported {
+                    exposure: exposure_symbol,
+                });
+                continue;
+            };
+            let reference = &self.storage.references[reference_id.index()];
+            if reference.flags.filtered {
+                obstacles.insert(ViewExposureObstacle::ExposureUnsupported {
+                    exposure: exposure_symbol,
+                });
+                continue;
+            }
+            match self.resolution.outcome(*reference_id) {
+                // Every Type is a Namespace, so `vehicle::*` on a part usage exposes its members
+                // just as `Catalog::*` does on a package. An alias target is not expanded here.
+                Some(ResolutionStatus::Resolved(target))
+                    if self
+                        .storage
+                        .declaration(target)
+                        .is_none_or(|value| value.kind == DeclarationKind::Alias)
+                        && (reference.flags.wildcard || reference.flags.recursive) =>
+                {
+                    obstacles.insert(ViewExposureObstacle::ExposureUnsupported {
+                        exposure: exposure_symbol,
+                    });
+                }
+                Some(ResolutionStatus::Resolved(target)) if reference.flags.wildcard => {
+                    self.collect_exposed_namespace_members(
+                        target,
+                        reference.flags.recursive,
+                        &mut candidates,
+                    );
+                }
+                Some(ResolutionStatus::Resolved(target)) => {
+                    candidates.insert(target);
+                    if reference.flags.recursive {
+                        self.collect_exposed_namespace_members(target, true, &mut candidates);
+                    }
+                }
+                Some(ResolutionStatus::Ambiguous(range)) => {
+                    let values = range
+                        .slice(&self.resolution.ambiguous_candidates)
+                        .unwrap_or_default()
+                        .iter()
+                        .filter_map(|candidate| self.symbol_id(*candidate))
+                        .collect::<Vec<_>>()
+                        .into_boxed_slice();
+                    obstacles.insert(ViewExposureObstacle::ExposureAmbiguous {
+                        exposure: exposure_symbol,
+                        candidates: values,
+                    });
+                }
+                Some(ResolutionStatus::Unresolved) => {
+                    obstacles.insert(ViewExposureObstacle::ExposureUnresolved {
+                        exposure: exposure_symbol,
+                    });
+                }
+                Some(ResolutionStatus::Unsupported | ResolutionStatus::NonConverged) | None => {
+                    obstacles.insert(ViewExposureObstacle::ExposureUnsupported {
+                        exposure: exposure_symbol,
+                    });
+                }
+            }
+        }
+
+        let mut elements = Vec::new();
+        for candidate in candidates {
+            let Some(candidate_symbol) = self.symbol_id(candidate) else {
+                continue;
+            };
+            match self.view_selection(symbol, candidate_symbol).answer {
+                QueryAnswer::Resolved(selection) => match selection.outcome {
+                    ViewSelectionOutcome::Included => elements.push(candidate_symbol),
+                    ViewSelectionOutcome::Excluded => {}
+                    ViewSelectionOutcome::Indeterminate(selection_obstacles) => {
+                        for obstacle in selection_obstacles {
+                            obstacles.insert(match obstacle {
+                                ViewSelectionObstacle::UnresolvedPredicate => {
+                                    ViewExposureObstacle::FilterUnresolved {
+                                        candidate: candidate_symbol,
+                                    }
+                                }
+                                ViewSelectionObstacle::AmbiguousPredicate(predicates) => {
+                                    ViewExposureObstacle::FilterAmbiguous {
+                                        candidate: candidate_symbol,
+                                        predicates,
+                                    }
+                                }
+                                ViewSelectionObstacle::UnsupportedPredicate => {
+                                    ViewExposureObstacle::FilterUnsupported {
+                                        candidate: candidate_symbol,
+                                    }
+                                }
+                            });
+                        }
+                    }
+                },
+                QueryAnswer::Unresolved => {
+                    obstacles.insert(ViewExposureObstacle::FilterUnresolved {
+                        candidate: candidate_symbol,
+                    });
+                }
+                QueryAnswer::Ambiguous(_)
+                | QueryAnswer::Unsupported
+                | QueryAnswer::Recovery
+                | QueryAnswer::Incomplete => {
+                    obstacles.insert(ViewExposureObstacle::FilterUnsupported {
+                        candidate: candidate_symbol,
+                    });
+                }
+            }
+        }
+        self.resolved_outcome(ViewExposedElements {
+            view: symbol,
+            elements: elements.into_boxed_slice(),
+            obstacles: obstacles.into_iter().collect::<Vec<_>>().into_boxed_slice(),
+        })
+    }
+
+    /// The visible members of a Namespace: its owned members that are public or carry no
+    /// authored visibility, plus its public imports. Every Type is a Namespace, so this covers
+    /// `vehicle::*` on a part usage as well as `Catalog::*` on a package. A recursive expose
+    /// descends into each such member. Inherited memberships are not expanded: through the
+    /// library specialization chain they would expose every standard feature of `Part`.
+    fn collect_exposed_namespace_members(
+        &self,
+        target: DeclarationId,
+        recursive: bool,
+        into: &mut std::collections::BTreeSet<DeclarationId>,
+    ) {
+        // The name index treats a default-visibility member of a non-package owner as private
+        // for name lookup; for exposure only an authored `private`/`protected` hides a member.
+        let exposable = |member: DeclarationId| {
+            self.memberships.get(member).is_some_and(|membership| {
+                membership.visibility == EffectiveVisibility::Public || !membership.authored
+            })
+        };
+        let mut pending = vec![target];
+        let mut visited = std::collections::BTreeSet::new();
+        while let Some(namespace) = pending.pop() {
+            if !visited.insert(namespace) {
+                continue;
+            }
+            for (_, imported) in self.exported_imports.entries_for_owner(Some(namespace)) {
+                into.extend(imported.iter().copied());
+            }
+            for (_, named) in self.direct_names.entries_for_owner(Some(namespace)) {
+                for member in named.iter().copied().filter(|member| exposable(*member)) {
+                    into.insert(member);
+                    if recursive {
+                        pending.push(member);
+                    }
+                }
+            }
+        }
+    }
+
     /// Projects `deriveNamespaceImportImportedElement` for every direct authored NamespaceImport
     /// owned by a Namespace. The concrete grammar gives an import no authorable name, so the
     /// owner-scoped result carries its canonical identity rather than asking callers to infer one
@@ -2890,7 +3143,29 @@ impl<D> SemanticModel<D> {
     }
 
     pub(crate) fn satisfy_relationships(&self) -> QueryOutcome<Box<[SatisfyRelationship]>> {
-        let endpoint = |reference: Option<AuthoredReferenceId>| match reference
+        // A dotted operand (`by a.b`) is walked hop by hop; with every hop resolved it is
+        // published as the chain, otherwise it reports the chain's status like a plain reference.
+        let feature_chain = |reference: AuthoredReferenceId| -> Option<SatisfyEndpoint> {
+            let authored = self.storage.references.get(reference.index())?;
+            if !authored.flags.dotted {
+                return None;
+            }
+            let path = self
+                .resolution
+                .member_access_paths
+                .get(&reference)?
+                .iter()
+                .map(|status| match status {
+                    ResolutionStatus::Resolved(target) => self.symbol_id(*target),
+                    _ => None,
+                })
+                .collect::<Option<Box<[SymbolId]>>>()?;
+            (!path.is_empty()).then(|| SatisfyEndpoint::FeatureChain {
+                path,
+                authored: self.authored_path(authored.path).into(),
+            })
+        };
+        let plain_endpoint = |reference: Option<AuthoredReferenceId>| match reference
             .as_ref()
             .and_then(|reference| self.resolution.outcome(*reference))
         {
@@ -2910,6 +3185,12 @@ impl<D> SemanticModel<D> {
                 SatisfyEndpoint::Unresolved
             }
             None => SatisfyEndpoint::Unsupported,
+        };
+        let endpoint = |reference: Option<AuthoredReferenceId>| {
+            if let Some(chain) = reference.and_then(feature_chain) {
+                return chain;
+            }
+            plain_endpoint(reference)
         };
         let mut values = self
             .storage
@@ -2943,9 +3224,16 @@ impl<D> SemanticModel<D> {
                     })
                     .and_then(|(index, _)| AuthoredReferenceId::from_index(index).ok());
                 let facts = self.storage.declaration_facts(id)?;
+                let identity = self.symbol_id(id)?;
                 Some(SatisfyRelationship {
-                    identity: self.symbol_id(id)?,
-                    requirement: endpoint(requirement),
+                    identity,
+                    // Only the declaration form (`satisfy requirement r : R by x`) has no
+                    // `SatisfySource`: the reference form always names one. There the satisfy
+                    // usage is itself the satisfied requirement usage (8.4.17.3).
+                    requirement: match requirement {
+                        Some(_) => endpoint(requirement),
+                        None => SatisfyEndpoint::Resolved(identity),
+                    },
                     satisfying_element: endpoint(satisfying),
                     polarity: if facts.negated.unwrap_or(false) {
                         SatisfyPolarity::NotSatisfied
@@ -2954,6 +3242,108 @@ impl<D> SemanticModel<D> {
                     },
                     provenance: RelationshipProvenance::Authored,
                     location: self.source_location(id)?,
+                })
+            })
+            .collect::<Vec<_>>();
+        values.sort_by(|left, right| {
+            self.document_order(left.location.document, right.location.document)
+                .then_with(|| left.location.range.cmp(&right.location.range))
+                .then_with(|| left.identity.cmp(&right.identity))
+        });
+        self.resolved_outcome(values.into_boxed_slice())
+    }
+
+    /// Every workspace requirement derivation (the `RequirementDerivation` domain library): a
+    /// connection usage conforming to `DerivationConnections::Derivation` -- by `#derivation`
+    /// metadata (its `SemanticMetadata` `baseType`) or by typing -- with its ends classified by
+    /// what they specialize. Without the library in the publication there are no derivations.
+    pub(crate) fn derivation_relationships(&self) -> QueryOutcome<Box<[DerivationRelationship]>> {
+        let anchor = |name: &str| -> Option<DeclarationId> {
+            match self.resolve_qualifier_scopes(None, name).ok()?.as_slice() {
+                [declaration] => Some(*declaration),
+                _ => None,
+            }
+        };
+        let (Some(derivation), Some(original), Some(derived)) = (
+            anchor("DerivationConnections::Derivation"),
+            anchor("DerivationConnections::originalRequirements"),
+            anchor("DerivationConnections::derivedRequirements"),
+        ) else {
+            return self.resolved_outcome(Box::default());
+        };
+        let conforms = |specific: DeclarationId, general: DeclarationId| {
+            self.conformance(specific, general, SpecializationScope::AnySpecialization)
+                == Conformance::Conforms
+        };
+        let target = |target: &RelationshipTarget| match target {
+            RelationshipTarget::Resolved(symbol) => DerivationEndpoint::Resolved(*symbol),
+            RelationshipTarget::Ambiguous(candidates) => {
+                DerivationEndpoint::Ambiguous(candidates.clone())
+            }
+            RelationshipTarget::Unresolved => DerivationEndpoint::Unresolved,
+            RelationshipTarget::Unsupported => DerivationEndpoint::Unsupported,
+        };
+        let endpoint = |endpoint: &ConnectorEndpoint| match endpoint {
+            ConnectorEndpoint::Feature(value) => target(value),
+            ConnectorEndpoint::FeatureChain {
+                terminal,
+                authored,
+                path,
+                ..
+            } => path
+                .iter()
+                .map(|hop| match hop {
+                    RelationshipTarget::Resolved(symbol) => Some(*symbol),
+                    _ => None,
+                })
+                .collect::<Option<Box<[SymbolId]>>>()
+                .filter(|path| !path.is_empty())
+                .map(|path| DerivationEndpoint::FeatureChain {
+                    path,
+                    authored: authored.clone(),
+                })
+                .unwrap_or_else(|| match target(terminal) {
+                    // A chain with a failed interior hop has no settled terminal either.
+                    DerivationEndpoint::Resolved(_) => DerivationEndpoint::Unresolved,
+                    other => other,
+                }),
+            ConnectorEndpoint::Unconnected => DerivationEndpoint::Unresolved,
+        };
+        let mut values = self
+            .storage
+            .declarations
+            .iter()
+            .enumerate()
+            .filter_map(|(index, declaration)| {
+                if declaration.kind != DeclarationKind::ConnectionUsage {
+                    return None;
+                }
+                let id = DeclarationId::from_index(index).ok()?;
+                if !conforms(id, derivation) {
+                    return None;
+                }
+                let kind = connector_kind(declaration.kind)?;
+                let connector = self.project_connector(id, declaration, kind)?;
+                let (mut originals, mut deriveds, mut unclassified) =
+                    (Vec::new(), Vec::new(), Vec::new());
+                for end in connector.ends.iter() {
+                    let role = end
+                        .declaration
+                        .and_then(|symbol| self.declaration_of(symbol));
+                    let value = endpoint(&end.endpoint);
+                    match role {
+                        Some(end) if conforms(end, original) => originals.push(value),
+                        Some(end) if conforms(end, derived) => deriveds.push(value),
+                        _ => unclassified.push(value),
+                    }
+                }
+                Some(DerivationRelationship {
+                    identity: connector.identity,
+                    original: originals.into_boxed_slice(),
+                    derived: deriveds.into_boxed_slice(),
+                    unclassified: unclassified.into_boxed_slice(),
+                    provenance: RelationshipProvenance::Authored,
+                    location: connector.location,
                 })
             })
             .collect::<Vec<_>>();

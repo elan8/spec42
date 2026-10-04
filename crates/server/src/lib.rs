@@ -5,15 +5,12 @@
 pub mod ai_tools;
 pub mod cli;
 pub mod diagnostic_catalog;
-#[cfg(any(test, feature = "elk-layout-spike"))]
-pub mod elk_layout;
+pub mod diagram;
 pub mod environment;
 pub mod generation;
 pub mod headless_renderer;
 pub mod host_snapshot;
 pub mod kpar_libraries;
-#[cfg(feature = "native-layout-shadow")]
-pub mod layout_shadow;
 pub mod library_bundle;
 pub mod library_status_rpc;
 pub mod model_projection;
@@ -113,6 +110,7 @@ pub async fn run_cli(cli: Cli) -> Result<ExitCode, String> {
         Some(Command::Check(args)) => run_check(&cli, args),
         Some(Command::Init(args)) => run_init(&cli, args),
         Some(Command::Generate(args)) => generation::run_generate(&cli, args),
+        Some(Command::Diagram(args)) => diagram::run_diagram(&cli, args),
         Some(Command::Doctor(args)) => run_doctor(&cli, args),
         Some(Command::ExplainDiagnostic(args)) => run_explain_diagnostic(&cli, args),
         Some(Command::ModelExport(args)) => run_model_export(&cli, args),

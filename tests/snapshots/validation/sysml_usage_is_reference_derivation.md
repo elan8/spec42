@@ -41,12 +41,6 @@ package References {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_usage_is_reference_derivation.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 5 8) (end 5 20))
-      )
     )
   )
 )

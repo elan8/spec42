@@ -673,9 +673,48 @@ pub enum RequirementUsageTyping {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
 pub enum SatisfyEndpoint {
     Resolved(ElementSummary),
+    /// A feature chain (`satisfy R by a.b.c`), every hop resolved: the feature each authored
+    /// segment resolves to, in order, and the authored segments `::`-joined (`a::b::c`). The
+    /// chain as a whole is the satisfying feature; its last hop is only the declaration the chain
+    /// ends at.
+    FeatureChain {
+        path: Vec<ElementSummary>,
+        authored: String,
+    },
     Ambiguous(Vec<ElementSummary>),
     Unresolved,
     Unsupported,
+}
+
+/// The target of one end of a requirement derivation connection; the same outcome shape as
+/// [`SatisfyEndpoint`], kept distinct so a derivation end is never read as a satisfy claim.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub enum DerivationEndpoint {
+    Resolved(ElementSummary),
+    /// A feature chain end, every hop resolved, and the authored segments `::`-joined.
+    FeatureChain {
+        path: Vec<ElementSummary>,
+        authored: String,
+    },
+    Ambiguous(Vec<ElementSummary>),
+    Unresolved,
+    Unsupported,
+}
+
+/// One requirement derivation (`RequirementDerivation` library): a connection usage that is a
+/// `DerivationConnections::Derivation`, with its ends classified by what they specialize.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
+pub struct DerivationRelationship {
+    pub semantic_id: String,
+    /// Original requirement ends; `Derivation` requires exactly one.
+    pub original: Vec<DerivationEndpoint>,
+    /// Derived requirement ends, in authored order.
+    pub derived: Vec<DerivationEndpoint>,
+    /// Ends that specialize neither.
+    pub unclassified: Vec<DerivationEndpoint>,
+    pub provenance: RelationshipProvenance,
+    /// Whether the publication this relationship came from is incomplete.
+    pub recovered: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Schema)]
@@ -1274,7 +1313,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0xc48d_ac59_4277_e819,
+            SCHEMA_FINGERPRINT, 0x8c7b_d770_46f0_0f9b,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1282,7 +1321,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xc248_84b6_18a3_0bfa,
+            COMPATIBILITY_TOKEN, 0xf75b_2080_69d3_0879,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

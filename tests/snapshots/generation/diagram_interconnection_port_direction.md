@@ -3,7 +3,7 @@
 description=Interconnection view publishes each port's authored direction and typing conjugation, resolved facts a renderer places port-l / port-r from rather than a guess
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=interconnection-view
 viewDocument=diagram_interconnection_port_direction.md
 viewQualifiedName=PortDirectionExample::selected
@@ -28,36 +28,6 @@ package PortDirectionExample {
 (fixture-diagnostics
   (document "memory://snapshot/diagram_interconnection_port_direction.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 4 8) (end 4 33))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 5 8) (end 5 35))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 6 8) (end 6 33))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 7 8) (end 7 28))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 8 8) (end 8 32))
-      )
     )
   )
 )
@@ -67,36 +37,6 @@ package PortDirectionExample {
 (fixture-diagnostics
   (document "memory://snapshot/diagram_interconnection_port_direction.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 4 8) (end 4 33))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 5 8) (end 5 35))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 6 8) (end 6 33))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 7 8) (end 7 28))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 8 8) (end 8 32))
-      )
     )
   )
 )
@@ -394,7 +334,7 @@ package PortDirectionExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:ae9612c53e5006473f5db790de1afe091d76a74a5f72268e5a98dc638ec33040",
+  "modelDigest": "blake3:5faba4214f40efc329d68402fa3522528e704d37067c8185927466248554ab17",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_port_direction.md",

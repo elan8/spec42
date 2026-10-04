@@ -18,9 +18,9 @@ generator_host = { path = "../generator_host" }
 sysml_query = { path = "../sysml_query" }
 serde = { workspace = true }
 serde_json = { workspace = true }
-toml = "0.8"
+toml = { workspace = true }
 rayon = "1"
 clap = { workspace = true }
 
 [dev-dependencies]
-tempfile = "3"
+tempfile = { workspace = true }

@@ -65,6 +65,7 @@ pub use sysml_source as source;
 mod traceability;
 mod type_query;
 mod verification;
+mod view_query;
 
 pub use action_query::{
     ActionArgumentId, ActionDerivedFactCollection, ActionDerivedFactKind, ActionDerivedFactOutcome,
@@ -80,8 +81,8 @@ pub use definition_usage_query::{
 };
 pub use details::{
     ConnectedElement, EffectiveTypeEntry, EffectiveTyping, ElementDetails, ElementDetailsAt,
-    InheritedFeature, ReferencedDetails, RelationshipFamily, RelationshipOutcome, ViewSelection,
-    ViewSelectionObstacle, ViewSelectionOutcome,
+    InheritedFeature, ReferencedDetails, RelationshipFamily, RelationshipOutcome, ViewRendering,
+    ViewSelection, ViewSelectionObstacle, ViewSelectionOutcome,
 };
 pub use diagnostics::{
     Diagnostic, DiagnosticCategory, DiagnosticCode, DiagnosticLocation, DiagnosticOrigin,
@@ -140,8 +141,8 @@ pub use specialization_query::{
 };
 pub use traceability::{
     BindingConnector, BindingConnectorCheckKind, BindingConnectorValidationOutcome,
-    BindingConnectorValidationPrerequisite, BindingEndpoint, SatisfyEndpoint, SatisfyPolarity,
-    SatisfyRelationship,
+    BindingConnectorValidationPrerequisite, BindingEndpoint, DerivationEndpoint,
+    DerivationRelationship, SatisfyEndpoint, SatisfyPolarity, SatisfyRelationship,
 };
 pub use type_query::{
     Conformance, ConformanceObstacle, EffectiveType, EffectiveTypeOrigin, RequirementUsageTyping,
@@ -152,6 +153,7 @@ pub use type_query::{
     TypeReference,
 };
 pub use verification::{RequirementVerification, VerificationOutcome, VerificationRequirement};
+pub use view_query::{ViewExposedElements, ViewExposureObstacle};
 
 use model::resolver::ResolvedSemanticModel;
 use pipeline::schedule::BuildSchedule;
@@ -1021,6 +1023,11 @@ impl PublishedResolution {
         self.model.satisfy_relationships()
     }
 
+    /// Workspace requirement derivation connections in canonical declaration order.
+    pub fn derivation_relationships(&self) -> QueryOutcome<Box<[DerivationRelationship]>> {
+        self.model.derivation_relationships()
+    }
+
     /// One exact derived relationship collection for a lowered Feature.
     ///
     /// The collection is a projection of canonical authored/implied relationships; it does not
@@ -1197,6 +1204,16 @@ impl PublishedResolution {
         candidate: SymbolId,
     ) -> QueryOutcome<ViewSelection> {
         self.model.view_selection(view, candidate)
+    }
+
+    /// The elements exposed by any view usage after namespace expansion and effective filters.
+    pub fn view_exposed_elements(&self, view: SymbolId) -> QueryOutcome<ViewExposedElements> {
+        self.model.view_exposed_elements(view)
+    }
+
+    /// The rendering reached through this view's direct or inherited rendering membership.
+    pub fn view_rendering(&self, view: SymbolId) -> QueryOutcome<Option<ViewRendering>> {
+        self.model.view_rendering(view)
     }
 
     /// The types a feature declares.

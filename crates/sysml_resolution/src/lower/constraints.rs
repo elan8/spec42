@@ -624,6 +624,10 @@ impl SemanticModelBuilder {
             node.span,
             DeclarationFacts {
                 short_name,
+                modifiers: DeclarationModifiers {
+                    individual: node.value.is_individual,
+                    ..DeclarationModifiers::default()
+                },
                 ..DeclarationFacts::none()
             },
         )?;
@@ -825,6 +829,10 @@ impl SemanticModelBuilder {
             Some(_) => None,
             None => self.intern_declaration_name(document, node.value.declaration_name)?,
         };
+        let short_name = match node.value.target {
+            Some(_) => None,
+            None => self.intern_short_name(document, node.value.short_name)?,
+        };
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -832,6 +840,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 negated: Some(node.value.is_negated),
                 ..DeclarationFacts::none()
             },
@@ -986,6 +995,10 @@ impl SemanticModelBuilder {
             node.span,
             DeclarationFacts {
                 short_name,
+                modifiers: DeclarationModifiers {
+                    individual: node.value.is_individual,
+                    ..DeclarationModifiers::default()
+                },
                 ..DeclarationFacts::none()
             },
         )?;

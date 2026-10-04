@@ -3,7 +3,7 @@
 description=Action flow view keeps unresolved exposure explicit
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=action-flow-view
 viewDocument=diagram_action_flow_unresolved.md
 viewQualifiedName=ActionNegative::selected
@@ -134,7 +134,7 @@ package ActionNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:995a2c150d60bc182b63125acfaffd5d42da1ee569146e490ecf7f7c07f9aa0f",
+  "modelDigest": "blake3:83a1c398f29af8a6e617f4094adfe96023762e1b5f1ce436dc16cb4cae15fdd3",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_action_flow_unresolved.md",

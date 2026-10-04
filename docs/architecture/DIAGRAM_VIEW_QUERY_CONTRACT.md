@@ -63,3 +63,19 @@ Graph endpoints and view-specific metadata use node or relationship indexes rath
 qualified names. The renderer expands those local joins once into layout keys such as `n:17`; this
 is presentation adaptation, not semantic reconstruction. A future incremental product must use a
 base `modelDigest` and public semantic references, never indexes from an earlier product.
+
+## Generated consumer contract
+
+The schema-5 wire shape is declared in `crates/diagram_product/src/wire.rs`. Its `projection` is a
+discriminated union keyed by the view kind, so each view carries only its own metadata and scene
+shape. The Rust publisher validates every product against this contract before returning it.
+
+`cargo run -p diagram_product --bin diagram_bindings` generates the checked-in TypeScript types in
+`vscode/src/generated/diagram-product`. Both the VS Code product parser and the diagram renderer
+import these generated declarations. `scripts/minici.sh lint` runs the generator in check mode and
+fails when the Rust contract and checked-in TypeScript files differ.
+
+This is a compile-time consumer migration for schema version 5 and does not change its JSON field
+names or golden products. The renderer's legacy pre-schema-5 adapters remain boundary-only
+compatibility code. A future incompatible wire change must increment `schemaVersion`, regenerate
+the bindings, update the checked-in product corpus, and migrate consumers in the same change.

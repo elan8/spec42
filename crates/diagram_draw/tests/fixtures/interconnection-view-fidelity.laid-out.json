@@ -1,0 +1,612 @@
+{
+  "title": "Powertrain",
+  "view": "interconnection-view",
+  "meta": {
+    "canonicalScene": true,
+    "schemaVersion": 3,
+    "selectedRoot": "powertrain",
+    "rootCandidates": [
+      "powertrain"
+    ],
+    "diagnostics": []
+  },
+  "nodes": [
+    {
+      "id": "controller",
+      "label": "controller",
+      "kind": "part",
+      "attributes": {
+        "containerId": null,
+        "qualifiedName": "controller",
+        "semanticId": "controller",
+        "definitionId": "Controller",
+        "partType": "Controller",
+        "ports": [
+          "cmdOut"
+        ],
+        "portDetails": [
+          {
+            "id": "controller.cmdOut",
+            "name": "cmdOut",
+            "direction": "out",
+            "semanticId": "controller.cmdOut",
+            "multiplicity": "[1]",
+            "portType": "Command",
+            "portSide": "right",
+            "attributes": {
+              "parentId": "controller",
+              "scenePortId": "controller.cmdOut",
+              "sideHint": "east"
+            }
+          }
+        ],
+        "notationRole": "usage",
+        "sceneNodeId": "controller",
+        "_isLayoutContainer": false,
+        "_layoutDepth": 0
+      },
+      "x": 200,
+      "y": 320,
+      "width": 280,
+      "height": 140
+    },
+    {
+      "id": "engine",
+      "label": "engine",
+      "kind": "part",
+      "attributes": {
+        "containerId": null,
+        "qualifiedName": "engine",
+        "semanticId": "engine",
+        "definitionId": "Engine",
+        "partType": "Engine",
+        "ports": [
+          "cmdIn",
+          "powerOut"
+        ],
+        "portDetails": [
+          {
+            "id": "engine.cmdIn",
+            "name": "cmdIn",
+            "direction": "in",
+            "semanticId": "engine.cmdIn",
+            "multiplicity": "[1]",
+            "portType": "Command",
+            "portSide": "left",
+            "attributes": {
+              "parentId": "engine",
+              "scenePortId": "engine.cmdIn",
+              "sideHint": "west"
+            }
+          },
+          {
+            "id": "engine.powerOut",
+            "name": "powerOut",
+            "direction": "out",
+            "semanticId": "engine.powerOut",
+            "multiplicity": "[1]",
+            "portType": "Torque",
+            "portSide": "right",
+            "attributes": {
+              "parentId": "engine",
+              "scenePortId": "engine.powerOut",
+              "sideHint": "east"
+            }
+          }
+        ],
+        "notationRole": "usage",
+        "sceneNodeId": "engine",
+        "_isLayoutContainer": false,
+        "_layoutDepth": 0
+      },
+      "x": 720,
+      "y": 320,
+      "width": 280,
+      "height": 140
+    },
+    {
+      "id": "wheel",
+      "label": "wheel",
+      "kind": "part",
+      "attributes": {
+        "containerId": null,
+        "qualifiedName": "wheel",
+        "semanticId": "wheel",
+        "definitionId": "Wheel",
+        "partType": "Wheel",
+        "ports": [
+          "powerIn"
+        ],
+        "portDetails": [
+          {
+            "id": "wheel.powerIn",
+            "name": "powerIn",
+            "direction": "in",
+            "semanticId": "wheel.powerIn",
+            "multiplicity": "[1]",
+            "portType": "Torque",
+            "portSide": "left",
+            "attributes": {
+              "parentId": "wheel",
+              "scenePortId": "wheel.powerIn",
+              "sideHint": "west"
+            }
+          }
+        ],
+        "notationRole": "usage",
+        "sceneNodeId": "wheel",
+        "_isLayoutContainer": false,
+        "_layoutDepth": 0
+      },
+      "x": 1240,
+      "y": 320,
+      "width": 280,
+      "height": 140
+    },
+    {
+      "id": "powertrain",
+      "label": "Powertrain",
+      "kind": "package",
+      "attributes": {
+        "isSyntheticContainer": true,
+        "containerId": null,
+        "qualifiedName": "Powertrain",
+        "memberNodeIds": [
+          "engine",
+          "wheel"
+        ],
+        "layoutDepth": 1,
+        "_isLayoutContainer": false,
+        "_layoutDepth": 0
+      },
+      "x": 70,
+      "y": 70,
+      "width": 420,
+      "height": 100
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-control",
+      "source": "controller",
+      "target": "engine",
+      "label": "ControlBus",
+      "edgeKind": "interface",
+      "attributes": {
+        "sourceId": "controller.cmdOut",
+        "targetId": "engine.cmdIn",
+        "sourcePortId": "controller.cmdOut",
+        "targetPortId": "engine.cmdIn",
+        "sourceNodeId": "controller",
+        "targetNodeId": "engine",
+        "semanticId": "e-control",
+        "relationType": "interface",
+        "canonicalScene": true,
+        "_sourcePortCenter": {
+          "x": 490,
+          "y": 390
+        },
+        "_targetPortCenter": {
+          "x": 710,
+          "y": 390
+        }
+      },
+      "sourceNode": {
+        "id": "controller",
+        "label": "controller",
+        "kind": "part",
+        "attributes": {
+          "containerId": null,
+          "qualifiedName": "controller",
+          "semanticId": "controller",
+          "definitionId": "Controller",
+          "partType": "Controller",
+          "ports": [
+            "cmdOut"
+          ],
+          "portDetails": [
+            {
+              "id": "controller.cmdOut",
+              "name": "cmdOut",
+              "direction": "out",
+              "semanticId": "controller.cmdOut",
+              "multiplicity": "[1]",
+              "portType": "Command",
+              "portSide": "right",
+              "attributes": {
+                "parentId": "controller",
+                "scenePortId": "controller.cmdOut",
+                "sideHint": "east"
+              }
+            }
+          ],
+          "notationRole": "usage",
+          "sceneNodeId": "controller",
+          "_isLayoutContainer": false,
+          "_layoutDepth": 0
+        },
+        "x": 200,
+        "y": 320,
+        "width": 280,
+        "height": 140
+      },
+      "targetNode": {
+        "id": "engine",
+        "label": "engine",
+        "kind": "part",
+        "attributes": {
+          "containerId": null,
+          "qualifiedName": "engine",
+          "semanticId": "engine",
+          "definitionId": "Engine",
+          "partType": "Engine",
+          "ports": [
+            "cmdIn",
+            "powerOut"
+          ],
+          "portDetails": [
+            {
+              "id": "engine.cmdIn",
+              "name": "cmdIn",
+              "direction": "in",
+              "semanticId": "engine.cmdIn",
+              "multiplicity": "[1]",
+              "portType": "Command",
+              "portSide": "left",
+              "attributes": {
+                "parentId": "engine",
+                "scenePortId": "engine.cmdIn",
+                "sideHint": "west"
+              }
+            },
+            {
+              "id": "engine.powerOut",
+              "name": "powerOut",
+              "direction": "out",
+              "semanticId": "engine.powerOut",
+              "multiplicity": "[1]",
+              "portType": "Torque",
+              "portSide": "right",
+              "attributes": {
+                "parentId": "engine",
+                "scenePortId": "engine.powerOut",
+                "sideHint": "east"
+              }
+            }
+          ],
+          "notationRole": "usage",
+          "sceneNodeId": "engine",
+          "_isLayoutContainer": false,
+          "_layoutDepth": 0
+        },
+        "x": 720,
+        "y": 320,
+        "width": 280,
+        "height": 140
+      },
+      "layout": {
+        "sections": [
+          {
+            "id": "e-control_s0",
+            "startPoint": {
+              "x": 490,
+              "y": 390
+            },
+            "endPoint": {
+              "x": 710,
+              "y": 390
+            },
+            "incomingShape": "controller__port__cmdOut",
+            "outgoingShape": "engine__port__cmdIn"
+          }
+        ],
+        "edgeOwnerOffset": {
+          "x": 0,
+          "y": 0
+        },
+        "lcaOffset": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": "e-power",
+      "source": "engine",
+      "target": "wheel",
+      "label": "flow",
+      "edgeKind": "flow",
+      "attributes": {
+        "sourceId": "engine.powerOut",
+        "targetId": "wheel.powerIn",
+        "sourcePortId": "engine.powerOut",
+        "targetPortId": "wheel.powerIn",
+        "sourceNodeId": "engine",
+        "targetNodeId": "wheel",
+        "semanticId": "e-power",
+        "relationType": "flow",
+        "canonicalScene": true,
+        "_sourcePortCenter": {
+          "x": 1010,
+          "y": 390
+        },
+        "_targetPortCenter": {
+          "x": 1230,
+          "y": 390
+        }
+      },
+      "sourceNode": {
+        "id": "engine",
+        "label": "engine",
+        "kind": "part",
+        "attributes": {
+          "containerId": null,
+          "qualifiedName": "engine",
+          "semanticId": "engine",
+          "definitionId": "Engine",
+          "partType": "Engine",
+          "ports": [
+            "cmdIn",
+            "powerOut"
+          ],
+          "portDetails": [
+            {
+              "id": "engine.cmdIn",
+              "name": "cmdIn",
+              "direction": "in",
+              "semanticId": "engine.cmdIn",
+              "multiplicity": "[1]",
+              "portType": "Command",
+              "portSide": "left",
+              "attributes": {
+                "parentId": "engine",
+                "scenePortId": "engine.cmdIn",
+                "sideHint": "west"
+              }
+            },
+            {
+              "id": "engine.powerOut",
+              "name": "powerOut",
+              "direction": "out",
+              "semanticId": "engine.powerOut",
+              "multiplicity": "[1]",
+              "portType": "Torque",
+              "portSide": "right",
+              "attributes": {
+                "parentId": "engine",
+                "scenePortId": "engine.powerOut",
+                "sideHint": "east"
+              }
+            }
+          ],
+          "notationRole": "usage",
+          "sceneNodeId": "engine",
+          "_isLayoutContainer": false,
+          "_layoutDepth": 0
+        },
+        "x": 720,
+        "y": 320,
+        "width": 280,
+        "height": 140
+      },
+      "targetNode": {
+        "id": "wheel",
+        "label": "wheel",
+        "kind": "part",
+        "attributes": {
+          "containerId": null,
+          "qualifiedName": "wheel",
+          "semanticId": "wheel",
+          "definitionId": "Wheel",
+          "partType": "Wheel",
+          "ports": [
+            "powerIn"
+          ],
+          "portDetails": [
+            {
+              "id": "wheel.powerIn",
+              "name": "powerIn",
+              "direction": "in",
+              "semanticId": "wheel.powerIn",
+              "multiplicity": "[1]",
+              "portType": "Torque",
+              "portSide": "left",
+              "attributes": {
+                "parentId": "wheel",
+                "scenePortId": "wheel.powerIn",
+                "sideHint": "west"
+              }
+            }
+          ],
+          "notationRole": "usage",
+          "sceneNodeId": "wheel",
+          "_isLayoutContainer": false,
+          "_layoutDepth": 0
+        },
+        "x": 1240,
+        "y": 320,
+        "width": 280,
+        "height": 140
+      },
+      "layout": {
+        "sections": [
+          {
+            "id": "e-power_s0",
+            "startPoint": {
+              "x": 1010,
+              "y": 390
+            },
+            "endPoint": {
+              "x": 1230,
+              "y": 390
+            },
+            "incomingShape": "engine__port__powerOut",
+            "outgoingShape": "wheel__port__powerIn"
+          }
+        ],
+        "edgeOwnerOffset": {
+          "x": 0,
+          "y": 0
+        },
+        "lcaOffset": {
+          "x": 0,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "interconnectionLayout": {
+    "nodes": [
+      {
+        "id": "controller",
+        "x": 200,
+        "y": 320,
+        "width": 280,
+        "height": 140,
+        "portAnchors": {
+          "cmdOut": {
+            "x": 290,
+            "y": 70,
+            "side": "EAST",
+            "label": {
+              "x": 249,
+              "y": 65,
+              "width": 30,
+              "height": 10,
+              "text": "cmdOut"
+            }
+          }
+        },
+        "portDrawOrder": {
+          "west": [],
+          "east": [
+            "cmdOut"
+          ]
+        }
+      },
+      {
+        "id": "engine",
+        "x": 720,
+        "y": 320,
+        "width": 280,
+        "height": 140,
+        "portAnchors": {
+          "cmdIn": {
+            "x": -10,
+            "y": 70,
+            "side": "WEST",
+            "label": {
+              "x": 1,
+              "y": 65,
+              "width": 25,
+              "height": 10,
+              "text": "cmdIn"
+            }
+          },
+          "powerOut": {
+            "x": 290,
+            "y": 70,
+            "side": "EAST",
+            "label": {
+              "x": 239,
+              "y": 65,
+              "width": 40,
+              "height": 10,
+              "text": "powerOut"
+            }
+          }
+        },
+        "portDrawOrder": {
+          "west": [
+            "cmdIn"
+          ],
+          "east": [
+            "powerOut"
+          ]
+        }
+      },
+      {
+        "id": "wheel",
+        "x": 1240,
+        "y": 320,
+        "width": 280,
+        "height": 140,
+        "portAnchors": {
+          "powerIn": {
+            "x": -10,
+            "y": 70,
+            "side": "WEST",
+            "label": {
+              "x": 1,
+              "y": 65,
+              "width": 35,
+              "height": 10,
+              "text": "powerIn"
+            }
+          }
+        },
+        "portDrawOrder": {
+          "west": [
+            "powerIn"
+          ],
+          "east": []
+        }
+      },
+      {
+        "id": "powertrain",
+        "x": 70,
+        "y": 70,
+        "width": 420,
+        "height": 100,
+        "portAnchors": {},
+        "portDrawOrder": {
+          "west": [],
+          "east": []
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-control",
+        "routePoints": [
+          {
+            "x": 490,
+            "y": 390
+          },
+          {
+            "x": 710,
+            "y": 390
+          }
+        ],
+        "sourcePortId": "controller.cmdOut",
+        "targetPortId": "engine.cmdIn"
+      },
+      {
+        "id": "e-power",
+        "routePoints": [
+          {
+            "x": 1010,
+            "y": 390
+          },
+          {
+            "x": 1230,
+            "y": 390
+          }
+        ],
+        "sourcePortId": "engine.powerOut",
+        "targetPortId": "wheel.powerIn"
+      }
+    ],
+    "containers": [
+      {
+        "id": "powertrain",
+        "label": "Powertrain",
+        "x": 70,
+        "y": 70,
+        "width": 420,
+        "height": 100
+      }
+    ],
+    "diagnostics": []
+  }
+}

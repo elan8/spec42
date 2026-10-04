@@ -94,7 +94,7 @@ package Redefinition {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_chain_expression_target_redefinition.md") (qualified-name "Redefinition::Vehicle::engine"))) (target (node (document "memory://snapshot/kerml_feature_chain_expression_target_redefinition.md") (qualified-name "Redefinition::Vehicle"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/kerml_feature_chain_expression_target_redefinition.md") (path (named (kind package) (name "Redefinition")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "selected")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_feature_chain_expression_target_redefinition.md") (path (named (kind package) (name "Redefinition")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "selected")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
   )
 )
 ~~~
@@ -195,7 +195,7 @@ package Redefinition {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_feature_chain_expression_target_redefinition.md") (path (named (kind package) (name "Redefinition")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "selected")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/kerml_feature_chain_expression_target_redefinition.md") (path (named (kind package) (name "Redefinition")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "selected")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (feature-reference "vehicle::engine" (target (node (document "memory://snapshot/kerml_feature_chain_expression_target_redefinition.md") (qualified-name "Redefinition::Vehicle::engine")))))
 )
 ~~~
 # NAVIGATION

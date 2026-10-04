@@ -120,21 +120,9 @@ package 'Flashlight Example' {
       )
       (diagnostic
         (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 33 3) (end 33 30))
-      )
-      (diagnostic
-        (severity information)
         (code "untyped_part_usage")
         (source "semantic")
         (range (start 35 2) (end 41 3))
-      )
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 36 3) (end 36 30))
       )
       (diagnostic
         (severity warning)

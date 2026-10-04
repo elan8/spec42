@@ -846,6 +846,134 @@ satisfy Missing by vehicle;
 }
 
 #[test]
+fn satisfy_query_publishes_a_feature_chain_satisfying_element_as_the_chain() {
+    // `satisfy R by a.b` names a feature chain (SysML 8.2.2.21.2); the chain as a whole is the
+    // satisfying feature (8.3.21.10), so it is published hop by hop, not as `Unsupported` and not
+    // as the bare declaration the last hop names.
+    let published = publication_for(&[(
+        "memory://chain.sysml",
+        r#"
+package Chain {
+requirement def Latency;
+requirement def Failsafe;
+requirement def Broken;
+part def Radio;
+part def Controller;
+part def Control { part controller : Controller; }
+part def Drone { part radio : Radio; part control : Control; }
+part drone : Drone;
+satisfy Latency by drone.radio;
+satisfy Failsafe by drone.control.controller;
+satisfy Broken by drone.missing;
+}
+"#,
+    )]);
+    let values = match published.satisfy_relationships().answer {
+        QueryAnswer::Resolved(values) => values,
+        other => panic!("expected resolved satisfy query, got {other:?}"),
+    };
+    assert_eq!(values.len(), 3);
+    let chain = |endpoint: &SatisfyEndpoint| match endpoint {
+        SatisfyEndpoint::FeatureChain { path, authored } => (
+            path.iter()
+                .map(|hop| {
+                    published
+                        .qualified_name(*hop)
+                        .unwrap_or_default()
+                        .to_owned()
+                })
+                .collect::<Vec<_>>(),
+            authored.to_string(),
+        ),
+        other => panic!("expected a feature chain, got {other:?}"),
+    };
+    assert_eq!(
+        chain(&values[0].satisfying_element),
+        (
+            vec!["Chain::drone".to_owned(), "Chain::Drone::radio".to_owned()],
+            "drone::radio".to_owned()
+        )
+    );
+    assert_eq!(
+        chain(&values[1].satisfying_element),
+        (
+            vec![
+                "Chain::drone".to_owned(),
+                "Chain::Drone::control".to_owned(),
+                "Chain::Control::controller".to_owned()
+            ],
+            "drone::control::controller".to_owned()
+        )
+    );
+    // A hop that does not resolve leaves the chain unresolved rather than half-published.
+    assert!(
+        matches!(values[2].satisfying_element, SatisfyEndpoint::Unresolved),
+        "{:?}",
+        values[2].satisfying_element
+    );
+    assert!(values
+        .iter()
+        .all(|value| matches!(value.requirement, SatisfyEndpoint::Resolved(_))));
+}
+
+#[test]
+fn satisfy_query_publishes_an_inline_requirement_declaration_as_the_satisfied_requirement() {
+    // `satisfy requirement r : R by x` declares the satisfied requirement inline: the satisfy
+    // usage is itself the requirement usage `r`, typed by `R` (SysML 8.4.17.3).
+    let published = publication_for(&[(
+        "memory://inline.sysml",
+        r#"
+package Inline {
+requirement def Req1;
+part def System { part sub1; }
+part system : System;
+satisfy requirement req1 : Req1 by system;
+satisfy requirement req1_1 : Req1 by system.sub1;
+satisfy requirement : Req1;
+}
+"#,
+    )]);
+    let values = match published.satisfy_relationships().answer {
+        QueryAnswer::Resolved(values) => values,
+        other => panic!("expected resolved satisfy query, got {other:?}"),
+    };
+    assert_eq!(values.len(), 3);
+    for value in values.iter() {
+        assert!(
+            matches!(value.requirement, SatisfyEndpoint::Resolved(requirement) if requirement == value.identity),
+            "the satisfy usage is its own requirement: {value:?}"
+        );
+        let types = match published.direct_types(value.identity).answer {
+            QueryAnswer::Resolved(types) => types,
+            other => panic!("expected the satisfy usage's typing, got {other:?}"),
+        };
+        assert!(
+            types
+                .iter()
+                .any(|ty| published.qualified_name(ty.symbol) == Some("Inline::Req1")),
+            "typed by Req1: {types:?}"
+        );
+    }
+    assert_eq!(
+        published.qualified_name(values[0].identity),
+        Some("Inline::req1")
+    );
+    assert!(matches!(
+        values[0].satisfying_element,
+        SatisfyEndpoint::Resolved(_)
+    ));
+    assert!(matches!(
+        values[1].satisfying_element,
+        SatisfyEndpoint::FeatureChain { .. }
+    ));
+    // No `by`: nothing is fabricated for the satisfying element.
+    assert!(matches!(
+        values[2].satisfying_element,
+        SatisfyEndpoint::Unsupported
+    ));
+}
+
+#[test]
 fn binding_connector_query_pairs_ends_preserves_duplicates_and_unresolved_outcomes() {
     let published = publication_for(&[(
         "memory://binding.sysml",

@@ -136,14 +136,27 @@ impl ResolvedExpressionIndex {
         // pairs with the `n`-th `FeatureReference` the walk produces for that declaration.
         let mut ordered: std::collections::BTreeMap<DeclarationId, Vec<AuthoredReferenceId>> =
             std::collections::BTreeMap::new();
+        let mut member_access: std::collections::BTreeMap<DeclarationId, Vec<AuthoredReferenceId>> =
+            std::collections::BTreeMap::new();
         for (index, reference) in inputs.storage.references.iter().enumerate() {
+            // `AuthoredReferenceId::from_index` is computed per matched kind, not once up front
+            // for every reference in the model: most references are neither an ExpressionOperand
+            // nor a MemberAccessOperand, and this loop runs once per reference in the whole
+            // workspace, not once per expression.
             if reference.kind == ReferenceKind::ExpressionOperand {
                 let id = AuthoredReferenceId::from_index(index)
                     .map_err(|_| ResolutionError::Capacity)?;
                 ordered.entry(reference.source).or_default().push(id);
+            } else if reference.kind == ReferenceKind::MemberAccessOperand {
+                let id = AuthoredReferenceId::from_index(index)
+                    .map_err(|_| ResolutionError::Capacity)?;
+                member_access.entry(reference.source).or_default().push(id);
             }
         }
         for slots in ordered.values_mut() {
+            slots.sort_by_key(|id| inputs.storage.references[id.index()].ordinal);
+        }
+        for slots in member_access.values_mut() {
             slots.sort_by_key(|id| inputs.storage.references[id.index()].ordinal);
         }
         let empty: Vec<AuthoredReferenceId> = Vec::new();
@@ -166,6 +179,7 @@ impl ResolvedExpressionIndex {
                 inputs,
                 &pendings,
                 ordered.get(&declaration).unwrap_or(&empty),
+                member_access.get(&declaration).unwrap_or(&empty),
             );
             if let Some(slot) = rows.get_mut(declaration.index()) {
                 *slot = Some(row);
@@ -489,6 +503,7 @@ fn classify_declaration(
     inputs: &ResolvedExpressionInputs<'_>,
     pendings: &[&PendingEvaluationFact],
     operands: &[AuthoredReferenceId],
+    member_access: &[AuthoredReferenceId],
 ) -> ResolvedExpressionRow {
     let document = pendings
         .first()
@@ -511,6 +526,7 @@ fn classify_declaration(
         resolution: inputs.resolution,
         parsed: None,
         operands,
+        member_access: member_access.to_vec(),
         next_ordinal: 0,
         nodes: Vec::new(),
     };
@@ -578,6 +594,9 @@ struct TreeBuilder<'a> {
     resolution: &'a ResolutionResults,
     parsed: Option<&'a ParsedDocument>,
     operands: &'a [AuthoredReferenceId],
+    /// `MemberAccessOperand` references still available to pair with a dotted chain, matched by
+    /// source span so an invocation callee is not consumed as an operand leaf.
+    member_access: Vec<AuthoredReferenceId>,
     /// The global operand ordinal the next `FeatureReference` leaf consumes, dense from zero
     /// across every authored expression on the declaration.
     next_ordinal: u32,
@@ -621,6 +640,44 @@ impl TreeBuilder<'_> {
         )
     }
 
+    /// Pairs a dotted chain with the `MemberAccessOperand` lowered for the same span.
+    ///
+    /// A root expression has no span of its own (`Span::dummy`). `self.member_access` is seeded
+    /// once per declaration, ordinal-sorted (source order), and pendings are walked in that same
+    /// source order (`operand_start`-sorted) with every nested (non-root) chain in an earlier
+    /// pending already matched-and-removed by the time a later pending's root is walked -- so the
+    /// earliest remaining entry is always this root's own chain, even when the declaration
+    /// authors several independent bare dotted-chain expressions (e.g.
+    /// `require constraint { s.enabled; t.ready; }`), not just one. Requiring exactly one
+    /// candidate to *remain* here (rather than taking the earliest) would treat every such
+    /// declaration but the last pending as unpaired, downgrading the whole declaration to
+    /// `Unsupported` instead of resolving each chain.
+    fn member_access_feature(&mut self, span: Span) -> Option<u32> {
+        let position = if span == Span::dummy() {
+            (!self.member_access.is_empty()).then_some(0)
+        } else {
+            self.member_access
+                .iter()
+                .position(|id| self.storage.references[id.index()].span == span)
+        }?;
+        let reference_id = self.member_access.remove(position);
+        let reference = &self.storage.references[reference_id.index()];
+        let target = match self.resolution.outcome(reference_id) {
+            Some(ResolutionStatus::Resolved(declaration)) => Some(declaration),
+            _ => None,
+        };
+        let authored = authored_path(self.storage, reference.path).into_boxed_str();
+        let span = reference.span;
+        Some(self.push(
+            RawExpressionNodeKind::FeatureReference {
+                target,
+                authored,
+                reference: Some(reference_id),
+            },
+            span,
+        ))
+    }
+
     /// Walks one AST expression node, mirroring `classify_constraint_node` / `classify_calc_node`'s
     /// traversal order and operand-ordinal threading. Returns `None` for a shape outside the slice.
     /// `outer_span` is the enclosing node's span, used where the node itself carries none (the
@@ -640,6 +697,7 @@ impl TreeBuilder<'_> {
             Expression::FeatureRef(_) | Expression::FeatureChainRef(_) => {
                 Some(self.feature_reference(outer_span))
             }
+            Expression::MemberAccess { .. } => self.member_access_feature(outer_span),
             Expression::Sequence { operands, .. } => {
                 let elements = &operands.value.elements;
                 if let [only] = elements.as_slice() {

@@ -3,7 +3,7 @@
 description=Action flow view projects actions and authored succession
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=action-flow-view
 viewDocument=diagram_action_flow_complete.md
 viewQualifiedName=ActionFlowExample::selected
@@ -217,7 +217,7 @@ package ActionFlowExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:decf000b6b8cd2e5db45686fca82fb606e96b3d87b84f64a7318836037ebe073",
+  "modelDigest": "blake3:ce6928885b5944b3b09c54c8777a29f05dd705054599e9a8c9b4eec61c41ea44",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_action_flow_complete.md",

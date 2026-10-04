@@ -68,12 +68,6 @@ package 'Local Clock Example' {
         (range (start 9 20) (end 9 26))
       )
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 11 2) (end 11 19))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")

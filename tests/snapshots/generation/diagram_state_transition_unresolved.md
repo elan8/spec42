@@ -3,7 +3,7 @@
 description=State transition view keeps unresolved exposure explicit
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=state-transition-view
 viewDocument=diagram_state_transition_unresolved.md
 viewQualifiedName=StateNegative::selected
@@ -129,7 +129,7 @@ package StateNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:2dbfe4a9ba5d5ebbbabac51304759e94c5602a34e4d299e6bb7464a0e01b0bf1",
+  "modelDigest": "blake3:7d2c98cc166d6d382bf535695ed3189aa3926cbcca30e24c077b95ae6d98a0ea",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_state_transition_unresolved.md",

@@ -3,7 +3,7 @@
 description=Grid view keeps unresolved exposure explicit
 type=generate
 libraries=standard
-plugin=repository:diagram
+plugin=native:diagram
 viewKind=grid-view
 viewDocument=diagram_grid_unresolved.md
 viewQualifiedName=GridNegative::selected
@@ -136,7 +136,7 @@ package GridNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:af38317eada2ee04204df81bee34bc98c34173587c86e7e69328aa25961cfe4d",
+  "modelDigest": "blake3:ac30377a5c9b07780a0523981b9e3db7bbc11e7a4401fa0662df663e7e3b1a34",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_grid_unresolved.md",

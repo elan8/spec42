@@ -29,12 +29,6 @@ package Ports {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_conjugated_port_definition_original_port_definition.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 8 8) (end 8 31))
-      )
     )
   )
 )
@@ -44,12 +38,6 @@ package Ports {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_conjugated_port_definition_original_port_definition.md"
     (diagnostics
-      (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 8 8) (end 8 31))
-      )
     )
   )
 )

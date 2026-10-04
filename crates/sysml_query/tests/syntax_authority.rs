@@ -166,6 +166,97 @@ const EXEMPTIONS: &[Exemption] = &[
         reason: "catalog digests library files by byte content to identify a root; it reads no syntax",
         must_contain: None,
     },
+    Exemption {
+        path: "crates/diagram_draw/src/graph_normalization.rs",
+        reason: "buckets an already-resolved LaidOutEdge relationship-type label into an SVG marker/stroke\
+                 style; a line-for-line port of the un-flagged `graph-normalization.ts` in\
+                 vscode/diagram-renderer. diagram_draw has no dependency on any authority crate and never\
+                 reads SysML source text -- this is wire vocabulary for a diagram-drawing DTO, same category\
+                 as the generator protocol exemptions above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/edges.rs",
+        reason: "selects marker/dash SVG style from the same already-resolved edge-kind label; a\
+                 line-for-line port of the un-flagged `applyEdgeMarker` in render/drawing.ts, for the same\
+                 reason as graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/action_flow.rs",
+        reason: "buckets an already-resolved PreparedNode/PreparedEdge kind label into SVG node shape and\
+                 marker/dash style; a line-for-line port of the un-flagged `views/action-flow.ts`, for the\
+                 same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/state_transition.rs",
+        reason: "same as action_flow.rs above, porting the un-flagged `views/state-transition.ts`",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/sequence.rs",
+        reason: "same as action_flow.rs above, porting the un-flagged `views/sequence.ts`; the \"return\"\
+                 match buckets an already-resolved message-kind label into a dashed-vs-solid style, not\
+                 SysML syntax",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/tooltip.rs",
+        reason: "formats an already-resolved edge-kind label into human-readable tooltip prose; a\
+                 line-for-line port of the un-flagged `edgeTooltipDescriptor` in render/diagram-tooltip.ts,\
+                 for the same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/ibd_edges.rs",
+        reason: "selects marker/dash SVG style from an already-resolved LaidOutEdge edge-kind label; a\
+                 line-for-line port of the un-flagged interconnection branch of `applyEdgeMarker` in\
+                 render/drawing.ts, for the same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/ibd_node.rs",
+        reason: "buckets an already-resolved child-record `type` field into a display prefix for a part\
+                 node's content rows; a line-for-line port of the un-flagged `renderIbdNode` in\
+                 render/drawing.ts, for the same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/ibd_ports.rs",
+        reason: "guesses a port's drawing side from its already-resolved display name when no layout\
+                 anchor is available; a line-for-line port of the un-flagged `drawIbdPorts` in\
+                 render/drawing.ts, for the same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/prepare.rs",
+        reason: "buckets already-resolved visualization DTO kind/type labels into a PreparedView; a\
+                 line-for-line port of the un-flagged `prepare/` TypeScript, for the same reason as\
+                 graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/layout.rs",
+        reason: "builds ELK JSON and reshapes engine output from already-resolved PreparedView kind\
+                 labels; a line-for-line port of the un-flagged `render/layout.ts` and\
+                 `views/behavior-common.ts` layout, for the same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/catalog.rs",
+        reason: "truncates already-resolved qualified-name display labels for Browser indent depth\
+                 and Grid matrix headers; a line-for-line port of the un-flagged\
+                 `views/standard-views-render.ts`, for the same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
+    Exemption {
+        path: "crates/diagram_draw/src/sysml_node.rs",
+        reason: "maps already-resolved element-kind labels to SysML node-chrome stereotypes for SVG\
+                 drawing and ELK sizing; a line-for-line port of the un-flagged `sysml-node-builder.ts`,\
+                 for the same reason as graph_normalization.rs above",
+        must_contain: None,
+    },
 ];
 
 /// Fields outside the authorities that may hold a parsed tree: the editor host's index entries,

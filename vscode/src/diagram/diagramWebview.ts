@@ -1,6 +1,7 @@
 import { prepareViewData } from "../../diagram-renderer/src/prepare";
-import { renderVisualization, type RenderController } from "../../diagram-renderer/src/renderer";
+import { isNativeDiagramView, renderVisualization, type RenderController } from "../../diagram-renderer/src/renderer";
 import type { PreparedView } from "../../diagram-renderer/src/prepare";
+import type { DiagramProductIdentity, DisclosureState, RequestServerDraw } from "../../diagram-renderer/src/render/types";
 import type { DiagramProduct } from "./diagramViewerCore";
 import { isEmptyIncompleteDiagramProduct } from "./diagramProductState";
 
@@ -18,7 +19,82 @@ type RenderMessage = {
   error?: string;
 };
 
+type DrawResponseMessage = {
+  type: "drawResponse";
+  requestId: number;
+  modelDigest: string;
+  viewHandle: string;
+  presentationRevision: number;
+  svg: string;
+};
+
+type DrawErrorMessage = {
+  type: "drawError";
+  requestId: number;
+  message?: string;
+};
+
 const vscode = acquireVsCodeApi();
+
+/** Draw includes prepare+layout+SVG, so this is longer than the old layout-only timeout.
+ * No response is treated as a decline: keep the last SVG or show an inert placeholder. */
+const DRAW_REQUEST_TIMEOUT_MS = 8_000;
+
+let drawRequestSeq = 0;
+const pendingDrawRequests = new Map<
+  number,
+  {
+    settle: (svg: string | null) => void;
+    identity: DiagramProductIdentity;
+    presentationRevision: number;
+  }
+>();
+
+const requestServerDraw: RequestServerDraw = (identity, presentationRevision, request, signal) => {
+  if (signal.aborted) return Promise.resolve(null);
+  const requestId = ++drawRequestSeq;
+  return new Promise((resolve) => {
+    let timeout: ReturnType<typeof setTimeout>;
+    const settle = (svg: string | null): void => {
+      pendingDrawRequests.delete(requestId);
+      clearTimeout(timeout);
+      resolve(svg);
+    };
+    timeout = setTimeout(() => settle(null), DRAW_REQUEST_TIMEOUT_MS);
+    signal.addEventListener("abort", () => settle(null), { once: true });
+    pendingDrawRequests.set(requestId, { settle, identity, presentationRevision });
+    vscode.postMessage({
+      type: "drawRequest",
+      requestId,
+      modelDigest: identity.modelDigest,
+      viewHandle: identity.viewHandle,
+      presentationRevision,
+      product: request.product,
+      width: request.width,
+      height: request.height,
+      colorScheme: request.colorScheme,
+      disclosure: request.disclosure,
+    });
+  });
+};
+
+function onDrawResponse(message: DrawResponseMessage | DrawErrorMessage): void {
+  const pending = pendingDrawRequests.get(message.requestId);
+  if (!pending) return;
+  if (message.type === "drawError") {
+    pending.settle(null);
+    return;
+  }
+  if (
+    message.modelDigest !== pending.identity.modelDigest ||
+    message.viewHandle !== pending.identity.viewHandle ||
+    message.presentationRevision !== pending.presentationRevision
+  ) {
+    pending.settle(null);
+    return;
+  }
+  pending.settle(message.svg);
+}
 
 const canvas = must<HTMLElement>("diagram");
 const viewSelect = must<HTMLSelectElement>("view-select");
@@ -30,6 +106,10 @@ const exportPngButton = must<HTMLButtonElement>("export-png");
 
 let controller: RenderController | undefined;
 let currentProduct: DiagramProduct | undefined;
+let currentPrepared: PreparedView | undefined;
+let currentIdentity: DiagramProductIdentity | undefined;
+let renderGeneration = 0;
+let renderAbort: AbortController | undefined;
 
 function must<T extends HTMLElement>(id: string): T {
   const element = document.getElementById(id);
@@ -40,6 +120,75 @@ function must<T extends HTMLElement>(id: string): T {
 function currentColorScheme(): "light" | "dark" {
   const classes = document.body.className;
   return classes.includes("vscode-light") || classes.includes("vscode-high-contrast-light") ? "light" : "dark";
+}
+
+function themeClassSignature(): string {
+  return ["vscode-high-contrast-light", "vscode-light", "vscode-high-contrast", "vscode-dark"]
+    .filter((name) => document.body.classList.contains(name))
+    .join(" ");
+}
+
+function beginRender(): { generation: number; signal: AbortSignal } {
+  const generation = ++renderGeneration;
+  renderAbort?.abort();
+  const abort = new AbortController();
+  renderAbort = abort;
+  return { generation, signal: abort.signal };
+}
+
+function isCurrentRender(generation: number, signal: AbortSignal): boolean {
+  return generation === renderGeneration && !signal.aborted;
+}
+
+function clearRenderState(): void {
+  controller?.destroy();
+  controller = undefined;
+  currentProduct = undefined;
+  currentPrepared = undefined;
+  currentIdentity = undefined;
+}
+
+function openSource(node: { uri?: string; sourcePath?: string; range?: { start?: { line: number; character?: number }; end?: { line?: number; character?: number } } }): void {
+  const range = node.range;
+  const uri = node.uri ?? node.sourcePath;
+  if (!uri || !range?.start || !range.end) return;
+  vscode.postMessage({
+    type: "openSource",
+    target: {
+      uri,
+      startLine: range.start.line,
+      startCharacter: range.start.character ?? 0,
+      endLine: range.end.line ?? range.start.line,
+      endCharacter: range.end.character ?? range.start.character ?? 0,
+    },
+  });
+}
+
+async function mountPrepared(
+  generation: number,
+  signal: AbortSignal,
+  prepared: PreparedView,
+  product: DiagramProduct,
+  productIdentity: DiagramProductIdentity,
+  disclosureState?: DisclosureState,
+): Promise<void> {
+  const previous = controller;
+  controller = undefined;
+  previous?.destroy();
+  const next = await renderVisualization(canvas, prepared, {
+    theme: { colorScheme: currentColorScheme() },
+    productIdentity,
+    product,
+    requestDraw: isNativeDiagramView(prepared.view) ? requestServerDraw : undefined,
+    disclosureState,
+    abortSignal: signal,
+    onNodeClick: openSource,
+  });
+  if (!isCurrentRender(generation, signal)) {
+    next.destroy();
+    return;
+  }
+  controller = next;
 }
 
 function populateSelect(views: RenderMessage["views"], selectedHandle: string): void {
@@ -80,13 +229,13 @@ function setStatus(header: string, error: string | undefined): void {
 }
 
 async function render(message: RenderMessage): Promise<void> {
+  const { generation, signal } = beginRender();
   populateSelect(message.views, message.selectedHandle);
   setStatus(message.header, message.error);
 
   if (message.placeholder) {
-    controller?.destroy();
-    controller = undefined;
-    currentProduct = undefined;
+    if (!isCurrentRender(generation, signal)) return;
+    clearRenderState();
     canvas.replaceChildren(message.loading ? withLoading(message.placeholder) : withText(message.placeholder));
     return;
   }
@@ -95,15 +244,15 @@ async function render(message: RenderMessage): Promise<void> {
   try {
     product = JSON.parse(message.productJson) as DiagramProduct;
   } catch {
+    if (!isCurrentRender(generation, signal)) return;
+    clearRenderState();
     canvas.replaceChildren(withText("The generated diagram product was not valid JSON."));
     return;
   }
 
-  controller?.destroy();
-  controller = undefined;
-  currentProduct = product;
-
   if (isEmptyIncompleteDiagramProduct(product)) {
+    if (!isCurrentRender(generation, signal)) return;
+    clearRenderState();
     const reasons = message.incompleteReasons.length > 0
       ? message.incompleteReasons.join(", ")
       : "the projection is empty";
@@ -111,25 +260,23 @@ async function render(message: RenderMessage): Promise<void> {
     return;
   }
 
+  currentProduct = product;
+
   const prepared = prepareViewData(product);
-  controller = await renderVisualization(canvas, prepared, {
-    theme: { colorScheme: "vscode" },
-    onNodeClick: (node) => {
-      const range = node.range;
-      const uri = node.uri ?? node.sourcePath;
-      if (!uri || !range?.start || !range.end) return;
-      vscode.postMessage({
-        type: "openSource",
-        target: {
-          uri,
-          startLine: range.start.line,
-          startCharacter: range.start.character ?? 0,
-          endLine: range.end.line ?? range.start.line,
-          endCharacter: range.end.character ?? range.start.character ?? 0,
-        },
-      });
-    },
-  });
+  currentPrepared = prepared;
+  const productIdentity: DiagramProductIdentity = {
+    modelDigest: product.modelDigest,
+    viewHandle: message.selectedHandle,
+  };
+  currentIdentity = productIdentity;
+  await mountPrepared(generation, signal, prepared, product, productIdentity);
+}
+
+async function redrawPreservingDisclosure(): Promise<void> {
+  if (!currentProduct || !currentPrepared || !currentIdentity) return;
+  const disclosure = controller?.getDisclosureState();
+  const { generation, signal } = beginRender();
+  await mountPrepared(generation, signal, currentPrepared, currentProduct, currentIdentity, disclosure);
 }
 
 function withText(text: string): HTMLElement {
@@ -151,11 +298,26 @@ function withLoading(text: string): HTMLElement {
   return div;
 }
 
-/** Re-render off-screen with a literal (non-CSS-variable) theme so the SVG stands alone. */
 async function standaloneSvg(): Promise<string> {
-  if (!currentProduct) throw new Error("Open a diagram before exporting it.");
+  if (!currentProduct || !currentIdentity) throw new Error("Open a diagram before exporting it.");
   if (!controller) throw new Error("Wait for the diagram to finish rendering before exporting it.");
   const scheme = currentColorScheme();
+  if (currentPrepared && isNativeDiagramView(currentPrepared.view)) {
+    const svg = await requestServerDraw(
+      currentIdentity,
+      Date.now(),
+      {
+        product: currentProduct,
+        width: 1600,
+        height: 1000,
+        colorScheme: scheme,
+        disclosure: controller.getDisclosureState(),
+      },
+      new AbortController().signal,
+    );
+    if (!svg) throw new Error("Could not export the diagram while the language server is unavailable.");
+    return withBackground(svg, scheme);
+  }
   const prepared: PreparedView = prepareViewData(currentProduct);
   const holder = document.createElement("div");
   holder.style.cssText = "position:absolute;left:-99999px;top:0;width:1600px;height:1000px;pointer-events:none";
@@ -236,7 +398,17 @@ window.addEventListener("message", (event: MessageEvent) => {
     void render(message as RenderMessage);
   } else if (message.type === "busy") {
     document.body.classList.toggle("busy", Boolean((message as { busy?: unknown }).busy));
+  } else if (message.type === "drawResponse" || message.type === "drawError") {
+    onDrawResponse(message as DrawResponseMessage | DrawErrorMessage);
   }
 });
 
 vscode.postMessage({ type: "ready" });
+
+let lastThemeSignature = themeClassSignature();
+new MutationObserver(() => {
+  const next = themeClassSignature();
+  if (next === lastThemeSignature) return;
+  lastThemeSignature = next;
+  void redrawPreservingDisclosure();
+}).observe(document.body, { attributes: true, attributeFilter: ["class"] });

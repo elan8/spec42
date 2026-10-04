@@ -66,12 +66,6 @@ part def Outer {
         (range (start 12 22) (end 12 37))
       )
       (diagnostic
-        (severity information)
-        (code "unconnected_port")
-        (source "semantic")
-        (range (start 15 4) (end 15 25))
-      )
-      (diagnostic
         (severity warning)
         (code "unresolved_type_reference")
         (source "semantic")
@@ -99,7 +93,13 @@ part def Outer {
         (severity error)
         (code "unrecognized_declaration_in_scope")
         (source "parser")
-        (range (start 27 4) (end 29 0))
+        (range (start 27 4) (end 28 4))
+      )
+      (diagnostic
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 28 4) (end 29 0))
       )
     )
   )

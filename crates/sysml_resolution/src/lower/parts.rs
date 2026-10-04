@@ -152,6 +152,9 @@ impl SemanticModelBuilder {
                     PartDefBodyElement::CaseUsage(case_usage) => {
                         self.lower_case_usage(document, Some(declaration), case_usage)?;
                     }
+                    PartDefBodyElement::ConcernUsage(concern_usage) => {
+                        self.lower_concern_usage(document, Some(declaration), concern_usage)?;
+                    }
                     PartDefBodyElement::AnalysisCaseUsage(analysis_case_usage) => {
                         self.lower_analysis_case_usage(
                             document,
@@ -254,11 +257,7 @@ impl SemanticModelBuilder {
                         self.lower_rendering_usage(document, Some(declaration), node)?;
                     }
                     PartDefBodyElement::ViewRendering(node) => {
-                        self.push_unsupported(
-                            document,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node.span,
-                        );
+                        self.lower_view_rendering_usage(document, declaration, node)?;
                     }
                     PartDefBodyElement::VerifyRequirement(node) => {
                         self.lower_verify_requirement_member(
@@ -629,6 +628,12 @@ impl SemanticModelBuilder {
             }
             PartUsageBodyElement::VerificationCaseUsage(node) => {
                 self.lower_verification_case_usage(document, Some(owner), node)?;
+            }
+            PartUsageBodyElement::CaseUsage(node) => {
+                self.lower_case_usage(document, Some(owner), node)?;
+            }
+            PartUsageBodyElement::ConcernUsage(node) => {
+                self.lower_concern_usage(document, Some(owner), node)?;
             }
             PartUsageBodyElement::ViewDef(node) => {
                 self.lower_view_def(document, Some(owner), node)?;
@@ -1294,7 +1299,8 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserEnumerationUsage>,
     ) -> Result<(), ConstructionError> {
-        let name = self.intern_declaration_name(document, Some(node.value.name))?;
+        let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1302,6 +1308,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     end: node.value.is_end,
                     ..DeclarationModifiers::default()
@@ -1545,6 +1552,7 @@ impl SemanticModelBuilder {
         node: &Node<InOutDecl>,
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.name)?;
+        let short_name = self.intern_short_name(document, node.value.short_name)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
@@ -1559,6 +1567,7 @@ impl SemanticModelBuilder {
             name,
             node.span,
             DeclarationFacts {
+                short_name,
                 modifiers: DeclarationModifiers {
                     reference: node.value.is_reference,
                     var: node.value.is_var,
