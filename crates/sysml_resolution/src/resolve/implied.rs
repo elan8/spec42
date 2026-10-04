@@ -2573,6 +2573,7 @@ pub(crate) const INDIVIDUAL_MULTIPLICITY_ANCHOR: &str = "Base::zeroOrOne";
 pub(crate) fn library_specialization_anchors(
     storage: &SemanticModelStorage,
 ) -> LibrarySpecializationAnchorFacts {
+    let names = LibraryAnchorNames::new(storage);
     let anchors = GENERATED_LIBRARY_SPECIALIZATION_RULES
         .iter()
         .map(|rule| {
@@ -2623,17 +2624,17 @@ pub(crate) fn library_specialization_anchors(
                     rule: LibrarySpecializationRuleKey(rule_id),
                     branch,
                 },
-                resolve_library_specialization_anchor(storage, anchor),
+                names.resolve(anchor),
             )
         })
         .collect();
     LibrarySpecializationAnchorFacts {
         by_rule: anchors,
-        roles: LibraryRoleAnchors::resolve(storage),
+        roles: LibraryRoleAnchors::resolve(&names),
         specialization_roles:
-            crate::resolve::role_specializations::LibrarySpecializationRoleAnchors::resolve(storage),
+            crate::resolve::role_specializations::LibrarySpecializationRoleAnchors::resolve(&names),
         reflective_metaclasses:
-            crate::resolve::reflective_metaclasses::ReflectiveMetaclassAnchors::resolve(storage),
+            crate::resolve::reflective_metaclasses::ReflectiveMetaclassAnchors::resolve(&names),
     }
 }
 
@@ -2659,18 +2660,34 @@ pub(crate) fn resolve_library_anchor_path(
     let Some(last) = storage.symbols.find(last) else {
         return LibrarySpecializationAnchor::Missing;
     };
-    let mut candidates = storage
-        .declarations
-        .iter()
-        .enumerate()
-        .filter_map(|(index, declaration)| {
-            (declaration.name == Some(last)
-                && storage
+    library_anchor_from_candidates(
+        storage,
+        owners,
+        storage
+            .declarations
+            .iter()
+            .enumerate()
+            .filter(|(_, declaration)| declaration.name == Some(last))
+            .filter_map(|(index, _)| DeclarationId::from_index(index).ok()),
+    )
+}
+
+/// The one acceptance rule for a library anchor: a standard-library declaration whose
+/// structural owner path matches `owners`. Both the single-anchor scan and
+/// [`LibraryAnchorNames`] feed it the declarations bearing the anchor's final name.
+fn library_anchor_from_candidates(
+    storage: &SemanticModelStorage,
+    owners: &[&str],
+    named: impl Iterator<Item = DeclarationId>,
+) -> LibrarySpecializationAnchor {
+    let mut candidates = named
+        .filter(|id| {
+            storage.declaration(*id).is_some_and(|declaration| {
+                storage
                     .document(declaration.document)
                     .is_some_and(|document| document.role == SourceRole::StandardLibrary)
-                && anchor_owner_path_matches(storage, declaration.owner, owners))
-            .then(|| DeclarationId::from_index(index).ok())
-            .flatten()
+                    && anchor_owner_path_matches(storage, declaration.owner, owners)
+            })
         })
         .collect::<Vec<_>>();
     candidates.sort_unstable();
@@ -2679,6 +2696,62 @@ pub(crate) fn resolve_library_anchor_path(
         0 => LibrarySpecializationAnchor::Missing,
         1 => LibrarySpecializationAnchor::Resolved(candidates[0]),
         _ => LibrarySpecializationAnchor::Ambiguous(candidates.into_boxed_slice()),
+    }
+}
+
+/// A transient by-name view of the declarations, for resolving a batch of library anchors with
+/// one pass over the declaration arena instead of one pass per anchor.
+///
+/// Scoped to one call over one immutable storage and never retained, so it is not a cache: every
+/// anchor it answers is exactly what [`resolve_library_anchor_path`] answers for that storage.
+pub(crate) struct LibraryAnchorNames<'a> {
+    storage: &'a SemanticModelStorage,
+    by_name: std::collections::HashMap<crate::model::NameId, Vec<DeclarationId>>,
+}
+
+impl<'a> LibraryAnchorNames<'a> {
+    pub(crate) fn new(storage: &'a SemanticModelStorage) -> Self {
+        let mut by_name =
+            std::collections::HashMap::<crate::model::NameId, Vec<DeclarationId>>::new();
+        for (index, declaration) in storage.declarations.iter().enumerate() {
+            let Some(name) = declaration.name else {
+                continue;
+            };
+            if let Ok(id) = DeclarationId::from_index(index) {
+                by_name.entry(name).or_default().push(id);
+            }
+        }
+        Self { storage, by_name }
+    }
+
+    pub(crate) fn storage(&self) -> &'a SemanticModelStorage {
+        self.storage
+    }
+
+    /// [`resolve_library_anchor_path`] over this view.
+    pub(crate) fn resolve_path(&self, parts: &[&str]) -> LibrarySpecializationAnchor {
+        let Some((&last, owners)) = parts.split_last() else {
+            return LibrarySpecializationAnchor::Missing;
+        };
+        let Some(last) = self.storage.symbols.find(last) else {
+            return LibrarySpecializationAnchor::Missing;
+        };
+        library_anchor_from_candidates(
+            self.storage,
+            owners,
+            self.by_name
+                .get(&last)
+                .map(Vec::as_slice)
+                .unwrap_or_default()
+                .iter()
+                .copied(),
+        )
+    }
+
+    /// [`resolve_library_specialization_anchor`] over this view.
+    pub(crate) fn resolve(&self, anchor: &str) -> LibrarySpecializationAnchor {
+        let parts = anchor.split("::").collect::<Vec<_>>();
+        self.resolve_path(&parts)
     }
 }
 

@@ -18,11 +18,9 @@ use std::collections::BTreeMap;
 use source_identity::SourceRole;
 use sysml_contract::ElementKind;
 
-use crate::lower::storage::SemanticModelStorage;
 use crate::model::element_kind::element_kind;
 use crate::model::DeclarationId;
 use crate::resolve::implied::anchor_owner_path_matches;
-use crate::resolve::implied::resolve_library_anchor_path;
 use crate::resolve::implied::LibrarySpecializationAnchor;
 
 /// The reflective packages, in the Pilot's lookup order.
@@ -55,7 +53,8 @@ impl Default for ReflectiveMetaclassAnchors {
 
 impl ReflectiveMetaclassAnchors {
     /// One scan over the admitted standard-library declarations.
-    pub(crate) fn resolve(storage: &SemanticModelStorage) -> Self {
+    pub(crate) fn resolve(names: &crate::resolve::implied::LibraryAnchorNames<'_>) -> Self {
+        let storage = names.storage();
         let mut found = BTreeMap::<ElementKind, Vec<DeclarationId>>::new();
         for (index, declaration) in storage.declarations.iter().enumerate() {
             if !element_kind(declaration.kind).conforms_to(ElementKind::Metaclass) {
@@ -98,7 +97,7 @@ impl ReflectiveMetaclassAnchors {
             .collect();
         Self {
             by_kind,
-            annotated_element: resolve_library_anchor_path(storage, &ANNOTATED_ELEMENT),
+            annotated_element: names.resolve_path(&ANNOTATED_ELEMENT),
         }
     }
 

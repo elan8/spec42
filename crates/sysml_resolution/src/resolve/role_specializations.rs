@@ -28,7 +28,6 @@ use crate::model::element_kind::membership_role_with_trigger;
 use crate::model::DeclarationId;
 use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
-use crate::resolve::implied::resolve_library_anchor_path;
 use crate::resolve::implied::LibrarySpecializationAnchor;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionError;
@@ -124,16 +123,11 @@ pub(crate) struct LibrarySpecializationRoleAnchors {
 }
 
 impl LibrarySpecializationRoleAnchors {
-    pub(crate) fn resolve(storage: &SemanticModelStorage) -> Self {
+    pub(crate) fn resolve(names: &crate::resolve::implied::LibraryAnchorNames<'_>) -> Self {
         Self {
             by_role: LibrarySpecializationRole::ALL
                 .into_iter()
-                .map(|role| {
-                    (
-                        role,
-                        resolve_library_anchor_path(storage, role.anchor_path()),
-                    )
-                })
+                .map(|role| (role, names.resolve_path(role.anchor_path())))
                 .collect(),
         }
     }
