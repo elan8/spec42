@@ -193,7 +193,8 @@ pub(crate) fn multiplicity_bound_form(
     operands: &mut Vec<sysml_v2_parser::ast::QualifiedReferenceId>,
 ) -> MultiplicityBoundForm {
     use sysml_v2_parser::ast::{BinaryOperator, UnaryOperator};
-    if matches!(expression, Expression::LiteralInfinity) || literal_bound_value(expression).is_some()
+    if matches!(expression, Expression::LiteralInfinity)
+        || literal_bound_value(expression).is_some()
     {
         return MultiplicityBoundForm::Literal;
     }
@@ -824,6 +825,24 @@ pub(crate) fn basic_usage_prefix_modifiers(prefix: &BasicUsagePrefix) -> Declara
         variation,
         derived: prefix.ref_prefix.derived_span.is_some(),
         reference: prefix.reference_span.is_some(),
+        constant: prefix.ref_prefix.constant_span.is_some(),
+        ..DeclarationModifiers::default()
+    }
+}
+
+/// The modifier facts of a `ControlNodePrefix` (SysML BNF `ControlNodePrefix`: `RefPrefix`
+/// followed by `individual` and a `PortionKind`). Its direction and portion kind are separate
+/// facts (`direction_node_fact`, `portion_kind_node_fact`).
+pub(crate) fn control_node_prefix_modifiers(
+    prefix: &sysml_v2_parser::ast::ControlNodePrefix,
+) -> DeclarationModifiers {
+    let (is_abstract, variation) =
+        definition_prefix_node_modifiers(prefix.ref_prefix.variance.as_ref());
+    DeclarationModifiers {
+        is_abstract,
+        variation,
+        individual: prefix.individual_span.is_some(),
+        derived: prefix.ref_prefix.derived_span.is_some(),
         constant: prefix.ref_prefix.constant_span.is_some(),
         ..DeclarationModifiers::default()
     }

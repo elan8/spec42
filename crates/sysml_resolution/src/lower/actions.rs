@@ -1,9 +1,12 @@
 //! Phase 2 lowering — behaviour: action definitions and usages, control nodes, flows, performs.
 
+use crate::lower::facts::control_node_prefix_modifiers;
 use crate::lower::facts::definition_prefix_modifiers;
 use crate::lower::facts::definition_prefix_node_modifiers;
 use crate::lower::facts::direction_fact;
+use crate::lower::facts::direction_node_fact;
 use crate::lower::facts::multiplicity_facts;
+use crate::lower::facts::portion_kind_node_fact;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
 use crate::lower::facts::ParameterDirection;
@@ -230,6 +233,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Merge,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionDefBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
@@ -239,6 +243,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Decide,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionDefBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
@@ -248,6 +253,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Join,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionDefBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
@@ -257,6 +263,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Fork,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionDefBodyElement::ThenAction(node) => {
@@ -632,6 +639,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Merge,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionUsageBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
@@ -641,6 +649,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Decide,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionUsageBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
@@ -650,6 +659,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Join,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionUsageBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
@@ -659,6 +669,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Fork,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionUsageBodyElement::ThenAction(node) => {
@@ -983,6 +994,7 @@ impl SemanticModelBuilder {
         decl_kind: DeclarationKind,
         span: Span,
         control_declaration: &ControlNodeDeclaration,
+        prefix: &sysml_v2_parser::ast::ControlNodePrefix,
         body: &FirstMergeBody,
     ) -> Result<(), ConstructionError> {
         // `ControlNodeDeclaration` is the node's own declaration, not a reference to another
@@ -1007,7 +1019,12 @@ impl SemanticModelBuilder {
             decl_kind,
             name,
             span,
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                modifiers: control_node_prefix_modifiers(prefix),
+                direction: direction_node_fact(prefix.ref_prefix.direction.as_ref()),
+                portion_kind: portion_kind_node_fact(prefix.portion.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -1015,6 +1032,7 @@ impl SemanticModelBuilder {
             Visibility::Default,
             span,
         )?;
+        self.lower_usage_extension_keywords(document, declaration, &prefix.extension_keywords)?;
         self.lower_first_merge_body(document, declaration, family, body)
     }
 
@@ -1087,6 +1105,7 @@ impl SemanticModelBuilder {
                         DeclarationKind::Merge,
                         node.span,
                         &node.value.declaration,
+                        &node.value.prefix,
                         &node.value.body,
                     )?,
                     ActionDefBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
@@ -1096,6 +1115,7 @@ impl SemanticModelBuilder {
                         DeclarationKind::Decide,
                         node.span,
                         &node.value.declaration,
+                        &node.value.prefix,
                         &node.value.body,
                     )?,
                     ActionDefBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
@@ -1105,6 +1125,7 @@ impl SemanticModelBuilder {
                         DeclarationKind::Join,
                         node.span,
                         &node.value.declaration,
+                        &node.value.prefix,
                         &node.value.body,
                     )?,
                     ActionDefBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
@@ -1114,6 +1135,7 @@ impl SemanticModelBuilder {
                         DeclarationKind::Fork,
                         node.span,
                         &node.value.declaration,
+                        &node.value.prefix,
                         &node.value.body,
                     )?,
                     _ => self.push_unsupported(document, family, element.span),
@@ -1156,6 +1178,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Merge,
                 merge_stmt.span,
                 &merge_stmt.value.declaration,
+                &merge_stmt.value.prefix,
                 &merge_stmt.value.body,
             )?,
             ThenTarget::Fork(fork_stmt) => self.lower_first_merge_stmt(
@@ -1165,6 +1188,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Fork,
                 fork_stmt.span,
                 &fork_stmt.value.declaration,
+                &fork_stmt.value.prefix,
                 &fork_stmt.value.body,
             )?,
             ThenTarget::Join(join_stmt) => self.lower_first_merge_stmt(
@@ -1174,6 +1198,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Join,
                 join_stmt.span,
                 &join_stmt.value.declaration,
+                &join_stmt.value.prefix,
                 &join_stmt.value.body,
             )?,
             ThenTarget::Decide(decision_stmt) => self.lower_first_merge_stmt(
@@ -1183,6 +1208,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Decide,
                 decision_stmt.span,
                 &decision_stmt.value.declaration,
+                &decision_stmt.value.prefix,
                 &decision_stmt.value.body,
             )?,
             // `then if <condition> { ... }` -- an inline conditional action node, lowered

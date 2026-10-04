@@ -529,6 +529,23 @@ impl<D> SemanticModel<D> {
             self.collect_metadata_body_features(id, declaration.kind, diagnostics)?;
             self.collect_metadata_annotated_elements(id, declaration.kind, diagnostics)?;
             self.collect_port_member_composition(id, declaration.kind, diagnostics)?;
+            // SysML 8.3.17.6 `validateControlNodeIsComposite`: a control node is composite. The
+            // effective `isComposite` is the canonical usage derivation, so a directed control
+            // node (`in fork g;`, a `ControlNodePrefix` direction) is referential.
+            if matches!(
+                declaration.kind,
+                DeclarationKind::Merge
+                    | DeclarationKind::Decide
+                    | DeclarationKind::Join
+                    | DeclarationKind::Fork
+            ) && !self.usage_is_composite(id)
+            {
+                diagnostics.push(self.declaration_diagnostic(
+                    id,
+                    DiagnosticCode::ControlNodeNotComposite,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
             self.collect_parallel_state_subactions(id, declaration.kind, facts, diagnostics)?;
             self.collect_variation_owned_features(id, diagnostics)?;
             // SysML 8.3.6.5 `validateVariantMembershipOwningNamespace`: every definition and

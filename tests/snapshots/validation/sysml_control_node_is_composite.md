@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.6:validateControlNodeIsComposite
-blocked_by=parser-gap-directed-control-node
 type=file
 ~~~
 # SOURCE
@@ -44,6 +43,12 @@ package Actions {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_control_node_is_composite.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "control_node_not_composite")
+        (source "semantic")
+        (range (start 7 8) (end 7 18))
+      )
     )
   )
 )
@@ -56,7 +61,7 @@ package Actions {
     (declaration (id (node (document "memory://snapshot/sysml_control_node_is_composite.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_control_node_is_composite.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_control_node_is_composite.md") (qualified-name "Actions::Act::f"))) (kind fork) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_control_node_is_composite.md") (qualified-name "Actions::Act::g"))) (kind fork) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_control_node_is_composite.md") (qualified-name "Actions::Act::g"))) (kind fork) (membership (kind feature) (visibility default)) (facts (direction in)))
   )
   (references
   )

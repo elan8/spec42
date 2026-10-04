@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Directed control nodes are referential.** A `ControlNodePrefix` (`in fork g;`, `individual`,
+  a portion kind, `#Tag`) is now lowered onto the control node, and a control node that is not
+  composite reports `control_node_not_composite` (SysML 8.3.17.6 validateControlNodeIsComposite).
+
 - **`*` is a LiteralInfinity expression.** An unbounded multiplicity bound (`[*]`, `[0..*]`) and a
   `*` written as a value are now published as `LiteralInfinity` elements specializing
   `Performances::literalInfinityEvaluations` (KerML 8.3.4.8.13), and a single-bound `[n]` keeps
