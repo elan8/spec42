@@ -706,6 +706,7 @@ impl SemanticModelBuilder {
                         )?;
                     }
                     ConstraintDefBodyElement::Expression(expression) => {
+                        self.count_result_expression(declaration)?;
                         self.push_evaluation_fact(
                             declaration,
                             self.constraint_expression_site(document, &expression.value),
@@ -1090,6 +1091,7 @@ impl SemanticModelBuilder {
                         )?;
                     }
                     CalcDefBodyElement::Expression(expression) => {
+                        self.count_result_expression(declaration)?;
                         self.push_evaluation_fact(
                             declaration,
                             self.calc_expression_site(document, &expression.value),

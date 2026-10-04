@@ -368,6 +368,38 @@ impl<D> SemanticModel<D> {
         Ok(())
     }
 
+    /// The ResultExpressionMembership rules over the owner's counted result expressions
+    /// (`DeclarationFacts::result_expression_count`), reported at the owner:
+    /// KerML 8.3.4.7.4 `validateFunctionResultExpressionMembership` and 8.3.4.7.3
+    /// `validateExpressionResultExpressionMembership` (at most one), and 8.3.4.7.7
+    /// `validateResultExpressionMembershipOwningType` (the owner is a Function or an Expression).
+    fn collect_result_expression_memberships(
+        &self,
+        id: DeclarationId,
+        kind: DeclarationKind,
+        facts: &DeclarationFacts,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        use crate::model::element_kind::element_kind;
+        use sysml_contract::ElementKind;
+        let count = facts.result_expression_count;
+        if count == 0 {
+            return Ok(());
+        }
+        let metaclass = element_kind(kind);
+        let code = if metaclass.conforms_to(ElementKind::Function) {
+            (count > 1).then_some(DiagnosticCode::FunctionMultipleResultExpressions)
+        } else if metaclass.conforms_to(ElementKind::Expression) {
+            (count > 1).then_some(DiagnosticCode::ExpressionMultipleResultExpressions)
+        } else {
+            Some(DiagnosticCode::ResultExpressionMembershipInvalidOwner)
+        };
+        if let Some(code) = code {
+            diagnostics.push(self.declaration_diagnostic(id, code, DiagnosticSeverity::Warning)?);
+        }
+        Ok(())
+    }
+
     /// KerML 8.3.3.1.10 `validateTypeOwnedMultiplicity`: a Type has at most one `ownedMember`
     /// that is a Multiplicity. Its `[m..n]` and every `multiplicity` body member count alike;
     /// each one after the first, in ownership order, is reported.
@@ -564,6 +596,7 @@ impl<D> SemanticModel<D> {
             self.collect_metadata_annotated_elements(id, declaration.kind, diagnostics)?;
             self.collect_port_member_composition(id, declaration.kind, diagnostics)?;
             self.collect_owned_multiplicities(id, declaration.kind, diagnostics)?;
+            self.collect_result_expression_memberships(id, declaration.kind, facts, diagnostics)?;
             // SysML 8.3.17.6 `validateControlNodeIsComposite`: a control node is composite. The
             // effective `isComposite` is the canonical usage derivation, so a directed control
             // node (`in fork g;`, a `ControlNodePrefix` direction) is referential.

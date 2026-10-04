@@ -1940,6 +1940,23 @@ impl SemanticModelBuilder {
         });
     }
 
+    /// Records one ResultExpressionMembership owned by `owner`: a result expression authored as a
+    /// member of its body (`DeclarationFacts::result_expression_count`).
+    pub(crate) fn count_result_expression(
+        &mut self,
+        owner: DeclarationId,
+    ) -> Result<(), ConstructionError> {
+        let facts = self
+            .declaration_facts
+            .get_mut(owner.index())
+            .ok_or(ConstructionError::InvalidMembership)?;
+        facts.result_expression_count = facts
+            .result_expression_count
+            .checked_add(1)
+            .ok_or(ConstructionError::Capacity)?;
+        Ok(())
+    }
+
     /// Records one authored unit token, in lockstep with the classifier that counts them.
     pub(crate) fn push_unit_token(
         &mut self,

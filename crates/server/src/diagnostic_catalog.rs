@@ -995,6 +995,27 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "expression_multiple_result_expressions",
+        severity: "warning",
+        meaning: "An expression body authors more than one result expression (KerML validateExpressionResultExpressionMembership).",
+        typical_fix: "Keep a single result expression as the last member of the body.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "function_multiple_result_expressions",
+        severity: "warning",
+        meaning: "A function or calculation body authors more than one result expression (KerML validateFunctionResultExpressionMembership).",
+        typical_fix: "Keep a single result expression as the last member of the body.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
+        code: "result_expression_membership_invalid_owner",
+        severity: "warning",
+        meaning: "A result expression is authored in the body of a type that is neither a function nor an expression (KerML validateResultExpressionMembershipOwningType).",
+        typical_fix: "Move the expression into a function or expression, or bind it to a feature value.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "type_multiple_multiplicities",
         severity: "warning",
         meaning: "A type owns more than one multiplicity, e.g. a `[m..n]` and a `multiplicity` member (KerML validateTypeOwnedMultiplicity).",

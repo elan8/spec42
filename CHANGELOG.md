@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Result expression memberships are checked.** A function, calculation or constraint body with
+  more than one result expression reports `function_multiple_result_expressions`, an expression
+  body `expression_multiple_result_expressions`, and a result expression in the body of a type
+  that is neither reports `result_expression_membership_invalid_owner` (KerML 8.3.4.7.3/4/7).
+
 - **Namespace-level `connection X;`, `interface X;` and `calc X;` are usages.** They take the
   usage library-specialization anchors (`Connections::connections`, `Interfaces::interfaces`,
   `Calculations::calculations`), and an interface usage now records its prefix modifiers,

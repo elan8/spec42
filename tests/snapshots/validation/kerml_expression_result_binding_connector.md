@@ -7,7 +7,7 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=kerml-1.0:8.3.4.7.3:checkExpressionResultBindingConnector
-blocked_by=lowering-result-expression-memberships
+blocked_by=lowering-gap-result-expression-binding-endpoints
 type=file
 ~~~
 # SOURCE

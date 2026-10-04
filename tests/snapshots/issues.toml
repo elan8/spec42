@@ -49,10 +49,10 @@ owner = "spec42-semantic"
 summary = "The owned connectorEnd collection is now canonical (SemanticModelStorage::owned_end_features), but the pinned manifest classifies checkConnectorBinaryObjectSpecialization as a specialization_check: the extractor rejects its compound XMI body (`connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure))`, note the XMI spelling `connectorEnds`), so no conditional contract or Objects::binaryLinkObjects anchor is generated to synthesize from. Needs extractor support for the compound predicate and an XMI-backed manifest refresh."
 
 [[issue]]
-id = "lowering-result-expression-memberships"
+id = "lowering-gap-result-expression-binding-endpoints"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "the publication does not record a ResultExpressionMembership -- a body result expression is only an evaluation site of its owner -- and it cannot count them from the parser's Expression body elements, which also carry members the pinned parser shreds into stray expressions (planning/UPSTREAM_PARSER_GAPS.md body-member-expression-shredding: `attribute a : T;` in a constraint def body, `protected in c : C;` in a KerML class body); counting them reports multiple_result_expressions on conforming corpus models"
+summary = "ResultExpressionMemberships are counted per owner (DeclarationFacts::result_expression_count), but a body result expression is evaluated at its owner rather than minted as an Expression element with its own result parameter, so the implied BindingConnector between the owner's result and the result expression's result has no endpoint fact and checkExpressionResultBindingConnector/checkFunctionResultBindingConnector stay Unsupported (ExpressionResultEndpointFacts/FunctionResultEndpointFacts)"
 
 [[issue]]
 id = "semantic-attribute-feature-composite"

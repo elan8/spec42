@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.7.4:validateFunctionResultExpressionMembership
-blocked_by=lowering-result-expression-memberships
 type=file
 ~~~
 # SOURCE
@@ -41,6 +40,12 @@ package Functions {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_function_result_expression_membership.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "function_multiple_result_expressions")
+        (source "semantic")
+        (range (start 5 4) (end 5 24))
+      )
     )
   )
 )

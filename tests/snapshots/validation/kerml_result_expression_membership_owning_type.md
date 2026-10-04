@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.7.7:validateResultExpressionMembershipOwningType
-blocked_by=lowering-result-expression-memberships
 type=file
 ~~~
 # SOURCE
@@ -41,6 +40,12 @@ package Results {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_result_expression_membership_owning_type.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "result_expression_membership_invalid_owner")
+        (source "semantic")
+        (range (start 5 4) (end 5 23))
+      )
     )
   )
 )

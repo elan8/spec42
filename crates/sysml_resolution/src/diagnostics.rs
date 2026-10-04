@@ -707,6 +707,15 @@ semantic_diagnostic_codes! {
     /// A succession relates endpoints that are not actions.
     SuccessionEndpointInvalid => "succession_endpoint_invalid",
         "A succession must relate action definitions or usages.";
+    /// KerML 8.3.4.7.3 `validateExpressionResultExpressionMembership`.
+    ExpressionMultipleResultExpressions => "expression_multiple_result_expressions",
+        "An expression may own at most one result expression.";
+    /// KerML 8.3.4.7.4 `validateFunctionResultExpressionMembership`.
+    FunctionMultipleResultExpressions => "function_multiple_result_expressions",
+        "A function may own at most one result expression.";
+    /// KerML 8.3.4.7.7 `validateResultExpressionMembershipOwningType`.
+    ResultExpressionMembershipInvalidOwner => "result_expression_membership_invalid_owner",
+        "Only a function or an expression may own a result expression.";
     /// KerML 8.3.3.1.10 `validateTypeOwnedMultiplicity`.
     TypeMultipleMultiplicities => "type_multiple_multiplicities",
         "A type may own at most one multiplicity.";
