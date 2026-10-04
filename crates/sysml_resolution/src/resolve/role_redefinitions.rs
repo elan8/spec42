@@ -65,10 +65,13 @@ pub(crate) enum LibraryRedefinitionRole {
     /// KerML 8.3.4.9 `checkFeatureFlowFeatureRedefinition`: the flow feature of a flow's second
     /// `FlowEnd` (end Feature index 1).
     FlowFeatureTargetInput,
+    /// SysML 8.3.26.6 `checkRenderingUsageRedefinition`: the RenderingUsage owned through a
+    /// `ViewRenderingMembership`.
+    ViewRendering,
 }
 
 impl LibraryRedefinitionRole {
-    pub(crate) const ALL: [Self; 9] = [
+    pub(crate) const ALL: [Self; 10] = [
         Self::ForLoopVariable,
         Self::FeatureChainSourceTarget,
         Self::StateEntryAction,
@@ -78,6 +81,7 @@ impl LibraryRedefinitionRole {
         Self::AssignmentAccessedFeature,
         Self::FlowFeatureSourceOutput,
         Self::FlowFeatureTargetInput,
+        Self::ViewRendering,
     ];
 
     /// The structural path of the library feature this role's occupant redefines, outermost
@@ -107,6 +111,7 @@ impl LibraryRedefinitionRole {
             ],
             Self::FlowFeatureSourceOutput => &["Transfers", "Transfer", "source", "sourceOutput"],
             Self::FlowFeatureTargetInput => &["Transfers", "Transfer", "target", "targetInput"],
+            Self::ViewRendering => &["Views", "View", "viewRendering"],
         }
     }
 
@@ -125,6 +130,7 @@ impl LibraryRedefinitionRole {
             Self::FlowFeatureSourceOutput | Self::FlowFeatureTargetInput => {
                 RedefinitionCheckKind::FeatureFlowFeature
             }
+            Self::ViewRendering => RedefinitionCheckKind::RenderingUsage,
         }
     }
 
@@ -177,6 +183,7 @@ pub(crate) struct LibraryRoleOccupant {
 /// - A feature chain expression's source-target feature is its lowered `source_target`.
 /// - An `entry`/`do`/`exit` action is the member of a `StateSubactionMembership`; the kind is the
 ///   membership role, never the declaration's name. Every StateActionUsage form publishes one.
+/// - A view's rendering is the member of a `ViewRenderingMembership`.
 /// - An assignment's `startingAt` and `accessedFeature` are the Features of its lowered
 ///   [`crate::lower::facts::AssignmentRecord`].
 pub(crate) fn library_role_occupants(
@@ -215,6 +222,9 @@ pub(crate) fn library_role_occupants(
                 StateSubactionKind::Do => LibraryRedefinitionRole::StateDoAction,
                 StateSubactionKind::Exit => LibraryRedefinitionRole::StateExitAction,
             },
+            // The rendering a `render` member owns (Pilot `RenderingUsageAdapter.isViewRendering`:
+            // the owning membership is a ViewRenderingMembership).
+            (_, Some(MembershipRole::ViewRendering)) => LibraryRedefinitionRole::ViewRendering,
             // The flow feature a `FlowEnd` owns, when that end is end Feature 0 or 1 of a Feature
             // (Pilot `FlowEndAdapter.addFlowFeatureRedefinition`).
             (DeclarationKind::KermlFeature, _) => {

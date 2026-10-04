@@ -102,9 +102,7 @@ impl<D> SemanticModel<D> {
                 self.assignment_referent_check()
             }
             RedefinitionCheckKind::RequirementUsageObjective => self.objective_redefinition_check(),
-            RedefinitionCheckKind::RenderingUsage => RedefinitionCheckOutcome::Unsupported {
-                prerequisite: RedefinitionCheckPrerequisite::ViewRenderingMembership,
-            },
+            RedefinitionCheckKind::RenderingUsage => self.library_role_check(kind),
         };
         self.resolved_outcome(outcome)
     }

@@ -181,7 +181,6 @@ pub enum RedefinitionCheckPrerequisite {
     /// result is not a fact of the publication.
     ExpressionElements,
     StateSubactionMembershipAndKind,
-    ViewRenderingMembership,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

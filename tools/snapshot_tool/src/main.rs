@@ -1265,7 +1265,6 @@ fn parse_redefinition_check_prerequisite(
         "state_subaction_membership_and_kind" => {
             Ok(RedefinitionCheckPrerequisite::StateSubactionMembershipAndKind)
         }
-        "view_rendering_membership" => Ok(RedefinitionCheckPrerequisite::ViewRenderingMembership),
         "rule_not_published" => Ok(RedefinitionCheckPrerequisite::RuleNotPublished),
         _ => Err(format!(
             "{fixture}: unknown redefinition check prerequisite {value:?}"
@@ -8505,7 +8504,7 @@ mod tests {
 
     #[test]
     fn parses_manifest_scoped_redefinition_check_expectations_strictly() {
-        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (redefinition-check\n    (rule_id \"kerml-1.0:8.3.3.3.4:checkFeatureParameterRedefinition\")\n    (outcome unsupported)\n    (prerequisite grammar_parameters))\n  (redefinition-check\n    (rule_id \"sysml-2.0:8.3.26.6:checkRenderingUsageRedefinition\")\n    (outcome unsupported)\n    (prerequisite view_rendering_membership)))\n~~~\n";
+        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (redefinition-check\n    (rule_id \"kerml-1.0:8.3.3.3.4:checkFeatureParameterRedefinition\")\n    (outcome unsupported)\n    (prerequisite grammar_parameters))\n  (redefinition-check\n    (rule_id \"kerml-1.0:8.3.3.3.4:checkFeatureResultRedefinition\")\n    (outcome unsupported)\n    (prerequisite expression_elements)))\n~~~\n";
         let parsed = parse_expected_semantics(fixture, "fixture.md")
             .unwrap()
             .expect("semantic expectations");
@@ -8519,9 +8518,9 @@ mod tests {
                     ),
                 },
                 RedefinitionCheckExpectation {
-                    rule: RedefinitionCheckKind::RenderingUsage,
+                    rule: RedefinitionCheckKind::FeatureResult,
                     outcome: RedefinitionCheckExpectationOutcome::Unsupported(
-                        RedefinitionCheckPrerequisite::ViewRenderingMembership,
+                        RedefinitionCheckPrerequisite::ExpressionElements,
                     ),
                 },
             ]

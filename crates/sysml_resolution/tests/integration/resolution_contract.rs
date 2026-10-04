@@ -3637,29 +3637,14 @@ fn binding_connector_checks_are_manifest_scoped_and_preserve_first_missing_prere
 }
 
 #[test]
-fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisite() {
+fn redefinition_checks_are_evaluated_over_published_role_facts() {
     let published = publication_for(&[(
         "memory://redefinition-rule-family.sysml",
         "package Model { classifier Parent { feature shared; } classifier Child :> Parent { feature shared; } }",
     )]);
-    let expected = [(
-        RedefinitionCheckKind::RenderingUsage,
-        RedefinitionCheckPrerequisite::ViewRenderingMembership,
-    )];
-
-    for (rule, prerequisite) in expected {
-        assert_eq!(
-            published.redefinition_check(rule),
-            QueryOutcome::new(
-                published.completeness(),
-                QueryAnswer::Resolved(RedefinitionCheckOutcome::Unsupported { prerequisite }),
-            ),
-            "{rule:?} must expose its first missing canonical prerequisite rather than infer a relationship"
-        );
-    }
     // Checks whose role facts are published are evaluated, never reported as unsupported. This
     // model has no end feature, for loop, feature chain expression, case objective, parameter,
-    // result, constructor, assignment or state action, so each holds vacuously; the snapshot
+    // result, constructor, assignment, state action or view rendering, so each holds vacuously; the snapshot
     // corpus carries the occupied cases.
     for rule in [
         RedefinitionCheckKind::FeatureEnd,
@@ -3675,6 +3660,7 @@ fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisi
         RedefinitionCheckKind::ForLoopActionUsageVar,
         RedefinitionCheckKind::RequirementUsageObjective,
         RedefinitionCheckKind::ActionUsageStateAction,
+        RedefinitionCheckKind::RenderingUsage,
     ] {
         assert_eq!(
             published.redefinition_check(rule),

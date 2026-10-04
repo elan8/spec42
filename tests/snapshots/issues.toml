@@ -1,12 +1,6 @@
 schema_version = 1
 
 [[issue]]
-id = "lowering-gap-redefinition-view-rendering-membership"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "`render` members now lower to a RenderingUsage under a ViewRenderingMembership, but the implied redefinition of Views::View::viewRendering and the RenderingUsage redefinition check over that membership are not yet implemented, so checkRenderingUsageRedefinition stays Unsupported (ViewRenderingMembership prerequisite)."
-
-[[issue]]
 id = "lowering-gap-binding-connector-satisfy-requirement-endpoints"
 kind = "lowering_gap"
 owner = "spec42-semantic"
