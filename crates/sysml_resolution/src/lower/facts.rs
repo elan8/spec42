@@ -465,6 +465,11 @@ pub(crate) struct DeclarationFacts {
     /// evaluated at the owner (an evaluation site), so it is counted here rather than minted as an
     /// element. Body recovery can only hide members, so the count is a lower bound.
     pub(crate) result_expression_count: u32,
+    /// Whether `result_expression_count` may be short of the authored ResultExpressionMemberships:
+    /// body recovery hid a member, or the body is a case-family body whose expression members the
+    /// parser cannot yet tell from shredded `include` members (so none of them is counted). Only
+    /// a declaration without this flag has an exactly known result-expression set.
+    pub(crate) result_expressions_incomplete: bool,
     /// The number of PayloadFeatures a Flow owns: one per authored `of ...` payload clause,
     /// present on every `DeclarationKind::Flow` and absent elsewhere. Payload features are not
     /// minted as declarations, so this is the single owning fact for KerML

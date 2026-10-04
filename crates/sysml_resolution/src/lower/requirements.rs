@@ -1799,6 +1799,7 @@ impl SemanticModelBuilder {
             match &element.value {
                 UseCaseDefBodyElement::Error(error) => {
                     self.push_recovery(document, error.span);
+                    self.mark_result_expressions_incomplete(owner)?;
                 }
                 UseCaseDefBodyElement::AttributeDef(attribute) => {
                     self.lower_attribute_def(document, Some(owner), attribute)?;
@@ -1911,6 +1912,9 @@ impl SemanticModelBuilder {
                 // the same `classify_expression`/`lower_calc_expression` pipeline a calc def's
                 // bare body expression uses.
                 UseCaseDefBodyElement::Expression(expression) => {
+                    // Not counted: the parser still shreds `include` members into stray
+                    // expressions here, so this may not be a ResultExpressionMember.
+                    self.mark_result_expressions_incomplete(owner)?;
                     self.push_evaluation_fact(
                         owner,
                         self.calc_expression_site(document, &expression.value),

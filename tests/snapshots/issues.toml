@@ -46,7 +46,7 @@ summary = "The owned connectorEnd collection is now canonical (SemanticModelStor
 id = "lowering-gap-result-expression-binding-endpoints"
 kind = "lowering_gap"
 owner = "spec42-semantic"
-summary = "ResultExpressionMemberships are counted per owner (DeclarationFacts::result_expression_count), but a body result expression is evaluated at its owner rather than minted as an Expression element with its own result parameter, so the implied BindingConnector between the owner's result and the result expression's result has no endpoint fact and checkExpressionResultBindingConnector/checkFunctionResultBindingConnector stay Unsupported (ExpressionResultEndpointFacts/FunctionResultEndpointFacts)"
+summary = "checkExpressionResultBindingConnector/checkFunctionResultBindingConnector are decided only where they hold vacuously (every applicable owner's ResultExpressionMembership set exactly known and empty). A body result expression is still evaluated at its owner (counted in DeclarationFacts::result_expression_count) rather than minted as an Expression element owned through a ResultExpressionMembership with its own `out` result, so the implied BindingConnector between the owner's result and the result expression's result (Pilot FunctionAdapter/ExpressionAdapter addResultBinding) has no endpoint facts and a non-empty set stays Unsupported (ExpressionResultEndpointFacts/FunctionResultEndpointFacts). Needs result-expression elements (as enter_instantiation mints for instantiations) plus the owner result parameter fact."
 
 [[issue]]
 id = "semantic-attribute-feature-composite"

@@ -252,16 +252,16 @@ impl BindingConnectorIndex {
                     BindingConnectorValidationOutcome::Violated
                 }
             }
-            BindingConnectorCheckKind::ExpressionResult => {
-                BindingConnectorValidationOutcome::Unsupported {
-                    prerequisite: BindingConnectorValidationPrerequisite::ExpressionResultEndpointFacts,
-                }
-            }
-            BindingConnectorCheckKind::FunctionResult => {
-                BindingConnectorValidationOutcome::Unsupported {
-                    prerequisite: BindingConnectorValidationPrerequisite::FunctionResultEndpointFacts,
-                }
-            }
+            BindingConnectorCheckKind::ExpressionResult => result_expression_binding_outcome(
+                storage,
+                rule,
+                BindingConnectorValidationPrerequisite::ExpressionResultEndpointFacts,
+            ),
+            BindingConnectorCheckKind::FunctionResult => result_expression_binding_outcome(
+                storage,
+                rule,
+                BindingConnectorValidationPrerequisite::FunctionResultEndpointFacts,
+            ),
             BindingConnectorCheckKind::ConstructorExpressionResultDefaultValueTbd => {
                 BindingConnectorValidationOutcome::Unsupported {
                     prerequisite: BindingConnectorValidationPrerequisite::NormativeSpecificationTbd,
@@ -285,6 +285,48 @@ impl BindingConnectorIndex {
                 }
             }
         }
+    }
+}
+
+/// `checkExpressionResultBindingConnector` (KerML 8.3.4.7.3) and
+/// `checkFunctionResultBindingConnector` (8.3.4.7.4): every ResultExpressionMembership of an
+/// instance of the rule's metaclass has a binding connector between the owner's `result` and the
+/// result expression's `result`.
+///
+/// The OCL quantifies over each owner's ResultExpressionMemberships. A result expression is
+/// evaluated at its owner rather than published as an Expression element with its own result
+/// parameter, so a non-empty membership set has no endpoint facts and stays explicitly
+/// unsupported. The rule is decided only where it holds vacuously: every applicable owner's
+/// membership set is exactly known (`result_expressions_incomplete` unset) and empty. A set that
+/// is not exactly known leaves the rule unresolved.
+fn result_expression_binding_outcome(
+    storage: &SemanticModelStorage,
+    rule: BindingConnectorCheckKind,
+    prerequisite: BindingConnectorValidationPrerequisite,
+) -> BindingConnectorValidationOutcome {
+    let Some(metaclass) = crate::resolve::implied::binding_connector_check_rule(rule)
+        .and_then(|rule| sysml_contract::ElementKind::parse(rule.metaclass))
+    else {
+        return BindingConnectorValidationOutcome::Unsupported { prerequisite };
+    };
+    let mut incomplete = false;
+    for (declaration, facts) in storage
+        .declarations
+        .iter()
+        .zip(storage.declaration_facts.iter())
+    {
+        if !crate::model::element_kind::element_kind(declaration.kind).conforms_to(metaclass) {
+            continue;
+        }
+        if facts.result_expression_count > 0 {
+            return BindingConnectorValidationOutcome::Unsupported { prerequisite };
+        }
+        incomplete |= facts.result_expressions_incomplete;
+    }
+    if incomplete {
+        BindingConnectorValidationOutcome::Unresolved
+    } else {
+        BindingConnectorValidationOutcome::Satisfied
     }
 }
 

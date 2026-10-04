@@ -3596,15 +3596,9 @@ fn binding_connector_checks_are_manifest_scoped_and_preserve_first_missing_prere
         "memory://binding-rule-family.sysml",
         "package Binding { action def Act { action start; action done; bind start = done; } }",
     )]);
+    // The result-expression rules are decided where they hold vacuously, as here; the snapshot
+    // corpus pins their unsupported (occupied) and unresolved (recovered body) outcomes.
     let expected = [
-        (
-            BindingConnectorCheckKind::ExpressionResult,
-            BindingConnectorValidationPrerequisite::ExpressionResultEndpointFacts,
-        ),
-        (
-            BindingConnectorCheckKind::FunctionResult,
-            BindingConnectorValidationPrerequisite::FunctionResultEndpointFacts,
-        ),
         (
             BindingConnectorCheckKind::ConstructorExpressionResultDefaultValueTbd,
             BindingConnectorValidationPrerequisite::NormativeSpecificationTbd,

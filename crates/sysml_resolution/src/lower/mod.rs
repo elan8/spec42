@@ -1960,6 +1960,19 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Records that `owner`'s ResultExpressionMemberships are not all counted
+    /// (`DeclarationFacts::result_expressions_incomplete`).
+    pub(crate) fn mark_result_expressions_incomplete(
+        &mut self,
+        owner: DeclarationId,
+    ) -> Result<(), ConstructionError> {
+        self.declaration_facts
+            .get_mut(owner.index())
+            .ok_or(ConstructionError::InvalidMembership)?
+            .result_expressions_incomplete = true;
+        Ok(())
+    }
+
     /// Records one authored unit token, in lockstep with the classifier that counts them.
     pub(crate) fn push_unit_token(
         &mut self,

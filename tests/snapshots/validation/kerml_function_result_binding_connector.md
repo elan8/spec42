@@ -1,13 +1,12 @@
 # META
 ~~~ini
-description=KerML 8.3.4.7.4 checkFunctionResultBindingConnector requires each function result expression membership to have its canonical binding connector
+description=KerML 8.3.4.7.4 checkFunctionResultBindingConnector holds vacuously for a function whose ResultExpressionMembership set is exactly known and empty
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=kerml-1.0:8.3.4.7.4:checkFunctionResultBindingConnector
-blocked_by=lowering-gap-result-expression-binding-endpoints
 type=file
 ~~~
 # SOURCE

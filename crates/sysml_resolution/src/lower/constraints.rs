@@ -661,6 +661,7 @@ impl SemanticModelBuilder {
                 match &element.value {
                     ConstraintDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span);
+                        self.mark_result_expressions_incomplete(declaration)?;
                     }
                     ConstraintDefBodyElement::AliasDef(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
@@ -1033,6 +1034,7 @@ impl SemanticModelBuilder {
                 match &element.value {
                     CalcDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span);
+                        self.mark_result_expressions_incomplete(declaration)?;
                     }
                     // KerML `flow of <payload> from <a> to <b>;` in a calc-shaped body
                     // (`classifier`/`struct`/`class`/`behavior`, KerML 8.2's `Flow`). Upstream
