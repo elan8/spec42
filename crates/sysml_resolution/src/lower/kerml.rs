@@ -12,6 +12,7 @@ use crate::lower::facts::DeclarationModifiers;
 use crate::lower::facts::MultiplicityRecord;
 use crate::lower::facts::OwnedEndFeature;
 use crate::lower::facts::OwnedEndRecord;
+use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
 use crate::lower::facts::SuccessionEndMultiplicities;
@@ -317,6 +318,38 @@ impl SemanticModelBuilder {
     /// formerly `KermlEndMember`), whose cross feature the grammar owns from the `EndFeaturePrefix`
     /// alternative -- so it is lowered here as an owned child through
     /// `lower_kerml_owned_cross_feature` rather than as this feature's owner.
+    /// Lowers a KerML `FeatureDeclaration`'s ordered `FeatureSpecialization` alternatives
+    /// (typing, subsetting, reference subsetting, cross subsetting, redefinition) in authored
+    /// order. Shared by every KerML feature-declaration form (features and connectors).
+    fn lower_kerml_feature_specializations(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        specializations: &[FeatureSpecialization],
+        direction: Option<ParameterDirection>,
+    ) -> Result<(), ConstructionError> {
+        for specialization in specializations {
+            match specialization {
+                FeatureSpecialization::Typing(relationship) => {
+                    self.lower_typing_relationship_impl(
+                        document,
+                        declaration,
+                        relationship,
+                        false,
+                        direction,
+                    )?;
+                }
+                FeatureSpecialization::Subsetting { relationship, .. }
+                | FeatureSpecialization::ReferenceSubsetting(relationship)
+                | FeatureSpecialization::CrossSubsetting(relationship)
+                | FeatureSpecialization::Redefinition(relationship) => {
+                    self.lower_subsetting_relationship(document, declaration, relationship)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
     pub(crate) fn lower_kerml_feature_member(
         &mut self,
         document: DocumentIdx,
@@ -368,25 +401,12 @@ impl SemanticModelBuilder {
         {
             self.lower_kerml_owned_cross_feature(document, declaration, cross)?;
         }
-        for specialization in &node.value.specializations {
-            match specialization {
-                FeatureSpecialization::Typing(relationship) => {
-                    self.lower_typing_relationship_impl(
-                        document,
-                        declaration,
-                        relationship,
-                        false,
-                        direction_node_fact(node.value.prefix.direction()),
-                    )?;
-                }
-                FeatureSpecialization::Subsetting { relationship, .. }
-                | FeatureSpecialization::ReferenceSubsetting(relationship)
-                | FeatureSpecialization::CrossSubsetting(relationship)
-                | FeatureSpecialization::Redefinition(relationship) => {
-                    self.lower_subsetting_relationship(document, declaration, relationship)?;
-                }
-            }
-        }
+        self.lower_kerml_feature_specializations(
+            document,
+            declaration,
+            &node.value.specializations,
+            direction_node_fact(node.value.prefix.direction()),
+        )?;
         self.lower_kerml_feature_relationship_parts(
             document,
             declaration,
@@ -428,6 +448,8 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
                     all: node.value.is_all,
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
                     ..DeclarationModifiers::default()
                 },
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
@@ -440,23 +462,12 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
-        if let Some(type_name) = node.value.typing {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span;
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
-        }
+        self.lower_kerml_feature_specializations(
+            document,
+            declaration,
+            &node.value.specializations,
+            None,
+        )?;
         if let Some(end) = &node.value.from {
             self.lower_kerml_connector_end(
                 document,
