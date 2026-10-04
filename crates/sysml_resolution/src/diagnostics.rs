@@ -707,6 +707,9 @@ semantic_diagnostic_codes! {
     /// A succession relates endpoints that are not actions.
     SuccessionEndpointInvalid => "succession_endpoint_invalid",
         "A succession must relate action definitions or usages.";
+    /// KerML 8.3.3.1.10 `validateTypeOwnedMultiplicity`.
+    TypeMultipleMultiplicities => "type_multiple_multiplicities",
+        "A type may own at most one multiplicity.";
     /// SysML 8.3.17.6 `validateControlNodeIsComposite`.
     ControlNodeNotComposite => "control_node_not_composite",
         "A control node must be composite.";

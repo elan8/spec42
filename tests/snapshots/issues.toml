@@ -49,12 +49,6 @@ owner = "spec42-semantic"
 summary = "The owned connectorEnd collection is now canonical (SemanticModelStorage::owned_end_features), but the pinned manifest classifies checkConnectorBinaryObjectSpecialization as a specialization_check: the extractor rejects its compound XMI body (`connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure))`, note the XMI spelling `connectorEnds`), so no conditional contract or Objects::binaryLinkObjects anchor is generated to synthesize from. Needs extractor support for the compound predicate and an XMI-backed manifest refresh."
 
 [[issue]]
-id = "parser-gap-kerml-multiplicity-member"
-kind = "parser_gap"
-owner = "sysml-v2-parser"
-summary = "KerML TypeBody admits a NonFeatureMember whose element is a Multiplicity (`multiplicity extra [2];`), giving a type a second owned Multiplicity, but the pinned parser reads that member in a classifier body as a result expression with two unresolved operands instead of a Multiplicity; once it parses, spec42 needs an owned-Multiplicity count over the classifier's multiplicity fact plus Multiplicity members and a type_multiple_multiplicities rule"
-
-[[issue]]
 id = "lowering-result-expression-memberships"
 kind = "lowering_gap"
 owner = "spec42-semantic"

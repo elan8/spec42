@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **A type owns at most one multiplicity.** A KerML type with both a `[m..n]` and a
+  `multiplicity` body member (or two such members) reports `type_multiple_multiplicities` at each
+  extra one (KerML 8.3.3.1.10 validateTypeOwnedMultiplicity).
+
 - **Directed control nodes are referential.** A `ControlNodePrefix` (`in fork g;`, `individual`,
   a portion kind, `#Tag`) is now lowered onto the control node, and a control node that is not
   composite reports `control_node_not_composite` (SysML 8.3.17.6 validateControlNodeIsComposite).

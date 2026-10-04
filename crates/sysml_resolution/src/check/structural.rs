@@ -368,6 +368,40 @@ impl<D> SemanticModel<D> {
         Ok(())
     }
 
+    /// KerML 8.3.3.1.10 `validateTypeOwnedMultiplicity`: a Type has at most one `ownedMember`
+    /// that is a Multiplicity. Its `[m..n]` and every `multiplicity` body member count alike;
+    /// each one after the first, in ownership order, is reported.
+    fn collect_owned_multiplicities(
+        &self,
+        id: DeclarationId,
+        kind: DeclarationKind,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        use crate::model::element_kind::element_kind;
+        use sysml_contract::ElementKind;
+        if !element_kind(kind).conforms_to(ElementKind::Type) {
+            return Ok(());
+        }
+        let mut multiplicities = self
+            .child_declarations(id)
+            .iter()
+            .copied()
+            .filter(|member| {
+                self.kind_of(*member).is_some_and(|member| {
+                    element_kind(member).conforms_to(ElementKind::Multiplicity)
+                })
+            });
+        multiplicities.next();
+        for member in multiplicities {
+            diagnostics.push(self.declaration_diagnostic(
+                member,
+                DiagnosticCode::TypeMultipleMultiplicities,
+                DiagnosticSeverity::Warning,
+            )?);
+        }
+        Ok(())
+    }
+
     /// SysML 8.3.12.5 `validatePortDefinitionOwnedUsagesNotComposite` and 8.3.12.6
     /// `validatePortUsageNestedUsagesNotComposite`: every non-port usage a port definition owns
     /// or a port usage nests is referential.
@@ -529,6 +563,7 @@ impl<D> SemanticModel<D> {
             self.collect_metadata_body_features(id, declaration.kind, diagnostics)?;
             self.collect_metadata_annotated_elements(id, declaration.kind, diagnostics)?;
             self.collect_port_member_composition(id, declaration.kind, diagnostics)?;
+            self.collect_owned_multiplicities(id, declaration.kind, diagnostics)?;
             // SysML 8.3.17.6 `validateControlNodeIsComposite`: a control node is composite. The
             // effective `isComposite` is the canonical usage derivation, so a directed control
             // node (`in fork g;`, a `ControlNodePrefix` direction) is referential.

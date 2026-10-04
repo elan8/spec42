@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.1.10:validateTypeOwnedMultiplicity
-blocked_by=parser-gap-kerml-multiplicity-member
 type=file
 ~~~
 # SOURCE
@@ -44,6 +43,12 @@ package Multiplicities {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_type_owned_multiplicity.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "type_multiple_multiplicities")
+        (source "semantic")
+        (range (start 7 8) (end 7 31))
+      )
     )
   )
 )

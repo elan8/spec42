@@ -94,7 +94,6 @@ rerun against the exact replacement revision when fixed.
 | Gap | Information unavailable to consumers | Minimum upstream acceptance evidence |
 | --- | --- | --- |
 | 61 | `message` has no member variant in a calc-shaped body | Give `message` a typed member variant in the calc-shaped body grammar; prove `message m of T;` produces one node whose keyword never reaches the AST as a feature reference |
-| kerml-multiplicity-member | A `multiplicity` member in a KerML type body | Parse `multiplicity extra [2];` in a classifier body as a Multiplicity `NonFeatureMember` rather than a result expression; prove it produces one Multiplicity member with its bounds |
 | occurrence-usage-typings | Every typing target of an `occurrence` usage: `ast::OccurrenceUsage::type_name` is one `QualifiedReferenceId`, so `occurrence x : A, B;` silently keeps only `A` (no recovery diagnostic), unlike `PartUsage`'s structured `typing` clause | Give `OccurrenceUsage` the same structured `TypingRelationship` clause `PartUsage`/`AttributeUsage` carry (every comma-separated target); prove `occurrence x : A, B;` produces both targets in order, so spec42 can lower each FeatureTyping |
 | 41 | Lexically distinguished implicit `that` self-reference | Produce a dedicated typed form that cannot collide with a user declaration; cover bare, cast, and member-access expressions |
 | 55 | `//` and `/** ... */` comment fidelity, and `DocComment` text normalization | Decide and test whether doc-style trivia is syntax; if syntax, preserve kind, raw span, and one normalized-text policy centrally |

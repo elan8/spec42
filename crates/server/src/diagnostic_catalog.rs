@@ -995,6 +995,13 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
+        code: "type_multiple_multiplicities",
+        severity: "warning",
+        meaning: "A type owns more than one multiplicity, e.g. a `[m..n]` and a `multiplicity` member (KerML validateTypeOwnedMultiplicity).",
+        typical_fix: "Keep a single multiplicity on the type.",
+        editor_quick_fixes: None,
+    },
+    DiagnosticCatalogEntry {
         code: "control_node_not_composite",
         severity: "warning",
         meaning: "A control node (decide, merge, fork, join) is referential, for example because it declares a direction (SysML validateControlNodeIsComposite).",
