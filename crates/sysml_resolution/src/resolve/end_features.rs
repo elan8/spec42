@@ -135,7 +135,10 @@ where
 /// A row is the declaration's owned members in authored order (`owned`), then, for each direct
 /// supertype in the order `generals` yields them, that supertype's row past the owned count: the
 /// owned members redefine the supertype's members at the same positions, so only the rest are
-/// inherited. A member inherited along two paths is listed once. A supertype still being derived is
+/// inherited. A member inherited along two paths is listed once, and a member that some other
+/// inherited or owned member directly or transitively redefines is not inherited at all (KerML
+/// `Type::removeRedefinedFeatures`), so in a diamond `D :> B, C` with `B :> A`, `C :> A` the
+/// member `B` redefines positionally is not reinherited through `C`. A supertype still being derived is
 /// on a specialization cycle with the declaration and contributes nothing, so the derivation is
 /// one deterministic pass rather than a fixed point.
 pub(crate) fn derive_positional_features<T, O, F, I>(
@@ -154,6 +157,8 @@ where
     const DONE: u8 = 2;
     let mut state = vec![UNVISITED; count];
     let mut rows: Vec<Vec<T>> = (0..count).map(|_| Vec::new()).collect();
+    // The members each row's members directly or transitively redefine positionally.
+    let mut redefined: Vec<Vec<T>> = (0..count).map(|_| Vec::new()).collect();
     let mut stack = Vec::new();
     for root in 0..count {
         if state[root] != UNVISITED {
@@ -178,6 +183,8 @@ where
             }
             let mut row = owned(declaration);
             let owned_count = row.len();
+            let mut covered: Vec<T> = Vec::new();
+            let mut candidates: Vec<T> = Vec::new();
             for general in generals(declaration) {
                 if state.get(general.index()) != Some(&DONE) {
                     continue;
@@ -185,13 +192,26 @@ where
                 let inherited = rows
                     .get(general.index())
                     .ok_or(ResolutionError::InvalidStorage)?;
-                for member in inherited.iter().skip(owned_count) {
-                    if !row.contains(member) {
-                        row.push(*member);
+                let general_redefined = redefined
+                    .get(general.index())
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                for member in general_redefined
+                    .iter()
+                    .chain(inherited.iter().take(owned_count))
+                {
+                    if !covered.contains(member) {
+                        covered.push(*member);
                     }
+                }
+                candidates.extend(inherited.iter().skip(owned_count).copied());
+            }
+            for member in candidates {
+                if !row.contains(&member) && !covered.contains(&member) {
+                    row.push(member);
                 }
             }
             rows[node] = row;
+            redefined[node] = covered;
             state[node] = DONE;
         }
     }
@@ -528,6 +548,37 @@ mod tests {
             synthesize_positional_end_redefinitions(6, &owned, [(id(3), id(0))], &authored)
                 .unwrap();
         assert_eq!(pairs(&implied), [(5, 2)]);
+    }
+
+    #[test]
+    fn a_feature_redefined_along_one_diamond_branch_is_not_reinherited_along_another() {
+        // A=0 owns end 1; B=2 specializes A and owns end 3 (redefining 1 positionally); C=4
+        // specializes A; D=5 specializes B, then C. KerML `removeRedefinedFeatures` drops 1 from D.
+        let owned = [declared(0, 1), declared(2, 3)];
+        let ends = derive_end_features(6, &owned, |declaration| {
+            match declaration.index() {
+                2 | 4 => vec![id(0)],
+                5 => vec![id(2), id(4)],
+                _ => vec![],
+            }
+            .into_iter()
+        })
+        .unwrap();
+        assert_eq!(ends[4], [OwnedEndFeature::Declared(id(1))]);
+        assert_eq!(ends[5], [OwnedEndFeature::Declared(id(3))]);
+        // The same holds with the branches in the other order, and transitively through E=6 :> D.
+        let ends = derive_end_features(7, &owned, |declaration| {
+            match declaration.index() {
+                2 | 4 => vec![id(0)],
+                5 => vec![id(4), id(2)],
+                6 => vec![id(5), id(0)],
+                _ => vec![],
+            }
+            .into_iter()
+        })
+        .unwrap();
+        assert_eq!(ends[5], [OwnedEndFeature::Declared(id(3))]);
+        assert_eq!(ends[6], [OwnedEndFeature::Declared(id(3))]);
     }
 
     #[test]
