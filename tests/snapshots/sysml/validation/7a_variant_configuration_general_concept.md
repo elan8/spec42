@@ -143,7 +143,7 @@ package '7a-Variant Configuration - General Concept' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c612a9f55e435f84c0eb2e66ae18f1c8ec4581460065123c2c30ee0a7d47859e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d68ed7385da1df0341a880dc918a81714c74b9027a7d7bcb3d4d04588096365d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/7a_variant_configuration_general_concept.md") (qualified-name "7a-Variant Configuration - General Concept::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))

@@ -211,7 +211,7 @@ package 'Interaction Realization-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:44f0afb918cd2e030af601da4a84161de808c2966bb6c40aa4863e9d1789a493"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b847730914101a13fbecc0b9c0270888609f408ce28b22f976177f7cfedc4941"))
   (declarations
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (qualified-name "Interaction Realization-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_1.md") (path (named (kind package) (name "Interaction Realization-1")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Interaction Example-1") (import (shape namespace) (recursive false))))))

@@ -8630,7 +8630,7 @@ standard library package ISQAtomicNuclear {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3ba2e277c2a0d99374a140c21cb21ad0dfd44172b826bc942cc62f790efa6e6d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:dc42ed56a28aaa904ea660fb470252afc824923a411c34d6583c07ed727b7bd6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_atomic_nuclear.md") (qualified-name "ISQAtomicNuclear"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/isq_atomic_nuclear.md") (path (named (kind library-package) (name "ISQAtomicNuclear")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * International System of Quantities and Units\n     * Generated on 2025-03-13T15:00:05Z from standard ISO-80000-10:2019 \"Atomic and nuclear physics\"\n     * see also https://www.iso.org/standard/64980.html\n     * \n     * Note 1: In documentation comments, AsciiMath notation (see http://asciimath.org/) is used for mathematical concepts,\n     * with Greek letters in Unicode encoding. In running text, AsciiMath is placed between backticks.\n     * Note 2: For vector and tensor quantities currently the unit and quantity value type for their (scalar) magnitude is \n     * defined, as well as their typical Cartesian 3d VectorMeasurementReference (i.e. coordinate system) \n     * or TensorMeasurementReference.\n     "))))

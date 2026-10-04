@@ -51,7 +51,7 @@ package '3c-Function-based Behavior-structure mod-3' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e958c68bea277b1072c1920f063675af4022199d095ded8c6c43c6c9c6760a44"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2c6d9a4b5d4e83ef1b81c11dba6fc71967686ff08c85c38eb2fe3c218484afe7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_3.md") (qualified-name "3c-Function-based Behavior-structure mod-3"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_3.md") (path (named (kind package) (name "3c-Function-based Behavior-structure mod-3")) (anonymous (kind action) (ordinal 0))))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))

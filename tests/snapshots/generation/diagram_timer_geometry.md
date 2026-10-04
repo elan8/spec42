@@ -109,7 +109,7 @@ package TimerGeometry {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6e3aed031e58a24ef4414da6172c9765109a453c7cc89114d37053347d7ddeb1") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:07902ee8c101cde6e9ef84d2cfe07057d0020a3e6b232f1399c6e134f05384f7") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_timer_geometry.md") (qualified-name "TimerGeometry"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_timer_geometry.md") (path (named (kind package) (name "TimerGeometry")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -6825,7 +6825,7 @@ package TimerGeometry {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:f28a3b34b18de0f856cce5b5455ba83ef918172e8150225399b40471409f1dd5",
+  "modelDigest": "blake3:b31c11f01ab3483f7147527927ab0378fd1bdafc5083d1fe2d401f751b1c1fbb",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_timer_geometry.md",

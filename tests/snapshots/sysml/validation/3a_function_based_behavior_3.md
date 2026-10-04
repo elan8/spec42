@@ -103,7 +103,7 @@ package '3a-Function-based Behavior-5' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:99fbe701c20e1659c4bb8ceb24e41a7f8035e87d918364db2980dad33650d58d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1e20421bfaa10871adc4e52096b71caaf008edb7951a26d686786ae52e887e0d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_3.md") (qualified-name "3a-Function-based Behavior-5"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3a_function_based_behavior_3.md") (path (named (kind package) (name "3a-Function-based Behavior-5")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "Definitions") (import (shape namespace) (recursive false))))))

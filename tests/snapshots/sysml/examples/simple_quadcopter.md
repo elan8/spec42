@@ -1057,7 +1057,7 @@ package SimpleQuadcopter {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:231871a63367f5192ae003c6f53679660d22e659fd2653ab7daf5ba47af7cae8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:18f1d380009d7215c9ac3a8f950c431b8f78ae0b532059bed7e2681d5cc7e6c7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (qualified-name "SimpleQuadcopter"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/simple_quadcopter.md") (path (named (kind package) (name "SimpleQuadcopter")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false))))))

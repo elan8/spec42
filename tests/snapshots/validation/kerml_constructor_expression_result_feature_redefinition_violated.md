@@ -34,7 +34,7 @@ package Constructors {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:41c347de4071f57eb175fa6055025f587d0530d3b919d85107fe400b75860cc9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f58d43a24d5a6ed21a06f80748184f4ec4ef3b60a9c5b7e9c695dbc15899e636"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition_violated.md") (qualified-name "Constructors"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_result_feature_redefinition_violated.md") (qualified-name "Constructors::Pair"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

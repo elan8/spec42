@@ -141,7 +141,7 @@ standard library package VectorValues {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5530a7186e5bb056a73150c5f4a5b6c31ee462e1423092defdf988a90e351861"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9bc0a774355089e891149c22210bcd1fc3d217fa398b0776d4d6f28923a56e36"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vector_values.md") (qualified-name "VectorValues"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/vector_values.md") (path (named (kind library-package) (name "VectorValues")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package provides a basic model of abstract vectors as well as concrete vectors\n\t * whose components are numerical values. The package VectorFunctions defines the \n\t * corresponding vector-space functions.\n\t "))))

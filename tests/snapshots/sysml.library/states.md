@@ -367,7 +367,7 @@ standard library package States {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5e47aa8945167801f31fee2834add515c580320b0c2e6ba268b29953c8156f61"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:549852506f5fb6e6e1af125e51cf996ec5402d39f06ec82cae6348709c441f54"))
   (declarations
     (declaration (id (node (document "memory://snapshot/states.md") (qualified-name "States"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/states.md") (path (named (kind library-package) (name "States")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines the base types for states and related behavioral elements in the\n\t * SysML language.\n\t "))))

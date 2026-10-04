@@ -169,7 +169,7 @@ standard library package Links {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b5f6d75a4656d8c2b313762c8a63f37565f3a289fbeb71a44521d403bf2328c5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c6ba3a3ee4c8a232cf5073b16b90b1709171a97ed142090bbfdf21e878355781"))
   (declarations
     (declaration (id (node (document "memory://snapshot/links.md") (qualified-name "Links"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/links.md") (path (named (kind library-package) (name "Links")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * This package defines associations and features that are related to the typing of links.\n     "))))

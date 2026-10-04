@@ -84,7 +84,7 @@ package IssueMetadataExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1b24c1df4f1ad4fa471fe0f15f1e03d3dede52d870327dac9d788a320880294a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f48de27a1b66301ced203d526cdc5849728ef317b522a0ef987dd7d9f84fb7ca"))
   (declarations
     (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (qualified-name "IssueMetadataExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/issue_metadata_example.md") (path (named (kind package) (name "IssueMetadataExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ModelingMetadata::Issue") (import (shape membership) (recursive false))))))

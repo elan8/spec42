@@ -43,7 +43,7 @@ package 'Opaque Action Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e3f38762e7581315421a7680d5f802703299316857c394fe2bd0254010906ab4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:18859a3f2539770beb41de07f5c897f19733cc3f4e06e287afcfc1d0f5dc5155"))
   (declarations
     (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/22_opaque_action_example.md") (qualified-name "Opaque Action Example::Sensor"))) (kind part-def) (membership (kind owning) (visibility default)))

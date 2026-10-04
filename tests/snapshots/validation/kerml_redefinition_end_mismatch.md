@@ -70,7 +70,7 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d46eae3810ed5c7bca51645751a447c173d7b9afde5dc9cf3e2d78942c163e18"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3efdbb508c3ca5b3353f5afac1dfe4e3a245c1d8d9ad4b7d9255f22d5bdce1f1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Base"))) (kind kerml-association) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))

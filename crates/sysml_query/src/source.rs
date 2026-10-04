@@ -12,7 +12,8 @@ pub use sysml_resolution::source::{
     discover_project_boundary, discover_project_roots, is_sysml_like, normalize_line_endings,
     normalize_uri, path_to_file_url, uri_under_any, ContentDigest, FilesystemProvider,
     InMemoryProvider, ProjectBoundary, RootDigest, SkippedSource, SourceAuthority, SourceDocument,
-    SourceError, SourceKind, SourceLoadReport, SourceProvider, Url, PROJECT_MANIFEST_FILE,
+    SourceError, SourceKind, SourceLanguage, SourceLoadReport, SourceProvider, Url,
+    PROJECT_MANIFEST_FILE,
 };
 
 /// Handle on the source authority. Cheap to clone; all clones share one authority.

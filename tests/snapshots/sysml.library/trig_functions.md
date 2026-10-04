@@ -178,7 +178,7 @@ standard library package TrigFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:000dea9026902fb35d3bb23a3023acdbc3abc8f6b2d1edbe86f352c730446237"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b4972e601c3e32975830ca893377d246a47abc47013bc0cdf39fba5e52070265"))
   (declarations
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (qualified-name "TrigFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/trig_functions.md") (path (named (kind library-package) (name "TrigFunctions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines basic trigonometric functions on real numbers.\n\t "))))

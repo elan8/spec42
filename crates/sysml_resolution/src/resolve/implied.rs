@@ -2515,6 +2515,7 @@ pub(crate) fn synthesize_semantic_metadata_specializations(
                             | crate::ElementKind::Connector
                             | crate::ElementKind::BindingConnector
                             | crate::ElementKind::Invariant
+                            | crate::ElementKind::MetadataFeature
                     )
             })
         };

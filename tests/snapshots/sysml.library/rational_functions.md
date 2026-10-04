@@ -595,7 +595,7 @@ standard library package RationalFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:93458853f8f53a8be8305c4ac1c0d30308b9c02b6d910fc8c2befa5416b2ddd5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c7fa9f672e9f516d83b50345ee90e3fcbcec88b531bda7407f0549aecec248be"))
   (declarations
     (declaration (id (node (document "memory://snapshot/rational_functions.md") (qualified-name "RationalFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/rational_functions.md") (path (named (kind library-package) (name "RationalFunctions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines Functions on Rational values, including concrete specializations of the \n\t * general arithmetic and comparison operations.\n\t "))))

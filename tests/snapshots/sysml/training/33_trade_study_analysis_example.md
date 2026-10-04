@@ -175,7 +175,7 @@ package 'Trade Study Analysis Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:274a63a85b793cf406d13f0fe83aaf7af1f4187ddc54484969c9785666688456"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:63deedeba0d148d517206887e5f19d32df3660e37f292ebe482b66bbc08ae132"))
   (declarations
     (declaration (id (node (document "memory://snapshot/33_trade_study_analysis_example.md") (qualified-name "Trade Study Analysis Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/33_trade_study_analysis_example.md") (path (named (kind package) (name "Trade Study Analysis Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

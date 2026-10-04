@@ -100,7 +100,7 @@ package BodyMemberDispatch {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2704ca3d8324d26fc0d4d32c7c9e1a0ed5213433a4268011e4c88d88868e7b1b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:33300cf42d873ba7114a180f7bf557578f28f891a48df036b204d10f0bad06d8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parser_body_member_dispatch.md") (qualified-name "BodyMemberDispatch"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parser_body_member_dispatch.md") (qualified-name "BodyMemberDispatch::A"))) (kind attribute-def) (membership (kind owning) (visibility default)))

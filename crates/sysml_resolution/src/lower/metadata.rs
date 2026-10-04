@@ -71,6 +71,25 @@ impl SemanticModelBuilder {
     /// `lower_attribute_body`. A `metadata` usage also applies its type as a metadata annotation:
     /// with no `about` clause it annotates its owning namespace, and with one it annotates each
     /// listed target (the `about` references, resolved through `DeclarationDomain::Any`).
+    /// The metaclass a `metadata` feature, `@` annotation or prefix metadata of `document`
+    /// lowers to. The parser gives these one node in both languages; the admitted document
+    /// language decides between KerML `MetadataFeature` and SysML `MetadataUsage` (KerML
+    /// 8.3.4.12, SysML 8.3.27).
+    pub(crate) fn metadata_feature_kind(
+        &self,
+        document: DocumentIdx,
+    ) -> Result<DeclarationKind, ConstructionError> {
+        let language = self
+            .documents
+            .get(document.index())
+            .ok_or(ConstructionError::InvalidIdentity)?
+            .language;
+        Ok(match language {
+            source_identity::SourceLanguage::KerML => DeclarationKind::KermlMetadataFeature,
+            source_identity::SourceLanguage::SysML => DeclarationKind::MetadataUsage,
+        })
+    }
+
     pub(crate) fn lower_metadata_usage(
         &mut self,
         document: DocumentIdx,
@@ -79,10 +98,11 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let name = self.intern_declaration_name(document, node.value.name)?;
         let short_name = self.intern_short_name(document, node.value.short_name)?;
+        let kind = self.metadata_feature_kind(document)?;
         let declaration = self.push_typed_declaration(
             document,
             owner,
-            DeclarationKind::MetadataUsage,
+            kind,
             name,
             node.span,
             // `ast::MetadataUsage` carries no modifier, multiplicity, direction, or short name.
@@ -295,10 +315,11 @@ impl SemanticModelBuilder {
             document,
             identification.and_then(|identification| identification.short_name),
         )?;
+        let kind = self.metadata_feature_kind(document)?;
         let annotation = self.push_typed_declaration(
             document,
             Some(owner),
-            DeclarationKind::MetadataUsage,
+            kind,
             name,
             node.span,
             DeclarationFacts {

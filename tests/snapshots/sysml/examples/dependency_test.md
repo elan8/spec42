@@ -38,7 +38,7 @@ package DependencyTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2dea2a5d07ff7629067141fd56c59465f8628bf8e3c84838c935b7a6707fb0be"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d9164d4f6601dcde40900a4c538e9a226309e04c4e215dfb8ebb656536513417"))
   (declarations
     (declaration (id (node (document "memory://snapshot/dependency_test.md") (qualified-name "DependencyTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dependency_test.md") (path (named (kind package) (name "DependencyTest")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "System") (import (shape namespace) (recursive false))))))

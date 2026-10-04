@@ -232,6 +232,7 @@ impl<D> SemanticModel<D> {
             .map(|document| crate::pipeline::PreparedDocument {
                 identity: document.identity,
                 role: document.role,
+                language: document.language,
                 digest: document.digest,
                 parsed: document.parsed,
                 parse_errors: document.parse_errors.into_vec(),
@@ -935,6 +936,7 @@ mod tests {
             digest: source_identity::ContentDigest::of_bytes(&[]),
             identity: "test".into(),
             role: SourceRole::Workspace,
+            language: source_identity::SourceLanguage::SysML,
             parsed: std::sync::Arc::new(ParsedDocument {
                 source: SourceStorage::default(),
                 qualified_references: QualifiedReferenceArena::default(),

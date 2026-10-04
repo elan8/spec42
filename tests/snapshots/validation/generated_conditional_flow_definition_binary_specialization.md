@@ -38,7 +38,7 @@ package FlowDefinitionBinarySpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b95166091af276ffa3df11848fe5a62dfff51a7db40161706eacfaf9b2e555dc") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2f2fe315c36698b35226fda6bf02fb7a615d6229c9602110aae0c3324b98cc42") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_flow_definition_binary_specialization.md") (qualified-name "FlowDefinitionBinarySpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_flow_definition_binary_specialization.md") (qualified-name "FlowDefinitionBinarySpecialization::Binary"))) (kind flow-def) (membership (kind owning) (visibility default)))

@@ -63,7 +63,7 @@ package Associations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:957c0206c24b4544a307c712862e0fff6f3183d068f71fc552497a38c69a5a65"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:117988b918c157e28ab06b41ab96a6b5c18d1c46c130ecca369cab676a547a61"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_association_end_types.md") (qualified-name "Associations::Other"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

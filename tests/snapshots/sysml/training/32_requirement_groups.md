@@ -111,7 +111,7 @@ package 'Requirement Groups' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:58e56b8fd4ce5c3a81dfa62cea756099f30af3890be9075d2905e655b81da8e3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3ab3c978229db18554b46c4f880f2069138f7c1db1a7b2a41a2378cfd5f257e1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/32_requirement_groups.md") (qualified-name "Requirement Groups"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/32_requirement_groups.md") (path (named (kind package) (name "Requirement Groups")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Requirement Definitions") (import (shape namespace) (recursive false))))))

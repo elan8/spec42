@@ -202,7 +202,7 @@ package HSUVDynamics {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:eb6db7781621156bda362e809e3aa2b45d090d5092e9a6264445d388dbb8b720"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ab384c8c8ad98f63289dd65225085f944e051989d9125bbc41cce7049b051c69"))
   (declarations
     (declaration (id (node (document "memory://snapshot/hsuvdynamics.md") (qualified-name "HSUVDynamics"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/hsuvdynamics.md") (path (named (kind package) (name "HSUVDynamics")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

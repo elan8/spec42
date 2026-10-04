@@ -70,7 +70,7 @@ package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8b52f5b26e279816bff64ac4f74e2f3fb94d030d00a75a285afb807953c873ab"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e1b3b98c1df8c0357ef50118556ad5f1301aa3e53c4ada63ea4c3bb742a9a0ba"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_decision_node_outgoing_successions.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_decision_node_outgoing_successions.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))

@@ -722,7 +722,7 @@ standard library package ISQBase {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c37b6be2a9efcad37642429be38c79fae58e8a70dfa4079e13b476f643e3837a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3a4c62e2bcff66dae166eca4efa1842017c2861594b88d58de27af5faf68279a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_base.md") (qualified-name "ISQBase"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/isq_base.md") (path (named (kind library-package) (name "ISQBase")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * International System of Quantities and Units\n     * Generated on 2025-03-13T15:00:05Z from standard ISO/IEC 80000\n     * \n     * Note 1: In documentation comments, AsciiMath notation (see http://asciimath.org/) is used for mathematical concepts,\n     * with Greek letters in Unicode encoding. In running text, AsciiMath is placed between backticks.\n     "))))

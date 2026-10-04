@@ -122,7 +122,7 @@ standard library package AnalysisCases {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c11a3c112b83e4c61ac39761582e70e13eb004e653100913dd189b04f87cfb16"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1170a3e32f0fbe55e572b0b1aad2ef04c5b7076fba770833d4609a349caaa915"))
   (declarations
     (declaration (id (node (document "memory://snapshot/analysis_cases.md") (qualified-name "AnalysisCases"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/analysis_cases.md") (path (named (kind library-package) (name "AnalysisCases")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines the base types for analysis cases and related behavioral elements \n\t * in the SysML language.\n\t "))))

@@ -107,7 +107,7 @@ fn canonicalize_or_self(path: &Path) -> PathBuf {
 use std::sync::Arc;
 
 pub use source_identity;
-pub use source_identity::{ContentDigest, RootDigest};
+pub use source_identity::{ContentDigest, RootDigest, SourceLanguage};
 pub use url::Url;
 
 /// Where a document comes from, which decides how the semantic authority treats it.
@@ -136,6 +136,7 @@ impl SourceKind {
 pub struct SourceDocument {
     uri: Url,
     kind: SourceKind,
+    language: SourceLanguage,
     digest: ContentDigest,
     content: Arc<str>,
     path_hint: Option<Box<str>>,
@@ -150,6 +151,13 @@ impl SourceDocument {
 
     pub fn kind(&self) -> SourceKind {
         self.kind
+    }
+
+    /// The language this document is admitted as. Admission derives it from the URI's path
+    /// ([`SourceLanguage::of_path`]); a host that knows better declares it with
+    /// [`Self::with_language`]. It is a semantic input and part of the document's identity.
+    pub fn language(&self) -> SourceLanguage {
+        self.language
     }
 
     /// The BLAKE3 digest of [`Self::content`].
@@ -192,6 +200,15 @@ impl SourceDocument {
     pub fn with_kind(&self, kind: SourceKind) -> Self {
         Self {
             kind,
+            ..self.clone()
+        }
+    }
+
+    /// The same document admitted as `language`, for a host whose identity does not carry the
+    /// language in its path (an in-memory fixture, an editor buffer with a declared language).
+    pub fn with_language(&self, language: SourceLanguage) -> Self {
+        Self {
+            language,
             ..self.clone()
         }
     }
@@ -595,8 +612,10 @@ impl SourceAuthority {
     /// Admit text under an already-parsed URL.
     pub fn admit_url(&self, uri: Url, content: &str, kind: SourceKind) -> SourceDocument {
         let content: Arc<str> = Arc::from(normalize_line_endings(content).as_ref());
+        let uri = normalize_uri(&uri);
         SourceDocument {
-            uri: normalize_uri(&uri),
+            language: SourceLanguage::of_path(uri.path()),
+            uri,
             kind,
             digest: ContentDigest::of_bytes(content.as_bytes()),
             content,
@@ -696,6 +715,23 @@ impl SourceAuthority {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn admission_derives_the_language_from_the_path_and_a_host_may_declare_it() {
+        let authority = SourceAuthority::new();
+        let kerml = authority
+            .admit_memory("scope", "lib/Base.kerml", "", SourceKind::Workspace)
+            .unwrap();
+        assert_eq!(kerml.language(), SourceLanguage::KerML);
+        let fixture = authority
+            .admit_memory("scope", "fixture.md", "", SourceKind::Workspace)
+            .unwrap();
+        assert_eq!(fixture.language(), SourceLanguage::SysML);
+        let declared = fixture.with_language(SourceLanguage::KerML);
+        assert_eq!(declared.language(), SourceLanguage::KerML);
+        assert_eq!(declared.uri(), fixture.uri());
+        assert_eq!(declared.digest(), fixture.digest());
+    }
 
     #[test]
     fn custom_uri_schemes_are_preserved() {

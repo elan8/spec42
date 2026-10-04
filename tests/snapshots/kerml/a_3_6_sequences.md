@@ -194,7 +194,7 @@ package SequencesExecution {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:7595e7ce49f14dc5129e991e4182073cca0e7bd6da5a41f5c9056f9d5f5c41c1"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:27ee11ccf8395385f72839e2d7f8538a87dc70a53a4c06b30aa9dc8e4cf6dde6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (qualified-name "SequencesExecution"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a_3_6_sequences.md") (path (named (kind package) (name "SequencesExecution")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " \n\t "))))

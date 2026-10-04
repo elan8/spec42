@@ -1060,7 +1060,7 @@ standard library package MeasurementReferences {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fd07608c0b2dfc845a311b1c8f5f9f3ce023cba4971fd3cd830a24354253714a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:72877d4bb8bba33fc91161ad9fa5ad792b3aa225d78e3d1ce29644858a06c7c9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/measurement_references.md") (qualified-name "MeasurementReferences"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/measurement_references.md") (path (named (kind library-package) (name "MeasurementReferences")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines the representations for measurement references.\n\t "))))

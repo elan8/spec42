@@ -3407,7 +3407,7 @@ standard library package ISQCharacteristicNumbers {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e45141cc4843d8e1e190337e22c0e41d1607dd6087a79d2e28e0123a1c209cb1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:30fdc2aa1e379ec714cf02e586adf26cae9e194900dbfb165ade77686b680837"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_characteristic_numbers.md") (qualified-name "ISQCharacteristicNumbers"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/isq_characteristic_numbers.md") (path (named (kind library-package) (name "ISQCharacteristicNumbers")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * International System of Quantities and Units\n     * Generated on 2025-03-13T15:00:05Z from standard ISO-80000-11:2019 \"Characteristic numbers\"\n     * see also https://www.iso.org/standard/64982.html\n     * \n     * Note 1: In documentation comments, AsciiMath notation (see http://asciimath.org/) is used for mathematical concepts,\n     * with Greek letters in Unicode encoding. In running text, AsciiMath is placed between backticks.\n     * Note 2: For vector and tensor quantities currently the unit and quantity value type for their (scalar) magnitude is \n     * defined, as well as their typical Cartesian 3d VectorMeasurementReference (i.e. coordinate system) \n     * or TensorMeasurementReference.\n     "))))

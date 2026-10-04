@@ -300,7 +300,7 @@ package '10c-Fuel Economy Analysis' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c0bc4252eea02414014d5bd977826bf23d4a3b61993d5bf6d36a6477fffc864e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:91d8604cf2cb463e7f0b751a2769da1701cc2ac3d1f94525ff0c67fec34728c8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (qualified-name "10c-Fuel Economy Analysis"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/10c_fuel_economy_analysis.md") (path (named (kind package) (name "10c-Fuel Economy Analysis")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

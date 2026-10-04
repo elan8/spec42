@@ -39,7 +39,7 @@ package ProductSelection_N_ary_SysML {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:68fd1a01fb1408ea31d229e6126320f11767c33b7be4b5ea375dafb22680226d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7d724c345bf7e1fa794dab38f2084b76fa7f594264688f5923f1eb6859ad1fd4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/product_selection_n_ary.md") (qualified-name "ProductSelection_N_ary_SysML::Account"))) (kind item-def) (membership (kind owning) (visibility default)))

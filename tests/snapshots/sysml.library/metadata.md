@@ -116,7 +116,7 @@ doc
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:35078522e6e2f1bce94728d1620219b7bd4fd4365a8eb2502bfd5e3a6be4bdfb"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:394bf6c7b8dfe58d3b9892a0a6147e92efe8883bf88dfd02771b645607778d0a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/metadata.md") (qualified-name "Metadata"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/metadata.md") (path (named (kind library-package) (name "Metadata")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n * This package defines the base types for metadata definitions and related \n * metadata annotations in the SysML language.\n "))))

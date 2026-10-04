@@ -35,7 +35,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:15ec99379886e4e71b2f7fad34288d303b1b97f0207917b0ddcce387af07f34d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:dd1b63b44cc1760d7b41762b33ba2b93dbbcc4566aad48d3a97859f772d8a2fa"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization_violating.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization_violating.md") (qualified-name "Model::Base"))) (kind part-def) (membership (kind owning) (visibility default)))

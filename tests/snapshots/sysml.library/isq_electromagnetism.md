@@ -9803,7 +9803,7 @@ standard library package ISQElectromagnetism {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:cddce1f05b20fd7a0fe3016bf8cf7beaffe87c51788ea3c66fb7bfe7a5eb08cd"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6c0b070d181c23f376eb071471b04ae736e486577f592813368f50238598104e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/isq_electromagnetism.md") (path (named (kind library-package) (name "ISQElectromagnetism")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * International System of Quantities and Units\n     * Generated on 2025-03-13T15:00:05Z from standard IEC-80000-6:2008 \"Electromagnetism\"\n     * see also https://www.iso.org/obp/ui/#iso:std:iec:80000:-6:ed-1:v1:en,fr\n     * \n     * Note 1: In documentation comments, AsciiMath notation (see http://asciimath.org/) is used for mathematical concepts,\n     * with Greek letters in Unicode encoding. In running text, AsciiMath is placed between backticks.\n     * Note 2: For vector and tensor quantities currently the unit and quantity value type for their (scalar) magnitude is \n     * defined, as well as their typical Cartesian 3d VectorMeasurementReference (i.e. coordinate system) \n     * or TensorMeasurementReference.\n     "))))

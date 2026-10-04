@@ -28,7 +28,7 @@ package GeneralExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:05f6bfec6072492498da878911c91df0650e59bbcc7482954fba4631d3f2e31d") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9f0c29d35310de05c0b0b725df02f9ca1707783512ea28066a3c976d8c39916e") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_general_complete.md") (qualified-name "GeneralExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_general_complete.md") (path (named (kind package) (name "GeneralExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -145,7 +145,7 @@ package GeneralExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:f33afc5958e89d43199da05a878c9ce59fb1449c415b6ad3be6d0b06afb011ff",
+  "modelDigest": "blake3:1b41cc5be67a905cb3ce4d237cfb9262f23356464b0085f46a6af8d6848abbc4",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_complete.md",

@@ -285,7 +285,7 @@ standard library package CauseAndEffect {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6671ee8053b74a25e04f4200e134f345a28e70bc3ca74b1e8ffb8caa560bf035"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:094e5c01bc59d902e1bdd8c58479eaf462025e9af7dbe849a54d5b51eb5b0e7b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (qualified-name "CauseAndEffect"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/cause_and_effect.md") (path (named (kind library-package) (name "CauseAndEffect")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " This package provides language-extension metadata for cause-effect modeling. "))))

@@ -60,7 +60,7 @@ package Parameters {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b21fb4d7388d2021e3aa21cb738cd3d0438a1e61f094f4f4b270513e8c4b5f40"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:bf2c75b821210db1277174f11db3b8b1c395bd6297f573490e07305a85c43e93"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_parameter_redefinition.md") (qualified-name "Parameters"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_parameter_redefinition.md") (qualified-name "Parameters::Base"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))

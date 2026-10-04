@@ -127,7 +127,7 @@ package 'Constraint Assertions-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6e436aa60e2789297c06a200b91b91fed61c45875d253d75869a4e233bea8f26"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8c5017afe21914052198293fa3d9c984349bd8ecccd89d9630a1584e5a6e8fa6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (qualified-name "Constraint Assertions-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_2.md") (path (named (kind package) (name "Constraint Assertions-2")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false))))))

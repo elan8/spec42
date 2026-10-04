@@ -682,8 +682,18 @@ mod tests {
             .diagram_views(Arc::clone(&publication))
             .expect("diagram catalog");
         let handle = catalog.views[0].handle.clone();
-        // Other publications push the one the handle came from out of the model cache.
-        for ordinal in 0..MAX_MODEL_VIEWS {
+        // Other publications push the one the handle came from out of the model cache. Eviction
+        // takes the smallest digest, so how many it takes depends on digest values; publish until
+        // it is gone, within a bound.
+        for ordinal in 0..64 {
+            if !service
+                .models
+                .lock()
+                .unwrap()
+                .contains_key(&publication.publication().model_digest())
+            {
+                break;
+            }
             let other = sysml_query::Services::new()
                 .publication
                 .publish(

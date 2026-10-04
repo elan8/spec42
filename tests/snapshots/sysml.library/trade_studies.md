@@ -261,7 +261,7 @@ standard library package TradeStudies {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5ed7630da059a289077f7d826fedb85589e626714badf7c70b4674d942fb5ff7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:32819733aaf173de2c0b59f38bd44423268fa987ac552b633d89bd69d40f21c7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/trade_studies.md") (qualified-name "TradeStudies"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/trade_studies.md") (path (named (kind library-package) (name "TradeStudies")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package provides a simple framework for defining trade-off study analysis cases.\n\t "))))

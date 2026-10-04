@@ -39,7 +39,7 @@ package MalformedConditionalSpecializationBodies {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5ab35a758b12f748c9e80c1e392c8b57da57170faa1e498ede23ac7863b71def") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8b0ce3144479af1f7004fbb934b0789869a31fbc28939137ee356f3d0b6cdc79") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_malformed_conditional_specialization_bodies.md") (qualified-name "MalformedConditionalSpecializationBodies"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_malformed_conditional_specialization_bodies.md") (qualified-name "MalformedConditionalSpecializationBodies::Library"))) (kind use-case-def) (membership (kind owning) (visibility default)))

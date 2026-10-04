@@ -5235,7 +5235,7 @@ standard library package ISQChemistryMolecular {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1b76a845b58c298bff89a5b6d72efefad50ebee987087f13acb3359c94d98132"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5570c848588ca6de17ffc4c0a79873b22458a91fbbf49a317f79b3159a59dc2c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_chemistry_molecular.md") (qualified-name "ISQChemistryMolecular"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/isq_chemistry_molecular.md") (path (named (kind library-package) (name "ISQChemistryMolecular")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * International System of Quantities and Units\n     * Generated on 2025-03-13T15:00:05Z from standard ISO-80000-9:2019 \"Physical chemistry and molecular physics\"\n     * see also https://www.iso.org/standard/64979.html\n     * \n     * Note 1: In documentation comments, AsciiMath notation (see http://asciimath.org/) is used for mathematical concepts,\n     * with Greek letters in Unicode encoding. In running text, AsciiMath is placed between backticks.\n     * Note 2: For vector and tensor quantities currently the unit and quantity value type for their (scalar) magnitude is \n     * defined, as well as their typical Cartesian 3d VectorMeasurementReference (i.e. coordinate system) \n     * or TensorMeasurementReference.\n     "))))

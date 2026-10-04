@@ -67,7 +67,7 @@ package Use {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d49916dfa251a36d6a71e7b1ef1dc0d6df60d3d29fd0860ff0e2ec7e84929b98"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b138d8841f78611c7ed5e33755a704dd08bb1077026add9abb482462e3cabd99"))
   (declarations
     (declaration (id (node (document "memory://snapshot/A.sysml") (qualified-name "Shared"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/A.sysml") (qualified-name "Shared::Thing"))) (kind part-def) (membership (kind owning) (visibility default)))

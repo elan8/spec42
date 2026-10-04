@@ -507,7 +507,7 @@ standard library package ScalarFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:77ba82923247e7ca0198335290e0c9a10cbf275790e808f231249ac4892bc815"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5f2561f874f68397ff6db4b96c424b895a91b8df26d54c3a9431aa95f5e491da"))
   (declarations
     (declaration (id (node (document "memory://snapshot/scalar_functions.md") (qualified-name "ScalarFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/scalar_functions.md") (path (named (kind library-package) (name "ScalarFunctions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines abstract functions that specialize the DataFunctions for use with ScalarValues. \n\t "))))

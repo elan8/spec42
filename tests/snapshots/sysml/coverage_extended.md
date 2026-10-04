@@ -95,7 +95,7 @@ package ExtendedExamples {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5a5054966a4ceb012f28acf6959cd39d3f34ebe2ff4dcc8d8f5effb32dc90714"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a08a4585b019a2ab7c0ae953bc644b374fd65b6d7b320a7af1da016b9b29945d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::AbstractFailure"))) (kind extended-definition) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))

@@ -54,7 +54,7 @@ package Multiplicities {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b64b0173988802a2885113d2a6420dff3a5dfe734733cbd38487a400e8ff6886"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:eab142656487cae59514df694493aedef83b709c7e8330bf94df9d2733acc702"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (qualified-name "Multiplicities"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_bound_non_integer.md") (qualified-name "Multiplicities::Bounded"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 0) (upper 3))))

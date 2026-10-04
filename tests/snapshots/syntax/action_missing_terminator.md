@@ -28,7 +28,7 @@ package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:187c653f3da3520f96f6f8f42256d05ba5febdd42642c8609f1c0bfa26ee5fd4"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:a7aa48b5755c7a76b291c78e2dbce99ca6f0c53ddb0eaa0a6c9f67cf8f9fcd9a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/action_missing_terminator.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/action_missing_terminator.md") (qualified-name "Actions::Next"))) (kind action-def) (membership (kind owning) (visibility default)))

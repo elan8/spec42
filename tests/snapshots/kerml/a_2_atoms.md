@@ -56,7 +56,7 @@ package Atoms {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ce6425b889fc153c98df08a93122a3aedca50b5c85670b6ddf82ad7ecd939f6c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f90dbdd0e94120e0f4b6b5cffc51808d728e46d1e8063798159a5bd8f967f450"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (qualified-name "Atoms"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a_2_atoms.md") (path (named (kind package) (name "Atoms")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " This package defines a keyword (atom) for classifiers with\n\t * exactly one instance and are disjoint from any others\n\t * marked with this keyword.\n\t "))))

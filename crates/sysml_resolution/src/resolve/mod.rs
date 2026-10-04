@@ -2003,6 +2003,7 @@ pub(crate) fn is_feature_declaration(kind: DeclarationKind) -> bool {
                 | sysml_contract::ElementKind::Connector
                 | sysml_contract::ElementKind::BindingConnector
                 | sysml_contract::ElementKind::Invariant
+                | sysml_contract::ElementKind::MetadataFeature
         )
 }
 

@@ -68,7 +68,7 @@ abstract part def Container {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:78b35de4d04c636bb29de5b8d361ee7022e2ce9eb901ed20f63f349bfb04f71d"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:2d9646cebd39163276252ce264a393e4b6a9cb9a63ba140699260bae461bbbe2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractEvent"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractPerson"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract individual) (individual-multiplicity (node (document "memory://snapshot/coverage_abstract_defs.md") (path (named (kind occurrence-def) (name "AbstractPerson")) (anonymous (kind kerml-multiplicity) (ordinal 0)))))))

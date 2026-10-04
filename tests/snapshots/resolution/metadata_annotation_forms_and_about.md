@@ -47,7 +47,7 @@ package MetadataAnnotationForms {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:43b351c58664f0f212b03325f3023e6172d34413ba915e4501dda043ef7d2ed3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9233d78f3c61261e89a2395582ba2fee60ce239397c268a2660165b88cd32361"))
   (declarations
     (declaration (id (node (document "memory://snapshot/metadata_annotation_forms_and_about.md") (qualified-name "MetadataAnnotationForms"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/metadata_annotation_forms_and_about.md") (qualified-name "MetadataAnnotationForms::Component"))) (kind part-def) (membership (kind owning) (visibility default)))

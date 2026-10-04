@@ -25,7 +25,7 @@ type=file
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:00822b861e583c5aba03c15441e4b75ab39e4ee721a8a593dee5c678e970552a"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:eec6454bb65bcec84a4e8d8b22fde487a80f86d1f2a367d8f16bee8a039e4e06"))
   (declarations
     (declaration (id (node (document "memory://snapshot/empty_member_at_file_level.md") (path (anonymous (kind default-reference) (ordinal 0))))) (kind default-reference) (membership (kind feature) (visibility default)))
   )

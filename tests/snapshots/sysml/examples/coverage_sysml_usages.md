@@ -153,7 +153,7 @@ part def Vehicle {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:b68cc5a4af517e91ba754c3a7f6da52bf395f73b90d104d39b2ff390db98f263"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:af27503e3c28527193859706ed5e162fc982f5eb6d5ef3587bb36a5eb9195460"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "Color"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_usages.md") (qualified-name "DataPort"))) (kind part-def) (membership (kind owning) (visibility default)))

@@ -100,7 +100,7 @@ package ViewTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:150602796e98ab955e756693987d3669c877d4c7667d84a2dcf3071d6b5af48f"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:9bbab2ed234abd542ed685873a7f5451d797a5782ee2097155590b70389e79d0"))
   (declarations
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_test.md") (qualified-name "ViewTest::C"))) (kind concern-def) (membership (kind owning) (visibility default)))

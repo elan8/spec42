@@ -57,7 +57,7 @@ package Parts {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d862541563d24c9501d0e3cc90781a8d1aae60f4b3289ff03f6892b0f7554880"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d5d4367a85f561bee08ee2844e36949bb20af33f00d6708e65ab9df0660aa496"))
   (declarations
     (declaration (id (node (document "memory://snapshot/part_usage_cannot_type_part.md") (qualified-name "Parts"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/part_usage_cannot_type_part.md") (qualified-name "Parts::Product"))) (kind part-def) (membership (kind owning) (visibility default)))

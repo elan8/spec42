@@ -39,7 +39,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:dedc5067445e065e4eb49cf5063279d77d27304c034c1e1e25206f96213dd5d5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4b53a5c1ce6d96cbad86b8c2655132aa30c046ac49d0c4cc25269fc22446d2ca"))
   (declarations
     (declaration (id (node (document "memory://snapshot/selflink_crosses_same_thing_self.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/selflink_crosses_same_thing_self.md") (qualified-name "P::Anything"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))

@@ -56,7 +56,7 @@ package Contexts {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5e8c8f6ae61d8f56faf0537dbd20539cd832da8859b757045d126aa184ac6c40"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3a148c591d3f7ed78251838e53825058e1967675d2643791c6c33e1cb5862530"))
   (declarations
     (declaration (id (node (document "memory://snapshot/contextual_inherited_expressions.md") (qualified-name "Contexts"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/contextual_inherited_expressions.md") (qualified-name "Contexts::ConflictingHeavyTruck"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "HeavyTruck")))))

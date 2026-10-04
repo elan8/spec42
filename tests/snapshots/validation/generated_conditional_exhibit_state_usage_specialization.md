@@ -40,7 +40,7 @@ package ExhibitStateSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3d9b590f381ff1247fbd011ff2834834a2251361bd6ccb27c02438e1e416cd15") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3c5b6b81ab6b886d0ee20f0064166747648601a8ce9bef4e6fe2c948a6941a0e") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_exhibit_state_usage_specialization.md") (qualified-name "ExhibitStateSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_exhibit_state_usage_specialization.md") (qualified-name "ExhibitStateSpecialization::Operating"))) (kind state-def) (membership (kind owning) (visibility default)))

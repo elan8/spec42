@@ -129,7 +129,7 @@ standard library package DerivationConnections {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0700fa018a384b209497b8eb9d4814bd1732cd26b24f5e034d2d3fe1d87b9fce"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e8c08ea29cb4e8daef30386b8a4be7cfcb09e4be896d52072feff8fa1a5e6347"))
   (declarations
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (qualified-name "DerivationConnections"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/derivation_connections.md") (path (named (kind library-package) (name "DerivationConnections")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package provides a library model for derivation connections between requirements.\n\t "))))

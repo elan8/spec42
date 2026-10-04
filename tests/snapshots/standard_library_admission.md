@@ -29,7 +29,7 @@ package Vehicles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b9dcc8b252e398fcfa9f2e3a547890d86ba1df13ba5f2a3c220ec7173591df3f") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3e97e14a58297bfd08d62a25d0f907d3171e9a6288c1323faecbf6386f97a81d") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/standard_library_admission.md") (qualified-name "Vehicles::Car"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Vehicle")))))

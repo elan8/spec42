@@ -35,7 +35,7 @@ package Values {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6553492e057f15ee7284cf5ce39f752957f485625bce812d530df6d0b4dbd347") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6bdc9aa0812b375184899bff530bd74c59dff1cc7c708dc924aa845bfa1c20fd") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/attribute_value_conformance.md") (qualified-name "Values::Status"))) (kind enum-def) (membership (kind owning) (visibility default)) (facts (implied-modifiers abstract variation)))

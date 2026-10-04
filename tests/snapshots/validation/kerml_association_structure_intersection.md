@@ -47,7 +47,7 @@ package Associations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a0a1f6d0ea470baf21bb117374c68258e535e11b44c252080f1c30c0dbec5745"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b215118165ce05599c7999dbd3b085a932ffbc9432cb3bf690da97a69d38aafd"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_association_structure_intersection.md") (qualified-name "Associations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_association_structure_intersection.md") (qualified-name "Associations::LinkObject"))) (kind kerml-association-structure) (membership (kind owning) (visibility default)))

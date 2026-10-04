@@ -873,7 +873,7 @@ standard library package VectorFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6ab98ff63ef186547e48f7081991890ef9b16570c477dbae6f999bd24f369e99"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:518482515dd4b1c3a2fee0f815f72a7954dce00bf8033a2f199bfa7f3b540dc9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vector_functions.md") (qualified-name "VectorFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/vector_functions.md") (path (named (kind library-package) (name "VectorFunctions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines abstract functions on VectorValues corresponding to the algebraic operations\n\t * provided by a vector space with inner product. It also includes concrete implementations of these\n\t * functions specifically for CartesianVectorValues.\n\t "))))

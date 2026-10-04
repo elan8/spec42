@@ -98,7 +98,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6254fe42fa2ac140aab0cf04db82df22099a3457692277b56f8050535bb75b5b") (admitted (standard-library 1)))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:827e8973a7f365858c47042319c2241122a9202e14da4ddf40b9bf45a219a6ba") (admitted (standard-library 1)))
   (declarations
     (declaration (id (node (document "memory://snapshot/fake-base.kerml") (qualified-name "Base"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fake-base.kerml") (qualified-name "Base::zeroOrOne"))) (kind kerml-multiplicity) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 0) (upper 1))))

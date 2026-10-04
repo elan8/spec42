@@ -83,7 +83,7 @@ package JohnIndividualExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b21982bd258772fdc2c06901a8c859b8b5913deba876cd21a39a07c949854382"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d1bf2e918742381fd18aa158578d9571389a3f315fc534dec08e34d86937cf40"))
   (declarations
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample::Country"))) (kind item-def) (membership (kind owning) (visibility default)))

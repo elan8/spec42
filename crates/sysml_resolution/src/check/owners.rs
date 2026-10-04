@@ -230,7 +230,8 @@ impl<D> SemanticModel<D> {
                 diagnostics,
             )?;
         }
-        if kind == DeclarationKind::MetadataUsage {
+        if crate::model::element_kind::element_kind(kind).conforms_to(ElementKind::MetadataFeature)
+        {
             self.collect_metadata_feature_typing(id, diagnostics)?;
         }
         Ok(())

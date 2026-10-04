@@ -239,7 +239,7 @@ standard library package StateSpaceRepresentation {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f33163e1dfdd1649bfdb24539884e26d75c8e3572b32d3309297c3a46604caab"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e5901d9ef97549d481dcc90a2dc9391e4371d55512e225240e7440852be5ceed"))
   (declarations
     (declaration (id (node (document "memory://snapshot/state_space_representation.md") (qualified-name "StateSpaceRepresentation"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/state_space_representation.md") (path (named (kind library-package) (name "StateSpaceRepresentation")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package provides a model of the foundational state-space system representation, \n\t * commonly used in control systems.\n\t "))))

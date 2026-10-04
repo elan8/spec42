@@ -277,7 +277,7 @@ package '10b-Trade-off Among Alternative Configurations' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:7e89183f84ffb56dd10ee206e96505d2bd0fc0351bbfd85f4a1f35f1b44c7ac4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ed1f77b08755abb717eaf55870e6a00c26414b86440270a59c9d16df0f285c51"))
   (declarations
     (declaration (id (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (qualified-name "10b-Trade-off Among Alternative Configurations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/10b_trade_off_among_alternative_configurations.md") (path (named (kind package) (name "10b-Trade-off Among Alternative Configurations")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

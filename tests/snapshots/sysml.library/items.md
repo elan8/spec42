@@ -537,7 +537,7 @@ standard library package Items {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:daa13b93f12aed86a5f80d15202cdbac7a5a02465d59c2d47eb22cd2e236a815"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0fcd3fe5cda6692c0e4016e4b6f630d79db2e029e4aac47da7d4c0ee375970e5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/items.md") (qualified-name "Items"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/items.md") (path (named (kind library-package) (name "Items")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines the base types for items and related structural elements in the\n\t * SysML language.\n\t "))))

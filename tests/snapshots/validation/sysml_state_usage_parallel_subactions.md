@@ -62,7 +62,7 @@ package States {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:013851768cf1a5b6ec3cd8ce4ab0ba6417b0745636118f610c13b13041eebe7d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a20b7d9181b17daf09619e029c819830e095bdf5d2ce7924ca1b64fd2eb3e33a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_state_usage_parallel_subactions.md") (qualified-name "States::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))

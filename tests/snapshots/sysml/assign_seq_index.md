@@ -73,7 +73,7 @@ package AssignTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f48cf36000dd05e36f81d233a04f7fa6c90e07194251c45fbfb722d2c47d2ad6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c5512d8055887b30ee7f9e8b4286cc5982bb4a664f9aa20b875595587b473c3c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (qualified-name "AssignTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/assign_seq_index.md") (qualified-name "AssignTest::A"))) (kind action-def) (membership (kind owning) (visibility default)))

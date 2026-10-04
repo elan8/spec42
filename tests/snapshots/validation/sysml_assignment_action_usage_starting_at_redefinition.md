@@ -40,7 +40,7 @@ package Redefinition {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:216bdd87e3550f6f91127a8e66a716d5b914969663e2148c51b4f674480d408a") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:128fc8267e436fc1c0b9601246afd81db00f12c317b7cea257febd4c09f7301a") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage_starting_at_redefinition.md") (qualified-name "Redefinition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage_starting_at_redefinition.md") (qualified-name "Redefinition::Counter"))) (kind part-def) (membership (kind owning) (visibility default)))

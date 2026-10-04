@@ -275,7 +275,7 @@ standard library package Interfaces {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d6d9003112ba8ccb2d20b49c088947a95fa9449a7658ba20dd58f05186fc0ca2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0b791f692f1714ba3655c8e3182095107d0f9d377d87967757913ee00402a3f0"))
   (declarations
     (declaration (id (node (document "memory://snapshot/interfaces.md") (qualified-name "Interfaces"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/interfaces.md") (path (named (kind library-package) (name "Interfaces")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * This package defines the base types for interfaces and related structural elements in the SysML language.\n     "))))

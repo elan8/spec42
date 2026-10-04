@@ -103,7 +103,7 @@ package '15_12-Compound Value Type' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:767f47c2c6e2ae319e0161421c9a488e978c3d9927883dea7367747fe290e617"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:914426595c701bb6c81c60101e6f0cc24a09110aa5a25e6428a655ef6f3c5252"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (qualified-name "15_12-Compound Value Type"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_12_compound_value_type.md") (path (named (kind package) (name "15_12-Compound Value Type")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

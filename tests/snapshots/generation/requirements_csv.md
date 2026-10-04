@@ -33,7 +33,7 @@ package VehicleRequirements {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:170bc3fee767254384ae822b2394c86e92c7121be0ec90cae16d1d2cb32d76ff") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e2fded24a198ca85d11393d7eb7a8024d13414657513a2b668041a5bc56086ad") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirements_csv.md") (qualified-name "VehicleRequirements"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirements_csv.md") (qualified-name "VehicleRequirements::LowBatteryWarning"))) (kind requirement-def) (membership (kind owning) (visibility default)))

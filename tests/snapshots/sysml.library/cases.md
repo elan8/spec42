@@ -179,7 +179,7 @@ standard library package Cases {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fd3a88f3bd062fe1d73e2b30e1b8fb2cf3ab8767091a59849454b4fd8915d379"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bc916a8a65aefd63adc9a34874c12a578c31b187e380d93e507b2979d0daac4f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/cases.md") (qualified-name "Cases"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/cases.md") (path (named (kind library-package) (name "Cases")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines the base types for cases and related behavioral elements \n\t * in the SysML language.\n\t "))))

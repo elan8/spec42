@@ -109,7 +109,7 @@ package TimerBrowser {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:eb6d929b70601f30271abe7ae680cab3071a10b396bff3d26be68350d2a1ec7c") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5369c21e86c5fead23c13bf3f346b69437dd08237d2c60a086c8b5168af3d9c1") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_timer_browser.md") (qualified-name "TimerBrowser"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_timer_browser.md") (path (named (kind package) (name "TimerBrowser")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -6825,7 +6825,7 @@ package TimerBrowser {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:1e78d87f80c08867255e1a79ccc0dd9b4ba2c2a42fa80524a9e6275090acfd00",
+  "modelDigest": "blake3:2b089324e00dd2a3030d71c6d0749885e9062b0ecee322403bce1fccbb7460de",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_timer_browser.md",

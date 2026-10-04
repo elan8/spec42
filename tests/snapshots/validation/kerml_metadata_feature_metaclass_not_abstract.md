@@ -57,14 +57,14 @@ package Metadata {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:37ede818e06e874bf7a8d9999a7e4d942faa4a11e077a262b49ab5565132a3de"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f493d5a21e91bed0adadf0e0bc53deca6f5cd89ffa29e56c4fe02b6340a07046"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::AbstractMarker"))) (kind kerml-metaclass) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::Marker"))) (kind kerml-metaclass) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::abstractly"))) (kind metadata) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "AbstractMarker")) (metadataAnnotationAbout (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::concrete"))) (kind metadata) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Marker")) (metadataAnnotationAbout (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::abstractly"))) (kind kerml-metadata-feature) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "AbstractMarker")) (metadataAnnotationAbout (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::concrete"))) (kind kerml-metadata-feature) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Marker")) (metadataAnnotationAbout (reference "Thing")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_metaclass_not_abstract.md") (qualified-name "Metadata::abstractly"))) (kind featureTyping) (ordinal 0))

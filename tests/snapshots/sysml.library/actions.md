@@ -1072,7 +1072,7 @@ standard library package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0683383b61e47daf5fc3d06f372c78670abac17c7ed407cc15dcc1a8429a1ac8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:19f4b508a6f3fe8c647d91573da61bcb18b75461e5b2e58649f6b2f2d5048a9c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/actions.md") (qualified-name "Actions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/actions.md") (path (named (kind library-package) (name "Actions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines the base types for actions and related behavioral elements in the\n\t * SysML language.\n\t "))))

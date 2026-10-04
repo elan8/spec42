@@ -36,7 +36,7 @@ state def S {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:7df16b8e3a470cadd6c4e2378e4ddc01ea22011846026fd5312dade18e131691"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b3c37ba4c74a5d9ad6f3d506a31cb0d593e3e1191eb6bca120d7b4be179da142"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S"))) (kind state-def) (membership (kind owning) (visibility default)))

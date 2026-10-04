@@ -43,7 +43,7 @@ package Parts {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8ad92e82fcf81854ec819c80c425b9c0fcda3e29be02e392d1b54f186efd90c0") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e8165653e1e2a560d2e16e4c699f8267e0d065b946eb3236fecc8986c5c4dd41") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_part_usage_part_definition.md") (qualified-name "Parts"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_part_usage_part_definition.md") (qualified-name "Parts::Component"))) (kind part-def) (membership (kind owning) (visibility default)))

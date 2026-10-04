@@ -354,7 +354,7 @@ package TimeVaryingCarDriver {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:962da675c07ef4eb952789bd3d1ec3ac95d2b89ad062d56222e98968990cb945"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:3d17ba13b4aae9bb622c9d3b14394a87080b76365e0c5c47c467babc52e303d4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (qualified-name "TimeVaryingCarDriver"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/time_varying_car_driver.md") (path (named (kind package) (name "TimeVaryingCarDriver")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

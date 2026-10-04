@@ -56,7 +56,7 @@ package Intersections {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7920f1b64ca3b9a539dbe11a91d5782c4bc8fba1a0bc6a535b9c00184a292d1c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8eed344276ba0022f77983521b5ef99ba76b3ee342ca9786c92e37103beb9dfa"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_intersecting_self.md") (qualified-name "Intersections"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_intersecting_self.md") (qualified-name "Intersections::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

@@ -359,7 +359,7 @@ standard library package Observation {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d98f56ba402668116262a876a99c91e387677cead1ab91ae2f38a8b4ddaddabb"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8cf32dfe6c3271e40ce6f59561a26d59ac4a71a5c81ba063330e11a7ae77f66d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/observation.md") (qualified-name "Observation"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/observation.md") (path (named (kind library-package) (name "Observation")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package models a framework for monitoring Boolean conditions and notifying\n\t * registered observers when they change from false to true.\n\t "))))

@@ -769,6 +769,11 @@ pub(crate) enum DeclarationKind {
     /// "anonymous nested declaration" pattern. `is_negated` is not modeled as a distinct fact
     /// here (see `AssertConstraintMember`'s own `is_negated` scope boundary).
     KermlInvariant,
+    /// A KerML `metadata` feature or `@` annotation (KerML `MetadataFeature`, §8.3.4.12). The
+    /// parser gives `metadata` one node in both languages; a document admitted as KerML lowers it
+    /// to this kind rather than to the SysML [`DeclarationKind::MetadataUsage`], which
+    /// specializes `MetadataFeature` and carries its own nearer library anchor.
+    KermlMetadataFeature,
     /// A KerML end member with an owned cross feature (`KermlEndMember`), e.g. `end happensDuring
     /// [1..*] subsets timeCoincidentOccurrences feature thatOccurrence: Occurrence redefines
     /// longerOccurrence;` (KerML Spec Annex A-3, association-end form). Distinct from a plain

@@ -70,7 +70,7 @@ package '15_06-System of Quantities' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:995cec352700c65c8a118098daf0d7815096263336553e186839d574f265786a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d5c227bfbdabf2b80eb0da64a26a6f560fac0f984418b17b8d4cb144139b6d5e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_06_system_of_quantities.md") (qualified-name "15_06-System of Quantities"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_06_system_of_quantities.md") (path (named (kind package) (name "15_06-System of Quantities")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false))))))

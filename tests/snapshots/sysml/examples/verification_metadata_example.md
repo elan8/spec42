@@ -105,7 +105,7 @@ package VerificationMetadataExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:156dde3c7b698e68a879dce95ae4026bc5b91e7b745b8418f598ef0bfe690100"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:20d36d31fbdbc22632a8ba45b5d4cbd141b13ba15279e6540a1d0d29710863ee"))
   (declarations
     (declaration (id (node (document "memory://snapshot/verification_metadata_example.md") (qualified-name "VerificationMetadataExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_metadata_example.md") (path (named (kind package) (name "VerificationMetadataExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "VerificationCases") (import (shape namespace) (recursive false))))))

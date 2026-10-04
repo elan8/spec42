@@ -72,7 +72,7 @@ probe element_details.md 22 15
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e10f1dbd18ae431e38a27b7e5e3006226a9054e9968a0c7dd2faaf80aa968b6f"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:35d64835668f6ceaa3d6b2329feba5741ca49fc0790fa5740cd8a6179861a45f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/element_details.md") (qualified-name "Details"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/element_details.md") (qualified-name "Details::Axle"))) (kind part-def) (membership (kind owning) (visibility default)))

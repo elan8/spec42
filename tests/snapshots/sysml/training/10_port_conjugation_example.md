@@ -38,7 +38,7 @@ package 'Port Conjugation Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a63572fe4c6c12b1696563234a7d7f2fd63309f704acd2af198c12bed4ecf8ca"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e248b96458bc239eb6ec00641f65e8a86c4a8b3ce7a178047994940d1d6181d7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/10_port_conjugation_example.md") (qualified-name "Port Conjugation Example::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))

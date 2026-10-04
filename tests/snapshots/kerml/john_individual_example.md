@@ -211,7 +211,7 @@ package JohnIndividualExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:56855a5c0d68c6f385b02c5c364523e96d510c33f0f8f978afc28b02bedfd9fe"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:392d0cd1419d2ededfce3c00a95d6730f7801f5ce86dcabd34875a4b3238fa97"))
   (declarations
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (qualified-name "JohnIndividualExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/john_individual_example.md") (path (named (kind package) (name "JohnIndividualExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Objects") (import (shape namespace) (recursive false))))))

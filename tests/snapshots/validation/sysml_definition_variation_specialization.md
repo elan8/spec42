@@ -68,7 +68,7 @@ package Variations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b75371dddbcd244802d103a9c09e6c5c6d15a030ed5049e488eba1f13b951455"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:46ac25fbf732248824f1ca4c032105e312c84c53bb16346bcb56176e89e18fcf"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_definition_variation_specialization.md") (qualified-name "Variations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_definition_variation_specialization.md") (qualified-name "Variations::Bad"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Root")))))

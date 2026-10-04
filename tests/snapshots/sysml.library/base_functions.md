@@ -374,7 +374,7 @@ standard library package BaseFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:75244994eaf64be1cc40bcfe7f79d1a319f5b4b327301fd3fed868ea21cc58fb"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4262f6ba3943b5c95ecea4b8b5f38e07a6e07fac4b50d309333637fe53560f86"))
   (declarations
     (declaration (id (node (document "memory://snapshot/base_functions.md") (qualified-name "BaseFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/base_functions.md") (path (named (kind library-package) (name "BaseFunctions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines a basic set of functions defined on all kinds of values. \n\t * Most correspond to similarly named operators in the KerML expression syntax.\n\t "))))

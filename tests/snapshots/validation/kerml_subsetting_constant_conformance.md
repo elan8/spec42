@@ -70,7 +70,7 @@ package Subsettings {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ee2a3b456c9ac51decc3d70ba901e9d8e5b6b018fc4d7eb8d185a120966832b9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5d3db94f6ae1dc36a9c3c61c70ffb5689abea9eff5a75b033d4eb28ee48fbf00"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening"))) (kind class-def) (membership (kind owning) (visibility default)))

@@ -47,7 +47,7 @@ package StateUsageExclusiveSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:59fa2a6eb3132fc27849a4ff6a6c4827857ee0052419e8fd683b2e27ebc89ad1") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:397af6bbaaa4c2a3bdc58cdd50f763f91d7df87cb862bcf403abcdcb9dd2dbfb") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_state_usage_exclusive_specialization.md") (qualified-name "StateUsageExclusiveSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_state_usage_exclusive_specialization.md") (qualified-name "StateUsageExclusiveSpecialization::Machine"))) (kind state-def) (membership (kind owning) (visibility default)))

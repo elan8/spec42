@@ -255,7 +255,7 @@ package '15_19a-Materials with Properties' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b7e62dc0664af6a55443940e56388e72ecaea375fef0ebb18232a8b4807a3b25"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4514869ba649351ac4a67adc8866ec41e86dc0004200de471a7735c851e26334"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_19a_materials_with_properties.md") (qualified-name "15_19a-Materials with Properties"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_19a_materials_with_properties.md") (path (named (kind package) (name "15_19a-Materials with Properties")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

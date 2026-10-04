@@ -250,7 +250,7 @@ package 'Interaction Realization-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:6c511777c66bf2bd8d655e1b31af7a82befea23a8cafe538d6db3ff73da823ea"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:eae479f91d27c62d462097f3cb87b5b4c62ea1afaff2ef29f6f5bafee78c0f7b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (qualified-name "Interaction Realization-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_interaction_realization_2.md") (path (named (kind package) (name "Interaction Realization-2")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Interaction Example-1") (import (shape namespace) (recursive false))))))

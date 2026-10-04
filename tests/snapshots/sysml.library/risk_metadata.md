@@ -154,7 +154,7 @@ standard library package RiskMetadata {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b6d5cf50564dc6dfd53e46f70cf39f1ada998ec28e136b7a381b5c3fb1d97c8b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1aca0f0602f3467cb19594e37fa3ea0ea7a8488c5a97456c22716dd581c8d414"))
   (declarations
     (declaration (id (node (document "memory://snapshot/risk_metadata.md") (qualified-name "RiskMetadata"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/risk_metadata.md") (path (named (kind library-package) (name "RiskMetadata")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines metadata for annotating model elements with assessments of risk.\n\t "))))

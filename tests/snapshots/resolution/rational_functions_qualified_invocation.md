@@ -61,7 +61,7 @@ package RationalFunctionsInvocation {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:86ea31384e2690fd5ea426ea44f28db028a8ea3bda891c06add384a4a7809c71") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:88c62a74e2d717a3cf17ad1ad48ca9454fd4ed7c341324bd386cd48e26bce5db") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/rational_functions_qualified_invocation.md") (qualified-name "RationalFunctionsInvocation"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/rational_functions_qualified_invocation.md") (qualified-name "RationalFunctionsInvocation::conversionFactor"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/rational_functions_qualified_invocation.md") (path (named (kind package) (name "RationalFunctionsInvocation")) (named (kind attribute) (name "conversionFactor")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/rational_functions_qualified_invocation.md") (path (named (kind package) (name "RationalFunctionsInvocation")) (named (kind attribute) (name "conversionFactor")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))

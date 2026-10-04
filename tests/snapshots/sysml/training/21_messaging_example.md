@@ -51,7 +51,7 @@ package 'Messaging Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5d3cc1a64a4746f4f3f2ad75fe010be12e6751fdc0e69b332edbb9cb6c2ab8c7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:22d36f4e7565359d91b736427e8bd857bd1388c40be336a2c44b3706871cd456"))
   (declarations
     (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/21_messaging_example.md") (qualified-name "Messaging Example::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))

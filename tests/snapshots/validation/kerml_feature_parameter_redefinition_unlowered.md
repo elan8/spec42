@@ -35,7 +35,7 @@ package Parameters {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:09a1bd6ed1b334ec78fe2b387a0f862ea684a5b10c95570d2e8fdd30397d903c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:eb0839e5237beb14f204b6623d60692c935d1e8d24147d7bdb641b664b65877e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_parameter_redefinition_unlowered.md") (qualified-name "Parameters"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_parameter_redefinition_unlowered.md") (qualified-name "Parameters::Computing"))) (kind kerml-function) (membership (kind owning) (visibility default)))

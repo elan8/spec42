@@ -32,7 +32,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6bda00768fa43bd1246923d0312e382648b4511fd4f5adc87630a43fa6ba944a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bf995632649d7cba41dca292a084af1250a870738627e15a24bf822dda281b7a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/alpha.sysml") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/alpha.sysml") (qualified-name "P::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))

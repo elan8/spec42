@@ -50,7 +50,7 @@ package ion {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3930c4b89a15b8382216b3ddbfb562c8f0dc22f978d8af0348670eed280d8607"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:ac839777e1e52aa4d39c5e8792138ec2403295e7cf07758850d585287dfa3de8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_unclosed_short_name.md") (qualified-name "ion"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_unclosed_short_name.md") (path (named (kind package) (name "ion")) (named (kind class-def) (name "A"))))) (kind class-def) (membership (kind owning) (visibility default)))

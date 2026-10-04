@@ -32,7 +32,7 @@ part p : Foo;
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a0a856788cf1ca3fd0dda5bb3371ffcf886813008ca1718209210cbd802e6668"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:69616a9ed858fa22b9be32592261f75103bb3f5c62bf7c6913841a1eaa354447"))
   (declarations
     (declaration (id (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "Foo"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/feature_typing_mismatch.md") (qualified-name "p"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Foo")))))

@@ -47,7 +47,7 @@ package 'Parts Example-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4946eff004bc5e86d779f136e38e38bb319ff98e69a3b6fda921b62b4c176675"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3b984f04f30279ae8fb5730ea56f2be7fc2c1b67aec3d230c59af9578b7da80d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/07_parts_example_1.md") (qualified-name "Parts Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/07_parts_example_1.md") (qualified-name "Parts Example-1::Cylinder"))) (kind part-def) (membership (kind owning) (visibility default)))

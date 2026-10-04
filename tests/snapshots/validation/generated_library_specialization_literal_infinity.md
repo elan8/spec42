@@ -37,7 +37,7 @@ package GeneratedLiteralInfinity {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:41d447db1fda385aae38ad1beae7e7fb956606e76f33df4fbf0b6b6a83ab1300") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:05df9fc64bffdd4ea63ba06a46c84723c24ef0c5a6be746d522e14d4b2dcab0e") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_literal_infinity.md") (qualified-name "GeneratedLiteralInfinity"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_literal_infinity.md") (qualified-name "GeneratedLiteralInfinity::ranged"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper unbounded))))

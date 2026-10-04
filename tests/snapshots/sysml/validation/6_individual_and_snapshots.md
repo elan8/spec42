@@ -371,7 +371,7 @@ package '6-Individual and Snapshots' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f3174415ccfdde60cac679c6e67ecca8db7b54dd7ff5ec73e615a60e8b413eaa"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:82a3e76fe4ed0af85fe641d39f5845cacddf0b3d322e3e930671f181ec334752"))
   (declarations
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (qualified-name "6-Individual and Snapshots"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/6_individual_and_snapshots.md") (path (named (kind package) (name "6-Individual and Snapshots")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

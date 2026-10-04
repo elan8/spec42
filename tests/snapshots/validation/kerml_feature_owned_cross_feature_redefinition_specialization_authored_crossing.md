@@ -36,7 +36,7 @@ package Redefinition {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:134d64b43a24835d293f8c77bf3fa68297e1440652da998537fa93bbbe966635"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9a22892273d3fea29b293a6a03988c2bbd90be50263168f80346b26be5946968"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_cross_feature_redefinition_specialization_authored_crossing.md") (qualified-name "Redefinition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_cross_feature_redefinition_specialization_authored_crossing.md") (qualified-name "Redefinition::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

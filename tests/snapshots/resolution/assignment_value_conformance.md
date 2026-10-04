@@ -34,7 +34,7 @@ package Assignments {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ac17daa8ed45ed630ef8624f776493030a51bc233cc8a4f9a8d73335c7a9594a") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c811a80c163dc77872cae026958af0476483f5f05dc482a7068017b7ffd18e12") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/assignment_value_conformance.md") (qualified-name "Assignments::Counter"))) (kind part-def) (membership (kind owning) (visibility default)))

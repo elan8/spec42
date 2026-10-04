@@ -127,7 +127,7 @@ standard library package Calculations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:76edc93a07e743414784c68e1469af2a857523f9f84b6ed941875b990b53c295"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f917d9e8ca3447526bdb2786b1e415ee816ef6efdd89f07e29665bc9ba30d61b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/calculations.md") (qualified-name "Calculations"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/calculations.md") (path (named (kind library-package) (name "Calculations")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines the base types for calculations and related behavioral elements in the\n\t * SysML language.\n\t "))))

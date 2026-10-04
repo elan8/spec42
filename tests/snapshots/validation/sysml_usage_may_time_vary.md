@@ -42,7 +42,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:20f929ca83452cbba2fd9b689a21221bddf7ddf2b8264794238a83f3c68bb86e") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b0e30b0894c8335f2bf11d24fc18dba0064ddebb7caa2835106768bff321c3a1") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_usage_may_time_vary.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_may_time_vary.md") (qualified-name "Model::Owner"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Occurrences::Occurrence")))))

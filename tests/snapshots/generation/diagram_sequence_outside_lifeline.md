@@ -32,7 +32,7 @@ package SequenceOutside {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a927b12409f035051813425b0741c0ae53f7407905cc17424f13a6e1459f1f2a") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:51295c3371cf14667b45259f2fc18d7f8fb554a693075362e8eeb81a669411f2") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (qualified-name "SequenceOutside"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_outside_lifeline.md") (path (named (kind package) (name "SequenceOutside")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -285,7 +285,7 @@ package SequenceOutside {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:80bfea9b5ea5d9c4e964d9682adcd538c6ba8489898711598b3a0a9ad9d56327",
+  "modelDigest": "blake3:5bdf63a30b0ebb0064efdc4b1888c9964da4951f8af230f563217fa2c7ee4cda",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_outside_lifeline.md",

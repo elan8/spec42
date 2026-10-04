@@ -36,7 +36,7 @@ package CompositeOwnerSpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:075c000ecd9e40a64179504abb810c8c547ba240bd09bf16a61ed3e271b85350") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c9b728456666e887572b864a18884b0925829c57d076f5bb0bffd101204361b4") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_composite_owner_specializations.md") (qualified-name "CompositeOwnerSpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_composite_owner_specializations.md") (qualified-name "CompositeOwnerSpecializations::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))

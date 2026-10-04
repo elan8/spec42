@@ -202,6 +202,7 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::LiteralInfinity
         | ElementKind::NullExpression
         | ElementKind::MetadataAccessExpression
+        | ElementKind::MetadataFeature
         | ElementKind::Invariant => "usage",
 
         // Comments, documentation and textual representations annotate elements; they are

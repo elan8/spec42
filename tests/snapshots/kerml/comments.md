@@ -70,7 +70,7 @@ package Comments {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:e8a112900c3b200845c2ff34e7933480efbd2709124e0ca7ae3f8141e9b216d9"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:2b87e4efdd8f09cb82d81036e6f6d1988c6e6e93e4619de476a7c5a071b43960"))
   (declarations
     (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (anonymous (kind comment) (ordinal 0))))) (kind comment) (membership (kind owning) (visibility default)) (documentation (comment (text "\n*AAA\n * BBB"))))

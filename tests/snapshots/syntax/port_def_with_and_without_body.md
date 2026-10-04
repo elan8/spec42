@@ -32,7 +32,7 @@ package Ports {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:933f97f8c57003a7ecc79f7594e7a5e372cc228f5eac1378303baec0c29ee2c8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e41bd916b98f1834cfc19e9dd0b1df570108e65e38d96840f113b245b83f7c9e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/port_def_with_and_without_body.md") (qualified-name "Ports"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/port_def_with_and_without_body.md") (qualified-name "Ports::Bare"))) (kind port-def) (membership (kind owning) (visibility default)))

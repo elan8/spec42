@@ -6067,7 +6067,7 @@ standard library package ISQLight {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6967e1cdf78569c46e076d0dcff2c673fa60395b99a98db5029f42ce98ed22e5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b7b74c540d1cac888ebf80be221bc773baad77743ba91f7abb14170afe19dbab"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_light.md") (qualified-name "ISQLight"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/isq_light.md") (path (named (kind library-package) (name "ISQLight")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * International System of Quantities and Units\n     * Generated on 2025-03-13T15:00:05Z from standard ISO-80000-7:2019 \"Light and radiation\"\n     * see also https://www.iso.org/standard/64977.html\n     * \n     * Note 1: In documentation comments, AsciiMath notation (see http://asciimath.org/) is used for mathematical concepts,\n     * with Greek letters in Unicode encoding. In running text, AsciiMath is placed between backticks.\n     * Note 2: For vector and tensor quantities currently the unit and quantity value type for their (scalar) magnitude is \n     * defined, as well as their typical Cartesian 3d VectorMeasurementReference (i.e. coordinate system) \n     * or TensorMeasurementReference.\n     "))))

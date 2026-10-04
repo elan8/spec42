@@ -432,7 +432,7 @@ package DecisionsAndMergesExecution {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:3d416d2fcdb36625def557eb5b61d763caa0515344ff7f0a982d4fffafed5b95"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:4e3df47426ab959b634ada4c9682f5d88499f542a9bc6485fdf0bfd0ebd5e12c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_3_7_decisions_and_merges.md") (qualified-name "DecisionsAndMergesExecution"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a_3_7_decisions_and_merges.md") (path (named (kind package) (name "DecisionsAndMergesExecution")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " \n\t "))))

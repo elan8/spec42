@@ -51,7 +51,7 @@ use sysml_query::resolved_slice::{
     TypeDerivedFactCollection, TypeDerivedFactOutcome, TypeDerivedFactValue,
     TypeDerivedRelationshipCollection,
 };
-use sysml_query::source::{SourceDocument as AdmittedDocument, SourceService};
+use sysml_query::source::{SourceDocument as AdmittedDocument, SourceLanguage, SourceService};
 type QuerySourceDocument = AdmittedDocument;
 
 #[derive(Debug, Parser)]
@@ -93,6 +93,9 @@ enum ReportFormat {
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct SourceDocument {
     name: String,
+    /// Declared by the SOURCE fence's info string (`~~~kerml` / `~~~sysml`): fixture document
+    /// names do not carry the language, so the fixture declares it and admission records it.
+    language: SourceLanguage,
     text: String,
 }
 
@@ -2214,6 +2217,7 @@ fn load_standard_library_documents(
                         document.text,
                         SourceKind::StandardLibrary,
                     )
+                    .map(|admitted| admitted.with_language(document.language))
                     .map_err(|error| error.to_string())?,
             );
         }
@@ -2719,6 +2723,7 @@ fn regenerate_snapshot(
                         SourceKind::Workspace
                     },
                 )
+                .map(|admitted| admitted.with_language(document.language))
                 .map_err(|error| error.to_string())
         })
         .collect::<Result<Vec<_>, _>>()?;
@@ -6900,6 +6905,7 @@ fn load_repository_sources(
         })?;
         documents.push(SourceDocument {
             name: relative.clone(),
+            language: SourceLanguage::of_path(relative),
             text,
         });
     }
@@ -7403,6 +7409,7 @@ fn parse_source_documents(
         };
         named.push(SourceDocument {
             name: name.trim().to_string(),
+            language: source_fence_language(rest, fallback_name)?,
             text,
         });
         cursor = after;
@@ -7410,14 +7417,31 @@ fn parse_source_documents(
     if !named.is_empty() {
         return Ok(named);
     }
+    let language = source_fence_language(source, fallback_name)?;
     fenced_block(source)
         .map(|(text, _)| {
             vec![SourceDocument {
                 name: fallback_name.to_string(),
+                language,
                 text,
             }]
         })
         .ok_or_else(|| format!("{fallback_name}: malformed SOURCE fence"))
+}
+
+/// The language a SOURCE fence declares by its info string. Every SOURCE fence must name one.
+fn source_fence_language(input: &str, fallback_name: &str) -> Result<SourceLanguage, String> {
+    let info = input
+        .find("~~~")
+        .and_then(|start| input[start + 3..].split_once('\n'))
+        .map(|(info, _)| info.trim());
+    match info {
+        Some("sysml") => Ok(SourceLanguage::SysML),
+        Some("kerml") => Ok(SourceLanguage::KerML),
+        other => Err(format!(
+            "{fallback_name}: SOURCE fence must declare `sysml` or `kerml`, found {other:?}"
+        )),
+    }
 }
 
 /// Reads execution-affecting META keys. Descriptive keys remain open-ended, but malformed lines,
@@ -9890,6 +9914,7 @@ mod tests {
                 fixture,
                 &[SourceDocument {
                     name: "model.sysml".to_string(),
+                    language: SourceLanguage::SysML,
                     text: "package Example {}".to_string(),
                 }],
                 "fixture.md",
@@ -9917,6 +9942,7 @@ mod tests {
             fixture,
             &[SourceDocument {
                 name: "model.sysml".to_string(),
+                language: SourceLanguage::SysML,
                 text: "package Example {}".to_string(),
             }],
             "fixture.md",

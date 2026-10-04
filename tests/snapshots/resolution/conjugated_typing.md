@@ -30,7 +30,7 @@ probe conjugated_typing.md 3 20 hover
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:912e5318a70c75f9558e735281e47dfaeea96906c5d089563369ad16d776e63a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:0e7169cd8794f27d49577fca1c818107d66697b1f6f112aa0c210b300938c18e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/conjugated_typing.md") (qualified-name "ConjugatedTypingCoverage::InputPort"))) (kind port-def) (membership (kind owning) (visibility default)))

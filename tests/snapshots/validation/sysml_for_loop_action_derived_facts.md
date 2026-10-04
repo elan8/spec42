@@ -27,7 +27,7 @@ package Actions { action def Procedure { for item in (1) { action step; } } }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:730635774ae2344d6df8496e51c5efffbba95c45aa9b5bd7840c282b9932fd90"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:977a915c52d68438b239e82ca18612cb91211e8f5de9eb2fc89bb74e3da96c6d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_derived_facts.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_for_loop_action_derived_facts.md") (qualified-name "Actions::Procedure"))) (kind action-def) (membership (kind owning) (visibility default)))

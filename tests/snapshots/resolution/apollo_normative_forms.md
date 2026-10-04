@@ -159,7 +159,7 @@ package ApolloNormativeForms {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c6ddda4d14c36da77a060c2fcbd1cad8e9d5c4086df44e39114c3cd105c5b018"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a6ec9f0c17e4ed4a77538ee6ab5295f3387ae9fe026dd06b965b81b31def267e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/apollo_normative_forms.md") (qualified-name "ApolloNormativeForms::Apollo11MissionDeltaVBudgetAnalysis"))) (kind analysis) (membership (kind feature) (visibility default)))

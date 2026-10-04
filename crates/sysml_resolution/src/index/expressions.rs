@@ -335,7 +335,7 @@ pub(crate) fn feature_reference_evaluability(
         .and_then(|owner| storage.declaration(owner))
         .map(|owner| crate::model::element_kind::element_kind(owner.kind));
     let decided = if owner_kind.is_some_and(|kind| {
-        kind.conforms_to(ElementKind::Metaclass) || kind.conforms_to(ElementKind::MetadataUsage)
+        kind.conforms_to(ElementKind::Metaclass) || kind.conforms_to(ElementKind::MetadataFeature)
     }) {
         ModelLevelEvaluability::Evaluable
     } else if types.featuring_requires_snapshots(referent) {

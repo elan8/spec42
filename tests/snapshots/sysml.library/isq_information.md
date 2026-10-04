@@ -2524,7 +2524,7 @@ standard library package ISQInformation {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4c098a60ddef7e0429882aa3571aea514990c7ac1534c9ddf2adaaa84e5d9c17"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ca892b79e33bac784a23ac3cc2cd3674e5525d5f6e63ed3e845afdb9abbd5c83"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_information.md") (qualified-name "ISQInformation"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/isq_information.md") (path (named (kind library-package) (name "ISQInformation")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * International System of Quantities and Units\n     * Generated on 2025-03-13T15:00:05Z from standard IEC-80000-13:2008 \"Information science and technology\"\n     * see also https://www.iso.org/obp/ui/#iso:std:iec:80000:-13:ed-1:v1:en\n     * \n     * Note 1: In documentation comments, AsciiMath notation (see http://asciimath.org/) is used for mathematical concepts,\n     * with Greek letters in Unicode encoding. In running text, AsciiMath is placed between backticks.\n     * Note 2: For vector and tensor quantities currently the unit and quantity value type for their (scalar) magnitude is \n     * defined, as well as their typical Cartesian 3d VectorMeasurementReference (i.e. coordinate system) \n     * or TensorMeasurementReference.\n     "))))

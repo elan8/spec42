@@ -62,7 +62,7 @@ package CommentTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cab89b300cc637b967bd447c61b4cac265bebc1c080a13e79122f6699df11964"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:88cdcf53e43681b273eecd82e7ff17e79726c77a2c9dac90ed36ea1a5fb2dee4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/comment_test.md") (qualified-name "CommentTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/comment_test.md") (path (named (kind package) (name "CommentTest")) (anonymous (kind comment) (ordinal 0))))) (kind comment) (membership (kind owning) (visibility default)) (documentation (comment (text "\n*AAA\n * BBB"))))

@@ -89,7 +89,7 @@ package 'Control Structures Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:97d2e7b7546d1737f5c0d55aa38ee1a684a6a20a7c8dc5ee115b9c299d48de59"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4780bc0f3ac2097a276e5947026db4f81e1b2ac81758745da33011097b302bd6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (qualified-name "Control Structures Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_control_structures_example.md") (path (named (kind package) (name "Control Structures Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

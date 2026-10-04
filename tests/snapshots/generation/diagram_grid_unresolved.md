@@ -34,7 +34,7 @@ package GridNegative {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0edb49e8728c7fad4d7c5295350b5bb0f3b56861582180a6731c1fc15450a755") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3b77d8e2b536145620d8b3aa06fdcdf16181edd750cc258d75be49d2db9d2197") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_grid_unresolved.md") (qualified-name "GridNegative"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_grid_unresolved.md") (path (named (kind package) (name "GridNegative")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -136,7 +136,7 @@ package GridNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:c5632b6b9b67cccd03c544860c1dc313e96ebc3416e368e0dab52c536cecbb65",
+  "modelDigest": "blake3:30063bf909923740523321b7babc4d35b42d7f04c8a98ef9703df3c760b3e001",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_grid_unresolved.md",

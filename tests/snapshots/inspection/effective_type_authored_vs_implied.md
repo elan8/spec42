@@ -44,7 +44,7 @@ probe effective_type_authored_vs_implied.md 16 13 hover
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6b44cb7f60b65c34759e636df2662819cc3d3c83d546b0b5679fbe47b4dbae26") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f444b127c16b26b72f1b5aa9180961e7ef23a6b4493e7d76aa728e9e95188249") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/effective_type_authored_vs_implied.md") (qualified-name "EffectiveTypeProvenance"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/effective_type_authored_vs_implied.md") (qualified-name "EffectiveTypeProvenance::AuthoredDerived"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base")))))

@@ -587,7 +587,7 @@ standard library package Performances {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:117a71658d40b6c42c752f2bb9b281e953059d0fd49a4fa92dc38fb448d93af9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8c879f7cd08c6681171eb5363013850fe8cf6612ce57a89b70159e6d5ef59189"))
   (declarations
     (declaration (id (node (document "memory://snapshot/performances.md") (qualified-name "Performances"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/performances.md") (path (named (kind library-package) (name "Performances")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines classifiers and features that related to the typing of performances and evaluations.\n\t "))))

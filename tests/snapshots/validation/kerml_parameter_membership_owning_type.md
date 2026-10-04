@@ -45,7 +45,7 @@ package Parameters {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cbbb7ac9e41af690dfbeb9c37f8f90d66b193871586f3fd3a12d752742e5e078"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2700da40818162b6a48d1b2805e54c39ef0252f9c3280095fc074d266ff10997"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Doing"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))

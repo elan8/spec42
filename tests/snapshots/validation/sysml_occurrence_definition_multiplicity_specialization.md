@@ -96,7 +96,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4e4790739b41cdc70adfa9fe242efd6b123869ccd974422466a82c0b651e4303") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e06ca63723aaf038c5f71e82196531a06d5f3ddd6663eff8c3bfc57616c43478") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_occurrence_definition_multiplicity_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_occurrence_definition_multiplicity_specialization.md") (qualified-name "Model::Abstract"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract individual) (individual-multiplicity (node (document "memory://snapshot/sysml_occurrence_definition_multiplicity_specialization.md") (path (named (kind package) (name "Model")) (named (kind occurrence-def) (name "Abstract")) (anonymous (kind kerml-multiplicity) (ordinal 0)))))))

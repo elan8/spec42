@@ -35,7 +35,7 @@ package SubactionSpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3f7fcddd9edef7a18cafdcf46ef09010a95f8f6c977ff2928fdb65f314d5842d") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:44952945bffcefdcb70d831c62db56228348335852a95d27385d3e6d583ed25c") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_subaction_specializations.md") (qualified-name "SubactionSpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_subaction_specializations.md") (qualified-name "SubactionSpecializations::Parent"))) (kind action-def) (membership (kind owning) (visibility default)))

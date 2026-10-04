@@ -202,6 +202,7 @@ fn listing_key(listed: &[SourceDocument]) -> LibraryListingKey {
                 SourceKind::Library => SourceRole::Library,
                 SourceKind::External => SourceRole::External,
             },
+            document.language(),
             document.digest(),
             document.library_location(),
         )

@@ -48,7 +48,7 @@ package 'Comment Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:28c2d48f5427c64c78239d51d094404aed41b924871a7a17ba5f795e6c1b7b47"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3a615c3d20ff6700dfad8657acf88416607715b5e33b0ca55e3d607da2a54aa9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/01_comment_example.md") (qualified-name "Comment Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/01_comment_example.md") (path (named (kind package) (name "Comment Example")) (anonymous (kind comment) (ordinal 0))))) (kind comment) (membership (kind owning) (visibility default)) (documentation (comment (text " This is a comment, which is a part of the model, \n\t * annotating (by default) it's owning namespace. "))))

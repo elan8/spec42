@@ -173,7 +173,7 @@ package OneToUnrestrictedConnectorsExecution {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:8e47dd9f44c10386e51751f0192eaa7c572b29cfb66ebde9a307e295b3c90c9c"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:9d57b32c0827a0ed92af5195925312023a1b3a70c156504cba4ab78f95ab519f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (qualified-name "OneToUnrestrictedConnectorsExecution"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a_3_4_one_to_unrestricted_connectors.md") (path (named (kind package) (name "OneToUnrestrictedConnectorsExecution")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " \n\t "))))

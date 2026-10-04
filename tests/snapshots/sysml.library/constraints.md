@@ -122,7 +122,7 @@ standard library package Constraints {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a2662fc9318e275b4298e4f830ae8f2f2576fca8b2566b7bb92fca80941a2e57"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:35899b06368f7bafe985ad265150a323a2e694174299f138f031dcdd9bbeb39a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/constraints.md") (qualified-name "Constraints"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/constraints.md") (path (named (kind library-package) (name "Constraints")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines the base types for constraints and related elements in the\n\t * SysML language.\n\t "))))

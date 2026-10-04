@@ -55,7 +55,7 @@ package RelationshipCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:dc703b955cf7eb123eab106df1f01f499ff2c4cb83a66a167742c278ebe09a52"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:7279919351832d6153dad5cd482622d4a70f2731733e59dc6523de8a0084bb19"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage"))) (kind package) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (explicitRelationshipEndpoint (reference "A")) (explicitRelationshipEndpoint (reference "B")) (explicitRelationshipEndpoint (reference "C")) (explicitRelationshipEndpoint (reference "D")) (explicitRelationshipEndpoint (reference "f")) (explicitRelationshipEndpoint (reference "B")) (explicitRelationshipEndpoint (reference "g")) (explicitRelationshipEndpoint (reference "A")) (explicitRelationshipEndpoint (reference "parent")) (explicitRelationshipEndpoint (reference "f")) (explicitRelationshipEndpoint (reference "child")) (explicitRelationshipEndpoint (reference "parent")) (explicitRelationshipEndpoint (reference "f")) (explicitRelationshipEndpoint (reference "g")))))
     (declaration (id (node (document "memory://snapshot/coverage_relationships.md") (qualified-name "RelationshipCoverage::A"))) (kind kerml-type) (membership (kind owning) (visibility default)))

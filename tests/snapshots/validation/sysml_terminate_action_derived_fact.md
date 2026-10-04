@@ -29,7 +29,7 @@ package Actions { action def Procedure { action target; terminate target; } }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f2c5f97e672194110c1fb9446f52592c0a49d947de66f7d2362556867a7e6a42"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:89fa03c5795c74d357d1929b1a340fd87475971d752743fd0deafe983047bc83"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_terminate_action_derived_fact.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_terminate_action_derived_fact.md") (qualified-name "Actions::Procedure"))) (kind action-def) (membership (kind owning) (visibility default)))

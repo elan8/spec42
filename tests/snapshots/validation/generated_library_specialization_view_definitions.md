@@ -39,7 +39,7 @@ package GeneratedViewDefinitions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:67de195a7d76ae7a5a592c25ca93fabef112c0ea41efb1b975e3628f2cd2d238") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d2b4c65464723b355eb52c8ae7d701fb141af640d7031c302a48b4b72b3bc34d") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_view_definitions.md") (qualified-name "GeneratedViewDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_view_definitions.md") (qualified-name "GeneratedViewDefinitions::MetadataDefinition"))) (kind metadata-def) (membership (kind owning) (visibility default)))

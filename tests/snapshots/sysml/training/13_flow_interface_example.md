@@ -112,7 +112,7 @@ package 'Flow Interface Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:eb3f7e41b66825459489cd253eb4f98629a338d572f2a462a96c34403ad1baad"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:29a5112f8733429ea865f8e2ecbea779778b7d7d9908981f638fb73c1a7f12e8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/13_flow_interface_example.md") (qualified-name "Flow Interface Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/13_flow_interface_example.md") (path (named (kind package) (name "Flow Interface Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Port Example") (import (shape namespace) (recursive false))))))

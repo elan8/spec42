@@ -23,7 +23,7 @@ package NoCatalog {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a5e5fd48df91b7f545bd98fc2bbac11f6cb09c5a44ca904b5e6a749b567cf854"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:673f7da233f65ad5cd32a25bad1583073da9e90498bee6ce821c521ba02b850e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/unit_catalog_unavailable.md") (qualified-name "NoCatalog"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/unit_catalog_unavailable.md") (qualified-name "NoCatalog::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))

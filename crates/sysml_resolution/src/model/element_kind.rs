@@ -182,6 +182,7 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::KermlConnector => ElementKind::Connector,
         DeclarationKind::KermlBinding => ElementKind::BindingConnector,
         DeclarationKind::KermlInvariant => ElementKind::Invariant,
+        DeclarationKind::KermlMetadataFeature => ElementKind::MetadataFeature,
     }
 }
 
@@ -335,7 +336,8 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::KermlMetadataAccessExpression
         | DeclarationKind::KermlConnector
         | DeclarationKind::KermlBinding
-        | DeclarationKind::KermlInvariant => None,
+        | DeclarationKind::KermlInvariant
+        | DeclarationKind::KermlMetadataFeature => None,
     }
 }
 
@@ -504,6 +506,7 @@ mod tests {
         DeclarationKind::KermlConnector,
         DeclarationKind::KermlBinding,
         DeclarationKind::KermlInvariant,
+        DeclarationKind::KermlMetadataFeature,
         DeclarationKind::KermlEnd,
         DeclarationKind::FlowEnd,
         DeclarationKind::Assign,

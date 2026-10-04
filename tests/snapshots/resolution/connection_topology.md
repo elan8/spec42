@@ -79,7 +79,7 @@ package ConnectionTopology {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:945ba8340df4e3ea32ae8dcd49f4b8e69a61725eb750821150c223b74909757a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:50598b1fb7e5fee2b4a76f40d1d89ba51485ec515913d47c22e9e79620396a9c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connection_topology.md") (qualified-name "ConnectionTopology"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connection_topology.md") (qualified-name "ConnectionTopology::Feed"))) (kind connection-def) (membership (kind owning) (visibility default)))

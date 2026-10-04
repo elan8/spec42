@@ -99,7 +99,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bfe1731ddb16d70c53f4f5377853a0f355328591f067e478a83cf72daf293a81"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d1c4592c62feda7c163d0c9c06d024cb2c866ebe50398aece33439279b9469c2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/type_namespace_imports.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/type_namespace_imports.md") (qualified-name "Model::Exporter"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

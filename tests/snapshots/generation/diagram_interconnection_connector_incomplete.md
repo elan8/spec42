@@ -54,7 +54,7 @@ package ConnectorIncomplete {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e0bd17f5886d1c5377a8f5d4f78828c022ea4ac77ec7b7c0ee0991e2375ef22b") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c055b456b5c5a7b71e771efd51179d86452ca6fd0f4d7de6a9197c87b6d03760") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_connector_incomplete.md") (qualified-name "ConnectorIncomplete"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_connector_incomplete.md") (path (named (kind package) (name "ConnectorIncomplete")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -226,7 +226,7 @@ package ConnectorIncomplete {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:c48b61f644b940557d7af20b6e640b8b6f53f478d75b462bba856415d65fa6b8",
+  "modelDigest": "blake3:e991acdde3072767b899e429b9aa3f2de55c0b0e72708e2a1841c08205af2099",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_connector_incomplete.md",

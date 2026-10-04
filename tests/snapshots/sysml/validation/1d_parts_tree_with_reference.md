@@ -75,7 +75,7 @@ package '1d-Parts Tree with Reference' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:0f8762df4050efb46434e714370d6b42149f7ac35d5cad124ec1173c2d8c42b3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:88f1f34bcea9d8ccaeab85af38e7e8d3ed73c6a2ac2512e150c2fa8712de7dd9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/1d_parts_tree_with_reference.md") (qualified-name "1d-Parts Tree with Reference::Definitions"))) (kind package) (membership (kind owning) (visibility default)))

@@ -47,7 +47,7 @@ package DocTests {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:179775f22a464be7ba2dc441823cb6414b25e8568cf89ba186e3b8ffe59e2c5c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:84909c227fda743db37ee11eafffd925d55c4b604d75bbeb5feb51668b021d79"))
   (declarations
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (qualified-name "DocTests"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/documentation_in_bodies.md") (path (named (kind package) (name "DocTests")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " Package-level documentation. "))))

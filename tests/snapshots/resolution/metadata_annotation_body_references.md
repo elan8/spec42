@@ -86,7 +86,7 @@ package MetadataAnnotationBody {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:46419bb9dcd79f52e32f33aa647e9508fa6d7ca2fbde6cb4d71a7b44d6cd431e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6ee408111c13dded85b25c9ba8e4c0c535702a1a10de5d1651d9411275d85a89"))
   (declarations
     (declaration (id (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/metadata_annotation_body_references.md") (qualified-name "MetadataAnnotationBody::Annotated"))) (kind part-def) (membership (kind owning) (visibility default)))

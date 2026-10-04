@@ -65,7 +65,7 @@ package RequirementTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:019bc8ad926c802bf2064f60ae8e65cb5ff26b03094888cb9acab2fdfebaf1aa"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3a64a8abede2d0f0e35bbc58d37fc3e26e0fbca4cf8fcae4582219f46a240730"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (qualified-name "RequirementTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_test.md") (path (named (kind package) (name "RequirementTest")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "q") (import (shape membership) (recursive true))))))

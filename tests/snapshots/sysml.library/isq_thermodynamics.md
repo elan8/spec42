@@ -5240,7 +5240,7 @@ standard library package ISQThermodynamics {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:52f5689837942c851eaa478824673e6ec87d23decea3632a563b0bc6b53b95bf"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a0eaa35b8a1b386d89ceb1023edf2a28c9da4f88a7db901ee3dd19b78cd8d1aa"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_thermodynamics.md") (qualified-name "ISQThermodynamics"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/isq_thermodynamics.md") (path (named (kind library-package) (name "ISQThermodynamics")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * International System of Quantities and Units\n     * Generated on 2025-03-13T15:00:05Z from standard ISO-80000-5:2019 \"Thermodynamics\"\n     * see also https://www.iso.org/standard/64976.html\n     * \n     * Note 1: In documentation comments, AsciiMath notation (see http://asciimath.org/) is used for mathematical concepts,\n     * with Greek letters in Unicode encoding. In running text, AsciiMath is placed between backticks.\n     * Note 2: For vector and tensor quantities currently the unit and quantity value type for their (scalar) magnitude is \n     * defined, as well as their typical Cartesian 3d VectorMeasurementReference (i.e. coordinate system) \n     * or TensorMeasurementReference.\n     "))))

@@ -95,7 +95,7 @@ package VariabilityTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:16b888c6815444dfd8aaff94acf942263750ae25ffaac0a3d4031275a0720967"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:b60606b8ef9ac9089778efeb0a3f45b01c3f744a1bd9c96046dfa0bba506c72d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/variability_test.md") (qualified-name "VariabilityTest::A"))) (kind action-def) (membership (kind owning) (visibility default)))

@@ -43,7 +43,7 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d132c85ea37a8e9e0fde5cde03b6a0aa78909f0ab07f19c610c61f49563d752d") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c5483415a33cf338b21273ea295bb9f694f3037c4485dd1d4deae4349b2df2fc") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/conditional_specialization_scope.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/conditional_specialization_scope.md") (qualified-name "Demo::Bounded"))) (kind attribute-def) (membership (kind owning) (visibility default)))

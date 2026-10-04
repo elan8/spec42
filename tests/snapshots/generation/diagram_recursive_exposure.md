@@ -31,7 +31,7 @@ package RecursiveExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:36a3c6d4049c1e24de2baf8739b4d9779c0d7c52be70bea95836fb147e9f3f0c") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:04db353d733bc8b3dfb2d84929ddb534d241340d0e65e6a73b00b364c3f69e2d") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_recursive_exposure.md") (path (named (kind package) (name "RecursiveExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -206,7 +206,7 @@ package RecursiveExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:2845030ae442751a58550a4a85e468452e244fea324802e7e517c72350e6fb6f",
+  "modelDigest": "blake3:93b03f55398514b10fe8da0c4a6ecf6ac0ee0aa7569951c6966e8bc2f8b25bb9",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_recursive_exposure.md",

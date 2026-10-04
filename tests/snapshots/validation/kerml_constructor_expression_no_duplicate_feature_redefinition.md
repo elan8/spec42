@@ -75,7 +75,7 @@ package Expressions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1dee1ab40f02a16db52e5aa2240932b39c4bb8bd0756ccb250263d91d3a53855"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:60bad7b7d6911729bbd54aef314b37dc2f10ee47a833c0d8f987134ee1592a72"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_no_duplicate_feature_redefinition.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_no_duplicate_feature_redefinition.md") (qualified-name "Expressions::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

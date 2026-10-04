@@ -37,7 +37,7 @@ package TransitionUsageActionSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:566137f7c5decc51bdb90080dac898dd8239bda8e03929f28749e2d8c02d13cc") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5faeb61416e24bb7abad5eb11380a53ed7b9184bd2178ab9b865cc5711f47f2f") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_transition_usage_action_specialization.md") (qualified-name "TransitionUsageActionSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_transition_usage_action_specialization.md") (qualified-name "TransitionUsageActionSpecialization::Decision"))) (kind action-def) (membership (kind owning) (visibility default)))

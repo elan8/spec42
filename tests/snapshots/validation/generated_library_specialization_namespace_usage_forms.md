@@ -39,7 +39,7 @@ package GeneratedSpecializationNamespaceUsages {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:94faf050eba5a013149dd2520d20d50ba857182f28274132ab4466150e8602db") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8e57f1eef7937d1a0b74376791f4191a5979a5da6e47e78d1efdabe4d2374076") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_namespace_usage_forms.md") (qualified-name "GeneratedSpecializationNamespaceUsages"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_namespace_usage_forms.md") (qualified-name "GeneratedSpecializationNamespaceUsages::CalculationUsage"))) (kind calc) (membership (kind feature) (visibility default)))

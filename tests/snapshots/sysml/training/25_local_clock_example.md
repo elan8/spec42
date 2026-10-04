@@ -80,7 +80,7 @@ package 'Local Clock Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c87210a718fb52b6e4333f862eb8c447e5365a87e88fe8ce7597a09f5281e838"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cb45805a0ffe6bfe32d76e5ec230d4a4776f78d0079b0dd855df70ef39aec6b5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (qualified-name "Local Clock Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_local_clock_example.md") (path (named (kind package) (name "Local Clock Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::String") (import (shape membership) (recursive false))))))

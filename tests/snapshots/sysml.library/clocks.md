@@ -330,7 +330,7 @@ standard library package Clocks {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5ec509b765f83e5d2e9e087a562d8db10cc8341a8c5581574f6ab933a2f35550"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:29fb342be2705012dfc1430abf9679d1e0401bce8dd93677d66dbcae60b17f79"))
   (declarations
     (declaration (id (node (document "memory://snapshot/clocks.md") (qualified-name "Clocks"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/clocks.md") (path (named (kind library-package) (name "Clocks")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package models Clocks that provide an advancing numerical reference \n\t * usable for quantifying the time of an Occurrence.\n\t "))))

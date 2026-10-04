@@ -82,7 +82,7 @@ package '15_07-System of Units and Scales' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9e006ca56a1ee9db24a8167f8a17a3e6e49185b6b8ff43e498434d446d473dd1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6df7732e29087220e70c7cf3fc642fb588fa03846b02a6ce20dbcb2dc5306191"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_07_system_of_units_and_scales.md") (qualified-name "15_07-System of Units and Scales"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_07_system_of_units_and_scales.md") (path (named (kind package) (name "15_07-System of Units and Scales")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false))))))

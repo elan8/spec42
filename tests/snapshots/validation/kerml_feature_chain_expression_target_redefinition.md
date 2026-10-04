@@ -37,7 +37,7 @@ package Redefinition {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ade60bd979398b490f102ce829963fddcfc4e22297759b89fb6e634b271a14ef") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:46af293d1a02b12672742ce49c07b96c4a2676e4c2abc3403d985f5a831222e4") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_chain_expression_target_redefinition.md") (qualified-name "Redefinition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_chain_expression_target_redefinition.md") (qualified-name "Redefinition::Engine"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

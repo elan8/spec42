@@ -3539,7 +3539,7 @@ standard library package ISQCondensedMatter {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1c048bd52ff5fdf9968a38fdcf1ccfffb935eaa6f2741a168cf84af3e1a66cae"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:282f48b03a8597945d0854b5016e8384e7984fa7bece06fc77079fdbeda2dda8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_condensed_matter.md") (qualified-name "ISQCondensedMatter"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/isq_condensed_matter.md") (path (named (kind library-package) (name "ISQCondensedMatter")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * International System of Quantities and Units\n     * Generated on 2025-03-13T15:00:05Z from standard ISO-80000-12:2019 \"Condensed matter physics\"\n     * see also https://www.iso.org/standard/63480.html\n     * \n     * Note 1: In documentation comments, AsciiMath notation (see http://asciimath.org/) is used for mathematical concepts,\n     * with Greek letters in Unicode encoding. In running text, AsciiMath is placed between backticks.\n     * Note 2: For vector and tensor quantities currently the unit and quantity value type for their (scalar) magnitude is \n     * defined, as well as their typical Cartesian 3d VectorMeasurementReference (i.e. coordinate system) \n     * or TensorMeasurementReference.\n     "))))

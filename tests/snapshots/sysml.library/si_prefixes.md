@@ -750,7 +750,7 @@ standard library package SIPrefixes {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9877692e70a8eaff7fe196d7ad6511395193d95cf24aa28abc8502e4ed150df0"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ca8e2c9c3059258e7d3f03cbd1794e22c6ee508c3ce65ad67b6fb232628ab26c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/si_prefixes.md") (qualified-name "SIPrefixes"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/si_prefixes.md") (path (named (kind library-package) (name "SIPrefixes")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * Definition of SI unit prefixes as specified in ISO/IEC 80000-1\n\t "))))

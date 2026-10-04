@@ -73,7 +73,7 @@ package Values {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:93d3d15360bfa39e1ac9e297c730173b669a36910a44be4f6f928a2ac4a11d5c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0a1eb3cecf58bdd0a8ab91f0a87800200b2a9f2d81b8440762e1f7567a9a0e3a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_value_overriding.md") (qualified-name "Values::Base"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

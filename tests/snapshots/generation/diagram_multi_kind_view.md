@@ -36,7 +36,7 @@ package Garage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5a2b6fd9fb5660cbc660b9d9bb2739165cfd428dd55b87b857b85057024367e1") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:38c3d9b4df6ec9c9ed243544fdd928ee8d4344d91401f849946dd16d8745f2f9") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Garage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Garage")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -259,7 +259,7 @@ package Garage {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:783790227f9a858151870cb8e6671178dff09034d82b94cc91943f46d3fc0ecc",
+  "modelDigest": "blake3:5f3b3ad1e18612eefb9b46018a814cae55b9f9b571250f0817b828749b678e60",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

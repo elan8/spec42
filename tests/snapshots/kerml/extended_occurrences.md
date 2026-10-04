@@ -180,7 +180,7 @@ package ExtendedOccurrences {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:3d83147000b14eef7f50c10362c18c6e228d220c5fef96c7c57258ca5abdeb93"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:e96e000abb5d128f86aa2eaa5f9fc205fbb9738bc04072503844e714496e12c8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/extended_occurrences.md") (qualified-name "ExtendedOccurrences::ExtendedObject"))) (kind kerml-structure) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "ExtendedOccurrence")))))

@@ -45,7 +45,7 @@ package DerivationCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ea4aaf9defd5a72a774f78ec051d0f93df00a89e5bd9bad4addb379df381cfe2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:63504bac244084514ff7b1bd7210642e77e165056951c67f0730d8bff785879c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/derivation_endpoints.md") (qualified-name "DerivationCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/derivation_endpoints.md") (path (named (kind package) (name "DerivationCoverage")) (anonymous (kind connection) (ordinal 0))))) (kind connection) (membership (kind feature) (visibility default)))

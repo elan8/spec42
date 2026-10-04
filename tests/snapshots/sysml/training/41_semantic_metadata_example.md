@@ -181,7 +181,7 @@ library package 'Semantic Metadata Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e0c1c0b68b24381a5f8a1279613b84349cc4db692849a7f5d1baeaafc15fc4c1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b674a7c10b0a95544ba78a1f5f8b6e3242dd8eda33517d0bd215f7d65736515b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (qualified-name "Semantic Metadata Example"))) (kind library-package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/41_semantic_metadata_example.md") (path (named (kind library-package) (name "Semantic Metadata Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Model Library Example") (import (shape namespace) (recursive false))))))

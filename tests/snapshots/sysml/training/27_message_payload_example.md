@@ -114,7 +114,7 @@ package 'Message Payload Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:d260b826265ab857599c63a4b4eba9dbb18c5a3f20a1d3be4f8e49cb5de2625b"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:625f009654da97dcebaeb71ed8706b86bb416aecace04c465633040e6a823477"))
   (declarations
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (qualified-name "Message Payload Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/27_message_payload_example.md") (path (named (kind package) (name "Message Payload Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Event Occurrence Example") (import (shape namespace) (recursive false))))))

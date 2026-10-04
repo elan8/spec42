@@ -59,7 +59,7 @@ package References {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5e46d3170659298e90d529886f135498c767b204c48cd5be9bf1d2b7d913020b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:479fd8d66c3eb366cffcf30e01994d831711ced48229c94016bc74e1962a1ffd"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_reference_subsetting.md") (qualified-name "References::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

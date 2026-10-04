@@ -458,7 +458,7 @@ standard library package CollectionFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:10ff341e51fddbc8151f76b15d2bc1498e5d58a44c6dd3ad27b456e5bd86b7c6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:df6558c4eeb65a587e583050aa8adf4e95129153a0fdeace973ed6bab558692d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/collection_functions.md") (qualified-name "CollectionFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/collection_functions.md") (path (named (kind library-package) (name "CollectionFunctions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines functions on Collections (as defined in the Collections package). \n\t * For functions on general sequences of values, see the SequenceFunctions package.\n\t "))))

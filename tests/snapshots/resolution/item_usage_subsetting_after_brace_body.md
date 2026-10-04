@@ -75,7 +75,7 @@ package ApolloItemSubsettingRepro {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9011da7ac6dc66ab073c279c04e16f79078c0c10f00eb98628e952158e93fbae"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d33fb1e49d300a2198e0768265cd704c411d5199910cc1ec4d437a680793aa64"))
   (declarations
     (declaration (id (node (document "memory://snapshot/item_usage_subsetting_after_brace_body.md") (qualified-name "ApolloItemSubsettingRepro"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/item_usage_subsetting_after_brace_body.md") (qualified-name "ApolloItemSubsettingRepro::Concern"))) (kind item-def) (membership (kind owning) (visibility default)))

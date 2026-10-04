@@ -89,7 +89,7 @@ package 'Variation Definitions' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:9d9386d4bb621cb0255685478bfebdac9bd473f33ba854a1631b1b875876e1dc"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:4699d1023c895afda97d20079090234aa96d56a5447f60cb27c6b51c0bab4dc1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (qualified-name "Variation Definitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/36_variation_definitions.md") (path (named (kind package) (name "Variation Definitions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

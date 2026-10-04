@@ -57,7 +57,7 @@ package Classes {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:4c91479d93359c3d2f3ae0a07da52df75ff5acf6a2a9e45359b56454ef729b47"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:397d08092406f3f30fa6088bb7e5966161021e1127fa563077334ccb008e7c40"))
   (declarations
     (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/classes.md") (qualified-name "Classes::A"))) (kind class-def) (membership (kind owning) (visibility public)) (facts (short-name "1")))

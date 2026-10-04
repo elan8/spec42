@@ -5926,7 +5926,7 @@ standard library package ISQMechanics {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fe560369ee3a593a554fd579ed4cda032411b1357e08e158490a1be386cddafa"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:61fe8b9cae2d3662526cfb8eb8b7454e41008b5c9997b3c3acd5202f7d3820aa"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_mechanics.md") (qualified-name "ISQMechanics"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/isq_mechanics.md") (path (named (kind library-package) (name "ISQMechanics")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * International System of Quantities and Units\n     * Generated on 2025-03-13T15:00:05Z from standard ISO-80000-4:2019 \"Mechanics\"\n     * see also https://www.iso.org/standard/64975.html\n     * \n     * Note 1: In documentation comments, AsciiMath notation (see http://asciimath.org/) is used for mathematical concepts,\n     * with Greek letters in Unicode encoding. In running text, AsciiMath is placed between backticks.\n     * Note 2: For vector and tensor quantities currently the unit and quantity value type for their (scalar) magnitude is \n     * defined, as well as their typical Cartesian 3d VectorMeasurementReference (i.e. coordinate system) \n     * or TensorMeasurementReference.\n     "))))

@@ -246,7 +246,7 @@ standard library package MeasurementRefCalculations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cb3bb9a6969b967cd69ea4dd046c1ecf38b7addd6d6c11b4a2ac44318655f72b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:26823f2cbdae7ab0b5d5851bc9889f0ac859f055ab31581114cef5ef71b20302"))
   (declarations
     (declaration (id (node (document "memory://snapshot/measurement_ref_calculations.md") (qualified-name "MeasurementRefCalculations"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/measurement_ref_calculations.md") (path (named (kind library-package) (name "MeasurementRefCalculations")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package package defines calculations on MeasurementUnits and CoordinateFrames.\n\t "))))

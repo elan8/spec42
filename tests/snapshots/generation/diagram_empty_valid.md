@@ -28,7 +28,7 @@ package EmptyExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e5b9199a03d57a46975dc0b53dc7f407082ecc3c2a4be85e7bcd37406a9b5e4e") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ee7704873c71deae1efdf6e9f54ebc4f0427336ecd579352778c9fd3dd9ef723") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_empty_valid.md") (qualified-name "EmptyExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_empty_valid.md") (path (named (kind package) (name "EmptyExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -117,7 +117,7 @@ package EmptyExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:d54c4d8644c5503e299c44d5dd17280e78ab3bad11bcddeccdbc1271a696eb30",
+  "modelDigest": "blake3:0d7bccb2e1bff337cb96291186c837cab7a3f3a074cfc18108a6053373422009",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_empty_valid.md",

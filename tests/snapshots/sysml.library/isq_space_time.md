@@ -3413,7 +3413,7 @@ standard library package ISQSpaceTime {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c613a304cb07f76ae183fe3a7d3ce0a5aba82d9eb606a81a9ca4d89cab8b262e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:495148df879a9f73bbca352d844a3e35899ea2fa61313dc9bb933e781e05e40e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_space_time.md") (qualified-name "ISQSpaceTime"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/isq_space_time.md") (path (named (kind library-package) (name "ISQSpaceTime")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * International System of Quantities and Units\n     * Generated on 2025-03-13T15:00:05Z from standard ISO-80000-3:2019 \"Space and Time\"\n     * see also https://www.iso.org/standard/64974.html\n     * \n     * Note 1: In documentation comments, AsciiMath notation (see http://asciimath.org/) is used for mathematical concepts,\n     * with Greek letters in Unicode encoding. In running text, AsciiMath is placed between backticks.\n     * Note 2: For vector and tensor quantities currently the unit and quantity value type for their (scalar) magnitude is \n     * defined, as well as their typical Cartesian 3d VectorMeasurementReference (i.e. coordinate system) \n     * or TensorMeasurementReference.\n     "))))

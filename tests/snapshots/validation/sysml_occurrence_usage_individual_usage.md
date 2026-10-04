@@ -58,7 +58,7 @@ package Occurrences {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:76c22bcb653652f3f6d91c560279c84801f3121c10139b8bff376e5ea05a6edb") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f230aa765009d3a884c6b8907dae1a316c51be004138167f02757f86ccf3f0d1") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_occurrence_usage_individual_usage.md") (qualified-name "Occurrences"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_occurrence_usage_individual_usage.md") (qualified-name "Occurrences::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))

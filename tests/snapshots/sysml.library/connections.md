@@ -252,7 +252,7 @@ standard library package Connections {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:417d85afc024acf2825e49af8e164fb1cc2aa4f80384f96b4a908553b1aefca7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:293782ae91a6fe45f98462e03630f11f0b98fef17b183b72a97ccaf8c97dbff2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connections.md") (qualified-name "Connections"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/connections.md") (path (named (kind library-package) (name "Connections")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * This package defines the base types for connections and related structural elements \n     * in the SysML language.\n     "))))

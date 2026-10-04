@@ -247,7 +247,7 @@ package CauseAndEffectExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:69f74b0751c962ce0cd0ebd8f57bdd0faafd0b4bd08338cdef5e11d903a54859"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:5777312f3daec0b3fe10c80234608c7b05ab9147a79b9adb6400011f59d55bcb"))
   (declarations
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (qualified-name "CauseAndEffectExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/cause_and_effect_example.md") (path (named (kind package) (name "CauseAndEffectExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "CauseAndEffect") (import (shape namespace) (recursive false))))))

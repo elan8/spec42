@@ -39,7 +39,7 @@ package SuccessionFlows {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4c5a3ab087b40b6d3fc0422a1eb29a16a17b33c76bfe356808be79db6a50c9db") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:20138b557035a6b9a9d8d6a161e6c5d59cf1c574b9b3ef7c4970b1988f1522df") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_succession_flow.md") (qualified-name "SuccessionFlows::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))

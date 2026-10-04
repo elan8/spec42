@@ -108,7 +108,7 @@ part def Outer {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:f1c6bfba8261a359cbed08e35e082d5daa4fa5fd762fe36991b873012982fd39"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:a5b0832f79cc3989e241967d1362225a9d2c06831aaf8829c70b5d078da34ae0"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_sysml_body_members.md") (qualified-name "Outer::InnerAttr"))) (kind attribute-def) (membership (kind owning) (visibility default)))

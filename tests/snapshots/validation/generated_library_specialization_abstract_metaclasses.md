@@ -55,7 +55,7 @@ package GeneratedAbstractSpecializationMetaclasses {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d80647f69e53bc24d760f0968da2abf259f03f795148428b7af7309a80ed4953") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4fe481857cb9641e7119433e2ef29dd75c0c379eb051b19fe22390eef7038497") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_abstract_metaclasses.md") (qualified-name "GeneratedAbstractSpecializationMetaclasses"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_abstract_metaclasses.md") (qualified-name "GeneratedAbstractSpecializationMetaclasses::Sum"))) (kind kerml-expression) (membership (kind feature) (visibility default)))

@@ -57,7 +57,7 @@ package Families {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3dc167243ee35ad471b3bbbc07c41cb738088c6367c62474e1d7d24b3946fbf4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:77ef9b5b45e19ba68dbbe665834ec5b738272a7643bffa6f537b76c9c822da50"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_family_generalization.md") (qualified-name "Families"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_family_generalization.md") (qualified-name "Families::ActionBase"))) (kind action-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "OccurrenceBase")))))

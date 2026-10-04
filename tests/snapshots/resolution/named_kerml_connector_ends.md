@@ -53,7 +53,7 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3774a499119a63cfe86903e92b0998680473e6e153441d157b7e2f1821a6faf3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c2c49d758eb5f036960c0ad1ba4fa318257771ddf1ed70657005f4d11b79e547"))
   (declarations
     (declaration (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context"))) (kind class-def) (membership (kind owning) (visibility default)))

@@ -127,7 +127,7 @@ package 'Change and Time Triggers' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:cbefe7c7622310fd225d74f521948e918c56809e05ccc4e2afb4d222933bed44"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:ffb887de7f8e9f1de4daa1764548df11267083c4c463aa21187853dd03f57be9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (qualified-name "Change and Time Triggers"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_change_and_time_triggers.md") (path (named (kind package) (name "Change and Time Triggers")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ISQ::TemperatureValue") (import (shape membership) (recursive false))))))

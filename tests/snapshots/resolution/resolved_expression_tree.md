@@ -69,7 +69,7 @@ package Expressions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f68ec606ecb86f160e5bc9ed23dca20c9023cd0a706e6089cdc299a202c68866"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:90604955da98a48550a01d3fca711608c27356e12147ce0112089224423d8cfd"))
   (declarations
     (declaration (id (node (document "memory://snapshot/resolved_expression_tree.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/resolved_expression_tree.md") (qualified-name "Expressions::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))

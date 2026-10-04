@@ -80,7 +80,7 @@ package 'Transition Actions' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:ac736c7798260aaa6c7eb92a19c0a38b83d51e378db2be1aa48520bb12c907cc"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:ce11e2011f33388e5e79077024981dce38530bb7162c6157f701f428848c9e5c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/25_transition_actions.md") (qualified-name "Transition Actions::ControllerStartSignal"))) (kind attribute-def) (membership (kind owning) (visibility default)))

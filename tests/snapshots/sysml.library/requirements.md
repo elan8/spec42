@@ -398,7 +398,7 @@ standard library package Requirements {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d88ac67d997f213f4f536ab0338a318b2b9d53074d455c67debf6f3ac07173da"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:255c28fbc962b0f0449662a17b13ea9d9e03dab4a5475ab50885523dae3c8b54"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirements.md") (qualified-name "Requirements"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/requirements.md") (path (named (kind library-package) (name "Requirements")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines the base types for requirements and related elements in the SysML language.\n\t "))))

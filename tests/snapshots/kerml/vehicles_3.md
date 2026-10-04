@@ -113,7 +113,7 @@ package Vehicles_3 {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fcd65e1426e444ae0a1d57008064d707d1d3d251db73d7755b52e695f79cee58"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:bcb9582c8d66cb8d87e3d3d5d3099db7eeaea8e837d3fcb9058a53ac88c75d8e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicles_3.md") (qualified-name "Vehicles_3"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicles_3.md") (path (named (kind package) (name "Vehicles_3")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

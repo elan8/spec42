@@ -59,7 +59,7 @@ package Connectors {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ef2cf7ea95b0873573ae5b0086ba769d042c76afff1c445af62eae4093fbbd82"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7c98e5ae612b218b5721e388aa2a1b3172771d3b4bd08b6e1a189334966b04c6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_connector_related_features.md") (qualified-name "Connectors"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_connector_related_features.md") (qualified-name "Connectors::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

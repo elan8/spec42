@@ -35,7 +35,7 @@ package SequenceCycle {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:7d8af1bb5902ec1fad5b5d8af0a0f0c0c3808723c7772c304ac09adb1a1e1d87") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:177da268bf297d531f316f55d9cb881ba281b057b6d7e845d4ab107be9ce1ac5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (qualified-name "SequenceCycle"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_ordering_cycle.md") (path (named (kind package) (name "SequenceCycle")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -489,7 +489,7 @@ package SequenceCycle {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:ee363c15ba175abd01586feeec72d524b2fced59f96b29d42917cc71ba2bf7ad",
+  "modelDigest": "blake3:0902b2d163251c82d5cb7506ceb75334ec2281c26f1c05225711262df3add9f5",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_ordering_cycle.md",

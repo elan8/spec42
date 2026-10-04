@@ -263,7 +263,7 @@ standard library package SampledFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1636fc5a3a196fef891bfa1348935c76e2f9eab7265ee64586fed8e7fddf64fb"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e4928e1ce2706fa708690d942a6d79258791f975ad76a1e02dbb626d1508e51b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sampled_functions.md") (qualified-name "SampledFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/sampled_functions.md") (path (named (kind library-package) (name "SampledFunctions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package provides a library model of discretely sampled mathematical functions.\n\t "))))

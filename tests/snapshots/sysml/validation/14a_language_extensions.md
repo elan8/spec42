@@ -85,7 +85,7 @@ package '14a-Language Extensions' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3849b61fd9e194fe9eb259e6cecb19f822cbc69d881511f85b3422e1ae8753bf"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3c99d309e8f09fa71412363f2162d5af8c1d99e8d1047ce6773c24bb6644fe03"))
   (declarations
     (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (qualified-name "14a-Language Extensions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14a_language_extensions.md") (path (named (kind package) (name "14a-Language Extensions")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "User Defined Extensions") (import (shape namespace) (recursive false))))))

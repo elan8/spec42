@@ -77,7 +77,7 @@ package ProductSelection_OwnedEnds_SysML {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:7c9673e92202057393274f21f1ea83af5b2885e93f1e41486a28f843024696f1"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3110c43a0f2c985ff5e7af2cc47abc46ac75d146dc413a51f446e818647b6512"))
   (declarations
     (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds_SysML"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/product_selection_owned_ends.md") (qualified-name "ProductSelection_OwnedEnds_SysML::OnlineCustomer"))) (kind item-def) (membership (kind owning) (visibility default)))

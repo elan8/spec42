@@ -44,7 +44,7 @@ probe unresolved_reference.md 5 25
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:38022cec3cfb7d58c5189fdcdabd099c6cdb469ebccd33e1fd8ae2448d0d4571"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:26ae8e2bf3a50ba3020715b6b695efac399ddbf7a7915daf90253ce03c041dfb"))
   (declarations
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::Known"))) (kind part-def) (membership (kind owning) (visibility default)))

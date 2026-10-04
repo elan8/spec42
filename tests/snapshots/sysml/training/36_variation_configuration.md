@@ -80,7 +80,7 @@ package 'Variation Configuration' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:520967a999dd3459bbfee27b1d5fbf00ee77d027cdd478d0bacea1c76675944b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1fc1ed9e10b55746436e3dbaa6a85460ae737847da3eb1b49d9c1011bfd1215f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/36_variation_configuration.md") (qualified-name "Variation Configuration"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/36_variation_configuration.md") (path (named (kind package) (name "Variation Configuration")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Variation Usages") (import (shape namespace) (recursive false))))))

@@ -1772,7 +1772,8 @@ impl<D> SemanticModel<D> {
                 .get(target)
                 .is_some_and(|membership| membership.kind == MembershipKind::Feature)
                 && self.storage.declaration(target).is_some_and(|target| {
-                    element_kind::element_kind(target.kind) != crate::ElementKind::MetadataUsage
+                    !element_kind::element_kind(target.kind)
+                        .conforms_to(crate::ElementKind::MetadataFeature)
                 });
             let values = selects_referent
                 .then(|| {

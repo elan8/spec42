@@ -33,7 +33,7 @@ package TypedFeatureScope {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:69f38172612593652b65702de4ff7661156a895a49eee6661690ca6f670c69e9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c24d29080fd5bdd5a27643b9bff35efff5b60eed26fe1c37a4ce221c1fd67e69"))
   (declarations
     (declaration (id (node (document "memory://snapshot/typed_feature_implicit_redefinition_scope.md") (qualified-name "TypedFeatureScope"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/typed_feature_implicit_redefinition_scope.md") (qualified-name "TypedFeatureScope::Carrier"))) (kind connection-def) (membership (kind owning) (visibility default)))

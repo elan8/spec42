@@ -46,7 +46,7 @@ package GeneratedAnonymousActionForms {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0db1ac90dd481c9f5615b6ca4771b2dd2cc1d7952f84241bbf8b30674180eec8") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:da2709745875607f9078e53cb115489e6c3c17cbb8e8be5333a7f13b54886303") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_anonymous_action_forms.md") (qualified-name "GeneratedAnonymousActionForms"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_anonymous_action_forms.md") (qualified-name "GeneratedAnonymousActionForms::Act"))) (kind action-def) (membership (kind owning) (visibility default)))

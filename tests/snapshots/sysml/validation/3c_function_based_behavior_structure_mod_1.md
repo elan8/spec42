@@ -81,7 +81,7 @@ package '3c-Function-based Behavior-structure mod-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5526f47e9b32b58cd837b68bfc57df4612be954e840133ac1a4d2032043d5f10"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f76f16e14ba17923737c7568565dbc0f35a8899bd4e3177ea63a2cf589c557b2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/3c_function_based_behavior_structure_mod_1.md") (qualified-name "3c-Function-based Behavior-structure mod-1::HitchBall"))) (kind part-def) (membership (kind owning) (visibility default)))

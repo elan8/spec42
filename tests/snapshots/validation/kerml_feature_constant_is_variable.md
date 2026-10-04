@@ -44,7 +44,7 @@ package Constants {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8416abaca568f11aec478011e9de255ca82816d7dfe968d41aa28141d946054d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a4e02ceb3cbb520cdfe79d181820480a40db4435a0585af3012b318702f6a553"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_constant_is_variable.md") (qualified-name "Constants"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_constant_is_variable.md") (qualified-name "Constants::Happening"))) (kind class-def) (membership (kind owning) (visibility default)))

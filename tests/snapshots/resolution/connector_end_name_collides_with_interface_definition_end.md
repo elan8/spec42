@@ -67,7 +67,7 @@ package ConnectorEndCollision {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:38e7c6e1ae61c88441612b0a2a1ba71ae5d36e7ccd0b1ad76c22672d1ad3be4e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6a9cfd545fec6bc76aed5274c793317de4d85f84bd9b6cec328c0d78ec417622"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connector_end_name_collides_with_interface_definition_end.md") (qualified-name "ConnectorEndCollision"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connector_end_name_collides_with_interface_definition_end.md") (qualified-name "ConnectorEndCollision::APort"))) (kind port-def) (membership (kind owning) (visibility default)))

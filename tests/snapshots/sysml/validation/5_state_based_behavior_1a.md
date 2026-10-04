@@ -322,7 +322,7 @@ package '5-State-based Behavior-1a' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:81cf55dbeef467827e92432b8fd1fe256fc65aefc2e6e98f1f1356f9f25558f6"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:c3589c08fa593966c07037334ce1bb614e3f0501536bd62a2697d0a04240a037"))
   (declarations
     (declaration (id (node (document "memory://snapshot/5_state_based_behavior_1a.md") (qualified-name "5-State-based Behavior-1a"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/5_state_based_behavior_1a.md") (path (named (kind package) (name "5-State-based Behavior-1a")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

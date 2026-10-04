@@ -268,7 +268,7 @@ package '15_19-Materials with Properties' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:31456a3fbb126925c91b696fef8bffbb12b91517c0ea919499d2c90992f19bde"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3ef5c2d9a1a0e37d5af2c317fc05f76a42fd7b4670b5702ae13d6b761f4cf4a5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_19_materials_with_properties.md") (qualified-name "15_19-Materials with Properties"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_19_materials_with_properties.md") (path (named (kind package) (name "15_19-Materials with Properties")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

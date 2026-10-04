@@ -36,7 +36,7 @@ package StepOwnedPerformanceNormativeGap {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:12d70b00d958694d57c4e6c453e59a1c54e5f1def5a3da950477a6eaa704a4a3") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1c1735adf36b41659099046f493c4cffa337318c9d28474a3d1d2ee522313634") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_step_owned_performance_normative_gap.md") (qualified-name "StepOwnedPerformanceNormativeGap"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_step_owned_performance_normative_gap.md") (qualified-name "StepOwnedPerformanceNormativeGap::Holder"))) (kind kerml-structure) (membership (kind owning) (visibility default)))

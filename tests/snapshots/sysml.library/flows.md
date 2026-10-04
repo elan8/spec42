@@ -480,7 +480,7 @@ standard library package Flows {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c9a64a01c4c777e61a25df439dd681fafb88806988181a2c8727245e55eb87bb"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fd84b36fec2367f8f48e0c3afbb4eeaa2a7bdbe480a1d6f227ce6fb0493ef686"))
   (declarations
     (declaration (id (node (document "memory://snapshot/flows.md") (qualified-name "Flows"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/flows.md") (path (named (kind library-package) (name "Flows")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * This package defines the base types for flows and related behavioral elements \n     * in the SysML language.\n     "))))

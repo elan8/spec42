@@ -141,7 +141,7 @@ standard library package UseCases {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:225c689a9e4e133dd9e6a66f52741deb42e8982ec5b10788c20a35ee551a36f7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a8dc5ba9484a6fc3a40f90a07b7781017fc56a8e268b915a70f40d927c19a663"))
   (declarations
     (declaration (id (node (document "memory://snapshot/use_cases.md") (qualified-name "UseCases"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/use_cases.md") (path (named (kind library-package) (name "UseCases")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines the base types for use cases and related behavioral elements in the SysML language.\n\t "))))

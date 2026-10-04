@@ -74,7 +74,7 @@ package MetadataPrefixedDependencyEdges {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:651167141b581fccf1ccd52225638a12f47849400892cf0885dad5ad9065f96c"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:8db50d8ebff3deaae051be909c12e41f288f1ff0cb4ac48c419892aed8c6289a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/consumer.sysml") (qualified-name "MetadataPrefixedDependencyEdges"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/consumer.sysml") (path (named (kind package) (name "MetadataPrefixedDependencyEdges")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Upstream") (import (shape namespace) (recursive false))))))

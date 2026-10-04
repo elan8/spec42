@@ -68,7 +68,7 @@ package Kinds {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ba755eb5eda4c3e8de29398d595c15844e5002114987af90acf3307f07fa0e68"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e3dbc33f68200cb1cd2fe25e2b6bc9a86ab579386ddd22e84ef0beaf17f7b3d7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_datatype_specialization.md") (qualified-name "Kinds"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_datatype_specialization.md") (qualified-name "Kinds::Happening"))) (kind class-def) (membership (kind owning) (visibility default)))

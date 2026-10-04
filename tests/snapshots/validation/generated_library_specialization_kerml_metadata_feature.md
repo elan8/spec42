@@ -6,7 +6,6 @@ specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 source_expectation=accepted
 rule_family=check
 expectation=semantics
-blocked_by=lowering-gap-kerml-metadata-feature-metaclass
 rule_id=kerml-1.0:8.3.4.12.3:checkMetadataFeatureSpecialization
 type=file
 libraries=standard
@@ -36,11 +35,11 @@ package GeneratedSpecializationKermlMetadata {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3d32afefd54a51ca475a39128ce78293e743b6d36e195495f54ffa0239f73871") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4b3f8f3aa98ec6d6e87f7a2ac59fae1039b61c3de544df2f7d72c2ff795cf587") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::Marker"))) (kind kerml-metaclass) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::MetadataFeature"))) (kind metadata) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Marker")) (metadataAnnotationAbout (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::MetadataFeature"))) (kind kerml-metadata-feature) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Marker")) (metadataAnnotationAbout (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
   (references
@@ -55,7 +54,7 @@ package GeneratedSpecializationKermlMetadata {
     (relationship (kind typing) (source (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::MetadataFeature"))) (target (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::Marker"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::MetadataFeature"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind metadataAnnotationAbout) (source (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::MetadataFeature"))) (target (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::MetadataFeature"))) (kind metadataAnnotationAbout) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::Marker"))) (target (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::Metaobject"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::MetadataFeature"))) (target (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::metadataItems"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::MetadataFeature"))) (target (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::metaobjects"))) (provenance implied))
   )
   (evaluation
   )
@@ -75,18 +74,12 @@ package GeneratedSpecializationKermlMetadata {
       (type (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::Marker")) (provenance authored))
       (effective-type (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::Marker")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::MetadataItem")) (source inherited) (from (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::metadataItems"))))
       (effective-type (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::Metaobject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::metaobjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (supertype (node (document "memory://snapshot/generated_library_specialization_kerml_metadata_feature.md") (qualified-name "GeneratedSpecializationKermlMetadata::Marker")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
-      (supertype (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::MetadataItem")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::metadataItems")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::Metaobject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::metaobjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))

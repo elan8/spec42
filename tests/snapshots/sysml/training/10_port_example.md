@@ -44,7 +44,7 @@ package 'Port Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4e5e022421faaf34783c440a612d48a28954703b6e5c82f9d328a0e83223089a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:39242c57292232bdd5f91e4dcf96588af6a69d04ecc9fb7622cab456d4e232d4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/10_port_example.md") (qualified-name "Port Example::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))

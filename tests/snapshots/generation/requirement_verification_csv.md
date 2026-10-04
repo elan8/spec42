@@ -47,7 +47,7 @@ package Verification {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b068f09a8f32c6ec226165c35afd9004b7a354ff8e88780a8b1d1a9b9a5eb197") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:de349b851397c4b4652f80c032ac2d8bc1bd31376b27f1387b63edc779e7924a") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_verification_csv.md") (qualified-name "Verification"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_verification_csv.md") (qualified-name "Verification::Availability"))) (kind requirement-def) (membership (kind owning) (visibility default)))

@@ -28,7 +28,7 @@ package UsesParts {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5e04ea4fd3ea7ff4e844f5bc6da0b9ee85ed45590340e0f00643ab7363fefe3d") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:448bc5c571dc496ea4382f9f0e3ed08fc3fad60f5e4d19cbe22b522e1e0edab4") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/workspace_shadows_library_anchor_package.md") (qualified-name "Parts"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/workspace_shadows_library_anchor_package.md") (qualified-name "Parts::Widget"))) (kind part-def) (membership (kind owning) (visibility default)))

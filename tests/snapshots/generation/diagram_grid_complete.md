@@ -28,7 +28,7 @@ package GridExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b05f8b7ada605d02c5485d860723fa35a55c33827d6fd6662a392eae5ba9d5a0") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:12ff79ff00d770d0685b9b56f77fb431247f9cbebd406cf9af9478a9c20ae53a") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_grid_complete.md") (qualified-name "GridExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_grid_complete.md") (path (named (kind package) (name "GridExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -169,7 +169,7 @@ package GridExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:8ff1e1862570c84d328147cf0d3da33d02b94da4128609d26435138f38d0842c",
+  "modelDigest": "blake3:5d85899c9bc4cfe48d2b8576ced5b5026e28783dcc5f24df4a33f0cb1575e64b",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_grid_complete.md",

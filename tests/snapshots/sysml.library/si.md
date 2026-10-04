@@ -2592,7 +2592,7 @@ standard library package SI {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ead02a29d08ecaded202fcd1dd6873c2507c8117550b852e46bfc57d53a386fd"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e8ad07f489b4b1a18a5daeae5362844bfba257059809f6cfeeb7a2bbc1a1b26d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/si.md") (qualified-name "SI"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/si.md") (path (named (kind library-package) (name "SI")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * International System of (Measurement) Units -- Système International d'Unités (SI), as defined in ISO/IEC 80000\n\t *\n\t * Note 1: In accordance with ISO/IEC 80000 en-GB spelling is used for the names and definitions of the units.\n\t * Note 2: This is a representative but not yet complete list of measurement units.\n\t "))))

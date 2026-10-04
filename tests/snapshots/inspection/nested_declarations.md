@@ -33,7 +33,7 @@ probe nested_declarations.md 2 24
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c834da5c041e9d100f8b0c4614201de321c22dcd00582f898546baf6198db9bd"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b2e83e403c43a9be14f847ba5eb18a9dfce0a8491ea3b97e3fc084995fcd1cb3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/nested_declarations.md") (qualified-name "Outer::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))

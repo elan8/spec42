@@ -4,7 +4,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
-use sysml_query::source::identity::{RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
+use sysml_query::source::identity::{
+    RootDigest, SourceLanguage, SourceManifest, SourceManifestEntry, SourceRole,
+};
 use sysml_query::StandardLibraryAvailability;
 
 use crate::library::{
@@ -561,6 +563,7 @@ fn scan_library_root(
             .replace('\\', "/");
         let uri = format!("file://{}", path.display());
         entries.push(SourceManifestEntry {
+            language: SourceLanguage::of_path(&relative_path),
             uri,
             path_hint: Some(relative_path.clone()),
             role,

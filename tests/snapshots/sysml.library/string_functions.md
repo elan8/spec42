@@ -253,7 +253,7 @@ standard library package StringFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fcc414127abebf17e682bd6f3eec86ed5a9ec4b7f62be2fe89963ca884fcff55"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:75083eb3a90faabd295d03a7f2f08bc4a9a49560308457a8541035f7f2ecec7e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/string_functions.md") (qualified-name "StringFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/string_functions.md") (path (named (kind library-package) (name "StringFunctions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines functions on String values, including those corresponding to string concatenation \n\t * and comparison operators in the KerML expression notation.\n\t "))))

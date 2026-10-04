@@ -44,7 +44,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:74d9089eda8be44c1433e4fddd86bfcbe49de9351c5133dee8eaaeae0eb62939"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ce91dd74cb154db7c5dcf30e50cc5a80785e6cc0f7ba5622e26cb150a7f0b22b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/implicit_redefinition.md") (qualified-name "P::Base"))) (kind part-def) (membership (kind owning) (visibility default)))

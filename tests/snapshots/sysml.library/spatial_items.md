@@ -636,7 +636,7 @@ standard library package SpatialItems {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:bd57ce9933edb79205cf90aa83c854b8cd85638d43c8dd0680c9e4f74638a197"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1939b2481a37c02f1d253048141ec6842cc320e650210a3a1762fca177f6cb60"))
   (declarations
     (declaration (id (node (document "memory://snapshot/spatial_items.md") (qualified-name "SpatialItems"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/spatial_items.md") (path (named (kind library-package) (name "SpatialItems")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package models physical items that have a spatial extent and act as a spatial frame of reference\n\t * for obtaining position and displacement vectors of points within them.\n\t "))))

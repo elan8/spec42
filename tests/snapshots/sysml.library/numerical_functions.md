@@ -487,7 +487,7 @@ standard library package NumericalFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d7b7efeb3d667709fd9ca5be94b30670d815434bfffe9d9b730e08fb14852d79"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:29c4f894f711a36d064ea7c0e3b75546b82e3bafffdc6a6efdaba5b790a7a253"))
   (declarations
     (declaration (id (node (document "memory://snapshot/numerical_functions.md") (qualified-name "NumericalFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/numerical_functions.md") (path (named (kind library-package) (name "NumericalFunctions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines abstract functions on Numerical values for general arithmetic and comparison operations.\n\t "))))

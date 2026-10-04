@@ -86,7 +86,7 @@ package Expressions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d988487e46949b88cbfc33f95a4e8381c2e11698c691da1191206dfead322eb7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b1f1373feaabd6c6e99900f4e67452427abd51fdcede2c2de4178b3f3a55a2aa"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_instantiated_type.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_instantiated_type.md") (qualified-name "Expressions::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

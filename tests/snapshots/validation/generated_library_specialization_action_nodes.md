@@ -60,7 +60,7 @@ package GeneratedActionNodes {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:08cbfe36fc8444d5df518f00ab845e0d48e5c042ce27c7d800245a0ed288bec7") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:62d0590e4eb83906928d32b2a07dd1720b898cbf47a2d1273cc94d67fbd3a60c") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_action_nodes.md") (qualified-name "GeneratedActionNodes"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_action_nodes.md") (qualified-name "GeneratedActionNodes::Act"))) (kind action-def) (membership (kind owning) (visibility default)))

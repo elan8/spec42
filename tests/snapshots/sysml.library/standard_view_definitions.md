@@ -153,7 +153,7 @@ standard library package StandardViewDefinitions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:311c30428a7fffa832eba1c3be29d9fd4c11faa3fffa06175c93299b7411638e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8409330db264d9f32d6ad691f84832074f455b174238af2ef63a3500a9fd5cbc"))
   (declarations
     (declaration (id (node (document "memory://snapshot/standard_view_definitions.md") (qualified-name "StandardViewDefinitions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/standard_view_definitions.md") (path (named (kind library-package) (name "StandardViewDefinitions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n         * This package defines the standard view definitions for the SysML language.\n         "))))

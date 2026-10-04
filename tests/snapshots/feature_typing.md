@@ -25,7 +25,7 @@ feature x : Integer;
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:273caa5b768cf58a9a4a83d66fd3189f9d6739a9c6a1ca78d34372ac87a213b9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:457cdb59b8eb091603c091cedc9c4f5e6a5ac1c5503dbd01ad2e04551235347f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/feature_typing.md") (qualified-name "x"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Integer")))))
   )

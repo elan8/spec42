@@ -49,7 +49,7 @@ package FeatureCategorySpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:788e79021748b89413ad0e6c9bab55c84624626697f1e4a8c05ab07a6658773f") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a34803818ac9f9552599d8419c44d7cc605cdf5f5bdb468301bd21aba73621f4") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_feature_category_specializations.md") (qualified-name "FeatureCategorySpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_feature_category_specializations.md") (qualified-name "FeatureCategorySpecializations::Association"))) (kind kerml-association) (membership (kind owning) (visibility default)))

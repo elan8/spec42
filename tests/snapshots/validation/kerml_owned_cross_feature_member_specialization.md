@@ -74,7 +74,7 @@ package MemberCrossFeatures {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:19a2afe7b59724ade4a85f96a3b208213708a546d1666a97ff142fab3ff4c2b2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4b5b13225f474ca10b963f733927f6c7ededaebe437f75e254268a0e5f57664f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_owned_cross_feature_member_specialization.md") (qualified-name "MemberCrossFeatures"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_owned_cross_feature_member_specialization.md") (qualified-name "MemberCrossFeatures::Base"))) (kind kerml-association) (membership (kind owning) (visibility default)))

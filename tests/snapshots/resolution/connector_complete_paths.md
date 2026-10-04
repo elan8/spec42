@@ -101,7 +101,7 @@ package Paths {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:75052b40a0b3c1a461e2e7ab55f841aad0e57da35ec067687b5e9d27f2c44456"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:da70d2975980b7c36efda6f5810c4dc55ede129a28a147d1e73ef7d468802f07"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connector_complete_paths.md") (qualified-name "Paths"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connector_complete_paths.md") (qualified-name "Paths::ConflictingPlant"))) (kind part-def) (membership (kind owning) (visibility default)))

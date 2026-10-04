@@ -58,7 +58,7 @@ package Model { classifier Base; classifier Derived unions Base; classifier Part
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3ee56d4a4aa004f950fe48d24c75ee97f844766af4a6882cd045752aa1ef68ea"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:42cbc742e90be80180260c8867afa39db770fb04307f7f67e900502bb52aa5e5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_unioning.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_unioning.md") (qualified-name "Model::Base"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

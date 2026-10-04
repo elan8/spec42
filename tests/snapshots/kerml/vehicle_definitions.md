@@ -86,7 +86,7 @@ package VehicleDefinitions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3aa32456befbff78b8183a70fdff1f9ba0f041bcf9da292650a02745ce14cb03"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:74943c21b987c8049d7231738b19dc8d88897435ddcff2ef27ccf4d60119d603"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (path (named (kind package) (name "VehicleDefinitions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * Example vehicle definitions model.\n\t "))))

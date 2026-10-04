@@ -191,7 +191,7 @@ impl<D> SemanticModel<D> {
         kind: DeclarationKind,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        if kind != DeclarationKind::MetadataUsage {
+        if !is_metadata_feature(kind) {
             return Ok(());
         }
         let metaclass = self
@@ -258,7 +258,7 @@ impl<D> SemanticModel<D> {
     ) -> Result<(), ResolutionError> {
         use crate::index::types::ScopeBits;
         use crate::resolve::implied::LibrarySpecializationAnchor;
-        if kind != DeclarationKind::MetadataUsage {
+        if !is_metadata_feature(kind) {
             return Ok(());
         }
         let anchors = &self
@@ -1231,4 +1231,11 @@ impl<D> SemanticModel<D> {
         }
         Ok(())
     }
+}
+
+/// Whether a declaration is a KerML `MetadataFeature`: a KerML metadata feature or a SysML
+/// `MetadataUsage`, which specializes it.
+fn is_metadata_feature(kind: DeclarationKind) -> bool {
+    crate::model::element_kind::element_kind(kind)
+        .conforms_to(sysml_contract::ElementKind::MetadataFeature)
 }

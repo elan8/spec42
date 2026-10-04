@@ -140,7 +140,7 @@ package 'User Keyword Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:b67a8c645e7b6c2fe182f63260be6d01a995d648542e390c9f164fa4ad04810c"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:016512507fc759cb33029b0d39f4d04fc7e646584e64179fbad15db7c4c9da79"))
   (declarations
     (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (qualified-name "User Keyword Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/41_user_keyword_example.md") (path (named (kind package) (name "User Keyword Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

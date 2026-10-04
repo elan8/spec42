@@ -90,7 +90,7 @@ package RationaleMetadataExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d01bfaf810b2a5c38ae883317559c9d569344f0bc03a62597b15ca3236333e55"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:681e1f4d7f8369859d68237ea809659dabcf7ec2c8b0ee3ec42972b6e05800e4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (qualified-name "RationaleMetadataExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/rationale_metadata_example.md") (path (named (kind package) (name "RationaleMetadataExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ModelingMetadata::Rationale") (import (shape membership) (recursive false))))))

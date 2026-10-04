@@ -149,7 +149,7 @@ package 'Verification Case Definition Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:fb343b407666e6c8be3f68dca4023d3d7d4c39c5cff537d3038d0b30f56d0c2b"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:8a72bfdb4eef6f338bdfb0bd9d169f68bf44793a80c06a2c6616fc7494d91332"))
   (declarations
     (declaration (id (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/34_verification_case_definition_example.md") (qualified-name "Verification Case Definition Example::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))

@@ -135,7 +135,7 @@ package '11a-View-Viewpoint' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:71e7053996960d8442c98420d9efb3db30302b03e498769531a06e20a1f9e94b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:7473472062533ce53f5c9e415e7beac478b63643c9f6c1deb7427fe8055028c1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/11a_view_viewpoint.md") (qualified-name "11a-View-Viewpoint::SystemModel"))) (kind package) (membership (kind owning) (visibility default)))

@@ -50,7 +50,7 @@ package ConnectorBinaryObjectSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f4195482841c9a5dda3020206b75e41be576d04b5ba00cf65d5ada830b2d327f") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:108f19ec2053de41947b5695f1848bdae3b5b71324a2154947d6a8f22ab4f28f") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

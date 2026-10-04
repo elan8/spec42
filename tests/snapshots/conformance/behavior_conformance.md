@@ -134,7 +134,7 @@ package Behavior {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:baedd0dabfeb31a21aa8744f02deedcf4e062bd6e80c446b4a57015406b0f9cc"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:99806163ae1eaf22a8bf5096ba8aa602d1a1e4c375d364a581457e2e59f39876"))
   (declarations
     (declaration (id (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/behavior_conformance.md") (qualified-name "Behavior::AbstractStateTemplate"))) (kind state-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))

@@ -105,7 +105,7 @@ package RequirementDerivationExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e00e38e159b585f6e741150124d3440eddb44bad743def4b6355a75f1b0e1fd5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:715443893dab69ab409753c7362243bf7603c805bdb042aebd1e7d7f34f564a2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (qualified-name "RequirementDerivationExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_derivation_example.md") (path (named (kind package) (name "RequirementDerivationExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RequirementDerivation") (import (shape namespace) (recursive false))))))

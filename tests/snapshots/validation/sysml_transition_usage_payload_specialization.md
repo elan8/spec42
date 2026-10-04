@@ -49,7 +49,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a161208f016905f61e04f3d28edea9239a4c843e90c983b427179b0099619d8f") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:093c8858df060f9312871073f9928a1cfa4834328bdbbac1e326053df0adc13d") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_transition_usage_payload_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_transition_usage_payload_specialization.md") (qualified-name "Model::Machine"))) (kind state-def) (membership (kind owning) (visibility default)))

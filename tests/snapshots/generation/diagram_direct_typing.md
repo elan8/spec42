@@ -33,7 +33,7 @@ package DirectTypingExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5e8befcd4abb9ed4d27ffc3d9b5e69469fcfd1c70c9f79b1d6ddab4e87e3c6db") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:78f38058673ad8477a65a6518a7312ad8b8e06c3234b0aa1dcecb5caf7fc1078") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_direct_typing.md") (qualified-name "DirectTypingExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_direct_typing.md") (path (named (kind package) (name "DirectTypingExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -230,7 +230,7 @@ package DirectTypingExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:a78f3970c8d53505a5476950f145f004ea1ef11b0edca1f45755afc408d936b5",
+  "modelDigest": "blake3:453c9ad9f84357ee6c024a63c8538634a16c8831b27e725404db4dc7d37a0b69",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_direct_typing.md",

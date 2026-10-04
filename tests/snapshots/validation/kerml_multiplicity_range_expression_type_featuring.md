@@ -53,7 +53,7 @@ package Ranges {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5a9756f0684285178f04b2e1612b659e94622eb14cd910c5d79c5d02b414a296"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:51d34a9e6fbf62dc8d58eae1bbd8c319b26e2682c5d6b2120775f0ba8147cd47"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges::Vehicle"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

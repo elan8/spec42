@@ -48,7 +48,7 @@ package Client {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e228fc3dc32ce4fc6696e67fd9b8e39eac4c0312e14da3fb06f75f8a9f0cf958"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:237b11a5f4e928f927fe58cba8ae85c3e0e8ae64d9fe1b89d6ef69790515c42e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/recursive_import_type_namespaces.md") (qualified-name "Client"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/recursive_import_type_namespaces.md") (path (named (kind package) (name "Client")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (membershipImport (reference "Library") (import (shape membership) (recursive true))))))

@@ -62,7 +62,7 @@ package StateActions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f9c9141ee23d63839eec7ee1f7057ecc7f55c57cb54039db957a3e2312b53666") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:569250da5025ca13688a440d0fb89cd3c0a29e9404aaeba7b17bffbccc6e53ce") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/state_action_library_redefinitions.md") (qualified-name "StateActions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/state_action_library_redefinitions.md") (qualified-name "StateActions::Machine"))) (kind state-def) (membership (kind owning) (visibility default)))

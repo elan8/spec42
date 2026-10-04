@@ -49,7 +49,7 @@ package Annotations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:59693f918693ac1f977a9d8a98e6eadb4c1f69be2ffb31d951b26ff31834c321"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8c5229ee19127c3631e0cee4725bc26d6f22b5432d8e64fa0c264beb6d152e93"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_annotation_annotated_element.md") (qualified-name "Annotations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_annotation_annotated_element.md") (path (named (kind package) (name "Annotations")) (anonymous (kind comment) (ordinal 0))))) (kind comment) (membership (kind owning) (visibility default)) (documentation (comment (text " Thing is annotated by a Comment it does not own. "))) (authored (membership (kind owning) (visibility default)) (relationships (annotation (reference "Thing")))))

@@ -54,7 +54,7 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a80e7ca05c57e722f03a0cb9ae70f7d42e8020e91224b9ca8d8b2af282dec4f5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ce972a9c0e7b9876e1845650d6d26241fc6fdfeb9a06343136c4701f3a646369"))
   (declarations
     (declaration (id (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/alias_cast_member_scope.md") (qualified-name "Demo::Derived"))) (kind attribute-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Holder")))))

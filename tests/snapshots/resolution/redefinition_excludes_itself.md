@@ -41,7 +41,7 @@ package Redefines {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:000f626dd73411f5adeeb2134e719b6deab5291397433a10cbe72cfc3d959510"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7a41ccec82bc536c187dd0065351835c6c2e58c585d8eda2aace196ad8f05227"))
   (declarations
     (declaration (id (node (document "memory://snapshot/redefinition_excludes_itself.md") (qualified-name "Redefines"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/redefinition_excludes_itself.md") (qualified-name "Redefines::Base"))) (kind part-def) (membership (kind owning) (visibility default)))

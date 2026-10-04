@@ -42,7 +42,7 @@ package Links {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0bf2b7c3ecf8189f2f5f6695fff02f397374ce92d181f6fae132819d3ede60b5") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0525682b4202320ed1e6cf33f61e7d9954301fc8f72b8f15d9d1d4cc153b0a51") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Links"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -901,7 +901,7 @@ package Links {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:6a449e801470316817ce585f8f25f1eb3b63f8286280eec2aa8895991f56a4e1",
+  "modelDigest": "blake3:8be42ded27464bc004d1396231d15b44a520138b26a7b31cf521c0cf58ab1815",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

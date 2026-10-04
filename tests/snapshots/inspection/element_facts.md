@@ -61,7 +61,7 @@ probe element_facts.md 24 32
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:eaaebed937b0ea260dd4b462fae841fa7a9e446feead071e6614e759666ea63a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5d554c55b0d5f864fcff40b3e41c5c8a7068bdf3a96cb4dc7772bd82b7f25ad6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/element_facts.md") (path (named (kind package) (name "Facts")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " What this package is for. "))))

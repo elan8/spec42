@@ -47,7 +47,7 @@ package MetadataPrefixedDependency {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:890d3dbe702f9a2377a29598f768dde54370eda753093684afb078de4f6d6ade"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fcf909cc71f82f9dc707a2ed32070ffb03172adde9cc22aabd2d3de4285e1254"))
   (declarations
     (declaration (id (node (document "memory://snapshot/metadata_prefixed_dependency.md") (qualified-name "MetadataPrefixedDependency"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/metadata_prefixed_dependency.md") (qualified-name "MetadataPrefixedDependency::ActA"))) (kind action-def) (membership (kind owning) (visibility default)))

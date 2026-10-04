@@ -73,7 +73,7 @@ package Constraints {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2f39c4d359d53a79f21023f192c381cda9f59b60486d1202b31c5646735c67ec"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:12d091cde006b2390b76e7e4c0013dc44a4fec5c0c7e7db6d6af1767be9bb316"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_assert_constraint_usage_reference.md") (qualified-name "Constraints"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_assert_constraint_usage_reference.md") (qualified-name "Constraints::Bound"))) (kind constraint-def) (membership (kind owning) (visibility default)))

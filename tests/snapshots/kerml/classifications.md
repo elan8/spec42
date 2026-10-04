@@ -38,7 +38,7 @@ package Classifications {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:b88eb90c747239082c87965329d78a58daa1aebb3dd67cdf0685b28cb239e910"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:f3622e12bbebda568226cf14ac65601292794dde40079b5291f24892a83838c4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/classifications.md") (qualified-name "Classifications"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/classifications.md") (qualified-name "Classifications::T"))) (kind class-def) (membership (kind owning) (visibility default)))

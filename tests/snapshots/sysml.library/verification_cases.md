@@ -211,7 +211,7 @@ standard library package VerificationCases {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:384c8158e574ea87aca9b808965096c93cd9d2b821afefb35a2d06f83d3cf900"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3de2b3dd1ef690f4760bd8949900d4165ab00ad3d03062a45d1c0bec0574ba27"))
   (declarations
     (declaration (id (node (document "memory://snapshot/verification_cases.md") (qualified-name "VerificationCases"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/verification_cases.md") (path (named (kind library-package) (name "VerificationCases")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines the base types for verification cases and related behavioral elements \n\t * in the SysML language.\n\t "))))

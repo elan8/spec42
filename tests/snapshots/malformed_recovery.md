@@ -25,7 +25,7 @@ x ` y
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:6abdd935816cff6e45b2889be28e6ba45df55264a66614e07bc755a4c4fae025"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:cbb6bf4d1b84a63b75d5c988b4de31a30e790d12ac79e773c7be3346d410c36b"))
   (declarations
   )
   (references

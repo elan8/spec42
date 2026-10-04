@@ -54,7 +54,7 @@ package Attributes {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2aaac082e5b46db977296263c9b0566c0998796c5fc86dfe219a7ad5fdcc9984"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:769f7e6d1d02b59ee419c60ccc8627d27a0c7f85ef62ecf21a3667592f265ff3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_attribute_definition_features.md") (qualified-name "Attributes"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_attribute_definition_features.md") (qualified-name "Attributes::Bad"))) (kind attribute-def) (membership (kind owning) (visibility default)))

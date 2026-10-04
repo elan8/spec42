@@ -184,7 +184,7 @@ package 'Wheel Package' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:adbac4251611d5fe380fbf024fd4476bd497664637115c98a3f65532c01b056e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:37d91ab2b5ad2fe3fbd9f05c7a080039dc5cc2432c46d54cdda30191bcb7d247"))
   (declarations
     (declaration (id (node (document "memory://snapshot/wheel_package.md") (qualified-name "Wheel Package"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/wheel_package.md") (path (named (kind package) (name "Wheel Package")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * Example from the SysML 1.6 spec, subclause 8.4.1 Wheel Hub Assembly.\n\t "))))

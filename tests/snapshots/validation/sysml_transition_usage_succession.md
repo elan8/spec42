@@ -48,7 +48,7 @@ package Transitions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7c62b82edfb6c1feec9c0b41418376f8641d6cd7bd06cf321e9fc01bb66035a6"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b6c975932eff7bb6ef66b760f71afc42048f42354774e1f8ad0b07382810594c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_transition_usage_succession.md") (qualified-name "Transitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_transition_usage_succession.md") (qualified-name "Transitions::Machine"))) (kind state-def) (membership (kind owning) (visibility default)))

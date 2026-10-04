@@ -1465,7 +1465,7 @@ standard library package ISQAcoustics {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5f9973660df4abce2416fa65cd9bb620d81764cbf79b7019f0df075e9d13d3c4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e609464c7914710e8725b11927828f9b4bd05a3ffce40aac7d47d707be57d28d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/isq_acoustics.md") (qualified-name "ISQAcoustics"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/isq_acoustics.md") (path (named (kind library-package) (name "ISQAcoustics")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * International System of Quantities and Units\n     * Generated on 2025-03-13T15:00:05Z from standard ISO-80000-8:2020 \"Acoustics\"\n     * see also https://www.iso.org/standard/64978.html\n     * \n     * Note 1: In documentation comments, AsciiMath notation (see http://asciimath.org/) is used for mathematical concepts,\n     * with Greek letters in Unicode encoding. In running text, AsciiMath is placed between backticks.\n     * Note 2: For vector and tensor quantities currently the unit and quantity value type for their (scalar) magnitude is \n     * defined, as well as their typical Cartesian 3d VectorMeasurementReference (i.e. coordinate system) \n     * or TensorMeasurementReference.\n     "))))

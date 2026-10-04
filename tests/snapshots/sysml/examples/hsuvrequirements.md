@@ -99,7 +99,7 @@ package HSUVRequirements {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:948714410cc75c33af9644e717b00a4beef1e32d9e18c99ddb981d9f85c39d15"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ddc992b8ecf10894bfe3c674d6d634b778ff530f69218128739b71f40b2a751f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (qualified-name "HSUVRequirements"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/hsuvrequirements.md") (path (named (kind package) (name "HSUVRequirements")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "Requirements") (import (shape namespace) (recursive false))))))

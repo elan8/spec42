@@ -41,7 +41,7 @@ package Shop {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3c4556cf60722f8e44bcd17f014490495d7175e79b5802913ce58e58b0eb1eb4") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:61ab6b3edc306cfaa2079793d2c415de72fa5c52194b9df7e27de0e0555ff7be") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Shop"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Shop")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -326,7 +326,7 @@ package Shop {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:719da6926f0382be274b41738ae9de2c92321936bba58d10105d9e0cdacb9cbb",
+  "modelDigest": "blake3:d1b266e1cd4b5cbf6eda6a6c226ba45af4e6381f65c0ed2ab550b5f24ef62b6a",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

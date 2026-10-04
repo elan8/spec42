@@ -45,7 +45,7 @@ package Behaviors {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:68865699f91e36a67d4f07c6f249bb6a3e1bcf946c5621a2750834b306b37d8e"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:bc2d250b2d11f6cbc61627d466fb8eab2b48110b0741f46e36fce78f241bb378"))
   (declarations
     (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/behaviors.md") (qualified-name "Behaviors::A"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))

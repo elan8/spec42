@@ -119,7 +119,7 @@ standard library package Base {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:93cb44b718e717a9ba8a8c5c0b69f4a8013cd7a555d270b1145d5fed5e3fc8dd"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:adaa31858d1cc4b523d75cd6189dff38dc97b4ea86ac70ae3ff1f4975a342be9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/base.md") (qualified-name "Base"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/base.md") (path (named (kind library-package) (name "Base")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines the classifiers and features that provide the bases for the typing\n\t * of all elements in the language.\n\t "))))

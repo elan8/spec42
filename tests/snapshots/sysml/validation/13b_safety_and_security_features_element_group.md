@@ -118,7 +118,7 @@ package '13b-Safety and Security Features Element Group' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:afc81c299c1e1347e5351008d32ed0efc3030835b5be324092e1c6a35e67b00f"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:79ea50579ebd42df77f9f251dbe269a4b81a743eef509f29a28014c1fd665f0c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group.md") (qualified-name "13b-Safety and Security Features Element Group::Safety & Security Features"))) (kind package) (membership (kind owning) (visibility default)))

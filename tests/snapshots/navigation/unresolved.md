@@ -27,7 +27,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:166a9a80f38c9979e36ac0c6be417fab282afa58f08bbc8c5ec20b9330399b64"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fdb055c6ed43dc036f9d2d0725e264c3c07d15ac7aa0390926cc34976c806dce"))
   (declarations
     (declaration (id (node (document "memory://snapshot/unresolved.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/unresolved.md") (qualified-name "P::engine"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "MissingEngine")))))

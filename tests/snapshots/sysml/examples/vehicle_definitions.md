@@ -138,7 +138,7 @@ package VehicleDefinitions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:184050d88922ce9f5d798b369e86c011d2a2a71f8b7912b6b0c4826233b811f1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7ad04ebf3a17726e04e39ebab51a76683a0696e73a47a63789acab87e8481062"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (qualified-name "VehicleDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/vehicle_definitions.md") (path (named (kind package) (name "VehicleDefinitions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * Example vehicle definitions model.\n\t "))))

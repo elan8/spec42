@@ -56,7 +56,7 @@ package Unions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:63bea654229513d713456c8a004d73443b530e544dc70bc5f0413707e5f6d606"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7762be91bd171ffaf8a3b76ae4038788395760785d3f1e247750f02f0504071c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_unioning_self.md") (qualified-name "Unions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_unioning_self.md") (qualified-name "Unions::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

@@ -179,7 +179,7 @@ package '15.10-Primitive Data Types' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2c2a07b84438a39af18e23e05f6fee3f4692163c8b59c0fc9f23463df1ae7cf3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:662cef80d3c0522bc932ef94fcbdf50c6cfc15efba1ede226d2367e2e2bd81f9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (qualified-name "15.10-Primitive Data Types"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_10_primitive_data_types.md") (path (named (kind package) (name "15.10-Primitive Data Types")) (anonymous (kind comment) (ordinal 0))))) (kind comment) (membership (kind owning) (visibility default)) (documentation (comment (text "\n\t * Primitive data types are defined in normative model libraries.\n\t * Any more specialized data types can be declared in user-defined \n\t * model libraries or models as needed.\n\t "))))

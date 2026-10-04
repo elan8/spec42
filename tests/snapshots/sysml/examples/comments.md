@@ -33,7 +33,7 @@ package Comments {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e183ded80174e3b0ddd4c289f66fa542e972a5051a9a34c42fc99cfc114f4941"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:10c9223c97aac2807da14524934bddebcb193354881d2a0b2c5800c57607cc55"))
   (declarations
     (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/comments.md") (path (named (kind package) (name "Comments")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " Documentation Comment "))))

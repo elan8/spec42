@@ -299,7 +299,7 @@ standard library package Quantities {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:53c4b35e8ea71181ea0684b4ed831ac8f2885db3788df60f52c6762fd74bb4d4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:297c09280ab473c25593de600d79ca5e0d69503e0d927d7bf9f71972ad9755ed"))
   (declarations
     (declaration (id (node (document "memory://snapshot/quantities.md") (qualified-name "Quantities"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/quantities.md") (path (named (kind library-package) (name "Quantities")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines the root representations for quantities and their values.\n\t "))))

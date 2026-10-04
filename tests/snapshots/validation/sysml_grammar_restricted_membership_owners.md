@@ -207,7 +207,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:c9073db8e6700c012dcfe75396538e67dbe520ec287cb662c360c1627d139796"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:c1cc6c2f94c14179fbda8ad43363970943c6dd5cbe41d4bf5636682a19fa131c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/actor.sysml") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/actor.sysml") (qualified-name "P::C"))) (kind part-def) (membership (kind owning) (visibility default)))

@@ -85,7 +85,7 @@ package Q {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:36409e45e4c57189b02b3cd42222164a24447668078488e9d4db008077117f53"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:60918c3c97d0b661e3161fc92b53f64e8bdf09ded3be16c882d9fd0336038edd"))
   (declarations
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/feature_path_test.md") (qualified-name "Q::A"))) (kind part-def) (membership (kind owning) (visibility default)))

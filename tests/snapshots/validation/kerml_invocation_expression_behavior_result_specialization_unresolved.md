@@ -36,7 +36,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:613a7360789f4c1442b5ba0cb530c41f9bc0a0907fe9c69e502a459e040e292c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b37d8d1a3af9f16e6ba7a3b274d412beb68fde8d42839b099015b62960f79079"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_behavior_result_specialization_unresolved.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_behavior_result_specialization_unresolved.md") (qualified-name "Model::invoked"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/kerml_invocation_expression_behavior_result_specialization_unresolved.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "invoked")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/kerml_invocation_expression_behavior_result_specialization_unresolved.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "invoked")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))

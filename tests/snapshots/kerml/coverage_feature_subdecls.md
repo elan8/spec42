@@ -75,7 +75,7 @@ package FeatureSubDeclCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:56790a4770c6a0b4a8ca03565fcc54cf91c0375d06d134beee99b07b504c474b"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:cca43d586d5468e750beac1eaa092ddc72a5ea56fa818bd4f728c9d847080b55"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage"))) (kind package) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (explicitRelationshipEndpoint (reference "f")) (explicitRelationshipEndpoint (reference "g")) (explicitRelationshipEndpoint (reference "f")) (explicitRelationshipEndpoint (reference "g")) (explicitRelationshipEndpoint (reference "f")) (explicitRelationshipEndpoint (reference "T")) (explicitRelationshipEndpoint (reference "f")) (explicitRelationshipEndpoint (reference "T")))))
     (declaration (id (node (document "memory://snapshot/coverage_feature_subdecls.md") (qualified-name "FeatureSubDeclCoverage::a"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1))))

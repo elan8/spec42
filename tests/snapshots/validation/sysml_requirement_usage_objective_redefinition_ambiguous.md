@@ -36,7 +36,7 @@ package Redefinition {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:96df0a8aaca53515d7d3089b766799b4665faac0cdf6ffc0194f0f4eb8d6d948"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:89731e578acf58114433005a70defd7d02e8f1c17d906212926b3f4d857057cf"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_requirement_usage_objective_redefinition_ambiguous.md") (qualified-name "Redefinition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_usage_objective_redefinition_ambiguous.md") (qualified-name "Redefinition::Both"))) (kind case-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "First")) (specialization (reference "Second")))))

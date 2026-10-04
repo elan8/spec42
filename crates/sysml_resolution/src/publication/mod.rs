@@ -343,6 +343,7 @@ fn library_source_identity(document: &SourceDocument) -> LibrarySourceIdentity<'
             SourceKind::Library => SourceRole::Library,
             SourceKind::External => SourceRole::External,
         },
+        document.language(),
         document.digest(),
         document.library_location(),
     )

@@ -42,7 +42,7 @@ package GeneratedBehaviorDefinitions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1ca01849e2f535e82a5f781872312bd3eae417e743fd561d5918614a5cec040d") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c0349f329bb5eb8354a7497c563e147af744e142490d5a6a8a8f6418a9cf0733") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_behavior_definitions.md") (qualified-name "GeneratedBehaviorDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_behavior_definitions.md") (qualified-name "GeneratedBehaviorDefinitions::ActionDefinition"))) (kind action-def) (membership (kind owning) (visibility default)))

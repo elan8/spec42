@@ -40,7 +40,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:87640687713d96580ddd1f5dcc7482a57d50ce355855fd73e52b02369ca1aa7c") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9318c168f0eaf376969a1c50c9cb281966e670d2219db36cd083398f55eed0df") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_object_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_object_specialization.md") (qualified-name "Model::ObjectType"))) (kind kerml-structure) (membership (kind owning) (visibility default)))

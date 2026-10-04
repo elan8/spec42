@@ -66,7 +66,7 @@ package Functions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2cff84fad11fe30b8596de6403483dbd0af02e0ebcfbf480247be6de40f9bfd9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:29f7c1d7d7a7a179da776c74bf509c2737743cf237da332fc59c967b5661a82f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_parameter_membership.md") (qualified-name "Functions::None"))) (kind kerml-function) (membership (kind owning) (visibility default)))

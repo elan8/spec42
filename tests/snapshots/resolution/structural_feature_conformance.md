@@ -167,7 +167,7 @@ package Structural {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3276ae7be36176947a46126dac42c643fec3c60f40fd7e1022bd7c223d1118db"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3818c4e236071fe61af9e0cd43337db258ffde67ba266b81965db738806cfd24"))
   (declarations
     (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/structural_feature_conformance.md") (qualified-name "Structural::AbstractIncomplete"))) (kind connection-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))

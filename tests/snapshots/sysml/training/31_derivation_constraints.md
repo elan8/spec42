@@ -157,7 +157,7 @@ package 'Derivation Constraints' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b103183131f6dc9065479456841ca5d51390221aaf1718370a2dd0d824fff34b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a5f3ed4963eceac68c43dad313fb3e0f3093426614b34ce9b7a90492cdd1f0d6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (qualified-name "Derivation Constraints"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_derivation_constraints.md") (path (named (kind package) (name "Derivation Constraints")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false))))))

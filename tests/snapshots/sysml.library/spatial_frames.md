@@ -599,7 +599,7 @@ standard library package SpatialFrames {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a931150e35ae59d64afb397f490c305bc513e2c7dd756877614718736f5eeda7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a1e6e8f10cb4e772371a1ecf4a80943ed9b90fc501bf9e3443d8486646dd39da"))
   (declarations
     (declaration (id (node (document "memory://snapshot/spatial_frames.md") (qualified-name "SpatialFrames"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/spatial_frames.md") (path (named (kind library-package) (name "SpatialFrames")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * This package models spatial frames of reference for quantifying the position of points \n     * in a three-dimensional space. \n     "))))

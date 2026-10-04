@@ -19,7 +19,7 @@ part def Vehicle { }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:62dc02bc12f624fc7cfeeeed750fcd111f27bee51a8e621f30ffbaa508a13b09"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:28450cbff97f79df05bafe190cc9ce2026b3a89b2aafd6c5017ec9f06542a763"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_part_def.md") (qualified-name "Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
   )

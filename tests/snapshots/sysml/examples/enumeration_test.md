@@ -114,7 +114,7 @@ package EnumerationTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:a7dbb57100ddd99352c7f95ae719619d0dfeed2669b91d1e4dd9318227c761c3"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:96c9aed68f05fe7ca184504e8d4ff98a0b82e3a84dbd908576c947b2ee347e73"))
   (declarations
     (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/enumeration_test.md") (qualified-name "EnumerationTest::Color"))) (kind attribute-def) (membership (kind owning) (visibility default)))

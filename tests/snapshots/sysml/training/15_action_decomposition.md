@@ -45,7 +45,7 @@ package 'Action Decomposition' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:14d4c1946452dfb045a84b0e50fe40918ac1df8967d1a71bc634f5d4487a5d1a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2125cddb79ec640ffda8c820f7de6080648eb325f12853240e5cf926ff042101"))
   (declarations
     (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/15_action_decomposition.md") (qualified-name "Action Decomposition::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))

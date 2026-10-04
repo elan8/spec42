@@ -62,7 +62,7 @@ package KeywordAsName {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:00159580b8a880f642649626ab8582199534da466003ec034252e9ff802726fd"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:b53a33e58810d54d4899ae0e054408c031c6c3918335693d1e8518e955cc185c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/keyword_as_name.md") (qualified-name "KeywordAsName::Container"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

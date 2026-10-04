@@ -170,7 +170,7 @@ package '13b-Safety and Security Features Element Group-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:138d1c2338f7a18157ddf58d8d9ee3c15183dd730041db9f7b6f4ef0ec1ec0fd"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3291e6ca6c80dd938ee8b15fa9a13e724d25c11f00f08486f85619115d60d057"))
   (declarations
     (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_1.md") (qualified-name "13b-Safety and Security Features Element Group-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/13b_safety_and_security_features_element_group_1.md") (path (named (kind package) (name "13b-Safety and Security Features Element Group-1")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))

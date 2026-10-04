@@ -49,7 +49,7 @@ package ConnectorAssociationSpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:32f43b224bd30dc7ab4dc9a32a508d7dff3c2c9b4e603680a2d2614de931a4bf") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c5e3a1673069586d91e62d4f4948e6ee501b97cc725061bdfeaed5896bc9ed62") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_connector_association_specializations.md") (qualified-name "ConnectorAssociationSpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_connector_association_specializations.md") (qualified-name "ConnectorAssociationSpecializations::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

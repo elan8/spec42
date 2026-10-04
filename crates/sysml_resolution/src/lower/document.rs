@@ -96,13 +96,16 @@ pub(crate) struct LoweredDocument {
 /// implementation to drift from the first.
 pub(crate) fn lower_document(
     parsed: Arc<ParsedDocument>,
+    language: source_identity::SourceLanguage,
 ) -> Result<LoweredDocument, ConstructionError> {
     let mut builder = SemanticModelBuilder::default();
     // The identity, role, digest and parse errors of the admitted document are not read by the
-    // lowering walk; they belong to the whole build, which supplies its own when it splices.
+    // lowering walk; they belong to the whole build, which supplies its own when it splices. The
+    // language is read: it selects the metaclass of productions the two languages share.
     let document = builder.admit_document(
         "",
         source_identity::SourceRole::Workspace,
+        language,
         source_identity::ContentDigest::of_bytes(&[]),
         parsed,
         Vec::new(),

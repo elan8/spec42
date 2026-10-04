@@ -66,7 +66,7 @@ package 'Merge Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:14f9be9806a3c8307ecc8c0e471a4568d737d693247c43184b4e77774cebcd82"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:64590ada8e30a8aee9f94dc88928d784593515a8c77367b0affd141aa9c08a37"))
   (declarations
     (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_merge_example.md") (qualified-name "Merge Example::Display"))) (kind action-def) (membership (kind owning) (visibility default)))

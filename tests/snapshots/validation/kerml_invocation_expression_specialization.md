@@ -41,7 +41,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4ef5d4152c19d5ba722b03253822bc41350bc87d35fd126a17e20ff275b63f2d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:047688b7519f641166e1a8b8f768bc4a3f480065ad91a8212d9c7592fb32d8a3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_specialization.md") (qualified-name "Model::Computing"))) (kind kerml-function) (membership (kind owning) (visibility default)))

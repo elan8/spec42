@@ -285,7 +285,7 @@ doc
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:23f4184b21d02572131ed39a5454f7fdf3a3fb2b76940077e2469fcaaa795f82"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d85fc1ea748c0ab13f1062adc4a312c63362c53bfade5f9bc05de82dd98e51c6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parts.md") (qualified-name "Parts"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/parts.md") (path (named (kind library-package) (name "Parts")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n * This package defines the base types for parts and related structural elements in the\n * SysML language.\n "))))

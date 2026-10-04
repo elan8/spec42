@@ -61,7 +61,7 @@ package ConnSpec {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:72714350e1f5c71a81c75d7e2c40a4132d90872b88ca7afba6f6803bffd5aff3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d982f4fe79cc9efb43a7abdb40df7ea7456543178efc938f5a4d7c9dd38072db"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connector_feature_specializations.md") (qualified-name "ConnSpec"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connector_feature_specializations.md") (qualified-name "ConnSpec::A"))) (kind kerml-association) (membership (kind owning) (visibility default)))

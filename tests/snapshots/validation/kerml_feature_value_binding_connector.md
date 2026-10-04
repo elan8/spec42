@@ -50,7 +50,7 @@ package Values {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:06f9c0f23fdbe7053d7b912587883a2b1d0016ce6a20c5a117b1c640a1e4520c") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:af6382750ac771192372d326ba98a31e9ac28e20a9d64ce9ac579710d4659203") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_value_binding_connector.md") (qualified-name "Values"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_value_binding_connector.md") (qualified-name "Values::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

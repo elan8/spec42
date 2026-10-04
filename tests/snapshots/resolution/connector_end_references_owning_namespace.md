@@ -80,7 +80,7 @@ package Remaining {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:eaa3947ee4c0a00643ace04968e8c9d5be6988c715ee8db7ff0c160d59accfed"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5ca9e01ca0651a406005ecd9c8c92c6ce5e60394cde182dd29491f7b3d620a34"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connector_end_references_owning_namespace.md") (qualified-name "Remaining"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connector_end_references_owning_namespace.md") (qualified-name "Remaining::Anything"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))

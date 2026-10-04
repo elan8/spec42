@@ -56,13 +56,13 @@ package Metadata {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cfdc280d03968021963623bbd8b699ed3be872447837440432963ae9d58ae637"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7a4e2b10140cf0aa80583e5ac57a3debe4058b7d875f0dad5a687b4fb75e7943"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (qualified-name "Metadata"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (qualified-name "Metadata::Marker"))) (kind kerml-metaclass) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (qualified-name "Metadata::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (qualified-name "Metadata::classified"))) (kind metadata) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Thing")) (metadataAnnotationAbout (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (qualified-name "Metadata::marked"))) (kind metadata) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Marker")) (metadataAnnotationAbout (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (qualified-name "Metadata::classified"))) (kind kerml-metadata-feature) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Thing")) (metadataAnnotationAbout (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (qualified-name "Metadata::marked"))) (kind kerml-metadata-feature) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Marker")) (metadataAnnotationAbout (reference "Thing")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/kerml_metadata_feature_metaclass.md") (qualified-name "Metadata::classified"))) (kind featureTyping) (ordinal 0))

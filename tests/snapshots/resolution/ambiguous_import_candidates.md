@@ -45,7 +45,7 @@ probe ambiguous_import_candidates.md 5 18
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ea187c4c9af2de2666b58cc933e4f449d756cefe98736d706a4f065a7afc57bb"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:955059dcf39d18b291f28c7765ddb5132abf918b441bd52205496a55738d1fed"))
   (declarations
     (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "A"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/ambiguous_import_candidates.md") (qualified-name "A::Thing"))) (kind part-def) (membership (kind owning) (visibility default)))

@@ -33,7 +33,7 @@ package 'Subsetting Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:41d012599cbb78a05efcfb16c6d706d6c0b41992e72679d6e214d594a790f12d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:900fe49014ff83e668bc8068a19f1642ef71a9e7a3d8776d56b88954cf9ae380"))
   (declarations
     (declaration (id (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/04_subsetting_example.md") (qualified-name "Subsetting Example::Engine"))) (kind part-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "VehiclePart")))))

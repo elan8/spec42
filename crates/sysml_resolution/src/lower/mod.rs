@@ -60,6 +60,7 @@ use hashbrown::HashTable;
 use std::hash::BuildHasher;
 
 use source_identity::ContentDigest;
+use source_identity::SourceLanguage;
 use source_identity::SourceRole;
 use std::collections::hash_map::RandomState;
 use std::collections::BTreeMap;
@@ -207,6 +208,7 @@ impl SemanticModelBuilder {
         &mut self,
         identity: impl Into<Box<str>>,
         role: SourceRole,
+        language: SourceLanguage,
         digest: ContentDigest,
         parsed: Arc<ParsedDocument>,
         parse_errors: Vec<ParseError>,
@@ -236,6 +238,7 @@ impl SemanticModelBuilder {
         self.documents.push(AdmittedDocument {
             identity,
             role,
+            language,
             digest,
             parsed,
             parse_errors: parse_errors.into_boxed_slice(),
@@ -2156,6 +2159,7 @@ impl SemanticModelBuilder {
                     ElementKind::Multiplicity
                         | ElementKind::MultiplicityRange
                         | ElementKind::MetadataUsage
+                        | ElementKind::MetadataFeature
                         | ElementKind::BindingConnector
                         | ElementKind::BindingConnectorAsUsage
                 )
@@ -2976,10 +2980,11 @@ impl SemanticModelBuilder {
         keywords: &[Node<sysml_v2_parser::ast::UsageExtensionKeyword>],
     ) -> Result<(), ConstructionError> {
         for keyword in keywords {
+            let kind = self.metadata_feature_kind(document)?;
             let annotation = self.push_typed_declaration(
                 document,
                 Some(declaration),
-                DeclarationKind::MetadataUsage,
+                kind,
                 None,
                 keyword.span,
                 DeclarationFacts::none(),
@@ -3037,10 +3042,11 @@ impl SemanticModelBuilder {
         declaration: DeclarationId,
     ) -> Result<(), ConstructionError> {
         for entry in std::mem::take(&mut self.pending_prefix_metadata) {
+            let kind = self.metadata_feature_kind(document)?;
             let annotation = self.push_typed_declaration(
                 document,
                 Some(declaration),
-                DeclarationKind::MetadataUsage,
+                kind,
                 None,
                 entry.span,
                 DeclarationFacts::none(),
@@ -3546,6 +3552,7 @@ mod tests {
             .admit_document(
                 "model",
                 SourceRole::Workspace,
+                SourceLanguage::SysML,
                 ContentDigest::of_bytes(&[]),
                 parsed.clone(),
                 Vec::new(),
@@ -3584,6 +3591,7 @@ mod tests {
                 .admit_document(
                     format!("model-{index}"),
                     SourceRole::Workspace,
+                    SourceLanguage::SysML,
                     ContentDigest::of_bytes(&[]),
                     parsed.clone(),
                     Vec::new(),
@@ -3597,6 +3605,7 @@ mod tests {
                 .admit_document(
                     "model-0",
                     SourceRole::Workspace,
+                    SourceLanguage::SysML,
                     ContentDigest::of_bytes(&[]),
                     parsed,
                     Vec::new(),
@@ -3615,6 +3624,7 @@ mod tests {
             .admit_document(
                 "model",
                 SourceRole::Workspace,
+                SourceLanguage::SysML,
                 ContentDigest::of_bytes(&[]),
                 parsed,
                 Vec::new(),

@@ -53,7 +53,7 @@ package GeneralSubsetting {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:60bfb1f7a5fa48ac4892ad796ff7747a0186266b57e74af89dcdeab88a2805a9") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3c56d7decd6202f0ce9445e633dddaa3624ba27826714b1adea3692429f72810") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (qualified-name "GeneralSubsetting"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_general_authored_subsetting.md") (path (named (kind package) (name "GeneralSubsetting")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -390,7 +390,7 @@ package GeneralSubsetting {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:69850a0075c157c413e830d4daefc2f7aba099110c15d04dd79238680dc2c792",
+  "modelDigest": "blake3:3d3769fca7939210c8df800de9f8f2009cb5c5946495f1be08876009dbdeee62",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_general_authored_subsetting.md",

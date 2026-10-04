@@ -618,7 +618,7 @@ package ChangingFeatureValuesExecution {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:1b16309b77b12c0982c6509289115fed74f4a3fa09a51862f25c9b739c277a4f"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:b5579e1f635b2a1aa4f7093d60d3ffc51312873bb0fcc769c61868cd30313780"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_3_8_changing_feature_values.md") (qualified-name "ChangingFeatureValuesExecution"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a_3_8_changing_feature_values.md") (path (named (kind package) (name "ChangingFeatureValuesExecution")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " \n\t "))))

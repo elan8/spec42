@@ -229,6 +229,9 @@ element_kinds! {
     /// `SuccessionAsUsage`, which specializes it; no declaration is published with this kind.
     Succession,
     Invariant,
+    /// The KerML `MetadataFeature` a KerML `metadata` feature or `@` annotation lowers to. A
+    /// SysML `MetadataUsage` specializes it.
+    MetadataFeature,
     /// The KerML `FlowEnd` a flow's `from`/`to` endpoint lowers to: an end Feature owning the
     /// flow feature that redefines the endpoint's last segment.
     FlowEnd,
@@ -286,6 +289,7 @@ impl ElementKind {
                 &[K::LiteralExpression]
             }
             K::Invariant => &[K::BooleanExpression],
+            K::MetadataFeature => &[K::Feature, K::AnnotatingElement],
             K::FlowEnd => &[K::Feature],
             K::BindingConnector | K::Succession => &[K::Connector],
 
@@ -351,7 +355,7 @@ impl ElementKind {
             K::CaseUsage => &[K::CalculationUsage],
             K::AnalysisCaseUsage | K::VerificationCaseUsage | K::UseCaseUsage => &[K::CaseUsage],
             K::ViewUsage | K::RenderingUsage => &[K::PartUsage],
-            K::MetadataUsage => &[K::ItemUsage],
+            K::MetadataUsage => &[K::ItemUsage, K::MetadataFeature],
             K::SuccessionAsUsage => &[K::Usage, K::Succession],
             K::BindingConnectorAsUsage => &[K::Usage, K::BindingConnector],
         }
@@ -506,6 +510,8 @@ mod tests {
         assert!(ElementKind::ExhibitStateUsage.conforms_to(ElementKind::StateUsage));
         assert!(ElementKind::ExhibitStateUsage.conforms_to(ElementKind::PerformActionUsage));
         assert!(ElementKind::ControlNode.conforms_to(ElementKind::ActionUsage));
+        assert!(ElementKind::MetadataUsage.conforms_to(ElementKind::MetadataFeature));
+        assert!(ElementKind::MetadataFeature.conforms_to(ElementKind::AnnotatingElement));
         assert!(!ElementKind::Classifier.conforms_to(ElementKind::DataType));
         assert!(!ElementKind::PartUsage.conforms_to(ElementKind::AttributeUsage));
         assert!(!ElementKind::ActionDefinition.conforms_to(ElementKind::Structure));

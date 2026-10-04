@@ -114,7 +114,7 @@ package MetadataTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:cff648039fb730c0136f94e1f6aa24cfc8456af46cfef23eb61e49de6fd4faf3"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:d8677c1d0b4f9cbf560dbc4e783226547535e6c703324b6c3cf91d257e6c17bf"))
   (declarations
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (qualified-name "MetadataTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/metadata_test.md") (path (named (kind package) (name "MetadataTest")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "User Defined Extensions") (import (shape namespace) (recursive false))))))

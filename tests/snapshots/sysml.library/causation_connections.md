@@ -179,7 +179,7 @@ standard library package CausationConnections {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:7d7a8611d8777e2a39efafe50706980f692c84b2ce1a330b4c687f2dbd7b97d3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:40c623af9352c3c978d173d0d58f62b5e2a42f6c01509b4848690c8dd3520afd"))
   (declarations
     (declaration (id (node (document "memory://snapshot/causation_connections.md") (qualified-name "CausationConnections"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/causation_connections.md") (path (named (kind library-package) (name "CausationConnections")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " \n\t * This package provides a library model modeling causes, effects, and causation connections \n\t * between them.\n\t "))))

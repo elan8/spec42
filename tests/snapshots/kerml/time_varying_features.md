@@ -237,7 +237,7 @@ package TimeVaryingFeatures {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:31ce1f9122cfe39ecac9be5089bf0c3b6303844c0a94995c0500148c4ba4125a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:581956ec203c2bc7e3ff9a4f6fa73227de7d2fdde085f8b5e22534943445c853"))
   (declarations
     (declaration (id (node (document "memory://snapshot/time_varying_features.md") (qualified-name "TimeVaryingFeatures"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/time_varying_features.md") (qualified-name "TimeVaryingFeatures::CC0"))) (kind class-def) (membership (kind owning) (visibility default)))

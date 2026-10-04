@@ -75,7 +75,7 @@ package VerificationTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:71d66e748beeaff18ed1e468cffbe9f8a327239ede88af42ec57d23a8d8502cb"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d6a4a7de92b7851e11dd355a59a3c1282f0fd7f88909d19d24377faee57276f5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/verification_test.md") (qualified-name "VerificationTest::R"))) (kind requirement-def) (membership (kind owning) (visibility default)))

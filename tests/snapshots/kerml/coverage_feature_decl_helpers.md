@@ -39,7 +39,7 @@ package FeatureDeclCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:4383bf7d587d38cb89fbaf501cd8a6723613fd23d4aa52c1e3dc99ebd16c8517"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:f1b65d073cb2d6e70409c11bcd4731a38dbfe80251c5804229b4f34cdc971e95"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_feature_decl_helpers.md") (qualified-name "FeatureDeclCoverage::Base"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

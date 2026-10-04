@@ -37,12 +37,6 @@ owner = "omg-specification"
 summary = "Pinned KerML XMI body for checkStepOwnedPerformanceSpecialization is unbalanced (SHA-256 899aa2a17a9527d1b448a84bc4a336a933bc6b067fb99ff9095bd5a866854bd8); OMG must publish an evaluable predicate before a specialization contract can be derived."
 
 [[issue]]
-id = "lowering-gap-kerml-metadata-feature-metaclass"
-kind = "lowering_gap"
-owner = "spec42-semantic"
-summary = "A KerML `metadata` feature is a MetadataFeature whose checkMetadataFeatureSpecialization anchor is Metaobjects::metaobjects, but the parser publishes one MetadataUsage node for `metadata` in both languages and no source-language fact reaches lowering, so it lowers as a SysML MetadataUsage (nearer Metadata::metadataItems anchor); publishing a distinct MetadataFeature metaclass needs a document-language fact from source identity (or a language-specific parser node), and ElementKind::MetadataUsage does not yet generalize a MetadataFeature kind"
-
-[[issue]]
 id = "semantic-connector-binary-object-specialization-contract"
 kind = "semantic_not_implemented"
 owner = "spec42-semantic"

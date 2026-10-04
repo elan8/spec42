@@ -2930,7 +2930,7 @@ standard library package <USCU> USCustomaryUnits {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:35f83937bf17b4f645a080b4b04e4a0e91fd12adfe36f62bf490cb70b4b8f321"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a62c26265e5810c82bbaef78569b8606c4815058ae2ff8a479d4eaa2401c7327"))
   (declarations
     (declaration (id (node (document "memory://snapshot/us_customary_units.md") (qualified-name "USCustomaryUnits"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (short-name "USCU") (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/us_customary_units.md") (path (named (kind library-package) (name "USCustomaryUnits")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * Measurement unit declarations generated from NIST SP811 Appendix B\n\t *\n\t * See https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b8\n\t "))))

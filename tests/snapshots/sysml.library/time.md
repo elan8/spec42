@@ -676,7 +676,7 @@ standard library package Time {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8aceb913828a5bc9600d9b45befbf6d1d985bdf139ced7122bd86515ebbf7e6d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:eead1f62a8648632ef8157f0f85131b25b2cc8c6406523c0cf4ff6cfa15e7d37"))
   (declarations
     (declaration (id (node (document "memory://snapshot/time.md") (qualified-name "Time"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/time.md") (path (named (kind library-package) (name "Time")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package specifies concepts to support time-related quantities and metrology, beyond \n\t * the quantities duration and time as defined in [ISO 80000-3]. Representations of the \n\t * Gregorian calendar date and time of day as specified by the [ISO 8601-1] standard are used.\n\t "))))

@@ -35,7 +35,7 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:99f5a4c69606301c3cce83b109c1ab213eae22b77c5dd76de7489ae898c582b1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:28d3b3fc18ed330cbcfbd7c2d232d8fe7a4a8be135135c3ffcb84207ca783ba9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/enumeration_literal_body_members.md") (qualified-name "Demo::Kind"))) (kind enum-def) (membership (kind owning) (visibility default)) (facts (implied-modifiers abstract variation)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Level")))))

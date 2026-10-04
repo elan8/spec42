@@ -29,7 +29,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:4cb1bf2c90b90c0cdfb98dd998af4a3a254588ad0cc116cd756da00f2be81ed7"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:07f1b1ccc00ba750b93f193fa314818a3f3fd2d6f659e4ca9919ea073068fdd2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_member_var.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_member_var.md") (qualified-name "P::r"))) (kind requirement) (membership (kind feature) (visibility default)))

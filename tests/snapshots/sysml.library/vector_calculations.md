@@ -458,7 +458,7 @@ standard library package VectorCalculations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:cf109ab4e6563103889612ca5a3f9a77ebdc78269c2fd5a15d026a5544e13ed4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8e511403b28dcc7d252b7513b88e55f321266ebe9e2dd9bf974ba554b370f548"))
   (declarations
     (declaration (id (node (document "memory://snapshot/vector_calculations.md") (qualified-name "VectorCalculations"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/vector_calculations.md") (path (named (kind library-package) (name "VectorCalculations")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package package defines calculations for the construction of and computations on VectorQuantityValues.\n\t "))))

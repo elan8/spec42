@@ -202,7 +202,7 @@ package OneToOneConnectorsExecution {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:e660cbaa83368787ab4cad1049b2d0c3f65b39b537f37a5e2aacc15378455b07"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:9c840753d9d87ddc17abfbb87ce227615a0d68ea0d009d0c9f5d86f89b1c024d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (qualified-name "OneToOneConnectorsExecution"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a_3_3_one_to_one_connectors.md") (path (named (kind package) (name "OneToOneConnectorsExecution")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " \n\t "))))

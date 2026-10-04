@@ -125,7 +125,7 @@ package 'Calculation Usages-2' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8845fda36be87b67f5235ca54c41e890d079eda091444f67733f3a3957cfcb86"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:997adf31de0338bb939e31d922d0c30efc7d8dd5a2cdecc939ac84ba038d8948"))
   (declarations
     (declaration (id (node (document "memory://snapshot/30_calculation_usages_2.md") (qualified-name "Calculation Usages-2"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/30_calculation_usages_2.md") (path (named (kind package) (name "Calculation Usages-2")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Real") (import (shape membership) (recursive false))))))

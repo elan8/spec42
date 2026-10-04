@@ -138,7 +138,7 @@ package FeatureAdvancedCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:b316894a6bb12af4449e04c2ccc74a6daadd36ede6183f995e60a59ff9a7730b"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:b397749a169c9a19b2b2f8d26c8a2f137902eeb7a88b99686f808badd5e9530d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (path (named (kind package) (name "FeatureAdvancedCoverage")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (membershipImport (reference "C") (import (shape membership) (recursive true))))))

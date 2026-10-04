@@ -541,7 +541,7 @@ standard library package StatePerformances {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:981e589ea0af87db2114a10b5c29f9f49abda207ec2737f61cf4d698b029b526"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d2a1f3454ef868a1dec3b4636a6c4f32e4f78a7cf27b7810177e4216c0893187"))
   (declarations
     (declaration (id (node (document "memory://snapshot/state_performances.md") (qualified-name "StatePerformances"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/state_performances.md") (path (named (kind library-package) (name "StatePerformances")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package contains a library model of the semantics of state-based behavior,\n\t * including the performance of (behavioral) states and the transitions between them.\n\t "))))

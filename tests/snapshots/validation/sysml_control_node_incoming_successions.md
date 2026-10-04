@@ -94,7 +94,7 @@ package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9cea06aa18d7c17c948e23cc125eb6c5963891fade942cec04af5e10da4b88b5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:26618a18c8fc469cac4ba89dfffe26517ef35e1306f87279183659b0cf7c0485"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_control_node_incoming_successions.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_control_node_incoming_successions.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))

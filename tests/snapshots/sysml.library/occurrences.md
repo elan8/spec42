@@ -1760,7 +1760,7 @@ standard library package Occurrences {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:cf7bd88fac75f82be150fa81b0a1bfa6503cd2085f09103acdeb285bb41fe108"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1fb327340e2d8e69cbbfe9828af6cecc94b7511880e707d0a90a09810508fa84"))
   (declarations
     (declaration (id (node (document "memory://snapshot/occurrences.md") (qualified-name "Occurrences"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)) (authored (membership (kind owning) (visibility default)) (relationships (explicitRelationshipEndpoint (reference "SelfLink")) (explicitRelationshipEndpoint (reference "SelfSameLifeLink")))))
     (declaration (id (node (document "memory://snapshot/occurrences.md") (path (named (kind library-package) (name "Occurrences")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines modeling constructs for anything existing or occurring in time and space, with\n\t * associations between them that assert temporal and spatial relationships.\n\t "))))

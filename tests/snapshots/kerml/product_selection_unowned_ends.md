@@ -65,7 +65,7 @@ package ProductSelection_UnownedEnds {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:88c3612c9711c48da83f3ee410c82a7a35f2cad03b830bb9bd4eaa4ecb57ab0e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:317a88347e15d394d7d7c07d02706d7d94011fb5bfbbc4b36b744b31245e20ca"))
   (declarations
     (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/product_selection_unowned_ends.md") (qualified-name "ProductSelection_UnownedEnds::OnlineCustomer"))) (kind class-def) (membership (kind owning) (visibility default)))

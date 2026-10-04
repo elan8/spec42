@@ -3737,7 +3737,7 @@ standard library package ShapeItems {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c61a35071bf088fb2aa947f398cf3dff11c93566a3dce6b885ca75bb30ac1f3a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d977454fe48787a1805f6b09bd8bb1ff7abcc350d4eb44e75515b3b7b33ec1c7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/shape_items.md") (qualified-name "ShapeItems"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/shape_items.md") (path (named (kind library-package) (name "ShapeItems")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package provides a model of items that represent basic geometric shapes. \n\t "))))

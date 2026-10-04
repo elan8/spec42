@@ -126,7 +126,7 @@ package Features {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:00b61c0e836d1cea4e3d75c9e05025a79f812727ef20f86d6a231fe523e3fdcd"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:706adfccc32b9883acaa0df4f25d768bbcb74fa79dbd71c14b96311e3f77b769"))
   (declarations
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features"))) (kind package) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (explicitRelationshipEndpoint (reference "y")) (explicitRelationshipEndpoint (reference "C")) (explicitRelationshipEndpoint (reference "f")) (explicitRelationshipEndpoint (reference "B")) (explicitRelationshipEndpoint (reference "g")) (explicitRelationshipEndpoint (reference "A")) (explicitRelationshipEndpoint (reference "parent")) (explicitRelationshipEndpoint (reference "person")) (explicitRelationshipEndpoint (reference "mother")) (explicitRelationshipEndpoint (reference "parent")) (explicitRelationshipEndpoint (reference "LegalRecord::guardian")) (explicitRelationshipEndpoint (reference "parent")) (explicitRelationshipEndpoint (reference "Vehicle::vin")) (explicitRelationshipEndpoint (reference "RegisteredAsset::identifier")) (explicitRelationshipEndpoint (reference "Vehicle::vin")) (explicitRelationshipEndpoint (reference "legalIdentification")))))
     (declaration (id (node (document "memory://snapshot/features.md") (qualified-name "Features::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

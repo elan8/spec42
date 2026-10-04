@@ -83,7 +83,7 @@ package NestedViewCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:85905ab1839fe42d396e1f0068352691796d28b038875ba4d2d150aa5d1dcb5b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fd0828a346a4d8f763825a03ef87962f4fda9c405e7acbf24fdd915ef4819252"))
   (declarations
     (declaration (id (node (document "memory://snapshot/view_nested_view_usages.md") (qualified-name "NestedViewCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_nested_view_usages.md") (qualified-name "NestedViewCoverage::Appendix"))) (kind view-def) (membership (kind owning) (visibility default)))

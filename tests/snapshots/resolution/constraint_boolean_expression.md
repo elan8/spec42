@@ -59,7 +59,7 @@ package Constraints {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:49d90ed86cc45ef04d03e54393b5df1da3407c6a64032a57881d4da3cde92222"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:97267c783a347269ad8312265c7a3764fd06aa17af7f2d4ff4c0d5da30c22331"))
   (declarations
     (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/constraint_boolean_expression.md") (qualified-name "Constraints::Counted"))) (kind constraint-def) (membership (kind owning) (visibility default)))

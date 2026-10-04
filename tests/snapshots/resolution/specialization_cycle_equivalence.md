@@ -85,7 +85,7 @@ package Cycles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e03d9c46f5aca8564d34806eda7486fff4de97a2710fc31673df86b28e1c5c76"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c6fd5f9d5dc8473d8002bf54cde7539cba0874fb3c13eeccd75495b6bec1a4f4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/specialization_cycle_equivalence.md") (qualified-name "Cycles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/specialization_cycle_equivalence.md") (qualified-name "Cycles::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "B")))))

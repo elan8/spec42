@@ -35,7 +35,7 @@ package Interfaces {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:597396060252a6b77233263bbe5920ad22c05dd956691807d617b83e69fc0f0b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c2a6235fccc70ecbb19188e79ad3c8e1f538bba42bdffd89beb2606a22d6cdda"))
   (declarations
     (declaration (id (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::A"))) (kind part-def) (membership (kind owning) (visibility default)))

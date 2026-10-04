@@ -39,7 +39,7 @@ package Inverses {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:9b8082649edd57d5c889bad34e80d0ba66845a57081bcb129570c18006dcadd4"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:6225ecf52b1f3093d7332c9de3df16644732a41ac23ad2c30e2e8e97666c97d6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses"))) (kind package) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (explicitRelationshipEndpoint (reference "B::g")) (explicitRelationshipEndpoint (reference "A::f")) (explicitRelationshipEndpoint (reference "B::g::f")) (explicitRelationshipEndpoint (reference "A::h")))))
     (declaration (id (node (document "memory://snapshot/inverses.md") (qualified-name "Inverses::A"))) (kind class-def) (membership (kind owning) (visibility default)))

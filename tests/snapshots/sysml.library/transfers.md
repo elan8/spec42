@@ -809,7 +809,7 @@ standard library package Transfers {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0443af57b8b05ed7d9f38e992d07bcea4a0faa7fc342ee027ba05614ecd1859c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:65b9794f5075f503479f4c7d5281a5f7b5d72700f555c8b2c71a2e5670b5d973"))
   (declarations
     (declaration (id (node (document "memory://snapshot/transfers.md") (qualified-name "Transfers"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/transfers.md") (path (named (kind library-package) (name "Transfers")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n     * This package defines the transfer interactions used to type flows.\n     "))))

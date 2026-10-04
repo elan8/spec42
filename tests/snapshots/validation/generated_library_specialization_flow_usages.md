@@ -39,7 +39,7 @@ package FlowSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d8004bf0cb247e47870586936188fe2655dbdc14dce9d237fc9c835cc0be343a") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ed6373b6c2ff50ece8ad5dd00752c35a095e5406575e24bde3c9a92a5a146d12") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_flow_usages.md") (qualified-name "FlowSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_flow_usages.md") (qualified-name "FlowSpecialization::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))

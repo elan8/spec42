@@ -740,7 +740,7 @@ standard library package Objects {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b99d559e72aed146533ffd7cacfbbc0c1ca85da713df51847c74cb5f4a0a460b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:efd8f4763c8eb44acd4f50dffb33763edfc1bd28bca1a80539997d79c40c20f7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/objects.md") (qualified-name "Objects"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/objects.md") (path (named (kind library-package) (name "Objects")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines classifiers and features that are related to the typing of objects, including link objects.\n\t "))))

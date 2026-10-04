@@ -249,7 +249,7 @@ standard library package Collections {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a4bca9c80db0a608a8328ca0f3b7ef13e8aef68ca5f220fe37f0925a1bdafb5b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:10340ac7b8195a8d5b8424e1cc0c4160113458e04201afd97f7bf9942e9d41e5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/collections.md") (qualified-name "Collections"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/collections.md") (path (named (kind library-package) (name "Collections")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines a standard set of Collection data types. Unlike sequences of values \n\t * defined directly using multiplicity, these data types allow for the possibility of collections \n\t * as elements of collections.\n\t "))))

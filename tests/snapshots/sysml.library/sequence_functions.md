@@ -573,7 +573,7 @@ standard library package SequenceFunctions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:bf3d03cbad46e7d60e4451134e6d8c95ac2d5d870a70d87d9b1e364215554d0a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:9ab5a2831441f703308482fc1ee2030944f450d90ebc82f31f37a6fa58726265"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sequence_functions.md") (qualified-name "SequenceFunctions"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/sequence_functions.md") (path (named (kind library-package) (name "SequenceFunctions")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines functions that operate on general sequences of values. (For functions that\n\t * operate on Collection values, see CollectionFunctions.)\n\t "))))

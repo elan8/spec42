@@ -308,7 +308,7 @@ standard library package Views {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:875f58bcb2871341548a54cda318901e08fdac5047d5a8268b51b3aa8a677ab9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:75ec411e87e22901719da399fffe3ae88c19ef47439d8349dd28ab2fbc7bc6f0"))
   (declarations
     (declaration (id (node (document "memory://snapshot/views.md") (qualified-name "Views"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/views.md") (path (named (kind library-package) (name "Views")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package defines the base types for views, viewpoints, renderings and related elements \n\t * in the SysML language.\n\t "))))

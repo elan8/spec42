@@ -110,7 +110,7 @@ package 'Constraint Assertions-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:06557ae8f059d94b052ab33b9e845b8f8e92b1efcb6366508bd7ce6d33e04872"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:27c3158b1da4d0a51f49ff3063e8b57872f634da59a05925ed73a7a7135ae3ac"))
   (declarations
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_1.md") (qualified-name "Constraint Assertions-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/31_constraint_assertions_1.md") (path (named (kind package) (name "Constraint Assertions-1")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ISQ") (import (shape namespace) (recursive false))))))

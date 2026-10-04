@@ -113,7 +113,7 @@ package Connections {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f0ebdf8a89397c71fde03dab6ea95fda4e22b3940118510c7bbdbd57dccc3848"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:60abb0edd7324982c4289f366b0ddbc65b65a6e37ef4f7740106e010c8c20996"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connection_conformance.md") (qualified-name "Connections"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connection_conformance.md") (qualified-name "Connections::Conforming"))) (kind part-def) (membership (kind owning) (visibility default)))

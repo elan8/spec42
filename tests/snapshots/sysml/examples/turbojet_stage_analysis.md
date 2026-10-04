@@ -194,7 +194,7 @@ package 'Turbojet Stage Analysis' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:320de94f6327b2bbe79d44377e84cb7b43b26059601b1470058e66918e50ceb3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5fda868ee1099f7ff6c033e5fe93f075821ae25a852f67193ef358ba2db7fedd"))
   (declarations
     (declaration (id (node (document "memory://snapshot/turbojet_stage_analysis.md") (qualified-name "Turbojet Stage Analysis"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/turbojet_stage_analysis.md") (path (named (kind package) (name "Turbojet Stage Analysis")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Quantities::ScalarQuantityValue") (import (shape membership) (recursive false))))))

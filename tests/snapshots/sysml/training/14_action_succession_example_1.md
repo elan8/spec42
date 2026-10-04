@@ -44,7 +44,7 @@ package 'Action Succession Example-1' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d5673eaabcadc6ae55b994aad4e9a600c78efd7948dcd053da47adc42c9a7bf9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e03a49973aa3c83fb590551a6791a742741822639961ab6bcc514c444d314fed"))
   (declarations
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/14_action_succession_example_1.md") (qualified-name "Action Succession Example-1::Focus"))) (kind action-def) (membership (kind owning) (visibility default)))

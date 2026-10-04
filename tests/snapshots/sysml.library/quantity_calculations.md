@@ -712,7 +712,7 @@ standard library package QuantityCalculations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:7f5be5954e0a181f8d7a24827f111a25d513fe0471efb1538f82fb586b5b6b7f"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:39c7e1da1344fd377feb85d7422284f7542f5d48b04fd116545a3cd9dbf057fa"))
   (declarations
     (declaration (id (node (document "memory://snapshot/quantity_calculations.md") (qualified-name "QuantityCalculations"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
     (declaration (id (node (document "memory://snapshot/quantity_calculations.md") (path (named (kind library-package) (name "QuantityCalculations")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package package defines calculations for the construction of and computations on ScalarQuantityValues.\n\t "))))

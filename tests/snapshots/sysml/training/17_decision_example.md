@@ -106,7 +106,7 @@ package 'Decision Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b4c682eb8f56fcb40c60c69fefa6cf3b1c10ee71080937769745bb2552e2c6d2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2bcf9ed996bc87657916ba78b20c15ffb23369ef864dff7f0394eb7daaadc85c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/17_decision_example.md") (qualified-name "Decision Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/17_decision_example.md") (path (named (kind package) (name "Decision Example")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
