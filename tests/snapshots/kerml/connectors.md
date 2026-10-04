@@ -45,16 +45,10 @@ package Connectors {
   (document "memory://snapshot/connectors.md"
     (diagnostics
       (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 7 2) (end 7 10))
-      )
-      (diagnostic
         (severity error)
-        (code "unrecognized_declaration_in_scope")
+        (code "unexpected_keyword_in_scope")
         (source "parser")
-        (range (start 7 11) (end 8 2))
+        (range (start 7 2) (end 8 2))
       )
       (diagnostic
         (severity error)
@@ -63,28 +57,16 @@ package Connectors {
         (range (start 8 2) (end 14 2))
       )
       (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 16 3) (end 16 6))
+        (severity error)
+        (code "unexpected_keyword_in_scope")
+        (source "parser")
+        (range (start 16 3) (end 17 3))
       )
       (diagnostic
         (severity error)
-        (code "unrecognized_declaration_in_scope")
+        (code "unexpected_keyword_in_scope")
         (source "parser")
-        (range (start 16 7) (end 17 3))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 17 3) (end 17 6))
-      )
-      (diagnostic
-        (severity error)
-        (code "unrecognized_declaration_in_scope")
-        (source "parser")
-        (range (start 17 7) (end 18 2))
+        (range (start 17 3) (end 18 2))
       )
       (diagnostic
         (severity error)
@@ -99,11 +81,11 @@ package Connectors {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:3158d76107a71413e335a2356ac61791c4750462b6335681a61637e4b2b8bc5b"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3158d76107a71413e335a2356ac61791c4750462b6335681a61637e4b2b8bc5b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A"))) (kind class-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "abstract")))))
-    (declaration (id (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind kerml-binding) (ordinal 0))))) (kind kerml-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "end")) (expressionOperand (reference "end")))))
+    (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A"))) (kind class-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind kerml-binding) (ordinal 0))))) (kind kerml-binding) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (succession (reference "a")) (succession (reference "b")))))
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::a"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A")))))
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::ab"))) (kind kerml-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "a")) (bindTarget (reference "b")))))
@@ -115,21 +97,12 @@ package Connectors {
     (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::B::a"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A")))))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A"))) (kind expressionOperand) (ordinal 0))
-      (authored-target "abstract")
-      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0))
       (authored-target "a")
       (outcome (status resolved) (target (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::a")))))
     (reference (id (source (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1))
       (authored-target "b")
       (outcome (status resolved) (target (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::b")))))
-    (reference (id (source (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind kerml-binding) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
-      (authored-target "end")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind kerml-binding) (ordinal 0))))) (kind expressionOperand) (ordinal 1))
-      (authored-target "end")
-      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::a"))) (kind featureTyping) (ordinal 0))
       (authored-target "A")
       (outcome (status resolved) (target (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A")))))
@@ -193,9 +166,6 @@ package Connectors {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::B::a"))) (target (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::B"))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A"))) (state unresolved-operand))
-    (evaluated (declaration (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind kerml-binding) (ordinal 0))))) (state unresolved-operand))
-    (evaluated (declaration (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind kerml-binding) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~
@@ -250,8 +220,6 @@ package Connectors {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A"))) (outcome resolved) (feature-reference "abstract" (target unresolved)))
-  (declaration (id (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind kerml-binding) (ordinal 0))))) (outcome resolved) (operator "and" (feature-reference "end" (target unresolved)) (feature-reference "end" (target unresolved))))
 )
 ~~~
 # CONNECTIONS
@@ -264,11 +232,6 @@ package Connectors {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/connectors.md") (range (start 7 2) (end 7 10)) (probe (position 7 2))
-    (reference (id (source (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A"))) (kind expressionOperand) (ordinal 0) (authored-target "abstract")
-      (outcome (status unresolved)))
-    )
-  )
   (query (document "memory://snapshot/connectors.md") (range (start 20 13) (end 20 14)) (probe (position 20 13))
     (reference (id (source (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0) (authored-target "a")
       (outcome (status resolved) (target (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::a")))))
@@ -277,16 +240,6 @@ package Connectors {
   (query (document "memory://snapshot/connectors.md") (range (start 20 20) (end 20 21)) (probe (position 20 20))
     (reference (id (source (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1) (authored-target "b")
       (outcome (status resolved) (target (node (document "memory://snapshot/connectors.md") (qualified-name "Connectors::A::b")))))
-    )
-  )
-  (query (document "memory://snapshot/connectors.md") (range (start 16 3) (end 16 6)) (probe (position 16 3))
-    (reference (id (source (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind kerml-binding) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "end")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/connectors.md") (range (start 17 3) (end 17 6)) (probe (position 17 3))
-    (reference (id (source (node (document "memory://snapshot/connectors.md") (path (named (kind package) (name "Connectors")) (named (kind class-def) (name "A")) (anonymous (kind kerml-binding) (ordinal 0))))) (kind expressionOperand) (ordinal 1) (authored-target "end")
-      (outcome (status unresolved)))
     )
   )
   (query (document "memory://snapshot/connectors.md") (range (start 3 14) (end 3 15)) (probe (position 3 14))

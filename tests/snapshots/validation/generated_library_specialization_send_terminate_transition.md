@@ -58,7 +58,7 @@ package GeneratedActionForms {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:02eaa73440a038ff627bf88481961cf92e9c243004dc9d7865ca72ad3573946e") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ebd37325693685d26ca0c742666c6a89de0114d5a10a91dcfcb5fbb988940567") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_send_terminate_transition.md") (qualified-name "GeneratedActionForms"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_send_terminate_transition.md") (qualified-name "GeneratedActionForms::Act"))) (kind action-def) (membership (kind owning) (visibility default)))

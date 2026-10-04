@@ -54,7 +54,7 @@ package Office {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:38af0fbc4bf572d5c6a1c082136465cf961e2352b5eda799f6ccf57a97233da1") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0190ea41bb15c6c2707f675dd47ee07543974984ba09bc98dcc148dd6fe2722c") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Office"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -705,7 +705,7 @@ package Office {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:08e5d58e6474d0efb7c53a69ca4eba7c9f89a44a3838d8af52509466743701a0",
+  "modelDigest": "blake3:f2c5165c41056a4a785f3203ab0f450363d119a640905fe5c67a408e11e8b040",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",

@@ -48,7 +48,7 @@ package Units {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3c791202877a3aa1b5fe5e906a0839d627aab47acd724d9338cc001f96072bf9") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:958f2fa006a0bc2cb22f13d8e315d449ef84f5f5cb46ee47a42623026905a104") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/unit_resolution.md") (qualified-name "Units"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/unit_resolution.md") (path (named (kind package) (name "Units")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "SI") (import (shape namespace) (recursive false))))))

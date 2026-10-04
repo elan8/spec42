@@ -44,18 +44,6 @@ package Multiplicities {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_type_owned_multiplicity.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 7 8) (end 7 20))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 7 21) (end 7 26))
-      )
     )
   )
 )
@@ -63,33 +51,30 @@ package Multiplicities {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8eb8588969cf05e56a15787cdf698326a6cc06a49074ffe4d01c6335fa635f5c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8eb8588969cf05e56a15787cdf698326a6cc06a49074ffe4d01c6335fa635f5c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (qualified-name "Multiplicities"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (qualified-name "Multiplicities::One"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 1) (upper 1))))
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "One")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "One")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "One")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "One")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
-    (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (qualified-name "Multiplicities::Two"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "multiplicity")) (expressionOperand (reference "extra")))))
+    (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (qualified-name "Multiplicities::Two"))) (kind kerml-classifier) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 1) (upper 1))))
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
+    (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (qualified-name "Multiplicities::Two::extra"))) (kind kerml-multiplicity) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 2) (upper 2))))
+    (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (named (kind kerml-multiplicity) (name "extra")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (named (kind kerml-multiplicity) (name "extra")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (named (kind kerml-multiplicity) (name "extra")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (named (kind kerml-multiplicity) (name "extra")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (qualified-name "Multiplicities::Two"))) (kind expressionOperand) (ordinal 0))
-      (authored-target "multiplicity")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (qualified-name "Multiplicities::Two"))) (kind expressionOperand) (ordinal 1))
-      (authored-target "extra")
-      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "One")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "One")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (named (kind kerml-multiplicity) (name "extra")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (named (kind kerml-multiplicity) (name "extra")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (qualified-name "Multiplicities::Two"))) (state unresolved-operand))
-    (evaluated (declaration (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (qualified-name "Multiplicities::Two"))) (state unsupported))
   )
 )
 ~~~
@@ -102,26 +87,18 @@ package Multiplicities {
     (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
     )
+    (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (named (kind kerml-multiplicity) (name "extra")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (path (named (kind package) (name "Multiplicities")) (named (kind kerml-classifier) (name "Two")) (named (kind kerml-multiplicity) (name "extra")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
+    )
 )
 ~~~
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (qualified-name "Multiplicities::Two"))) (outcome unsupported))
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/kerml_type_owned_multiplicity.md") (range (start 7 8) (end 7 20)) (probe (position 7 8))
-    (reference (id (source (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (qualified-name "Multiplicities::Two"))) (kind expressionOperand) (ordinal 0) (authored-target "multiplicity")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/kerml_type_owned_multiplicity.md") (range (start 7 21) (end 7 26)) (probe (position 7 21))
-    (reference (id (source (node (document "memory://snapshot/kerml_type_owned_multiplicity.md") (qualified-name "Multiplicities::Two"))) (kind expressionOperand) (ordinal 1) (authored-target "extra")
-      (outcome (status unresolved)))
-    )
-  )
 )
 ~~~

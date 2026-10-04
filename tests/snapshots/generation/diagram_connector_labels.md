@@ -42,7 +42,7 @@ package Links {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d93545af0fd65e1704797247b19c990525274582f8275f0924278d413d66c440") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0bf2b7c3ecf8189f2f5f6695fff02f397374ce92d181f6fae132819d3ede60b5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Links"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -198,7 +198,7 @@ package Links {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind connection) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
-    (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind interface) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::interfaces"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind interface) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::interfaces"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind connection) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Links")) (named (kind part) (name "system")) (anonymous (kind interface) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system"))) (provenance implied))
@@ -578,34 +578,40 @@ package Links {
       (positional-ends (authored 0) (effective 2))
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system")))
       (type (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink")) (provenance authored))
-      (type (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::interfaces")) (provenance implied))
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
-      (effective-type (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::interfaces")) (source direct))
+      (effective-type (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (source inherited) (from (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::Interface")) (source inherited) (from (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::interfaces"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (source inherited) (from (node (document "memory://snapshot/model.sysml") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (source inherited) (from (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Links::DataLink")) (scopes any))
-      (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Links::links")) (scopes any))
+      (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Links::links")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::Connection")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::Interface")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::interfaces")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::interfaces")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system::a")))
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Links::system")))
@@ -895,7 +901,7 @@ package Links {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:a92845afd051a11b40491a0dce29d0756b164e483fb8d4e8aafc6691701f82f5",
+  "modelDigest": "blake3:6a449e801470316817ce585f8f25f1eb3b63f8286280eec2aa8895991f56a4e1",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -1840,6 +1846,12 @@ package Links {
     },
     {
       "kind": "relationship",
+      "ordinal": 59,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
       "ordinal": 60,
       "relationshipKind": "subsetting",
       "source": 12
@@ -1889,12 +1901,6 @@ package Links {
     {
       "kind": "relationship",
       "ordinal": 58,
-      "relationshipKind": "typing",
-      "source": 12
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 59,
       "relationshipKind": "typing",
       "source": 12
     },
@@ -3489,21 +3495,10 @@ package Links {
         "kind": "typing",
         "navigation": 34,
         "provenance": "authored",
-        "reference": 107,
-        "source": 18,
-        "target": {
-          "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 108,
         "source": 18,
         "target": {
-          "reference": 21,
+          "reference": 3,
           "status": "resolved"
         }
       },
@@ -3514,6 +3509,17 @@ package Links {
         "reference": 99,
         "source": 18,
         "target": {
+          "reference": 21,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 100,
+        "source": 18,
+        "target": {
           "reference": 22,
           "status": "resolved"
         }
@@ -3522,7 +3528,7 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 104,
+        "reference": 105,
         "source": 18,
         "target": {
           "node": 0,
@@ -3632,7 +3638,7 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 100,
+        "reference": 101,
         "source": 1,
         "target": {
           "reference": 20,
@@ -3643,7 +3649,7 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 101,
+        "reference": 102,
         "source": 1,
         "target": {
           "reference": 22,
@@ -3654,7 +3660,7 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 105,
+        "reference": 106,
         "source": 1,
         "target": {
           "node": 0,
@@ -3775,7 +3781,7 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 102,
+        "reference": 103,
         "source": 8,
         "target": {
           "reference": 20,
@@ -3786,7 +3792,7 @@ package Links {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 103,
+        "reference": 104,
         "source": 8,
         "target": {
           "reference": 22,
@@ -3797,7 +3803,7 @@ package Links {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 106,
+        "reference": 107,
         "source": 8,
         "target": {
           "node": 0,

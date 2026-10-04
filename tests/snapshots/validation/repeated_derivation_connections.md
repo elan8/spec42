@@ -47,7 +47,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c5c8011b2c684636abfe8a7257c8bb7c81a9ecbd4224f3cc17d85b2468918a1d") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:de8b2cb4a64c5ed60706f733cfa26a512aa8523da4b76a7cb8bab0bd8e804ab9") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/repeated_derivation_connections.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/repeated_derivation_connections.md") (path (named (kind package) (name "Model")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RequirementDerivation") (import (shape namespace) (recursive false))))))

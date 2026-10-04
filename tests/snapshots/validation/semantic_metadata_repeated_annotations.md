@@ -52,7 +52,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8a3050935275c4ba93f1f9e0dbbe52baf4e76b7f4c117b156331300571902b61") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3502774bdb044dddc738e035cc42625af4fe73cefb7d19d4aa1c80413c52e04f") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/semantic_metadata_repeated_annotations.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/semantic_metadata_repeated_annotations.md") (path (named (kind package) (name "Model")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::SemanticMetadata") (import (shape membership) (recursive false))))))

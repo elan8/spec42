@@ -61,7 +61,7 @@ package Proj {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:658721ce500ccc1313ca9c265a4c19ee9ff38bdbfa857b231317a132961e041e") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:79ed11917e8e65eaa5537b94b4f6fe48ad4a06e46a48ad55f4d38d11dfaa8d65") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model_projection.md") (qualified-name "Proj::Base"))) (kind part-def) (membership (kind owning) (visibility default)))

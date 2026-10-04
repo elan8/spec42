@@ -35,7 +35,7 @@ package Remaining {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:67cf84e90bc3f6d9bc889ab2c8c736f358a4e51fc0b00b04d2455b4179881a69") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8139e21c1bbb79c0aebc320d4d579153db4926d720c805e25935b9406bdd5e19") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box"))) (kind view-def) (membership (kind owning) (visibility default)))

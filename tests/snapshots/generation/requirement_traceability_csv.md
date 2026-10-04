@@ -41,7 +41,7 @@ package Traceability {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:99bedddde88eea52bc880e8ad06dd7a01e05bfd9419e8e55912506f920a8fdfd") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:cd30e933c9cee793b8cc4a3b99db94e5f693366672133466501dac689198b170") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_traceability_csv.md") (qualified-name "Traceability"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_traceability_csv.md") (path (named (kind package) (name "Traceability")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "safety")) (satisfyTarget (reference "vehicle")))))

@@ -2171,7 +2171,7 @@ dependencies = [
 [[package]]
 name = "sysml-v2-parser"
 version = "0.57.0"
-source = "git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=c6eb80999d51def4be4aeadd42f9ffb628bb7f4c#c6eb80999d51def4be4aeadd42f9ffb628bb7f4c"
+source = "git+https://github.com/lukewilliamboswell/sysml-v2-parser.git?rev=532fb0a66fe75693cdaed009b7f49d181fcd0d97#532fb0a66fe75693cdaed009b7f49d181fcd0d97"
 dependencies = [
  "log",
  "memchr",

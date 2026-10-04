@@ -2247,12 +2247,10 @@ impl SemanticModelBuilder {
             })
             .filter_map(|(index, (_, facts))| {
                 let record = facts.multiplicity.as_ref()?;
-                let bounds = record
-                    .bound_spans
-                    .as_deref()
-                    .map_or([None, None], |bounds| {
-                        [bounds.lower.clone(), bounds.upper.clone()]
-                    });
+                let bounds = [
+                    record.bound_spans.lower.clone(),
+                    Some(record.bound_spans.upper.clone()),
+                ];
                 Some(DeclarationId::from_index(index).map(|id| (id, record.span, bounds)))
             })
             .collect::<Result<Vec<_>, _>>()?;
@@ -2268,7 +2266,7 @@ impl SemanticModelBuilder {
             self.push_membership(range, MembershipKind::Owning, Visibility::Default, span)?;
             // `MultiplicityRange::bound`: each authored bound is an owned Expression, in source
             // order. Only its identity, ownership and result are minted here; the bound's value
-            // stays the owner's `multiplicity` fact, and an unbounded `*` has no AST node to mint.
+            // stays the owner's `multiplicity` fact; an unbounded `*` is a `LiteralInfinity` bound.
             // Its feature-reference operands are lowered as `FeatureReferenceExpression` operands
             // of the bound, so its result type can be derived from their referents.
             for site in bounds.into_iter().flatten() {

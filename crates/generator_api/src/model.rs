@@ -2258,6 +2258,7 @@ fn diagram_notation_role(kind: ElementKind) -> DiagramNotationRole {
         | Metaclass::LiteralRational
         | Metaclass::LiteralString
         | Metaclass::MetadataAccessExpression
+        | Metaclass::LiteralInfinity
         | Metaclass::NullExpression => DiagramNotationRole::Unsupported,
         Metaclass::Unrecognized(_) => DiagramNotationRole::Unsupported,
     }

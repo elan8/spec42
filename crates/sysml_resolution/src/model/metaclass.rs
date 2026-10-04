@@ -180,6 +180,7 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         | K::KermlLiteralInteger
         | K::KermlLiteralRational
         | K::KermlLiteralString
+        | K::KermlLiteralInfinity
         | K::KermlNullExpression
         | K::KermlMetadataAccessExpression
         | K::KermlConnector

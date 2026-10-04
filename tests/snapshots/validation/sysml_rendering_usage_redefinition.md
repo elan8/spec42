@@ -45,7 +45,7 @@ package Renderings {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:046f1ac26bd7e0b77530845229bf2ad2b87e2ce7f1f1caa1e7d106ea283b9649") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2db09808ea08c713a721686a3a5326da511825854f2f2d9d12fcd2ae951e0f7d") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_rendering_usage_redefinition.md") (qualified-name "Renderings"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_rendering_usage_redefinition.md") (qualified-name "Renderings::TableView"))) (kind view-def) (membership (kind owning) (visibility default)))

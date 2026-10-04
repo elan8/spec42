@@ -63,7 +63,7 @@ package Nested {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0e041b1dd0636f0de341c1efb19bec8aba353dd109c27617524273f6a99333c2") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:82b6478d58d7a71e472673950b2e8cfd5a9d224a4aab695df63618de808e29f5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/nested_instantiation_expressions.md") (qualified-name "Nested"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/nested_instantiation_expressions.md") (qualified-name "Nested::Box"))) (kind part-def) (membership (kind owning) (visibility default)))

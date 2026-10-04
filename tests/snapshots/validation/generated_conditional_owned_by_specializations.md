@@ -35,7 +35,7 @@ package OwnedBySpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e3ae68ecbb068075cfbfd742ba8cd97547e5d21b47d4b277deb44349c1878d41") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c5b62d0e954dbe6113ea17c80ca1d459b8b041bb0f68cab3cf654fb1d945c749") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_owned_by_specializations.md") (qualified-name "OwnedBySpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_owned_by_specializations.md") (qualified-name "OwnedBySpecializations::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))

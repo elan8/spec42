@@ -38,7 +38,7 @@ package BinaryConnectorSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f4127c560a2f553fbd81374c0d55c9c5080b7c5d724e4eb2257a5439e93ce1b3") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a672c36b9b95af0f35d85d1cb79079aec47ed588ec5ae1678ca890293d1693b8") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_binary_connector_specialization.md") (qualified-name "BinaryConnectorSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_binary_connector_specialization.md") (qualified-name "BinaryConnectorSpecialization::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

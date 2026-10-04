@@ -51,7 +51,7 @@ package MetaclassGeneralization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:342e56fede5ed681ae158c16c3766d12df776e85b5351304fc50e6f418b3f672") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4b8ad19cf2bd77569f31ca37d4a67509a6730f325f821ee4d48c4e5fab53e6c9") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_metaclass_generalization.md") (qualified-name "MetaclassGeneralization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_metaclass_generalization.md") (qualified-name "MetaclassGeneralization::Act"))) (kind action-def) (membership (kind owning) (visibility default)))

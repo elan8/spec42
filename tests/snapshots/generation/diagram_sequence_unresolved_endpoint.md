@@ -38,7 +38,7 @@ package SequenceUnresolved {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a41872ef46dfc43c6bed88539a765119751c4156310da4e7770fe79bb5e12c93") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:78dfbb6e3aa886db83ad1c458303cebd77f6a6b06d5b9d999e4017fe02956ac7") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (qualified-name "SequenceUnresolved"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_unresolved_endpoint.md") (path (named (kind package) (name "SequenceUnresolved")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -295,7 +295,7 @@ package SequenceUnresolved {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:eb1986969bbae59cec894d2830ebfa0ba0ec8a666ad2f550bb591b638a13f946",
+  "modelDigest": "blake3:0c5f6dba927809d10e289aa5c5eab94451c03b28aa68f5c51e1e565c41c3cb6e",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_unresolved_endpoint.md",

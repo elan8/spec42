@@ -722,6 +722,8 @@ pub(crate) enum DeclarationKind {
     KermlLiteralRational,
     /// A string literal written inside an expression. KerML `LiteralString`.
     KermlLiteralString,
+    /// `*` written as an expression (an unbounded multiplicity bound). KerML `LiteralInfinity`.
+    KermlLiteralInfinity,
     /// `null` or `()` written inside an expression. KerML `NullExpression`.
     KermlNullExpression,
     /// `X.metadata` written inside an expression. KerML `MetadataAccessExpression`.

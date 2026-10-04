@@ -48,7 +48,7 @@ package FeatureCategoryLoweringGaps {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1d9b2928c1ef6cc5dac690ade3d2c69b7f84aab4df29a8e9cf98313b9d45f71e") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5776f3c5694ead2070b83abe8c4294814e4f15e9a764d7508b0ab9d4d457a4d5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_feature_category_occurrence_specializations.md") (qualified-name "FeatureCategoryLoweringGaps"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_feature_category_occurrence_specializations.md") (qualified-name "FeatureCategoryLoweringGaps::ObjectType"))) (kind kerml-structure) (membership (kind owning) (visibility default)))

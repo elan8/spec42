@@ -35,7 +35,7 @@ package OccurrenceUsageSuboccurrenceSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:5edb2e063f93a62dc89b1e9b5ce4df850451b19287b929c98751f05571f44374") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b42b04a6ffde10ad14d90bc06d429096ed3a8842ed320130391ec674b841d157") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_occurrence_usage_suboccurrence_specialization.md") (qualified-name "OccurrenceUsageSuboccurrenceSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_occurrence_usage_suboccurrence_specialization.md") (qualified-name "OccurrenceUsageSuboccurrenceSpecialization::Container"))) (kind part-def) (membership (kind owning) (visibility default)))

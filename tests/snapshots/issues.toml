@@ -49,12 +49,6 @@ owner = "spec42-semantic"
 summary = "The owned connectorEnd collection is now canonical (SemanticModelStorage::owned_end_features), but the pinned manifest classifies checkConnectorBinaryObjectSpecialization as a specialization_check: the extractor rejects its compound XMI body (`connectorEnds->size() = 2 and association->exists(oclIsKindOf(AssociationStructure))`, note the XMI spelling `connectorEnds`), so no conditional contract or Objects::binaryLinkObjects anchor is generated to synthesize from. Needs extractor support for the compound predicate and an XMI-backed manifest refresh."
 
 [[issue]]
-id = "abstract-syntax-literal-infinity-identity"
-kind = "abstract_syntax_coverage_gap"
-owner = "spec42-snapshot"
-summary = "KerML LiteralExpression admits `*` (LiteralInfinity) wherever an expression is written, but the pinned sysml-v2-parser publishes no ast::Expression node for it (a `[*]` bound is an absent node, and `feature x = *;` is reported as an unsupported feature declaration), so lowering mints no LiteralInfinity element for checkLiteralInfinitySpecialization to be asserted against"
-
-[[issue]]
 id = "parser-gap-directed-control-node"
 kind = "parser_gap"
 owner = "sysml-v2-parser"

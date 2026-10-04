@@ -2237,6 +2237,7 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::KermlLiteralInteger => "kerml-literal-integer",
         DeclarationKind::KermlLiteralRational => "kerml-literal-rational",
         DeclarationKind::KermlLiteralString => "kerml-literal-string",
+        DeclarationKind::KermlLiteralInfinity => "kerml-literal-infinity",
         DeclarationKind::KermlNullExpression => "kerml-null-expression",
         DeclarationKind::KermlMetadataAccessExpression => "kerml-metadata-access-expression",
         DeclarationKind::KermlFeature => "kerml-feature",

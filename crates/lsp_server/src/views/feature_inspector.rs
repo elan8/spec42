@@ -199,6 +199,7 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::LiteralInteger
         | ElementKind::LiteralRational
         | ElementKind::LiteralString
+        | ElementKind::LiteralInfinity
         | ElementKind::NullExpression
         | ElementKind::MetadataAccessExpression
         | ElementKind::Invariant => "usage",

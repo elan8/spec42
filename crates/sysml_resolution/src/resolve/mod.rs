@@ -1997,6 +1997,7 @@ pub(crate) fn is_feature_declaration(kind: DeclarationKind) -> bool {
                 | sysml_contract::ElementKind::LiteralInteger
                 | sysml_contract::ElementKind::LiteralRational
                 | sysml_contract::ElementKind::LiteralString
+                | sysml_contract::ElementKind::LiteralInfinity
                 | sysml_contract::ElementKind::NullExpression
                 | sysml_contract::ElementKind::MetadataAccessExpression
                 | sysml_contract::ElementKind::Connector

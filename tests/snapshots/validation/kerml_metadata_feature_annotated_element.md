@@ -61,7 +61,7 @@ package Metadata {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3fba4f68fc1b3e06714c99b9000991647d3d959de7903905b9d5547ac76cea68") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4bfc441c7c7c1f6e410cbb9c9041df18f2b447dc69cf66327a442b829133345a") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_feature_annotated_element.md") (qualified-name "Metadata::ClassifierMarker"))) (kind kerml-metaclass) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Metaobjects::Metaobject")))))

@@ -176,6 +176,7 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::KermlLiteralInteger => ElementKind::LiteralInteger,
         DeclarationKind::KermlLiteralRational => ElementKind::LiteralRational,
         DeclarationKind::KermlLiteralString => ElementKind::LiteralString,
+        DeclarationKind::KermlLiteralInfinity => ElementKind::LiteralInfinity,
         DeclarationKind::KermlNullExpression => ElementKind::NullExpression,
         DeclarationKind::KermlMetadataAccessExpression => ElementKind::MetadataAccessExpression,
         DeclarationKind::KermlConnector => ElementKind::Connector,
@@ -329,6 +330,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::KermlLiteralInteger
         | DeclarationKind::KermlLiteralRational
         | DeclarationKind::KermlLiteralString
+        | DeclarationKind::KermlLiteralInfinity
         | DeclarationKind::KermlNullExpression
         | DeclarationKind::KermlMetadataAccessExpression
         | DeclarationKind::KermlConnector
@@ -495,6 +497,7 @@ mod tests {
         DeclarationKind::KermlLiteralInteger,
         DeclarationKind::KermlLiteralRational,
         DeclarationKind::KermlLiteralString,
+        DeclarationKind::KermlLiteralInfinity,
         DeclarationKind::KermlNullExpression,
         DeclarationKind::KermlMetadataAccessExpression,
         DeclarationKind::DefaultReferenceUsage,

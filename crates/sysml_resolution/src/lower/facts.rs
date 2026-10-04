@@ -142,21 +142,23 @@ pub(crate) struct MultiplicityRecord {
     pub(crate) lower: MultiplicityBound,
     pub(crate) upper: MultiplicityBound,
     pub(crate) span: Span,
-    /// The source spans of the authored bound expressions, in source order, which the owned
-    /// `MultiplicityRange`'s `bound` Expressions are minted at. Boxed because almost every
-    /// declaration carries no multiplicity, and `None` for a `[*]`, whose sole bound is the
-    /// unbounded `*` the parser publishes no expression node for.
-    pub(crate) bound_spans: Option<Box<MultiplicityBoundSpans>>,
+    /// The authored bound expressions, in source order, which the owned `MultiplicityRange`'s
+    /// `bound` Expressions are minted at. It is the provenance of `lower`: a single-bound `[n]`
+    /// authors no `lowerBound` (`bound_spans.lower` is `None`), and `lower` is then the effective
+    /// lower bound, equal to the upper bound (KerML 8.3.4.11, `MultiplicityRange::lowerBound`).
+    /// Boxed because almost every declaration carries no multiplicity.
+    pub(crate) bound_spans: Box<MultiplicityBoundSpans>,
 }
 
 /// The authored bound expressions of a multiplicity (`lowerBound`, `upperBound`): the source span
 /// each `bound` Expression is minted at, and its Expression metaclass.
 ///
-/// `lower` is `None` for the single-bound form; `upper` is `None` for an unbounded `*`.
+/// `lower` is `None` for the single-bound form; `upper` is always authored (an unbounded `*` is a
+/// `LiteralInfinity` bound).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct MultiplicityBoundSpans {
     pub(crate) lower: Option<MultiplicityBoundSite>,
-    pub(crate) upper: Option<MultiplicityBoundSite>,
+    pub(crate) upper: MultiplicityBoundSite,
 }
 
 /// One authored bound expression of a multiplicity: where its `bound` Expression is minted, its
@@ -191,7 +193,8 @@ pub(crate) fn multiplicity_bound_form(
     operands: &mut Vec<sysml_v2_parser::ast::QualifiedReferenceId>,
 ) -> MultiplicityBoundForm {
     use sysml_v2_parser::ast::{BinaryOperator, UnaryOperator};
-    if literal_bound_value(expression).is_some() {
+    if matches!(expression, Expression::LiteralInfinity) || literal_bound_value(expression).is_some()
+    {
         return MultiplicityBoundForm::Literal;
     }
     match expression {
@@ -256,6 +259,7 @@ pub(crate) fn leaf_expression_kind(expression: &Expression) -> Option<Declaratio
         Expression::LiteralString(_) => DeclarationKind::KermlLiteralString,
         Expression::Null => DeclarationKind::KermlNullExpression,
         Expression::MetadataAccess(_) => DeclarationKind::KermlMetadataAccessExpression,
+        Expression::LiteralInfinity => DeclarationKind::KermlLiteralInfinity,
         _ => return None,
     })
 }
@@ -674,13 +678,16 @@ pub(crate) struct MetadataAnnotationRecord {
 /// Builds the multiplicity fact for a declaration whose parser node carries a `multiplicity` field.
 ///
 /// A declaration with no `[...]` written yields `None`; that is genuinely "no multiplicity
-/// authored", distinct from `[*]`, which yields a record with both bounds `Unbounded`.
+/// authored", distinct from `[*]`, whose upper bound is a `LiteralInfinity`.
+///
+/// A single-bound `[n]` authors only the `upperBound` (KerML 8.3.4.11: `lowerBound` is null when
+/// `bound` has one element); its lower bound is effectively the same value. That effective value
+/// is derived here, once, as the record's `lower`, while `bound_spans.lower` stays `None` so the
+/// authored form remains distinguishable.
 pub(crate) fn multiplicity_facts(
     multiplicity: Option<&Node<Multiplicity>>,
 ) -> Option<MultiplicityRecord> {
     let multiplicity = multiplicity?;
-    // A bare `[3]` reaches the AST as one expression node in both slots; KerML makes that single
-    // bound the `upperBound` (8.3.4.11, `lowerBound` is null when `bound` has one element).
     let site = |bound: &Node<Expression>| {
         let mut operands = Vec::new();
         let form = multiplicity_bound_form(&bound.value, &mut operands);
@@ -691,30 +698,24 @@ pub(crate) fn multiplicity_facts(
             operands: operands.into_boxed_slice(),
         }
     };
-    let upper_span = multiplicity.value.upper.as_deref().map(site);
-    let lower_span = multiplicity
-        .value
-        .lower
-        .as_deref()
-        .map(site)
-        .filter(|lower| Some(lower.span) != upper_span.as_ref().map(|upper| upper.span));
+    let authored_upper = multiplicity.value.upper.as_ref();
+    let authored_lower = multiplicity.value.lower.as_deref();
+    let upper = multiplicity_bound(authored_upper);
     Some(MultiplicityRecord {
-        lower: multiplicity_bound(multiplicity.value.lower.as_deref()),
-        upper: multiplicity_bound(multiplicity.value.upper.as_deref()),
+        lower: authored_lower.map_or(upper, multiplicity_bound),
+        upper,
         span: multiplicity.value.span,
-        bound_spans: (lower_span.is_some() || upper_span.is_some()).then(|| {
-            Box::new(MultiplicityBoundSpans {
-                lower: lower_span,
-                upper: upper_span,
-            })
+        bound_spans: Box::new(MultiplicityBoundSpans {
+            lower: authored_lower.map(site),
+            upper: site(authored_upper),
         }),
     })
 }
 
-pub(crate) fn multiplicity_bound(expression: Option<&Node<Expression>>) -> MultiplicityBound {
-    let Some(expression) = expression else {
+pub(crate) fn multiplicity_bound(expression: &Node<Expression>) -> MultiplicityBound {
+    if matches!(expression.value, Expression::LiteralInfinity) {
         return MultiplicityBound::Unbounded;
-    };
+    }
     match literal_bound_value(&expression.value) {
         Some(LiteralBoundValue::Integer(value)) => MultiplicityBound::Literal(value),
         Some(LiteralBoundValue::NonInteger) => MultiplicityBound::NonIntegerLiteral,

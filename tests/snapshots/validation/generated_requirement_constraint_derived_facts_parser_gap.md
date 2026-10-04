@@ -47,7 +47,7 @@ package RequirementConstraintDerivedFacts {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:63c717f105917a5353d8315db9c8509189bf456a4849f2e2f44d0560565ec198") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:73c2f93c400fce321a514deaa0221a25cb1714b1f6ce88eb5b2285dceaf30b89") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_requirement_constraint_derived_facts_parser_gap.md") (qualified-name "RequirementConstraintDerivedFacts"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_requirement_constraint_derived_facts_parser_gap.md") (qualified-name "RequirementConstraintDerivedFacts::Bound"))) (kind constraint-def) (membership (kind owning) (visibility default)))

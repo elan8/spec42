@@ -46,7 +46,7 @@ package GeneratedViewpointAnchors {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ca83b54dcdbca20e47cb051fb914861abfd0bcbbcfc73746f0f12aa0e77f9b8b") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:674e76ce3ef3095d4e21522271cca4ed00312c2b755a24a05725803e628cd64f") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_viewpoint_anchors.md") (qualified-name "GeneratedViewpointAnchors"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_viewpoint_anchors.md") (qualified-name "GeneratedViewpointAnchors::Act"))) (kind action-def) (membership (kind owning) (visibility default)))

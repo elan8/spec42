@@ -220,6 +220,7 @@ element_kinds! {
     LiteralInteger,
     LiteralRational,
     LiteralString,
+    LiteralInfinity,
     NullExpression,
     MetadataAccessExpression,
     Connector,
@@ -280,6 +281,7 @@ impl ElementKind {
             | K::LiteralExpression
             | K::NullExpression
             | K::MetadataAccessExpression => &[K::Expression],
+            K::LiteralInfinity => &[K::LiteralExpression],
             K::LiteralBoolean | K::LiteralInteger | K::LiteralRational | K::LiteralString => {
                 &[K::LiteralExpression]
             }

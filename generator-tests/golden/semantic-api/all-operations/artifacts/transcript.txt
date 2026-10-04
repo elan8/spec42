@@ -1,7 +1,7 @@
 info: model_digest=<present> spec42_version=<present> semantic_api_version=0.2.0
 roots: 1 element(s)
   Coverage [Package] name=Coverage library=false
-find(None): 27 element(s)
+find(None): 29 element(s)
   Coverage [Package] name=Coverage library=false
   Coverage:: [Documentation] name=<none> library=false
   Coverage::Component [PartDefinition] name=Component library=false
@@ -11,7 +11,9 @@ find(None): 27 element(s)
   Coverage::Engine::mass [AttributeUsage] name=mass library=false
   Coverage::Engine::speed [AttributeUsage] name=speed library=false
   Coverage::Engine::speed:: [MultiplicityRange] name=<none> library=false
+  Coverage::Engine::speed:::: [LiteralInfinity] name=<none> library=false
   Coverage::Engine::speed:::: [LiteralInteger] name=<none> library=false
+  Coverage::Engine::speed:::::: [Feature] name=<none> library=false
   Coverage::Engine::speed:::::: [Feature] name=<none> library=false
   Coverage::Mass [AttributeDefinition] name=Mass library=false
   Coverage::Powered [PartDefinition] name=Powered library=false
@@ -98,7 +100,8 @@ relationships(Coverage::Engine::speed): 2 edge(s)
   typeFeaturing Coverage::Engine::speed -> Coverage::Engine implied=true
   typing Coverage::Engine::speed -> Coverage::Speed implied=false
 effective_features(Coverage::Engine::speed): 0 element(s)
-children(Coverage::Engine::speed::): 1 element(s)
+children(Coverage::Engine::speed::): 2 element(s)
+  Coverage::Engine::speed:::: [LiteralInfinity] name=<none> library=false
   Coverage::Engine::speed:::: [LiteralInteger] name=<none> library=false
 element(Coverage::Engine::speed::): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Engine::speed::): <untyped>
@@ -113,6 +116,20 @@ relationships(Coverage::Engine::speed::::): 1 edge(s)
   typeFeaturing Coverage::Engine::speed:::: -> Coverage::Engine implied=true
 effective_features(Coverage::Engine::speed::::): 1 element(s)
   Coverage::Engine::speed:::::: [Feature] name=<none> library=false
+children(Coverage::Engine::speed::::): 1 element(s)
+  Coverage::Engine::speed:::::: [Feature] name=<none> library=false
+element(Coverage::Engine::speed::::): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::Engine::speed::::): <untyped>
+relationships(Coverage::Engine::speed::::): 1 edge(s)
+  typeFeaturing Coverage::Engine::speed:::: -> Coverage::Engine implied=true
+effective_features(Coverage::Engine::speed::::): 1 element(s)
+  Coverage::Engine::speed:::::: [Feature] name=<none> library=false
+children(Coverage::Engine::speed::::::): 0 element(s)
+element(Coverage::Engine::speed::::::): definition=false abstract=false derived=false end=false multiplicity=<none>
+typed_by(Coverage::Engine::speed::::::): <untyped>
+relationships(Coverage::Engine::speed::::::): 1 edge(s)
+  typeFeaturing Coverage::Engine::speed:::::: -> Coverage::Engine::speed:::: implied=true
+effective_features(Coverage::Engine::speed::::::): 0 element(s)
 children(Coverage::Engine::speed::::::): 0 element(s)
 element(Coverage::Engine::speed::::::): definition=false abstract=false derived=false end=false multiplicity=<none>
 typed_by(Coverage::Engine::speed::::::): <untyped>

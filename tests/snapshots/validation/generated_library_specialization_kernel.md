@@ -94,7 +94,7 @@ package GeneratedKernel {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e49d2c1999d6451c65e35dd4bed95723234a3f3feedbf05329f1a10e7cfc11e5") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f8293297b608f51b4da9ca0a0d4bfd1dcb0e3a217f7ae5d314fb7d7ad230e822") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_kernel.md") (qualified-name "GeneratedKernel::Association"))) (kind kerml-association) (membership (kind owning) (visibility default)))

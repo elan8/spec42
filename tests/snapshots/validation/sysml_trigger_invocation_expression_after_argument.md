@@ -60,7 +60,7 @@ package Triggers {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d1820d46bb786555dfb2d86b566a0f0139583b26d6ca7d73ca161bd393b110db") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0d3d097abf5dc2647bfb0cf7dc1f9d43bf6eb863a77cb3c39b37ba46d0e52cbf") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_trigger_invocation_expression_after_argument.md") (qualified-name "Triggers::Act"))) (kind action-def) (membership (kind owning) (visibility default)))

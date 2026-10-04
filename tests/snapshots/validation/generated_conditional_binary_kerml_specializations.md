@@ -67,7 +67,7 @@ package BinaryKerMLSpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:71342d86510561531d0a597cd03690a3c505d59d90fac659e477ce519eddaf70") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:35ed31b1d990c03d65246d6c743ba364f467805ce3366fb9b7db57782be2ec7d") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_binary_kerml_specializations.md") (qualified-name "BinaryKerMLSpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_binary_kerml_specializations.md") (qualified-name "BinaryKerMLSpecializations::Link"))) (kind kerml-association) (membership (kind owning) (visibility default)))

@@ -44,7 +44,7 @@ package PortDirectionExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:af39ac3b3beca23419486ae811159e0b31090f0c395503b5769b2e8b8fa6e1b8") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:167a1c5ae63272d2b396f723ba9a15923a86c1a7a423cc3e8287d128f2316f18") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (path (named (kind package) (name "PortDirectionExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -334,7 +334,7 @@ package PortDirectionExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:5faba4214f40efc329d68402fa3522528e704d37067c8185927466248554ab17",
+  "modelDigest": "blake3:4ac0a939a75d2bbed5989c227a2197d6b435131cc0476b64560308a2bef30867",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_port_direction.md",

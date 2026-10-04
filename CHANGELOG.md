@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`*` is a LiteralInfinity expression.** An unbounded multiplicity bound (`[*]`, `[0..*]`) and a
+  `*` written as a value are now published as `LiteralInfinity` elements specializing
+  `Performances::literalInfinityEvaluations` (KerML 8.3.4.8.13), and a single-bound `[n]` keeps
+  its authored form (no `lowerBound`) while its effective lower bound equals `n`. The generator
+  wire `Metaclass` gains `LiteralInfinity`, so generator guests must be rebuilt.
+
 - **Non-literal multiplicity bounds are type-checked.** A bound that references a feature (`[count]`)
   or does integer arithmetic over feature references now resolves those names, and a bound whose
   result is not an Integer (e.g. a `Real` feature) reports `multiplicity_bound_invalid`

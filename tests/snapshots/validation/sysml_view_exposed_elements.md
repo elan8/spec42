@@ -143,7 +143,7 @@ package ExposureExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:24b1d7965c94e20466a289eae47c56d677d3eacb682fe110946a36f556b0af7d") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:73418c01abaeaafb7fa6a1c6aa4663162a98c16d10118fafb5482655900ee2aa") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_view_exposed_elements.md") (qualified-name "ExposureExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_view_exposed_elements.md") (qualified-name "ExposureExample::Catalog"))) (kind package) (membership (kind owning) (visibility default)))

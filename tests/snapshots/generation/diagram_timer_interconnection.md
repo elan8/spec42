@@ -103,7 +103,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:267bc69f0c6d135c05a8ee76b14b376c8e346196989516897d42eb6077bfe842") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:154fc8e5675513e07fe884c89e6a084cb749c5809e2a2403986a7346b82a125b") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (qualified-name "KitchenTimer"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text " Root package for the kitchen timer teaching example. "))))
@@ -6964,7 +6964,7 @@ Repository sources are loaded byte-for-byte from the paths declared in META.
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:d5f1682d24330a17955d0334bfd210e2359b57af2545dd41dd808e7a1feea264",
+  "modelDigest": "blake3:5f348f47cd0ea02f8fc678bf1ecdedf6bce6dabf70ef3cc83ae28a97e5001f52",
   "documents": [
     {
       "uri": "memory://snapshot/examples/timer/KitchenTimer.sysml",

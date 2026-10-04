@@ -28,7 +28,7 @@ package BrowserExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b72dc185f0f7dd98f118430fa8e03ce00bfa4a26ae0233813f17c46bb12047a2") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:63e50e031c6cc3e1ea5cfa208043f3bdcb8b9927711b5105cc41394a4a4dd0b6") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -169,7 +169,7 @@ package BrowserExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:558c24f93375a48ba5bcdc66257858d86460e07e37de474a73c8c80c00586272",
+  "modelDigest": "blake3:bab831f0603f139b050db974685111a8331fa956462186a7d5ee20d21ac6bfee",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_browser_complete.md",

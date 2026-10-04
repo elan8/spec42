@@ -44,7 +44,7 @@ package InterconnectionExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f107a429784874c5cb2122086463a763c006eaa1eb5f45445542daa8280046af") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6f071ede4a28704e23df2d35be3e0df878b00365dc7c7d24400a4c7f57f38ad3") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_complete.md") (qualified-name "InterconnectionExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_complete.md") (path (named (kind package) (name "InterconnectionExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -351,7 +351,7 @@ package InterconnectionExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:e26a15333e8ece42a47fea9fb641f44921f5ee37e7fd1735cd6a67a4eb866286",
+  "modelDigest": "blake3:a6327bb08a3820e0da9c7eca80735fe38eeb52d4b70aed17f88880651d8669c9",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_complete.md",

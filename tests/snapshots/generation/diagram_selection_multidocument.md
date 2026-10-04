@@ -41,7 +41,7 @@ package BehaviorModel {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:cd1feb467dac01a3a89256904ace4c47dc547fca71b7ffa6b761410fbce02b28") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:84f2d101a96ab500c0194d78ac3b41e5c553fe4ef6f37cb3d9f4b327f7094fc5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/behavior.sysml") (qualified-name "BehaviorModel"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/behavior.sysml") (path (named (kind package) (name "BehaviorModel")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -254,7 +254,7 @@ package BehaviorModel {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:4b2f64167d8df0328eb565a68eb12ed8862f71d74c9ae0fbdc4cbb6b55f6497a",
+  "modelDigest": "blake3:60cbc4e6cfa34db330978fc06502abf79c3bb0e51713ab8bcf0046c8b60ebc58",
   "documents": [
     {
       "uri": "memory://snapshot/structure.sysml",

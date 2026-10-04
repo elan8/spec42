@@ -39,7 +39,7 @@ package FlowFeatureRedefinition {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:acaf2d51b90ab8e44d8b2d322694d7ad40646ba51df8b76fe2c52fbe13e77596") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1db5314a014859cdb34826a1b52f54b78d3998431e38c494914f9ce488b04d9e") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_flow_feature_redefinition.md") (qualified-name "FlowFeatureRedefinition"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_flow_feature_redefinition.md") (qualified-name "FlowFeatureRedefinition::Fuel"))) (kind item-def) (membership (kind owning) (visibility default)))

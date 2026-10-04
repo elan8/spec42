@@ -57,7 +57,7 @@ package AmbiguousExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f14a5a180f45e68462fafa495c434bc62cb11e6b2856e4c9dd8bdbb64f575100") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0a562e8257c16b6bd276a5305be68159737233563fc7ab56fda5bcba59ea5c88") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_ambiguous_exposure.md") (qualified-name "AmbiguousExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_ambiguous_exposure.md") (path (named (kind package) (name "AmbiguousExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -158,7 +158,7 @@ package AmbiguousExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:e53ad18ff1a388f0622127dd68127e9484a5ec882627a4e97404119d64f546d1",
+  "modelDigest": "blake3:6a128055783ccb2e54dd6560a0be9fbaae1428b9781e56cd6e901f0ab04e9755",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_ambiguous_exposure.md",

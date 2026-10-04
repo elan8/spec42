@@ -34,7 +34,7 @@ package GeometryNegative {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:05c5456db9aebfe18ff29f2c4a9d79e3df76921be8b9a4ff7d7c53f8dc54af22") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a43905dcb3c129042fc01924d289a0c693080d7f550760138b6a45e8dd27bc34") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_geometry_unresolved.md") (qualified-name "GeometryNegative"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_geometry_unresolved.md") (path (named (kind package) (name "GeometryNegative")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -136,7 +136,7 @@ package GeometryNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:66952e287b67aea92cf6645dd2a4b7872035f7dedcf3743625fb47cce6221d6b",
+  "modelDigest": "blake3:3c780c74ee6dd1b5f94a691fb6bbdbced75fd6d1e58c775a14d65cab576599ab",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_geometry_unresolved.md",

@@ -59,7 +59,7 @@ package Occurrences {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3098459a1eb926ab528c27b596a0f61cc47a5e3748d0b9ade1d944b2643132df") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:575be56ef7308ad3eddcbb875b7616f59f7555591add3b621906978f31802548") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_occurrence_usage_individual_definition.md") (qualified-name "Occurrences"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_occurrence_usage_individual_definition.md") (qualified-name "Occurrences::First"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers individual) (individual-multiplicity (node (document "memory://snapshot/sysml_occurrence_usage_individual_definition.md") (path (named (kind package) (name "Occurrences")) (named (kind part-def) (name "First")) (anonymous (kind kerml-multiplicity) (ordinal 0)))))))

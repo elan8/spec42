@@ -161,6 +161,7 @@ pub enum Metaclass {
     LiteralInteger,
     LiteralRational,
     LiteralString,
+    LiteralInfinity,
     MergeNodeUsage,
     MetadataAccessExpression,
     MultiplicityRange,
@@ -282,6 +283,7 @@ impl Metaclass {
             Self::LiteralInteger => "LiteralInteger",
             Self::LiteralRational => "LiteralRational",
             Self::LiteralString => "LiteralString",
+            Self::LiteralInfinity => "LiteralInfinity",
             Self::MetadataAccessExpression => "MetadataAccessExpression",
             Self::NullExpression => "NullExpression",
             Self::MergeNodeUsage => "MergeNodeUsage",
@@ -398,6 +400,7 @@ impl Metaclass {
             "LiteralInteger" => Self::LiteralInteger,
             "LiteralRational" => Self::LiteralRational,
             "LiteralString" => Self::LiteralString,
+            "LiteralInfinity" => Self::LiteralInfinity,
             "MetadataAccessExpression" => Self::MetadataAccessExpression,
             "NullExpression" => Self::NullExpression,
             "MergeNodeUsage" => Self::MergeNodeUsage,
@@ -1313,7 +1316,7 @@ mod tests {
     #[test]
     fn the_wire_schema_fingerprint_is_pinned() {
         assert_eq!(
-            SCHEMA_FINGERPRINT, 0x8c7b_d770_46f0_0f9b,
+            SCHEMA_FINGERPRINT, 0x2b66_c8aa_fc3c_a533,
             "the generator wire schema changed; every guest must be rebuilt"
         );
     }
@@ -1321,7 +1324,7 @@ mod tests {
     #[test]
     fn the_compatibility_token_is_pinned() {
         assert_eq!(
-            COMPATIBILITY_TOKEN, 0xf75b_2080_69d3_0879,
+            COMPATIBILITY_TOKEN, 0x85ed_4e42_ffb0_4022,
             "the generator ABI contract changed; every guest must be rebuilt"
         );
     }

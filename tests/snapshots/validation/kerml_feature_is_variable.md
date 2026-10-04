@@ -60,7 +60,7 @@ package Variables {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c74858a9773df38fb481e58f653f9118c628f06183b65e6a7ecf312c4e2da34a") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:7c88ad9c392d088cbd8f7e19c9e13ce6a62eb3c82b37d47f0509239f3a87c2d1") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Happening"))) (kind class-def) (membership (kind owning) (visibility default)))
