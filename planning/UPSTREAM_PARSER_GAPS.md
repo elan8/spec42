@@ -3,9 +3,12 @@
 This is the active record of information the parser must preserve or distinguish before spec42 can
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
-The canonical parser currently pinned by the root workspace is
-`elan8/sysml-v2-parser@9f00caf353581a3c0ccc13676c5d8829f90708b3` (parser `main`,
-`PARSE_AST_VERSION` 256). It adds `elan8/sysml-v2-parser#139` (`elan8/spec42#140`): a targeted
+The parser currently pinned by the root workspace is the fork commit
+`lukewilliamboswell/sysml-v2-parser@532fb0a66fe75693cdaed009b7f49d181fcd0d97` (branch
+`spec42-parser-gaps`, `PARSE_AST_VERSION` 265), pending upstream merge as
+`elan8/sysml-v2-parser#161`; only the rows this pin closed or narrowed were re-verified against it. The last
+canonical upstream pin was `elan8/sysml-v2-parser@9f00caf353581a3c0ccc13676c5d8829f90708b3`
+(parser `main`, `PARSE_AST_VERSION` 256), which added `elan8/sysml-v2-parser#139` (`elan8/spec42#140`): a targeted
 `verify_requirement_expects_declaration` recovery for the invalid `verify requirement
 <feature-chain>;` form (was the generic `recovered_requirement_body_element`) -- a
 diagnostic-only change with no AST shape effect, so spec42 passes the code through unchanged. And
