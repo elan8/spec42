@@ -1182,6 +1182,9 @@ impl SemanticModelBuilder {
                 short_name,
                 modifiers: DeclarationModifiers {
                     is_abstract: node.value.is_abstract,
+                    reference: node.value.is_reference,
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
                     ..DeclarationModifiers::default()
                 },
                 direction: direction_fact(node.value.direction.as_ref()),

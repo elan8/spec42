@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Namespace-level `connection X;`, `interface X;` and `calc X;` are usages.** They take the
+  usage library-specialization anchors (`Connections::connections`, `Interfaces::interfaces`,
+  `Calculations::calculations`), and an interface usage now records its prefix modifiers,
+  direction, multiplicity and `#` extension keywords; a calculation usage records `ref` and
+  `ordered`/`nonunique`.
+
 - **A type owns at most one multiplicity.** A KerML type with both a `[m..n]` and a
   `multiplicity` body member (or two such members) reports `type_multiple_multiplicities` at each
   extra one (KerML 8.3.3.1.10 validateTypeOwnedMultiplicity).

@@ -5,6 +5,7 @@ use crate::lower::facts::direction_node_fact;
 use crate::lower::facts::multiplicity_facts;
 use crate::lower::facts::occurrence_prefix_direction;
 use crate::lower::facts::occurrence_prefix_modifiers;
+use crate::lower::facts::portion_kind_node_fact;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
 use crate::lower::facts::PendingReference;
@@ -846,57 +847,61 @@ impl SemanticModelBuilder {
         owner: Option<DeclarationId>,
         node: &Node<ParserInterfaceUsage>,
     ) -> Result<(), ConstructionError> {
-        let (name, short_name, interface_type, subsets, redefines, ends, body) = match &node.value {
+        let no_multiplicity_modifiers = sysml_v2_parser::ast::MultiplicityModifiers::default();
+        let (prefix, name, short_name, interface_type, multiplicity, multiplicity_modifiers) =
+            match &node.value {
+                ParserInterfaceUsage::TypedConnect {
+                    prefix,
+                    name,
+                    short_name,
+                    interface_type,
+                    multiplicity,
+                    multiplicity_modifiers,
+                    ..
+                }
+                | ParserInterfaceUsage::Declaration {
+                    prefix,
+                    name,
+                    short_name,
+                    interface_type,
+                    multiplicity,
+                    multiplicity_modifiers,
+                    ..
+                } => (
+                    prefix,
+                    *name,
+                    *short_name,
+                    interface_type.as_ref(),
+                    multiplicity.as_deref(),
+                    multiplicity_modifiers,
+                ),
+                // The `connect`-only shape (`interface a to b;`) declares no name, typing or
+                // multiplicity.
+                ParserInterfaceUsage::Connection { prefix, .. } => {
+                    (prefix, None, None, None, None, &no_multiplicity_modifiers)
+                }
+            };
+        let (subsets, redefines, ends, body) = match &node.value {
             ParserInterfaceUsage::TypedConnect {
-                name,
-                short_name,
-                interface_type,
                 subsets,
                 redefines,
                 part,
                 body,
                 ..
-            } => (
-                *name,
-                *short_name,
-                interface_type.as_ref(),
-                subsets.as_ref(),
-                redefines.as_ref(),
-                Some(part),
-                body,
-            ),
-            ParserInterfaceUsage::Connection {
+            }
+            | ParserInterfaceUsage::Connection {
                 subsets,
                 redefines,
                 part,
                 body,
                 ..
-            } => (
-                None,
-                None,
-                None,
-                subsets.as_ref(),
-                redefines.as_ref(),
-                Some(part),
-                body,
-            ),
+            } => (subsets.as_ref(), redefines.as_ref(), Some(part), body),
             ParserInterfaceUsage::Declaration {
-                name,
-                short_name,
-                interface_type,
                 subsets,
                 redefines,
                 body,
                 ..
-            } => (
-                *name,
-                *short_name,
-                interface_type.as_ref(),
-                subsets.as_ref(),
-                redefines.as_ref(),
-                None,
-                body,
-            ),
+            } => (subsets.as_ref(), redefines.as_ref(), None, body),
         };
         let name = self.intern_declaration_name(document, name)?;
         let short_name = self.intern_short_name(document, short_name)?;
@@ -906,10 +911,16 @@ impl SemanticModelBuilder {
             DeclarationKind::InterfaceUsage,
             name,
             node.span,
-            // `ast::InterfaceUsage` is an enum of connect/declaration shapes carrying name, short
-            // name, type, subsets/redefines, and ends -- no modifier, multiplicity, or direction.
             DeclarationFacts {
                 short_name,
+                modifiers: DeclarationModifiers {
+                    ordered: multiplicity_modifiers.is_ordered(),
+                    nonunique: !multiplicity_modifiers.is_unique(),
+                    ..occurrence_prefix_modifiers(prefix)
+                },
+                direction: occurrence_prefix_direction(prefix),
+                portion_kind: portion_kind_node_fact(prefix.portion()),
+                multiplicity: multiplicity_facts(multiplicity),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -919,6 +930,7 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
+        self.lower_occurrence_prefix_members(document, declaration, prefix)?;
         if let Some(type_reference) = interface_type {
             let span = self.documents[document.index()]
                 .parsed
