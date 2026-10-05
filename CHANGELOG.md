@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Members without authored visibility are public in every namespace (#231).** A member of a
+  definition or usage with no `public`/`private`/`protected` keyword was treated as private,
+  because only package members got the public default. So `import vehicle::*;` (a part usage) and
+  `import Vehicle::*;` (a part definition) imported nothing, and inspection published
+  `(visibility private)` for such members. KerML/SysML make every membership public by default
+  except imports, which stay private. `expose vehicle::*` now uses the same rule instead of its
+  own workaround.
 - **Comment, documentation and textual-representation bodies are published as KerML defines
   them (#210).** The published body was the authored text between `/*` and `*/`, so a multi-line
   `doc` kept every continuation `*` and the indentation before it, and consumers (hover, reports,
