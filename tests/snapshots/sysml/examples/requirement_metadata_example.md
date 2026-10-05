@@ -184,12 +184,6 @@ package RequirementMetadataExample {
         (range (start 24 12) (end 24 17))
       )
       (diagnostic
-        (severity warning)
-        (code "unsupported_package_member")
-        (source "semantic")
-        (range (start 28 4) (end 28 9))
-      )
-      (diagnostic
         (severity error)
         (code "unexpected_keyword_in_scope")
         (source "parser")
@@ -208,7 +202,7 @@ package RequirementMetadataExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation true) (source-digest "blake3:b6f622d8bfe7d6ca17ad7c0fcbada53cfb5f6878bbb5c11a1f2ef2283d47380b"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation true) (source-digest "blake3:b6f622d8bfe7d6ca17ad7c0fcbada53cfb5f6878bbb5c11a1f2ef2283d47380b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Metaobjects::SemanticMetadata") (import (shape membership) (recursive false))))))
@@ -217,6 +211,7 @@ package RequirementMetadataExample {
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "RiskLevelEnum") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::Goal"))) (kind requirement-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::deliverPayload"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "deliverPayload")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "goal")))))
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal"))) (kind metadata-def) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "SemanticMetadata")))))
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind metadata-def) (name "goal")) (anonymous (kind attribute) (ordinal 0))))) (kind attribute) (membership (kind feature) (visibility default)) (effective-identification (name unresolved) (short-name unresolved) (provenance first-redefinition)) (feature-value (kind bind) (value (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind metadata-def) (name "goal")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind metadata-def) (name "goal")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "baseType")))))
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind metadata-def) (name "goal")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind metadata-def) (name "goal")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "goals")) (metaCastTarget (reference "SysML::RequirementUsage")))))
@@ -260,6 +255,9 @@ package RequirementMetadataExample {
     (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
       (authored-target "Metaobjects::SemanticMetadata")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "deliverPayload")) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0))
+      (authored-target "goal")
+      (outcome (status resolved) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal")))))
     (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal"))) (kind specialization) (ordinal 0))
       (authored-target "SemanticMetadata")
       (outcome (status unresolved)))
@@ -322,8 +320,10 @@ package RequirementMetadataExample {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind metadataAnnotation) (source (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "deliverPayload")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "deliverPayload")) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0)))
     (relationship (kind expressionOperand) (source (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind metadata-def) (name "goal")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind metadata-def) (name "goal")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals"))) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::Goal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "deliverPayload")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::deliverPayload"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind metadata-def) (name "goal")) (anonymous (kind attribute) (ordinal 0))))) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind metadata-def) (name "goal")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind metadata-def) (name "goal")) (anonymous (kind attribute) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "vehicleMassRequirement")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (provenance implied))
@@ -360,6 +360,9 @@ package RequirementMetadataExample {
 (types
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::Goal")))
       (subtype (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goals")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "deliverPayload")) (anonymous (kind metadata) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::deliverPayload")))
     )
     (declaration (id (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind metadata-def) (name "goal")) (anonymous (kind attribute) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal")))
@@ -438,6 +441,7 @@ package RequirementMetadataExample {
 # METADATA ANNOTATIONS
 ~~~sexpr
 (metadata-annotations
+  (annotation (element (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::deliverPayload"))) (form prefix-keyword) (definition (resolved (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal")))))
   (annotation (element (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::vehicleMassRequirement"))) (form annotating-member) (definition unresolved) (value (redefines unresolved) (outcome resolved) (feature-reference "StatusKind::tbd" (target unresolved))) (value (redefines unresolved) (outcome not-applicable) (value (redefines unresolved) (outcome resolved) (feature-reference "high" (target unresolved))) (value (redefines unresolved) (outcome resolved) (feature-reference "medium" (target unresolved))) (value (redefines unresolved) (outcome resolved) (feature-reference "low" (target unresolved))) (value (redefines unresolved) (outcome resolved) (feature-reference "medium" (target unresolved)))) (value (redefines unresolved) (outcome resolved) (literal (value (kind string) (value "Bob")))) (value (redefines unresolved) (outcome resolved) (literal (value (kind string) (value "Mary")))))
 )
 ~~~
@@ -462,6 +466,11 @@ package RequirementMetadataExample {
   (query (document "memory://snapshot/requirement_metadata_example.md") (range (start 1 16) (end 1 45)) (probe (position 1 16))
     (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0) (authored-target "Metaobjects::SemanticMetadata")
       (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/requirement_metadata_example.md") (range (start 28 5) (end 28 9)) (probe (position 28 5))
+    (reference (id (source (node (document "memory://snapshot/requirement_metadata_example.md") (path (named (kind package) (name "RequirementMetadataExample")) (named (kind requirement) (name "deliverPayload")) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0) (authored-target "goal")
+      (outcome (status resolved) (target (node (document "memory://snapshot/requirement_metadata_example.md") (qualified-name "RequirementMetadataExample::goal")))))
     )
   )
   (query (document "memory://snapshot/requirement_metadata_example.md") (range (start 8 22) (end 8 38)) (probe (position 8 22))

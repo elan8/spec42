@@ -959,12 +959,12 @@ impl SemanticModelBuilder {
             // unsupported member first, so a stray `#tag` never leaks onto a later declaration.
             if let RequirementDefBodyElement::MetadataKeywordUsage(keyword) = &element.value {
                 if keyword.value.body.is_none() {
-                    self.buffer_prefix_metadata_keyword(keyword);
+                    self.buffer_prefix_metadata_keyword(Some(owner), unsupported, keyword);
                     continue;
                 }
             }
             if !matches!(&element.value, RequirementDefBodyElement::Dependency(_)) {
-                self.flush_pending_prefix_metadata(document, unsupported);
+                self.flush_pending_prefix_metadata(document);
             }
             match &element.value {
                 RequirementDefBodyElement::Error(error) => {
@@ -1079,7 +1079,7 @@ impl SemanticModelBuilder {
                 }
             }
         }
-        self.flush_pending_prefix_metadata(document, unsupported);
+        self.flush_pending_prefix_metadata(document);
         Ok(())
     }
 

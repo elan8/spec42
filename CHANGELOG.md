@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`metadata Tag about x;` is typed by `Tag`.** A `metadata` usage without `:` or `typed by`
+  was published as an untyped usage *named* `Tag`. So the SysML training examples'
+  `metadata SafetyFeature about …` and `metadata ToolExecution { … }` had no metadata type, their
+  body redefinitions did not resolve, and `metadata Thing about Thing;` reported spurious
+  `ambiguous_reference` errors. Per `MetadataUsageDeclaration` the lone name is the type; a name
+  is declared only before `:` / `typed by`. Pins sysml-v2-parser `827f9b44`.
+- **`#Tag` prefix metadata in package and part-usage bodies annotates the member after it.**
+  `#Tag requirement r;` in a package and `#moe attribute range;` in a part body were reported as
+  `unsupported_package_member` / `unsupported_part_usage_member` and the annotation was dropped.
+  They now publish a metadata annotation on that member, like `@Tag` and `#refinement
+  dependency` already did. A tag with no member to bind to (before an `import`, say) is still
+  reported as unsupported.
+- **Metadata annotations no longer count as owned usages or metadata body features.** `@Tag`
+  inside a `port def`, a port usage or a metadata usage's body reported
+  `port_owned_usage_composite`, `port_nested_usage_composite` or `metadata_body_feature_invalid`.
+  An annotation is owned through an OwningMembership, so it is not an `ownedUsage` or
+  `ownedFeature` of its owner.
 - **Members without authored visibility are public in every namespace (#231).** A member of a
   definition or usage with no `public`/`private`/`protected` keyword was treated as private,
   because only package members got the public default. So `import vehicle::*;` (a part usage) and

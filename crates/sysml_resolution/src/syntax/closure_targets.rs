@@ -444,7 +444,7 @@ pub(crate) fn walk_metadata_usage_type_refs(
     out: &mut RefSink,
 ) {
     push_optional_type_reference(
-        reference_text(document, metadata_usage.type_reference).as_deref(),
+        reference_text(document, Some(metadata_usage.type_reference)).as_deref(),
         out,
     );
     for target in &metadata_usage.about_targets {

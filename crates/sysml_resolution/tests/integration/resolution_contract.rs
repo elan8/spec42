@@ -4032,24 +4032,6 @@ part vehicle : Vehicle;
     );
 }
 
-/// A name shared by siblings of *different* kinds needs no occurrence ordinal -- the kind on
-/// every path segment already separates them. This is the sibling `sysml-compiler`'s tag byte:
-/// `metadata def X` and the `metadata X about ...` annotating it are distinct elements.
-#[test]
-fn same_name_different_kind_siblings_are_separated_by_kind() {
-    let sexpr = semantic_sexpr_for(
-        "package P { part def Vehicle; metadata def Safety; metadata Safety about Vehicle; }",
-    );
-    assert!(
-        sexpr.contains(r#"(named (kind metadata-def) (name "Safety"))"#),
-        "expected the metadata definition's kind in its identity, got: {sexpr}"
-    );
-    assert!(
-        sexpr.contains(r#"(named (kind metadata) (name "Safety"))"#),
-        "expected the metadata usage's kind in its identity, got: {sexpr}"
-    );
-}
-
 #[test]
 fn conformance_is_reflexive_and_transitive() {
     let published = publication_for(&[(
