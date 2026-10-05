@@ -35,10 +35,10 @@ package Comments {
 (semantic-model
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e183ded80174e3b0ddd4c289f66fa542e972a5051a9a34c42fc99cfc114f4941"))
   (declarations
-    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " Documentation Comment ")) (doc (text " Documentation about Package ")) (comment (text " Named Comment ")) (comment (text " Comment about Comment ")) (comment (text " Documention Comment on Part Def "))))
-    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::C"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text " Documentation in Part Def ")) (comment (text " Comment in Part Def ")) (comment (text " Comment about Package "))))
-    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::cmt"))) (kind comment) (membership (kind feature) (visibility default)) (documentation (comment (text " Named Comment "))))
-    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::cmt_cmt"))) (kind comment) (membership (kind feature) (visibility default)) (documentation (comment (text " Comment about Comment "))))
+    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text "Documentation Comment ")) (doc (text "Documentation about Package ")) (comment (text "Named Comment ")) (comment (text "Comment about Comment ")) (comment (text "Documention Comment on Part Def "))))
+    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::C"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text "Documentation in Part Def ")) (comment (text "Comment in Part Def ")) (comment (text "Comment about Package "))))
+    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::cmt"))) (kind comment) (membership (kind feature) (visibility default)) (documentation (comment (text "Named Comment "))))
+    (declaration (id (node (document "memory://snapshot/comments.md") (qualified-name "Comments::cmt_cmt"))) (kind comment) (membership (kind feature) (visibility default)) (documentation (comment (text "Comment about Comment "))))
   )
   (references
   )

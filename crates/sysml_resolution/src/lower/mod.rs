@@ -420,9 +420,12 @@ impl SemanticModelBuilder {
         self.intern_declared_name(decoded.as_ref())
     }
 
-    /// Interns the authored bytes of a regular-comment body. Normalized comment text is a
-    /// separate parser query; documentation publication has historically preserved the authored
-    /// body and continues to do so across the span-backed AST migration.
+    /// Interns a regular-comment body processed per KerML 8.2.3.3.2 note 1 (shared by
+    /// `Comment`, `Documentation`, and, through 8.2.3.3.3 note 1, `TextualRepresentation`):
+    /// whitespace after `/*` up to the first line terminator is dropped and each later line loses
+    /// its leading whitespace, one `*`, and one following space. The parser owns that lexical
+    /// rule, so consumers (hover, reports, generated documents) never re-implement it -- spec42
+    /// issue #210.
     pub(crate) fn intern_comment_body(
         &mut self,
         document: DocumentIdx,
@@ -436,9 +439,9 @@ impl SemanticModelBuilder {
                 .parsed,
         );
         let text = parsed
-            .comment_body(body)
+            .normalized_comment_body(body)
             .ok_or(ConstructionError::InvalidParserReference)?;
-        self.intern_name(text)
+        self.intern_name(text.as_ref())
     }
 
     /// Interns an optional authored `<shortName>` prefix; see `intern_declaration_name`.

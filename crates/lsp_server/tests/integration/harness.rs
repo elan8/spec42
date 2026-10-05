@@ -207,6 +207,25 @@ pub fn wait_for_publications(stdout: &mut std::process::ChildStdout, uris: &[&st
     }
 }
 
+/// Block until the server announces a workspace publication with `spec42/publicationChanged`.
+///
+/// `publish_workspace_diagnostics` sends that notification only after every per-document
+/// diagnostics task of its sweep has finished, so it is the barrier for the whole sweep. Waiting
+/// for one document's `publishDiagnostics` is not: the announcement can still be in flight after
+/// that document's diagnostics, and after the response to a request sent in between.
+pub fn wait_for_publication_changed(stdout: &mut std::process::ChildStdout) {
+    loop {
+        let msg = read_message(stdout)
+            .unwrap_or_else(|| panic!("server closed before announcing a publication"));
+        let Ok(json) = serde_json::from_str::<serde_json::Value>(&msg) else {
+            continue;
+        };
+        if json["method"].as_str() == Some("spec42/publicationChanged") {
+            return;
+        }
+    }
+}
+
 /// Compare URIs the way the server may re-serialize them when publishing.
 fn normalized_uri(uri: &str) -> String {
     uri.trim_end_matches('/').to_ascii_lowercase()

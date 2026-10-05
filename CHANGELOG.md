@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `metadata SafetyFeature about …` and `metadata ToolExecution { … }` had no metadata type, their
   body redefinitions did not resolve, and `metadata Thing about Thing;` reported spurious
   `ambiguous_reference` errors. Per `MetadataUsageDeclaration` the lone name is the type; a name
-  is declared only before `:` / `typed by`. Pins sysml-v2-parser `67c13a16`.
+  is declared only before `:` / `typed by`. Pins sysml-v2-parser `827f9b44`.
 - **`#Tag` prefix metadata in package and part-usage bodies annotates the member after it.**
   `#Tag requirement r;` in a package and `#moe attribute range;` in a part body were reported as
   `unsupported_package_member` / `unsupported_part_usage_member` and the annotation was dropped.
@@ -24,6 +24,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `port_owned_usage_composite`, `port_nested_usage_composite` or `metadata_body_feature_invalid`.
   An annotation is owned through an OwningMembership, so it is not an `ownedUsage` or
   `ownedFeature` of its owner.
+- **Members without authored visibility are public in every namespace (#231).** A member of a
+  definition or usage with no `public`/`private`/`protected` keyword was treated as private,
+  because only package members got the public default. So `import vehicle::*;` (a part usage) and
+  `import Vehicle::*;` (a part definition) imported nothing, and inspection published
+  `(visibility private)` for such members. KerML/SysML make every membership public by default
+  except imports, which stay private. `expose vehicle::*` now uses the same rule instead of its
+  own workaround.
+- **Comment, documentation and textual-representation bodies are published as KerML defines
+  them (#210).** The published body was the authored text between `/*` and `*/`, so a multi-line
+  `doc` kept every continuation `*` and the indentation before it, and consumers (hover, reports,
+  generated documents) each had to strip them. Bodies are now processed per KerML 8.2.3.3.2
+  note 1: the white space after `/*` up to the first line break is dropped, and on each later
+  line the leading white space, one `*`, and one following space are removed. Line structure
+  (paragraphs, list items) is kept. `doc /* a wheel */` now publishes `"a wheel "` instead of
+  `" a wheel "`.
 
 ## [0.54.1] - 2026-10-02
 
