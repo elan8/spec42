@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Comment, documentation and textual-representation bodies are published as KerML defines
+  them (#210).** The published body was the authored text between `/*` and `*/`, so a multi-line
+  `doc` kept every continuation `*` and the indentation before it, and consumers (hover, reports,
+  generated documents) each had to strip them. Bodies are now processed per KerML 8.2.3.3.2
+  note 1: the white space after `/*` up to the first line break is dropped, and on each later
+  line the leading white space, one `*`, and one following space are removed. Line structure
+  (paragraphs, list items) is kept. `doc /* a wheel */` now publishes `"a wheel "` instead of
+  `" a wheel "`.
+
 ## [0.54.1] - 2026-10-02
 
 - **Short names are published wherever SysML's `Identification` allows them (#236).** A short name

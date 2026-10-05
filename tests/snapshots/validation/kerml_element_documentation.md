@@ -21,7 +21,7 @@ package Model { action def Vehicle { doc /* vehicle documentation */ language "A
     (form documentation)
     (locale none)
     (language none)
-    (text " vehicle documentation ")
+    (text "vehicle documentation ")
     (outcome resolved))
   (element-documentation
     (rule_id "kerml-1.0:8.3.2.1.2:deriveElementTextualRepresentation")
@@ -29,7 +29,7 @@ package Model { action def Vehicle { doc /* vehicle documentation */ language "A
     (form textual_representation)
     (locale none)
     (language "Alf")
-    (text " vehicle implementation ")
+    (text "vehicle implementation ")
     (outcome resolved)))
 ~~~
 # DIAGNOSTICS
@@ -47,7 +47,7 @@ package Model { action def Vehicle { doc /* vehicle documentation */ language "A
   (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8308ef4dbd1f4b2efa1b9163f5d950fec9338e6ed8fc278361cf021ea52aca4c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_element_documentation.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_element_documentation.md") (qualified-name "Model::Vehicle"))) (kind action-def) (membership (kind owning) (visibility default)) (documentation (doc (text " vehicle documentation ")) (rep (language "Alf") (text " vehicle implementation "))))
+    (declaration (id (node (document "memory://snapshot/kerml_element_documentation.md") (qualified-name "Model::Vehicle"))) (kind action-def) (membership (kind owning) (visibility default)) (documentation (doc (text "vehicle documentation ")) (rep (language "Alf") (text "vehicle implementation "))))
   )
   (references
   )
