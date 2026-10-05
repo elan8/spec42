@@ -199,7 +199,7 @@ impl<D> SemanticModel<D> {
             let Some(member_kind) = self.kind_of(member) else {
                 continue;
             };
-            if !is_feature_declaration(member_kind) {
+            if !is_feature_declaration(member_kind) || self.is_metadata_annotation(member) {
                 continue;
             }
             let redefined = self.settled_targets(member, &[ReferenceKind::Redefinition]);
@@ -250,7 +250,10 @@ impl<D> SemanticModel<D> {
             let Some(member_kind) = self.kind_of(member) else {
                 continue;
             };
-            if member_kind == DeclarationKind::PortUsage || !self.usage_is_composite(member) {
+            if member_kind == DeclarationKind::PortUsage
+                || self.is_metadata_annotation(member)
+                || !self.usage_is_composite(member)
+            {
                 continue;
             }
             diagnostics.push(self.declaration_diagnostic(
@@ -305,6 +308,19 @@ impl<D> SemanticModel<D> {
     /// `isReferenceDefault` treats every directed feature as a reference (which is why a
     /// `ParameterUsage` above is always non-composite), so `in item rx : Signal;` inside a `port
     /// def` is a flow feature declaration, not an owned composite subpart.
+    /// Whether `declaration` is a metadata annotation (`@Tag`, `#Tag`, `metadata m : Tag about
+    /// x`) rather than a feature of its owner. Both `AnnotatingMember` and `PrefixMetadataMember`
+    /// are OwningMemberships, so an annotation is never an `ownedFeature` or `ownedUsage` of the
+    /// element that owns it, and rules over those collections must not see it.
+    fn is_metadata_annotation(&self, declaration: DeclarationId) -> bool {
+        self.kind_of(declaration) == Some(DeclarationKind::MetadataUsage)
+            && self
+                .storage
+                .metadata_annotations
+                .iter()
+                .any(|record| record.annotation == declaration)
+    }
+
     pub(crate) fn usage_is_composite(&self, declaration: DeclarationId) -> bool {
         let Some(kind) = self.kind_of(declaration) else {
             return false;

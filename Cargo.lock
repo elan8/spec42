@@ -2171,7 +2171,7 @@ dependencies = [
 [[package]]
 name = "sysml-v2-parser"
 version = "0.57.0"
-source = "git+https://github.com/elan8/sysml-v2-parser.git?rev=3ccf83ea5f7ccc39e94bfbb164abc8601fed92c0#3ccf83ea5f7ccc39e94bfbb164abc8601fed92c0"
+source = "git+https://github.com/elan8/sysml-v2-parser.git?rev=67c13a1621d238df867b958fd60ea2588d2bf9f7#67c13a1621d238df867b958fd60ea2588d2bf9f7"
 dependencies = [
  "log",
  "memchr",
@@ -3004,7 +3004,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]

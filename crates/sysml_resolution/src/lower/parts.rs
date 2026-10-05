@@ -85,15 +85,16 @@ impl SemanticModelBuilder {
                 // declaration.
                 if let PartDefBodyElement::MetadataKeywordUsage(keyword) = &element.value {
                     if keyword.value.body.is_none() {
-                        self.buffer_prefix_metadata_keyword(keyword);
+                        self.buffer_prefix_metadata_keyword(
+                            Some(declaration),
+                            UnsupportedFamily::PartDefinitionMember,
+                            keyword,
+                        );
                         continue;
                     }
                 }
                 if !matches!(&element.value, PartDefBodyElement::Dependency(_)) {
-                    self.flush_pending_prefix_metadata(
-                        document,
-                        UnsupportedFamily::PartDefinitionMember,
-                    );
+                    self.flush_pending_prefix_metadata(document);
                 }
                 match &element.value {
                     PartDefBodyElement::Error(error) => {
@@ -402,7 +403,7 @@ impl SemanticModelBuilder {
                     ),
                 }
             }
-            self.flush_pending_prefix_metadata(document, UnsupportedFamily::PartDefinitionMember);
+            self.flush_pending_prefix_metadata(document);
         }
         Ok(())
     }
@@ -488,6 +489,25 @@ impl SemanticModelBuilder {
     /// `family` names the owning body in the unsupported facts this dispatch produces, so a `ref`
     /// body's unmodeled members stay distinguishable from a `part` usage body's.
     pub(crate) fn lower_part_usage_body_element(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        element: &Node<PartUsageBodyElement>,
+    ) -> Result<(), ConstructionError> {
+        // A body-less `#tag` (`#moe attribute range;`) annotates the member after it.
+        if let PartUsageBodyElement::MetadataKeywordUsage(keyword) = &element.value {
+            if keyword.value.body.is_none() {
+                self.buffer_prefix_metadata_keyword(Some(owner), family, keyword);
+                return Ok(());
+            }
+        }
+        self.lower_prefixable_member(document, Some(owner), element.span, |this| {
+            this.lower_part_usage_body_member(document, owner, family, element)
+        })
+    }
+
+    fn lower_part_usage_body_member(
         &mut self,
         document: DocumentIdx,
         owner: DeclarationId,

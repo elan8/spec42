@@ -647,7 +647,7 @@ fn collect_semantic_ranges_package_body_element(
                 ctx.source,
                 &mu_node.span,
                 mu_node.value.name,
-                ctx.type_text(mu_node.value.type_reference),
+                ctx.type_text(Some(mu_node.value.type_reference)),
                 None,
                 out,
             );

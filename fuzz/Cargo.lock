@@ -354,7 +354,7 @@ dependencies = [
 
 [[package]]
 name = "generator_api"
-version = "0.50.0"
+version = "0.54.1"
 dependencies = [
  "serde",
  "sha2",
@@ -591,7 +591,7 @@ dependencies = [
 
 [[package]]
 name = "language_service"
-version = "0.50.0"
+version = "0.54.1"
 dependencies = [
  "serde",
  "serde_json",
@@ -913,7 +913,7 @@ checksum = "8ed6a63f02c8539c91a8685a86f4099661ba3da017932f6ebbea6de3f0fa7c90"
 
 [[package]]
 name = "source_identity"
-version = "0.50.0"
+version = "0.54.1"
 dependencies = [
  "blake3",
  "serde",
@@ -922,7 +922,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-constraint-manifest"
-version = "0.50.0"
+version = "0.54.1"
 dependencies = [
  "clap",
  "quick-xml",
@@ -946,7 +946,7 @@ dependencies = [
 
 [[package]]
 name = "spec42-generator-protocol"
-version = "0.50.0"
+version = "0.54.1"
 dependencies = [
  "postcard-schema",
  "serde",
@@ -1021,8 +1021,8 @@ dependencies = [
 
 [[package]]
 name = "sysml-v2-parser"
-version = "0.55.0"
-source = "git+https://github.com/elan8/sysml-v2-parser.git?rev=f04d51ee79e63989684fca64e7769d700ae8f5c4#f04d51ee79e63989684fca64e7769d700ae8f5c4"
+version = "0.57.0"
+source = "git+https://github.com/elan8/sysml-v2-parser.git?rev=67c13a1621d238df867b958fd60ea2588d2bf9f7#67c13a1621d238df867b958fd60ea2588d2bf9f7"
 dependencies = [
  "log",
  "memchr",
@@ -1034,7 +1034,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_contract"
-version = "0.50.0"
+version = "0.54.1"
 dependencies = [
  "serde",
  "source_identity",
@@ -1042,7 +1042,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_query"
-version = "0.50.0"
+version = "0.54.1"
 dependencies = [
  "sysml_contract",
  "sysml_resolution",
@@ -1050,7 +1050,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_resolution"
-version = "0.50.0"
+version = "0.54.1"
 dependencies = [
  "hashbrown",
  "rayon",
@@ -1064,7 +1064,7 @@ dependencies = [
 
 [[package]]
 name = "sysml_source"
-version = "0.50.0"
+version = "0.54.1"
 dependencies = [
  "ignore",
  "source_identity",

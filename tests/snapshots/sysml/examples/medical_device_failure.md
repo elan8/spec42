@@ -86,9 +86,9 @@ package MedicalDeviceFailure {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_part_usage_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 21 2) (end 21 12))
+        (range (start 21 3) (end 21 12))
       )
     )
   )
@@ -97,7 +97,7 @@ package MedicalDeviceFailure {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:51366626473ebc97f3725151bcf295affa7c19f7c78f889c7f47421f9356db44"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:51366626473ebc97f3725151bcf295affa7c19f7c78f889c7f47421f9356db44"))
   (declarations
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (qualified-name "MedicalDeviceFailure"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "CauseAndEffect") (import (shape namespace) (recursive false))))))
@@ -108,6 +108,7 @@ package MedicalDeviceFailure {
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 0))))) (kind connection) (membership (kind feature) (visibility default)) (facts (positional-end 0)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "battery::depleted")))))
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 1))))) (kind connection) (membership (kind feature) (visibility default)) (facts (positional-end 1)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "battery::cannotBeCharged")))))
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 2))))) (kind connection) (membership (kind feature) (visibility default)) (facts (positional-end 2)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "deviceFails")))))
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind bare-connect) (ordinal 0)) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "causation")))))
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 0)) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "cause")))))
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 1)) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "cause")))))
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 2)) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "effect")))))
@@ -140,6 +141,9 @@ package MedicalDeviceFailure {
     (reference (id (source (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0))
       (authored-target "multicausation")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind bare-connect) (ordinal 0)) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0))
+      (authored-target "causation")
+      (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 0)) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0))
       (authored-target "cause")
       (outcome (status unresolved)))
@@ -162,6 +166,7 @@ package MedicalDeviceFailure {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 0))))) (target (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 1))))) (target (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 2))))) (target (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind bare-connect) (ordinal 0)) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind bare-connect) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 0)) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 1)) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 1))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 2)) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 2))))) (provenance implied))
@@ -198,6 +203,9 @@ package MedicalDeviceFailure {
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 2)))))
       (featured-by (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)))))
     )
+    (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind bare-connect) (ordinal 0)) (anonymous (kind metadata) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind bare-connect) (ordinal 0)))))
+    )
     (declaration (id (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 0)) (anonymous (kind metadata) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 0)))))
     )
@@ -231,6 +239,7 @@ package MedicalDeviceFailure {
 ~~~sexpr
 (metadata-annotations
   (annotation (element (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0))))) (form prefix-keyword) (definition unresolved))
+  (annotation (element (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind bare-connect) (ordinal 0))))) (form prefix-keyword) (definition unresolved))
   (annotation (element (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 0))))) (form prefix-keyword) (definition unresolved))
   (annotation (element (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 1))))) (form prefix-keyword) (definition unresolved))
   (annotation (element (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind connection) (ordinal 2))))) (form prefix-keyword) (definition unresolved))
@@ -278,6 +287,11 @@ package MedicalDeviceFailure {
   )
   (query (document "memory://snapshot/medical_device_failure.md") (range (start 15 3) (end 15 17)) (probe (position 15 3))
     (reference (id (source (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind connection) (ordinal 0)) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0) (authored-target "multicausation")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/medical_device_failure.md") (range (start 21 3) (end 21 12)) (probe (position 21 3))
+    (reference (id (source (node (document "memory://snapshot/medical_device_failure.md") (path (named (kind package) (name "MedicalDeviceFailure")) (named (kind part) (name "medicalDevice")) (anonymous (kind bare-connect) (ordinal 0)) (anonymous (kind metadata) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0) (authored-target "causation")
       (outcome (status unresolved)))
     )
   )

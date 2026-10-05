@@ -51,7 +51,7 @@ package GeneratedUsages {
     view ViewUsage;
     viewpoint ViewpointUsage;
     rendering RenderingUsage;
-    metadata MetadataUsage;
+    metadata MetadataUsage : Metadata::MetadataItem;
     occurrence OccurrenceUsage;
 }
 ~~~
@@ -89,7 +89,7 @@ package GeneratedUsages {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:227e3b81ac8567b89d8fd8b115aa2e87747b13a67ca83f540cff65d801468348") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:ba583279024b25ee94ac81b7213f26f96c3c2b750463e2bc4468dfc31522f2e5") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::ActionUsage"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
@@ -104,7 +104,7 @@ package GeneratedUsages {
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::FlowUsage"))) (kind flow) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::InterfaceUsage"))) (kind interface-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::ItemUsage"))) (kind item) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::MetadataUsage"))) (kind metadata) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::MetadataUsage"))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Metadata::MetadataItem")))))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::OccurrenceUsage"))) (kind occurrence) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::PartUsage"))) (kind part) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::PortUsage"))) (kind port) (membership (kind feature) (visibility default)))
@@ -117,8 +117,12 @@ package GeneratedUsages {
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::ViewpointUsage"))) (kind viewpoint) (membership (kind feature) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::MetadataUsage"))) (kind featureTyping) (ordinal 0))
+      (authored-target "Metadata::MetadataItem")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::MetadataItem")))))
   )
   (relationships
+    (relationship (kind typing) (source (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::MetadataUsage"))) (target (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::MetadataItem"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::MetadataUsage"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::ActionUsage"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::AllocationUsage"))) (target (node (document "memory://snapshot/sysml.library/allocations.md") (qualified-name "Allocations::allocations"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::AnalysisCaseUsage"))) (target (node (document "memory://snapshot/sysml.library/analysis_cases.md") (qualified-name "AnalysisCases::analysisCases"))) (provenance implied))
@@ -383,8 +387,10 @@ package GeneratedUsages {
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::MetadataUsage")))
+      (type (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::MetadataItem")) (provenance authored))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::MetadataItem")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::MetadataItem")) (source inherited) (from (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::metadataItems"))))
       (effective-type (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::Metaobject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/metaobjects.md") (qualified-name "Metaobjects::metaobjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
@@ -596,7 +602,7 @@ package GeneratedUsages {
 # METADATA ANNOTATIONS
 ~~~sexpr
 (metadata-annotations
-  (annotation (element (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages"))) (form usage))
+  (annotation (element (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages"))) (form usage) (definition (resolved (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::MetadataItem")))))
 )
 ~~~
 # CONNECTIONS
@@ -609,5 +615,10 @@ package GeneratedUsages {
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/generated_library_specialization_usages.md") (range (start 22 29) (end 22 51)) (probe (position 22 29))
+    (reference (id (source (node (document "memory://snapshot/generated_library_specialization_usages.md") (qualified-name "GeneratedUsages::MetadataUsage"))) (kind featureTyping) (ordinal 0) (authored-target "Metadata::MetadataItem")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/metadata.md") (qualified-name "Metadata::MetadataItem")))))
+    )
+  )
 )
 ~~~

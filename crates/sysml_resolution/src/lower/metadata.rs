@@ -100,23 +100,22 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
-        if let Some(type_reference) = node.value.type_reference {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_reference)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span;
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_reference,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
-        }
+        let type_reference = node.value.type_reference;
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(type_reference)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span;
+        self.push_reference(PendingReference {
+            source: declaration,
+            kind: ReferenceKind::FeatureTyping,
+            document,
+            local: type_reference,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
         self.metadata_annotations.push(MetadataAnnotationRecord {
             annotation: declaration,
             annotated_element: owner.unwrap_or(declaration),
