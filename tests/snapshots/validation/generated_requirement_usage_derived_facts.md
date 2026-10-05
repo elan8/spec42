@@ -32,7 +32,7 @@ package RequirementUsageDerivedFacts {
   (requirement-derived-fact (rule_id "sysml-2.0:8.3.21.9:deriveRequirementUsageActorParameter") (source "RequirementUsageDerivedFacts::Requirement") (target "RequirementUsageDerivedFacts::Requirement::actor") (outcome resolved))
   (requirement-derived-fact (rule_id "sysml-2.0:8.3.21.9:deriveRequirementUsageSubjectParameter") (source "RequirementUsageDerivedFacts::Requirement") (target "RequirementUsageDerivedFacts::Requirement::subject") (outcome resolved))
   (requirement-derived-fact (rule_id "sysml-2.0:8.3.21.9:deriveRequirementUsageFramedConcern") (source "RequirementUsageDerivedFacts::Requirement") (target "RequirementUsageDerivedFacts::Requirement::concern") (outcome resolved))
-  (requirement-derived-fact (rule_id "sysml-2.0:8.3.21.9:deriveRequirementUsageText") (source "RequirementUsageDerivedFacts::Requirement") (text " requirement usage text ") (outcome text)))
+  (requirement-derived-fact (rule_id "sysml-2.0:8.3.21.9:deriveRequirementUsageText") (source "RequirementUsageDerivedFacts::Requirement") (text "requirement usage text ") (outcome text)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
@@ -50,7 +50,7 @@ package RequirementUsageDerivedFacts {
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_requirement_usage_derived_facts.md") (qualified-name "RequirementUsageDerivedFacts"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_requirement_usage_derived_facts.md") (qualified-name "RequirementUsageDerivedFacts::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/generated_requirement_usage_derived_facts.md") (qualified-name "RequirementUsageDerivedFacts::Requirement"))) (kind requirement) (membership (kind feature) (visibility default)) (documentation (doc (text " requirement usage text "))))
+    (declaration (id (node (document "memory://snapshot/generated_requirement_usage_derived_facts.md") (qualified-name "RequirementUsageDerivedFacts::Requirement"))) (kind requirement) (membership (kind feature) (visibility default)) (documentation (doc (text "requirement usage text "))))
     (declaration (id (node (document "memory://snapshot/generated_requirement_usage_derived_facts.md") (qualified-name "RequirementUsageDerivedFacts::Requirement::actor"))) (kind requirement-actor) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
     (declaration (id (node (document "memory://snapshot/generated_requirement_usage_derived_facts.md") (qualified-name "RequirementUsageDerivedFacts::Requirement::concern"))) (kind frame) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_requirement_usage_derived_facts.md") (qualified-name "RequirementUsageDerivedFacts::Requirement::subject"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))

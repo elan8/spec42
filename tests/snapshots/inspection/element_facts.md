@@ -57,8 +57,8 @@ probe element_facts.md 24 32
 (semantic-model
   (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:eaaebed937b0ea260dd4b462fae841fa7a9e446feead071e6614e759666ea63a"))
   (declarations
-    (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text " What this package is for. "))))
-    (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Chassis"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (short-name "ch") (modifiers abstract)) (documentation (doc (text " A chassis. "))))
+    (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text "What this package is for. "))))
+    (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Chassis"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (short-name "ch") (modifiers abstract)) (documentation (doc (text "A chassis. "))))
     (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Chassis::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (modifiers ordered nonunique) (multiplicity (lower 1) (upper unbounded))))
     (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Chassis::spare"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers reference) (multiplicity (lower 0) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Wheel")))))
     (declaration (id (node (document "memory://snapshot/element_facts.md") (qualified-name "Facts::Chassis::wheels"))) (kind part) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 4) (upper 4))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Wheel")))))
