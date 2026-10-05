@@ -1343,7 +1343,11 @@ fn watched_rename_batch_publishes_once_without_transient_dependent_error() {
         &mut stdin,
         &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
     );
-    super::harness::wait_for_publication(&mut stdout, usage_uri.as_str());
+    // The startup sweep announces its publication only after every per-document diagnostics
+    // task has finished, so the usage document's diagnostics can arrive -- and a request barrier
+    // can be answered -- while that announcement is still in flight. Waiting for the
+    // announcement itself keeps it out of the rename window counted below.
+    super::harness::wait_for_publication_changed(&mut stdout);
     super::harness::lsp_barrier(&mut stdin, &mut stdout);
 
     fs::rename(&old_path, &new_path).expect("rename definition");
@@ -1432,7 +1436,11 @@ fn explorer_rename_notification_publishes_once_without_transient_dependent_error
         &mut stdin,
         &serde_json::json!({ "jsonrpc": "2.0", "method": "initialized", "params": {} }).to_string(),
     );
-    super::harness::wait_for_publication(&mut stdout, usage_uri.as_str());
+    // The startup sweep announces its publication only after every per-document diagnostics
+    // task has finished, so the usage document's diagnostics can arrive -- and a request barrier
+    // can be answered -- while that announcement is still in flight. Waiting for the
+    // announcement itself keeps it out of the rename window counted below.
+    super::harness::wait_for_publication_changed(&mut stdout);
     super::harness::lsp_barrier(&mut stdin, &mut stdout);
 
     // The Explorer rename itself, as the client's file-operation notification reports it: one
