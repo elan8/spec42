@@ -390,7 +390,7 @@ semantic_diagnostic_codes! {
     }
 
     Validation {
-    /// A usage is typed by a definition of an incompatible metaclass family.
+    /// A usage is typed by a definition of an incompatible metaclass family, or by a usage.
     IncompatibleTypeKind => "incompatible_type_kind",
         "This usage is typed by a definition of an incompatible kind.";
     /// A definition specializes a definition of an incompatible metaclass family, or a classifier

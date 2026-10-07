@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`satisfy` of a requirement definition is reported (#251).** `satisfy ReqDef by drone;`
+  reported nothing: `satisfy_invalid_endpoint_kind` accepted any requirement, definition or
+  usage. `validateSatisfyRequirementUsageReference` requires a requirement usage. Write `satisfy
+  requirement : ReqDef by drone;`.
+- **A usage typed by a usage is reported (#251).** `out power : electricPower;`, where
+  `electricPower` is an ISQ attribute usage, types a feature by a feature. `incompatible_type_kind`
+  covered only a part typed by a part; it now covers every SysML usage, since `Usage::definition`
+  is a Classifier. KerML features are not affected. Pins sysml-v2-parser `2718803e`
+  (`PARSE_AST_VERSION` 267), which reads `ref x :> y` in an action body as a subsetting; before,
+  the Systems Library's `ForLoopAction` would have been reported.
+
 - **Keyword-less members of a `metadata def` are reference usages.** `metadata def M { :>
   annotatedElement : SysML::RequirementUsage; }` was lowered as an attribute, because the parser
   returned the same node for it as for `attribute x;`. An attribute implies `Base::DataValue`,

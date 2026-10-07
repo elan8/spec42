@@ -4,9 +4,10 @@ This is the active record of information the parser must preserve or distinguish
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
 The parser currently pinned by the root workspace is
-`elan8/sysml-v2-parser@7217b9e4df76ab31672947e53dbdd8e30b88e42f` (parser `main`,
-`PARSE_AST_VERSION` 266). It carries `elan8/sysml-v2-parser#172` (the grammar work first proposed
-as `#161`) and `#183` (keyword-less `metadata def` members are `DefaultReferenceUsage`s). Only
+`elan8/sysml-v2-parser@2718803e32a5017053f3a000da52b8d9005b0469` (`PARSE_AST_VERSION` 267): parser
+`main` at `7217b9e4` plus `elan8/sysml-v2-parser#184` (`ref x :> y` in an action body is a
+subsetting, not a typing). That commit is not on parser `main` yet: re-pin to the merge commit once
+`#184` lands. Only
 the rows this pin closed or narrowed were re-verified against it. An earlier
 canonical upstream pin was `elan8/sysml-v2-parser@9f00caf353581a3c0ccc13676c5d8829f90708b3`
 (parser `main`, `PARSE_AST_VERSION` 256), which added `elan8/sysml-v2-parser#139` (`elan8/spec42#140`): a targeted

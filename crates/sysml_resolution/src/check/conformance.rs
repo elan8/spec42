@@ -470,6 +470,33 @@ impl<D> SemanticModel<D> {
             )?);
             return Ok(());
         }
+        // SysML `Usage::definition : Classifier` redefines `Feature::type`, so every type of a
+        // usage is a classifier. `out power : electricPower;`, where `electricPower` is an
+        // attribute usage, types a feature by a feature. KerML has no such restriction (a
+        // Feature is a Type), so this applies to SysML usages only.
+        if reference.kind == ReferenceKind::FeatureTyping {
+            let metaclass = |declaration: DeclarationId| {
+                self.storage
+                    .declaration(declaration)
+                    .map(|declaration| element_kind(declaration.kind))
+            };
+            if metaclass(reference.source).is_some_and(|kind| kind.conforms_to(ElementKind::Usage))
+                && metaclass(target).is_some_and(|kind| kind.conforms_to(ElementKind::Feature))
+            {
+                diagnostics.push(self.reference_message_diagnostic(
+                    reference,
+                    DiagnosticCode::IncompatibleTypeKind,
+                    DiagnosticSeverity::Error,
+                    format!(
+                        "A usage is typed by a definition, but '{}' is a usage. Use ':>' to \
+                         specialize it, or type by its definition.",
+                        self.display_name(target)
+                    ),
+                    Some((target, RELATED_DECLARED)),
+                )?);
+                return Ok(());
+            }
+        }
         let (Some((source_family, source_role)), Some((target_family, target_role))) = (
             self.declaration_family(reference.source),
             self.declaration_family(target),
@@ -479,22 +506,6 @@ impl<D> SemanticModel<D> {
 
         let code = match reference.kind {
             ReferenceKind::FeatureTyping => {
-                if source_family == Family::Part
-                    && source_role == Role::Usage
-                    && target_family == Family::Part
-                    && target_role == Role::Usage
-                {
-                    diagnostics.push(self.reference_message_diagnostic(
-                        reference,
-                        DiagnosticCode::IncompatibleTypeKind,
-                        DiagnosticSeverity::Error,
-                        "A part usage cannot type another part; use a part definition.".to_string(),
-                        Some((target, RELATED_DECLARED)),
-                    )?);
-                    return Ok(());
-                }
-                // A usage is typed by a definition. A typing whose target is another usage is a
-                // different relationship shape, not a kind violation this rule can judge.
                 if source_role != Role::Usage || target_role != Role::Definition {
                     return Ok(());
                 }
