@@ -92,7 +92,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:affe676b43f70d34c7f24ff4c48c8fdd36e20d4d9cdfd3baa8e5b0be68d5a1e2") (admitted (standard-library 3)))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d028180d3d23a0f44ddeb5a49e310c2ec29032cdb0341695d9aac2d6ed44b4a9") (admitted (standard-library 3)))
   (declarations
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Model::Individual"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers individual) (individual-multiplicity (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind occurrence-def) (name "Individual")) (anonymous (kind kerml-multiplicity) (ordinal 0)))))))
@@ -102,6 +102,7 @@ package Model {
   )
   (relationships
     (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Model::Individual"))) (target (node (document "memory://snapshot/occurrences.kerml") (qualified-name "Occurrences::Life"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Model::Individual"))) (target (node (document "memory://snapshot/occurrences.kerml") (qualified-name "Occurrences::Occurrence"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind occurrence-def) (name "Individual")) (anonymous (kind kerml-multiplicity) (ordinal 0))))) (target (node (document "memory://snapshot/occurrences.kerml") (qualified-name "Base::naturals"))) (provenance implied))
   )
   (evaluation

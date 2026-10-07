@@ -57,11 +57,13 @@ package Filters {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cfd715b25d46874af008a4c50e1868e76a8a315e856b23afc5c8e243db80ac8c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3e591f38607d3af8f38b300aa4274ae56249f8eb0822fff33d7bf004b5e8d1c9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_boolean.md") (qualified-name "Filters"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_boolean.md") (qualified-name "Filters::Accepted"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_boolean.md") (path (named (kind package) (name "Filters")) (named (kind package) (name "Accepted")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (kind kerml-literal-boolean) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_boolean.md") (qualified-name "Filters::Rejected"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_element_filter_membership_condition_is_boolean.md") (path (named (kind package) (name "Filters")) (named (kind package) (name "Rejected")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
   )
   (references
   )

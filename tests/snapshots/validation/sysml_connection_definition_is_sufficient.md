@@ -47,7 +47,7 @@ package Connections {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:17c4a96d149275e777a515462e7e5765226d0760993a95f2aaef4fbdfac7ea34"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:35e6ce76447b517ea5d1bd8304c989cf1ab2240935cf3da15d6e000689553ec4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_connection_definition_is_sufficient.md") (qualified-name "Connections::Component"))) (kind part-def) (membership (kind owning) (visibility default)))

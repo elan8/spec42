@@ -8,12 +8,12 @@
 use std::collections::HashSet;
 
 use sysml_v2_parser::ast::{
-    AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, Expression, Import,
-    ItemUsage, LibraryPackage, MetadataBody, MetadataBodyElement, MetadataDef, MetadataUsage,
-    Package, PackageBody, PackageBodyElement, PartDef, PartDefBody, PartDefBodyElement, PartUsage,
-    PartUsageBody, PartUsageBodyElement, PortBody, PortBodyElement, PortDef, PortDefBody,
-    PortDefBodyElement, PortUsage, QualifiedIdentification, RefDecl, RootElement, ViewBody,
-    ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement, ViewUsage,
+    AttributeBody, AttributeBodyElement, AttributeDef, AttributeUsage, DefaultReferenceUsage,
+    Expression, Import, ItemUsage, LibraryPackage, MetadataBody, MetadataBodyElement, MetadataDef,
+    MetadataUsage, Package, PackageBody, PackageBodyElement, PartDef, PartDefBody,
+    PartDefBodyElement, PartUsage, PartUsageBody, PartUsageBodyElement, PortBody, PortBodyElement,
+    PortDef, PortDefBody, PortDefBodyElement, PortUsage, QualifiedIdentification, RefDecl,
+    RootElement, ViewBody, ViewBodyElement, ViewDef, ViewDefBody, ViewDefBodyElement, ViewUsage,
 };
 use sysml_v2_parser::{Node, ParsedDocument as ParsedRoot};
 
@@ -404,9 +404,35 @@ pub(crate) fn walk_attribute_body_type_refs(
             AttributeBodyElement::AttributeUsage(attribute_usage) => {
                 walk_attribute_usage_type_refs(document, &attribute_usage.value, out);
             }
+            AttributeBodyElement::DefaultReferenceUsage(usage) => {
+                walk_default_reference_usage_type_refs(document, &usage.value, out);
+            }
+            AttributeBodyElement::RefDecl(ref_decl) => {
+                walk_ref_decl_type_refs(document, &ref_decl.value, out);
+            }
             _ => {}
         }
     }
+}
+
+/// A keyword-less usage (`:> annotatedElement : SysML::RequirementUsage;`) names its types and
+/// value operands exactly as an `attribute` member does, so it seeds the same closure targets.
+pub(crate) fn walk_default_reference_usage_type_refs(
+    document: &ParsedRoot,
+    usage: &DefaultReferenceUsage,
+    out: &mut RefSink,
+) {
+    push_optional_typing_reference(document, usage.typing.as_deref(), out);
+    push_optional_type_reference(subsetting_target(document, usage.redefines.as_deref()), out);
+    push_optional_type_reference(
+        subsetting_target(document, usage.references.as_deref()),
+        out,
+    );
+    push_optional_type_reference(subsetting_target(document, usage.crosses.as_deref()), out);
+    if let Some(value) = usage.value.as_deref() {
+        walk_expression_reference_targets(document, &value.expression, out);
+    }
+    walk_attribute_body_type_refs(document, &usage.body, out);
 }
 
 pub(crate) fn walk_item_usage_type_refs(

@@ -28,7 +28,7 @@ package BrowserExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:b72dc185f0f7dd98f118430fa8e03ce00bfa4a26ae0233813f17c46bb12047a2") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e4506d319beaf27ce41c9cb0c45d3706d9e0ae95d7927f1fff9a03af45c928a9") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -54,8 +54,10 @@ package BrowserExample {
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch"))) (target (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch::leaf"))) (target (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch::leaf"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::Root::branch::leaf"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::selected"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_browser_complete.md") (path (named (kind package) (name "BrowserExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_browser_complete.md") (qualified-name "BrowserExample::selected"))) (provenance implied))
@@ -79,6 +81,7 @@ package BrowserExample {
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
@@ -88,6 +91,7 @@ package BrowserExample {
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -97,6 +101,7 @@ package BrowserExample {
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
@@ -106,6 +111,7 @@ package BrowserExample {
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -163,11 +169,15 @@ package BrowserExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:558c24f93375a48ba5bcdc66257858d86460e07e37de474a73c8c80c00586272",
+  "modelDigest": "blake3:e07298f6704b6153f168ade1d8dbf7570082a7235b0822d46a8bc9b13f077109",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_browser_complete.md",
       "sourceDomain": "workspace"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/occurrences.md",
+      "sourceDomain": "standard-library"
     },
     {
       "uri": "memory://snapshot/sysml.library/parts.md",
@@ -236,10 +246,15 @@ package BrowserExample {
     {
       "document": 1,
       "kind": "qualified-name",
+      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
       "qualifiedName": "Parts::Part"
     },
     {
-      "document": 1,
+      "document": 2,
       "kind": "qualified-name",
       "qualifiedName": "Parts::parts"
     },
@@ -270,18 +285,30 @@ package BrowserExample {
     {
       "kind": "relationship",
       "ordinal": 2,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "subsetting",
       "source": 1
     },
     {
       "kind": "relationship",
       "ordinal": 3,
+      "relationshipKind": "typeFeaturing",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
       "relationshipKind": "subsetting",
       "source": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
+      "ordinal": 5,
+      "relationshipKind": "subsetting",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 6,
       "relationshipKind": "typeFeaturing",
       "source": 2
     }
@@ -303,7 +330,7 @@ package BrowserExample {
         "navigation": 1,
         "origin": 1,
         "provenance": "authored",
-        "reference": 6,
+        "reference": 7,
         "source": 0,
         "target": 1
       },
@@ -312,7 +339,7 @@ package BrowserExample {
         "navigation": 2,
         "origin": 2,
         "provenance": "authored",
-        "reference": 8,
+        "reference": 9,
         "source": 1,
         "target": 2
       }
@@ -391,8 +418,19 @@ package BrowserExample {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 7,
+        "reference": 8,
         "source": 0,
+        "target": {
+          "reference": 5,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 10,
+        "source": 1,
         "target": {
           "reference": 4,
           "status": "resolved"
@@ -402,10 +440,10 @@ package BrowserExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 9,
+        "reference": 11,
         "source": 1,
         "target": {
-          "reference": 5,
+          "reference": 6,
           "status": "resolved"
         }
       },
@@ -413,7 +451,7 @@ package BrowserExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 10,
+        "reference": 12,
         "source": 1,
         "target": {
           "node": 0,
@@ -424,10 +462,21 @@ package BrowserExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 11,
+        "reference": 13,
         "source": 2,
         "target": {
-          "reference": 5,
+          "reference": 4,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 14,
+        "source": 2,
+        "target": {
+          "reference": 6,
           "status": "resolved"
         }
       },
@@ -435,7 +484,7 @@ package BrowserExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 12,
+        "reference": 15,
         "source": 2,
         "target": {
           "node": 1,

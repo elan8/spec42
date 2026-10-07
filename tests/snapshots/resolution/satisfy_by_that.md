@@ -35,7 +35,7 @@ package Remaining {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:67cf84e90bc3f6d9bc889ab2c8c736f358a4e51fc0b00b04d2455b4179881a69") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0e3567c76ea1adb3346f64858466c679ba7b485dfc8a79d443423c89d494cd93") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box"))) (kind view-def) (membership (kind owning) (visibility default)))
@@ -50,6 +50,7 @@ package Remaining {
     (relationship (kind satisfyTarget) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things::that"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (kind satisfyTarget) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::View"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (target (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box::viewpointConformance"))) (target (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks"))) (provenance implied))
   )
@@ -72,6 +73,7 @@ package Remaining {
       (featured-by (node (document "memory://snapshot/satisfy_by_that.md") (qualified-name "Remaining::Box")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::booleanEvaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
@@ -83,6 +85,7 @@ package Remaining {
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::assertedConstraintChecks")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::BooleanEvaluation")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (scopes any))

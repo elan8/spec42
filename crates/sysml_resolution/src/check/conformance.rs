@@ -26,6 +26,8 @@
 
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::MultiplicityBound;
+use crate::lower::facts::MultiplicityRecord;
+use crate::model::element_kind::element_kind;
 use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
 use crate::model::resolver::RELATED_AMBIGUOUS_CANDIDATE;
@@ -36,9 +38,7 @@ use crate::model::DocumentIdx;
 use crate::model::ReferenceKind;
 use crate::resolve::implied::conditional_library_specialization_anchor_branch;
 use crate::resolve::implied::conditional_library_specialization_predicate_holds;
-use crate::resolve::implied::conditional_library_specialization_rules;
 use crate::resolve::implied::library_specialization_metaclasses;
-use crate::resolve::implied::library_specialization_rules;
 use crate::resolve::implied::LibrarySpecializationAnchor;
 use crate::resolve::implied::LibrarySpecializationDiagnosticKey;
 use crate::resolve::results::ResolutionError;
@@ -50,10 +50,37 @@ use crate::DiagnosticLocation;
 use crate::DiagnosticOrigin;
 use crate::DiagnosticSeverity;
 use crate::RelatedLocation;
+use sysml_contract::ElementKind;
 
 pub(crate) use crate::model::metaclass::{
     classify, descends_from, descends_from_occurrence, Family, Role,
 };
+
+/// Which of the KerML classifier metaclasses the specialization rules distinguish a metaclass
+/// conforms to, read from the canonical metaclass hierarchy [`ElementKind::conforms_to`]: an
+/// attribute definition is a DataType, an occurrence definition a Class, an item or part
+/// definition a Structure, an action definition a Behavior, a connection definition an
+/// AssociationStructure, and so on.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub(crate) struct ClassifierMetaclass {
+    pub(crate) data_type: bool,
+    pub(crate) class: bool,
+    pub(crate) association: bool,
+    pub(crate) structure: bool,
+    pub(crate) behavior: bool,
+}
+
+/// The classifier metaclasses `kind` conforms to, or `None` when it is not a Classifier.
+pub(crate) fn classifier_metaclass(kind: ElementKind) -> Option<ClassifierMetaclass> {
+    kind.conforms_to(ElementKind::Classifier)
+        .then(|| ClassifierMetaclass {
+            data_type: kind.conforms_to(ElementKind::DataType),
+            class: kind.conforms_to(ElementKind::Class),
+            association: kind.conforms_to(ElementKind::Association),
+            structure: kind.conforms_to(ElementKind::Structure),
+            behavior: kind.conforms_to(ElementKind::Behavior),
+        })
+}
 
 /// Whether a reference from a `source`-family declaration may target a `target`-family one.
 ///
@@ -142,9 +169,8 @@ impl<D> SemanticModel<D> {
             let Some(declaration_record) = self.storage.declaration(declaration) else {
                 return Err(ResolutionError::InvalidStorage);
             };
-            for rule in library_specialization_metaclasses(declaration_record.kind)
-                .flat_map(library_specialization_rules)
-            {
+            let metaclasses = library_specialization_metaclasses(declaration_record.kind);
+            for rule in metaclasses.iter().flat_map(|metaclass| metaclass.rules()) {
                 let Some(outcome) = self.resolution.library_specialization_anchor(rule.rule_id)
                 else {
                     return Err(ResolutionError::InvalidStorage);
@@ -163,8 +189,9 @@ impl<D> SemanticModel<D> {
                         crate::LibrarySpecializationAnchorBranch::Default,
                     ));
             }
-            for rule in library_specialization_metaclasses(declaration_record.kind)
-                .flat_map(conditional_library_specialization_rules)
+            for rule in metaclasses
+                .iter()
+                .flat_map(|metaclass| metaclass.conditional_rules())
             {
                 if !conditional_library_specialization_predicate_holds(
                     &self.storage,
@@ -292,10 +319,10 @@ impl<D> SemanticModel<D> {
                 // Counted over authored references rather than settled operands: whether the
                 // author wrote one target does not depend on whether it resolved.
                 let mut authored = self
-                    .storage
-                    .references
+                    .outgoing_reference_ids(id)
                     .iter()
-                    .filter(|reference| reference.source == id && reference.kind == kind);
+                    .filter_map(|reference| self.storage.references.get(reference.index()))
+                    .filter(|reference| reference.kind == kind);
                 let Some(only) = authored.next() else {
                     continue;
                 };
@@ -403,6 +430,20 @@ impl<D> SemanticModel<D> {
             let Some(ResolutionStatus::Resolved(target)) = self.resolution.outcome(id) else {
                 continue;
             };
+            // KerML 8.3.3.1.10 `validateType{Unioning,Intersecting,Differencing}TypesNotSelf`:
+            // a type-relationship operand is never the declaring type itself.
+            if matches!(
+                reference.kind,
+                ReferenceKind::Unioning | ReferenceKind::Intersecting | ReferenceKind::Differencing
+            ) && target == reference.source
+            {
+                diagnostics.push(self.reference_diagnostic(
+                    reference,
+                    DiagnosticCode::TypeRelationshipOperandIsSelf,
+                    DiagnosticSeverity::Error,
+                    None,
+                )?);
+            }
             self.check_reference_kind(reference, target, diagnostics)?;
             self.check_reference_conformance(reference, target, diagnostics)?;
         }
@@ -415,6 +456,20 @@ impl<D> SemanticModel<D> {
         target: DeclarationId,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
+        // KerML 8.3.4.1.2/8.3.4.2.2/8.3.4.3.2/8.3.4.6.2 `validate{DataType,Class,Structure,
+        // Behavior}Specialization` are metaclass tests over an owned Specialization's general,
+        // and apply to every KerML and SysML classifier alike.
+        if reference.kind == ReferenceKind::Subclassification
+            && self.kerml_specialization_incompatible(reference.source, target)
+        {
+            diagnostics.push(self.reference_diagnostic(
+                reference,
+                DiagnosticCode::IncompatibleSpecializationKind,
+                DiagnosticSeverity::Warning,
+                Some(target),
+            )?);
+            return Ok(());
+        }
         let (Some((source_family, source_role)), Some((target_family, target_role))) = (
             self.declaration_family(reference.source),
             self.declaration_family(target),
@@ -489,6 +544,33 @@ impl<D> SemanticModel<D> {
             Some(target),
         )?);
         Ok(())
+    }
+
+    /// Whether `specific`'s metaclass may not specialize `general`'s under the KerML classifier
+    /// specialization rules: a DataType specializes no Class or Association, a Class no DataType
+    /// and no Association unless it is one, a Structure no Behavior, and a Behavior no Structure.
+    pub(crate) fn kerml_specialization_incompatible(
+        &self,
+        specific: DeclarationId,
+        general: DeclarationId,
+    ) -> bool {
+        let (Some(specific), Some(general)) = (
+            self.storage.declaration(specific),
+            self.storage.declaration(general),
+        ) else {
+            return false;
+        };
+        let (Some(specific), Some(general)) = (
+            classifier_metaclass(element_kind(specific.kind)),
+            classifier_metaclass(element_kind(general.kind)),
+        ) else {
+            return false;
+        };
+        (specific.data_type && (general.class || general.association))
+            || (specific.class
+                && (general.data_type || (general.association && !specific.association)))
+            || (specific.structure && general.behavior)
+            || (specific.behavior && general.structure)
     }
 
     /// KerML §8.3.3.3.10 and §8.4.3.4: a specializing feature's co-domain and multiplicity must
@@ -569,17 +651,27 @@ impl<D> SemanticModel<D> {
         &self,
         declaration: DeclarationId,
     ) -> Option<(i64, Option<i64>)> {
-        let multiplicity = self
-            .storage
-            .declaration_facts(declaration)?
-            .multiplicity
-            .as_ref()?;
+        Self::literal_bounds(
+            self.storage
+                .declaration_facts(declaration)?
+                .multiplicity
+                .as_ref()?,
+        )
+    }
+
+    /// The `[lower..upper]` of one authored multiplicity when both bounds fold to literals, with
+    /// `None` as the upper bound standing for unbounded. `None` when a bound is an expression or
+    /// the literal bounds admit nothing, so the question stays unanswered rather than guessed.
+    pub(crate) fn literal_bounds(multiplicity: &MultiplicityRecord) -> Option<(i64, Option<i64>)> {
         // The single-bound spelling `[3]` reaches this fact family already expanded to `[3..3]`,
         // so an `Unbounded` upper here is always an authored `*`, never an omitted bound.
         let (lower, upper) = match (multiplicity.lower, multiplicity.upper) {
             // An expression bound needs operand resolution to compare, which this fact family does
             // not perform, so the question stays unanswered on either side.
-            (MultiplicityBound::Expression, _) | (_, MultiplicityBound::Expression) => return None,
+            (MultiplicityBound::Expression | MultiplicityBound::NonIntegerLiteral, _)
+            | (_, MultiplicityBound::Expression | MultiplicityBound::NonIntegerLiteral) => {
+                return None
+            }
             (MultiplicityBound::Literal(lower), MultiplicityBound::Unbounded) => (lower, None),
             (MultiplicityBound::Literal(lower), MultiplicityBound::Literal(upper)) => {
                 (lower, Some(upper))

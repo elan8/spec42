@@ -31,7 +31,7 @@ package Connections {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:7d0ff2a8761d3018bcc7b6b1ca419bf73a05b8d92f3ca8c34cbb008f4a935a9b"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b45467df9bca83aecd5e3635ec62aaa73c4033bc7be03c40e571fcb2c560f6ee"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connect_missing_to.md") (qualified-name "Connections"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connect_missing_to.md") (qualified-name "Connections::A"))) (kind part-def) (membership (kind owning) (visibility default)))

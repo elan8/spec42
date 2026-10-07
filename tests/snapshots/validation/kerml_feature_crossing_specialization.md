@@ -30,6 +30,12 @@ package Model {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_crossing_specialization.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 2 4) (end 7 5))
+      )
     )
   )
 )
@@ -37,7 +43,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d3432e1e6efdb5066fdbe725fab68cdb4b8c4c39d497485e4176ed4874be03ce"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8c68dea5824d1e6a8fdb9650bd451ff9ba24d9e93ef9787768c92a37edc2c8c6"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_crossing_specialization.md") (qualified-name "Model::HappensDuring"))) (kind kerml-association) (membership (kind owning) (visibility default)))

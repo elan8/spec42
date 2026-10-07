@@ -40,6 +40,12 @@ package Demo {
 (fixture-diagnostics
   (document "memory://snapshot/named_kerml_connector_ends.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 1 4) (end 1 15))
+      )
     )
   )
 )
@@ -47,15 +53,15 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3774a499119a63cfe86903e92b0998680473e6e153441d157b7e2f1821a6faf3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c2c49d758eb5f036960c0ad1ba4fa318257771ddf1ed70657005f4d11b79e547"))
   (declarations
     (declaration (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context"))) (kind class-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::actualSource"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::actualTarget"))) (kind kerml-feature) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::link"))) (kind kerml-connector) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Link")))))
-    (declaration (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::link::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1)) (positional-end 0)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "actualSource")))))
-    (declaration (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::link::target"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 1)) (positional-end 1)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "actualTarget")))))
+    (declaration (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::link::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (cross-multiplicity (lower 1) (upper 1)) (positional-end 0)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "actualSource")))))
+    (declaration (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::link::target"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (cross-multiplicity (lower 1) (upper 1)) (positional-end 1)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "actualTarget")))))
     (declaration (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Link"))) (kind kerml-association) (membership (kind owning) (visibility default)))
   )
   (references
@@ -113,7 +119,7 @@ package Demo {
 # CONNECTIONS
 ~~~sexpr
 (connections
-  (connector (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::link"))) (kind connection) (type (resolved (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Link")))) (end (name (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::link::source"))) (multiplicity (lower 1) (upper 1)) (feature (resolved (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::actualSource"))))) (end (name (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::link::target"))) (multiplicity (lower 1) (upper 1)) (feature (resolved (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::actualTarget"))))))
+  (connector (id (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::link"))) (kind connection) (type (resolved (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Link")))) (end (name (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::link::source"))) (cross-multiplicity (lower 1) (upper 1)) (feature (resolved (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::actualSource"))))) (end (name (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::link::target"))) (cross-multiplicity (lower 1) (upper 1)) (feature (resolved (node (document "memory://snapshot/named_kerml_connector_ends.md") (qualified-name "Demo::Context::actualTarget"))))))
 )
 ~~~
 # NAVIGATION

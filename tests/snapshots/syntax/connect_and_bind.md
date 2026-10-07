@@ -42,7 +42,7 @@ package Connections {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:77058676bdd8e0e1a65dc07acaa26f6c5bc38becdd2d79ae1a715c04b1b803bb"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9b452cf910bd1c38d4d6172ffb34ab0d36fb7f75317b53493b90e7c33a6ae81e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connect_and_bind.md") (qualified-name "Connections"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connect_and_bind.md") (qualified-name "Connections::A"))) (kind part-def) (membership (kind owning) (visibility default)))

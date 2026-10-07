@@ -51,6 +51,18 @@ package Ends {
       )
       (diagnostic
         (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 13 4) (end 15 5))
+      )
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 16 4) (end 18 5))
+      )
+      (diagnostic
+        (severity warning)
         (code "redefinition_end_mismatch")
         (source "semantic")
         (range (start 17 8) (end 17 30))
@@ -62,7 +74,7 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:2ac66c3d094088d695b65a3898361493342d9c54b20d40fcdddd7a368074812c"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:4a351adecf5853362bf1714b26d97cb85f1c653a3119bb1ecf9cf9caed06628e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/structural_end_features.md") (qualified-name "Ends::Association"))) (kind kerml-association) (membership (kind owning) (visibility default)))

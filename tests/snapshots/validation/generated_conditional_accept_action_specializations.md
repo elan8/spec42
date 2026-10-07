@@ -42,7 +42,7 @@ package AcceptActionSpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:97c5cfe4a958c23f32313593c20bab7a1cf7000e9c9275f28a7054f5e5303a7f") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:d4ea429e8ede2037874fbebe01b55556e513961a0ae623410a22e1f68774ef2a") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_accept_action_specializations.md") (qualified-name "AcceptActionSpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_accept_action_specializations.md") (qualified-name "AcceptActionSpecializations::Message"))) (kind item-def) (membership (kind owning) (visibility default)))

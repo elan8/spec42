@@ -8,7 +8,7 @@ use crate::model::ReferenceKind;
 use crate::resolve::implied::LibrarySpecializationAnchor;
 use crate::resolve::implied::LibrarySpecializationAnchorFacts;
 use crate::resolve::names::CandidateRange;
-use crate::resolve::names::NameIndex;
+use crate::resolve::names::InheritedNameIndex;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum ResolutionError {
@@ -46,9 +46,20 @@ pub(crate) enum EffectiveNameOutcome {
 pub(crate) struct EffectiveNameFacts {
     pub(crate) name: EffectiveNameOutcome,
     pub(crate) short_name: EffectiveNameOutcome,
-    /// True only when both components come from the first redefined Feature rather than authored
-    /// identification. This preserves provenance without replacing the authored declaration name.
-    pub(crate) derived_from_redefinition: bool,
+    /// Where the effective identification comes from, preserved without replacing the authored
+    /// declaration name.
+    pub(crate) provenance: EffectiveNameProvenance,
+}
+
+/// The source of an element's effective identification.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum EffectiveNameProvenance {
+    /// The element's own authored identification, or none.
+    Declared,
+    /// Both components come from the first Feature it redefines (KerML `Feature::effectiveName`).
+    FirstRedefinition,
+    /// `~` + the original definition's name (SysML `ConjugatedPortDefinition::effectiveName`).
+    OriginalPortDefinition,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -209,6 +220,32 @@ pub(crate) struct SuccessionEndpointSubsettingProjection {
     pub(crate) kind: SuccessionEndpointSubsettingKind,
 }
 
+/// Which connector end of a Succession a control node occupies.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum ControlNodeSuccessionEnd {
+    /// The node is the succession's target (`then`): the succession is one of its
+    /// `targetConnector`s, an incoming succession.
+    Incoming,
+    /// The node is the succession's source (`first`): one of its `sourceConnector`s, an outgoing
+    /// succession.
+    Outgoing,
+}
+
+/// One Succession whose resolved source or target end is a SysML ControlNode (`decide`, `merge`,
+/// `fork`, `join`).
+///
+/// This is the canonical `ControlNode::sourceConnector`/`targetConnector` restricted to
+/// Successions, derived once from the settled end references. Entries are ordered by
+/// `(node, end, succession)`, so each node's incoming and outgoing successions are contiguous and
+/// in declaration order. Successions whose end does not resolve are absent: they attach to no
+/// known node, and the unresolved end is already its own diagnostic.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct ControlNodeSuccession {
+    pub(crate) node: DeclarationId,
+    pub(crate) end: ControlNodeSuccessionEnd,
+    pub(crate) succession: DeclarationId,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) struct TransitionPayloadSubsettingProjection {
     pub(crate) transition: DeclarationId,
@@ -261,7 +298,7 @@ pub(crate) struct ResolutionResults {
     pub(crate) member_access_paths:
         std::collections::BTreeMap<AuthoredReferenceId, Box<[ResolutionStatus]>>,
     pub(crate) ambiguous_candidates: Box<[DeclarationId]>,
-    pub(crate) inherited_names: NameIndex,
+    pub(crate) inherited_names: InheritedNameIndex,
     pub(crate) effective_names: Box<[EffectiveNameFacts]>,
     pub(crate) solver_status: SolverStatus,
     pub(crate) implied_relationships: Box<[ImpliedRelationship]>,
@@ -289,6 +326,7 @@ pub(crate) struct ResolutionResults {
         Box<[SuccessionEndpointSubsettingProjection]>,
     pub(crate) decision_outgoing_subsetting_status: SuccessionEndpointSubsettingStatus,
     pub(crate) merge_incoming_subsetting_status: SuccessionEndpointSubsettingStatus,
+    pub(crate) control_node_successions: Box<[ControlNodeSuccession]>,
     pub(crate) transition_payload_subsetting_projections:
         Box<[TransitionPayloadSubsettingProjection]>,
     pub(crate) transition_payload_subsetting_status: TransitionPayloadSubsettingStatus,
@@ -432,12 +470,14 @@ impl ResolutionResults {
         projections: Box<[SuccessionEndpointSubsettingProjection]>,
         decision_status: SuccessionEndpointSubsettingStatus,
         merge_status: SuccessionEndpointSubsettingStatus,
+        control_node_successions: Box<[ControlNodeSuccession]>,
     ) -> Self {
         Self {
             implied_relationships,
             succession_endpoint_subsetting_projections: projections,
             decision_outgoing_subsetting_status: decision_status,
             merge_incoming_subsetting_status: merge_status,
+            control_node_successions,
             ..self
         }
     }

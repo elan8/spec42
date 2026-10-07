@@ -36,6 +36,7 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::ItemDefinition => ElementKind::ItemDefinition,
         DeclarationKind::ItemUsage => ElementKind::ItemUsage,
         DeclarationKind::PortDefinition => ElementKind::PortDefinition,
+        DeclarationKind::ConjugatedPortDefinition => ElementKind::ConjugatedPortDefinition,
         DeclarationKind::PortUsage => ElementKind::PortUsage,
         DeclarationKind::OccurrenceDefinition => ElementKind::OccurrenceDefinition,
         DeclarationKind::OccurrenceUsage => ElementKind::OccurrenceUsage,
@@ -50,6 +51,7 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::Allocate => ElementKind::AllocationUsage,
         DeclarationKind::FlowDefinition => ElementKind::FlowConnectionDefinition,
         DeclarationKind::Flow => ElementKind::FlowConnectionUsage,
+        DeclarationKind::SuccessionFlow => ElementKind::SuccessionFlowUsage,
         DeclarationKind::ActionDefinition => ElementKind::ActionDefinition,
         DeclarationKind::ActionUsage => ElementKind::ActionUsage,
         DeclarationKind::AcceptActionUsage => ElementKind::AcceptActionUsage,
@@ -61,6 +63,7 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         | DeclarationKind::ExitActionBinding => ElementKind::ActionUsage,
         DeclarationKind::StateDefinition => ElementKind::StateDefinition,
         DeclarationKind::StateUsage => ElementKind::StateUsage,
+        DeclarationKind::ExhibitStateUsage => ElementKind::ExhibitStateUsage,
         DeclarationKind::CalcDefinition => ElementKind::CalculationDefinition,
         DeclarationKind::CalcUsage => ElementKind::CalculationUsage,
         DeclarationKind::ConstraintDefinition => ElementKind::ConstraintDefinition,
@@ -76,6 +79,8 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         // A verified requirement is a `RequirementUsage` under a
         // `RequirementVerificationMembership`.
         DeclarationKind::VerifyRequirement => ElementKind::RequirementUsage,
+        // A case's objective is a `RequirementUsage` under an `ObjectiveMembership`.
+        DeclarationKind::ObjectiveRequirement => ElementKind::RequirementUsage,
         DeclarationKind::ConcernDefinition => ElementKind::ConcernDefinition,
         DeclarationKind::ConcernUsage => ElementKind::ConcernUsage,
         // A `frame` is a `ConcernUsage` under a `FramedConcernMembership`.
@@ -96,7 +101,6 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::RenderingUsage => ElementKind::RenderingUsage,
         DeclarationKind::MetadataDefinition => ElementKind::MetadataDefinition,
         DeclarationKind::MetadataUsage => ElementKind::MetadataUsage,
-        DeclarationKind::CommentUsage => ElementKind::Comment,
         // `#keyword def X` has no more specific type than `Definition`.
         DeclarationKind::ExtendedDefinition => ElementKind::Definition,
         // `#keyword x` has no more specific type than `Usage`.
@@ -140,6 +144,9 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::Expose => ElementKind::Expose,
         DeclarationKind::Alias => ElementKind::Alias,
         DeclarationKind::Dependency => ElementKind::Dependency,
+        DeclarationKind::Comment => ElementKind::Comment,
+        DeclarationKind::Documentation => ElementKind::Documentation,
+        DeclarationKind::TextualRepresentation => ElementKind::TextualRepresentation,
 
         DeclarationKind::KermlType => ElementKind::Type,
         DeclarationKind::KermlClassifier => ElementKind::Classifier,
@@ -156,16 +163,26 @@ pub(crate) fn element_kind(kind: DeclarationKind) -> ElementKind {
         DeclarationKind::KermlPredicate => ElementKind::Predicate,
         DeclarationKind::KermlInteraction => ElementKind::Interaction,
         DeclarationKind::KermlMultiplicity => ElementKind::Multiplicity,
+        DeclarationKind::KermlMultiplicityRange => ElementKind::MultiplicityRange,
 
         DeclarationKind::KermlFeature => ElementKind::Feature,
         // An association or connector end is a `Feature` under an `EndFeatureMembership`.
         DeclarationKind::KermlEnd => ElementKind::Feature,
+        DeclarationKind::FlowEnd => ElementKind::FlowEnd,
         DeclarationKind::KermlStep => ElementKind::Step,
         DeclarationKind::KermlExpression => ElementKind::Expression,
         DeclarationKind::KermlBooleanExpression => ElementKind::BooleanExpression,
+        DeclarationKind::KermlLiteralBoolean => ElementKind::LiteralBoolean,
+        DeclarationKind::KermlLiteralInteger => ElementKind::LiteralInteger,
+        DeclarationKind::KermlLiteralRational => ElementKind::LiteralRational,
+        DeclarationKind::KermlLiteralString => ElementKind::LiteralString,
+        DeclarationKind::KermlLiteralInfinity => ElementKind::LiteralInfinity,
+        DeclarationKind::KermlNullExpression => ElementKind::NullExpression,
+        DeclarationKind::KermlMetadataAccessExpression => ElementKind::MetadataAccessExpression,
         DeclarationKind::KermlConnector => ElementKind::Connector,
         DeclarationKind::KermlBinding => ElementKind::BindingConnector,
         DeclarationKind::KermlInvariant => ElementKind::Invariant,
+        DeclarationKind::KermlMetadataFeature => ElementKind::MetadataFeature,
     }
 }
 
@@ -191,11 +208,12 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         }
         DeclarationKind::Frame => Some(MembershipRole::FramedConcern),
         DeclarationKind::VerifyRequirement => Some(MembershipRole::RequirementVerification),
+        DeclarationKind::ObjectiveRequirement => Some(MembershipRole::Objective),
         DeclarationKind::EnumerationLiteral => Some(MembershipRole::Variant),
         DeclarationKind::ParameterUsage | DeclarationKind::PerformParameterBinding => {
             Some(MembershipRole::Parameter)
         }
-        DeclarationKind::KermlEnd => Some(MembershipRole::EndFeature),
+        DeclarationKind::KermlEnd | DeclarationKind::FlowEnd => Some(MembershipRole::EndFeature),
         DeclarationKind::AssumeConstraintUsage => Some(MembershipRole::RequirementConstraint(
             RequirementConstraintKind::Assumption,
         )),
@@ -215,6 +233,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::ItemDefinition
         | DeclarationKind::ItemUsage
         | DeclarationKind::PortDefinition
+        | DeclarationKind::ConjugatedPortDefinition
         | DeclarationKind::PortUsage
         | DeclarationKind::OccurrenceDefinition
         | DeclarationKind::OccurrenceUsage
@@ -227,6 +246,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::Allocate
         | DeclarationKind::FlowDefinition
         | DeclarationKind::Flow
+        | DeclarationKind::SuccessionFlow
         | DeclarationKind::ActionDefinition
         | DeclarationKind::ActionUsage
         | DeclarationKind::AcceptActionUsage
@@ -234,6 +254,7 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::TerminateActionUsage
         | DeclarationKind::StateDefinition
         | DeclarationKind::StateUsage
+        | DeclarationKind::ExhibitStateUsage
         | DeclarationKind::CalcDefinition
         | DeclarationKind::CalcUsage
         | DeclarationKind::ConstraintDefinition
@@ -259,7 +280,6 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::RenderingUsage
         | DeclarationKind::MetadataDefinition
         | DeclarationKind::MetadataUsage
-        | DeclarationKind::CommentUsage
         | DeclarationKind::ExtendedDefinition
         | DeclarationKind::ExtendedUsage
         | DeclarationKind::ReferenceUsage
@@ -286,6 +306,9 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::Expose
         | DeclarationKind::Alias
         | DeclarationKind::Dependency
+        | DeclarationKind::Comment
+        | DeclarationKind::Documentation
+        | DeclarationKind::TextualRepresentation
         | DeclarationKind::KermlClassifier
         | DeclarationKind::ClassDefinition
         | DeclarationKind::KermlType
@@ -299,13 +322,22 @@ pub(crate) fn membership_role(kind: DeclarationKind) -> Option<MembershipRole> {
         | DeclarationKind::KermlPredicate
         | DeclarationKind::KermlInteraction
         | DeclarationKind::KermlMultiplicity
+        | DeclarationKind::KermlMultiplicityRange
         | DeclarationKind::KermlFeature
         | DeclarationKind::KermlStep
         | DeclarationKind::KermlExpression
         | DeclarationKind::KermlBooleanExpression
+        | DeclarationKind::KermlLiteralBoolean
+        | DeclarationKind::KermlLiteralInteger
+        | DeclarationKind::KermlLiteralRational
+        | DeclarationKind::KermlLiteralString
+        | DeclarationKind::KermlLiteralInfinity
+        | DeclarationKind::KermlNullExpression
+        | DeclarationKind::KermlMetadataAccessExpression
         | DeclarationKind::KermlConnector
         | DeclarationKind::KermlBinding
-        | DeclarationKind::KermlInvariant => None,
+        | DeclarationKind::KermlInvariant
+        | DeclarationKind::KermlMetadataFeature => None,
     }
 }
 
@@ -320,6 +352,27 @@ pub(crate) fn membership_role_with_trigger(
         Some(MembershipRole::TransitionTriggerAction)
     } else {
         membership_role(kind)
+    }
+}
+
+/// KerML `Feature::direction` of a Feature with effective membership `role` and authored
+/// `direction`.
+///
+/// A `ParameterMembership` fixes its parameter's direction (`parameterDirection()`): `in` for a
+/// subject, actor or stakeholder, `out` for a `ReturnParameterMembership` result, as the Pilot's
+/// `ParameterMembershipAdapter` sets it. Those memberships admit no authored direction, so the
+/// derived one is the only one; every other Feature has the direction its author wrote, or none.
+pub(crate) fn effective_direction(
+    role: Option<MembershipRole>,
+    authored: Option<crate::lower::facts::ParameterDirection>,
+) -> Option<crate::lower::facts::ParameterDirection> {
+    use crate::lower::facts::ParameterDirection;
+    match role {
+        Some(MembershipRole::Subject | MembershipRole::Actor | MembershipRole::Stakeholder) => {
+            Some(ParameterDirection::In)
+        }
+        Some(MembershipRole::ReturnParameter) => Some(ParameterDirection::Out),
+        _ => authored,
     }
 }
 
@@ -349,6 +402,7 @@ mod tests {
         DeclarationKind::RequirementDefinition,
         DeclarationKind::RequirementUsage,
         DeclarationKind::PortDefinition,
+        DeclarationKind::ConjugatedPortDefinition,
         DeclarationKind::PortUsage,
         DeclarationKind::ItemDefinition,
         DeclarationKind::ItemUsage,
@@ -360,9 +414,9 @@ mod tests {
         DeclarationKind::Succession,
         DeclarationKind::StateDefinition,
         DeclarationKind::StateUsage,
+        DeclarationKind::ExhibitStateUsage,
         DeclarationKind::MetadataDefinition,
         DeclarationKind::MetadataUsage,
-        DeclarationKind::CommentUsage,
         DeclarationKind::ConnectionDefinition,
         DeclarationKind::ConnectionUsage,
         DeclarationKind::OccurrenceDefinition,
@@ -417,11 +471,13 @@ mod tests {
         DeclarationKind::Join,
         DeclarationKind::ThenContinuation,
         DeclarationKind::Flow,
+        DeclarationKind::SuccessionFlow,
         DeclarationKind::StakeholderUsage,
         DeclarationKind::RequirementActor,
         DeclarationKind::CaseActor,
         DeclarationKind::Frame,
         DeclarationKind::VerifyRequirement,
+        DeclarationKind::ObjectiveRequirement,
         DeclarationKind::KermlType,
         DeclarationKind::KermlClassifier,
         DeclarationKind::KermlStructure,
@@ -434,15 +490,25 @@ mod tests {
         DeclarationKind::KermlPredicate,
         DeclarationKind::KermlInteraction,
         DeclarationKind::KermlMultiplicity,
+        DeclarationKind::KermlMultiplicityRange,
         DeclarationKind::KermlFeature,
         DeclarationKind::KermlStep,
         DeclarationKind::KermlExpression,
         DeclarationKind::KermlBooleanExpression,
+        DeclarationKind::KermlLiteralBoolean,
+        DeclarationKind::KermlLiteralInteger,
+        DeclarationKind::KermlLiteralRational,
+        DeclarationKind::KermlLiteralString,
+        DeclarationKind::KermlLiteralInfinity,
+        DeclarationKind::KermlNullExpression,
+        DeclarationKind::KermlMetadataAccessExpression,
         DeclarationKind::DefaultReferenceUsage,
         DeclarationKind::KermlConnector,
         DeclarationKind::KermlBinding,
         DeclarationKind::KermlInvariant,
+        DeclarationKind::KermlMetadataFeature,
         DeclarationKind::KermlEnd,
+        DeclarationKind::FlowEnd,
         DeclarationKind::Assign,
         DeclarationKind::While,
         DeclarationKind::Loop,
@@ -450,6 +516,9 @@ mod tests {
         DeclarationKind::ForLoop,
         DeclarationKind::ForLoopVariable,
         DeclarationKind::Dependency,
+        DeclarationKind::Comment,
+        DeclarationKind::Documentation,
+        DeclarationKind::TextualRepresentation,
         DeclarationKind::ExtendedDefinition,
         DeclarationKind::ExtendedUsage,
         DeclarationKind::BareConnect,
@@ -526,6 +595,7 @@ mod tests {
             &[
                 DeclarationKind::RequirementUsage,
                 DeclarationKind::VerifyRequirement,
+                DeclarationKind::ObjectiveRequirement,
             ],
         ),
         (
@@ -542,7 +612,10 @@ mod tests {
         ),
     ];
 
-    /// No public kind may be unreachable: a variant nothing projects onto is dead contract.
+    /// No public kind may be unreachable: a variant nothing projects onto, and that no produced
+    /// kind specializes, is dead contract. An abstract metaclass such as `Succession` or
+    /// `ControlNode` is reachable through the generalization hierarchy of the kinds that are
+    /// produced.
     #[test]
     fn every_public_kind_is_produced_by_some_declaration_kind() {
         let produced = ALL_DECLARATION_KINDS
@@ -551,7 +624,10 @@ mod tests {
             .map(element_kind)
             .collect::<BTreeSet<_>>();
         let declared = ElementKind::ALL.iter().copied().collect::<BTreeSet<_>>();
-        let unreachable = declared.difference(&produced).collect::<Vec<_>>();
+        let unreachable = declared
+            .iter()
+            .filter(|general| !produced.iter().any(|kind| kind.conforms_to(**general)))
+            .collect::<Vec<_>>();
         assert!(
             unreachable.is_empty(),
             "these public kinds are never produced, so they are dead contract: {unreachable:?}"

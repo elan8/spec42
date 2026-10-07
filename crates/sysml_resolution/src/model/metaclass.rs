@@ -65,11 +65,11 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         K::ActionUsage => (F::Action, Usage),
         K::AcceptActionUsage | K::SendActionUsage | K::TerminateActionUsage => (F::Action, Usage),
         K::StateDefinition => (F::State, Definition),
-        K::StateUsage => (F::State, Usage),
-        K::PortDefinition => (F::Port, Definition),
+        K::StateUsage | K::ExhibitStateUsage => (F::State, Usage),
+        K::PortDefinition | K::ConjugatedPortDefinition => (F::Port, Definition),
         K::PortUsage => (F::Port, Usage),
         K::RequirementDefinition => (F::Requirement, Definition),
-        K::RequirementUsage => (F::Requirement, Usage),
+        K::RequirementUsage | K::ObjectiveRequirement => (F::Requirement, Usage),
         K::ConcernDefinition => (F::Concern, Definition),
         K::ConcernUsage => (F::Concern, Usage),
         K::UseCaseDefinition => (F::UseCase, Definition),
@@ -93,7 +93,7 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         K::InterfaceDefinition => (F::Interface, Definition),
         K::InterfaceUsage => (F::Interface, Usage),
         K::FlowDefinition => (F::Flow, Definition),
-        K::Flow => (F::Flow, Usage),
+        K::Flow | K::SuccessionFlow => (F::Flow, Usage),
         K::AllocationDefinition => (F::Allocation, Definition),
         K::Allocate => (F::Allocation, Usage),
         K::ConstraintDefinition => (F::Constraint, Definition),
@@ -154,6 +154,9 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         | K::ForLoop
         | K::ForLoopVariable
         | K::Dependency
+        | K::Comment
+        | K::Documentation
+        | K::TextualRepresentation
         | K::BareConnect
         | K::PerformParameterBinding
         | K::KermlType
@@ -168,15 +171,24 @@ pub(crate) fn classify(kind: DeclarationKind) -> Option<(Family, Role)> {
         | K::KermlPredicate
         | K::KermlInteraction
         | K::KermlMultiplicity
+        | K::KermlMultiplicityRange
         | K::KermlFeature
         | K::KermlStep
         | K::KermlExpression
         | K::KermlBooleanExpression
+        | K::KermlLiteralBoolean
+        | K::KermlLiteralInteger
+        | K::KermlLiteralRational
+        | K::KermlLiteralString
+        | K::KermlLiteralInfinity
+        | K::KermlNullExpression
+        | K::KermlMetadataAccessExpression
         | K::KermlConnector
         | K::KermlBinding
         | K::KermlInvariant
+        | K::KermlMetadataFeature
         | K::KermlEnd
-        | K::CommentUsage => return None,
+        | K::FlowEnd => return None,
     })
 }
 

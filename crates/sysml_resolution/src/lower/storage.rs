@@ -18,6 +18,7 @@ use crate::lower::facts::FeatureValueRecord;
 use crate::lower::facts::MembershipRecord;
 use crate::lower::facts::MetadataAnnotationRecord;
 use crate::lower::facts::OperatorExpressionRecord;
+use crate::lower::facts::OwnedEndRecord;
 use crate::lower::facts::PendingEvaluationFact;
 use crate::lower::facts::RecoveryRecord;
 use crate::lower::facts::UnsupportedRecord;
@@ -53,6 +54,24 @@ pub(crate) struct SemanticModelStorage {
     pub(crate) unit_tokens: Box<[AuthoredUnitToken]>,
     pub(crate) filter_conditions: Box<[AuthoredFilterCondition]>,
     pub(crate) invocations: Box<[AuthoredInvocation]>,
+    /// Every `assign` and the Features of its target parameter, in lowering order.
+    pub(crate) assignments: Box<[crate::lower::facts::AssignmentRecord]>,
+    /// Every `accept when|at|after` TriggerInvocationExpression, in lowering order.
+    pub(crate) trigger_invocations: Box<[crate::lower::facts::TriggerInvocationRecord]>,
+    /// Every evaluation site whose authored expression lowering does not fully represent as
+    /// Expression elements, sorted and deduplicated.
+    pub(crate) unlowered_expressions: Box<[crate::lower::facts::UnloweredExpressionSite]>,
+    /// Every Type's owned end Features, grouped by owner and in authored order within an owner.
+    ///
+    /// The one canonical representation of KerML `Type::ownedEndFeature` (and so of the owned
+    /// `connectorEnd` / `associationEnd`): every end-count, end-position and related-feature
+    /// consumer reads it through [`Self::owned_end_features`]. Declared ends of every form are
+    /// recorded for every owner. Bare ends are recorded for every connector whose ends lower
+    /// through the KerML connector-end shape (KerML `connector` / `binding` / `succession` and
+    /// `flow ... from ... to`). The SysML `connect` / `bind` / `first ... then` / transition /
+    /// `allocate` forms keep their bare ends as references only, so a consumer must scope itself
+    /// to the metaclasses whose collection is complete.
+    pub(crate) owned_end_features: Box<[OwnedEndRecord]>,
 }
 
 /// The parse product of every admitted document, held alongside the storage until the publication
@@ -97,6 +116,50 @@ impl ParsedSources {
 }
 
 impl SemanticModelStorage {
+    /// Every `(owner, expression)` ResultExpressionMembership, in lowering (authored) order.
+    pub(crate) fn result_expressions(
+        &self,
+    ) -> impl Iterator<Item = (DeclarationId, DeclarationId)> + '_ {
+        self.memberships
+            .iter()
+            .filter(|membership| membership.role == Some(crate::MembershipRole::ResultExpression))
+            .filter_map(|membership| {
+                Some((
+                    self.declaration(membership.member)?.owner?,
+                    membership.member,
+                ))
+            })
+    }
+
+    /// Each Function's or Expression's result expression, indexed by owner: the first it owns
+    /// (the Pilot's `getOwnedFeatureByMembershipIn(ResultExpressionMembership)`). The owner's
+    /// expression body is that element's; the owner holds none of its own.
+    pub(crate) fn result_expression_of(&self) -> Box<[Option<DeclarationId>]> {
+        let mut bodies = vec![None; self.declarations.len()];
+        for (owner, expression) in self.result_expressions() {
+            if let Some(slot) = bodies.get_mut(owner.index()) {
+                slot.get_or_insert(expression);
+            }
+        }
+        bodies.into_boxed_slice()
+    }
+
+    /// The Expression that gives each declaration its value, indexed by declaration: its first
+    /// FeatureValue's value Expression, else its result expression.
+    ///
+    /// Evaluation is keyed to that Expression element; this is the one bridge from the valued
+    /// declaration to it, so no consumer evaluates an expression at its owner or picks a
+    /// different one.
+    pub(crate) fn value_expressions(&self) -> Box<[Option<DeclarationId>]> {
+        let mut values = self.result_expression_of();
+        for value in self.feature_values.iter().rev() {
+            if let Some(slot) = values.get_mut(value.declaration.index()) {
+                *slot = Some(value.value);
+            }
+        }
+        values
+    }
+
     /// The implicit multiplicities introduced by individual-definition syntax. Their existing
     /// declaration ownership and this explicit role are the sole relationship representation.
     pub(crate) fn individual_multiplicities(&self) -> impl Iterator<Item = DeclarationId> + '_ {
@@ -133,7 +196,38 @@ impl SemanticModelStorage {
         self.declaration_facts.get(id.index())
     }
 
+    /// `Type::multiplicity` (KerML 8.3.3.1.10, `deriveTypeMultiplicity`): the first
+    /// `Multiplicity` `owner` owns, in `ownedMember` order. A header `[m..n]` and the empty
+    /// multiplicity of an `individual` definition precede every body member, so source position
+    /// is that order.
+    pub(crate) fn type_multiplicity(&self, owner: DeclarationId) -> Option<DeclarationId> {
+        self.declarations
+            .iter()
+            .enumerate()
+            .filter(|(_, candidate)| {
+                candidate.owner == Some(owner)
+                    && matches!(
+                        candidate.kind,
+                        crate::model::DeclarationKind::KermlMultiplicity
+                            | crate::model::DeclarationKind::KermlMultiplicityRange
+                    )
+            })
+            .min_by_key(|(index, candidate)| (candidate.span.offset, *index))
+            .and_then(|(index, _)| DeclarationId::from_index(index).ok())
+    }
+
     pub(crate) fn symbol(&self, id: NameId) -> Option<&str> {
         self.symbols.get(id)
+    }
+
+    /// `owner`'s owned end Features in authored order (KerML `Type::ownedEndFeature`).
+    pub(crate) fn owned_end_features(&self, owner: DeclarationId) -> &[OwnedEndRecord] {
+        let start = self
+            .owned_end_features
+            .partition_point(|record| record.owner < owner);
+        let end = self
+            .owned_end_features
+            .partition_point(|record| record.owner <= owner);
+        &self.owned_end_features[start..end]
     }
 }

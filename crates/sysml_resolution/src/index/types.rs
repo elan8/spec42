@@ -11,6 +11,7 @@
 //! is a lookup rather than a traversal, an answer cannot depend on the order queries arrive in,
 //! and the publication keeps its "the only interior mutation is source line indexing" invariant.
 
+use crate::lower::facts::OwnedEndFeature;
 use crate::lower::storage::SemanticModelStorage;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
@@ -71,21 +72,22 @@ impl ScopeBits {
 /// makes one tagged closure answer both readings: a path through a `Subsetting` edge stops being
 /// a subclassification path at that edge and never regains it.
 pub(crate) fn edge_scopes(kind: ReferenceKind) -> Option<u8> {
-    match kind {
+    if !kind.is_specialization() {
+        return None;
+    }
+    Some(match kind {
         ReferenceKind::Subclassification => {
-            Some(ScopeBits::AnySpecialization.bit() | ScopeBits::Subclassification.bit())
+            ScopeBits::AnySpecialization.bit() | ScopeBits::Subclassification.bit()
         }
-        ReferenceKind::Redefinition => Some(
+        ReferenceKind::Redefinition => {
             ScopeBits::AnySpecialization.bit()
                 | ScopeBits::FeatureSpecialization.bit()
-                | ScopeBits::Redefinition.bit(),
-        ),
-        ReferenceKind::Subsetting | ReferenceKind::References | ReferenceKind::Crosses => {
-            Some(ScopeBits::AnySpecialization.bit() | ScopeBits::FeatureSpecialization.bit())
+                | ScopeBits::Redefinition.bit()
         }
-        ReferenceKind::FeatureTyping => Some(ScopeBits::AnySpecialization.bit()),
-        _ => None,
-    }
+        ReferenceKind::FeatureTyping => ScopeBits::AnySpecialization.bit(),
+        // Subsetting, ReferenceSubsetting and CrossSubsetting.
+        _ => ScopeBits::AnySpecialization.bit() | ScopeBits::FeatureSpecialization.bit(),
+    })
 }
 
 /// Whether a fact was authored or synthesized by the resolver.
@@ -317,6 +319,11 @@ pub(crate) struct TypeIndex {
     /// scopes each edge belongs to. The transitive answer lives in the closure; this is the one
     /// hop a type hierarchy view expands at a time.
     pub(crate) supertypes: Rows<(DeclarationId, u8)>,
+    /// The same direct supertypes in KerML `ownedSpecialization` order (authored edges in
+    /// reference order, then implied ones), deduplicated
+    /// ([`crate::resolve::end_features::ordered_direct_generals`]). The positional derivations
+    /// (`Type::endFeature`, parameter positions) read this order; `supertypes` is identity-ordered.
+    pub(crate) ordered_generals: Box<[Box<[DeclarationId]>]>,
     /// Direct specializers per declaration: the reverse of the direct specialization edges, tagged
     /// with the scopes each edge belongs to.
     ///
@@ -357,10 +364,32 @@ pub(crate) struct TypeIndex {
     /// and the legacy check could only answer the first, which is why it fell silent whenever an
     /// ancestor declared any end at all.
     pub(crate) effective_ends: Box<[u32]>,
+    /// KerML `Type::endFeature` per declaration, each entry keyed by its position.
+    ///
+    /// Derived by [`crate::resolve::end_features::derive_end_features`] over the published direct
+    /// supertypes, visited in `ownedSpecialization` order (`ordered_generals`): the owned ends in authored order, then each direct
+    /// supertype's ends past the owned count (the owned ends redefine those at their positions,
+    /// `checkFeatureEndRedefinition`).
+    pub(crate) end_features: Rows<(u32, OwnedEndFeature)>,
+    /// The resolved `Links::BinaryLink` anchor that `validateAssociationBinarySpecialization` and
+    /// `validateConnectorBinarySpecialization` test conformance against.
+    binary_link: BinaryLinkAnchor,
     /// Source-role-verified anchors used together by the exact `Usage::mayTimeVary` derivation.
     /// Keeping the family here makes every consumer use the same anchor identities and settled
     /// specialization closure rather than reinterpreting rendered names or direct edges.
     usage_time_variation_anchors: UsageTimeVariationAnchors,
+    /// Whether each declaration is owned through a VariantMembership (authored, or implied by its
+    /// metaclass as for an enumeration literal): the input of `getExpectedFeaturingTypeOf`.
+    variant_members: Box<[bool]>,
+}
+
+#[derive(Debug)]
+struct BinaryLinkAnchor(LibrarySpecializationAnchor);
+
+impl Default for BinaryLinkAnchor {
+    fn default() -> Self {
+        Self(LibrarySpecializationAnchor::Missing)
+    }
 }
 
 #[derive(Debug)]
@@ -414,6 +443,7 @@ impl TypeIndex {
         let mut direct_featuring = Vec::new();
         let mut chaining = Vec::new();
         let mut supertypes = Vec::new();
+        let mut ordered_edges = Vec::new();
         let mut subtypes = Vec::new();
         let mut edge = |source: DeclarationId,
                         target: DeclarationId,
@@ -421,6 +451,7 @@ impl TypeIndex {
                         provenance: FactProvenance| {
             if let Some(scopes) = edge_scopes(kind) {
                 supertypes.push((source, (target, scopes)));
+                ordered_edges.push((source, target));
                 subtypes.push((target, (source, scopes)));
             }
             if kind == ReferenceKind::FeatureTyping {
@@ -459,6 +490,11 @@ impl TypeIndex {
         let direct_featuring = Rows::build(count, direct_featuring)?;
         let chaining = Rows::build(count, chaining)?;
         let supertypes = Rows::build(count, supertypes)?;
+        let ordered_generals =
+            crate::resolve::end_features::ordered_direct_generals(count, ordered_edges)?
+                .into_iter()
+                .map(Vec::into_boxed_slice)
+                .collect::<Box<[_]>>();
         let subtypes = Rows::build(count, subtypes)?;
 
         // Effective typing walks the feature-specialization chain and collects what each feature
@@ -592,11 +628,15 @@ impl TypeIndex {
                 *slot = true;
             }
         }
+        let variant_members = crate::resolve::usage_composition::variant_member_flags(storage)?;
+        let end_features = derive_end_features(storage, &ordered_generals)?;
 
         Ok(Self {
+            variant_members,
             specialization,
             direct_types,
             supertypes,
+            ordered_generals,
             subtypes,
             effective_types,
             featuring,
@@ -605,6 +645,11 @@ impl TypeIndex {
             set_operands,
             authored_ends: authored_ends.into_boxed_slice(),
             effective_ends: effective_ends.into_boxed_slice(),
+            end_features,
+            binary_link: BinaryLinkAnchor(resolve_library_specialization_anchor(
+                storage,
+                "Links::BinaryLink",
+            )),
             usage_time_variation_anchors: UsageTimeVariationAnchors {
                 occurrence: resolve_library_specialization_anchor(
                     storage,
@@ -630,26 +675,13 @@ impl TypeIndex {
         storage: &SemanticModelStorage,
         usage: DeclarationId,
     ) -> UsageTimeVariationOutcome {
-        let Some(declaration) = storage.declaration(usage) else {
+        if storage.declaration(usage).is_none() {
             return UsageTimeVariationOutcome::Unresolved;
-        };
-        let Some(owning_type) = declaration.owner.filter(|owner| {
-            storage.declaration(*owner).is_some_and(|owner| {
-                !matches!(
-                    owner.kind,
-                    crate::model::DeclarationKind::Namespace
-                        | crate::model::DeclarationKind::Package
-                        | crate::model::DeclarationKind::LibraryPackage
-                        | crate::model::DeclarationKind::Import
-                        | crate::model::DeclarationKind::Alias
-                )
-            })
-        }) else {
+        }
+        let Some(owning_type) = Self::owning_type(storage, usage) else {
             return UsageTimeVariationOutcome::Resolved(false);
         };
-        match self
-            .specializes_library_anchor(owning_type, &self.usage_time_variation_anchors.occurrence)
-        {
+        match self.specializes_occurrence(owning_type) {
             UsageTimeVariationOutcome::Resolved(true) => {}
             UsageTimeVariationOutcome::Resolved(false) => {
                 return UsageTimeVariationOutcome::Resolved(false)
@@ -690,23 +722,73 @@ impl TypeIndex {
         UsageTimeVariationOutcome::Resolved(true)
     }
 
-    /// The effective SysML `Usage::isReference` fact shared by its own derivation and every
-    /// predicate, such as `mayTimeVary`, that consumes the complementary `isComposite` value.
+    /// KerML `Feature::owningType`: the owner of `feature` when that owner is a Type rather than
+    /// a package-like namespace (a package-owned feature has no owning type).
+    pub(crate) fn owning_type(
+        storage: &SemanticModelStorage,
+        feature: DeclarationId,
+    ) -> Option<DeclarationId> {
+        crate::resolve::usage_composition::owning_type(storage, feature)
+    }
+
+    /// Whether `declaration` is or specializes the source-role-verified `Occurrences::Occurrence`
+    /// anchor, or why that cannot be settled.
+    pub(crate) fn specializes_occurrence(
+        &self,
+        declaration: DeclarationId,
+    ) -> UsageTimeVariationOutcome {
+        self.specializes_library_anchor(declaration, &self.usage_time_variation_anchors.occurrence)
+    }
+
+    /// KerML `Feature::isVariable` for one Feature, or `None` when the declaration is not a
+    /// Feature and the property does not apply.
+    ///
+    /// SysML `Usage::mayTimeVary` redefines `isVariable` as a derived property, so a Usage answers
+    /// through [`Self::usage_may_time_vary`]. Any other (KerML) Feature carries the authored fact:
+    /// `var` sets it, and `const` sets it too because `isConstant implies isVariable`
+    /// (`validateFeatureConstantIsVariable`; the Pilot's `FeatureAdapter.setIsVariableIfConstant`).
+    pub(crate) fn feature_is_variable(
+        &self,
+        storage: &SemanticModelStorage,
+        feature: DeclarationId,
+    ) -> Option<UsageTimeVariationOutcome> {
+        let declaration = storage.declaration(feature)?;
+        if crate::resolve::is_usage_declaration(declaration.kind) {
+            return Some(self.usage_may_time_vary(storage, feature));
+        }
+        if !crate::resolve::is_feature_declaration(declaration.kind) {
+            return None;
+        }
+        let Some(facts) = storage.declaration_facts(feature) else {
+            return Some(UsageTimeVariationOutcome::Unresolved);
+        };
+        Some(UsageTimeVariationOutcome::Resolved(
+            facts.modifiers.var || facts.modifiers.constant,
+        ))
+    }
+
+    /// The effective SysML `Usage::isReference` fact (`not isComposite`) shared by its own
+    /// derivation and every predicate, such as `mayTimeVary`, that consumes the complementary
+    /// `isComposite` value. `None` when `usage` is not a Usage.
+    ///
+    /// A Usage is composite unless one of these makes it referential, exactly as the Pilot sets
+    /// `isComposite`:
+    /// - an authored `ref` prefix;
+    /// - a metaclass that is never composite (`AttributeUsage`, `ReferenceUsage`,
+    ///   `PerformActionUsage`, `SuccessionAsUsage`, `BindingConnectorAsUsage`, and an `event`
+    ///   occurrence, whose constructors clear `isComposite`);
+    /// - SysML 8.3.6.4 `validateUsageIsReferential`, which the Pilot's `UsageAdapter.postProcess`
+    ///   satisfies by construction: a direction, an end feature, or no expected featuring type
+    ///   (`UsageUtil.getExpectedFeaturingTypeOf`: the owning type of a FeatureMembership, or, for
+    ///   a variant of a variation usage, that usage's own expected featuring type);
+    /// - `validatePortUsageIsReference`: a port usage whose expected featuring type is not a port
+    ///   definition or port usage (`PortUsageAdapter.postProcess`).
     pub(crate) fn usage_is_reference(
         &self,
         storage: &SemanticModelStorage,
         usage: DeclarationId,
     ) -> Option<bool> {
-        let declaration = storage.declaration(usage)?;
-        let facts = storage.declaration_facts(usage)?;
-        Some(
-            facts.modifiers.reference
-                || matches!(
-                    declaration.kind,
-                    crate::model::DeclarationKind::ReferenceUsage
-                        | crate::model::DeclarationKind::DefaultReferenceUsage
-                ),
-        )
+        crate::resolve::usage_composition::usage_is_reference(storage, &self.variant_members, usage)
     }
 
     fn specializes_library_anchor(
@@ -785,6 +867,15 @@ impl TypeIndex {
         self.supertypes.row(declaration)
     }
 
+    /// `declaration`'s direct supertypes in `ownedSpecialization` order; see
+    /// [`TypeIndex::ordered_generals`].
+    pub(crate) fn ordered_generals(&self, declaration: DeclarationId) -> &[DeclarationId] {
+        self.ordered_generals
+            .get(declaration.index())
+            .map(|row| &**row)
+            .unwrap_or_default()
+    }
+
     /// Declarations that directly specialize `declaration`, with the scopes of each edge.
     pub(crate) fn subtypes(&self, declaration: DeclarationId) -> &[(DeclarationId, u8)] {
         self.subtypes.row(declaration)
@@ -831,6 +922,61 @@ impl TypeIndex {
             .unwrap_or_default()
     }
 
+    /// KerML `Type::endFeature` of `declaration`: its owned ends in authored order, then the ends
+    /// it inherits unredefined. See [`TypeIndex::end_features`] for the derivation.
+    pub(crate) fn end_features(
+        &self,
+        declaration: DeclarationId,
+    ) -> impl Iterator<Item = OwnedEndFeature> + '_ {
+        self.end_features
+            .row(declaration)
+            .iter()
+            .map(|(_, end)| *end)
+    }
+
+    /// KerML `Feature::type` of `declaration`: its effective types with redundant ones removed.
+    ///
+    /// A type is redundant when another of the feature's types specializes it (the Pilot's
+    /// `FeatureAdapter.removeRedundantTypes`), so a feature typed `Thing` that also inherits
+    /// `Anything` along a library subsetting has the one type `Thing`. Types that specialize each
+    /// other through a cycle are both kept: neither is the more specific. Identity order.
+    pub(crate) fn feature_types(&self, declaration: DeclarationId) -> Vec<DeclarationId> {
+        let mut types = self
+            .effective_types(declaration)
+            .iter()
+            .map(|(target, _)| *target)
+            .collect::<Vec<_>>();
+        types.sort_unstable();
+        types.dedup();
+        let redundant = |general: DeclarationId| {
+            types.iter().any(|specific| {
+                *specific != general
+                    && self
+                        .specialization
+                        .reaches(*specific, general, ScopeBits::AnySpecialization)
+                    && !self.specialization.reaches(
+                        general,
+                        *specific,
+                        ScopeBits::AnySpecialization,
+                    )
+            })
+        };
+        types
+            .iter()
+            .copied()
+            .filter(|general| !redundant(*general))
+            .collect()
+    }
+
+    /// Whether `declaration` is or specializes `Links::BinaryLink`, or `None` when this
+    /// publication has no single resolved anchor to answer against.
+    pub(crate) fn specializes_binary_link(&self, declaration: DeclarationId) -> Option<bool> {
+        match self.specializes_library_anchor(declaration, &self.binary_link.0) {
+            UsageTimeVariationOutcome::Resolved(conforms) => Some(conforms),
+            UsageTimeVariationOutcome::Unresolved | UsageTimeVariationOutcome::Ambiguous => None,
+        }
+    }
+
     /// How many positional ends `declaration` has, counting those it inherits.
     pub(crate) fn effective_ends(&self, declaration: DeclarationId) -> u32 {
         self.effective_ends
@@ -838,6 +984,36 @@ impl TypeIndex {
             .copied()
             .unwrap_or_default()
     }
+}
+
+/// Derives every declaration's KerML `Type::endFeature` row; see [`TypeIndex::end_features`].
+fn derive_end_features(
+    storage: &SemanticModelStorage,
+    ordered_generals: &[Box<[DeclarationId]>],
+) -> Result<Rows<(u32, OwnedEndFeature)>, ResolutionError> {
+    let count = storage.declarations.len();
+    let ends = crate::resolve::end_features::derive_end_features(
+        count,
+        &storage.owned_end_features,
+        |declaration| {
+            ordered_generals
+                .get(declaration.index())
+                .map(|row| &**row)
+                .unwrap_or_default()
+                .iter()
+                .copied()
+        },
+    )?;
+    let mut pairs = Vec::new();
+    for (index, row) in ends.into_iter().enumerate() {
+        let declaration =
+            DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+        for (position, end) in row.into_iter().enumerate() {
+            let position = u32::try_from(position).map_err(|_| ResolutionError::Capacity)?;
+            pairs.push((declaration, (position, end)));
+        }
+    }
+    Rows::build(count, pairs)
 }
 
 /// The set operation one reference kind states, or `None` if it states none.
@@ -926,12 +1102,23 @@ pub(crate) fn saturate(
     count: usize,
 ) -> Result<Vec<Vec<(DeclarationId, u8)>>, ResolutionError> {
     let mut closure = direct.to_vec();
-    let mut next: Vec<Vec<(DeclarationId, u8)>> = vec![Vec::new(); count];
+    // Each pass is a Jacobi step `closure'[i] = direct[i] + closure[parents of i]`. A row whose
+    // parents' rows did not change in the previous pass would recompute to exactly its current
+    // value, so only rows with a changed parent are recomputed; updates are committed after the
+    // pass, keeping every pass identical to the full step and the result the same fixed point.
+    let mut changed = vec![true; count];
+    let mut row = Vec::new();
+    let mut updates: Vec<(usize, Vec<(DeclarationId, u8)>)> = Vec::new();
     let pass_limit = count.checked_add(1).ok_or(ResolutionError::Capacity)?;
     for _ in 0..pass_limit {
-        let mut changed = false;
+        updates.clear();
         for index in 0..count {
-            let row = &mut next[index];
+            if !direct[index]
+                .iter()
+                .any(|(parent, _)| changed[parent.index()])
+            {
+                continue;
+            }
             row.clear();
             for (parent, parent_scopes) in &direct[index] {
                 row.push((*parent, *parent_scopes));
@@ -942,14 +1129,18 @@ pub(crate) fn saturate(
                     }
                 }
             }
-            merge_scopes(row);
-            if *row != closure[index] {
-                changed = true;
+            merge_scopes(&mut row);
+            if row != closure[index] {
+                updates.push((index, row.clone()));
             }
         }
-        std::mem::swap(&mut closure, &mut next);
-        if !changed {
+        changed.fill(false);
+        if updates.is_empty() {
             break;
+        }
+        for (index, updated) in updates.drain(..) {
+            changed[index] = true;
+            closure[index] = updated;
         }
     }
     Ok(closure)

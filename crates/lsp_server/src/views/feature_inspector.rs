@@ -97,6 +97,7 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::EnumerationDefinition
         | ElementKind::ItemDefinition
         | ElementKind::PortDefinition
+        | ElementKind::ConjugatedPortDefinition
         | ElementKind::OccurrenceDefinition
         | ElementKind::ConnectionDefinition
         | ElementKind::InterfaceDefinition
@@ -130,12 +131,14 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::Function
         | ElementKind::Predicate
         | ElementKind::Interaction
-        | ElementKind::Multiplicity => "definition",
+        | ElementKind::Multiplicity
+        | ElementKind::MultiplicityRange => "definition",
 
         ElementKind::ConnectionUsage
         | ElementKind::InterfaceUsage
         | ElementKind::AllocationUsage
         | ElementKind::FlowConnectionUsage
+        | ElementKind::SuccessionFlowUsage
         | ElementKind::SuccessionAsUsage
         | ElementKind::SatisfyRequirementUsage
         | ElementKind::BindingConnectorAsUsage
@@ -144,7 +147,8 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::Alias
         | ElementKind::Dependency
         | ElementKind::Connector
-        | ElementKind::BindingConnector => "relationship",
+        | ElementKind::BindingConnector
+        | ElementKind::Succession => "relationship",
 
         ElementKind::PartUsage
         | ElementKind::AttributeUsage
@@ -154,6 +158,7 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::OccurrenceUsage
         | ElementKind::ActionUsage
         | ElementKind::StateUsage
+        | ElementKind::ExhibitStateUsage
         | ElementKind::CalculationUsage
         | ElementKind::ConstraintUsage
         | ElementKind::AssertConstraintUsage
@@ -167,7 +172,6 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::ViewpointUsage
         | ElementKind::RenderingUsage
         | ElementKind::MetadataUsage
-        | ElementKind::Comment
         | ElementKind::ReferenceUsage
         | ElementKind::AcceptActionUsage
         | ElementKind::SendActionUsage
@@ -179,16 +183,34 @@ fn semantic_role(kind: ElementKind) -> &'static str {
         | ElementKind::WhileLoopActionUsage
         | ElementKind::ForLoopActionUsage
         | ElementKind::ForLoopVariable
+        | ElementKind::ControlNode
         | ElementKind::DecisionNode
         | ElementKind::MergeNode
         | ElementKind::ForkNode
         | ElementKind::JoinNode
         | ElementKind::FinalState
         | ElementKind::Feature
+        | ElementKind::FlowEnd
         | ElementKind::Step
         | ElementKind::Expression
         | ElementKind::BooleanExpression
+        | ElementKind::LiteralExpression
+        | ElementKind::LiteralBoolean
+        | ElementKind::LiteralInteger
+        | ElementKind::LiteralRational
+        | ElementKind::LiteralString
+        | ElementKind::LiteralInfinity
+        | ElementKind::NullExpression
+        | ElementKind::MetadataAccessExpression
+        | ElementKind::MetadataFeature
         | ElementKind::Invariant => "usage",
+
+        // Comments, documentation and textual representations annotate elements; they are
+        // neither types, features nor relationships.
+        ElementKind::AnnotatingElement
+        | ElementKind::Comment
+        | ElementKind::Documentation
+        | ElementKind::TextualRepresentation => "other",
     }
 }
 
@@ -333,7 +355,7 @@ fn bound_text(bound: MultiplicityBound) -> String {
         MultiplicityBound::Unbounded => "*".to_string(),
         MultiplicityBound::Literal(value) => value.to_string(),
         // The author wrote a non-literal bound. Rendering a number here would invent one.
-        MultiplicityBound::Expression => "…".to_string(),
+        MultiplicityBound::NonIntegerLiteral | MultiplicityBound::Expression => "…".to_string(),
     }
 }
 

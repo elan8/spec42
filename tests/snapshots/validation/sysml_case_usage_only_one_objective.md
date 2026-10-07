@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.22.3:validateCaseUsageOnlyOneObjective
-blocked_by=semantic-duplicate-role-member
 type=file
 ~~~
 # SOURCE
@@ -40,6 +39,12 @@ package Roles {
         (code "duplicate_role_member")
         (source "semantic")
         (range (start 13 8) (end 13 25))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_case_usage_only_one_objective.md")
+            (range (start 12 8) (end 12 24))
+          )
+        )
       )
     )
   )
@@ -50,6 +55,18 @@ package Roles {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_case_usage_only_one_objective.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "duplicate_role_member")
+        (source "semantic")
+        (range (start 13 8) (end 13 25))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_case_usage_only_one_objective.md")
+            (range (start 12 8) (end 12 24))
+          )
+        )
+      )
     )
   )
 )
@@ -57,16 +74,16 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:dbc5d53ce3c265a89476ee03fd644716184ac8a20d84ff5b2808342c4d9554e2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:daaa821aadc9ac9388a1b2d2ffe6793a993dce1b49b9ffa906ecee95bab17eda"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_case_usage_only_one_objective.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_case_usage_only_one_objective.md") (qualified-name "Roles::Bad"))) (kind case) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_case_usage_only_one_objective.md") (qualified-name "Roles::Bad::first"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_case_usage_only_one_objective.md") (qualified-name "Roles::Bad::first"))) (kind objective-requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_case_usage_only_one_objective.md") (qualified-name "Roles::Bad::s"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
-    (declaration (id (node (document "memory://snapshot/sysml_case_usage_only_one_objective.md") (qualified-name "Roles::Bad::second"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_case_usage_only_one_objective.md") (qualified-name "Roles::Bad::second"))) (kind objective-requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_case_usage_only_one_objective.md") (qualified-name "Roles::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_case_usage_only_one_objective.md") (qualified-name "Roles::Good"))) (kind case) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_case_usage_only_one_objective.md") (qualified-name "Roles::Good::first"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_case_usage_only_one_objective.md") (qualified-name "Roles::Good::first"))) (kind objective-requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_case_usage_only_one_objective.md") (qualified-name "Roles::Good::s"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
   )
   (references

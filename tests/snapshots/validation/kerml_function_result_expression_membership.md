@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.7.4:validateFunctionResultExpressionMembership
-blocked_by=lowering-result-expression-memberships
 type=file
 ~~~
 # SOURCE
@@ -41,6 +40,12 @@ package Functions {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_function_result_expression_membership.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "function_multiple_result_expressions")
+        (source "semantic")
+        (range (start 5 4) (end 5 24))
+      )
     )
   )
 )
@@ -48,33 +53,64 @@ package Functions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:48f9e939bc713a262773c62e816a287baf8f836debe59d4626ece2695b30955e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f5d8ecc929e92aff99c543657d2aada892f79601c50b06c2c214c758068a144c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::One"))) (kind kerml-function) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind feature) (visibility default) (role result-expression)) (facts (expression-result (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::Two"))) (kind kerml-function) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind feature) (visibility default) (role result-expression)) (facts (expression-result (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (kind kerml-literal-integer) (membership (kind feature) (visibility default) (role result-expression)) (facts (expression-result (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
   )
   (references
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::One"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::Two"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (target (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::Two"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::One"))) (state literal) (value (kind integer) (integer 1)))
-    (evaluated (declaration (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::Two"))) (state literal) (value (kind integer) (integer 2)))
-    (evaluated (declaration (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::Two"))) (state literal) (value (kind integer) (integer 2)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (state literal) (value (kind integer) (integer 1)))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (state literal) (value (kind integer) (integer 2)))
   )
 )
 ~~~
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::One")))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::Two")))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::Two")))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 1)))))
+    )
 )
 ~~~
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::One"))) (outcome resolved) (literal (value (kind integer) (integer 1))))
-  (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (qualified-name "Functions::Two"))) (outcome resolved) (operator "and" (literal (value (kind integer) (integer 1))) (literal (value (kind integer) (integer 2)))))
+  (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "One")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (outcome resolved) (literal (value (kind integer) (integer 1))))
+  (declaration (id (node (document "memory://snapshot/kerml_function_result_expression_membership.md") (path (named (kind package) (name "Functions")) (named (kind kerml-function) (name "Two")) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (outcome resolved) (literal (value (kind integer) (integer 2))))
 )
 ~~~
 # NAVIGATION

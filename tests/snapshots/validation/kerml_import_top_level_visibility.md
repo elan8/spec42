@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.2.4.2:validateImportTopLevelVisibility
-blocked_by=semantic-top-level-import-not-private
 type=file
 ~~~
 # SOURCE
@@ -44,6 +43,12 @@ public import Lib::Gadget;
 (fixture-diagnostics
   (document "memory://snapshot/kerml_import_top_level_visibility.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "top_level_import_not_private")
+        (source "semantic")
+        (range (start 9 0) (end 9 26))
+      )
     )
   )
 )
@@ -51,7 +56,7 @@ public import Lib::Gadget;
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4d5a46e89519176de150fffde30edf02335e6560a15b1c57b324a9b12e8275d5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:eb4bcdeddded19cfab4a2d273dbef8b526a19dc1468b5c3766bf565c6b80093b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_import_top_level_visibility.md") (path (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "Lib::Thing") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/kerml_import_top_level_visibility.md") (path (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (membershipImport (reference "Lib::Gadget") (import (shape membership) (recursive false))))))

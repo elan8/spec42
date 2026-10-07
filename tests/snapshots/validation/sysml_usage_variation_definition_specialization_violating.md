@@ -32,10 +32,10 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:29d7f9ae56acd0544f4c7dde0fb5431c83e44730f8c4a45f38a2dd29ac5f0f0e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d5014cdeb07131a2a2a7a5f6cdfcf2825b1129dc6d73d050145bbb998555f46f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_definition_specialization_violating.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_definition_specialization_violating.md") (qualified-name "Model::Choice"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation)))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_definition_specialization_violating.md") (qualified-name "Model::Choice"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_definition_specialization_violating.md") (qualified-name "Model::Choice::option"))) (kind part) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (featureTyping (reference "Other")))))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_definition_specialization_violating.md") (qualified-name "Model::Other"))) (kind part-def) (membership (kind owning) (visibility default)))
   )

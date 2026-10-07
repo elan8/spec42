@@ -21,7 +21,7 @@ package Outer {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bff1d2144b9dc7703bf322f04d3aa929115348a0fb0aa5d80157788ff27231fb"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:37f20984c2f3dff72a480a48f29691e84df00b71eeaf2dd7376fa6653b1fbb21"))
   (declarations
     (declaration (id (node (document "memory://snapshot/parse_nested_package.md") (qualified-name "Outer"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/parse_nested_package.md") (qualified-name "Outer::Inner"))) (kind package) (membership (kind owning) (visibility default)))

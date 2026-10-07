@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.3.2:validateStructureSpecialization
-blocked_by=semantic-specialization-kind-compatibility
 type=file
 ~~~
 # SOURCE
@@ -33,7 +32,13 @@ package Kinds {
         (severity warning)
         (code "incompatible_specializes_kind")
         (source "semantic")
-        (range (start 8 4) (end 8 35))
+        (range (start 8 29) (end 8 34))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_structure_specialization.md")
+            (range (start 2 4) (end 2 19))
+          )
+        )
       )
     )
   )
@@ -44,6 +49,18 @@ package Kinds {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_structure_specialization.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "incompatible_specializes_kind")
+        (source "semantic")
+        (range (start 8 29) (end 8 34))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_structure_specialization.md")
+            (range (start 2 4) (end 2 19))
+          )
+        )
+      )
     )
   )
 )
@@ -51,7 +68,7 @@ package Kinds {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2508056fb255af3fad663b304fe635ced5be39d17ccc46b94e6756c7b064c865"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4b9c9b3e23f06b0b672e2d54d3840f921d07a3557abb93c72e2411f53a74cc80"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_structure_specialization.md") (qualified-name "Kinds"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_structure_specialization.md") (qualified-name "Kinds::Doing"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))

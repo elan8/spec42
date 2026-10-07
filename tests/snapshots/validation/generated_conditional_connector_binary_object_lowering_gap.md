@@ -1,13 +1,13 @@
 # META
 ~~~ini
-description=Connector binary-object specialization remains explicit until KerML connector bodies publish a positional connector-end collection
+description=Connector binary-object specialization implies Objects::binaryLinkObjects for a two-ended connector typed by an association structure
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=kerml-1.0:8.3.4.5.3:checkConnectorBinaryObjectSpecialization
-blocked_by=lowering-gap-kerml-connector-positional-end-collection
+blocked_by=semantic-connector-binary-object-specialization-contract
 type=file
 libraries=standard
 ~~~
@@ -21,8 +21,8 @@ package ConnectorBinaryObjectSpecialization {
         feature a : Thing;
         feature b : Thing;
         connector pair : LinkObject {
-            end feature source :>> a;
-            end feature target :>> b;
+            end feature source ::> a;
+            end feature target ::> b;
         }
     }
 }
@@ -37,6 +37,12 @@ package ConnectorBinaryObjectSpecialization {
 (fixture-diagnostics
   (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 2 4) (end 2 28))
+      )
     )
   )
 )
@@ -44,15 +50,15 @@ package ConnectorBinaryObjectSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:eedb73ff0141a7a5942167643c6c6565cf54b26b4b473a5648443368f98d0091") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:108f19ec2053de41947b5695f1848bdae3b5b71324a2154947d6a8f22ab4f28f") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::a"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::b"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (kind kerml-connector) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "LinkObject")))))
-    (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "a")))))
-    (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "b")))))
+    (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "a")))))
+    (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "b")))))
     (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::LinkObject"))) (kind kerml-association-structure) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
@@ -66,10 +72,10 @@ package ConnectorBinaryObjectSpecialization {
     (reference (id (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (kind featureTyping) (ordinal 0))
       (authored-target "LinkObject")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::LinkObject")))))
-    (reference (id (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (kind redefinition) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (kind referenceSubsetting) (ordinal 0))
       (authored-target "a")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::a")))))
-    (reference (id (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target"))) (kind redefinition) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target"))) (kind referenceSubsetting) (ordinal 0))
       (authored-target "b")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::b")))))
   )
@@ -77,20 +83,23 @@ package ConnectorBinaryObjectSpecialization {
     (relationship (kind typing) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::a"))) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::a"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::b"))) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::b"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::LinkObject"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (kind featureTyping) (ordinal 0)))
-    (relationship (kind redefinition) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (kind redefinition) (ordinal 0)))
-    (relationship (kind redefinition) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target"))) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::b"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target"))) (kind redefinition) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::a"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (kind referenceSubsetting) (ordinal 0)))
+    (relationship (kind referenceSubsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target"))) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::b"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target"))) (kind referenceSubsetting) (ordinal 0)))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::a"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::a"))) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::b"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::b"))) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (target (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::source"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target"))) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::target"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target"))) (target (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::LinkObject"))) (target (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject"))) (provenance implied))
   )
@@ -126,6 +135,7 @@ package ConnectorBinaryObjectSpecialization {
       (type (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::LinkObject")) (provenance authored))
       (effective-type (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::LinkObject")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
       (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
@@ -133,7 +143,9 @@ package ConnectorBinaryObjectSpecialization {
       (supertype (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::LinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
@@ -147,10 +159,14 @@ package ConnectorBinaryObjectSpecialization {
       (effective-type (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Thing")) (source inherited) (from (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::a"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::participant"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::source"))))
       (supertype (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::a")) (scopes any feature))
       (supertype (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Thing")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::participant")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::source")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target")))
@@ -158,10 +174,14 @@ package ConnectorBinaryObjectSpecialization {
       (effective-type (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Thing")) (source inherited) (from (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::b"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::participant"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::target"))))
       (supertype (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::b")) (scopes any feature))
       (supertype (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Thing")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::participant")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink::target")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link::participant")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::LinkObject")))
@@ -203,12 +223,12 @@ package ConnectorBinaryObjectSpecialization {
     )
   )
   (query (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (range (start 8 35) (end 8 36)) (probe (position 8 35))
-    (reference (id (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (kind redefinition) (ordinal 0) (authored-target "a")
+    (reference (id (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::source"))) (kind referenceSubsetting) (ordinal 0) (authored-target "a")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::a")))))
     )
   )
   (query (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (range (start 9 35) (end 9 36)) (probe (position 9 35))
-    (reference (id (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target"))) (kind redefinition) (ordinal 0) (authored-target "b")
+    (reference (id (source (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::pair::target"))) (kind referenceSubsetting) (ordinal 0) (authored-target "b")
       (outcome (status resolved) (target (node (document "memory://snapshot/generated_conditional_connector_binary_object_lowering_gap.md") (qualified-name "ConnectorBinaryObjectSpecialization::Holder::b")))))
     )
   )

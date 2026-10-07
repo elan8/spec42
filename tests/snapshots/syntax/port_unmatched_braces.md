@@ -27,7 +27,7 @@ package Ports {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:2649cd441ef3a52f30bd6a381eb8b167498e4e2cdedfb418497d66bb5131b861"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:3a3f529c3b880ababb842cc7d474740439d7cd44596c2ffdd0ca14e5905925ca"))
   (declarations
   )
   (references

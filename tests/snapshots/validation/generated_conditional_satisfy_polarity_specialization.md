@@ -7,7 +7,6 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=sysml-2.0:8.3.21.10:checkSatisfyRequirementUsageSpecialization
-blocked_by=semantic-query-gap-anonymous-library-specialization-forms
 type=file
 libraries=standard
 ~~~
@@ -22,7 +21,7 @@ package SatisfyPolaritySpecialization {
 # EXPECTED SEMANTICS
 ~~~sexpr
 (fixture-semantics
-  (relationship (kind specialization) (source "SatisfyPolaritySpecialization::<anonymous>") (target "Requirements::notSatisfiedRequirementChecks") (provenance implied) (outcome resolved)))
+  (relationship (kind subsetting) (source (anonymous (owner "SatisfyPolaritySpecialization") (kind SatisfyRequirementUsage) (ordinal 0))) (target "Requirements::notSatisfiedRequirementChecks") (provenance implied) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
@@ -36,7 +35,7 @@ package SatisfyPolaritySpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:035c9ace5a4fd3467d0db77331ca0f06f722f743cc3fd9787579fa2ea5a9b188") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:7a221c2eef253bdb71b636c34d4b2b14390f325ccc7fcf01dddebff550efc97a") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_satisfy_polarity_specialization.md") (qualified-name "SatisfyPolaritySpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_satisfy_polarity_specialization.md") (path (named (kind package) (name "SatisfyPolaritySpecialization")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "Safety")) (satisfyTarget (reference "Vehicle")))))

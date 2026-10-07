@@ -91,7 +91,7 @@ share one set of authorities per host process.
 
 | Service (`sysml_query::…`) | Handle | Owns |
 |---|---|---|
-| `source::SourceService` | `SourceDocument` | admission of text as an identified document; URI normalisation; line-ending policy; providers (filesystem with ignore rules, in-memory, library roots); content digests |
+| `source::SourceService` | `SourceDocument` | admission of text as an identified document; URI normalisation; line-ending policy; the document language (KerML or SysML, from the path extension unless the host declares it; a semantic input committed to every source identity); providers (filesystem with ignore rules, in-memory, library roots); content digests |
 | `syntax::SyntaxService` | `ParsedSource` | the parser call and parse memo; syntax-fidelity queries over a parsed tree: outline, folding, token roles, package declarations, closure facts, reserved keywords; formatting-preservation checks |
 | `library::LibraryClosureService` | `LibraryClosure` | the package index over library roots and the transitive import closure a workspace needs, with its seed signature |
 | `publication::PublicationService` and `PublicationSession` | `PublishedModel`, `BuildToken`, `SessionLifecycle` | partitioning admitted documents by provenance, library-stratum reuse, constructing the immutable publication; the publication lifecycle, its input revision and build token, and the barrier that atomically admits a finished build with its dependent projections |

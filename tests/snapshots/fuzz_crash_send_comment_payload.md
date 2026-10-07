@@ -42,7 +42,7 @@ in send// nd port for HTT3prin  pq  for y  // nd port for HTT3prin items { }
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:aeb710a8d0ad90ed1f589691d9c9f54cd7f016be1c763ccf63758b62e0100a8e"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:6a7e0c2796c2daccfb9a01cb08482cf5af6c2f30f9c8f2b0718162e30335a8a9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_crash_send_comment_payload.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_crash_send_comment_payload.md") (qualified-name "P::A"))) (kind action-def) (membership (kind owning) (visibility default)))

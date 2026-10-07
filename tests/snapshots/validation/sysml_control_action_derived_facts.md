@@ -45,15 +45,17 @@ package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:23c723007904efc3cf05c9c9b70c3a25828fd242ff58e139bafd01a913e75c58"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:aab22d99ddce2b0d0b78f641516dbc7b700a32dfdd8fe761d6cbe38c406dfbb3"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_control_action_derived_facts.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_control_action_derived_facts.md") (qualified-name "Actions::IfProcedure"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_control_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "IfProcedure")) (anonymous (kind if) (ordinal 0))))) (kind if) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_control_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "IfProcedure")) (anonymous (kind if) (ordinal 0)) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (kind kerml-literal-boolean) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_control_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "IfProcedure")) (anonymous (kind if) (ordinal 0)) (named (kind action) (name "elseStep"))))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/sysml_control_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "IfProcedure")) (anonymous (kind if) (ordinal 0)) (named (kind action) (name "thenStep"))))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/sysml_control_action_derived_facts.md") (qualified-name "Actions::WhileProcedure"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_control_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "WhileProcedure")) (anonymous (kind while) (ordinal 0))))) (kind while) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_control_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "WhileProcedure")) (anonymous (kind while) (ordinal 0)) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (kind kerml-literal-boolean) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_control_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "WhileProcedure")) (anonymous (kind while) (ordinal 0)) (named (kind action) (name "loopStep"))))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
   )
   (references

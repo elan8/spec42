@@ -393,7 +393,8 @@ semantic_diagnostic_codes! {
     /// A usage is typed by a definition of an incompatible metaclass family.
     IncompatibleTypeKind => "incompatible_type_kind",
         "This usage is typed by a definition of an incompatible kind.";
-    /// A definition specializes a definition of an incompatible metaclass family.
+    /// A definition specializes a definition of an incompatible metaclass family, or a classifier
+    /// violates KerML `validate{DataType,Class,Structure,Behavior}Specialization`.
     IncompatibleSpecializationKind => "incompatible_specializes_kind",
         "This definition specializes a definition of an incompatible kind.";
     /// A usage subsets or redefines a feature of an incompatible metaclass family.
@@ -420,6 +421,30 @@ semantic_diagnostic_codes! {
     /// A binary connection-like declaration has more than two ends.
     InvalidBinaryConnectionLikeEndCount => "invalid_binary_connection_like_end_count",
         "This binary connection-like definition declares more than two ends.";
+    /// KerML 8.3.3.3.4 `validateFeatureEndMultiplicity`.
+    EndFeatureMultiplicityNotOne => "end_feature_multiplicity_not_one",
+        "An end feature must have multiplicity 1..1.";
+    /// KerML 8.3.4.4.2 `validateAssociationEndTypes`.
+    AssociationEndTypeNotOne => "association_end_type_not_one",
+        "An owned end feature of an association must have exactly one type.";
+    /// KerML 8.3.4.4.2 `validateAssociationRelatedTypes`.
+    AssociationRelatedTypesInsufficient => "association_related_types_insufficient",
+        "A concrete association must relate at least two types.";
+    /// KerML 8.3.4.4.2 `validateAssociationBinarySpecialization`.
+    BinaryAssociationEndCount => "binary_association_end_count",
+        "An association with more than two ends must not specialize Links::BinaryLink.";
+    /// KerML 8.3.4.5.2 `validateBindingConnectorIsBinary`.
+    BindingConnectorNotBinary => "binding_connector_not_binary",
+        "A binding connector must relate exactly two features.";
+    /// KerML 8.3.4.5.3 `validateConnectorRelatedFeatures`.
+    ConnectorRelatedFeaturesInsufficient => "connector_related_features_insufficient",
+        "A concrete connector must relate at least two features.";
+    /// KerML 8.3.4.9.2 `validateFlowPayloadFeature`.
+    FlowMultiplePayloadFeatures => "flow_multiple_payload_features",
+        "A flow may own at most one payload feature.";
+    /// KerML 8.3.4.5.3 `validateConnectorBinarySpecialization`.
+    BinaryConnectorEndCount => "binary_connector_end_count",
+        "A connector with more than two ends must not specialize Links::BinaryLink.";
     /// An end feature is derived, abstract, composite or portion.
     EndFeatureInvalidRestrictions => "end_feature_invalid_restrictions",
         "An end feature must not be derived, abstract, composite or portion.";
@@ -429,6 +454,9 @@ semantic_diagnostic_codes! {
     /// A feature owned by a metadata feature does not redefine a feature of the metaclass.
     MetadataBodyFeatureInvalid => "metadata_body_feature_invalid",
         "A feature owned by a metadata feature must redefine a feature of its metaclass.";
+    /// KerML 8.3.4.12.3 `validateMetadataFeatureAnnotatedElement`.
+    MetadataAnnotatedElementIncompatible => "metadata_annotated_element_incompatible",
+        "The annotating metaclass does not admit an element of this metaclass.";
     /// A non-port usage owned by a port definition is composite.
     PortOwnedUsageComposite => "port_owned_usage_composite",
         "A usage owned by a port definition must not be composite unless it is a port.";
@@ -441,6 +469,90 @@ semantic_diagnostic_codes! {
     /// A variant member's metaclass family is not the variation's.
     InvalidVariationMemberKind => "invalid_variation_member_kind",
         "A variant member must use the variation's own kind.";
+    /// SysML 8.3.6.2/8.3.6.4 `validateDefinitionVariationOwnedFeatureMembership` and
+    /// `validateUsageVariationOwnedFeatureMembership`.
+    VariationOwnsFeatureMembership => "variation_owns_feature_membership",
+        "A variation may own only variant members, not ordinary features.";
+    /// SysML 8.3.6.2/8.3.6.4 `validateDefinitionVariationSpecialization` and
+    /// `validateUsageVariationSpecialization`.
+    VariationSpecializesVariation => "variation_specializes_variation",
+        "A variation must not specialize another variation.";
+    /// SysML 8.3.6.5 `validateVariantMembershipOwningNamespace`.
+    VariantOutsideVariation => "variant_outside_variation",
+        "A variant must be an owned member of a variation definition or usage.";
+    /// SysML 8.3.26.2 `validateExposeOwningNamespace`.
+    ExposeInvalidOwner => "expose_invalid_owner",
+        "An expose must be owned by a view usage.";
+    /// SysML 8.3.24.2 `validateRequirementVerificationMembershipOwningType`.
+    VerificationMembershipInvalidOwner => "verification_membership_invalid_owner",
+        "A verified requirement must be owned by the objective of a verification case.";
+    /// SysML 8.3.21.7 `validateRequirementConstraintMembershipOwningType`.
+    RequirementConstraintInvalidOwner => "requirement_constraint_invalid_owner",
+        "An assumed or required constraint must be owned by a requirement definition or usage.";
+    /// SysML 8.3.18.5 `validateStateDefinitionStateSubactionKind` and 8.3.18.6
+    /// `validateStateUsageStateSubactionKind`.
+    StateDuplicateSubactionKind => "state_duplicate_subaction_kind",
+        "A state may have at most one entry, one do and one exit action.";
+    /// SysML 8.3.20.2 `validateAssertConstraintUsageReference`.
+    AssertTargetInvalidKind => "assert_target_invalid_kind",
+        "An asserted constraint reference must name a constraint usage.";
+    /// SysML 8.3.9.2 `validateEventOccurrenceUsageReference`.
+    EventOccurrenceReferenceNotOccurrence => "event_occurrence_reference_not_occurrence",
+        "An event occurrence reference must name an occurrence usage.";
+    /// KerML 8.3.3.3.2 `validateCrossSubsettingCrossingFeature`.
+    CrossSubsettingCrossingFeatureInvalid => "cross_subsetting_crossing_feature_invalid",
+        "A crossing feature must be an end feature of a type with at least two end features.";
+    /// KerML 8.3.3.3.2 `validateCrossSubsettingCrossedFeature`.
+    CrossSubsettingCrossedFeatureInvalid => "cross_subsetting_crossed_feature_invalid",
+        "A crossed feature must be a two-feature chain through the opposite end feature.";
+    /// KerML 8.3.3.3.4 `validateFeatureCrossFeatureType`.
+    CrossFeatureTypeMismatch => "cross_feature_type_mismatch",
+        "The cross feature of a feature must have the same types as the feature.";
+    /// KerML 8.3.3.3.4 `validateFeatureCrossFeatureSpecialization`.
+    CrossFeatureSpecializationIncompatible => "cross_feature_specialization_incompatible",
+        "The cross feature of a feature must specialize the cross feature of every end feature it redefines.";
+    /// SysML 8.3.18.9 `validateTransitionUsageTriggerActions`.
+    TransitionTriggerSourceNotState => "transition_trigger_source_not_state",
+        "A transition with a trigger must have a state usage as its source.";
+    /// KerML 8.3.4.7.8 `validateReturnParameterMembershipOwningType`.
+    ReturnParameterMembershipInvalidOwner => "return_parameter_membership_invalid_owner",
+        "A return parameter must be owned by a function or an expression.";
+    /// KerML 8.3.4.7.4 `validateFunctionResultParameterMembership`.
+    FunctionResultParameterCount => "function_result_parameter_count",
+        "A function may own at most one return parameter.";
+    /// KerML 8.3.4.7.3 `validateExpressionResultParameterMembership`.
+    ExpressionResultParameterCount => "expression_result_parameter_count",
+        "An expression may own at most one return parameter.";
+    /// KerML 8.3.4.8.5 `validateFeatureReferenceExpressionReferentIsFeature`.
+    FeatureReferenceReferentNotFeature => "feature_reference_referent_not_feature",
+        "A feature reference expression must reference a feature.";
+    /// KerML 8.3.4.8.8 `validateInvocationExpressionParameterRedefinition`.
+    InvocationArgumentRedefinesNoParameter => "invocation_argument_redefines_no_parameter",
+        "An invocation argument must redefine one input parameter of the invoked type.";
+    /// KerML 8.3.4.8.8 `validateInvocationExpressionNoDuplicateParameterRedefinition`.
+    InvocationDuplicateParameterRedefinition => "invocation_duplicate_parameter_redefinition",
+        "Two arguments of an invocation must not bind the same parameter.";
+    /// KerML 8.3.4.8.3 `validateConstructorExpressionNoDuplicateFeatureRedefinition`.
+    ConstructorDuplicateFeatureRedefinition => "constructor_duplicate_feature_redefinition",
+        "Two arguments of a constructor must not initialise the same feature.";
+    /// SysML 8.3.17.17 `validateTriggerInvocationExpressionWhenArgument`.
+    TriggerWhenArgumentNotBoolean => "trigger_when_argument_not_boolean",
+        "The argument of a `when` trigger must be a Boolean condition.";
+    /// SysML 8.3.17.17 `validateTriggerInvocationExpressionAtArgument`.
+    TriggerAtArgumentNotTimeInstant => "trigger_at_argument_not_time_instant",
+        "The argument of an `at` trigger must be a time instant value.";
+    /// SysML 8.3.17.17 `validateTriggerInvocationExpressionAfterArgument`.
+    TriggerAfterArgumentNotDuration => "trigger_after_argument_not_duration",
+        "The argument of an `after` trigger must be a duration value.";
+    /// KerML 8.3.4.8.8 `validateInvocationExpressionInstantiatedType`.
+    InvocationInstantiatedTypeNotBehavior => "invocation_instantiated_type_not_behavior",
+        "An invocation must invoke a behavior or a feature typed by a behavior.";
+    /// KerML 8.3.4.12.3 `validateMetadataFeatureMetaclass`.
+    MetadataTypeNotMetaclass => "metadata_type_not_metaclass",
+        "A metadata feature must have exactly one type that is a metaclass.";
+    /// KerML 8.3.4.12.3 `validateMetadataFeatureMetaclassNotAbstract`.
+    MetadataMetaclassAbstract => "metadata_metaclass_abstract",
+        "The metaclass of a metadata feature must not be abstract.";
     /// A redefining feature is featured by a type unrelated to the redefined feature's.
     RedefinitionFeaturingTypeIncompatible => "redefinition_featuring_type_incompatible",
         "A redefinition must be introduced by the redefined feature's featuring type or a \
@@ -454,6 +566,27 @@ semantic_diagnostic_codes! {
     /// A non-unique feature subsets a unique one.
     SubsettingUniquenessMismatch => "subsetting_uniqueness_mismatch",
         "A non-unique feature cannot subset a unique one.";
+    /// KerML 8.3.3.3.10 `validateSubsettingConstantConformance`.
+    SubsettingConstantMismatch => "subsetting_constant_mismatch",
+        "A variable feature that subsets a constant feature must itself be constant.";
+    /// KerML 8.3.3.3.10 `validateSubsettingFeaturingTypes`.
+    SubsettingTargetNotAccessible => "subsetting_target_not_accessible",
+        "A subsetted feature must be accessible from the featuring types of the subsetting feature.";
+    /// KerML 8.3.3.1.10 `validateType{Unioning,Intersecting,Differencing}TypesNotSelf`.
+    TypeRelationshipOperandIsSelf => "type_relationship_operand_is_self",
+        "A type cannot be an operand of its own union, intersection or difference.";
+    /// KerML 8.3.2.4.2 `validateImportTopLevelVisibility`.
+    TopLevelImportNotPrivate => "top_level_import_not_private",
+        "An import owned by a root namespace must be private.";
+    /// KerML 8.3.3.3.4 `validateFeatureChainingFeatureNotOne`.
+    FeatureChainingSingleOperand => "feature_chaining_single_operand",
+        "A feature chain must chain at least two features.";
+    /// KerML 8.3.3.3.4 `validateFeatureChainingFeaturesNotSelf`.
+    FeatureChainingIncludesSelf => "feature_chaining_includes_self",
+        "A feature cannot be one of its own chaining features.";
+    /// KerML 8.3.3.3.4 `validateFeatureChainingFeatureConformance`.
+    FeatureChainingNotFeaturedWithinPrevious => "feature_chaining_not_featured_within_previous",
+        "Each chaining feature after the first must be featured within the previous one.";
     /// A type owns exactly one `unions`, `intersects` or `differences` operand.
     ///
     /// KerML requires zero or at least two: a union, intersection or difference of one type is
@@ -467,6 +600,36 @@ semantic_diagnostic_codes! {
     /// An assignment's value has a type unrelated to the feature it assigns to.
     AssignmentValueIncompatible => "assignment_value_incompatible",
         "This value's type is unrelated to the feature it is assigned to.";
+    /// SysML 8.3.17.5 `validateAssignmentActionUsage`: the assigned feature is not variable.
+    AssignmentTargetNotTimeVarying => "assignment_target_not_time_varying",
+        "An assignment's target feature must be able to have time-varying values.";
+    /// KerML 8.3.3.3.4 `validateFeatureIsVariable`.
+    VariableFeatureOwnerNotOccurrence => "variable_feature_owner_not_occurrence",
+        "A variable feature must be owned by a type that specializes Occurrences::Occurrence.";
+    /// KerML 8.3.3.3.4 `validateFeaturePortionNotVariable`.
+    PortionFeatureIsVariable => "portion_feature_is_variable",
+        "A portion feature must not be variable.";
+    /// SysML 8.3.9.4 `validateOccurrenceUsagePortionKind`.
+    PortionOwnerNotOccurrence => "portion_owner_not_occurrence",
+        "A snapshot or timeslice must be owned by an occurrence definition or usage.";
+    /// KerML 8.3.4.10.2 `validateFeatureValueIsInitial`.
+    InitialValueFeatureNotVariable => "initial_value_feature_not_variable",
+        "An initial value (`:=`) requires a variable feature.";
+    /// KerML 8.3.3.3.4 `validateFeatureOwnedReferenceSubsetting`.
+    FeatureMultipleReferenceSubsettings => "feature_multiple_reference_subsettings",
+        "A feature may own at most one reference subsetting.";
+    /// KerML 8.3.3.3.4 `validateFeatureOwnedCrossSubsetting`.
+    FeatureMultipleCrossSubsettings => "feature_multiple_cross_subsettings",
+        "A feature may own at most one cross subsetting.";
+    /// KerML 8.3.4.10.2 `validateFeatureValueOverriding`.
+    FeatureValueOverridesNonDefault => "feature_value_overrides_non_default",
+        "A feature value may only override default values of the features it redefines.";
+    /// SysML 8.3.9.4 `validateOccurrenceUsageIndividualDefinition`.
+    OccurrenceMultipleIndividualDefinitions => "occurrence_multiple_individual_definitions",
+        "An occurrence usage may have at most one individual occurrence definition.";
+    /// SysML 8.3.9.4 `validateOccurrenceUsageIndividualUsage`.
+    IndividualUsageWithoutIndividualDefinition => "individual_usage_without_individual_definition",
+        "An individual occurrence usage must be typed by an individual occurrence definition.";
     /// A unit token names no unit in the admitted measurement catalog.
     UnknownUnitSymbol => "unknown_unit_symbol",
         "This unit token names no unit in the admitted measurement catalog.";
@@ -482,6 +645,9 @@ semantic_diagnostic_codes! {
     /// A view filter's condition evaluates to something other than a Boolean.
     NonBooleanViewFilter => "view_filter_non_boolean",
         "A view filter condition must evaluate to a Boolean.";
+    /// KerML 8.3.4.13.2 `validateElementFilterMembershipConditionIsModelLevelEvaluable`.
+    FilterConditionNotModelLevelEvaluable => "filter_condition_not_model_level_evaluable",
+        "A filter condition must be model-level evaluable.";
     /// A calculation invocation supplies fewer arguments than the callee has parameters to bind.
     CalculationArgumentsIncomplete => "calculation_binding_mismatch",
         "This invocation supplies fewer arguments than the calculation has parameters.";
@@ -521,6 +687,14 @@ semantic_diagnostic_codes! {
     /// A `perform` names something that is not an action.
     PerformTargetInvalidKind => "perform_target_invalid_kind",
         "A performed behavior must resolve to an action definition or usage.";
+    /// KerML 8.3.3.1.8 `validateSpecializationSpecificNotConjugated`: a conjugated type is the
+    /// specific type of a Specialization.
+    SpecializationSpecificConjugated => "specialization_specific_conjugated",
+        "A conjugated type cannot be the specific type of a specialization.";
+    /// SysML 8.3.18.2 `validateExhibitStateUsageReference`: an `exhibit` names something that is
+    /// not a state usage.
+    ExhibitTargetInvalidKind => "exhibit_target_invalid_kind",
+        "An exhibited state must resolve to a state usage.";
     /// A transition endpoint resolves to something that is not a state.
     TransitionEndpointInvalidState => "transition_endpoint_invalid_state",
         "A transition endpoint must resolve to a state.";
@@ -533,6 +707,45 @@ semantic_diagnostic_codes! {
     /// A succession relates endpoints that are not actions.
     SuccessionEndpointInvalid => "succession_endpoint_invalid",
         "A succession must relate action definitions or usages.";
+    /// KerML 8.3.4.7.3 `validateExpressionResultExpressionMembership`.
+    ExpressionMultipleResultExpressions => "expression_multiple_result_expressions",
+        "An expression may own at most one result expression.";
+    /// KerML 8.3.4.7.4 `validateFunctionResultExpressionMembership`.
+    FunctionMultipleResultExpressions => "function_multiple_result_expressions",
+        "A function may own at most one result expression.";
+    /// KerML 8.3.4.7.7 `validateResultExpressionMembershipOwningType`.
+    ResultExpressionMembershipInvalidOwner => "result_expression_membership_invalid_owner",
+        "Only a function or an expression may own a result expression.";
+    /// KerML 8.3.3.1.10 `validateTypeOwnedMultiplicity`.
+    TypeMultipleMultiplicities => "type_multiple_multiplicities",
+        "A type may own at most one multiplicity.";
+    /// SysML 8.3.17.6 `validateControlNodeIsComposite`.
+    ControlNodeNotComposite => "control_node_not_composite",
+        "A control node must be composite.";
+    /// SysML 8.3.17 `validateControlNodeIncomingSuccessions`.
+    ControlNodeIncomingMultiplicity => "control_node_incoming_multiplicity",
+        "An incoming succession to a control node must have a target multiplicity of 1..1.";
+    /// SysML 8.3.17 `validateControlNodeOutgoingSuccessions`.
+    ControlNodeOutgoingMultiplicity => "control_node_outgoing_multiplicity",
+        "An outgoing succession from a control node must have a source multiplicity of 1..1.";
+    /// SysML 8.3.17 `validateDecisionNodeIncomingSuccessions`.
+    DecisionNodeMultipleIncoming => "decision_node_multiple_incoming",
+        "A decision node may have at most one incoming succession.";
+    /// SysML 8.3.17 `validateDecisionNodeOutgoingSuccessions`.
+    DecisionNodeOutgoingMultiplicity => "decision_node_outgoing_multiplicity",
+        "An outgoing succession from a decision node must have a target multiplicity of 0..1.";
+    /// SysML 8.3.17 `validateForkNodeIncomingSuccessions`.
+    ForkNodeMultipleIncoming => "fork_node_multiple_incoming",
+        "A fork node may have at most one incoming succession.";
+    /// SysML 8.3.17 `validateJoinNodeOutgoingSuccessions`.
+    JoinNodeMultipleOutgoing => "join_node_multiple_outgoing",
+        "A join node may have at most one outgoing succession.";
+    /// SysML 8.3.17 `validateMergeNodeIncomingSuccessions`.
+    MergeNodeIncomingMultiplicity => "merge_node_incoming_multiplicity",
+        "An incoming succession to a merge node must have a source multiplicity of 0..1.";
+    /// SysML 8.3.17 `validateMergeNodeOutgoingSuccessions`.
+    MergeNodeMultipleOutgoing => "merge_node_multiple_outgoing",
+        "A merge node may have at most one outgoing succession.";
     /// A transition guard settles to a non-Boolean constant.
     TransitionGuardNonBoolean => "transition_guard_non_boolean",
         "A transition guard must evaluate to a Boolean.";
@@ -621,6 +834,9 @@ semantic_diagnostic_codes! {
     /// A declared multiplicity states bounds that admit nothing.
     InvalidMultiplicity => "invalid_multiplicity",
         "This multiplicity states bounds that admit nothing.";
+    /// KerML 8.3.4.11.2 `validateMultiplicityRangeBoundResultTypes`.
+    MultiplicityBoundInvalid => "multiplicity_bound_invalid",
+        "A multiplicity bound must evaluate to a natural number.";
 
     // --- Analysis ------------------------------------------------------------------------------
     /// An analysis constraint settled to false.

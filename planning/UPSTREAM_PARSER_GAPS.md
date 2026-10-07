@@ -3,9 +3,13 @@
 This is the active record of information the parser must preserve or distinguish before spec42 can
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
-The canonical parser currently pinned by the root workspace is
-`elan8/sysml-v2-parser@9f00caf353581a3c0ccc13676c5d8829f90708b3` (parser `main`,
-`PARSE_AST_VERSION` 256). It adds `elan8/sysml-v2-parser#139` (`elan8/spec42#140`): a targeted
+The parser currently pinned by the root workspace is
+`elan8/sysml-v2-parser@7217b9e4df76ab31672947e53dbdd8e30b88e42f` (parser `main`,
+`PARSE_AST_VERSION` 266). It carries `elan8/sysml-v2-parser#172` (the grammar work first proposed
+as `#161`) and `#183` (keyword-less `metadata def` members are `DefaultReferenceUsage`s). Only
+the rows this pin closed or narrowed were re-verified against it. An earlier
+canonical upstream pin was `elan8/sysml-v2-parser@9f00caf353581a3c0ccc13676c5d8829f90708b3`
+(parser `main`, `PARSE_AST_VERSION` 256), which added `elan8/sysml-v2-parser#139` (`elan8/spec42#140`): a targeted
 `verify_requirement_expects_declaration` recovery for the invalid `verify requirement
 <feature-chain>;` form (was the generic `recovered_requirement_body_element`) -- a
 diagnostic-only change with no AST shape effect, so spec42 passes the code through unchanged. And
@@ -39,8 +43,7 @@ the old `sysml-v2-parser-next` dependency alias.
 
 The bump from `c81e0b69236d57c64df127104232b54f72646484` closes parser gaps 62, 66, 69, 74,
 79 and 82: flow payload and feature-specialization clause identity, binding body ends, directed
-action parameter kinds, and invalid membership owners now reach typed lowering. Gap 77 is narrowed
-to the transition effect-action spelling in a state body; transitions in action bodies are typed.
+action parameter kinds, and invalid membership owners now reach typed lowering.
 The remaining unmet corpus expectations have explicit semantic or lowering blockers rather than
 continuing to masquerade as parser gaps.
 
@@ -95,8 +98,12 @@ rerun against the exact replacement revision when fixed.
 | Gap | Information unavailable to consumers | Minimum upstream acceptance evidence |
 | --- | --- | --- |
 | 61 | `message` has no member variant in a calc-shaped body | Give `message` a typed member variant in the calc-shaped body grammar; prove `message m of T;` produces one node whose keyword never reaches the AST as a feature reference |
+| occurrence-usage-typings | Every typing target of an `occurrence` usage: `ast::OccurrenceUsage::type_name` is one `QualifiedReferenceId`, so `occurrence x : A, B;` silently keeps only `A` (no recovery diagnostic), unlike `PartUsage`'s structured `typing` clause | Give `OccurrenceUsage` the same structured `TypingRelationship` clause `PartUsage`/`AttributeUsage` carry (every comma-separated target); prove `occurrence x : A, B;` produces both targets in order, so spec42 can lower each FeatureTyping |
 | 41 | Lexically distinguished implicit `that` self-reference | Produce a dedicated typed form that cannot collide with a user declaration; cover bare, cast, and member-access expressions |
 | 55 | `//` and `/** ... */` comment fidelity, and `DocComment` text normalization | Decide and test whether doc-style trivia is syntax; if syntax, preserve kind, raw span, and one normalized-text policy centrally |
+| view-rendering-usage | Which `ViewRenderingUsage` alternative was written: `ast::ViewRenderingUsage` drops the `rendering` keyword and reads the `OwnedReferenceSubsetting` shorthand's target (`render asTreeDiagram;`) as a declared `name`, so a qualified target cannot be represented and a reference is indistinguishable from a declaration | Distinguish `render <QualifiedName> ...;` (ReferenceSubsetting target, qualified allowed) from `render rendering r : R;` / `render <keyword>+ r;` (declared Usage); prove both produce distinct typed nodes, so spec42 can lower the ViewRenderingMembership member (`lowering-gap-redefinition-view-rendering-membership`) |
+| state-action-declaration | Which `PerformActionUsageDeclaration` alternative an `entry`/`do`/`exit` member wrote: `entry action started;` is `'action' UsageDeclaration` (a new action named `started`), but the parser reads it as `action_reference` and only treats the name as declared when a `: Type`, `:>>` clause or owned body follows | Read `(entry\|do\|exit) action <Name> ...;` as `declared_name` and keep `action_reference` for the keyword-less `OwnedReferenceSubsetting` form (`entry started;`); prove `entry action started;` yields a declared action, so spec42 snapshots can use the plain spelling for StateSubactionMembership rules |
+| body-member-expression-shredding | Use-case-family body members the dispatcher does not recognise still fall through to the terminal `expression` arm: `include system.uc1;` and `include use case u :> v [1..5];` in a `use case` body yield stray `Expression` elements (`include`, ...). Constraint, calculation and KerML type bodies are fixed | Dispatch every use-case-family body member keyword (`include` with a feature-chain or `use case` target) before the expression fallback; prove `use case uc { include a.b; }` yields no expression element. spec42 can then lower case-body result expressions as ResultExpressionMemberships (constraint/calc/KerML bodies already are) |
 
 The contribution target is the pinned `elan8/sysml-v2-parser` repository (the canonical upstream;
 the `lukewilliamboswell/sysml-v2-parser` fork used during the pipeline-rewrite cycle merged into it
@@ -253,5 +260,4 @@ none of them changed by this bump:
   (`SatisfiedRequirement::Declaration`, deliberately unsupported: it declares an inline
   requirement rather than referencing one).
 - `Actions.sysml`: `transition aTransition first start accept apayload : Anything via receiver
-  then done;` inside a nested `state` of an action definition (payload-accept transition
-  spelling in that nested state body).
+  then done;` inside a nested `state` of an action definition (a payload-accept transition spelling).

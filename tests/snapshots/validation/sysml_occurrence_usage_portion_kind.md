@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.9.4:validateOccurrenceUsagePortionKind
-blocked_by=semantic-portion-owner-not-occurrence
 type=file
 ~~~
 # SOURCE
@@ -36,7 +35,7 @@ package Occurrences {
         (severity warning)
         (code "portion_owner_not_occurrence")
         (source "semantic")
-        (range (start 5 8) (end 5 33))
+        (range (start 10 8) (end 10 33))
       )
     )
   )
@@ -47,6 +46,12 @@ package Occurrences {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "portion_owner_not_occurrence")
+        (source "semantic")
+        (range (start 10 8) (end 10 33))
+      )
     )
   )
 )
@@ -54,7 +59,7 @@ package Occurrences {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:dab930329f4aa3537b4d2a7620f684fb242d1a0d65601d609fb9c07a070ded64"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8eba289d462bb4edd143ceb4e9e8f4282e648536c12a72278297192b1b7c8129"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md") (qualified-name "Occurrences"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_occurrence_usage_portion_kind.md") (qualified-name "Occurrences::Bad"))) (kind attribute-def) (membership (kind owning) (visibility default)))

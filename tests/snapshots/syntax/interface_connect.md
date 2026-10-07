@@ -35,7 +35,7 @@ package Interfaces {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:597396060252a6b77233263bbe5920ad22c05dd956691807d617b83e69fc0f0b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c2a6235fccc70ecbb19188e79ad3c8e1f538bba42bdffd89beb2606a22d6cdda"))
   (declarations
     (declaration (id (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::A"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -45,6 +45,7 @@ package Interfaces {
     (declaration (id (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::Bare"))) (kind interface-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::Braced"))) (kind interface-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::Power"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/interface_connect.md") (path (named (kind package) (name "Interfaces")) (named (kind port-def) (name "Power")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (kind conjugated-port-def) (membership (kind owning) (visibility default)) (effective-identification (name "~Power") (short-name absent) (provenance original-port-definition)))
     (declaration (id (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::PowerLink"))) (kind interface-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::PowerLink::dst"))) (kind connection) (membership (kind feature) (visibility default)) (facts (positional-end 1)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Power")))))
     (declaration (id (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::PowerLink::src"))) (kind connection) (membership (kind feature) (visibility default)) (facts (positional-end 0)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Power")))))
@@ -103,6 +104,7 @@ package Interfaces {
     (relationship (kind connectorEnd) (source (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::System::i"))) (target (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::B::q"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::System::i"))) (kind connectorEnd) (ordinal 1)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::A::p"))) (target (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::A"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::B::q"))) (target (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::B"))) (provenance implied))
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/interface_connect.md") (path (named (kind package) (name "Interfaces")) (named (kind port-def) (name "Power")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (target (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::Power"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::PowerLink::dst"))) (target (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::PowerLink"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::PowerLink::src"))) (target (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::PowerLink"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/interface_connect.md") (path (named (kind package) (name "Interfaces")) (named (kind part-def) (name "System")) (anonymous (kind interface) (ordinal 0))))) (target (node (document "memory://snapshot/interface_connect.md") (qualified-name "Interfaces::System"))) (provenance implied))

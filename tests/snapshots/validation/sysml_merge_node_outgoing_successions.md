@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.13:validateMergeNodeOutgoingSuccessions
-blocked_by=semantic-merge-node-multiple-outgoing
 type=file
 ~~~
 # SOURCE
@@ -39,6 +38,12 @@ package Actions {
         (code "merge_node_multiple_outgoing")
         (source "semantic")
         (range (start 12 8) (end 12 37))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_merge_node_outgoing_successions.md")
+            (range (start 10 8) (end 10 18))
+          )
+        )
       )
     )
   )
@@ -49,6 +54,18 @@ package Actions {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_merge_node_outgoing_successions.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "merge_node_multiple_outgoing")
+        (source "semantic")
+        (range (start 12 8) (end 12 37))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_merge_node_outgoing_successions.md")
+            (range (start 10 8) (end 10 18))
+          )
+        )
+      )
     )
   )
 )
@@ -56,7 +73,7 @@ package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f82e34497054d657b50eaec2c7d1024cb7bacc2ce2c4c95efdbdd9ace5cb67e5"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:27e2c8fcd82380449c767a7d1943194f98a12df34128bc5391e93ac6a95dc1a5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_merge_node_outgoing_successions.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_merge_node_outgoing_successions.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))

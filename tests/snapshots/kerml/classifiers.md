@@ -40,7 +40,7 @@ package Classifiers {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:715d0cd223e7dbf7c86afe8131c35b26cfcefd7525691936f6f2fc9cc129b41d"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:ee92b92ff52e806ed15f1732a4d397cd0eabb6b1038d0a7c80cc2de642eb410d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/classifiers.md") (qualified-name "Classifiers"))) (kind package) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (explicitRelationshipEndpoint (reference "A")) (explicitRelationshipEndpoint (reference "B")) (explicitRelationshipEndpoint (reference "B")) (explicitRelationshipEndpoint (reference "A")) (explicitRelationshipEndpoint (reference "C")) (explicitRelationshipEndpoint (reference "A")) (explicitRelationshipEndpoint (reference "C")) (explicitRelationshipEndpoint (reference "B")))))
     (declaration (id (node (document "memory://snapshot/classifiers.md") (qualified-name "Classifiers::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

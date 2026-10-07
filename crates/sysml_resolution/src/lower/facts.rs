@@ -3,6 +3,7 @@
 use std::sync::Arc;
 
 use source_identity::ContentDigest;
+use source_identity::SourceLanguage;
 use source_identity::SourceRole;
 use sysml_v2_parser::{
     ast::{
@@ -56,6 +57,33 @@ pub(crate) struct RelationshipFlags {
     /// Transmission;`); the sibling `abstract` prefix is deliberately left unrepresented, as
     /// before this slice.
     pub(crate) variation: bool,
+    /// What the authored position of an `ExpressionOperand` reference makes of its target; `None`
+    /// on every other reference kind. Set by lowering from the parser's expression shape, so a
+    /// consumer never re-derives it from the target or the source text.
+    pub(crate) operand_role: Option<ExpressionOperandRole>,
+}
+
+/// The KerML expression element an `ExpressionOperand` reference is the member reference of.
+///
+/// Every role is resolved and numbered alike (evaluation pairs operand slots by ordinal), but
+/// only a [`ExpressionOperandRole::FeatureReference`] is a `FeatureReferenceExpression` whose
+/// referent must be a Feature (KerML 8.3.4.8.5 `validateFeatureReferenceExpressionReferentIsFeature`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ExpressionOperandRole {
+    /// A `FeatureReferenceExpression` (KerML `FeatureReferenceMember`).
+    FeatureReference,
+    /// The operand of `meta`, which KerML reads as an implicit `MetadataAccessExpression`'s
+    /// `ElementReferenceMember` and which may name any Element. (An authored `X.metadata` is its
+    /// own element instead, see `ReferenceKind::MetadataAccessTarget`.)
+    MetadataReference,
+    /// The function a `->f g` arrow invocation passes without parentheses (KerML
+    /// `FunctionReferenceExpression`, whose member is an Expression typed by the named function).
+    FunctionReference,
+    /// The `FeatureChainMember` a `.?`/`.` selection names.
+    FeatureChainMember,
+    /// The bare type of an `accept T` payload shorthand (SysML `PayloadFeature`'s
+    /// `OwnedFeatureTyping`), not a feature reference.
+    PayloadTyping,
 }
 
 /// The `in`/`out`/`inout` direction prefix on a directed parameter declaration (BNF `InOutDecl`),
@@ -81,10 +109,32 @@ pub(crate) enum MultiplicityBound {
     Unbounded,
     /// A bound that folds to a literal integer from literals alone (`[3]`, `[0..4]`).
     Literal(i64),
+    /// A bound written from literals alone whose value is not an integer (`[1.5]`, `["a"]`,
+    /// `[true]`, `[null]`). It is model-level evaluable, and what it evaluates to is not a
+    /// natural number (KerML 8.3.4.11.2 `validateMultiplicityRangeBoundResultTypes`).
+    NonIntegerLiteral,
     /// A bound authored as a non-literal expression (`[1..n]`, `[a#(0)]`). Published as an explicit
     /// non-literal fact -- its effective value needs operand resolution, which this fact family
     /// deliberately does not perform, and it is never recovered by re-reading authored text.
     Expression,
+}
+
+/// The authored end multiplicities of one Succession, indexed by connector-end position: the
+/// source (`first`, `connectorEnd->at(1)`) and the target (`then`, `connectorEnd->at(2)`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct SuccessionEndMultiplicities {
+    pub(crate) source: Option<MultiplicityRecord>,
+    pub(crate) target: Option<MultiplicityRecord>,
+}
+
+impl SuccessionEndMultiplicities {
+    /// The fact for a succession's authored end multiplicities, or `None` when neither end has one.
+    pub(crate) fn authored(
+        source: Option<MultiplicityRecord>,
+        target: Option<MultiplicityRecord>,
+    ) -> Option<Box<Self>> {
+        (source.is_some() || target.is_some()).then(|| Box::new(Self { source, target }))
+    }
 }
 
 /// The authored multiplicity of one declaration (BNF `MultiplicityBounds`).
@@ -93,6 +143,127 @@ pub(crate) struct MultiplicityRecord {
     pub(crate) lower: MultiplicityBound,
     pub(crate) upper: MultiplicityBound,
     pub(crate) span: Span,
+    /// The authored bound expressions, in source order, which the owned `MultiplicityRange`'s
+    /// `bound` Expressions are minted at. It is the provenance of `lower`: a single-bound `[n]`
+    /// authors no `lowerBound` (`bound_spans.lower` is `None`), and `lower` is then the effective
+    /// lower bound, equal to the upper bound (KerML 8.3.4.11, `MultiplicityRange::lowerBound`).
+    /// Boxed because almost every declaration carries no multiplicity.
+    pub(crate) bound_spans: Box<MultiplicityBoundSpans>,
+}
+
+/// The authored bound expressions of a multiplicity (`lowerBound`, `upperBound`): the source span
+/// each `bound` Expression is minted at, and its Expression metaclass.
+///
+/// `lower` is `None` for the single-bound form; `upper` is always authored (an unbounded `*` is a
+/// `LiteralInfinity` bound).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct MultiplicityBoundSpans {
+    pub(crate) lower: Option<MultiplicityBoundSite>,
+    pub(crate) upper: MultiplicityBoundSite,
+}
+
+/// One authored bound expression of a multiplicity: where its `bound` Expression is minted, its
+/// metaclass, the form its result type is derived from, and the feature-reference operands
+/// lowering resolves for it (in source order).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct MultiplicityBoundSite {
+    pub(crate) span: Span,
+    pub(crate) kind: DeclarationKind,
+    pub(crate) form: MultiplicityBoundForm,
+    pub(crate) operands: Box<[sysml_v2_parser::ast::QualifiedReferenceId]>,
+}
+
+/// How the result type of a multiplicity `bound` Expression is derived (KerML 8.3.4.11.2
+/// `validateMultiplicityRangeBoundResultTypes`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum MultiplicityBoundForm {
+    /// Literal-only: decided by the owner's `MultiplicityBound` fact.
+    Literal,
+    /// A lone `FeatureReferenceExpression`: its result is typed by the referent's types.
+    FeatureReference,
+    /// Signs and `+`, `-`, `*` over integer literals and feature references: an
+    /// `IntegerFunctions` invocation whose result is an Integer when every operand is one.
+    IntegerArithmetic,
+    /// Any other shape: no result type is derived, and the rule stays unanswered.
+    Unsupported,
+}
+
+/// The result-type form of a bound expression, collecting its feature-reference operands.
+pub(crate) fn multiplicity_bound_form(
+    expression: &Expression,
+    operands: &mut Vec<sysml_v2_parser::ast::QualifiedReferenceId>,
+) -> MultiplicityBoundForm {
+    use sysml_v2_parser::ast::{BinaryOperator, UnaryOperator};
+    if matches!(expression, Expression::LiteralInfinity)
+        || literal_bound_value(expression).is_some()
+    {
+        return MultiplicityBoundForm::Literal;
+    }
+    match expression {
+        Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
+            operands.push(*target);
+            MultiplicityBoundForm::FeatureReference
+        }
+        Expression::Sequence { operands: list, .. } => match list.value.elements.as_slice() {
+            [only] => multiplicity_bound_form(&only.expression.value, operands),
+            _ => MultiplicityBoundForm::Unsupported,
+        },
+        Expression::UnaryOp {
+            op: UnaryOperator::Plus | UnaryOperator::Minus,
+            operand,
+        } => integer_operand(&operand.value, operands),
+        Expression::BinaryOp {
+            op: BinaryOperator::Add | BinaryOperator::Sub | BinaryOperator::Mul,
+            left,
+            right,
+        } => match (
+            integer_operand(&left.value, operands),
+            integer_operand(&right.value, operands),
+        ) {
+            (
+                MultiplicityBoundForm::IntegerArithmetic,
+                MultiplicityBoundForm::IntegerArithmetic,
+            ) => MultiplicityBoundForm::IntegerArithmetic,
+            _ => MultiplicityBoundForm::Unsupported,
+        },
+        _ => MultiplicityBoundForm::Unsupported,
+    }
+}
+
+/// An operand of integer arithmetic: an integer literal, a feature reference, or nested integer
+/// arithmetic. Anything else makes the whole bound `Unsupported`.
+fn integer_operand(
+    expression: &Expression,
+    operands: &mut Vec<sysml_v2_parser::ast::QualifiedReferenceId>,
+) -> MultiplicityBoundForm {
+    match literal_bound_value(expression) {
+        Some(LiteralBoundValue::Integer(_)) => return MultiplicityBoundForm::IntegerArithmetic,
+        Some(LiteralBoundValue::NonInteger) => return MultiplicityBoundForm::Unsupported,
+        None => {}
+    }
+    match multiplicity_bound_form(expression, operands) {
+        MultiplicityBoundForm::FeatureReference | MultiplicityBoundForm::IntegerArithmetic => {
+            MultiplicityBoundForm::IntegerArithmetic
+        }
+        _ => MultiplicityBoundForm::Unsupported,
+    }
+}
+
+/// The KerML metaclass of an expression node that is an Expression element in its own right
+/// without owning any further structure: a literal (`LiteralBoolean`, `LiteralInteger`,
+/// `LiteralRational`, `LiteralString`), a `NullExpression` (`null` or `()`), or a
+/// `MetadataAccessExpression` (`X.metadata`). `None` for every other node.
+pub(crate) fn leaf_expression_kind(expression: &Expression) -> Option<DeclarationKind> {
+    Some(match expression {
+        Expression::LiteralBoolean(_) => DeclarationKind::KermlLiteralBoolean,
+        Expression::LiteralInteger(_) => DeclarationKind::KermlLiteralInteger,
+        Expression::LiteralReal(_) => DeclarationKind::KermlLiteralRational,
+        Expression::LiteralString(_) => DeclarationKind::KermlLiteralString,
+        Expression::Null => DeclarationKind::KermlNullExpression,
+        Expression::MetadataAccess(_) => DeclarationKind::KermlMetadataAccessExpression,
+        Expression::LiteralInfinity => DeclarationKind::KermlLiteralInfinity,
+        _ => return None,
+    })
 }
 
 /// The `snapshot`/`timeslice` portion prefix on an occurrence usage (`ast::OccurrencePortionKind`).
@@ -164,6 +335,39 @@ pub(crate) struct DeclarationModifiers {
     pub(crate) nonunique: bool,
 }
 
+impl DeclarationModifiers {
+    /// Whether `isVariation` holds only because it is implied, not authored.
+    ///
+    /// An `EnumerationDefinition` is always a variation (`validateEnumerationDefinitionIsVariation`;
+    /// the Pilot's `EnumerationDefinitionImpl.isVariation` is constantly true), and its grammar has
+    /// no `variation` keyword slot.
+    pub(crate) fn implied_variation(&self, kind: crate::model::DeclarationKind) -> bool {
+        kind == crate::model::DeclarationKind::EnumerationDefinition && !self.variation
+    }
+
+    /// The effective `isVariation`: authored `variation` or implied by the metaclass.
+    pub(crate) fn effectively_variation(&self, kind: crate::model::DeclarationKind) -> bool {
+        self.variation || self.implied_variation(kind)
+    }
+
+    /// Whether `isAbstract` holds only because it is implied, not authored.
+    ///
+    /// SysML requires a variation Definition or Usage to be abstract
+    /// (`validateDefinitionVariationIsAbstract`, `validateUsageVariationIsAbstract`), and the
+    /// grammar makes `abstract` and `variation` mutually exclusive alternatives of one prefix
+    /// slot. The Pilot's `DefinitionAdapter`/`UsageAdapter.postProcess` therefore set
+    /// `isAbstract` for every variation. The authored `is_abstract` fact is kept unchanged so the
+    /// implied value stays distinguishable from a written `abstract`.
+    pub(crate) fn implied_abstract(&self, kind: crate::model::DeclarationKind) -> bool {
+        self.effectively_variation(kind) && !self.is_abstract
+    }
+
+    /// The effective `Type::isAbstract`: authored `abstract` or implied by a variation.
+    pub(crate) fn effectively_abstract(&self, kind: crate::model::DeclarationKind) -> bool {
+        self.is_abstract || self.implied_abstract(kind)
+    }
+}
+
 /// The authored presentation-adjacent facts of one declaration, recorded at the point its typed
 /// parser node is lowered.
 ///
@@ -174,10 +378,22 @@ pub(crate) struct DeclarationModifiers {
 pub(crate) struct DeclarationFacts {
     /// The `<shortName>` identification prefix, where the owning parser node has the field.
     pub(crate) short_name: Option<NameId>,
+    /// The effective name a never-authored element derives from its context, which it does not
+    /// declare: a `ConjugatedPortDefinition`'s `~` + its original definition's name (SysML
+    /// `ConjugatedPortDefinition::effectiveName`). `None` for every authored declaration.
+    pub(crate) derived_name: Option<NameId>,
     pub(crate) modifiers: DeclarationModifiers,
     pub(crate) portion_kind: Option<PortionKind>,
     pub(crate) direction: Option<ParameterDirection>,
+    /// The Feature's own multiplicity (`[m]` after its declared name or typing).
     pub(crate) multiplicity: Option<MultiplicityRecord>,
+    /// The cross multiplicity a connector end authors (KerML/SysML `ConnectorEnd`:
+    /// `OwnedCrossMultiplicityMember? (declaredName 'references')? OwnedReferenceSubsetting`),
+    /// e.g. the `[0..*]` of `from [0..*] x references y`. It constrains the end's cross feature
+    /// (how many values the end has for fixed values of the other ends), not the end Feature, whose
+    /// own multiplicity is never authored in this production, so it is kept apart from
+    /// `multiplicity`.
+    pub(crate) cross_multiplicity: Option<MultiplicityRecord>,
     /// The owned reference subsetting of a short `render target` member. `None` means an inline
     /// `render rendering` declaration for members with the ViewRendering role.
     pub(crate) view_rendering_reference: Option<AuthoredReferenceId>,
@@ -208,12 +424,30 @@ pub(crate) struct DeclarationFacts {
     /// One-based `ActionUsage::inputParameter(i)` position when this declaration is the single
     /// action selected by a control-action branch/body syntax production.
     pub(crate) action_input_parameter_position: Option<u32>,
+    /// This ParameterUsage is the TransitionUsage's first input parameter, the grammar's
+    /// `EmptyParameterMember` that `checkTransitionUsageSourceBindingConnector` binds to `source`.
+    pub(crate) is_transition_source_parameter: bool,
+    /// This ReferenceUsage is the TransitionUsage's `transitionLink` feature, which
+    /// `checkTransitionUsageSuccessionBindingConnector` binds to the transition's succession.
+    pub(crate) is_transition_link: bool,
+    /// This Feature is the argument at `position` of an instantiation expression (KerML
+    /// `InvocationExpression` input parameter, or `ConstructorExpression` result feature), minted
+    /// for each argument the author wrote. A named argument owns the authored Redefinition of
+    /// the parameter it names.
+    pub(crate) instantiation_argument: Option<InstantiationArgument>,
     /// This ParameterUsage is the TransitionUsage's synthesized second input parameter.
     pub(crate) is_transition_payload_parameter: bool,
     /// This ParameterUsage is the payload parameter of a transition's trigger AcceptActionUsage.
     pub(crate) is_trigger_payload_parameter: bool,
     /// This Succession is the one owned member synthesized by a TransitionUsage's `then` clause.
     pub(crate) is_transition_succession: bool,
+    /// The authored multiplicities of a Succession's two connector ends (`first [m] a then [n]
+    /// b`), present only on a `DeclarationKind::Succession` that authors at least one of them.
+    ///
+    /// A succession's ends are lowered as `Succession` references rather than as end-feature
+    /// declarations, so their multiplicities have no declaration of their own to live on; this is
+    /// their single owning fact. An absent end is "not authored", never a defaulted `1..1`.
+    pub(crate) succession_end_multiplicities: Option<Box<SuccessionEndMultiplicities>>,
     /// The exact `TransitionFeatureMembership::kind` through which this child is owned.
     pub(crate) transition_feature_role: Option<TransitionFeatureRole>,
     /// The number of directly owned end Features when the owning construct's complete authored
@@ -225,6 +459,18 @@ pub(crate) struct DeclarationFacts {
     /// intentionally absent when recovery makes the authored collection incomplete, so generated
     /// specialization predicates cannot turn a partial lowering into a positive result.
     pub(crate) owned_end_feature_count: Option<u32>,
+    /// Whether the result expressions this declaration owns (each an Expression under a
+    /// ResultExpressionMembership) may be short of the authored ResultExpressionMemberships: body
+    /// recovery hid a member, or the body is a case-family body whose expression members the
+    /// parser cannot yet tell from shredded `include` members (so none of them is lowered as a
+    /// result expression). Only a declaration without this flag has an exactly known set.
+    pub(crate) result_expressions_incomplete: bool,
+    /// The number of PayloadFeatures a Flow owns: one per authored `of ...` payload clause,
+    /// present on every `DeclarationKind::Flow` and absent elsewhere. Payload features are not
+    /// minted as declarations, so this is the single owning fact for KerML
+    /// `ownedFeature->selectByKind(PayloadFeature)`; a payload's type is its `FlowPayloadType`
+    /// reference, which an untyped payload does not have, so the reference count is not it.
+    pub(crate) payload_feature_count: Option<u32>,
     /// This declaration's position among its owner's authored connector ends (BNF `EndDecl`).
     ///
     /// Present only on a declaration lowered from an `end` member of a connection/interface/
@@ -249,6 +495,9 @@ pub(crate) struct DeclarationFacts {
     pub(crate) cross_feature_projection: Option<CrossFeatureProjection>,
     /// The canonical result Feature owned by this Expression.
     pub(crate) expression_result: Option<DeclarationId>,
+    /// On a `MultiplicityRange` `bound` Expression: the form its result type is derived from.
+    /// Its operands are the `ExpressionOperand` references it is the source of.
+    pub(crate) multiplicity_bound_form: Option<MultiplicityBoundForm>,
     /// This declaration is the implicit Multiplicity required by individual syntax.
     pub(crate) is_individual_multiplicity: bool,
 }
@@ -257,6 +506,36 @@ pub(crate) struct DeclarationFacts {
 pub(crate) struct CrossFeatureProjection {
     pub(crate) cross_feature: DeclarationId,
     pub(crate) owned_cross_feature: DeclarationId,
+}
+
+/// One member of a Type's ordered KerML `ownedEndFeature` collection (KerML 8.3.3.1.10), which
+/// is also the owned part of `Connector::connectorEnd` and `Association::associationEnd`.
+///
+/// KerML gives every connector end an end Feature. The lowering represents an end in one of two
+/// shapes, and the collection keeps the shape as provenance rather than flattening it:
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum OwnedEndFeature {
+    /// An owned end Feature that is its own declaration: an `end`-prefixed feature, a positional
+    /// `EndDecl`, or a named (`references`) connector end.
+    Declared(DeclarationId),
+    /// A bare connector end (`connector c from a to b`, `binding a = b`): its implicit end
+    /// Feature is not minted as a declaration, so the end is represented by the authored
+    /// ReferenceSubsetting reference its owner carries for it.
+    Bare(AuthoredReferenceId),
+    /// A flow's `from`/`to` endpoint: the minted `FlowEnd` declaration together with the flow's
+    /// authored FlowSource/FlowTarget `reference`, which remains the single authored endpoint
+    /// fact (the end's relatedFeature derives from it).
+    Flow {
+        end: DeclarationId,
+        reference: AuthoredReferenceId,
+    },
+}
+
+/// An [`OwnedEndFeature`] together with the Type owning it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct OwnedEndRecord {
+    pub(crate) owner: DeclarationId,
+    pub(crate) end: OwnedEndFeature,
 }
 
 impl DeclarationFacts {
@@ -285,14 +564,15 @@ pub(crate) enum AnnotationForm {
     TextualRepresentation,
 }
 
-/// One documentation/comment/textual-representation annotation bound to its annotated declaration.
+/// The authored body of one documentation/comment/textual-representation annotating element.
 ///
-/// The parser models these as *sibling* body elements with no parent link, so lowering binds the
-/// annotations at the head of a declaration's own body to that declaration. A declaration may
-/// carry several, which is why this is a table rather than a field on `DeclarationFacts`.
+/// `element` is the `Comment`/`Documentation`/`TextualRepresentation` declaration that owns the
+/// body, locale and language; the namespace that owns it (its declaration `owner`) is the element
+/// it documents or, for a comment with no `about` clause, annotates. A namespace may own several,
+/// which is why this is a table rather than a field on `DeclarationFacts`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct DocumentationRecord {
-    pub(crate) declaration: DeclarationId,
+    pub(crate) element: DeclarationId,
     pub(crate) form: AnnotationForm,
     pub(crate) locale: Option<NameId>,
     /// The `rep` language string; always `None` for the other two forms.
@@ -406,41 +686,93 @@ pub(crate) struct MetadataAnnotationRecord {
 /// Builds the multiplicity fact for a declaration whose parser node carries a `multiplicity` field.
 ///
 /// A declaration with no `[...]` written yields `None`; that is genuinely "no multiplicity
-/// authored", distinct from `[*]`, which yields a record with both bounds `Unbounded`.
+/// authored", distinct from `[*]`, whose upper bound is a `LiteralInfinity`.
+///
+/// A single-bound `[n]` authors only the `upperBound` (KerML 8.3.4.11: `lowerBound` is null when
+/// `bound` has one element); its lower bound is effectively the same value. That effective value
+/// is derived here, once, as the record's `lower`, while `bound_spans.lower` stays `None` so the
+/// authored form remains distinguishable.
 pub(crate) fn multiplicity_facts(
     multiplicity: Option<&Node<Multiplicity>>,
 ) -> Option<MultiplicityRecord> {
     let multiplicity = multiplicity?;
+    let site = |bound: &Node<Expression>| {
+        let mut operands = Vec::new();
+        let form = multiplicity_bound_form(&bound.value, &mut operands);
+        MultiplicityBoundSite {
+            span: bound.span,
+            kind: leaf_expression_kind(&bound.value).unwrap_or(DeclarationKind::KermlExpression),
+            form,
+            operands: operands.into_boxed_slice(),
+        }
+    };
+    let authored_upper = multiplicity.value.upper.as_ref();
+    let authored_lower = multiplicity.value.lower.as_deref();
+    let upper = multiplicity_bound(authored_upper);
     Some(MultiplicityRecord {
-        lower: multiplicity_bound(multiplicity.value.lower.as_deref()),
-        upper: multiplicity_bound(multiplicity.value.upper.as_deref()),
+        lower: authored_lower.map_or(upper, multiplicity_bound),
+        upper,
         span: multiplicity.value.span,
+        bound_spans: Box::new(MultiplicityBoundSpans {
+            lower: authored_lower.map(site),
+            upper: site(authored_upper),
+        }),
     })
 }
 
-pub(crate) fn multiplicity_bound(expression: Option<&Node<Expression>>) -> MultiplicityBound {
-    let Some(expression) = expression else {
+pub(crate) fn multiplicity_bound(expression: &Node<Expression>) -> MultiplicityBound {
+    if matches!(expression.value, Expression::LiteralInfinity) {
         return MultiplicityBound::Unbounded;
-    };
+    }
     match literal_bound_value(&expression.value) {
-        Some(value) => MultiplicityBound::Literal(value),
+        Some(LiteralBoundValue::Integer(value)) => MultiplicityBound::Literal(value),
+        Some(LiteralBoundValue::NonInteger) => MultiplicityBound::NonIntegerLiteral,
         None => MultiplicityBound::Expression,
     }
 }
 
+/// The value a literal-only multiplicity bound folds to.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum LiteralBoundValue {
+    Integer(i64),
+    /// A real, string, boolean or null literal: evaluable, but not an integer.
+    NonInteger,
+}
+
 /// Folds a multiplicity bound expression to a literal integer, or reports that it is not one.
 ///
-/// Deliberately narrow: only an integer literal (optionally parenthesised) is a literal bound.
+/// Deliberately narrow: only an integer literal (optionally parenthesised or signed) is a literal
+/// bound.
 /// Everything else -- a feature reference, an arithmetic expression, an index -- is published as
 /// `MultiplicityBound::Expression` rather than guessed at, because folding it needs operand
 /// resolution this fact family does not perform.
-pub(crate) fn literal_bound_value(expression: &Expression) -> Option<i64> {
+pub(crate) fn literal_bound_value(expression: &Expression) -> Option<LiteralBoundValue> {
     match expression {
-        Expression::LiteralInteger(value) => Some(*value),
+        Expression::LiteralInteger(value) => Some(LiteralBoundValue::Integer(*value)),
+        Expression::LiteralReal(_)
+        | Expression::LiteralString(_)
+        | Expression::LiteralBoolean(_)
+        | Expression::Null => Some(LiteralBoundValue::NonInteger),
         Expression::Sequence { operands, .. } => match operands.value.elements.as_slice() {
             [only] => literal_bound_value(&only.expression.value),
             _ => None,
         },
+        // A signed integer literal (`-1`, `+2`) is still a literal-only, model-level-evaluable
+        // value; a negative result is a published fact the bound rule rejects.
+        Expression::UnaryOp { op, operand } => {
+            let negate = match op {
+                sysml_v2_parser::ast::UnaryOperator::Plus => false,
+                sysml_v2_parser::ast::UnaryOperator::Minus => true,
+                sysml_v2_parser::ast::UnaryOperator::Not
+                | sysml_v2_parser::ast::UnaryOperator::BitNot => return None,
+            };
+            match literal_bound_value(&operand.value)? {
+                LiteralBoundValue::Integer(value) if negate => {
+                    value.checked_neg().map(LiteralBoundValue::Integer)
+                }
+                value => Some(value),
+            }
+        }
         _ => None,
     }
 }
@@ -500,6 +832,24 @@ pub(crate) fn basic_usage_prefix_modifiers(prefix: &BasicUsagePrefix) -> Declara
         variation,
         derived: prefix.ref_prefix.derived_span.is_some(),
         reference: prefix.reference_span.is_some(),
+        constant: prefix.ref_prefix.constant_span.is_some(),
+        ..DeclarationModifiers::default()
+    }
+}
+
+/// The modifier facts of a `ControlNodePrefix` (SysML BNF `ControlNodePrefix`: `RefPrefix`
+/// followed by `individual` and a `PortionKind`). Its direction and portion kind are separate
+/// facts (`direction_node_fact`, `portion_kind_node_fact`).
+pub(crate) fn control_node_prefix_modifiers(
+    prefix: &sysml_v2_parser::ast::ControlNodePrefix,
+) -> DeclarationModifiers {
+    let (is_abstract, variation) =
+        definition_prefix_node_modifiers(prefix.ref_prefix.variance.as_ref());
+    DeclarationModifiers {
+        is_abstract,
+        variation,
+        individual: prefix.individual_span.is_some(),
+        derived: prefix.ref_prefix.derived_span.is_some(),
         constant: prefix.ref_prefix.constant_span.is_some(),
         ..DeclarationModifiers::default()
     }
@@ -759,8 +1109,11 @@ pub(crate) struct AdmittedDocument {
     /// sources, so this is never an admission filter; it is what lets owner-defined projections
     /// report the authored workspace without also reporting the whole standard library.
     pub(crate) role: SourceRole,
-    /// The digest of the text this tree was parsed from: the complete key of this document's
-    /// lowering product, since the lowering walk reads the tree and nothing else.
+    /// The language the source was admitted as. Productions the two languages share (`metadata`)
+    /// denote different metaclasses, so lowering reads it.
+    pub(crate) language: SourceLanguage,
+    /// The digest of the text this tree was parsed from: with the language, the complete key of
+    /// this document's lowering product, since the lowering walk reads nothing else.
     pub(crate) digest: ContentDigest,
     pub(crate) parsed: Arc<ParsedDocument>,
     pub(crate) parse_errors: Box<[ParseError]>,
@@ -863,6 +1216,11 @@ pub(crate) struct AuthoredReference {
     /// segments, subsequent member lookup starts from the resolved cast target rather than the
     /// operand's pre-cast type.
     pub(crate) member_access_narrowings: Box<[MemberAccessNarrowing]>,
+    /// For a dotted feature chain (`a::b.c`), the zero-based index of the last path segment of
+    /// each KerML chaining feature, in order: a `.` separator ends a chaining feature, while `::`
+    /// qualifies within one. Read from the parser's typed separators; empty for an undotted
+    /// reference.
+    pub(crate) chaining_feature_ends: Box<[u32]>,
     pub(crate) span: Span,
 }
 
@@ -1029,4 +1387,114 @@ pub(crate) struct AuthoredInvocation {
     pub(crate) argument_count: u32,
     /// The invocation expression's own range.
     pub(crate) span: Span,
+}
+
+/// One `assign` (SysML `AssignmentActionUsage`) and the Features its target parameter owns.
+///
+/// The SysML grammar (`AssignmentTargetMember`/`TargetParameter`/`TargetFeature`/
+/// `TargetAccessedFeatureMember`) gives an AssignmentActionUsage a first input parameter, the
+/// `target`, whose first owned Feature is the `startingAt` feature and whose first owned Feature
+/// in turn is the `accessedFeature`. Lowering mints all three, so
+/// `checkAssignmentActionUsageStartingAtRedefinition`,
+/// `checkAssignmentActionUsageAccessedFeatureRedefinition` and
+/// `checkAssignmentActionUsageReferentRedefinition` each have a Feature to read.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct AssignmentRecord {
+    /// The AssignmentActionUsage.
+    pub(crate) assignment: DeclarationId,
+    /// Its first parameter, `target`.
+    pub(crate) target_parameter: DeclarationId,
+    /// The first owned Feature of `target`.
+    pub(crate) starting_at: DeclarationId,
+    /// The first owned Feature of `startingAt`.
+    pub(crate) accessed_feature: DeclarationId,
+    /// The reference naming the assignment's `referent` (the `AssignTarget` reference of a bare
+    /// target, the member-access reference of a dotted one), sourced at `assignment`. `None` when
+    /// the authored target is a shape lowering does not resolve, so the referent is unknown.
+    pub(crate) referent: Option<AuthoredReferenceId>,
+}
+
+/// The kind of a SysML `TriggerInvocationExpression` (`TriggerKind`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum TriggerInvocationKind {
+    /// `accept when <condition>`: a change trigger on a Boolean condition.
+    When,
+    /// `accept at <instant>`: a time trigger at a time instant.
+    At,
+    /// `accept after <duration>`: a time trigger after a duration.
+    After,
+}
+
+/// The literal kind of a literal argument, as the parser types it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum LiteralKind {
+    Boolean,
+    Integer,
+    Real,
+    String,
+    Null,
+}
+
+/// The argument of a [`TriggerInvocationRecord`], as far as its syntax settles it.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum TriggerArgument {
+    /// A literal, whose `LiteralExpression` result type the literal kind fixes.
+    Literal(LiteralKind),
+    /// A feature reference: the `ExpressionOperand` reference sourced at the trigger expression,
+    /// whose settled feature's types are the argument's result types.
+    FeatureReference(AuthoredReferenceId),
+    /// Any other expression, whose result type this publication does not derive.
+    Other,
+}
+
+/// One `accept when|at|after <argument>` trigger, lowered as its own SysML
+/// `TriggerInvocationExpression` element.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct TriggerInvocationRecord {
+    /// The TriggerInvocationExpression element.
+    pub(crate) expression: DeclarationId,
+    pub(crate) kind: TriggerInvocationKind,
+    pub(crate) argument: TriggerArgument,
+}
+
+/// What an expression the source writes leaves out of the publication when lowering does not
+/// represent it as its own Expression element with its grammar-defined parameters.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum UnloweredExpression {
+    /// The expression is not an element at all (an operator, a feature reference or a feature
+    /// chain nested in another expression, or written directly in a constraint, calculation,
+    /// guard or other body), so neither it, its `result` nor its parameters exist.
+    Element,
+    /// The expression is its own element -- the value Expression of a FeatureValue, with its
+    /// `result`, or a MetadataAccessExpression -- but its owned operands (an
+    /// OperatorExpression's `ArgumentMember`s, a metadata access's referenced element) are not
+    /// lowered.
+    Parameters,
+}
+
+/// One evaluation site whose authored expression includes an [`UnloweredExpression`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) struct UnloweredExpressionSite {
+    pub(crate) site: DeclarationId,
+    pub(crate) kind: UnloweredExpression,
+}
+
+/// Which instantiation expression an argument Feature belongs to.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum InstantiationForm {
+    /// An `InvocationExpression`: the argument is an `in` parameter of the expression.
+    Invocation,
+    /// A `ConstructorExpression`: the argument is an `in` feature of the expression's result.
+    Constructor,
+}
+
+/// The lowering role of an instantiation-expression argument Feature.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct InstantiationArgument {
+    pub(crate) form: InstantiationForm,
+    /// Zero-based authored argument position.
+    pub(crate) position: u32,
+    /// The author named the parameter (`f(x = a)`); a positional argument's redefinition is
+    /// implied by its position instead.
+    pub(crate) named: bool,
 }

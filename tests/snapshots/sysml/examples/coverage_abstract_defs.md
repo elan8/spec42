@@ -68,20 +68,22 @@ abstract part def Container {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:78b35de4d04c636bb29de5b8d361ee7022e2ce9eb901ed20f63f349bfb04f71d"))
+  (publication (phase resolved) (completeness parse-recovery,unsupported-syntax) (has-evaluation false) (source-digest "blake3:2d9646cebd39163276252ce264a393e4b6a9cb9a63ba140699260bae461bbbe2"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractEvent"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractPerson"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract individual) (individual-multiplicity (node (document "memory://snapshot/coverage_abstract_defs.md") (path (named (kind occurrence-def) (name "AbstractPerson")) (anonymous (kind kerml-multiplicity) (ordinal 0)))))))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (path (named (kind occurrence-def) (name "AbstractPerson")) (anonymous (kind kerml-multiplicity) (ordinal 0))))) (kind kerml-multiplicity) (membership (kind owning) (visibility default)) (facts (origin individual-multiplicity)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractPort"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (path (named (kind port-def) (name "AbstractPort")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (kind conjugated-port-def) (membership (kind owning) (visibility default)) (effective-identification (name "~AbstractPort") (short-name absent) (provenance original-port-definition)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractVehicle"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractWidget"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerPart"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerPort"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (path (named (kind part-def) (name "Container")) (named (kind port-def) (name "InnerPort")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (kind conjugated-port-def) (membership (kind owning) (visibility default)) (effective-identification (name "~InnerPort") (short-name absent) (provenance original-port-definition)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerWeight"))) (kind attribute-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerWidget"))) (kind item-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation)))
+    (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::fourCyl"))) (kind part) (membership (kind owning) (visibility default) (role variant)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "EngineChoices::sixCyl"))) (kind part) (membership (kind owning) (visibility default) (role variant)))
     (declaration (id (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Weight"))) (kind attribute-def) (membership (kind owning) (visibility default)))
@@ -89,6 +91,8 @@ abstract part def Container {
   (references
   )
   (relationships
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/coverage_abstract_defs.md") (path (named (kind port-def) (name "AbstractPort")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "AbstractPort"))) (provenance implied))
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/coverage_abstract_defs.md") (path (named (kind part-def) (name "Container")) (named (kind port-def) (name "InnerPort")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_abstract_defs.md") (qualified-name "Container::InnerPort"))) (provenance implied))
   )
   (evaluation
   )

@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.21.8:validateRequirementDefinitionSubjectParameterPosition
-blocked_by=semantic-subject-member-order
 type=file
 ~~~
 # SOURCE
@@ -39,6 +38,12 @@ package Roles {
         (code "subject_member_not_first")
         (source "semantic")
         (range (start 12 8) (end 12 34))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md")
+            (range (start 11 8) (end 11 38))
+          )
+        )
       )
     )
   )
@@ -49,6 +54,18 @@ package Roles {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "subject_member_not_first")
+        (source "semantic")
+        (range (start 12 8) (end 12 34))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md")
+            (range (start 11 8) (end 11 38))
+          )
+        )
+      )
     )
   )
 )
@@ -56,7 +73,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f6c8f187488cc1dac4955669e0f60b83e3875b6e41153115e4425e0e192c6c2a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6fdee98a891def7b9a7e1e2674ffe614cd18f6cc3dcf9eba846fe951bd5d90c1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_definition_subject_parameter_position.md") (qualified-name "Roles::Bad"))) (kind requirement-def) (membership (kind owning) (visibility default)))

@@ -70,6 +70,9 @@ element_kinds! {
     ItemDefinition,
     ItemUsage,
     PortDefinition,
+    /// The `ConjugatedPortDefinition` every `PortDefinition` owns, named `~` + its name, whose
+    /// `PortConjugation` makes it the conjugate of that definition. Never authored.
+    ConjugatedPortDefinition,
     PortUsage,
     OccurrenceDefinition,
     OccurrenceUsage,
@@ -81,6 +84,9 @@ element_kinds! {
     AllocationUsage,
     FlowConnectionDefinition,
     FlowConnectionUsage,
+    /// A `succession flow`: a flow whose transfer starts after its source ends
+    /// (`SuccessionFlowUsage :> FlowUsage, SuccessionFlow`).
+    SuccessionFlowUsage,
     ActionDefinition,
     ActionUsage,
     /// An `ActionUsage` carrying the `accept` action form.
@@ -89,6 +95,8 @@ element_kinds! {
     TerminateActionUsage,
     StateDefinition,
     StateUsage,
+    /// An `exhibit` state: a StateUsage that is also a PerformActionUsage, never composite.
+    ExhibitStateUsage,
     CalculationDefinition,
     CalculationUsage,
     ConstraintDefinition,
@@ -117,10 +125,6 @@ element_kinds! {
     RenderingUsage,
     MetadataDefinition,
     MetadataUsage,
-    /// A named `comment` annotation (`comment aboutP about p /* ... */`). Only minted when the
-    /// author writes an identification on the comment; an anonymous `comment /* ... */` stays a
-    /// documentation fact with no element of its own, exactly as before.
-    Comment,
     /// A definition with no more specific keyword, including the `#keyword def` extended form.
     Definition,
     /// A usage with no more specific keyword: the `#keyword <name>` extended usage form
@@ -146,6 +150,10 @@ element_kinds! {
     /// the variable and the loop body's own members share an owner *and* a membership kind here,
     /// so nothing else would tell them apart.
     ForLoopVariable,
+    /// The abstract `ControlNode` metaclass every decision, merge, fork and join node
+    /// specializes. No declaration is published with this kind; it exists so the metaclass
+    /// generalization hierarchy states `ForkNode :> ControlNode :> ActionUsage`.
+    ControlNode,
     DecisionNode,
     MergeNode,
     ForkNode,
@@ -174,6 +182,14 @@ element_kinds! {
     Alias,
     Dependency,
 
+    // --- Annotating elements ------------------------------------------------------------
+    /// The abstract KerML `AnnotatingElement` every comment, documentation and textual
+    /// representation specializes. No declaration is published with this kind.
+    AnnotatingElement,
+    Comment,
+    Documentation,
+    TextualRepresentation,
+
     // --- KerML types --------------------------------------------------------------------
     Type,
     Classifier,
@@ -188,21 +204,171 @@ element_kinds! {
     Predicate,
     Interaction,
     Multiplicity,
+    /// The KerML `MultiplicityRange` an authored `[m..n]` lowers to, owned by the declaration
+    /// it bounds.
+    MultiplicityRange,
 
     // --- KerML features -----------------------------------------------------------------
     Feature,
     Step,
     Expression,
     BooleanExpression,
+    /// The abstract KerML `LiteralExpression` every literal metaclass specializes. No
+    /// declaration is published with this kind.
+    LiteralExpression,
+    LiteralBoolean,
+    LiteralInteger,
+    LiteralRational,
+    LiteralString,
+    LiteralInfinity,
+    NullExpression,
+    MetadataAccessExpression,
     Connector,
     BindingConnector,
+    /// The KerML `Succession` metaclass. Every published succession is a SysML
+    /// `SuccessionAsUsage`, which specializes it; no declaration is published with this kind.
+    Succession,
     Invariant,
+    /// The KerML `MetadataFeature` a KerML `metadata` feature or `@` annotation lowers to. A
+    /// SysML `MetadataUsage` specializes it.
+    MetadataFeature,
+    /// The KerML `FlowEnd` a flow's `from`/`to` endpoint lowers to: an end Feature owning the
+    /// flow feature that redefines the endpoint's last segment.
+    FlowEnd,
 }
 
 impl ElementKind {
     /// The kind whose [`ElementKind::as_str`] is `text`.
     pub fn parse(text: &str) -> Option<Self> {
         Self::ALL.iter().copied().find(|kind| kind.as_str() == text)
+    }
+
+    /// The direct metaclass generalizations of this kind in the KerML/SysML abstract syntax,
+    /// restricted to the metaclasses this vocabulary publishes.
+    ///
+    /// This is the language's own static metamodel (for instance `PartUsage :> ItemUsage`,
+    /// `ConnectionDefinition :> PartDefinition, AssociationStructure`), not a fact about any
+    /// admitted library. Relationship metaclasses (`Import`, `Expose`, `Dependency`) and the
+    /// `Alias` membership generalize no published element metaclass.
+    pub fn direct_generals(self) -> &'static [ElementKind] {
+        use ElementKind as K;
+        match self {
+            K::Namespace
+            | K::Import
+            | K::Expose
+            | K::Alias
+            | K::Dependency
+            | K::AnnotatingElement => &[],
+            K::Comment | K::TextualRepresentation => &[K::AnnotatingElement],
+            K::Documentation => &[K::Comment],
+            K::Package => &[K::Namespace],
+            K::LibraryPackage => &[K::Package],
+
+            // KerML Core and Kernel.
+            K::Type => &[K::Namespace],
+            K::Classifier => &[K::Type],
+            K::Class | K::DataType => &[K::Classifier],
+            K::Structure => &[K::Class],
+            K::Association => &[K::Classifier],
+            K::AssociationStructure => &[K::Association, K::Structure],
+            K::Metaclass => &[K::Structure],
+            K::Behavior => &[K::Class],
+            K::Function => &[K::Behavior],
+            K::Predicate => &[K::Function],
+            K::Interaction => &[K::Association, K::Behavior],
+            K::Feature => &[K::Type],
+            K::Multiplicity | K::Step | K::Connector => &[K::Feature],
+            K::MultiplicityRange => &[K::Multiplicity],
+            K::Expression => &[K::Step],
+            K::BooleanExpression
+            | K::LiteralExpression
+            | K::NullExpression
+            | K::MetadataAccessExpression => &[K::Expression],
+            K::LiteralInfinity => &[K::LiteralExpression],
+            K::LiteralBoolean | K::LiteralInteger | K::LiteralRational | K::LiteralString => {
+                &[K::LiteralExpression]
+            }
+            K::Invariant => &[K::BooleanExpression],
+            K::MetadataFeature => &[K::Feature, K::AnnotatingElement],
+            K::FlowEnd => &[K::Feature],
+            K::BindingConnector | K::Succession => &[K::Connector],
+
+            // SysML definitions.
+            K::Definition => &[K::Classifier],
+            K::AttributeDefinition => &[K::Definition, K::DataType],
+            K::EnumerationDefinition => &[K::AttributeDefinition],
+            K::OccurrenceDefinition => &[K::Definition, K::Class],
+            K::ItemDefinition => &[K::OccurrenceDefinition, K::Structure],
+            K::PartDefinition => &[K::ItemDefinition],
+            K::PortDefinition => &[K::OccurrenceDefinition, K::Structure],
+            K::ConjugatedPortDefinition => &[K::PortDefinition],
+            K::ConnectionDefinition => &[K::PartDefinition, K::AssociationStructure],
+            K::InterfaceDefinition | K::AllocationDefinition => &[K::ConnectionDefinition],
+            K::ActionDefinition => &[K::OccurrenceDefinition, K::Behavior],
+            K::FlowConnectionDefinition => &[K::ActionDefinition, K::Interaction],
+            K::StateDefinition => &[K::ActionDefinition],
+            K::CalculationDefinition => &[K::ActionDefinition, K::Function],
+            K::ConstraintDefinition => &[K::OccurrenceDefinition, K::Predicate],
+            K::RequirementDefinition => &[K::ConstraintDefinition],
+            K::ConcernDefinition | K::ViewpointDefinition => &[K::RequirementDefinition],
+            K::CaseDefinition => &[K::CalculationDefinition],
+            K::AnalysisCaseDefinition | K::VerificationCaseDefinition | K::UseCaseDefinition => {
+                &[K::CaseDefinition]
+            }
+            K::ViewDefinition | K::RenderingDefinition => &[K::PartDefinition],
+            K::MetadataDefinition => &[K::ItemDefinition, K::Metaclass],
+
+            // SysML usages.
+            K::Usage => &[K::Feature],
+            K::ReferenceUsage | K::AttributeUsage | K::OccurrenceUsage => &[K::Usage],
+            K::ForLoopVariable => &[K::ReferenceUsage],
+            K::EnumerationUsage => &[K::AttributeUsage],
+            K::ItemUsage | K::PortUsage => &[K::OccurrenceUsage],
+            K::PartUsage => &[K::ItemUsage],
+            K::ConnectionUsage => &[K::PartUsage, K::Connector],
+            K::InterfaceUsage | K::AllocationUsage => &[K::ConnectionUsage],
+            K::ActionUsage => &[K::OccurrenceUsage, K::Step],
+            K::FlowConnectionUsage => &[K::ActionUsage, K::Connector],
+            // KerML `SuccessionFlow :> Flow, Succession`; `Flow` is not published, so the
+            // succession side is stated directly.
+            K::SuccessionFlowUsage => &[K::FlowConnectionUsage, K::Succession],
+            K::AcceptActionUsage
+            | K::SendActionUsage
+            | K::TerminateActionUsage
+            | K::PerformActionUsage
+            | K::TransitionUsage
+            | K::AssignmentActionUsage
+            | K::IfActionUsage
+            | K::WhileLoopActionUsage
+            | K::ForLoopActionUsage
+            | K::ControlNode
+            | K::StateUsage => &[K::ActionUsage],
+            K::DecisionNode | K::MergeNode | K::ForkNode | K::JoinNode => &[K::ControlNode],
+            K::FinalState => &[K::StateUsage],
+            K::ExhibitStateUsage => &[K::StateUsage, K::PerformActionUsage],
+            K::CalculationUsage => &[K::ActionUsage, K::Expression],
+            K::ConstraintUsage => &[K::OccurrenceUsage, K::BooleanExpression],
+            K::AssertConstraintUsage => &[K::ConstraintUsage, K::Invariant],
+            K::RequirementUsage => &[K::ConstraintUsage],
+            K::ConcernUsage | K::ViewpointUsage => &[K::RequirementUsage],
+            K::SatisfyRequirementUsage => &[K::RequirementUsage, K::AssertConstraintUsage],
+            K::CaseUsage => &[K::CalculationUsage],
+            K::AnalysisCaseUsage | K::VerificationCaseUsage | K::UseCaseUsage => &[K::CaseUsage],
+            K::ViewUsage | K::RenderingUsage => &[K::PartUsage],
+            K::MetadataUsage => &[K::ItemUsage, K::MetadataFeature],
+            K::SuccessionAsUsage => &[K::Usage, K::Succession],
+            K::BindingConnectorAsUsage => &[K::Usage, K::BindingConnector],
+        }
+    }
+
+    /// Whether this metaclass is `general` or (transitively) specializes it: OCL
+    /// `oclIsKindOf(general)` over the published metaclass vocabulary.
+    pub fn conforms_to(self, general: ElementKind) -> bool {
+        self == general
+            || self
+                .direct_generals()
+                .iter()
+                .any(|direct| direct.conforms_to(general))
     }
 }
 
@@ -259,6 +425,8 @@ pub enum MembershipRole {
     FramedConcern,
     /// `RequirementVerificationMembership` -- a requirement verified by a case.
     RequirementVerification,
+    /// `ObjectiveMembership` -- the objective requirement of a case.
+    Objective,
     /// `ViewRenderingMembership` -- the rendering selected by a view definition or usage.
     ViewRendering,
     /// `TransitionFeatureMembership` with `kind = trigger` -- the accept action that triggers a
@@ -266,10 +434,15 @@ pub enum MembershipRole {
     TransitionTriggerAction,
     /// `VariantMembership` -- an enumeration literal, or a variant of a variation.
     Variant,
-    /// `ParameterMembership` -- a directed parameter, a return, or a bound argument.
+    /// `ParameterMembership` -- a directed parameter or a bound argument.
     Parameter,
+    /// `ReturnParameterMembership` -- the result parameter of a function or expression, authored
+    /// with `return`.
+    ReturnParameter,
     /// `EndFeatureMembership` -- an association or connector end.
     EndFeature,
+    /// `ResultExpressionMembership` -- the result expression of a function or expression body.
+    ResultExpression,
 }
 
 impl MembershipRole {
@@ -286,11 +459,14 @@ impl MembershipRole {
             Self::Actor => "actor",
             Self::FramedConcern => "framed-concern",
             Self::RequirementVerification => "requirement-verification",
+            Self::Objective => "objective",
             Self::ViewRendering => "view-rendering",
             Self::TransitionTriggerAction => "transition-trigger-action",
             Self::Variant => "variant",
             Self::Parameter => "parameter",
+            Self::ReturnParameter => "return-parameter",
             Self::EndFeature => "end-feature",
+            Self::ResultExpression => "result-expression",
         }
     }
 }
@@ -305,6 +481,44 @@ impl fmt::Display for MembershipRole {
 mod tests {
     use super::*;
     use std::collections::BTreeSet;
+
+    #[test]
+    fn metaclass_generalization_is_acyclic_and_rooted() {
+        for kind in ElementKind::ALL.iter().copied() {
+            // Every chain terminates (recursion would overflow on a cycle) and no kind lists
+            // itself or a duplicate as a direct general.
+            let generals = kind.direct_generals();
+            assert!(!generals.contains(&kind), "{kind} generalizes itself");
+            let unique = generals.iter().collect::<BTreeSet<_>>();
+            assert_eq!(unique.len(), generals.len(), "{kind} repeats a general");
+            for general in generals {
+                assert!(
+                    !general.conforms_to(kind),
+                    "{kind} and {general} form a cycle"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn metaclass_conformance_follows_the_metamodel() {
+        assert!(ElementKind::PartDefinition.conforms_to(ElementKind::Structure));
+        assert!(ElementKind::ConnectionDefinition.conforms_to(ElementKind::Association));
+        assert!(ElementKind::AttributeDefinition.conforms_to(ElementKind::DataType));
+        assert!(ElementKind::CaseUsage.conforms_to(ElementKind::Expression));
+        assert!(ElementKind::DataType.conforms_to(ElementKind::Classifier));
+        assert!(ElementKind::SuccessionAsUsage.conforms_to(ElementKind::Succession));
+        assert!(ElementKind::Succession.conforms_to(ElementKind::Connector));
+        assert!(ElementKind::ForkNode.conforms_to(ElementKind::ControlNode));
+        assert!(ElementKind::ExhibitStateUsage.conforms_to(ElementKind::StateUsage));
+        assert!(ElementKind::ExhibitStateUsage.conforms_to(ElementKind::PerformActionUsage));
+        assert!(ElementKind::ControlNode.conforms_to(ElementKind::ActionUsage));
+        assert!(ElementKind::MetadataUsage.conforms_to(ElementKind::MetadataFeature));
+        assert!(ElementKind::MetadataFeature.conforms_to(ElementKind::AnnotatingElement));
+        assert!(!ElementKind::Classifier.conforms_to(ElementKind::DataType));
+        assert!(!ElementKind::PartUsage.conforms_to(ElementKind::AttributeUsage));
+        assert!(!ElementKind::ActionDefinition.conforms_to(ElementKind::Structure));
+    }
 
     #[test]
     fn every_kind_round_trips_through_its_name() {
@@ -357,7 +571,9 @@ mod tests {
             MembershipRole::TransitionTriggerAction,
             MembershipRole::Variant,
             MembershipRole::Parameter,
+            MembershipRole::ReturnParameter,
             MembershipRole::EndFeature,
+            MembershipRole::ResultExpression,
         ];
         let names = roles
             .iter()

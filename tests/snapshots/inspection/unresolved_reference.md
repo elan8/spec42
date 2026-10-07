@@ -44,7 +44,7 @@ probe unresolved_reference.md 5 25
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:38022cec3cfb7d58c5189fdcdabd099c6cdb469ebccd33e1fd8ae2448d0d4571"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:26ae8e2bf3a50ba3020715b6b695efac399ddbf7a7915daf90253ce03c041dfb"))
   (declarations
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::Known"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -53,6 +53,7 @@ probe unresolved_reference.md 5 25
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::size"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "undefinedName")))))
     (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
+    (declaration (id (node (document "memory://snapshot/unresolved_reference.md") (path (named (kind package) (name "Broken")) (named (kind attribute) (name "size")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/unresolved_reference.md") (qualified-name "Broken::known"))) (kind featureTyping) (ordinal 0))
@@ -230,6 +231,7 @@ probe unresolved_reference.md 5 25
     (symbol (kind "PartUsage") (name "known") (qualified-name "Broken::known") (location (document "memory://snapshot/unresolved_reference.md") (range (start 4 9) (end 4 14)) (role Declaration)) (declaration (range (start 4 4) (end 4 23))))
     (symbol (kind "AttributeUsage") (name "size") (qualified-name "Broken::size") (location (document "memory://snapshot/unresolved_reference.md") (range (start 5 14) (end 5 18)) (role Declaration)) (declaration (range (start 5 4) (end 5 39))))
     (symbol (kind "Expression") (qualified-name "Broken::size::") (location (document "memory://snapshot/unresolved_reference.md") (range (start 5 21) (end 5 38)) (role Declaration)) (declaration (range (start 5 21) (end 5 38))))
+    (symbol (kind "LiteralInteger") (qualified-name "Broken::size::::") (location (document "memory://snapshot/unresolved_reference.md") (range (start 5 37) (end 5 38)) (role Declaration)) (declaration (range (start 5 37) (end 5 38))))
   )
 )
 ~~~

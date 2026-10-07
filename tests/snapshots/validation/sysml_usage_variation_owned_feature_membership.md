@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.6.4:validateUsageVariationOwnedFeatureMembership
-blocked_by=semantic-variation-owned-feature-membership
 type=file
 ~~~
 # SOURCE
@@ -50,6 +49,12 @@ package Variations {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_usage_variation_owned_feature_membership.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "variation_owns_feature_membership")
+        (source "semantic")
+        (range (start 12 12) (end 12 30))
+      )
     )
   )
 )
@@ -57,15 +62,15 @@ package Variations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d0d007e4e10c4e0844ea24eff93f166f4b8d9ffee72b2afb78173a2458dd59ea"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e49de34d3d38b9d92a6d8814abb91964fc3760d84e8fc9a54057bfa99910eda8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_owned_feature_membership.md") (qualified-name "Variations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_owned_feature_membership.md") (qualified-name "Variations::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_owned_feature_membership.md") (qualified-name "Variations::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_owned_feature_membership.md") (qualified-name "Variations::Holder::bad"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base") (variation true)))))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_owned_feature_membership.md") (qualified-name "Variations::Holder::bad"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base") (variation true)))))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_owned_feature_membership.md") (qualified-name "Variations::Holder::bad::extra"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base")))))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_owned_feature_membership.md") (qualified-name "Variations::Holder::bad::small"))) (kind part) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (featureTyping (reference "Base")))))
-    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_owned_feature_membership.md") (qualified-name "Variations::Holder::good"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base") (variation true)))))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_owned_feature_membership.md") (qualified-name "Variations::Holder::good"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base") (variation true)))))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_owned_feature_membership.md") (qualified-name "Variations::Holder::good::large"))) (kind part) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (featureTyping (reference "Base")))))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_owned_feature_membership.md") (qualified-name "Variations::Holder::good::small"))) (kind part) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (featureTyping (reference "Base")))))
   )

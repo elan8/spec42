@@ -175,6 +175,28 @@ searches `SMG` or `TYPES` text:
 ~~~
 ```
 
+A relationship `source` may also name an anonymous element (an `if`, `assign`, `satisfy`,
+transition, ...) by its canonical owner-scoped identity, the same `(anonymous (kind ...)
+(ordinal ...))` path segment `SMG` renders. `owner` is itself a qualified name or another
+anonymous reference, `kind` is the `ElementKind` metaclass name, and `ordinal` is the canonical
+anonymous ordinal. The runner resolves it only through
+`sysml_query::PublishedModel::inspection().resolve_anonymous_member`; an ordinal shared by two
+declaration forms of one metaclass is ambiguous rather than guessed:
+
+```sexpr
+(relationship
+  (kind subsetting)
+  (source (anonymous (owner "Model::Decision") (kind IfActionUsage) (ordinal 0)))
+  (target "Actions::ifThenActions")
+  (provenance implied)
+  (outcome resolved))
+```
+
+A relationship `kind` is one of `specialization`, `feature_typing`, `subsetting`,
+`redefinition`, `feature_chaining`, `type_featuring`, `connector_end`, `unioning`,
+`intersecting`, `differencing`, `disjoining`, or `annotation` (the Annotation a `comment ...
+about X` owns, from the Comment to its annotated element).
+
 The five exact pinned-XMI `Feature` derived-relationship collections have a separate compact
 assertion. `rule_id` is one of the five full canonical KerML IDs below; it selects the closed
 `sysml_query::FeatureDerivedRelationshipCollection` API directly, rather than deriving a query
@@ -225,8 +247,10 @@ use the closed
 
 It is evaluated only through `PublishedModel::type_derived_elements`. The resolver selects direct
 canonical Feature-membership member identities; the end-feature projection additionally reads the
-canonical `end` modifier fact. It does not materialize a public `FeatureMembership` relationship,
-infer inherited members, or recover a target from text.
+canonical `end` modifier fact. It does not infer inherited members or recover a target from text.
+The owning `FeatureMembership` relationships are the `deriveTypeOwnedFeatureMembership` fact, whose
+values carry each relationship's canonical `MembershipId`; a `type-derived-fact` target names the
+member that membership owns.
 `absent`, `incomplete`, and `unsupported` omit `target`.
 
 The remaining exact `Type` derivations use the closed `type-derived-fact` assertion. Its

@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.3.8:validateRedefinitionFeaturingTypes
-blocked_by=semantic-redefinition-featuring-type-compatibility
 type=file
 ~~~
 # SOURCE
@@ -36,10 +35,16 @@ package Redefinitions {
   (document "memory://snapshot/kerml_redefinition_featuring_types.md"
     (diagnostics
       (diagnostic
-        (severity warning)
+        (severity error)
         (code "redefinition_featuring_type_incompatible")
         (source "semantic")
-        (range (start 13 8) (end 13 47))
+        (range (start 13 41) (end 13 46))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_redefinition_featuring_types.md")
+            (range (start 10 8) (end 10 30))
+          )
+        )
       )
     )
   )
@@ -50,6 +55,18 @@ package Redefinitions {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_redefinition_featuring_types.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "redefinition_featuring_type_incompatible")
+        (source "semantic")
+        (range (start 13 41) (end 13 46))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_redefinition_featuring_types.md")
+            (range (start 10 8) (end 10 30))
+          )
+        )
+      )
     )
   )
 )
@@ -57,7 +74,7 @@ package Redefinitions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2509561083bc2998fc80a48f1d867d54d8870b72841043b0b722d00d8a353b66"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5e11f5cbb860e1960fd9fdd4c6efb7f56db096a5b877e1a008b6a47916a40caa"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_featuring_types.md") (qualified-name "Redefinitions::Base"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

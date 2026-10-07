@@ -157,7 +157,6 @@ pub enum SpecializationCheckPrerequisite {
     TransitionFeatureRolesAndLibraryAnchors,
     UseCaseOwnerAndLibraryAnchor,
     UsageVariationOwner,
-    IndividualMultiplicityAndLibraryAnchor,
     OccurrenceOwnerTypingAndLibraryAnchor,
 }
 
@@ -174,19 +173,14 @@ pub enum SpecializationCheckOutcome {
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RedefinitionCheckPrerequisite {
     RuleNotPublished,
-    EndFeaturePositionAndInheritedEnds,
-    FlowEndOrdinalAndLibraryAnchors,
-    CrossFeatureAndSubsettingEndpoints,
-    ParameterDirectionAndInheritedPosition,
-    FunctionOrExpressionResult,
-    ConstructorResultAndInstantiatedTypeFeatures,
-    FeatureChainSourceTarget,
-    FeatureChainSourceTargetAndLibraryAnchor,
+    /// Some grammar-defined parameter -- of an operator expression, or of a `send`, `accept`,
+    /// `assign`, `if`, loop, transition or `terminate` usage -- is not lowered, so the positional
+    /// obligations it carries are not facts of the publication.
+    GrammarParameters,
+    /// Some expression the source writes is not lowered as its own Expression element, so its
+    /// result is not a fact of the publication.
+    ExpressionElements,
     StateSubactionMembershipAndKind,
-    AssignmentActionInputParameterEndpoints,
-    ForLoopVariableProjection,
-    ObjectiveMembershipAndCaseObjective,
-    ViewRenderingMembership,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -209,16 +203,7 @@ pub enum SatisfyPolarity {
 /// Why a named binding-connector validation could not be evaluated from canonical facts.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BindingConnectorValidationPrerequisite {
-    /// Lowering has not yet published the `FeatureReferenceExpression.targetFeature` and
-    /// expression-result facts which the exact rule relates through a binding connector.
-    FeatureReferenceExpressionTargetAndResult,
-    FeatureValueEndpointFacts,
-    ExpressionResultEndpointFacts,
-    FunctionResultEndpointFacts,
-    InvocationExpressionBehaviorEndpointFacts,
     AcceptActionUsageReceiverEndpointFacts,
-    TransitionUsageSourceEndpointFacts,
-    TransitionUsageSuccessionEndpointFacts,
     SatisfyRequirementUsageEndpointFacts,
     /// The exact pinned OCL body is `TBD`, so OMG has not supplied an evaluable predicate.
     NormativeSpecificationTbd,

@@ -50,14 +50,14 @@ package Parameters {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d9ca3ac205dd0c088c18a9b081bd402e524a22025a36f230111c54bd0a693d76"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7e4b6ba8ffdd8ddaf160f91ed9be36c9281d511fabc6333181970ff2764c222d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing"))) (kind kerml-function) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::both"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction inout)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction inout)))))
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::input"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction in)))))
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::output"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing") (direction out)))))
-    (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::result"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Computing::result"))) (kind parameter) (membership (kind feature) (visibility default) (role return-parameter)) (authored (membership (kind feature) (visibility default) (role return-parameter)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_parameter_direction.md") (qualified-name "Parameters::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
   (references

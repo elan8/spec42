@@ -30,13 +30,25 @@ package ConditionalSpecializations {
   (relationship (kind subsetting) (source "ConditionalSpecializations::Snapshot") (target "Occurrences::Occurrence::snapshots") (provenance implied) (outcome resolved))
   (relationship (kind subsetting) (source "ConditionalSpecializations::Timeslice") (target "Occurrences::Occurrence::timeSlices") (provenance implied) (outcome resolved))
   (relationship (kind specialization) (source "ConditionalSpecializations::Explicit") (provenance implied) (outcome absent))
-  (relationship (kind specialization) (source "ConditionalSpecializations::Ordinary") (provenance implied) (outcome absent)))
+  (relationship (kind specialization) (source "ConditionalSpecializations::Ordinary") (target "Occurrences::Occurrence") (provenance implied) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
 (fixture-diagnostics
   (document "memory://snapshot/generated_conditional_library_specializations.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "portion_owner_not_occurrence")
+        (source "semantic")
+        (range (start 4 4) (end 4 33))
+      )
+      (diagnostic
+        (severity warning)
+        (code "portion_owner_not_occurrence")
+        (source "semantic")
+        (range (start 5 4) (end 5 35))
+      )
     )
   )
 )
@@ -44,7 +56,7 @@ package ConditionalSpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:16f9fee4a0d6534062dafbdcad03d587adc1314197f40b277b427257413a6b0d") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3d9e8c0e05cafe164ecd0ca18ee0f2f6fa0ea5d772efd46bde957f93ea240793") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_library_specializations.md") (qualified-name "ConditionalSpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_library_specializations.md") (qualified-name "ConditionalSpecializations::Explicit"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers individual) (individual-multiplicity (node (document "memory://snapshot/generated_conditional_library_specializations.md") (path (named (kind package) (name "ConditionalSpecializations")) (named (kind occurrence-def) (name "Explicit")) (anonymous (kind kerml-multiplicity) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Occurrences::Life")))))
@@ -66,8 +78,10 @@ package ConditionalSpecializations {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_library_specializations.md") (path (named (kind package) (name "ConditionalSpecializations")) (named (kind occurrence-def) (name "Explicit")) (anonymous (kind kerml-multiplicity) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::naturals"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_library_specializations.md") (path (named (kind package) (name "ConditionalSpecializations")) (named (kind occurrence-def) (name "Explicit")) (anonymous (kind kerml-multiplicity) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::zeroOrOne"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_library_specializations.md") (qualified-name "ConditionalSpecializations::Individual"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Life"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_library_specializations.md") (qualified-name "ConditionalSpecializations::Individual"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_library_specializations.md") (path (named (kind package) (name "ConditionalSpecializations")) (named (kind occurrence-def) (name "Individual")) (anonymous (kind kerml-multiplicity) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::naturals"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_library_specializations.md") (path (named (kind package) (name "ConditionalSpecializations")) (named (kind occurrence-def) (name "Individual")) (anonymous (kind kerml-multiplicity) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::zeroOrOne"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_library_specializations.md") (qualified-name "ConditionalSpecializations::Ordinary"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_library_specializations.md") (qualified-name "ConditionalSpecializations::Plain"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_library_specializations.md") (qualified-name "ConditionalSpecializations::Snapshot"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::snapshots"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_library_specializations.md") (qualified-name "ConditionalSpecializations::Snapshot"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))) (provenance implied))
@@ -128,6 +142,10 @@ package ConditionalSpecializations {
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Rational")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Real")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/generated_conditional_library_specializations.md") (qualified-name "ConditionalSpecializations::Ordinary")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
     )
     (declaration (id (node (document "memory://snapshot/generated_conditional_library_specializations.md") (qualified-name "ConditionalSpecializations::Plain")))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))

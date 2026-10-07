@@ -144,7 +144,7 @@ package Types {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:92bf859ed276e45c4017951a46cdb187a56914e606c9142aeeb6ef6f42b23613"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:9e1f4b2b4b524f1aec3142018b62b5c08d614d9fc52107ed2647bd4ed17a01a1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types"))) (kind package) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (explicitRelationshipEndpoint (reference "A")) (explicitRelationshipEndpoint (reference "B")) (explicitRelationshipEndpoint (reference "x")) (explicitRelationshipEndpoint (reference "Base::things")) (explicitRelationshipEndpoint (reference "Conjugate1")) (explicitRelationshipEndpoint (reference "Original")) (explicitRelationshipEndpoint (reference "Conjugate2")) (explicitRelationshipEndpoint (reference "Original")))))
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types::A"))) (kind kerml-type) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::Anything")))))
@@ -160,6 +160,9 @@ package Types {
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types::Original"))) (kind kerml-type) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::Anything")))))
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types::Original::Input"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction in)))
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types::Singleton"))) (kind kerml-type) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 1) (upper 1))) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::Anything")))))
+    (declaration (id (node (document "memory://snapshot/types.md") (path (named (kind package) (name "Types")) (named (kind kerml-type) (name "Singleton")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/types.md") (path (named (kind package) (name "Types")) (named (kind kerml-type) (name "Singleton")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/types.md") (path (named (kind package) (name "Types")) (named (kind kerml-type) (name "Singleton")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/types.md") (path (named (kind package) (name "Types")) (named (kind kerml-type) (name "Singleton")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types::Super"))) (kind kerml-type) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::Anything")))))
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types::Super::P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types::Super::P::Sub"))) (kind kerml-type) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Super")))))
@@ -282,6 +285,7 @@ package Types {
     (relationship (kind conjugation) (source (node (document "memory://snapshot/types.md") (qualified-name "Types::Conjugate1"))) (target (node (document "memory://snapshot/types.md") (qualified-name "Types::Original"))) (provenance authored))
     (relationship (kind conjugation) (source (node (document "memory://snapshot/types.md") (qualified-name "Types::Conjugate2"))) (target (node (document "memory://snapshot/types.md") (qualified-name "Types::Original"))) (provenance authored))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/types.md") (qualified-name "Types::Original::Input"))) (target (node (document "memory://snapshot/types.md") (qualified-name "Types::Original"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/types.md") (path (named (kind package) (name "Types")) (named (kind kerml-type) (name "Singleton")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/types.md") (path (named (kind package) (name "Types")) (named (kind kerml-type) (name "Singleton")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/types.md") (qualified-name "Types::Super::f"))) (target (node (document "memory://snapshot/types.md") (qualified-name "Types::Super"))) (provenance implied))
   )
   (evaluation
@@ -315,6 +319,9 @@ package Types {
     )
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types::Original::Input")))
       (featured-by (node (document "memory://snapshot/types.md") (qualified-name "Types::Original")))
+    )
+    (declaration (id (node (document "memory://snapshot/types.md") (path (named (kind package) (name "Types")) (named (kind kerml-type) (name "Singleton")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/types.md") (path (named (kind package) (name "Types")) (named (kind kerml-type) (name "Singleton")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
     )
     (declaration (id (node (document "memory://snapshot/types.md") (qualified-name "Types::Super")))
       (subtype (node (document "memory://snapshot/types.md") (qualified-name "Types::Super::P::Sub")) (scopes any subclassification))

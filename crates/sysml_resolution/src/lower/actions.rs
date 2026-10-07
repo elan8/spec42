@@ -1,15 +1,22 @@
 //! Phase 2 lowering — behaviour: action definitions and usages, control nodes, flows, performs.
 
+use crate::lower::facts::control_node_prefix_modifiers;
 use crate::lower::facts::definition_prefix_modifiers;
 use crate::lower::facts::definition_prefix_node_modifiers;
 use crate::lower::facts::direction_fact;
+use crate::lower::facts::direction_node_fact;
 use crate::lower::facts::multiplicity_facts;
+use crate::lower::facts::portion_kind_node_fact;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
+use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
+use crate::lower::facts::SuccessionEndMultiplicities;
 use crate::lower::facts::UnsupportedFamily;
+use crate::lower::kerml::kerml_bare_end_multiplicity;
 use crate::lower::SemanticModelBuilder;
+use crate::model::AuthoredReferenceId;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
@@ -23,9 +30,9 @@ use sysml_v2_parser::ast::{
     ActionBranchBody, ActionDef, ActionDefBody, ActionDefBodyElement,
     ActionUsage as ParserActionUsage, ActionUsageBody, ActionUsageBodyElement, ActionUsageKeyword,
     AssignStmt, ControlNodeDeclaration, DefinitionBody, DefinitionBodyElement, Expression,
-    FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDeclaration, FlowDef, FlowUsage, ForLoop,
-    GuardedSuccession, IfStmt, MembershipKind as ParserMembershipKind, Node,
-    Perform as ParserPerform, PerformActionTarget, PerformBody, PerformBodyElement,
+    FirstMergeBody, FirstMergeBodyElement, FirstStmt, FlowDeclaration, FlowDef, FlowUsage,
+    FlowUsageKind, ForLoop, GuardedSuccession, IfStmt, MembershipKind as ParserMembershipKind,
+    Node, Perform as ParserPerform, PerformActionTarget, PerformBody, PerformBodyElement,
     PerformInOutBinding, SendPayload, Span, SuccessionUsage, TerminateStmt, ThenAction, ThenTarget,
     TransitionAccept,
 };
@@ -214,12 +221,9 @@ impl SemanticModelBuilder {
                     node,
                 )?;
             }
-            ActionDefBodyElement::AssertConstraint(node) => self.lower_assert_constraint_member(
-                document,
-                owner,
-                UnsupportedFamily::ActionDefinitionMember,
-                node,
-            )?,
+            ActionDefBodyElement::AssertConstraint(node) => {
+                self.lower_assert_constraint_member(document, owner, node)?
+            }
             ActionDefBodyElement::RefDecl(node) => {
                 self.lower_ref_decl(document, Some(owner), node)?;
             }
@@ -230,6 +234,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Merge,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionDefBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
@@ -239,6 +244,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Decide,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionDefBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
@@ -248,6 +254,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Join,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionDefBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
@@ -257,6 +264,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Fork,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionDefBodyElement::ThenAction(node) => {
@@ -458,7 +466,7 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let family = UnsupportedFamily::ActionUsageMember;
         if let Some(accept) = &node.value.accept {
-            self.lower_accept_trigger(document, declaration, family, accept)?;
+            self.lower_accept_trigger(document, declaration, family, accept, node.span)?;
         }
         if let Some(send) = &node.value.send {
             match send {
@@ -619,12 +627,9 @@ impl SemanticModelBuilder {
             ActionUsageBodyElement::Bind(node) => {
                 self.lower_bind(document, owner, UnsupportedFamily::ActionUsageMember, node)?;
             }
-            ActionUsageBodyElement::AssertConstraint(node) => self.lower_assert_constraint_member(
-                document,
-                owner,
-                UnsupportedFamily::ActionUsageMember,
-                node,
-            )?,
+            ActionUsageBodyElement::AssertConstraint(node) => {
+                self.lower_assert_constraint_member(document, owner, node)?
+            }
             ActionUsageBodyElement::RefDecl(node) => {
                 self.lower_ref_decl(document, Some(owner), node)?;
             }
@@ -635,6 +640,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Merge,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionUsageBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
@@ -644,6 +650,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Decide,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionUsageBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
@@ -653,6 +660,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Join,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionUsageBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
@@ -662,6 +670,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Fork,
                 node.span,
                 &node.value.declaration,
+                &node.value.prefix,
                 &node.value.body,
             )?,
             ActionUsageBodyElement::ThenAction(node) => {
@@ -785,9 +794,13 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 // The succession feature's own multiplicity (`succession [n] first ... then ...`).
-                // The per-end `first_multiplicity`/`then_multiplicity` belong to the ends, which
-                // are lowered as references rather than declarations, so they are not facts here.
                 multiplicity: multiplicity_facts(node.value.succession_multiplicity.as_ref()),
+                // The per-end `first [m]`/`then [n]` multiplicities belong to the connector ends,
+                // which are lowered as references, so they are the succession's end facts.
+                succession_end_multiplicities: SuccessionEndMultiplicities::authored(
+                    multiplicity_facts(node.value.first_multiplicity.as_ref()),
+                    multiplicity_facts(node.value.then_multiplicity.as_ref()),
+                ),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -859,6 +872,13 @@ impl SemanticModelBuilder {
                 multiplicity: multiplicity_facts(
                     succession.and_then(|decl| decl.declaration.value.multiplicity.as_ref()),
                 ),
+                // The `first` source of a guarded succession is a bare member reference with no
+                // multiplicity slot; only the `then` target end can author one.
+                // A `references` end owns its multiplicity on its own end feature instead.
+                succession_end_multiplicities: SuccessionEndMultiplicities::authored(
+                    None,
+                    kerml_bare_end_multiplicity(&node.value.target),
+                ),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -914,7 +934,21 @@ impl SemanticModelBuilder {
         kind: ReferenceKind,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
-        match &node.value {
+        self.lower_succession_end_reference(document, owner, family, kind, node)?;
+        Ok(())
+    }
+
+    /// [`Self::lower_succession_end`], returning the one reference it pushed for the end, if the
+    /// end's shape is one it resolves.
+    pub(crate) fn lower_succession_end_reference(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        kind: ReferenceKind,
+        node: &Node<Expression>,
+    ) -> Result<Option<AuthoredReferenceId>, ConstructionError> {
+        Ok(match &node.value {
             Expression::FeatureRef(target) => {
                 let span = self.documents[document.index()]
                     .parsed
@@ -922,7 +956,7 @@ impl SemanticModelBuilder {
                     .ok_or(ConstructionError::InvalidParserReference)?
                     .metadata
                     .span;
-                self.push_reference(PendingReference {
+                Some(self.push_reference(PendingReference {
                     source: owner,
                     kind,
                     document,
@@ -930,19 +964,20 @@ impl SemanticModelBuilder {
                     flags: RelationshipFlags::default(),
                     span,
                     import: None,
-                })?;
+                })?)
             }
             Expression::MemberAccess { .. } | Expression::FeatureChainRef(_) => {
-                if self
-                    .push_member_access_expression(owner, document, node)?
-                    .is_none()
-                {
+                let reference = self.push_member_access_expression(owner, document, node)?;
+                if reference.is_none() {
                     self.push_unsupported(document, family, node.span);
                 }
+                reference
             }
-            _ => self.push_unsupported(document, family, node.span),
-        }
-        Ok(())
+            _ => {
+                self.push_unsupported(document, family, node.span);
+                None
+            }
+        })
     }
 
     /// Lowers a `decide`/`merge`/`fork`/`join` control node (BNF `DecisionStmt`/`MergeStmt`/
@@ -960,6 +995,7 @@ impl SemanticModelBuilder {
         decl_kind: DeclarationKind,
         span: Span,
         control_declaration: &ControlNodeDeclaration,
+        prefix: &sysml_v2_parser::ast::ControlNodePrefix,
         body: &FirstMergeBody,
     ) -> Result<(), ConstructionError> {
         // `ControlNodeDeclaration` is the node's own declaration, not a reference to another
@@ -984,7 +1020,12 @@ impl SemanticModelBuilder {
             decl_kind,
             name,
             span,
-            DeclarationFacts::none(),
+            DeclarationFacts {
+                modifiers: control_node_prefix_modifiers(prefix),
+                direction: direction_node_fact(prefix.ref_prefix.direction.as_ref()),
+                portion_kind: portion_kind_node_fact(prefix.portion.as_ref()),
+                ..DeclarationFacts::none()
+            },
         )?;
         self.push_membership(
             declaration,
@@ -992,6 +1033,7 @@ impl SemanticModelBuilder {
             Visibility::Default,
             span,
         )?;
+        self.lower_usage_extension_keywords(document, declaration, &prefix.extension_keywords)?;
         self.lower_first_merge_body(document, declaration, family, body)
     }
 
@@ -1064,6 +1106,7 @@ impl SemanticModelBuilder {
                         DeclarationKind::Merge,
                         node.span,
                         &node.value.declaration,
+                        &node.value.prefix,
                         &node.value.body,
                     )?,
                     ActionDefBodyElement::DecisionStmt(node) => self.lower_first_merge_stmt(
@@ -1073,6 +1116,7 @@ impl SemanticModelBuilder {
                         DeclarationKind::Decide,
                         node.span,
                         &node.value.declaration,
+                        &node.value.prefix,
                         &node.value.body,
                     )?,
                     ActionDefBodyElement::JoinStmt(node) => self.lower_first_merge_stmt(
@@ -1082,6 +1126,7 @@ impl SemanticModelBuilder {
                         DeclarationKind::Join,
                         node.span,
                         &node.value.declaration,
+                        &node.value.prefix,
                         &node.value.body,
                     )?,
                     ActionDefBodyElement::ForkStmt(node) => self.lower_first_merge_stmt(
@@ -1091,6 +1136,7 @@ impl SemanticModelBuilder {
                         DeclarationKind::Fork,
                         node.span,
                         &node.value.declaration,
+                        &node.value.prefix,
                         &node.value.body,
                     )?,
                     _ => self.push_unsupported(document, family, element.span),
@@ -1133,6 +1179,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Merge,
                 merge_stmt.span,
                 &merge_stmt.value.declaration,
+                &merge_stmt.value.prefix,
                 &merge_stmt.value.body,
             )?,
             ThenTarget::Fork(fork_stmt) => self.lower_first_merge_stmt(
@@ -1142,6 +1189,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Fork,
                 fork_stmt.span,
                 &fork_stmt.value.declaration,
+                &fork_stmt.value.prefix,
                 &fork_stmt.value.body,
             )?,
             ThenTarget::Join(join_stmt) => self.lower_first_merge_stmt(
@@ -1151,6 +1199,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Join,
                 join_stmt.span,
                 &join_stmt.value.declaration,
+                &join_stmt.value.prefix,
                 &join_stmt.value.body,
             )?,
             ThenTarget::Decide(decision_stmt) => self.lower_first_merge_stmt(
@@ -1160,6 +1209,7 @@ impl SemanticModelBuilder {
                 DeclarationKind::Decide,
                 decision_stmt.span,
                 &decision_stmt.value.declaration,
+                &decision_stmt.value.prefix,
                 &decision_stmt.value.body,
             )?,
             // `then if <condition> { ... }` -- an inline conditional action node, lowered
@@ -1230,13 +1280,68 @@ impl SemanticModelBuilder {
             Visibility::Default,
             span,
         )?;
-        self.lower_succession_end(
+        let referent = self.lower_succession_end_reference(
             document,
             declaration,
             family,
             ReferenceKind::AssignTarget,
             &node.lhs,
         )?;
+        // The target parameter and the two Features it owns (`TargetParameter`/`TargetFeature`/
+        // `TargetAccessedFeatureMember`), each spanning the authored target.
+        let target_parameter = self.push_typed_declaration(
+            document,
+            Some(declaration),
+            DeclarationKind::ParameterUsage,
+            None,
+            node.lhs.span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::In),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(
+            target_parameter,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.lhs.span,
+        )?;
+        let starting_at = self.push_typed_declaration(
+            document,
+            Some(target_parameter),
+            DeclarationKind::KermlFeature,
+            None,
+            node.lhs.span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            starting_at,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.lhs.span,
+        )?;
+        let accessed_feature = self.push_typed_declaration(
+            document,
+            Some(starting_at),
+            DeclarationKind::ReferenceUsage,
+            None,
+            node.lhs.span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            accessed_feature,
+            MembershipKind::Feature,
+            Visibility::Default,
+            node.lhs.span,
+        )?;
+        self.assignments
+            .push(crate::lower::facts::AssignmentRecord {
+                assignment: declaration,
+                target_parameter,
+                starting_at,
+                accessed_feature,
+                referent,
+            });
         self.push_evaluation_fact(
             declaration,
             self.constraint_expression_site(document, &node.rhs.value),
@@ -1480,7 +1585,88 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         accept: &Node<TransitionAccept>,
     ) -> Result<(), ConstructionError> {
-        self.lower_accept_trigger(document, owner, family, &accept.value)
+        self.lower_accept_trigger(document, owner, family, &accept.value, accept.span)
+    }
+
+    /// Lowers an `accept when|at|after <argument>` trigger as its own SysML
+    /// `TriggerInvocationExpression` element owned by `owner` (the accept action, or the site an
+    /// accept trigger is written at), spanning `span`, with its `TriggerKind`. The argument is
+    /// lowered through the general constraint-expression dispatch at that element, and its
+    /// syntax is recorded as far as it settles the argument's result type: a literal, or the
+    /// feature reference whose settled feature carries the type.
+    pub(crate) fn lower_trigger_invocation(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        family: UnsupportedFamily,
+        kind: sysml_v2_parser::ast::TriggerKind,
+        argument: &Node<Expression>,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        use crate::lower::facts::LiteralKind;
+        use crate::lower::facts::TriggerArgument;
+        use crate::lower::facts::TriggerInvocationKind;
+        let expression = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::KermlExpression,
+            None,
+            span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            expression,
+            MembershipKind::Owning,
+            Visibility::Default,
+            span,
+        )?;
+        let result = self.push_typed_declaration(
+            document,
+            Some(expression),
+            DeclarationKind::KermlFeature,
+            None,
+            span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::Out),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(result, MembershipKind::Feature, Visibility::Default, span)?;
+        self.declaration_facts[expression.index()].expression_result = Some(result);
+        let argument_fact = match &argument.value {
+            Expression::LiteralBoolean(_) => TriggerArgument::Literal(LiteralKind::Boolean),
+            Expression::LiteralInteger(_) => TriggerArgument::Literal(LiteralKind::Integer),
+            Expression::LiteralReal(_) => TriggerArgument::Literal(LiteralKind::Real),
+            Expression::LiteralString(_) => TriggerArgument::Literal(LiteralKind::String),
+            Expression::Null => TriggerArgument::Literal(LiteralKind::Null),
+            Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
+                self.note_expression_node(expression, argument);
+                TriggerArgument::FeatureReference(self.push_expression_operand_reference_id(
+                    document,
+                    expression,
+                    *target,
+                    crate::lower::facts::ExpressionOperandRole::FeatureReference,
+                )?)
+            }
+            _ => TriggerArgument::Other,
+        };
+        if let TriggerArgument::Literal(_) = argument_fact {
+            self.lower_leaf_expression(document, expression, argument)?;
+        }
+        if argument_fact == TriggerArgument::Other {
+            self.lower_constraint_expression(document, expression, family, argument)?;
+        }
+        self.trigger_invocations
+            .push(crate::lower::facts::TriggerInvocationRecord {
+                expression,
+                kind: match kind {
+                    sysml_v2_parser::ast::TriggerKind::When => TriggerInvocationKind::When,
+                    sysml_v2_parser::ast::TriggerKind::At => TriggerInvocationKind::At,
+                    sysml_v2_parser::ast::TriggerKind::After => TriggerInvocationKind::After,
+                },
+                argument: argument_fact,
+            });
+        Ok(())
     }
 
     /// The `TransitionAccept` dispatch shared by `then accept ...;` (see `lower_then_accept`) and
@@ -1492,10 +1678,23 @@ impl SemanticModelBuilder {
         owner: DeclarationId,
         family: UnsupportedFamily,
         accept: &TransitionAccept,
+        span: Span,
     ) -> Result<(), ConstructionError> {
         match accept {
             TransitionAccept::Shorthand(expr, via) => {
-                self.lower_constraint_expression(document, owner, family, expr)?;
+                // `accept T` names the payload's type (SysML `PayloadFeature`'s
+                // `OwnedFeatureTyping`), not a feature reference.
+                match &expr.value {
+                    Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
+                        self.push_expression_operand_reference(
+                            document,
+                            owner,
+                            *target,
+                            crate::lower::facts::ExpressionOperandRole::PayloadTyping,
+                        )?;
+                    }
+                    _ => self.lower_constraint_expression(document, owner, family, expr)?,
+                }
                 if let Some(via) = via {
                     self.lower_satisfy_operand(
                         document,
@@ -1506,8 +1705,8 @@ impl SemanticModelBuilder {
                     )?;
                 }
             }
-            TransitionAccept::TimeTrigger(_kind, expr) => {
-                self.lower_constraint_expression(document, owner, family, expr)?;
+            TransitionAccept::TimeTrigger(kind, expr) => {
+                self.lower_trigger_invocation(document, owner, family, *kind, expr, span)?;
             }
             TransitionAccept::Payload(clause, via) => {
                 self.lower_payload_clause_type(document, owner, clause)?;
@@ -1578,7 +1777,10 @@ impl SemanticModelBuilder {
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
-            DeclarationKind::Flow,
+            match node.value.kind {
+                FlowUsageKind::Flow | FlowUsageKind::Message => DeclarationKind::Flow,
+                FlowUsageKind::SuccessionFlow => DeclarationKind::SuccessionFlow,
+            },
             name,
             node.span,
             DeclarationFacts {
@@ -1594,6 +1796,9 @@ impl SemanticModelBuilder {
                 // KerML's `ownedEndFeatures` are the two typed `from`/`to` endpoints; a declared
                 // flow without them owns no end features of its own.
                 owned_end_feature_count: endpoints.map(|_| 2),
+                payload_feature_count: Some(
+                    u32::try_from(payloads.len()).map_err(|_| ConstructionError::Capacity)?,
+                ),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -1670,6 +1875,10 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                succession_end_multiplicities: SuccessionEndMultiplicities::authored(
+                    multiplicity_facts(node.value.source_multiplicity.as_ref()),
+                    multiplicity_facts(node.value.target_multiplicity.as_ref()),
+                ),
                 ..DeclarationFacts::none()
             },
         )?;

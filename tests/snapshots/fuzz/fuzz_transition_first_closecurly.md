@@ -36,10 +36,11 @@ state def S {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:7df16b8e3a470cadd6c4e2378e4ddc01ea22011846026fd5312dade18e131691"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:b3c37ba4c74a5d9ad6f3d506a31cb0d593e3e1191eb6bca120d7b4be179da142"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S"))) (kind state-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (path (named (kind package) (name "P")) (named (kind state-def) (name "S")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entry-action-binding) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (path (named (kind package) (name "P")) (named (kind state-def) (name "S")) (anonymous (kind initial-state) (ordinal 0))))) (kind initial-state) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (initialState (reference "off")))))
     (declaration (id (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S::off"))) (kind state) (membership (kind feature) (visibility default)))
   )
@@ -50,6 +51,7 @@ state def S {
   )
   (relationships
     (relationship (kind initialState) (source (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (path (named (kind package) (name "P")) (named (kind state-def) (name "S")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S::off"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (path (named (kind package) (name "P")) (named (kind state-def) (name "S")) (anonymous (kind initial-state) (ordinal 0))))) (kind initialState) (ordinal 0)))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (path (named (kind package) (name "P")) (named (kind state-def) (name "S")) (anonymous (kind entry-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (path (named (kind package) (name "P")) (named (kind state-def) (name "S")) (anonymous (kind initial-state) (ordinal 0))))) (target (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S::off"))) (target (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S"))) (provenance implied))
   )
@@ -60,6 +62,9 @@ state def S {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (path (named (kind package) (name "P")) (named (kind state-def) (name "S")) (anonymous (kind entry-action-binding) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S")))
+    )
     (declaration (id (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (path (named (kind package) (name "P")) (named (kind state-def) (name "S")) (anonymous (kind initial-state) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/fuzz_transition_first_closecurly.md") (qualified-name "P::S")))
     )

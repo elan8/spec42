@@ -104,6 +104,9 @@ pub(crate) struct LibraryAnchors {
     pub(crate) string: Anchor,
     pub(crate) integer: Anchor,
     pub(crate) real: Anchor,
+    /// `Base::Anything::self`, the self-reference feature a model-level evaluable feature
+    /// reference may name (KerML 8.3.4.8.5).
+    pub(crate) anything_self: Anchor,
 }
 
 impl LibraryAnchors {
@@ -116,6 +119,7 @@ impl LibraryAnchors {
             string: find_anchor(storage, STRING_PATH),
             integer: find_anchor(storage, INTEGER_PATH),
             real: find_anchor(storage, REAL_PATH),
+            anything_self: find_anchor(storage, &["Base", "Anything", "self"]),
         }
     }
 
@@ -247,6 +251,113 @@ pub(crate) struct SettledFilter {
     pub(crate) span: Span,
     pub(crate) state: EvaluationState,
     pub(crate) predicate: crate::lower::facts::FilterPredicate,
+    /// What the condition's model-level evaluability depends on; decided by
+    /// [`model_level_evaluability`].
+    pub(crate) evaluability: EvaluabilityInputs,
+}
+
+/// The inputs KerML model-level evaluability (8.3.4.8, `Expression::modelLevelEvaluable`) of one
+/// expression depends on, read from its classified tree at the evaluation barrier.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum EvaluabilityInputs {
+    /// Every node is a literal, a feature reference, or an operator whose Kernel Function Library
+    /// function is model-level evaluable (the comparison, arithmetic, logical and unary operators
+    /// the classifier admits; the Pilot's `ModelLevelLibraryFunctionFactory`). Carries each
+    /// feature reference's settled referent in operand order, `None` when it did not settle.
+    Composed {
+        referents: Box<[Option<DeclarationId>]>,
+    },
+    /// The tree has a node whose evaluability needs facts not derived here: an invocation (whose
+    /// function's `isModelLevelEvaluable` is not published), or a shape outside the classified
+    /// slice.
+    Undecided,
+}
+
+/// Whether an expression is model-level evaluable.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum ModelLevelEvaluability {
+    Evaluable,
+    NotEvaluable,
+    /// A prerequisite is not settled or not derived; never reported as either answer.
+    Undecided,
+}
+
+/// KerML `Expression::modelLevelEvaluable` over settled [`EvaluabilityInputs`]: an operator tree
+/// is evaluable when every feature reference in it is, and not evaluable when any is not.
+pub(crate) fn model_level_evaluability(
+    storage: &SemanticModelStorage,
+    types: &TypeIndex,
+    anchors: &LibraryAnchors,
+    inputs: &EvaluabilityInputs,
+) -> ModelLevelEvaluability {
+    let EvaluabilityInputs::Composed { referents } = inputs else {
+        return ModelLevelEvaluability::Undecided;
+    };
+    let mut result = ModelLevelEvaluability::Evaluable;
+    for referent in referents.iter() {
+        match referent.map_or(ModelLevelEvaluability::Undecided, |referent| {
+            feature_reference_evaluability(storage, types, anchors, referent)
+        }) {
+            ModelLevelEvaluability::NotEvaluable => return ModelLevelEvaluability::NotEvaluable,
+            ModelLevelEvaluability::Undecided => result = ModelLevelEvaluability::Undecided,
+            ModelLevelEvaluability::Evaluable => {}
+        }
+    }
+    result
+}
+
+/// KerML 8.3.4.8.5 `FeatureReferenceExpression::modelLevelEvaluable`, as the Pilot's delegate
+/// decides it: a referent that is the self-reference feature, owned by a metaclass or metadata
+/// feature, or featured by nothing and valued by nothing is evaluable; one with a featuring type
+/// is not. A referent with a FeatureValue, or an Expression referent that would otherwise not be
+/// evaluable, depends on that expression's own evaluability, which is not derived here.
+pub(crate) fn feature_reference_evaluability(
+    storage: &SemanticModelStorage,
+    types: &TypeIndex,
+    anchors: &LibraryAnchors,
+    referent: DeclarationId,
+) -> ModelLevelEvaluability {
+    use crate::index::types::ScopeBits;
+    use sysml_contract::ElementKind;
+    let Some(declaration) = storage.declaration(referent) else {
+        return ModelLevelEvaluability::Undecided;
+    };
+    if anchors.anything_self.is_some_and(|anchor| {
+        referent == anchor
+            || types
+                .specialization()
+                .reaches(referent, anchor, ScopeBits::AnySpecialization)
+    }) {
+        return ModelLevelEvaluability::Evaluable;
+    }
+    let owner_kind = declaration
+        .owner
+        .and_then(|owner| storage.declaration(owner))
+        .map(|owner| crate::model::element_kind::element_kind(owner.kind));
+    let decided = if owner_kind.is_some_and(|kind| {
+        kind.conforms_to(ElementKind::Metaclass) || kind.conforms_to(ElementKind::MetadataFeature)
+    }) {
+        ModelLevelEvaluability::Evaluable
+    } else if types.featuring_requires_snapshots(referent) {
+        ModelLevelEvaluability::Undecided
+    } else if !types.featuring_types(referent).is_empty() {
+        ModelLevelEvaluability::NotEvaluable
+    } else if storage
+        .feature_values
+        .iter()
+        .any(|value| value.declaration == referent)
+    {
+        ModelLevelEvaluability::Undecided
+    } else {
+        ModelLevelEvaluability::Evaluable
+    };
+    if decided == ModelLevelEvaluability::NotEvaluable
+        && crate::model::element_kind::element_kind(declaration.kind)
+            .conforms_to(ElementKind::Expression)
+    {
+        return ModelLevelEvaluability::Undecided;
+    }
+    decided
 }
 
 /// One authored invocation whose callee settled, with both argument counts.

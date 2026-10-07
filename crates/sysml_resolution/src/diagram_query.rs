@@ -1304,10 +1304,13 @@ fn compartment_kind(kind: ElementKind) -> Option<DiagramCompartmentKind> {
         | ElementKind::IfActionUsage
         | ElementKind::WhileLoopActionUsage
         | ElementKind::ForLoopActionUsage => Compartment::Actions,
-        ElementKind::StateUsage | ElementKind::FinalState => Compartment::States,
+        ElementKind::StateUsage | ElementKind::ExhibitStateUsage | ElementKind::FinalState => {
+            Compartment::States
+        }
         ElementKind::CalculationUsage => Compartment::Calculations,
         ElementKind::ConnectionUsage
         | ElementKind::FlowConnectionUsage
+        | ElementKind::SuccessionFlowUsage
         | ElementKind::BindingConnectorAsUsage
         | ElementKind::Connector
         | ElementKind::BindingConnector => Compartment::Connections,
@@ -1354,7 +1357,9 @@ fn diagram_scene(
                         DiagramStateVertexKind::Initial
                     } else {
                         match element.kind {
-                            ElementKind::StateUsage => DiagramStateVertexKind::State,
+                            ElementKind::StateUsage | ElementKind::ExhibitStateUsage => {
+                                DiagramStateVertexKind::State
+                            }
                             ElementKind::FinalState => DiagramStateVertexKind::Final,
                             _ => return None,
                         }
@@ -1441,7 +1446,7 @@ fn sequence_scene(
     let messages = elements
         .iter()
         .enumerate()
-        .filter(|(_, element)| element.kind == ElementKind::FlowConnectionUsage)
+        .filter(|(_, element)| element.kind.conforms_to(ElementKind::FlowConnectionUsage))
         .filter(|(_, element)| is_direct_member(element))
         .map(|(index, element)| (index as u32, element))
         .collect::<Vec<_>>();
@@ -1791,6 +1796,7 @@ fn relationship_kind_from_name(name: &str) -> Option<DiagramRelationshipKind> {
         "flowTarget" => Some(DiagramRelationshipKind::FlowTarget),
         "typeCheckTarget" => Some(DiagramRelationshipKind::TypeCheckTarget),
         "metaCastTarget" => Some(DiagramRelationshipKind::MetaCastTarget),
+        "metadataAccessTarget" => Some(DiagramRelationshipKind::MetadataAccessTarget),
         "stakeholderTarget" => Some(DiagramRelationshipKind::StakeholderTarget),
         "purposeTarget" => Some(DiagramRelationshipKind::PurposeTarget),
         "verifyRequirementTarget" => Some(DiagramRelationshipKind::VerifyRequirementTarget),
@@ -1841,6 +1847,7 @@ fn is_connector_edge_element(kind: ElementKind) -> bool {
             | ElementKind::InterfaceUsage
             | ElementKind::AllocationUsage
             | ElementKind::FlowConnectionUsage
+            | ElementKind::SuccessionFlowUsage
             | ElementKind::BindingConnectorAsUsage
     )
 }

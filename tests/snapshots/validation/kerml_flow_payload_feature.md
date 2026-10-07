@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.9.2:validateFlowPayloadFeature
-blocked_by=lowering-gap-flow-payload-count
 type=file
 ~~~
 # SOURCE
@@ -47,6 +46,12 @@ package Flows {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_flow_payload_feature.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "flow_multiple_payload_features")
+        (source "semantic")
+        (range (start 10 8) (end 10 53))
+      )
     )
   )
 )
@@ -54,12 +59,20 @@ package Flows {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:73c254581b289ebf821351c109c56924c016a399439cffdce63de00bb3a17cf4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:299424a6526f0728a54ebc8cde5807ff4b4b01607dc49dde42a8aec9054104a8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0))))) (kind flow) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (flowSource (reference "source")) (flowTarget (reference "target")) (flowPayloadType (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1))))) (kind flow) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (flowSource (reference "source")) (flowTarget (reference "target")) (flowPayloadType (reference "Thing")) (flowPayloadType (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0))))) (kind flow-end) (membership (kind feature) (visibility default)) (facts (positional-end 0)))
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 1))))) (kind flow-end) (membership (kind feature) (visibility default)) (facts (positional-end 1)))
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 0))))) (kind flow-end) (membership (kind feature) (visibility default)) (facts (positional-end 0)))
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 1))))) (kind flow-end) (membership (kind feature) (visibility default)) (facts (positional-end 1)))
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::source"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::target"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -105,6 +118,14 @@ package Flows {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::target"))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::target"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1))))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 1))))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 1))))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 1))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 1))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::source"))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::target"))) (target (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving"))) (provenance implied))
   )
@@ -116,10 +137,36 @@ package Flows {
 ~~~sexpr
 (types
     (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)))))
+      (positional-ends (authored 2) (effective 2))
       (featured-by (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving")))
     )
     (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)))))
+      (positional-ends (authored 2) (effective 2))
       (featured-by (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving")))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)))))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)))))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 0)) (anonymous (kind flow-end) (ordinal 1)))))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_flow_payload_feature.md") (path (named (kind package) (name "Flows")) (named (kind kerml-behavior) (name "Moving")) (anonymous (kind flow) (ordinal 1)) (anonymous (kind flow-end) (ordinal 1)))))
     )
     (declaration (id (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving::source")))
       (featured-by (node (document "memory://snapshot/kerml_flow_payload_feature.md") (qualified-name "Flows::Moving")))

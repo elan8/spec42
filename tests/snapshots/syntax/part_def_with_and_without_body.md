@@ -28,7 +28,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8d528f74439f4d6984457d7128ccd5e7b5d45c763c697802f724a0ea37918a8a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e1a8a4cdecebfa76dc615243c72b128aef6f8ec37a818e9d523aba8ad3842009"))
   (declarations
     (declaration (id (node (document "memory://snapshot/part_def_with_and_without_body.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/part_def_with_and_without_body.md") (qualified-name "P::Bare"))) (kind part-def) (membership (kind owning) (visibility default)))

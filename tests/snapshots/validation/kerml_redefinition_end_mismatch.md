@@ -14,17 +14,17 @@ type=file
 ~~~kerml
 package Ends {
     classifier Thing;
-    assoc Base {
+    abstract assoc Base {
         end feature endpoint : Thing;
     }
 
     // Conforming: the redefining feature remains an end feature.
-    assoc Conforming specializes Base {
+    abstract assoc Conforming specializes Base {
         end feature endpoint : Thing;
     }
 
     // Invalid: the implied redefinition drops the end modifier.
-    assoc Invalid specializes Base {
+    abstract assoc Invalid specializes Base {
         feature endpoint : Thing;
     }
 
@@ -70,18 +70,18 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:00b1940e45625770e771463fe0bc7f087a08bce4d85287d84ed565bc6ae57228"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3efdbb508c3ca5b3353f5afac1dfe4e3a245c1d8d9ad4b7d9255f22d5bdce1f1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Base"))) (kind kerml-association) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Base"))) (kind kerml-association) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Base::endpoint"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::BehaviorBase"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::BehaviorBase::endpoint"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::BehaviorChild"))) (kind kerml-behavior) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "BehaviorBase")))))
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::BehaviorChild::endpoint"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Conforming"))) (kind kerml-association) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base")))))
+    (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Conforming"))) (kind kerml-association) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base")))))
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Conforming::endpoint"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (modifiers end)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
-    (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Invalid"))) (kind kerml-association) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base")))))
+    (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Invalid"))) (kind kerml-association) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base")))))
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Invalid::endpoint"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
@@ -223,7 +223,7 @@ package Ends {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (range (start 7 33) (end 7 37)) (probe (position 7 33))
+  (query (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (range (start 7 42) (end 7 46)) (probe (position 7 42))
     (reference (id (source (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Conforming"))) (kind specialization) (ordinal 0) (authored-target "Base")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Base")))))
     )
@@ -233,7 +233,7 @@ package Ends {
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (range (start 12 30) (end 12 34)) (probe (position 12 30))
+  (query (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (range (start 12 39) (end 12 43)) (probe (position 12 39))
     (reference (id (source (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Invalid"))) (kind specialization) (ordinal 0) (authored-target "Base")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_redefinition_end_mismatch.md") (qualified-name "Ends::Base")))))
     )

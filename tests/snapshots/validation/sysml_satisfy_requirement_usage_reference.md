@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.21.10:validateSatisfyRequirementUsageReference
-blocked_by=lowering-part-definition-members
 type=file
 ~~~
 # SOURCE
@@ -37,7 +36,13 @@ package Requirements {
         (severity warning)
         (code "satisfy_invalid_endpoint_kind")
         (source "semantic")
-        (range (start 11 8) (end 11 31))
+        (range (start 11 16) (end 11 30))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_satisfy_requirement_usage_reference.md")
+            (range (start 4 8) (end 4 31))
+          )
+        )
       )
     )
   )
@@ -67,7 +72,7 @@ package Requirements {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d31b68e8c76c8f6e57f30f215929a28e1d66bc57282bf41a3ad43a527a2320f8"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6692685ba087ca1a49ae4f98156f0f5097ad20b37d93af28d5a539d191e3a32c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_satisfy_requirement_usage_reference.md") (qualified-name "Requirements::Component"))) (kind part-def) (membership (kind owning) (visibility default)))

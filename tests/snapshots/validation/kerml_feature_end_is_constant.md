@@ -29,6 +29,12 @@ package Ends {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_end_is_constant.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 2 4) (end 8 5))
+      )
     )
   )
 )
@@ -36,7 +42,7 @@ package Ends {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:56dd6d8fc154c8f4521689e42d6c9e1f4dedda57e7c00d6ffc1dd4cc64be2ffa"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e476468c375704b692c73ec23b363143368e70baef5f3f850f471340220256e4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_is_constant.md") (qualified-name "Ends"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_end_is_constant.md") (qualified-name "Ends::Constants"))) (kind kerml-association) (membership (kind owning) (visibility default)))

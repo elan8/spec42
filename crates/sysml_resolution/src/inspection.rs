@@ -111,6 +111,11 @@ pub struct ElementInspection {
     pub multiplicity: MultiplicityFacts,
     /// The authored modifiers, in a stable order.
     pub modifiers: Box<[ElementModifier]>,
+    /// Modifiers the semantics imply although they were not authored, in a stable order and
+    /// disjoint from `modifiers` (a variation implies `abstract`; an enumeration definition implies
+    /// `variation`). Effective modifiers are the
+    /// union of the two.
+    pub implied_modifiers: Box<[ElementModifier]>,
     pub portion_kind: Option<PortionKind>,
     pub direction: Option<FeatureDirection>,
     pub value: Option<AuthoredValue>,

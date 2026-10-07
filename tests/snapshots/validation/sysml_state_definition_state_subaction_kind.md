@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.18.5:validateStateDefinitionStateSubactionKind
-blocked_by=lowering-state-subaction-memberships
 type=file
 ~~~
 # SOURCE
@@ -16,15 +15,15 @@ type=file
 package States {
     // Conforming: one subaction membership of each kind.
     state def Good {
-        entry action started;
-        do action running;
-        exit action finished;
+        entry action started { }
+        do action running { }
+        exit action finished { }
     }
 
     // Invalid: two entry subaction memberships.
     state def Bad {
-        entry action started;
-        entry action restarted;
+        entry action started { }
+        entry action restarted { }
     }
 }
 ~~~
@@ -37,7 +36,7 @@ package States {
         (severity warning)
         (code "state_duplicate_subaction_kind")
         (source "semantic")
-        (range (start 11 8) (end 11 31))
+        (range (start 11 8) (end 11 34))
       )
     )
   )
@@ -50,33 +49,9 @@ package States {
     (diagnostics
       (diagnostic
         (severity warning)
-        (code "unresolved_reference")
+        (code "state_duplicate_subaction_kind")
         (source "semantic")
-        (range (start 3 21) (end 3 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 4 18) (end 4 25))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 5 20) (end 5 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 10 21) (end 10 28))
-      )
-      (diagnostic
-        (severity warning)
-        (code "unresolved_reference")
-        (source "semantic")
-        (range (start 11 21) (end 11 30))
+        (range (start 11 8) (end 11 34))
       )
     )
   )
@@ -85,40 +60,25 @@ package States {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:75dcb5656fa8df9d3169287fa7ec8102a900fafdde78c5fabfd495a95145229b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:c35c6fb2db385bcecd8d1edd3ee2ba90b53bba10617aa8ff2183204259f59ede"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad"))) (kind state-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Bad")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entry-action-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (entryActionBinding (reference "started")))))
-    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Bad")) (anonymous (kind entry-action-binding) (ordinal 1))))) (kind entry-action-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (entryActionBinding (reference "restarted")))))
+    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad::restarted"))) (kind entry-action-binding) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad::started"))) (kind entry-action-binding) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good"))) (kind state-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entry-action-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (entryActionBinding (reference "started")))))
-    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind do-action-binding) (ordinal 0))))) (kind do-action-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (doActionBinding (reference "running")))))
-    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind exit-action-binding) (ordinal 0))))) (kind exit-action-binding) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (exitActionBinding (reference "finished")))))
+    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good::finished"))) (kind exit-action-binding) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good::running"))) (kind do-action-binding) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good::started"))) (kind entry-action-binding) (membership (kind feature) (visibility default)))
   )
   (references
-    (reference (id (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Bad")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entryActionBinding) (ordinal 0))
-      (authored-target "started")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Bad")) (anonymous (kind entry-action-binding) (ordinal 1))))) (kind entryActionBinding) (ordinal 0))
-      (authored-target "restarted")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entryActionBinding) (ordinal 0))
-      (authored-target "started")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind do-action-binding) (ordinal 0))))) (kind doActionBinding) (ordinal 0))
-      (authored-target "running")
-      (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind exit-action-binding) (ordinal 0))))) (kind exitActionBinding) (ordinal 0))
-      (authored-target "finished")
-      (outcome (status unresolved)))
   )
   (relationships
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Bad")) (anonymous (kind entry-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Bad")) (anonymous (kind entry-action-binding) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind entry-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind do-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind exit-action-binding) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad::restarted"))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad::started"))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good::finished"))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good::running"))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good::started"))) (target (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good"))) (provenance implied))
   )
   (evaluation
   )
@@ -127,19 +87,19 @@ package States {
 # TYPES
 ~~~sexpr
 (types
-    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Bad")) (anonymous (kind entry-action-binding) (ordinal 0)))))
+    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad::restarted")))
       (featured-by (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad")))
     )
-    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Bad")) (anonymous (kind entry-action-binding) (ordinal 1)))))
+    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad::started")))
       (featured-by (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Bad")))
     )
-    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind entry-action-binding) (ordinal 0)))))
+    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good::finished")))
       (featured-by (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good")))
     )
-    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind do-action-binding) (ordinal 0)))))
+    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good::running")))
       (featured-by (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good")))
     )
-    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind exit-action-binding) (ordinal 0)))))
+    (declaration (id (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good::started")))
       (featured-by (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (qualified-name "States::Good")))
     )
 )
@@ -147,30 +107,5 @@ package States {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (range (start 10 21) (end 10 28)) (probe (position 10 21))
-    (reference (id (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Bad")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entryActionBinding) (ordinal 0) (authored-target "started")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (range (start 11 21) (end 11 30)) (probe (position 11 21))
-    (reference (id (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Bad")) (anonymous (kind entry-action-binding) (ordinal 1))))) (kind entryActionBinding) (ordinal 0) (authored-target "restarted")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (range (start 3 21) (end 3 28)) (probe (position 3 21))
-    (reference (id (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind entry-action-binding) (ordinal 0))))) (kind entryActionBinding) (ordinal 0) (authored-target "started")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (range (start 4 18) (end 4 25)) (probe (position 4 18))
-    (reference (id (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind do-action-binding) (ordinal 0))))) (kind doActionBinding) (ordinal 0) (authored-target "running")
-      (outcome (status unresolved)))
-    )
-  )
-  (query (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (range (start 5 20) (end 5 28)) (probe (position 5 20))
-    (reference (id (source (node (document "memory://snapshot/sysml_state_definition_state_subaction_kind.md") (path (named (kind package) (name "States")) (named (kind state-def) (name "Good")) (anonymous (kind exit-action-binding) (ordinal 0))))) (kind exitActionBinding) (ordinal 0) (authored-target "finished")
-      (outcome (status unresolved)))
-    )
-  )
 )
 ~~~

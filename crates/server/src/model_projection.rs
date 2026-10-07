@@ -210,6 +210,7 @@ fn bound_json(bound: MultiplicityBound) -> Value {
     match bound {
         MultiplicityBound::Unbounded => json!("unbounded"),
         MultiplicityBound::Literal(value) => json!(value),
+        MultiplicityBound::NonIntegerLiteral => json!("non-integer-literal"),
         MultiplicityBound::Expression => json!("expression"),
     }
 }

@@ -1,5 +1,8 @@
 //! Phase 3: the name and scope indexes the solver looks names up in.
 
+use std::collections::HashMap;
+use std::collections::HashSet;
+
 use crate::index::documents::record_visited_index_entries;
 use crate::lower::facts::Declaration;
 use crate::lower::facts::DeclarationFacts;
@@ -74,7 +77,7 @@ impl EffectiveScopeIndex {
         declarations: usize,
         direct: &NameIndex,
         imported: &NameIndex,
-        inherited: &NameIndex,
+        inherited: &InheritedNameIndex,
     ) -> Result<Self, ResolutionError> {
         let mut ranges = Vec::with_capacity(declarations.saturating_add(1));
         let mut members = Vec::new();
@@ -85,10 +88,13 @@ impl EffectiveScopeIndex {
                 Some(DeclarationId::from_index(slot - 1).map_err(|_| ResolutionError::Capacity)?)
             };
             let mut scope_members = Vec::new();
-            for index in [direct, imported, inherited] {
+            for index in [direct, imported] {
                 for (_, candidates) in index.entries_for_owner(owner) {
                     scope_members.extend_from_slice(candidates);
                 }
+            }
+            for (_, candidates) in inherited.entries_for_owner(owner) {
+                scope_members.extend_from_slice(candidates);
             }
             scope_members.sort_unstable();
             scope_members.dedup();
@@ -278,6 +284,51 @@ pub(crate) fn name_entry_sort_key((key, candidate): &(NameKey, DeclarationId)) -
     (owner << 64) | (u128::from(key.name.0) << 32) | u128::from(candidate.0)
 }
 
+/// Ancestor-scoped inherited-member lookup, keyed by `(child declaration, name)`.
+///
+/// Every child with a non-empty ancestor closure maps to the representative child that shares its
+/// closure; the entries are stored once per distinct closure. Lookups are observably identical to
+/// a per-child materialization.
+#[derive(Debug)]
+pub(crate) struct InheritedNameIndex {
+    representative: Box<[Option<DeclarationId>]>,
+    names: NameIndex,
+}
+
+impl InheritedNameIndex {
+    pub(crate) fn empty() -> Result<Self, ResolutionError> {
+        Ok(Self {
+            representative: Box::default(),
+            names: NameIndex::build(Vec::new())?,
+        })
+    }
+
+    fn representative(&self, owner: Option<DeclarationId>) -> Option<DeclarationId> {
+        owner.and_then(|owner| self.representative.get(owner.index()).copied().flatten())
+    }
+
+    pub(crate) fn candidates(
+        &self,
+        owner: Option<DeclarationId>,
+        name: NameId,
+    ) -> &[DeclarationId] {
+        match self.representative(owner) {
+            Some(representative) => self.names.candidates(Some(representative), name),
+            None => &[],
+        }
+    }
+
+    pub(crate) fn entries_for_owner(
+        &self,
+        owner: Option<DeclarationId>,
+    ) -> impl Iterator<Item = (NameId, &[DeclarationId])> {
+        let representative = self.representative(owner);
+        representative
+            .into_iter()
+            .flat_map(move |representative| self.names.entries_for_owner(Some(representative)))
+    }
+}
+
 /// Builds the ancestor-scoped inherited-member lookup index: for each non-cyclic declaration with
 /// a non-empty ancestor closure, every name directly owned by any ancestor becomes a candidate for
 /// that declaration. `NameIndex::build` sorts and dedups `(owner, name, candidate)` triples, so a
@@ -289,7 +340,7 @@ pub(crate) fn build_inherited_name_index(
     declarations: &[Declaration],
     direct_names: &NameIndex,
     ancestor_closures: &[Box<[DeclarationId]>],
-) -> Result<NameIndex, ResolutionError> {
+) -> Result<InheritedNameIndex, ResolutionError> {
     build_inherited_name_index_for_scopes(declarations, direct_names, ancestor_closures, None)
 }
 
@@ -298,7 +349,15 @@ pub(crate) fn build_inherited_name_index_for_scopes(
     direct_names: &NameIndex,
     ancestor_closures: &[Box<[DeclarationId]>],
     scope_filter: Option<&std::collections::BTreeSet<DeclarationId>>,
-) -> Result<NameIndex, ResolutionError> {
+) -> Result<InheritedNameIndex, ResolutionError> {
+    // The visible inherited members of a child are a function of its ancestor closure alone: the
+    // candidates come from `direct_names` of the closure's members, and shadowing compares only
+    // the candidates' owners against *their* ancestor closures. Children with identical closures
+    // (for example the many anonymous MultiplicityRanges and bound Expressions that all
+    // specialize the same library types) therefore share one entry set, materialized once under
+    // the lowest-indexed such child as its representative.
+    let mut representative = vec![None; ancestor_closures.len()];
+    let mut representatives: HashMap<&[DeclarationId], DeclarationId> = HashMap::new();
     let mut entries = Vec::new();
     for (index, ancestors) in ancestor_closures.iter().enumerate() {
         if ancestors.is_empty() {
@@ -307,6 +366,16 @@ pub(crate) fn build_inherited_name_index_for_scopes(
         let child = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
         if scope_filter.is_some_and(|filter| !filter.contains(&child)) {
             continue;
+        }
+        match representatives.entry(&ancestors[..]) {
+            std::collections::hash_map::Entry::Occupied(shared) => {
+                representative[index] = Some(*shared.get());
+                continue;
+            }
+            std::collections::hash_map::Entry::Vacant(slot) => {
+                slot.insert(child);
+                representative[index] = Some(child);
+            }
         }
         for &ancestor in ancestors.iter() {
             for (name, candidates) in direct_names.entries_for_owner(Some(ancestor)) {
@@ -360,7 +429,10 @@ pub(crate) fn build_inherited_name_index_for_scopes(
         }
         cursor = end;
     }
-    NameIndex::build(visible)
+    Ok(InheritedNameIndex {
+        representative: representative.into_boxed_slice(),
+        names: NameIndex::build(visible)?,
+    })
 }
 
 pub(crate) fn build_direct_name_index(
@@ -469,19 +541,27 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             ReferenceKind::NamespaceImport => {
                 // `::*` re-exports the target's own members; `::*::**` additionally re-exports the
                 // members of every namespace nested under it.
-                let owners = if reference.flags().recursive {
-                    recursive_import_owners(recursive_children.as_deref().unwrap_or(&[]), target)
+                if reference.flags().recursive {
+                    extend_from_recursive_namespaces(
+                        &mut entries,
+                        &mut exported_entries,
+                        exported_names,
+                        previous_exported_imports,
+                        import_owner,
+                        &recursive_import_owners(
+                            recursive_children.as_deref().unwrap_or(&[]),
+                            target,
+                        ),
+                        import_is_public,
+                    );
                 } else {
-                    vec![target]
-                };
-                for owner in owners {
                     extend_from_namespace(
                         &mut entries,
                         &mut exported_entries,
                         exported_names,
                         previous_exported_imports,
                         import_owner,
-                        owner,
+                        target,
                         import_is_public,
                     );
                 }
@@ -505,20 +585,18 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
                 // `::**` also re-exports the members of the target namespace and of every namespace
                 // nested under it. The named membership itself is added above.
                 if reference.flags().recursive {
-                    for owner in recursive_import_owners(
-                        recursive_children.as_deref().unwrap_or(&[]),
-                        target,
-                    ) {
-                        extend_from_namespace(
-                            &mut entries,
-                            &mut exported_entries,
-                            exported_names,
-                            previous_exported_imports,
-                            import_owner,
-                            owner,
-                            import_is_public,
-                        );
-                    }
+                    extend_from_recursive_namespaces(
+                        &mut entries,
+                        &mut exported_entries,
+                        exported_names,
+                        previous_exported_imports,
+                        import_owner,
+                        &recursive_import_owners(
+                            recursive_children.as_deref().unwrap_or(&[]),
+                            target,
+                        ),
+                        import_is_public,
+                    );
                 }
             }
             ReferenceKind::FilterImport
@@ -571,6 +649,7 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::FlowTarget
             | ReferenceKind::TypeCheckTarget
             | ReferenceKind::MetaCastTarget
+            | ReferenceKind::MetadataAccessTarget
             | ReferenceKind::StakeholderTarget
             | ReferenceKind::PurposeTarget
             | ReferenceKind::VerifyRequirementTarget
@@ -579,6 +658,7 @@ pub(crate) fn build_effective_import_indexes<R: ResolutionReferenceFact>(
             | ReferenceKind::DependencySupplier
             | ReferenceKind::PerformParameterTarget
             | ReferenceKind::MetadataAnnotationAbout
+            | ReferenceKind::Annotation
             | ReferenceKind::FlowPayloadType => {}
         }
     }
@@ -621,8 +701,51 @@ fn extend_from_namespace(
     }
 }
 
-/// `owner index -> its child declarations that are publicly-visible namespaces`. Only a public
-/// nested namespace is importable, so a recursive import never descends through a private one.
+/// Re-exports the namespaces a recursive import reaches, in recursion order, giving each name
+/// only the candidates of the *first* reached namespace that has it.
+///
+/// KerML 8.3.2.4 (and the Pilot's `KerMLScope.resolveIfUnvisited`/`resolveRecursive`): a
+/// recursive NamespaceImport resolves a name in the imported namespace first and only otherwise
+/// descends, depth first and in ownership order, into its public owned Namespaces, stopping at
+/// the first one that has a visible membership of that name. A deeper same-named member is
+/// therefore hidden by a shallower or earlier one rather than ambiguous with it.
+#[allow(clippy::too_many_arguments)]
+fn extend_from_recursive_namespaces(
+    entries: &mut Vec<(NameKey, DeclarationId)>,
+    exported_entries: &mut Vec<(NameKey, DeclarationId)>,
+    exported_names: &NameIndex,
+    previous_exported_imports: &NameIndex,
+    import_owner: Option<DeclarationId>,
+    namespaces: &[DeclarationId],
+    import_is_public: bool,
+) {
+    let mut taken = HashSet::new();
+    let mut reached = Vec::new();
+    for namespace in namespaces.iter().copied() {
+        reached.clear();
+        for index in [exported_names, previous_exported_imports] {
+            for (name, candidates) in index.entries_for_owner(Some(namespace)) {
+                if taken.contains(&name) {
+                    continue;
+                }
+                reached.push(name);
+                extend_import_entries(
+                    entries,
+                    exported_entries,
+                    import_owner,
+                    name,
+                    candidates,
+                    import_is_public,
+                );
+            }
+        }
+        taken.extend(reached.iter().copied());
+    }
+}
+
+/// `owner index -> its publicly-visible owned Namespaces`, in source order. Every Package, Type
+/// and Feature is a Namespace, and a recursive import descends through each public one; only a
+/// public owned namespace is importable, so recursion never descends through a private one.
 fn public_namespace_children(
     declarations: &[Declaration],
     memberships: &MembershipIndex,
@@ -645,12 +768,20 @@ fn public_namespace_children(
             slot.push(child);
         }
     }
+    for slot in &mut children {
+        slot.sort_by_key(|child| {
+            declarations
+                .get(child.index())
+                .map(|declaration| (declaration.document, declaration.span.offset, *child))
+        });
+    }
     children
 }
 
-/// `target` plus every namespace nested under it, following only the public-namespace edges in
-/// `children`. Package ownership is a tree; the visited guard is defensive against malformed
-/// storage rather than expected cycles.
+/// `target` followed by every namespace nested under it in recursion order: depth first, each
+/// namespace before its owned namespaces, siblings in source order, following only the
+/// public-namespace edges in `children`. Ownership is a tree; the visited guard is defensive
+/// against malformed storage rather than expected cycles.
 fn recursive_import_owners(
     children: &[Vec<DeclarationId>],
     target: DeclarationId,
@@ -668,7 +799,7 @@ fn recursive_import_owners(
         }
         owners.push(current);
         if let Some(next) = children.get(current.index()) {
-            stack.extend(next.iter().copied());
+            stack.extend(next.iter().rev().copied());
         }
     }
     owners

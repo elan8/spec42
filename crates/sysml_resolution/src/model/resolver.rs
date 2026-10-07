@@ -232,6 +232,7 @@ impl<D> SemanticModel<D> {
             .map(|document| crate::pipeline::PreparedDocument {
                 identity: document.identity,
                 role: document.role,
+                language: document.language,
                 digest: document.digest,
                 parsed: document.parsed,
                 parse_errors: document.parse_errors.into_vec(),
@@ -289,6 +290,8 @@ mod tests {
     use crate::lower::facts::AuthoredExpression;
     use crate::lower::facts::CanonicalDocument;
     use crate::lower::facts::ExpressionGrammar;
+    use crate::lower::facts::OwnedEndFeature;
+    use crate::lower::facts::OwnedEndRecord;
     use source_identity::SourceRole;
     use sysml_v2_parser::ast::{Expression, QualifiedReferenceArena, RootNamespace, SourceStorage};
     use sysml_v2_parser::ParsedDocument;
@@ -678,6 +681,10 @@ mod tests {
             unit_tokens: Box::new([]),
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
+            assignments: Box::new([]),
+            trigger_invocations: Box::new([]),
+            unlowered_expressions: Box::new([]),
+            owned_end_features: Box::new([]),
         };
         let rule = GENERATED_CONDITIONAL_LIBRARY_SPECIALIZATION_RULES
             .iter()
@@ -792,6 +799,15 @@ mod tests {
             unit_tokens: Box::new([]),
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
+            assignments: Box::new([]),
+            trigger_invocations: Box::new([]),
+            unlowered_expressions: Box::new([]),
+            owned_end_features: [(1, 2), (1, 3), (4, 5)]
+                .map(|(owner, end)| OwnedEndRecord {
+                    owner: id(owner),
+                    end: OwnedEndFeature::Declared(id(end)),
+                })
+                .into(),
         };
         let rule = |rule_id| {
             GENERATED_CONDITIONAL_LIBRARY_SPECIALIZATION_RULES
@@ -920,6 +936,7 @@ mod tests {
             digest: source_identity::ContentDigest::of_bytes(&[]),
             identity: "test".into(),
             role: SourceRole::Workspace,
+            language: source_identity::SourceLanguage::SysML,
             parsed: std::sync::Arc::new(ParsedDocument {
                 source: SourceStorage::default(),
                 qualified_references: QualifiedReferenceArena::default(),
@@ -970,6 +987,10 @@ mod tests {
                 predicate: FilterPredicate::Unsupported,
             }]),
             invocations: Box::new([]),
+            assignments: Box::new([]),
+            trigger_invocations: Box::new([]),
+            unlowered_expressions: Box::new([]),
+            owned_end_features: Box::new([]),
         }
     }
 
@@ -1059,6 +1080,10 @@ mod tests {
             unit_tokens: Box::new([]),
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
+            assignments: Box::new([]),
+            trigger_invocations: Box::new([]),
+            unlowered_expressions: Box::new([]),
+            owned_end_features: Box::new([]),
         }
     }
 
@@ -1146,6 +1171,10 @@ mod tests {
             unit_tokens: Box::new([]),
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
+            assignments: Box::new([]),
+            trigger_invocations: Box::new([]),
+            unlowered_expressions: Box::new([]),
+            owned_end_features: Box::new([]),
         }
     }
 
@@ -1154,7 +1183,7 @@ mod tests {
             member_access_paths: Default::default(),
             outcomes: Box::new([]),
             ambiguous_candidates: Box::new([]),
-            inherited_names: NameIndex::build(Vec::new()).unwrap(),
+            inherited_names: crate::resolve::names::InheritedNameIndex::empty().unwrap(),
             effective_names: Box::new([]),
             solver_status: status,
             implied_relationships: Box::new([]),
@@ -1178,6 +1207,7 @@ mod tests {
             succession_endpoint_subsetting_projections: Box::default(),
             decision_outgoing_subsetting_status: Default::default(),
             merge_incoming_subsetting_status: Default::default(),
+            control_node_successions: Box::default(),
             transition_payload_subsetting_projections: Box::default(),
             transition_payload_subsetting_status: Default::default(),
             transition_succession_source_projections: Box::default(),
@@ -2196,7 +2226,10 @@ mod tests {
             resolution.effective_names[anonymous_length.index()].name,
             EffectiveNameOutcome::Resolved(length_name)
         );
-        assert!(resolution.effective_names[anonymous_length.index()].derived_from_redefinition);
+        assert_eq!(
+            resolution.effective_names[anonymous_length.index()].provenance,
+            crate::resolve::results::EffectiveNameProvenance::FirstRedefinition
+        );
         assert_eq!(
             resolution.outcome(AuthoredReferenceId(2)),
             Some(ResolutionStatus::Resolved(anonymous_length))

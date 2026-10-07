@@ -52,7 +52,7 @@ package Inheritance {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:bcf46385f7f1e9a2b8e6d606e86f99b9d21f2aa81f60309b3bfba5794642d5e0"))
+  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation false) (source-digest "blake3:404019ab236e5a2fca226768a091cd73f73da86fe9d67a9179e273e86fb1076b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/inheritance.md") (qualified-name "Inheritance::A"))) (kind class-def) (membership (kind owning) (visibility default)))

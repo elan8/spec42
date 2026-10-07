@@ -30,6 +30,12 @@ package Views {
         (range (start 3 9) (end 3 10))
       )
       (diagnostic
+        (severity information)
+        (code "view_expose_empty")
+        (source "semantic")
+        (range (start 5 1) (end 7 2))
+      )
+      (diagnostic
         (severity warning)
         (code "invalid_import_filter")
         (source "semantic")
@@ -42,13 +48,17 @@ package Views {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:d64f696060a3d8a5413b577ff4929f22d8578fdc4b8528404e83e3ef9ba8c529"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9dd96839b97c09d3447b6b81c463b0f430bb3c49d69b53eef468c83151d64c5d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (qualified-name "Views"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (qualified-name "Views::Imported"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (path (named (kind package) (name "Views")) (named (kind package) (name "Imported")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (qualified-name "Views::Overview"))) (kind view-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (path (named (kind package) (name "Views")) (named (kind view-def) (name "Overview")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (qualified-name "Views::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (qualified-name "Views::summary"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Overview")))))
+    (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (path (named (kind package) (name "Views")) (named (kind view) (name "summary")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/view_filter_boolean.md") (path (named (kind package) (name "Views")) (named (kind view) (name "summary")) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/view_filter_boolean.md") (qualified-name "Views::summary"))) (kind featureTyping) (ordinal 0))

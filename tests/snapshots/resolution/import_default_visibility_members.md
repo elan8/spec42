@@ -35,7 +35,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4bd7c737e75aa97463425d8c67c5dd44d293b980957f72fbcdec0a04b5ee208a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:555a3a610b47e1629bdc95ba6d10e7bc86605efb4942081189b0e01a7f7e9cbc"))
   (declarations
     (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/import_default_visibility_members.md") (qualified-name "P::Car"))) (kind part-def) (membership (kind owning) (visibility default)))

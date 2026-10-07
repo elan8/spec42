@@ -51,7 +51,7 @@ package CoverageIndividual {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cc260e42efc2f0574416b1986958ea8b3cd611f779804213b16cf55f2d510c57"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:faf6685eda3fbdc40f90045f4479eb00dbaa43a027eebdff0a91eb5d3ed70f9a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_individual.md") (qualified-name "CoverageIndividual::D1"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers individual) (individual-multiplicity (node (document "memory://snapshot/coverage_individual.md") (path (named (kind package) (name "CoverageIndividual")) (named (kind occurrence-def) (name "D1")) (anonymous (kind kerml-multiplicity) (ordinal 0)))))))

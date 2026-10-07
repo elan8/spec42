@@ -49,7 +49,7 @@ package Views {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2c859c5b558d633a45c0356288954beb10abf7c77e0ffe426c05dc302cda5157"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:78eb5e05fcabe3ec5416f20f2f4469df64768375727c2af06a4088a2fa0a5341"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_expose_is_import_all.md") (qualified-name "Views"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_expose_is_import_all.md") (qualified-name "Views::Component"))) (kind part-def) (membership (kind owning) (visibility default)))

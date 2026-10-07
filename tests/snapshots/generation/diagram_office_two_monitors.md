@@ -54,7 +54,7 @@ package Office {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:38af0fbc4bf572d5c6a1c082136465cf961e2352b5eda799f6ccf57a97233da1") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:554ef2d294e625198f7ba058df8fbfc2153fa5564c5e6fc7d13a05027641aeea") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Office"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -65,9 +65,11 @@ package Office {
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::power"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PowerPort") (conjugated true)))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::video"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "VideoPort") (conjugated true)))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Office::PowerPort"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind port-def) (name "PowerPort")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (kind conjugated-port-def) (membership (kind owning) (visibility default)) (effective-identification (name "~PowerPort") (short-name absent) (provenance original-port-definition)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Socket"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Socket::power"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "PowerPort")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Office::VideoPort"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind port-def) (name "VideoPort")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (kind conjugated-port-def) (membership (kind owning) (visibility default)) (effective-identification (name "~VideoPort") (short-name absent) (provenance original-port-definition)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind part-def) (name "Workplace")) (anonymous (kind bare-connect) (ordinal 0))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "laptop::video")) (memberAccessOperand (reference "monitor1::video")))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind part-def) (name "Workplace")) (anonymous (kind bare-connect) (ordinal 1))))) (kind bare-connect) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (memberAccessOperand (reference "monitor1::power")) (memberAccessOperand (reference "socket::power")))))
@@ -162,30 +164,41 @@ package Office {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Laptop::video"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::power"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor"))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::power"))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind port-def) (name "PowerPort")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::power"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::power"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::video"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor"))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::video"))) (target (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind port-def) (name "VideoPort")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::video"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::video"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::PowerPort"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind port-def) (name "PowerPort")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Office::PowerPort"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Socket"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Socket::power"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Socket"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Socket::power"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Socket::power"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::VideoPort"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind port-def) (name "VideoPort")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Office::VideoPort"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind part-def) (name "Workplace")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind part-def) (name "Workplace")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind part-def) (name "Workplace")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind part-def) (name "Workplace")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind part-def) (name "Workplace")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind part-def) (name "Workplace")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind part-def) (name "Workplace")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind part-def) (name "Workplace")) (anonymous (kind bare-connect) (ordinal 1))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind part-def) (name "Workplace")) (anonymous (kind bare-connect) (ordinal 2))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace::laptop"))) (target (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace::laptop"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace::laptop"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace::monitor1"))) (target (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace::monitor1"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace::monitor1"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace::monitor2"))) (target (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace::monitor2"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace::monitor2"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace::socket"))) (target (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace::socket"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace::socket"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Office::connections"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
@@ -262,7 +275,9 @@ package Office {
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::power")))
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor")))
       (type (node (document "memory://snapshot/model.sysml") (qualified-name "Office::PowerPort")) (provenance authored))
+      (type (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind port-def) (name "PowerPort")) (anonymous (kind conjugated-port-def) (ordinal 0)))) (provenance implied))
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Office::PowerPort")) (source direct))
+      (effective-type (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind port-def) (name "PowerPort")) (anonymous (kind conjugated-port-def) (ordinal 0)))) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
@@ -270,6 +285,7 @@ package Office {
       (effective-type (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))))
       (effective-type (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (source inherited) (from (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Office::PowerPort")) (scopes any))
+      (supertype (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind port-def) (name "PowerPort")) (anonymous (kind conjugated-port-def) (ordinal 0)))) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
@@ -284,7 +300,9 @@ package Office {
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::video")))
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor")))
       (type (node (document "memory://snapshot/model.sysml") (qualified-name "Office::VideoPort")) (provenance authored))
+      (type (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind port-def) (name "VideoPort")) (anonymous (kind conjugated-port-def) (ordinal 0)))) (provenance implied))
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Office::VideoPort")) (source direct))
+      (effective-type (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind port-def) (name "VideoPort")) (anonymous (kind conjugated-port-def) (ordinal 0)))) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
@@ -292,6 +310,7 @@ package Office {
       (effective-type (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))))
       (effective-type (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (source inherited) (from (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Office::VideoPort")) (scopes any))
+      (supertype (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind port-def) (name "VideoPort")) (anonymous (kind conjugated-port-def) (ordinal 0)))) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
@@ -311,6 +330,9 @@ package Office {
       (subtype (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Laptop::power")) (scopes any))
       (subtype (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::power")) (scopes any))
       (subtype (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Socket::power")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind port-def) (name "PowerPort")) (anonymous (kind conjugated-port-def) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::power")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Socket")))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
@@ -350,6 +372,9 @@ package Office {
       (subtype (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Laptop::video")) (scopes any))
       (subtype (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::video")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Office")) (named (kind port-def) (name "VideoPort")) (anonymous (kind conjugated-port-def) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor::video")) (scopes any))
+    )
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Workplace")))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any subclassification))
@@ -365,6 +390,7 @@ package Office {
       (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
@@ -380,6 +406,7 @@ package Office {
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -392,6 +419,7 @@ package Office {
       (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
@@ -407,6 +435,7 @@ package Office {
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -419,6 +448,7 @@ package Office {
       (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
@@ -434,6 +464,7 @@ package Office {
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -444,7 +475,9 @@ package Office {
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Laptop")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Laptop")) (scopes any))
@@ -453,8 +486,10 @@ package Office {
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -465,7 +500,9 @@ package Office {
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor")) (scopes any))
@@ -474,8 +511,10 @@ package Office {
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -486,7 +525,9 @@ package Office {
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Monitor")) (scopes any))
@@ -495,8 +536,10 @@ package Office {
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -507,7 +550,9 @@ package Office {
       (effective-type (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Socket")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/model.sysml") (qualified-name "Office::Socket")) (scopes any))
@@ -516,8 +561,10 @@ package Office {
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object::subobjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -658,7 +705,7 @@ package Office {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:08e5d58e6474d0efb7c53a69ca4eba7c9f89a44a3838d8af52509466743701a0",
+  "modelDigest": "blake3:aa4c5d746bdb3f1263610db8c8e5d4fe316f85b6eac12684cffbef91401b123b",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -666,6 +713,14 @@ package Office {
     },
     {
       "uri": "memory://snapshot/sysml.library/connections.md",
+      "sourceDomain": "standard-library"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/objects.md",
+      "sourceDomain": "standard-library"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/occurrences.md",
       "sourceDomain": "standard-library"
     },
     {
@@ -678,6 +733,24 @@ package Office {
     }
   ],
   "sources": [
+    {
+      "document": 0,
+      "range": [
+        3,
+        4,
+        3,
+        23
+      ]
+    },
+    {
+      "document": 0,
+      "range": [
+        4,
+        4,
+        4,
+        23
+      ]
+    },
     {
       "document": 0,
       "range": [
@@ -1034,54 +1107,72 @@ package Office {
     {
       "document": 2,
       "kind": "qualified-name",
+      "qualifiedName": "Objects::Object::subobjects"
+    },
+    {
+      "document": 3,
+      "kind": "qualified-name",
+      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
+    },
+    {
+      "document": 4,
+      "kind": "qualified-name",
       "qualifiedName": "Parts::Part"
     },
     {
-      "document": 2,
+      "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "Parts::Part::ownedPorts"
     },
     {
-      "document": 2,
+      "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "Parts::parts"
     },
     {
-      "document": 3,
+      "document": 5,
       "kind": "qualified-name",
       "qualifiedName": "Ports::ports"
     },
     {
       "kind": "source-anchor",
-      "metaclass": "ConnectionUsage",
-      "ownerQualifiedName": "Office::Workplace",
-      "source": 19,
+      "metaclass": "ConjugatedPortDefinition",
+      "ownerQualifiedName": "Office::PowerPort",
+      "source": 1,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConjugatedPortDefinition",
+      "ownerQualifiedName": "Office::VideoPort",
+      "source": 0,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "Office::Workplace",
-      "source": 22,
+      "source": 21,
       "sourceDomain": "workspace"
     },
     {
       "kind": "source-anchor",
       "metaclass": "ConnectionUsage",
       "ownerQualifiedName": "Office::Workplace",
-      "source": 25,
+      "source": 24,
+      "sourceDomain": "workspace"
+    },
+    {
+      "kind": "source-anchor",
+      "metaclass": "ConnectionUsage",
+      "ownerQualifiedName": "Office::Workplace",
+      "source": 27,
       "sourceDomain": "workspace"
     },
     {
       "kind": "relationship",
       "ordinal": 10,
       "relationshipKind": "connection",
-      "source": 1
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 5,
-      "relationshipKind": "subsetting",
       "source": 1
     },
     {
@@ -1093,12 +1184,18 @@ package Office {
     {
       "kind": "relationship",
       "ordinal": 7,
+      "relationshipKind": "subsetting",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
       "relationshipKind": "typeFeaturing",
       "source": 1
     },
     {
       "kind": "relationship",
-      "ordinal": 4,
+      "ordinal": 5,
       "relationshipKind": "typing",
       "source": 1
     },
@@ -1110,12 +1207,6 @@ package Office {
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
       "ordinal": 10,
       "relationshipKind": "subsetting",
       "source": 2
@@ -1123,12 +1214,18 @@ package Office {
     {
       "kind": "relationship",
       "ordinal": 11,
+      "relationshipKind": "subsetting",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 12,
       "relationshipKind": "typeFeaturing",
       "source": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
+      "ordinal": 9,
       "relationshipKind": "typing",
       "source": 2
     },
@@ -1140,121 +1237,145 @@ package Office {
     },
     {
       "kind": "relationship",
-      "ordinal": 35,
+      "ordinal": 42,
       "relationshipKind": "subsetting",
       "source": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 36,
+      "ordinal": 43,
       "relationshipKind": "subsetting",
       "source": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 46,
+      "ordinal": 56,
       "relationshipKind": "subsetting",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 57,
+      "relationshipKind": "subsetting",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 44,
+      "relationshipKind": "typeFeaturing",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 58,
+      "relationshipKind": "typeFeaturing",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 40,
+      "relationshipKind": "typing",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 41,
+      "relationshipKind": "typing",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 54,
+      "relationshipKind": "typing",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 55,
+      "relationshipKind": "typing",
       "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 47,
       "relationshipKind": "subsetting",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 37,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
+      "source": 5
     },
     {
       "kind": "relationship",
       "ordinal": 48,
-      "relationshipKind": "typeFeaturing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 34,
-      "relationshipKind": "typing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 45,
-      "relationshipKind": "typing",
-      "source": 4
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 39,
       "relationshipKind": "subsetting",
       "source": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 40,
+      "ordinal": 61,
       "relationshipKind": "subsetting",
       "source": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 50,
+      "ordinal": 62,
       "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 51,
-      "relationshipKind": "subsetting",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 41,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 52,
-      "relationshipKind": "typeFeaturing",
-      "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 38,
-      "relationshipKind": "typing",
       "source": 5
     },
     {
       "kind": "relationship",
       "ordinal": 49,
+      "relationshipKind": "typeFeaturing",
+      "source": 5
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 63,
+      "relationshipKind": "typeFeaturing",
+      "source": 5
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 45,
       "relationshipKind": "typing",
       "source": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 16,
-      "relationshipKind": "subsetting",
-      "source": 8
+      "ordinal": 46,
+      "relationshipKind": "typing",
+      "source": 5
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
-      "relationshipKind": "subsetting",
-      "source": 8
+      "ordinal": 59,
+      "relationshipKind": "typing",
+      "source": 5
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 60,
+      "relationshipKind": "typing",
+      "source": 5
     },
     {
       "kind": "relationship",
       "ordinal": 18,
+      "relationshipKind": "subsetting",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 19,
+      "relationshipKind": "subsetting",
+      "source": 8
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 20,
       "relationshipKind": "typeFeaturing",
       "source": 8
     },
     {
       "kind": "relationship",
-      "ordinal": 15,
+      "ordinal": 17,
       "relationshipKind": "typing",
       "source": 8
     },
@@ -1308,25 +1429,19 @@ package Office {
     },
     {
       "kind": "relationship",
-      "ordinal": 19,
+      "ordinal": 21,
       "relationshipKind": "memberAccessOperand",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 20,
+      "ordinal": 22,
       "relationshipKind": "memberAccessOperand",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 23,
-      "relationshipKind": "memberAccessOperand",
-      "source": 11
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 24,
+      "ordinal": 26,
       "relationshipKind": "memberAccessOperand",
       "source": 11
     },
@@ -1338,19 +1453,31 @@ package Office {
     },
     {
       "kind": "relationship",
-      "ordinal": 28,
+      "ordinal": 31,
       "relationshipKind": "memberAccessOperand",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 21,
+      "ordinal": 32,
+      "relationshipKind": "memberAccessOperand",
+      "source": 11
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 23,
       "relationshipKind": "subsetting",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 25,
+      "ordinal": 24,
+      "relationshipKind": "subsetting",
+      "source": 11
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 28,
       "relationshipKind": "subsetting",
       "source": 11
     },
@@ -1362,19 +1489,31 @@ package Office {
     },
     {
       "kind": "relationship",
-      "ordinal": 22,
-      "relationshipKind": "typeFeaturing",
+      "ordinal": 33,
+      "relationshipKind": "subsetting",
       "source": 11
     },
     {
       "kind": "relationship",
-      "ordinal": 26,
+      "ordinal": 34,
+      "relationshipKind": "subsetting",
+      "source": 11
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 25,
       "relationshipKind": "typeFeaturing",
       "source": 11
     },
     {
       "kind": "relationship",
       "ordinal": 30,
+      "relationshipKind": "typeFeaturing",
+      "source": 11
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 35,
       "relationshipKind": "typeFeaturing",
       "source": 11
     },
@@ -1399,6 +1538,12 @@ package Office {
     {
       "kind": "relationship",
       "ordinal": 3,
+      "relationshipKind": "subsetting",
+      "source": 12
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
       "relationshipKind": "typeFeaturing",
       "source": 12
     },
@@ -1422,19 +1567,25 @@ package Office {
     },
     {
       "kind": "relationship",
-      "ordinal": 32,
+      "ordinal": 37,
       "relationshipKind": "subsetting",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 33,
+      "ordinal": 38,
+      "relationshipKind": "subsetting",
+      "source": 13
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 39,
       "relationshipKind": "typeFeaturing",
       "source": 13
     },
     {
       "kind": "relationship",
-      "ordinal": 31,
+      "ordinal": 36,
       "relationshipKind": "typing",
       "source": 13
     },
@@ -1452,19 +1603,25 @@ package Office {
     },
     {
       "kind": "relationship",
-      "ordinal": 43,
+      "ordinal": 51,
       "relationshipKind": "subsetting",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 44,
+      "ordinal": 52,
+      "relationshipKind": "subsetting",
+      "source": 14
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 53,
       "relationshipKind": "typeFeaturing",
       "source": 14
     },
     {
       "kind": "relationship",
-      "ordinal": 42,
+      "ordinal": 50,
       "relationshipKind": "typing",
       "source": 14
     },
@@ -1476,19 +1633,25 @@ package Office {
     },
     {
       "kind": "relationship",
-      "ordinal": 13,
+      "ordinal": 14,
       "relationshipKind": "subsetting",
       "source": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
+      "ordinal": 15,
+      "relationshipKind": "subsetting",
+      "source": 15
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 16,
       "relationshipKind": "typeFeaturing",
       "source": 15
     },
     {
       "kind": "relationship",
-      "ordinal": 12,
+      "ordinal": 13,
       "relationshipKind": "typing",
       "source": 15
     }
@@ -1497,7 +1660,7 @@ package Office {
     "reference": 16,
     "kind": "interconnection-view",
     "name": "connections",
-    "source": 28
+    "source": 30
   },
   "completeness": {
     "status": "complete",
@@ -1507,154 +1670,154 @@ package Office {
     "edges": [
       {
         "kind": "containment",
-        "navigation": 11,
+        "navigation": 13,
         "origin": 4,
         "provenance": "authored",
-        "reference": 56,
+        "reference": 64,
         "source": 0,
         "target": 4
       },
       {
         "kind": "containment",
-        "navigation": 2,
+        "navigation": 4,
         "origin": 5,
         "provenance": "implied",
-        "reference": 76,
+        "reference": 87,
         "source": 4,
         "target": 5
       },
       {
         "kind": "containment",
-        "navigation": 0,
+        "navigation": 2,
         "origin": 6,
         "provenance": "implied",
-        "reference": 77,
+        "reference": 88,
         "source": 4,
         "target": 6
       },
       {
         "kind": "containment",
-        "navigation": 17,
+        "navigation": 19,
         "origin": 7,
         "provenance": "authored",
-        "reference": 57,
+        "reference": 65,
         "source": 0,
         "target": 7
       },
       {
         "kind": "containment",
-        "navigation": 8,
+        "navigation": 10,
         "origin": 8,
         "provenance": "implied",
-        "reference": 91,
+        "reference": 105,
         "source": 7,
         "target": 8
       },
       {
         "kind": "containment",
-        "navigation": 19,
+        "navigation": 21,
         "origin": 1,
         "provenance": "authored",
-        "reference": 58,
+        "reference": 66,
         "source": 0,
         "target": 1
       },
       {
         "kind": "connector",
-        "navigation": 20,
+        "navigation": 22,
         "origin": 1,
         "provenance": "authored",
-        "reference": 30,
+        "reference": 34,
         "source": 6,
         "target": 11
       },
       {
         "kind": "containment",
-        "navigation": 22,
+        "navigation": 24,
         "origin": 2,
         "provenance": "authored",
-        "reference": 59,
+        "reference": 67,
         "source": 0,
         "target": 2
       },
       {
         "kind": "connector",
-        "navigation": 23,
+        "navigation": 25,
         "origin": 2,
         "provenance": "authored",
-        "reference": 35,
+        "reference": 39,
         "source": 10,
         "target": 8
       },
       {
         "kind": "containment",
-        "navigation": 25,
+        "navigation": 27,
         "origin": 3,
         "provenance": "authored",
-        "reference": 60,
+        "reference": 68,
         "source": 0,
         "target": 3
       },
       {
         "kind": "connector",
-        "navigation": 26,
+        "navigation": 28,
         "origin": 3,
         "provenance": "authored",
-        "reference": 25,
+        "reference": 29,
         "source": 5,
         "target": 8
       },
       {
         "kind": "containment",
-        "navigation": 13,
+        "navigation": 15,
         "origin": 9,
         "provenance": "authored",
-        "reference": 61,
+        "reference": 69,
         "source": 0,
         "target": 9
       },
       {
         "kind": "containment",
-        "navigation": 6,
+        "navigation": 8,
         "origin": 10,
         "provenance": "implied",
-        "reference": 81,
+        "reference": 93,
         "source": 9,
         "target": 10
       },
       {
         "kind": "containment",
-        "navigation": 4,
+        "navigation": 6,
         "origin": 11,
         "provenance": "implied",
-        "reference": 82,
+        "reference": 94,
         "source": 9,
         "target": 11
       },
       {
         "kind": "containment",
-        "navigation": 15,
+        "navigation": 17,
         "origin": 12,
         "provenance": "authored",
-        "reference": 62,
+        "reference": 70,
         "source": 0,
         "target": 12
       },
       {
         "kind": "containment",
-        "navigation": 6,
+        "navigation": 8,
         "origin": 13,
         "provenance": "implied",
-        "reference": 86,
+        "reference": 99,
         "source": 12,
         "target": 13
       },
       {
         "kind": "containment",
-        "navigation": 4,
+        "navigation": 6,
         "origin": 14,
         "provenance": "implied",
-        "reference": 87,
+        "reference": 100,
         "source": 12,
         "target": 14
       }
@@ -1716,7 +1879,7 @@ package Office {
         "notationRole": "definition",
         "owner": null,
         "reference": 10,
-        "source": 10,
+        "source": 12,
         "typing": {
           "status": "absent"
         }
@@ -1729,8 +1892,8 @@ package Office {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 22,
-        "source": 19,
+        "reference": 26,
+        "source": 21,
         "typing": {
           "status": "absent"
         }
@@ -1743,8 +1906,8 @@ package Office {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 23,
-        "source": 22,
+        "reference": 27,
+        "source": 24,
         "typing": {
           "status": "absent"
         }
@@ -1757,8 +1920,8 @@ package Office {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 24,
-        "source": 25,
+        "reference": 28,
+        "source": 27,
         "typing": {
           "status": "absent"
         }
@@ -1781,7 +1944,7 @@ package Office {
         "notationRole": "usage",
         "owner": 0,
         "reference": 12,
-        "source": 11,
+        "source": 13,
         "typing": {
           "status": "resolved",
           "types": [
@@ -1801,7 +1964,7 @@ package Office {
         "notationRole": "usage",
         "owner": 4,
         "reference": 1,
-        "source": 2,
+        "source": 4,
         "typing": {
           "status": "resolved",
           "types": [
@@ -1821,7 +1984,7 @@ package Office {
         "notationRole": "usage",
         "owner": 4,
         "reference": 2,
-        "source": 0,
+        "source": 2,
         "typing": {
           "status": "resolved",
           "types": [
@@ -1849,7 +2012,7 @@ package Office {
         "notationRole": "usage",
         "owner": 0,
         "reference": 15,
-        "source": 17,
+        "source": 19,
         "typing": {
           "status": "resolved",
           "types": [
@@ -1869,7 +2032,7 @@ package Office {
         "notationRole": "usage",
         "owner": 7,
         "reference": 8,
-        "source": 8,
+        "source": 10,
         "typing": {
           "status": "resolved",
           "types": [
@@ -1898,7 +2061,7 @@ package Office {
         "notationRole": "usage",
         "owner": 0,
         "reference": 13,
-        "source": 13,
+        "source": 15,
         "typing": {
           "status": "resolved",
           "types": [
@@ -1918,7 +2081,7 @@ package Office {
         "notationRole": "usage",
         "owner": 9,
         "reference": 4,
-        "source": 6,
+        "source": 8,
         "typing": {
           "status": "resolved",
           "types": [
@@ -1938,7 +2101,7 @@ package Office {
         "notationRole": "usage",
         "owner": 9,
         "reference": 5,
-        "source": 4,
+        "source": 6,
         "typing": {
           "status": "resolved",
           "types": [
@@ -1967,7 +2130,7 @@ package Office {
         "notationRole": "usage",
         "owner": 0,
         "reference": 14,
-        "source": 15,
+        "source": 17,
         "typing": {
           "status": "resolved",
           "types": [
@@ -1987,7 +2150,7 @@ package Office {
         "notationRole": "usage",
         "owner": 12,
         "reference": 4,
-        "source": 6,
+        "source": 8,
         "typing": {
           "status": "resolved",
           "types": [
@@ -2007,7 +2170,7 @@ package Office {
         "notationRole": "usage",
         "owner": 12,
         "reference": 5,
-        "source": 4,
+        "source": 6,
         "typing": {
           "status": "resolved",
           "types": [
@@ -2024,18 +2187,18 @@ package Office {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 63,
+        "reference": 71,
         "source": 0,
         "target": {
-          "reference": 18,
+          "reference": 20,
           "status": "resolved"
         }
       },
       {
         "kind": "typing",
-        "navigation": 12,
+        "navigation": 14,
         "provenance": "authored",
-        "reference": 80,
+        "reference": 92,
         "source": 4,
         "target": {
           "reference": 0,
@@ -2046,10 +2209,21 @@ package Office {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 78,
+        "reference": 89,
         "source": 4,
         "target": {
-          "reference": 20,
+          "reference": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 90,
+        "source": 4,
+        "target": {
+          "reference": 22,
           "status": "resolved"
         }
       },
@@ -2057,7 +2231,7 @@ package Office {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 79,
+        "reference": 91,
         "source": 4,
         "target": {
           "node": 0,
@@ -2066,9 +2240,9 @@ package Office {
       },
       {
         "kind": "typing",
-        "navigation": 3,
+        "navigation": 5,
         "provenance": "authored",
-        "reference": 29,
+        "reference": 33,
         "source": 5,
         "target": {
           "reference": 6,
@@ -2079,18 +2253,7 @@ package Office {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 26,
-        "source": 5,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 27,
+        "reference": 30,
         "source": 5,
         "target": {
           "reference": 21,
@@ -2098,10 +2261,21 @@ package Office {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 31,
+        "source": 5,
+        "target": {
+          "reference": 23,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 28,
+        "reference": 32,
         "source": 5,
         "target": {
           "reference": 0,
@@ -2110,9 +2284,9 @@ package Office {
       },
       {
         "kind": "typing",
-        "navigation": 1,
+        "navigation": 3,
         "provenance": "authored",
-        "reference": 34,
+        "reference": 38,
         "source": 6,
         "target": {
           "reference": 9,
@@ -2123,18 +2297,7 @@ package Office {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 31,
-        "source": 6,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 32,
+        "reference": 35,
         "source": 6,
         "target": {
           "reference": 21,
@@ -2142,10 +2305,21 @@ package Office {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 36,
+        "source": 6,
+        "target": {
+          "reference": 23,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 33,
+        "reference": 37,
         "source": 6,
         "target": {
           "reference": 0,
@@ -2154,9 +2328,9 @@ package Office {
       },
       {
         "kind": "typing",
-        "navigation": 18,
+        "navigation": 20,
         "provenance": "authored",
-        "reference": 94,
+        "reference": 109,
         "source": 7,
         "target": {
           "reference": 7,
@@ -2167,10 +2341,21 @@ package Office {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 92,
+        "reference": 106,
         "source": 7,
         "target": {
-          "reference": 20,
+          "reference": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 107,
+        "source": 7,
+        "target": {
+          "reference": 22,
           "status": "resolved"
         }
       },
@@ -2178,7 +2363,7 @@ package Office {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 93,
+        "reference": 108,
         "source": 7,
         "target": {
           "node": 0,
@@ -2187,9 +2372,9 @@ package Office {
       },
       {
         "kind": "typing",
-        "navigation": 9,
+        "navigation": 11,
         "provenance": "authored",
-        "reference": 55,
+        "reference": 63,
         "source": 8,
         "target": {
           "reference": 6,
@@ -2200,18 +2385,7 @@ package Office {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 52,
-        "source": 8,
-        "target": {
-          "reference": 19,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 53,
+        "reference": 60,
         "source": 8,
         "target": {
           "reference": 21,
@@ -2219,10 +2393,21 @@ package Office {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 61,
+        "source": 8,
+        "target": {
+          "reference": 23,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 54,
+        "reference": 62,
         "source": 8,
         "target": {
           "reference": 7,
@@ -2231,9 +2416,9 @@ package Office {
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 20,
+        "navigation": 22,
         "provenance": "authored",
-        "reference": 64,
+        "reference": 72,
         "source": 1,
         "target": {
           "node": 6,
@@ -2242,9 +2427,9 @@ package Office {
       },
       {
         "kind": "memberAccessOperand",
-        "navigation": 21,
+        "navigation": 23,
         "provenance": "authored",
-        "reference": 65,
+        "reference": 73,
         "source": 1,
         "target": {
           "node": 11,
@@ -2255,7 +2440,7 @@ package Office {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 70,
+        "reference": 78,
         "source": 1,
         "target": {
           "reference": 17,
@@ -2263,123 +2448,13 @@ package Office {
         }
       },
       {
-        "kind": "typeFeaturing",
+        "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 73,
+        "reference": 79,
         "source": 1,
         "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 23,
-        "provenance": "authored",
-        "reference": 66,
-        "source": 2,
-        "target": {
-          "node": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 24,
-        "provenance": "authored",
-        "reference": 67,
-        "source": 2,
-        "target": {
-          "node": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 71,
-        "source": 2,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 74,
-        "source": 2,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 26,
-        "provenance": "authored",
-        "reference": 68,
-        "source": 3,
-        "target": {
-          "node": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "memberAccessOperand",
-        "navigation": 27,
-        "provenance": "authored",
-        "reference": 69,
-        "source": 3,
-        "target": {
-          "node": 8,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 72,
-        "source": 3,
-        "target": {
-          "reference": 17,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 75,
-        "source": 3,
-        "target": {
-          "node": 0,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typing",
-        "navigation": 14,
-        "provenance": "authored",
-        "reference": 85,
-        "source": 9,
-        "target": {
-          "reference": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 83,
-        "source": 9,
-        "target": {
-          "reference": 20,
+          "reference": 19,
           "status": "resolved"
         }
       },
@@ -2388,6 +2463,160 @@ package Office {
         "navigation": null,
         "provenance": "implied",
         "reference": 84,
+        "source": 1,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 25,
+        "provenance": "authored",
+        "reference": 74,
+        "source": 2,
+        "target": {
+          "node": 10,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 26,
+        "provenance": "authored",
+        "reference": 75,
+        "source": 2,
+        "target": {
+          "node": 8,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 80,
+        "source": 2,
+        "target": {
+          "reference": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 81,
+        "source": 2,
+        "target": {
+          "reference": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 85,
+        "source": 2,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 28,
+        "provenance": "authored",
+        "reference": 76,
+        "source": 3,
+        "target": {
+          "node": 5,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "memberAccessOperand",
+        "navigation": 29,
+        "provenance": "authored",
+        "reference": 77,
+        "source": 3,
+        "target": {
+          "node": 8,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 82,
+        "source": 3,
+        "target": {
+          "reference": 17,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 83,
+        "source": 3,
+        "target": {
+          "reference": 19,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 86,
+        "source": 3,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typing",
+        "navigation": 16,
+        "provenance": "authored",
+        "reference": 98,
+        "source": 9,
+        "target": {
+          "reference": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 95,
+        "source": 9,
+        "target": {
+          "reference": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 96,
+        "source": 9,
+        "target": {
+          "reference": 22,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 97,
         "source": 9,
         "target": {
           "node": 0,
@@ -2396,9 +2625,9 @@ package Office {
       },
       {
         "kind": "typing",
-        "navigation": 7,
+        "navigation": 9,
         "provenance": "authored",
-        "reference": 42,
+        "reference": 46,
         "source": 10,
         "target": {
           "reference": 6,
@@ -2406,13 +2635,13 @@ package Office {
         }
       },
       {
-        "kind": "subsetting",
+        "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 36,
+        "reference": 47,
         "source": 10,
         "target": {
-          "reference": 19,
+          "reference": 24,
           "status": "resolved"
         }
       },
@@ -2420,7 +2649,7 @@ package Office {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 37,
+        "reference": 40,
         "source": 10,
         "target": {
           "reference": 21,
@@ -2428,10 +2657,21 @@ package Office {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 41,
+        "source": 10,
+        "target": {
+          "reference": 23,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 40,
+        "reference": 44,
         "source": 10,
         "target": {
           "reference": 3,
@@ -2440,9 +2680,9 @@ package Office {
       },
       {
         "kind": "typing",
-        "navigation": 5,
+        "navigation": 7,
         "provenance": "authored",
-        "reference": 50,
+        "reference": 56,
         "source": 11,
         "target": {
           "reference": 9,
@@ -2450,13 +2690,13 @@ package Office {
         }
       },
       {
-        "kind": "subsetting",
+        "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 44,
+        "reference": 57,
         "source": 11,
         "target": {
-          "reference": 19,
+          "reference": 25,
           "status": "resolved"
         }
       },
@@ -2464,7 +2704,7 @@ package Office {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 45,
+        "reference": 50,
         "source": 11,
         "target": {
           "reference": 21,
@@ -2472,10 +2712,21 @@ package Office {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 51,
+        "source": 11,
+        "target": {
+          "reference": 23,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 48,
+        "reference": 54,
         "source": 11,
         "target": {
           "reference": 3,
@@ -2484,9 +2735,9 @@ package Office {
       },
       {
         "kind": "typing",
-        "navigation": 16,
+        "navigation": 18,
         "provenance": "authored",
-        "reference": 90,
+        "reference": 104,
         "source": 12,
         "target": {
           "reference": 3,
@@ -2497,10 +2748,21 @@ package Office {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 88,
+        "reference": 101,
         "source": 12,
         "target": {
-          "reference": 20,
+          "reference": 18,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 102,
+        "source": 12,
+        "target": {
+          "reference": 22,
           "status": "resolved"
         }
       },
@@ -2508,7 +2770,7 @@ package Office {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 89,
+        "reference": 103,
         "source": 12,
         "target": {
           "node": 0,
@@ -2517,9 +2779,9 @@ package Office {
       },
       {
         "kind": "typing",
-        "navigation": 7,
+        "navigation": 9,
         "provenance": "authored",
-        "reference": 43,
+        "reference": 48,
         "source": 13,
         "target": {
           "reference": 6,
@@ -2527,13 +2789,13 @@ package Office {
         }
       },
       {
-        "kind": "subsetting",
+        "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 38,
+        "reference": 49,
         "source": 13,
         "target": {
-          "reference": 19,
+          "reference": 24,
           "status": "resolved"
         }
       },
@@ -2541,7 +2803,7 @@ package Office {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 39,
+        "reference": 42,
         "source": 13,
         "target": {
           "reference": 21,
@@ -2549,10 +2811,21 @@ package Office {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 43,
+        "source": 13,
+        "target": {
+          "reference": 23,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 41,
+        "reference": 45,
         "source": 13,
         "target": {
           "reference": 3,
@@ -2561,9 +2834,9 @@ package Office {
       },
       {
         "kind": "typing",
-        "navigation": 5,
+        "navigation": 7,
         "provenance": "authored",
-        "reference": 51,
+        "reference": 58,
         "source": 14,
         "target": {
           "reference": 9,
@@ -2571,13 +2844,13 @@ package Office {
         }
       },
       {
-        "kind": "subsetting",
+        "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 46,
+        "reference": 59,
         "source": 14,
         "target": {
-          "reference": 19,
+          "reference": 25,
           "status": "resolved"
         }
       },
@@ -2585,7 +2858,7 @@ package Office {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 47,
+        "reference": 52,
         "source": 14,
         "target": {
           "reference": 21,
@@ -2593,10 +2866,21 @@ package Office {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 53,
+        "source": 14,
+        "target": {
+          "reference": 23,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 49,
+        "reference": 55,
         "source": 14,
         "target": {
           "reference": 3,

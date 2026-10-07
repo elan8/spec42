@@ -36,6 +36,24 @@ package Model {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_owned_type_featuring.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "redefinition_featuring_type_incompatible")
+        (source "semantic")
+        (range (start 3 44) (end 3 48))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_feature_owned_type_featuring.md")
+            (range (start 2 8) (end 2 21))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "feature_chaining_single_operand")
+        (source "semantic")
+        (range (start 3 56) (end 3 60))
+      )
     )
   )
 )
@@ -43,7 +61,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:62e4e35f103e2a544c94d7957a161f0e93786351c06dac8c3d7a5f7da608227d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:274adf1086d9cba92cbbe007102e46297fe7381c999e9b3809692c2f6833ba27"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_owned_type_featuring.md") (qualified-name "Model::Vehicle"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

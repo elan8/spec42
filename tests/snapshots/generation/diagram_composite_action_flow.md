@@ -41,7 +41,7 @@ package Shop {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2482f23b5c93f43472bfaef4ad3ce82a4f17bf39520dbc7bcd0e597f7813e8c6") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:61ab6b3edc306cfaa2079793d2c415de72fa5c52194b9df7e27de0e0555ff7be") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Shop"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Shop")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -86,10 +86,12 @@ package Shop {
     (relationship (kind typing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::fulfilment"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::ActionFlowView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::fulfilment"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Shop")) (named (kind view) (name "fulfilment")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Shop")) (named (kind view) (name "fulfilment")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
     (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Shop")) (named (kind action-def) (name "Fulfil")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Shop")) (named (kind action-def) (name "Fulfil")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil::order"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil::order"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil::order"))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Shop")) (named (kind action-def) (name "Fulfil")) (named (kind action) (name "order")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Shop")) (named (kind action-def) (name "Fulfil")) (named (kind action) (name "order")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil::order"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil::order::pack"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil::order::pack"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
@@ -118,6 +120,20 @@ package Shop {
     )
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Shop")) (named (kind action-def) (name "Fulfil")) (anonymous (kind succession) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil::order")))
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil")))
@@ -146,6 +162,20 @@ package Shop {
     )
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Shop")) (named (kind action-def) (name "Fulfil")) (named (kind action) (name "order")) (anonymous (kind succession) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil::order")))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks"))))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::BinaryLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::binaryLinks")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensBefore")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::HappensLink")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Without")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::happensBeforeLinks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil::order::pack")))
       (featured-by (node (document "memory://snapshot/model.sysml") (qualified-name "Shop::Fulfil::order")))
@@ -296,7 +326,7 @@ package Shop {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:4690d7af52241bbd8ee366da7ba176ab88979a0bd6a390102e63dc11268aa3eb",
+  "modelDigest": "blake3:bb4442536aab80627559dda8508bb3587ee5069f6f4c33a47bed89ae1d3d46f6",
   "documents": [
     {
       "uri": "memory://snapshot/model.sysml",
@@ -304,6 +334,10 @@ package Shop {
     },
     {
       "uri": "memory://snapshot/sysml.library/actions.md",
+      "sourceDomain": "standard-library"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/occurrences.md",
       "sourceDomain": "standard-library"
     }
   ],
@@ -474,6 +508,11 @@ package Shop {
       "qualifiedName": "Actions::actions"
     },
     {
+      "document": 2,
+      "kind": "qualified-name",
+      "qualifiedName": "Occurrences::happensBeforeLinks"
+    },
+    {
       "kind": "source-anchor",
       "metaclass": "SuccessionAsUsage",
       "ownerQualifiedName": "Shop::Fulfil",
@@ -514,7 +553,7 @@ package Shop {
     {
       "kind": "relationship",
       "ordinal": 1,
-      "relationshipKind": "succession",
+      "relationshipKind": "subsetting",
       "source": 1
     },
     {
@@ -526,6 +565,12 @@ package Shop {
     {
       "kind": "relationship",
       "ordinal": 3,
+      "relationshipKind": "succession",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 4,
       "relationshipKind": "typeFeaturing",
       "source": 1
     },
@@ -549,13 +594,13 @@ package Shop {
     },
     {
       "kind": "relationship",
-      "ordinal": 7,
+      "ordinal": 8,
       "relationshipKind": "subsetting",
       "source": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 8,
+      "ordinal": 9,
       "relationshipKind": "subsetting",
       "source": 2
     },
@@ -567,55 +612,61 @@ package Shop {
     },
     {
       "kind": "relationship",
-      "ordinal": 9,
+      "ordinal": 10,
       "relationshipKind": "typeFeaturing",
       "source": 2
     },
     {
       "kind": "relationship",
-      "ordinal": 10,
-      "relationshipKind": "succession",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
       "ordinal": 11,
-      "relationshipKind": "succession",
+      "relationshipKind": "subsetting",
       "source": 3
     },
     {
       "kind": "relationship",
       "ordinal": 12,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "succession",
       "source": 3
     },
     {
       "kind": "relationship",
       "ordinal": 13,
-      "relationshipKind": "subsetting",
-      "source": 4
+      "relationshipKind": "succession",
+      "source": 3
     },
     {
       "kind": "relationship",
       "ordinal": 14,
-      "relationshipKind": "subsetting",
-      "source": 4
+      "relationshipKind": "typeFeaturing",
+      "source": 3
     },
     {
       "kind": "relationship",
       "ordinal": 15,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "subsetting",
       "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 16,
       "relationshipKind": "subsetting",
-      "source": 5
+      "source": 4
     },
     {
       "kind": "relationship",
       "ordinal": 17,
+      "relationshipKind": "typeFeaturing",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 18,
+      "relationshipKind": "subsetting",
+      "source": 5
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 19,
       "relationshipKind": "subsetting",
       "source": 5
     },
@@ -627,15 +678,9 @@ package Shop {
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
+      "ordinal": 20,
       "relationshipKind": "typeFeaturing",
       "source": 5
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 4,
-      "relationshipKind": "subsetting",
-      "source": 6
     },
     {
       "kind": "relationship",
@@ -646,6 +691,12 @@ package Shop {
     {
       "kind": "relationship",
       "ordinal": 6,
+      "relationshipKind": "subsetting",
+      "source": 6
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
       "relationshipKind": "typeFeaturing",
       "source": 6
     }
@@ -667,7 +718,7 @@ package Shop {
         "navigation": 8,
         "origin": 1,
         "provenance": "authored",
-        "reference": 13,
+        "reference": 14,
         "source": 0,
         "target": 1
       },
@@ -676,7 +727,7 @@ package Shop {
         "navigation": 9,
         "origin": 1,
         "provenance": "implied",
-        "reference": 25,
+        "reference": 27,
         "source": 3,
         "target": 2
       },
@@ -685,7 +736,7 @@ package Shop {
         "navigation": 7,
         "origin": 2,
         "provenance": "authored",
-        "reference": 14,
+        "reference": 15,
         "source": 0,
         "target": 2
       },
@@ -694,7 +745,7 @@ package Shop {
         "navigation": 1,
         "origin": 3,
         "provenance": "authored",
-        "reference": 15,
+        "reference": 16,
         "source": 0,
         "target": 3
       },
@@ -703,7 +754,7 @@ package Shop {
         "navigation": 4,
         "origin": 4,
         "provenance": "authored",
-        "reference": 20,
+        "reference": 22,
         "source": 3,
         "target": 4
       },
@@ -712,7 +763,7 @@ package Shop {
         "navigation": 5,
         "origin": 4,
         "provenance": "implied",
-        "reference": 35,
+        "reference": 38,
         "source": 6,
         "target": 5
       },
@@ -721,7 +772,7 @@ package Shop {
         "navigation": 3,
         "origin": 5,
         "provenance": "authored",
-        "reference": 21,
+        "reference": 23,
         "source": 3,
         "target": 5
       },
@@ -730,7 +781,7 @@ package Shop {
         "navigation": 2,
         "origin": 6,
         "provenance": "authored",
-        "reference": 22,
+        "reference": 24,
         "source": 3,
         "target": 6
       }
@@ -781,7 +832,7 @@ package Shop {
         "name": null,
         "notationRole": "unsupported",
         "owner": 0,
-        "reference": 11,
+        "reference": 12,
         "source": 8,
         "typing": {
           "status": "absent"
@@ -832,7 +883,7 @@ package Shop {
         "name": null,
         "notationRole": "unsupported",
         "owner": 3,
-        "reference": 12,
+        "reference": 13,
         "source": 4,
         "typing": {
           "status": "absent"
@@ -872,7 +923,7 @@ package Shop {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 16,
+        "reference": 17,
         "source": 0,
         "target": {
           "reference": 8,
@@ -880,10 +931,21 @@ package Shop {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 18,
+        "source": 1,
+        "target": {
+          "reference": 11,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "succession",
         "navigation": 9,
         "provenance": "authored",
-        "reference": 17,
+        "reference": 19,
         "source": 1,
         "target": {
           "node": 3,
@@ -894,7 +956,7 @@ package Shop {
         "kind": "succession",
         "navigation": 10,
         "provenance": "authored",
-        "reference": 18,
+        "reference": 20,
         "source": 1,
         "target": {
           "node": 2,
@@ -905,7 +967,7 @@ package Shop {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 19,
+        "reference": 21,
         "source": 1,
         "target": {
           "node": 0,
@@ -916,7 +978,7 @@ package Shop {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 37,
+        "reference": 40,
         "source": 2,
         "target": {
           "reference": 9,
@@ -927,7 +989,7 @@ package Shop {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 38,
+        "reference": 41,
         "source": 2,
         "target": {
           "reference": 10,
@@ -938,7 +1000,7 @@ package Shop {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 39,
+        "reference": 42,
         "source": 2,
         "target": {
           "node": 0,
@@ -949,7 +1011,7 @@ package Shop {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 23,
+        "reference": 25,
         "source": 3,
         "target": {
           "reference": 9,
@@ -958,23 +1020,34 @@ package Shop {
       },
       {
         "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 24,
-        "source": 3,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
         "reference": 26,
         "source": 3,
         "target": {
+          "reference": 10,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 28,
+        "source": 3,
+        "target": {
           "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 29,
+        "source": 4,
+        "target": {
+          "reference": 11,
           "status": "resolved"
         }
       },
@@ -982,7 +1055,7 @@ package Shop {
         "kind": "succession",
         "navigation": 5,
         "provenance": "authored",
-        "reference": 27,
+        "reference": 30,
         "source": 4,
         "target": {
           "node": 6,
@@ -993,7 +1066,7 @@ package Shop {
         "kind": "succession",
         "navigation": 6,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 31,
         "source": 4,
         "target": {
           "node": 5,
@@ -1004,7 +1077,7 @@ package Shop {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 29,
+        "reference": 32,
         "source": 4,
         "target": {
           "node": 3,
@@ -1015,41 +1088,8 @@ package Shop {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 30,
-        "source": 5,
-        "target": {
-          "reference": 9,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 31,
-        "source": 5,
-        "target": {
-          "reference": 10,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 32,
-        "source": 5,
-        "target": {
-          "node": 3,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
         "reference": 33,
-        "source": 6,
+        "source": 5,
         "target": {
           "reference": 9,
           "status": "resolved"
@@ -1060,6 +1100,39 @@ package Shop {
         "navigation": null,
         "provenance": "implied",
         "reference": 34,
+        "source": 5,
+        "target": {
+          "reference": 10,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 35,
+        "source": 5,
+        "target": {
+          "node": 3,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 36,
+        "source": 6,
+        "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 37,
         "source": 6,
         "target": {
           "reference": 10,
@@ -1070,7 +1143,7 @@ package Shop {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 36,
+        "reference": 39,
         "source": 6,
         "target": {
           "node": 3,

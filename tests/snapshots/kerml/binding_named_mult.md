@@ -21,6 +21,12 @@ package BindingNamedMult {
         (severity warning)
         (code "unresolved_reference")
         (source "semantic")
+        (range (start 1 20) (end 1 30))
+      )
+      (diagnostic
+        (severity warning)
+        (code "unresolved_reference")
+        (source "semantic")
         (range (start 1 35) (end 1 44))
       )
       (diagnostic
@@ -72,13 +78,21 @@ package BindingNamedMult {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:646e291c0e43444b0e1d47c6e4b0376ce33307d9f638fd9a8f7e21ed5ec55562"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:12adab54fd70328204ccaae2848e83383e3cc488fc1055eac2360fd215258c81"))
   (declarations
     (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (qualified-name "BindingNamedMult"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0))))) (kind bind) (membership (kind feature) (visibility default)) (facts (multiplicity (lower expression) (upper expression))) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "startShot")) (bindTarget (reference "endShot")))))
     (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 1))))) (kind bind) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "startShot")) (bindTarget (reference "endShot")))))
     (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 2))))) (kind bind) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "a")) (bindTarget (reference "b")))))
     (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3))))) (kind bind) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 0) (upper 1))) (authored (membership (kind feature) (visibility default)) (relationships (bindSource (reference "a")) (bindTarget (reference "b")))))
+    (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (expressionOperand (reference "instantNum")))))
+    (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
+    (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
+    (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0))))) (kind bindSource) (ordinal 0))
@@ -105,8 +119,14 @@ package BindingNamedMult {
     (reference (id (source (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3))))) (kind bindTarget) (ordinal 0))
       (authored-target "b")
       (outcome (status unresolved)))
+    (reference (id (source (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
+      (authored-target "instantNum")
+      (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (provenance implied))
   )
   (evaluation
   )
@@ -115,6 +135,15 @@ package BindingNamedMult {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)))))
+    )
 )
 ~~~
 # NAVIGATION
@@ -157,6 +186,11 @@ package BindingNamedMult {
   )
   (query (document "memory://snapshot/binding_named_mult.md") (range (start 4 23) (end 4 24)) (probe (position 4 23))
     (reference (id (source (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 3))))) (kind bindTarget) (ordinal 0) (authored-target "b")
+      (outcome (status unresolved)))
+    )
+  )
+  (query (document "memory://snapshot/binding_named_mult.md") (range (start 1 20) (end 1 30)) (probe (position 1 20))
+    (reference (id (source (node (document "memory://snapshot/binding_named_mult.md") (path (named (kind package) (name "BindingNamedMult")) (anonymous (kind bind) (ordinal 0)) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "instantNum")
       (outcome (status unresolved)))
     )
   )

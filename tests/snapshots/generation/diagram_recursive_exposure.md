@@ -31,7 +31,7 @@ package RecursiveExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0461baf7ecb54433d8d9d4e4408c4904771fcf6f58dfd0131911d158c4b26b3e") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:04db353d733bc8b3dfb2d84929ddb534d241340d0e65e6a73b00b364c3f69e2d") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_recursive_exposure.md") (path (named (kind package) (name "RecursiveExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -59,10 +59,13 @@ package RecursiveExample {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::tree"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_recursive_exposure.md") (path (named (kind package) (name "RecursiveExample")) (named (kind view) (name "tree")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::tree"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::vehicle"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::vehicle::engine"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::vehicle::engine"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::vehicle::engine"))) (target (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::vehicle"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::vehicle::engine::cylinder"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::vehicle::engine::cylinder"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::vehicle::engine::cylinder"))) (target (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::vehicle::engine"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::vehicle::wheel"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::vehicle::wheel"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::vehicle::wheel"))) (target (node (document "memory://snapshot/diagram_recursive_exposure.md") (qualified-name "RecursiveExample::vehicle"))) (provenance implied))
   )
@@ -121,6 +124,7 @@ package RecursiveExample {
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
@@ -130,6 +134,7 @@ package RecursiveExample {
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -139,6 +144,7 @@ package RecursiveExample {
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
@@ -148,6 +154,7 @@ package RecursiveExample {
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -157,6 +164,7 @@ package RecursiveExample {
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item")) (source inherited) (from (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::items"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
@@ -166,6 +174,7 @@ package RecursiveExample {
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -197,11 +206,15 @@ package RecursiveExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:f92a3dfdcadee7ef4e4c21c3c10d7db8c5b7619d2df216ccd81bc94818f45d39",
+  "modelDigest": "blake3:0cb262a2166024d464ea05927ea7a6640fe5628da5ab1092dfac17dab44ec916",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_recursive_exposure.md",
       "sourceDomain": "workspace"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/occurrences.md",
+      "sourceDomain": "standard-library"
     },
     {
       "uri": "memory://snapshot/sysml.library/parts.md",
@@ -284,6 +297,11 @@ package RecursiveExample {
     {
       "document": 1,
       "kind": "qualified-name",
+      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
+    },
+    {
+      "document": 2,
+      "kind": "qualified-name",
       "qualifiedName": "Parts::parts"
     },
     {
@@ -312,25 +330,37 @@ package RecursiveExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 3,
-      "relationshipKind": "subsetting",
-      "source": 2
-    },
-    {
-      "kind": "relationship",
       "ordinal": 4,
-      "relationshipKind": "typeFeaturing",
+      "relationshipKind": "subsetting",
       "source": 2
     },
     {
       "kind": "relationship",
       "ordinal": 5,
       "relationshipKind": "subsetting",
-      "source": 3
+      "source": 2
     },
     {
       "kind": "relationship",
       "ordinal": 6,
+      "relationshipKind": "typeFeaturing",
+      "source": 2
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 7,
+      "relationshipKind": "subsetting",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
+      "relationshipKind": "subsetting",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 9,
       "relationshipKind": "typeFeaturing",
       "source": 3
     },
@@ -343,6 +373,12 @@ package RecursiveExample {
     {
       "kind": "relationship",
       "ordinal": 2,
+      "relationshipKind": "subsetting",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 3,
       "relationshipKind": "typeFeaturing",
       "source": 4
     }
@@ -364,7 +400,7 @@ package RecursiveExample {
         "navigation": 3,
         "origin": 1,
         "provenance": "authored",
-        "reference": 6,
+        "reference": 7,
         "source": 0,
         "target": 1
       },
@@ -373,7 +409,7 @@ package RecursiveExample {
         "navigation": 1,
         "origin": 2,
         "provenance": "authored",
-        "reference": 7,
+        "reference": 8,
         "source": 0,
         "target": 2
       },
@@ -382,7 +418,7 @@ package RecursiveExample {
         "navigation": 2,
         "origin": 3,
         "provenance": "authored",
-        "reference": 9,
+        "reference": 10,
         "source": 2,
         "target": 3
       }
@@ -476,8 +512,19 @@ package RecursiveExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 8,
+        "reference": 9,
         "source": 0,
+        "target": {
+          "reference": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 17,
+        "source": 1,
         "target": {
           "reference": 5,
           "status": "resolved"
@@ -487,10 +534,10 @@ package RecursiveExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 14,
+        "reference": 18,
         "source": 1,
         "target": {
-          "reference": 5,
+          "reference": 6,
           "status": "resolved"
         }
       },
@@ -498,7 +545,7 @@ package RecursiveExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 15,
+        "reference": 19,
         "source": 1,
         "target": {
           "node": 0,
@@ -507,23 +554,12 @@ package RecursiveExample {
       },
       {
         "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 10,
-        "source": 2,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
         "reference": 11,
         "source": 2,
         "target": {
-          "node": 0,
+          "reference": 5,
           "status": "resolved"
         }
       },
@@ -532,9 +568,9 @@ package RecursiveExample {
         "navigation": null,
         "provenance": "implied",
         "reference": 12,
-        "source": 3,
+        "source": 2,
         "target": {
-          "reference": 5,
+          "reference": 6,
           "status": "resolved"
         }
       },
@@ -543,6 +579,39 @@ package RecursiveExample {
         "navigation": null,
         "provenance": "implied",
         "reference": 13,
+        "source": 2,
+        "target": {
+          "node": 0,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 14,
+        "source": 3,
+        "target": {
+          "reference": 5,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 15,
+        "source": 3,
+        "target": {
+          "reference": 6,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "typeFeaturing",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 16,
         "source": 3,
         "target": {
           "node": 2,

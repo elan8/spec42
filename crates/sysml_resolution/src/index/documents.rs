@@ -8,6 +8,7 @@ use crate::model::span::document_range;
 use crate::model::span::identifier_range;
 use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
+use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;
 use crate::model::NameId;
 use crate::resolve::results::ResolutionError;
@@ -251,8 +252,20 @@ impl DocumentIndex {
             }
             // A generated result Feature has no authored token or source extent distinct from its
             // owning Expression. Keep its semantic span for diagnostics and identity, but do not
-            // let it win cursor containment over the authored value Expression.
-            if !synthetic_expression_results[index] {
+            // let it win cursor containment over the authored value Expression. Likewise a
+            // ConjugatedPortDefinition is never authored: lowering mints it with its original
+            // PortDefinition's span, so it must not win containment over that definition. A
+            // flow's minted FlowEnd and its owned flow feature carry the endpoint's span but are
+            // never authored either; the endpoint reference keeps the cursor.
+            let is_flow_end = |kind| kind == DeclarationKind::FlowEnd;
+            let synthesized = synthetic_expression_results[index]
+                || declaration.kind == DeclarationKind::ConjugatedPortDefinition
+                || is_flow_end(declaration.kind)
+                || declaration
+                    .owner
+                    .and_then(|owner| storage.declarations.get(owner.index()))
+                    .is_some_and(|owner| is_flow_end(owner.kind));
+            if !synthesized {
                 if let Ok(range) = document_range(storage, declaration.document, &declaration.span)
                 {
                     spans[declaration.document.index()].push((range, id));

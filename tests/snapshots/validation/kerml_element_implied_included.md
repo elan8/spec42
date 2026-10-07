@@ -51,7 +51,7 @@ package Implied {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ab30b0f073cfbeeb946e7e406c3b97dead32ee47a9913d122e47fe5aa25b509a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9cba8c6a0347d945d2a2694a13cbf5db7cf2cba77bb299877daad2db067c2b71"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_element_implied_included.md") (qualified-name "Implied::General"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

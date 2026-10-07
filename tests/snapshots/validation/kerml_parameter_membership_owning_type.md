@@ -6,13 +6,19 @@ specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 validation_rule=8.3.4.6.4 validateParameterMembershipOwningType
 source_expectation=accepted
 rule_family=validate
-expectation=diagnostics
+expectation=by_construction
+evidence_reference=file:tests/snapshots/kerml/features.md
 rule_id=kerml-1.0:8.3.4.6.4:validateParameterMembershipOwningType
-blocked_by=semantic-parameter-membership-invalid-owner
 type=file
 ~~~
 # SOURCE
 ~~~kerml
+// The violating side has no textual counterpart. KerML's only ParameterMembership productions are
+// expression members (ArgumentMember, NamedArgumentMember, BodyParameterMember,
+// TypeReferenceMember), owned by an Expression (a Step) or a constructor result; SysML adds them
+// only in action-family productions owned by Steps. A directed `in feature` in a classifier body
+// is an ordinary FeatureMembership: kerml/features.md pins Tanks::fuelInPort::fuelFlow as a plain
+// directed kerml-feature member with no parameter role, as this fixture's SMG does Holder::input.
 package Parameters {
     classifier Thing;
 
@@ -22,25 +28,10 @@ package Parameters {
     }
 
     classifier Holder {
-        // Invalid: a classifier is not a Behavior, a Step, or a constructor result parameter.
+        // Also conforming: a directed feature, not a ParameterMembership.
         in feature input : Thing;
     }
 }
-~~~
-# EXPECTED DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "memory://snapshot/kerml_parameter_membership_owning_type.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "parameter_membership_invalid_owner")
-        (source "semantic")
-        (range (start 5 8) (end 5 33))
-      )
-    )
-  )
-)
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
@@ -54,7 +45,7 @@ package Parameters {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4b240476e0f809eea67c3523455450568f731efd744377e8d501060ac40afade"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2700da40818162b6a48d1b2805e54c39ef0252f9c3280095fc074d266ff10997"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Doing"))) (kind kerml-behavior) (membership (kind owning) (visibility default)))
@@ -105,12 +96,12 @@ package Parameters {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (range (start 5 27) (end 5 32)) (probe (position 5 27))
+  (query (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (range (start 11 27) (end 11 32)) (probe (position 11 27))
     (reference (id (source (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Doing::input"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Thing")))))
     )
   )
-  (query (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (range (start 10 27) (end 10 32)) (probe (position 10 27))
+  (query (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (range (start 16 27) (end 16 32)) (probe (position 16 27))
     (reference (id (source (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Holder::input"))) (kind featureTyping) (ordinal 0) (authored-target "Thing")
       (outcome (status resolved) (target (node (document "memory://snapshot/kerml_parameter_membership_owning_type.md") (qualified-name "Parameters::Thing")))))
     )

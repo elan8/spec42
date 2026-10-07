@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.21.7:validateRequirementConstraintMembershipOwningType
-blocked_by=semantic-requirement-constraint-owner
 type=file
 ~~~
 # SOURCE
@@ -38,7 +37,7 @@ package Roles {
         (severity warning)
         (code "requirement_constraint_invalid_owner")
         (source "semantic")
-        (range (start 11 4) (end 11 18))
+        (range (start 12 8) (end 12 41))
       )
     )
   )
@@ -49,6 +48,12 @@ package Roles {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "requirement_constraint_invalid_owner")
+        (source "semantic")
+        (range (start 12 8) (end 12 41))
+      )
     )
   )
 )
@@ -56,7 +61,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:90e2c9c2eacf75643a9cace9f8936678aba596833eaaeda6c2e11631e82bbf81"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:545cb77e0e661c1943f8a17898bb31edbb9de90febbfcc759f4030f99f722d2b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_constraint_membership_owning_type.md") (qualified-name "Roles::Bad"))) (kind part-def) (membership (kind owning) (visibility default)))

@@ -265,8 +265,8 @@ digest_newtype!(ContentDigest, "spec42.source_identity.content.v1");
 digest_newtype!(RootDigest, "spec42.source_identity.root.v1");
 digest_newtype!(ArtifactKey, "spec42.cache.artifact_key.v1");
 digest_newtype!(PublicationModelDigest, "spec42.publication.model.v3");
-digest_newtype!(LibraryStratumKey, "spec42.library.stratum.v4");
-digest_newtype!(LibraryListingKey, "spec42.library.listing.v2");
+digest_newtype!(LibraryStratumKey, "spec42.library.stratum.v5");
+digest_newtype!(LibraryListingKey, "spec42.library.listing.v3");
 
 /// Evaluation configuration committed into a publication identity.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -331,6 +331,7 @@ impl PublicationModelDigest {
 pub struct LibrarySourceIdentity<'a> {
     uri: &'a str,
     role: SourceRole,
+    language: SourceLanguage,
     content_digest: ContentDigest,
     library_location: Option<(u32, &'a str)>,
 }
@@ -339,12 +340,14 @@ impl<'a> LibrarySourceIdentity<'a> {
     pub fn new(
         uri: &'a str,
         role: SourceRole,
+        language: SourceLanguage,
         content_digest: ContentDigest,
         library_location: Option<(u32, &'a str)>,
     ) -> Self {
         Self {
             uri,
             role,
+            language,
             content_digest,
             library_location,
         }
@@ -359,6 +362,7 @@ fn encode_library_sources<'a>(
     for source in sources {
         enc.field(source.uri.as_bytes());
         enc.field(&[source.role.tag()]);
+        enc.field(&[source.language.tag()]);
         enc.field(source.content_digest.as_bytes());
         enc.field_u64(
             source
@@ -422,6 +426,47 @@ impl SourceRole {
     }
 }
 
+/// The concrete syntax a source is authored in.
+///
+/// KerML and SysML share one parser, and several productions (`metadata`, for one) produce the
+/// same syntax node in both, yet denote different metaclasses (a KerML `MetadataFeature` versus a
+/// SysML `MetadataUsage`). The language is therefore a semantic input of every source and is
+/// committed into each identity that commits the source. This type owns the one normalization
+/// from a path to a language; consumers read the admitted fact rather than inspecting paths.
+#[derive(
+    Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize,
+)]
+pub enum SourceLanguage {
+    #[default]
+    SysML,
+    KerML,
+}
+
+impl SourceLanguage {
+    pub fn tag(self) -> u8 {
+        match self {
+            SourceLanguage::SysML => 0,
+            SourceLanguage::KerML => 1,
+        }
+    }
+
+    /// The language a source path, or the path component of a source URI, names by its file
+    /// extension: `.kerml` (in any case) is KerML and every other source is SysML. A URI query
+    /// or fragment is not part of the path.
+    pub fn of_path(path: &str) -> Self {
+        let path = path.split(['?', '#']).next().unwrap_or_default();
+        let extension = path
+            .rsplit_once('.')
+            .map(|(_, extension)| extension)
+            .filter(|extension| !extension.contains('/'));
+        if extension.is_some_and(|extension| extension.eq_ignore_ascii_case("kerml")) {
+            SourceLanguage::KerML
+        } else {
+            SourceLanguage::SysML
+        }
+    }
+}
+
 /// One admitted source's identity within a [`SourceManifest`] (plan §5.2).
 ///
 /// `path_hint` is provenance only, never identity: it is not fed into the leaf digest or the
@@ -436,6 +481,9 @@ pub struct SourceManifestEntry {
     /// Provenance-only display path. Never used as identity.
     pub path_hint: Option<String>,
     pub role: SourceRole,
+    /// The language the source is admitted as: a semantic input, so part of the identity.
+    #[serde(default)]
+    pub language: SourceLanguage,
     pub content_digest: ContentDigest,
     pub byte_len: u64,
     /// Index of the configured library root this entry came from, in configured precedence
@@ -446,7 +494,7 @@ pub struct SourceManifestEntry {
 }
 
 impl SourceManifestEntry {
-    const DOMAIN: &'static str = "spec42.cache.source_manifest.entry.v1";
+    const DOMAIN: &'static str = "spec42.cache.source_manifest.entry.v2";
 
     /// The per-entry leaf digest: a domain-separated, length-prefixed commitment to every
     /// identity-relevant field. `path_hint` is deliberately excluded.
@@ -454,6 +502,7 @@ impl SourceManifestEntry {
         let mut enc = CanonicalEncoder::new(Self::DOMAIN);
         enc.field(self.uri.as_bytes());
         enc.field(&[self.role.tag()]);
+        enc.field(&[self.language.tag()]);
         enc.field(self.content_digest.as_bytes());
         enc.field_u64(self.byte_len);
         enc.field_u64(self.library_root_slot.map(|s| s as u64 + 1).unwrap_or(0));
@@ -656,6 +705,7 @@ mod tests {
         let source = LibrarySourceIdentity {
             uri: "file:///lib/a.sysml",
             role: SourceRole::Library,
+            language: SourceLanguage::SysML,
             content_digest: ContentDigest::of_bytes(b"package A;"),
             library_location: Some((0, "a.sysml")),
         };
@@ -733,6 +783,7 @@ mod tests {
         let source = LibrarySourceIdentity {
             uri: "file:///lib/a.sysml",
             role: SourceRole::Library,
+            language: SourceLanguage::SysML,
             content_digest: digest,
             library_location: Some((0, "a.sysml")),
         };
@@ -749,6 +800,13 @@ mod tests {
             base,
             changed(LibrarySourceIdentity {
                 role: SourceRole::StandardLibrary,
+                ..source
+            })
+        );
+        assert_ne!(
+            base,
+            changed(LibrarySourceIdentity {
+                language: SourceLanguage::KerML,
                 ..source
             })
         );
@@ -791,6 +849,7 @@ mod tests {
         let entry = |uri, path| LibrarySourceIdentity {
             uri,
             role: SourceRole::Library,
+            language: SourceLanguage::SysML,
             content_digest: digest,
             library_location: Some((0, path)),
         };
@@ -824,11 +883,43 @@ mod tests {
             uri: uri.to_string(),
             path_hint: Some(uri.to_string()),
             role,
+            language: SourceLanguage::SysML,
             content_digest: ContentDigest::of_bytes(content),
             byte_len: content.len() as u64,
             library_root_slot: None,
             relative_path: None,
         }
+    }
+
+    #[test]
+    fn manifest_entry_commits_its_language() {
+        let sysml = entry(
+            "memory://fixture/a.md",
+            SourceRole::Workspace,
+            b"package A;",
+        );
+        let kerml = SourceManifestEntry {
+            language: SourceLanguage::KerML,
+            ..sysml.clone()
+        };
+        assert_ne!(sysml.leaf_digest(), kerml.leaf_digest());
+    }
+
+    #[test]
+    fn language_of_path_reads_only_the_path_extension() {
+        assert_eq!(SourceLanguage::of_path("a/b.kerml"), SourceLanguage::KerML);
+        assert_eq!(
+            SourceLanguage::of_path("file:///a/B.KerML"),
+            SourceLanguage::KerML
+        );
+        assert_eq!(
+            SourceLanguage::of_path("a.kerml?x=1#f"),
+            SourceLanguage::KerML
+        );
+        assert_eq!(SourceLanguage::of_path("a.sysml"), SourceLanguage::SysML);
+        assert_eq!(SourceLanguage::of_path("a.md"), SourceLanguage::SysML);
+        assert_eq!(SourceLanguage::of_path("x.kerml/a"), SourceLanguage::SysML);
+        assert_eq!(SourceLanguage::of_path("kerml"), SourceLanguage::SysML);
     }
 
     #[test]

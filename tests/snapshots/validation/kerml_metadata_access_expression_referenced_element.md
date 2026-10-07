@@ -8,11 +8,13 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.8.15:validateMetadataAccessExpressionReferencedElement
-blocked_by=lowering-metadata-expressions
 type=file
 ~~~
 # SOURCE
 ~~~kerml
+// The violating side has no textual counterpart: MetadataAccessExpression is
+// `referencedElement = [QualifiedName] '.' 'metadata'`, so every one owns its referenced element.
+// Once the expression is lowered, the conforming side must report nothing.
 package Expressions {
     classifier Thing;
     classifier Holder {
@@ -26,12 +28,6 @@ package Expressions {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "metadata_access_missing_referenced_element")
-        (source "semantic")
-        (range (start 4 8) (end 4 38))
-      )
     )
   )
 )
@@ -41,12 +37,6 @@ package Expressions {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "unsupported_calc_definition_member")
-        (source "semantic")
-        (range (start 4 23) (end 4 37))
-      )
     )
   )
 )
@@ -54,24 +44,29 @@ package Expressions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness unsupported-syntax) (has-evaluation true) (source-digest "blake3:746c85cfbc34dea470230660129ec811abd13968cd93c4203394c588c8e29440"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3ad41c930181eca64bffc484080a945c6862fb9ca904f48f5774d822a490b410"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder::meta"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder::meta"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0))))) (result (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0))))) (kind kerml-metadata-access-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind owning) (visibility default)) (relationships (metadataAccessTarget (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
   (references
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0))))) (kind metadataAccessTarget) (ordinal 0))
+      (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Thing")))))
   )
   (relationships
+    (relationship (kind metadataAccessTarget) (source (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0))))) (kind metadataAccessTarget) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder::meta"))) (target (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder"))) (provenance implied))
-    (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder::meta"))) (target (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder::meta"))) (target (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unsupported))
+    (evaluated (declaration (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0))))) (state unsupported))
   )
 )
 ~~~
@@ -80,10 +75,13 @@ package Expressions {
 (types
     (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder::meta")))
       (featured-by (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder")))
-      (supertype (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+      (supertype (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
-    (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
-      (featured-by (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-expression) (ordinal 0)))))
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder")))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0)))))
       (subtype (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Holder::meta")) (scopes any feature))
     )
 )
@@ -91,11 +89,16 @@ package Expressions {
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome unsupported))
+  (declaration (id (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0))))) (outcome unsupported))
 )
 ~~~
 # NAVIGATION
 ~~~sexpr
 (navigation
+  (query (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (range (start 7 23) (end 7 28)) (probe (position 7 23))
+    (reference (id (source (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "meta")) (anonymous (kind kerml-metadata-access-expression) (ordinal 0))))) (kind metadataAccessTarget) (ordinal 0) (authored-target "Thing")
+      (outcome (status resolved) (target (node (document "memory://snapshot/kerml_metadata_access_expression_referenced_element.md") (qualified-name "Expressions::Thing")))))
+    )
+  )
 )
 ~~~

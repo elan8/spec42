@@ -28,11 +28,12 @@ package Actions { action def Procedure { action receiver; send 1 to receiver; } 
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1ca6a609151b06c8508354500f0ff1bd6539384199059939336d463b66e021bd"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f722f35cfa3761b33b25bfabc77313a7ea4dc6a7763d8d2bef3f72b8c357ee30"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_send_action_optional_sender.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_send_action_optional_sender.md") (qualified-name "Actions::Procedure"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_send_action_optional_sender.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Procedure")) (anonymous (kind send-action) (ordinal 0))))) (kind send-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (sendTarget (reference "receiver")))))
+    (declaration (id (node (document "memory://snapshot/sysml_send_action_optional_sender.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Procedure")) (anonymous (kind send-action) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_send_action_optional_sender.md") (qualified-name "Actions::Procedure::receiver"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
   )
   (references

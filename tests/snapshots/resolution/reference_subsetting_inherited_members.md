@@ -52,7 +52,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7ed8800addd6ca83309a4754762d56ab074bc3e18656d993d15e0f62a25436fc"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:32091e7306936654fd358b06e54c69bcdb7a56a3d8960521294e484227f96b52"))
   (declarations
     (declaration (id (node (document "memory://snapshot/reference_subsetting_inherited_members.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/reference_subsetting_inherited_members.md") (qualified-name "P::Container"))) (kind class-def) (membership (kind owning) (visibility default)))

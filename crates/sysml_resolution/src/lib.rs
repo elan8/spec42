@@ -10,7 +10,9 @@
 
 use std::fmt;
 
-use source_identity::{ContentDigest, RootDigest, SourceManifest, SourceManifestEntry, SourceRole};
+use source_identity::{
+    ContentDigest, RootDigest, SourceLanguage, SourceManifest, SourceManifestEntry, SourceRole,
+};
 
 mod action_query;
 mod check;
@@ -126,7 +128,8 @@ pub use projection::{
     ProjectionTruncation, PublishedModelProjection, MODEL_PROJECTION_SCHEMA_VERSION,
 };
 pub use qualified_reference::{
-    QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceTarget,
+    AnonymousElementReference, QualifiedElementReference, QualifiedReferenceOutcome,
+    QualifiedReferenceTarget,
 };
 pub use redefinition_query::{
     RedefinitionCheckKind, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite,
@@ -225,6 +228,7 @@ pub struct SourceInput {
     identity: Box<str>,
     payload: SourcePayload,
     kind: SourceKind,
+    language: SourceLanguage,
     content_digest: ContentDigest,
     library_root_slot: Option<u32>,
     library_relative_path: Option<Box<str>>,
@@ -239,10 +243,14 @@ impl SourceInput {
         &self.identity
     }
 
+    /// Admit text under `identity`, in the language its path names
+    /// ([`SourceLanguage::of_path`]).
     pub fn new(identity: impl Into<Box<str>>, content: String, kind: SourceKind) -> Self {
         let content_digest = ContentDigest::of_bytes(content.as_bytes());
+        let identity = identity.into();
         Self {
-            identity: identity.into(),
+            language: SourceLanguage::of_path(&identity),
+            identity,
             payload: SourcePayload::Text(content),
             kind,
             content_digest,
@@ -261,6 +269,7 @@ impl SourceInput {
             identity: identity.into(),
             content_digest: document.digest(),
             kind: document.kind(),
+            language: document.language(),
             payload: SourcePayload::Pending(document),
             library_root_slot: library_location.as_ref().map(|(slot, _)| *slot),
             library_relative_path: library_location.map(|(_, path)| path),
@@ -274,14 +283,24 @@ impl SourceInput {
         parsed: syntax::ParsedSource,
         kind: SourceKind,
     ) -> Self {
+        let identity = identity.into();
         Self {
-            identity: identity.into(),
+            language: SourceLanguage::of_path(&identity),
+            identity,
             content_digest: parsed.digest(),
             payload: SourcePayload::Parsed(parsed),
             kind,
             library_root_slot: None,
             library_relative_path: None,
         }
+    }
+}
+
+impl SourceInput {
+    /// The same source admitted as `language`, for an identity whose path does not name it.
+    pub fn with_language(mut self, language: SourceLanguage) -> Self {
+        self.language = language;
+        self
     }
 }
 
@@ -405,6 +424,7 @@ fn manifest_entry(source: &SourceInput) -> SourceManifestEntry {
         uri: source.identity.to_string(),
         path_hint: None,
         role: source_role(source.kind),
+        language: source.language,
         content_digest: source.content_digest,
         byte_len: source.payload.byte_len(),
         library_root_slot: source.library_root_slot,
@@ -714,6 +734,7 @@ fn build_parts(
         .map(|source| OwnedSourceRecord {
             identity: source.identity,
             role: source_role(source.kind),
+            language: source.language,
             digest: source.content_digest,
             payload: source.payload,
             syntax: syntax.clone(),

@@ -7,8 +7,10 @@ use crate::evaluate::classify::is_logical_operator;
 use crate::evaluate::classify::is_range_or_coalesce_operator;
 use crate::evaluate::classify::is_unary_operator;
 use crate::evaluate::fold::quantity_unit_text;
-use crate::lower::facts::direction_fact;
 use crate::lower::facts::multiplicity_facts;
+use crate::lower::facts::occurrence_prefix_direction;
+use crate::lower::facts::occurrence_prefix_modifiers;
+use crate::lower::facts::portion_kind_node_fact;
 use crate::lower::facts::AuthoredExpression;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
@@ -32,6 +34,8 @@ use sysml_v2_parser::ast::{
     ConstraintUsage as ParserConstraintUsage, Expression, MembershipKind as ParserMembershipKind,
     Node, RequireConstraint, SequenceExpressionList,
 };
+
+use crate::lower::facts::ExpressionOperandRole;
 
 impl SemanticModelBuilder {
     /// Lowers a `constraint def`/`constraint` usage body's boolean expression (slice 1 of the
@@ -63,12 +67,21 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
+        self.note_expression_node(declaration, node);
         match &node.value {
             Expression::LiteralInteger(_)
             | Expression::LiteralReal(_)
             | Expression::LiteralBoolean(_)
             | Expression::LiteralString(_)
-            | Expression::Null => Ok(()),
+            | Expression::Null => self
+                .lower_leaf_expression(document, declaration, node)
+                .map(drop),
+            Expression::MetadataAccess(_) => {
+                if !self.lower_metadata_access(document, declaration, node)? {
+                    self.push_unsupported(document, family, node.span);
+                }
+                Ok(())
+            }
             Expression::Bracket { base, operands, .. } => {
                 self.lower_unit_token(document, declaration, operands)?;
                 self.lower_constraint_expression(document, declaration, family, base)
@@ -87,26 +100,20 @@ impl SemanticModelBuilder {
             }
             Expression::Select { base, selector } => {
                 self.lower_constraint_expression(document, declaration, family, base)?;
-                self.push_expression_operand_reference(document, declaration, *selector)
-            }
-            Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
-                let span = self.documents[document.index()]
-                    .parsed
-                    .qualified_reference(*target)
-                    .ok_or(ConstructionError::InvalidParserReference)?
-                    .metadata
-                    .span;
-                self.push_reference(PendingReference {
-                    source: declaration,
-                    kind: ReferenceKind::ExpressionOperand,
+                self.push_expression_operand_reference(
                     document,
-                    local: *target,
-                    flags: RelationshipFlags::default(),
-                    span,
-                    import: None,
-                })?;
-                Ok(())
+                    declaration,
+                    *selector,
+                    ExpressionOperandRole::FeatureChainMember,
+                )
             }
+            Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => self
+                .push_expression_operand_reference(
+                    document,
+                    declaration,
+                    *target,
+                    ExpressionOperandRole::FeatureReference,
+                ),
             Expression::MemberAccess { .. } => {
                 if self
                     .push_member_access_expression(declaration, document, node)?
@@ -148,22 +155,24 @@ impl SemanticModelBuilder {
                 self.lower_constraint_expression(document, declaration, family, left)?;
                 self.lower_constraint_expression(document, declaration, family, right)
             }
-            Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(document, declaration, callee, args.len(), node.span)?;
+            Expression::Invocation { args, .. } | Expression::Constructor { args, .. } => {
+                let entered = self.enter_instantiation(document, declaration, node)?;
                 for arg in args {
                     self.lower_constraint_expression(document, declaration, family, &arg.value)?;
                 }
-                Ok(())
-            }
-            Expression::Constructor { type_name, args } => {
-                self.push_invocation_callee_reference(document, declaration, *type_name)?;
-                for arg in args {
-                    self.lower_constraint_expression(document, declaration, family, &arg.value)?;
-                }
+                self.leave_instantiation(entered);
                 Ok(())
             }
             Expression::CollectionOp { base, args, .. } => {
                 self.lower_constraint_expression(document, declaration, family, base)?;
+                if let Some(function) = function_reference_argument(node) {
+                    return self.push_expression_operand_reference(
+                        document,
+                        declaration,
+                        function,
+                        ExpressionOperandRole::FunctionReference,
+                    );
+                }
                 for arg in args {
                     self.lower_constraint_expression(document, declaration, family, &arg.value)?;
                 }
@@ -190,7 +199,16 @@ impl SemanticModelBuilder {
                 self.push_type_check_target_reference(document, declaration, *type_name)
             }
             Expression::MetaCast { base, metaclass } => {
-                self.lower_constraint_expression(document, declaration, family, base)?;
+                if let Some(element) = bare_reference(base) {
+                    self.push_expression_operand_reference(
+                        document,
+                        declaration,
+                        element,
+                        ExpressionOperandRole::MetadataReference,
+                    )?;
+                } else {
+                    self.lower_constraint_expression(document, declaration, family, base)?;
+                }
                 self.push_meta_cast_target_reference(document, declaration, *metaclass)
             }
             _ => {
@@ -232,12 +250,21 @@ impl SemanticModelBuilder {
         family: UnsupportedFamily,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
+        self.note_expression_node(declaration, node);
         match &node.value {
             Expression::LiteralInteger(_)
             | Expression::LiteralReal(_)
             | Expression::LiteralBoolean(_)
             | Expression::LiteralString(_)
-            | Expression::Null => Ok(()),
+            | Expression::Null => self
+                .lower_leaf_expression(document, declaration, node)
+                .map(drop),
+            Expression::MetadataAccess(_) => {
+                if !self.lower_metadata_access(document, declaration, node)? {
+                    self.push_unsupported(document, family, node.span);
+                }
+                Ok(())
+            }
             Expression::Bracket { base, operands, .. } => {
                 self.lower_unit_token(document, declaration, operands)?;
                 self.lower_calc_expression(document, declaration, family, base)
@@ -251,26 +278,20 @@ impl SemanticModelBuilder {
             }
             Expression::Select { base, selector } => {
                 self.lower_calc_expression(document, declaration, family, base)?;
-                self.push_expression_operand_reference(document, declaration, *selector)
-            }
-            Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
-                let span = self.documents[document.index()]
-                    .parsed
-                    .qualified_reference(*target)
-                    .ok_or(ConstructionError::InvalidParserReference)?
-                    .metadata
-                    .span;
-                self.push_reference(PendingReference {
-                    source: declaration,
-                    kind: ReferenceKind::ExpressionOperand,
+                self.push_expression_operand_reference(
                     document,
-                    local: *target,
-                    flags: RelationshipFlags::default(),
-                    span,
-                    import: None,
-                })?;
-                Ok(())
+                    declaration,
+                    *selector,
+                    ExpressionOperandRole::FeatureChainMember,
+                )
             }
+            Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => self
+                .push_expression_operand_reference(
+                    document,
+                    declaration,
+                    *target,
+                    ExpressionOperandRole::FeatureReference,
+                ),
             Expression::MemberAccess { .. } => {
                 if self
                     .push_member_access_expression(declaration, document, node)?
@@ -307,22 +328,24 @@ impl SemanticModelBuilder {
                 self.lower_calc_expression(document, declaration, family, left)?;
                 self.lower_calc_expression(document, declaration, family, right)
             }
-            Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(document, declaration, callee, args.len(), node.span)?;
+            Expression::Invocation { args, .. } | Expression::Constructor { args, .. } => {
+                let entered = self.enter_instantiation(document, declaration, node)?;
                 for arg in args {
                     self.lower_calc_expression(document, declaration, family, &arg.value)?;
                 }
-                Ok(())
-            }
-            Expression::Constructor { type_name, args } => {
-                self.push_invocation_callee_reference(document, declaration, *type_name)?;
-                for arg in args {
-                    self.lower_calc_expression(document, declaration, family, &arg.value)?;
-                }
+                self.leave_instantiation(entered);
                 Ok(())
             }
             Expression::CollectionOp { base, args, .. } => {
                 self.lower_calc_expression(document, declaration, family, base)?;
+                if let Some(function) = function_reference_argument(node) {
+                    return self.push_expression_operand_reference(
+                        document,
+                        declaration,
+                        function,
+                        ExpressionOperandRole::FunctionReference,
+                    );
+                }
                 for arg in args {
                     self.lower_calc_expression(document, declaration, family, &arg.value)?;
                 }
@@ -349,7 +372,16 @@ impl SemanticModelBuilder {
                 self.push_type_check_target_reference(document, declaration, *type_name)
             }
             Expression::MetaCast { base, metaclass } => {
-                self.lower_calc_expression(document, declaration, family, base)?;
+                if let Some(element) = bare_reference(base) {
+                    self.push_expression_operand_reference(
+                        document,
+                        declaration,
+                        element,
+                        ExpressionOperandRole::MetadataReference,
+                    )?;
+                } else {
+                    self.lower_calc_expression(document, declaration, family, base)?;
+                }
                 self.push_meta_cast_target_reference(document, declaration, *metaclass)
             }
             _ => {
@@ -434,11 +466,14 @@ impl SemanticModelBuilder {
         declaration: DeclarationId,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
+        self.note_expression_node(declaration, node);
         match &node.value {
             Expression::LiteralInteger(_)
             | Expression::LiteralReal(_)
             | Expression::LiteralBoolean(_)
-            | Expression::LiteralString(_) => Ok(()),
+            | Expression::LiteralString(_) => self
+                .lower_leaf_expression(document, declaration, node)
+                .map(drop),
             Expression::Bracket { base, operands, .. } => {
                 self.lower_unit_token(document, declaration, operands)?;
                 self.lower_filter_expression(document, declaration, base)
@@ -452,24 +487,24 @@ impl SemanticModelBuilder {
             }
             Expression::Select { base, selector } => {
                 self.lower_filter_expression(document, declaration, base)?;
-                self.push_expression_operand_reference(document, declaration, *selector)
-            }
-            Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
-                let span = self.documents[document.index()]
-                    .parsed
-                    .qualified_reference(*target)
-                    .ok_or(ConstructionError::InvalidParserReference)?
-                    .metadata
-                    .span;
-                self.push_reference(PendingReference {
-                    source: declaration,
-                    kind: ReferenceKind::ExpressionOperand,
+                self.push_expression_operand_reference(
                     document,
-                    local: *target,
-                    flags: RelationshipFlags::default(),
-                    span,
-                    import: None,
-                })?;
+                    declaration,
+                    *selector,
+                    ExpressionOperandRole::FeatureChainMember,
+                )
+            }
+            Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => self
+                .push_expression_operand_reference(
+                    document,
+                    declaration,
+                    *target,
+                    ExpressionOperandRole::FeatureReference,
+                ),
+            Expression::MetadataAccess(_) => {
+                if !self.lower_metadata_access(document, declaration, node)? {
+                    self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span);
+                }
                 Ok(())
             }
             Expression::Classification { metaclass } => {
@@ -513,22 +548,24 @@ impl SemanticModelBuilder {
                 self.lower_filter_expression(document, declaration, left)?;
                 self.lower_filter_expression(document, declaration, right)
             }
-            Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(document, declaration, callee, args.len(), node.span)?;
+            Expression::Invocation { args, .. } | Expression::Constructor { args, .. } => {
+                let entered = self.enter_instantiation(document, declaration, node)?;
                 for arg in args {
                     self.lower_filter_expression(document, declaration, &arg.value)?;
                 }
-                Ok(())
-            }
-            Expression::Constructor { type_name, args } => {
-                self.push_invocation_callee_reference(document, declaration, *type_name)?;
-                for arg in args {
-                    self.lower_filter_expression(document, declaration, &arg.value)?;
-                }
+                self.leave_instantiation(entered);
                 Ok(())
             }
             Expression::CollectionOp { base, args, .. } => {
                 self.lower_filter_expression(document, declaration, base)?;
+                if let Some(function) = function_reference_argument(node) {
+                    return self.push_expression_operand_reference(
+                        document,
+                        declaration,
+                        function,
+                        ExpressionOperandRole::FunctionReference,
+                    );
+                }
                 for arg in args {
                     self.lower_filter_expression(document, declaration, &arg.value)?;
                 }
@@ -543,7 +580,16 @@ impl SemanticModelBuilder {
                 self.push_type_check_target_reference(document, declaration, *type_name)
             }
             Expression::MetaCast { base, metaclass } => {
-                self.lower_filter_expression(document, declaration, base)?;
+                if let Some(element) = bare_reference(base) {
+                    self.push_expression_operand_reference(
+                        document,
+                        declaration,
+                        element,
+                        ExpressionOperandRole::MetadataReference,
+                    )?;
+                } else {
+                    self.lower_filter_expression(document, declaration, base)?;
+                }
                 self.push_meta_cast_target_reference(document, declaration, *metaclass)
             }
             Expression::UnaryOp { op, operand } if is_unary_operator(op) => {
@@ -617,6 +663,7 @@ impl SemanticModelBuilder {
                 match &element.value {
                     ConstraintDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span);
+                        self.mark_result_expressions_incomplete(declaration)?;
                     }
                     ConstraintDefBodyElement::AliasDef(node) => {
                         // New upstream member kind: kept visible as unsupported rather than dropped.
@@ -662,13 +709,15 @@ impl SemanticModelBuilder {
                         )?;
                     }
                     ConstraintDefBodyElement::Expression(expression) => {
+                        let element =
+                            self.mint_result_expression(document, declaration, expression)?;
                         self.push_evaluation_fact(
-                            declaration,
+                            element,
                             self.constraint_expression_site(document, &expression.value),
                         );
                         self.lower_constraint_expression(
                             document,
-                            declaration,
+                            element,
                             UnsupportedFamily::ConstraintDefinitionMember,
                             expression,
                         )?
@@ -690,6 +739,12 @@ impl SemanticModelBuilder {
                             UnsupportedFamily::ConstraintDefinitionMember,
                             node,
                         )?,
+                    // `CalculationBodyItem = ActionBodyItem | ReturnParameterMember`: a
+                    // constraint body is a `CalculationBody`, so its action-body members lower
+                    // through the owner that lowers them in a calculation body.
+                    ConstraintDefBodyElement::ActionMember(node) => {
+                        self.lower_action_def_body_element(document, declaration, node)?;
+                    }
                 }
             }
         }
@@ -775,15 +830,20 @@ impl SemanticModelBuilder {
         &mut self,
         document: DocumentIdx,
         owner: DeclarationId,
-        family: UnsupportedFamily,
         node: &Node<AssertConstraintMember>,
     ) -> Result<(), ConstructionError> {
-        if node.value.target.is_some() {
-            self.push_unsupported(document, family, node.span);
-            return Ok(());
-        }
-        let name = self.intern_declaration_name(document, node.value.declaration_name)?;
-        let short_name = self.intern_short_name(document, node.value.short_name)?;
+        // `assert <path>;` is `AssertConstraintUsage`'s `OwnedReferenceSubsetting` alternative
+        // (SysML BNF `AssertConstraintUsage`, Pilot `SysML.xtext`): an anonymous usage whose
+        // asserted constraint is a `::>` reference-subsetting target, the relationship
+        // `validateAssertConstraintUsageReference` reads. A shorthand declares no name.
+        let name = match node.value.target {
+            Some(_) => None,
+            None => self.intern_declaration_name(document, node.value.declaration_name)?,
+        };
+        let short_name = match node.value.target {
+            Some(_) => None,
+            None => self.intern_short_name(document, node.value.short_name)?,
+        };
         let declaration = self.push_typed_declaration(
             document,
             Some(owner),
@@ -805,6 +865,23 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
+        if let Some(target) = node.value.target {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: declaration,
+                kind: ReferenceKind::References,
+                document,
+                local: target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
         if let Some(type_name) = node.value.type_name {
             let span = self.documents[document.index()]
                 .parsed
@@ -966,6 +1043,7 @@ impl SemanticModelBuilder {
                 match &element.value {
                     CalcDefBodyElement::Error(error) => {
                         self.push_recovery(document, error.span);
+                        self.mark_result_expressions_incomplete(declaration)?;
                     }
                     // KerML `flow of <payload> from <a> to <b>;` in a calc-shaped body
                     // (`classifier`/`struct`/`class`/`behavior`, KerML 8.2's `Flow`). Upstream
@@ -1024,13 +1102,15 @@ impl SemanticModelBuilder {
                         )?;
                     }
                     CalcDefBodyElement::Expression(expression) => {
+                        let element =
+                            self.mint_result_expression(document, declaration, expression)?;
                         self.push_evaluation_fact(
-                            declaration,
+                            element,
                             self.calc_expression_site(document, &expression.value),
                         );
                         self.lower_calc_expression(
                             document,
-                            declaration,
+                            element,
                             UnsupportedFamily::CalcDefinitionMember,
                             expression,
                         )?
@@ -1081,12 +1161,7 @@ impl SemanticModelBuilder {
                         self.lower_import(document, Some(declaration), node)?;
                     }
                     CalcDefBodyElement::AssertConstraint(node) => {
-                        self.lower_assert_constraint_member(
-                            document,
-                            declaration,
-                            UnsupportedFamily::CalcDefinitionMember,
-                            node,
-                        )?;
+                        self.lower_assert_constraint_member(document, declaration, node)?;
                     }
                 }
             }
@@ -1095,13 +1170,12 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers a package/definition/usage-level `calc` feature member (BNF CalculationUsage),
-    /// mirroring `lower_analysis_case_usage`: ownership, membership, a `:` typing target, and
-    /// `redefines` targets. Unlike other usage kinds, `CalcUsage::redefines` is a bare
-    /// `Vec<QualifiedReferenceId>` rather than a `Node<SubsettingRelationship>` (and there is no
-    /// `subsets` field at all), so each target is pushed as its own `Redefinition` reference
-    /// using that target's own resolved span (via `qualified_reference`) rather than through
-    /// `lower_subsetting_relationship`. `in`/`out`/`inout` direction, value binding, and
-    /// calculation-expression body content are out of scope, sharing
+    /// mirroring `lower_analysis_case_usage`: ownership, membership, the shared
+    /// `OccurrenceUsagePrefix`, every `Typings` target, and `redefines` targets.
+    /// `CalcUsage::redefines` is a bare `Vec<QualifiedReferenceId>` rather than a
+    /// `Node<SubsettingRelationship>`, so each target is pushed as its own `Redefinition`
+    /// reference using that target's own resolved span (via `qualified_reference`) rather than
+    /// through `lower_subsetting_relationship`. Body content shares
     /// `UnsupportedFamily::CalcDefinitionMember` with the `def` form.
     pub(crate) fn lower_calc_usage(
         &mut self,
@@ -1120,10 +1194,12 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
-                    ..DeclarationModifiers::default()
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
+                    ..occurrence_prefix_modifiers(&node.value.prefix)
                 },
-                direction: direction_fact(node.value.direction.as_ref()),
+                direction: occurrence_prefix_direction(&node.value.prefix),
+                portion_kind: portion_kind_node_fact(node.value.prefix.portion()),
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
@@ -1137,27 +1213,14 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
+        self.lower_occurrence_prefix_members(document, declaration, &node.value.prefix)?;
         // Constructs the canonical value Expression/result and preserves its authored spelling.
         // This usage family does not yet classify the expression operands.
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(document, declaration, feature_value)?;
         }
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span;
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
         }
         if let Some(targets) = &node.value.redefines {
             for target in targets.iter().copied() {
@@ -1183,4 +1246,38 @@ impl SemanticModelBuilder {
         }
         self.lower_calc_def_body(document, declaration, &node.value.body)
     }
+}
+
+/// The element a bare (possibly qualified or dotted) name operand references, if the operand is
+/// one.
+fn bare_reference(node: &Node<Expression>) -> Option<sysml_v2_parser::ast::QualifiedReferenceId> {
+    match &node.value {
+        Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => Some(*target),
+        _ => None,
+    }
+}
+
+/// The function a `->f g` arrow invocation passes without parentheses (KerML
+/// `FunctionReferenceExpression`): the parser records it as the single positional argument of a
+/// body-less collection operation whose node ends where that argument ends, which a
+/// parenthesized `->f(g)` argument list never does.
+fn function_reference_argument(
+    node: &Node<Expression>,
+) -> Option<sysml_v2_parser::ast::QualifiedReferenceId> {
+    let Expression::CollectionOp {
+        args, brace_body, ..
+    } = &node.value
+    else {
+        return None;
+    };
+    let [argument] = args.as_slice() else {
+        return None;
+    };
+    if brace_body.is_some()
+        || argument.parameter.is_some()
+        || argument.value.span.offset + argument.value.span.len != node.span.offset + node.span.len
+    {
+        return None;
+    }
+    bare_reference(&argument.value)
 }

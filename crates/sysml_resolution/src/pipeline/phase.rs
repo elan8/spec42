@@ -18,6 +18,8 @@ use crate::evaluate::EvaluationFact;
 use crate::evaluate::SettledEvaluation;
 use crate::evaluation::EvaluationPolicy;
 use crate::index::bindings::BindingConnectorIndex;
+use crate::index::connector_context::context_featuring_candidates;
+use crate::index::connector_context::synthesize_connector_context_featurings;
 use crate::index::documents::DocumentIndex;
 use crate::index::elements::ElementFactIndex;
 use crate::index::expressions::ExpressionIndex;
@@ -45,6 +47,7 @@ use crate::resolve::implied::synthesize_feature_reference_expression_result_spec
 use crate::resolve::implied::synthesize_implied_relationships;
 use crate::resolve::implied::synthesize_invocation_expression_specializations;
 use crate::resolve::implied::synthesize_operator_expression_result_specializations;
+use crate::resolve::implied::synthesize_owned_cross_feature_type_featurings;
 use crate::resolve::implied::synthesize_owned_cross_feature_typings;
 use crate::resolve::implied::synthesize_semantic_metadata_specializations;
 use crate::resolve::implied::synthesize_succession_endpoint_subsettings;
@@ -148,6 +151,7 @@ impl Lowered {
                     provisional_relationships: &provisional_library_specializations,
                     settled_outcomes: seed,
                     shadowed_library_roots: &shadowed_library_roots,
+                    owned_end_features: &storage.owned_end_features,
                 },
             )?;
         let authored_relationships = storage
@@ -191,6 +195,10 @@ impl Lowered {
             let mut implied = resolution.implied_relationships.to_vec();
             implied.extend(
                 synthesize_owned_cross_feature_typings(&storage, &prerequisite_types)?.into_vec(),
+            );
+            implied.extend(
+                synthesize_owned_cross_feature_type_featurings(&storage, &prerequisite_types)?
+                    .into_vec(),
             );
             implied.sort_by_key(|relationship| {
                 (
@@ -402,6 +410,80 @@ impl Lowered {
                 synthesis.status,
             )
         };
+        // `checkFeatureParameterRedefinition` then `checkFeatureResultRedefinition`: a parameter
+        // redefines the parameter at its position, and a result the result, of every Behavior or
+        // Step (Function or Expression) its owner directly specializes. That includes the
+        // FeatureTyping of an invocation by its callee settled just above, so both run once every
+        // specialization of a Behavior or Step is known; a positional parameter redefinition is
+        // itself a specialization of a parameter that may own a result, so results run last.
+        let resolution = if !matches!(resolution.solver_status, SolverStatus::Converged) {
+            resolution
+        } else {
+            let settled = crate::resolve::SettledTypeEdges::collect(
+                &storage.references,
+                &resolution.outcomes,
+                &resolution.implied_relationships,
+            )?;
+            let parameters =
+                crate::resolve::parameter_positions::synthesize_parameter_redefinitions(
+                    &storage,
+                    settled.edges,
+                    &settled.authored_redefinitions,
+                )?;
+            let mut with_parameters = resolution.implied_relationships.to_vec();
+            with_parameters.extend(parameters.iter().copied());
+            let settled = crate::resolve::SettledTypeEdges::collect(
+                &storage.references,
+                &resolution.outcomes,
+                &with_parameters,
+            )?;
+            let mut synthesized = parameters;
+            synthesized.extend(
+                crate::resolve::result_parameters::synthesize_result_redefinitions(
+                    &storage,
+                    settled.edges.iter().copied(),
+                    &settled.authored_redefinitions,
+                )?,
+            );
+            // `checkConstructorExpressionResultFeatureRedefinition`: a positional constructor
+            // argument redefines the public feature of the instantiated type at its position.
+            // Which features a type has excludes the ones its members redefine, so this reads
+            // every redefinition settled so far, the ones just synthesized included.
+            let mut redefinitions = settled.authored_redefinitions.clone();
+            redefinitions.extend(
+                with_parameters
+                    .iter()
+                    .chain(synthesized.iter())
+                    .filter(|relationship| {
+                        relationship.kind == crate::model::ReferenceKind::Redefinition
+                    })
+                    .map(|relationship| (relationship.source, relationship.target)),
+            );
+            synthesized.extend(
+                crate::resolve::constructor_features::synthesize_constructor_argument_redefinitions(
+                    &storage,
+                    &resolution.constructor_expression_projections,
+                    settled.edges,
+                    &redefinitions,
+                )?,
+            );
+            if synthesized.is_empty() {
+                resolution
+            } else {
+                let mut implied = resolution.implied_relationships.to_vec();
+                implied.extend(synthesized);
+                implied.sort_by_key(|relationship| {
+                    (
+                        relationship.kind,
+                        relationship.source.0,
+                        relationship.target.0,
+                    )
+                });
+                implied.dedup();
+                let library_anchors = resolution.library_specialization_anchors.clone();
+                resolution.settle(implied.into_boxed_slice(), library_anchors)
+            }
+        };
         let resolution = if storage
             .declarations
             .iter()
@@ -425,7 +507,38 @@ impl Lowered {
                 synthesis.projections,
                 synthesis.decision_status,
                 synthesis.merge_status,
+                synthesis.control_node_successions,
             )
+        };
+        // A Connector with no owning Type is featured by the innermost featuring type its related
+        // features share (`checkConnectorTypeFeaturing`). That reads the settled featuring rows,
+        // end features and specialization closure, so it consumes a prerequisite type index at
+        // this final sub-barrier; nothing else depends on a Connector's own featuring type.
+        let connector_candidates = context_featuring_candidates(&storage)?;
+        let resolution = if connector_candidates.is_empty() {
+            resolution
+        } else {
+            let prerequisite_types = TypeIndex::build(&storage, &resolution)?;
+            let mut implied = resolution.implied_relationships.to_vec();
+            implied.extend(
+                synthesize_connector_context_featurings(
+                    &storage,
+                    &resolution,
+                    &prerequisite_types,
+                    &connector_candidates,
+                )?
+                .into_vec(),
+            );
+            implied.sort_by_key(|relationship| {
+                (
+                    relationship.kind,
+                    relationship.source.0,
+                    relationship.target.0,
+                )
+            });
+            implied.dedup();
+            let library_anchors = resolution.library_specialization_anchors.clone();
+            resolution.settle(implied.into_boxed_slice(), library_anchors)
         };
         let mut completeness = PublicationCompleteness::Complete;
         if has_recovery {
@@ -490,12 +603,14 @@ impl Evaluated {
             &self.resolution.inherited_names,
         )?;
         let facts = ElementFactIndex::build(&self.storage, &self.resolution, &self.evaluation)?;
-        let bindings = BindingConnectorIndex::build(&self.storage, &self.resolution)?;
         // A barrier product, not a solver family: every type fact here is derived from settled
         // outcomes and feeds nothing back into scope, imports or inheritance. The resolver's own
         // ancestor closure for inherited names stays separate and unchanged -- widening that one
         // would silently change name resolution.
         let types = TypeIndex::build(&self.storage, &self.resolution)?;
+        // Result binding connectors relate a Function's or Expression's result, which may be
+        // inherited over the settled type closure.
+        let bindings = BindingConnectorIndex::build(&self.storage, &self.resolution, &types)?;
         // Expression facts read the type closure and the settled evaluation, so they name those
         // three inputs rather than borrowing a model that does not exist yet.
         let expressions = ExpressionIndex::build(

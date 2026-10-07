@@ -1,6 +1,7 @@
 //! Phase 2's memo: one document's lowering product, keyed by the content that produced it.
 //!
-//! Lowering reads one parsed document and nothing else, so content is the complete key. The memo
+//! Lowering reads one parsed document and the language it is admitted as, and nothing else, so
+//! `(language, content)` is the complete key. The memo
 //! is owned by the publication authority and reached only through it: `design.md` — *caches,
 //! memos, and stratum reuse are implementation details behind service handles*. A consumer cannot
 //! hold, name, or invalidate an entry, and cannot tell a hit from a miss except through the
@@ -16,7 +17,7 @@ use std::collections::HashMap;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 
-use source_identity::ContentDigest;
+use source_identity::{ContentDigest, SourceLanguage};
 use sysml_v2_parser::ParsedDocument;
 
 use crate::lower::document::{lower_document, LoweredDocument};
@@ -35,7 +36,7 @@ struct Entry {
 /// The per-document lowering memo shared by every publication of one authority.
 #[derive(Debug, Default)]
 pub(crate) struct LoweringMemo {
-    entries: Mutex<HashMap<ContentDigest, Entry>>,
+    entries: Mutex<HashMap<(SourceLanguage, ContentDigest), Entry>>,
     next_generation: AtomicU64,
 }
 
@@ -49,23 +50,24 @@ impl LoweringMemo {
         MemoGeneration(self.next_generation.fetch_add(1, Ordering::Relaxed))
     }
 
-    /// The product for `digest`, from the memo or from one lowering of `parsed`.
+    /// The product for `(language, digest)`, from the memo or from one lowering of `parsed`.
     ///
     /// Returns whether the product was reused. The walk runs outside the lock, so two builds that
     /// miss on the same document lower it twice and store one product rather than serialising;
     /// lowering is a pure function of content, so the two products are equal.
     pub(crate) fn lower(
         &self,
+        language: SourceLanguage,
         digest: ContentDigest,
         generation: MemoGeneration,
         parsed: &Arc<ParsedDocument>,
     ) -> Result<(Arc<LoweredDocument>, bool), ConstructionError> {
-        if let Some(hit) = self.touch(digest, generation) {
+        if let Some(hit) = self.touch((language, digest), generation) {
             return Ok((hit, true));
         }
-        let lowered = Arc::new(lower_document(Arc::clone(parsed))?);
+        let lowered = Arc::new(lower_document(Arc::clone(parsed), language)?);
         let mut entries = self.entries.lock().unwrap_or_else(PoisonError::into_inner);
-        let entry = entries.entry(digest).or_insert_with(|| Entry {
+        let entry = entries.entry((language, digest)).or_insert_with(|| Entry {
             lowered: Arc::clone(&lowered),
             used: generation.0,
         });
@@ -90,12 +92,64 @@ impl LoweringMemo {
 
     fn touch(
         &self,
-        digest: ContentDigest,
+        key: (SourceLanguage, ContentDigest),
         generation: MemoGeneration,
     ) -> Option<Arc<LoweredDocument>> {
         let mut entries = self.entries.lock().unwrap_or_else(PoisonError::into_inner);
-        let entry = entries.get_mut(&digest)?;
+        let entry = entries.get_mut(&key)?;
         entry.used = entry.used.max(generation.0);
         Some(Arc::clone(&entry.lowered))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::model::DeclarationKind;
+
+    fn metadata_kinds(lowered: &LoweredDocument) -> Vec<DeclarationKind> {
+        lowered
+            .declarations
+            .iter()
+            .map(|declaration| declaration.kind)
+            .filter(|kind| {
+                matches!(
+                    kind,
+                    DeclarationKind::MetadataUsage | DeclarationKind::KermlMetadataFeature
+                )
+            })
+            .collect()
+    }
+
+    /// The same text is a different lowering product in each language, so the language is part
+    /// of the memo key: a KerML entry is never served to a SysML admission of identical content.
+    #[test]
+    fn the_language_is_part_of_the_key() {
+        let text = "package P { metaclass M; metadata m : M; }";
+        let parsed = Arc::new(sysml_v2_parser::parse_for_editor(text).document);
+        let digest = ContentDigest::of_bytes(text.as_bytes());
+        let memo = LoweringMemo::new();
+        let generation = memo.begin();
+
+        let (kerml, reused) = memo
+            .lower(SourceLanguage::KerML, digest, generation, &parsed)
+            .unwrap();
+        assert!(!reused);
+        let (sysml, reused) = memo
+            .lower(SourceLanguage::SysML, digest, generation, &parsed)
+            .unwrap();
+        assert!(!reused);
+        assert_eq!(memo.len(), 2);
+        assert_eq!(
+            metadata_kinds(&kerml),
+            [DeclarationKind::KermlMetadataFeature]
+        );
+        assert_eq!(metadata_kinds(&sysml), [DeclarationKind::MetadataUsage]);
+
+        let (again, reused) = memo
+            .lower(SourceLanguage::KerML, digest, generation, &parsed)
+            .unwrap();
+        assert!(reused);
+        assert!(Arc::ptr_eq(&again, &kerml));
     }
 }

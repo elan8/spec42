@@ -36,6 +36,18 @@ package Demo {
 (fixture-diagnostics
   (document "memory://snapshot/effective_name_qualified_traversal.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "redefinition_featuring_type_incompatible")
+        (source "semantic")
+        (range (start 3 27) (end 3 43))
+        (related-information
+          (related
+            (uri "memory://snapshot/effective_name_qualified_traversal.md")
+            (range (start 2 8) (end 2 18))
+          )
+        )
+      )
     )
   )
 )
@@ -43,7 +55,7 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e54b7472d8b08f2e9d36b212de49cd02da81e96fde6be91caf33884e2ce51734"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:47ebd7e9ba08602e43be59c372659dd11a62de08a5722aef66af83f8d96c4ef5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/effective_name_qualified_traversal.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/effective_name_qualified_traversal.md") (qualified-name "Demo::Base"))) (kind item-def) (membership (kind owning) (visibility default)))

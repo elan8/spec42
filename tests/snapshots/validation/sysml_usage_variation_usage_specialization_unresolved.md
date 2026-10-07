@@ -40,12 +40,12 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8506fa00583c81cc4e1026175de4a2ea7bc1d28dc9a6692cab45f8ca84bd6a61"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9402c0e206ef6ea6a1e278818a27190d7b0605ac324fc7b1a4f9e11291cafdec"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization_unresolved.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization_unresolved.md") (qualified-name "Model::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization_unresolved.md") (qualified-name "Model::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization_unresolved.md") (qualified-name "Model::Holder::choice"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base") (variation true)))))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization_unresolved.md") (qualified-name "Model::Holder::choice"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base") (variation true)))))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_specialization_unresolved.md") (path (named (kind package) (name "Model")) (named (kind part-def) (name "Holder")) (named (kind part) (name "choice")) (anonymous (kind ref) (ordinal 0))))) (kind ref) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (subsetting (reference "missing")))))
   )
   (references

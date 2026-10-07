@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.8:validateForkNodeIncomingSuccessions
-blocked_by=semantic-fork-node-multiple-incoming
 type=file
 ~~~
 # SOURCE
@@ -39,6 +38,12 @@ package Actions {
         (code "fork_node_multiple_incoming")
         (source "semantic")
         (range (start 12 8) (end 12 37))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_fork_node_incoming_successions.md")
+            (range (start 10 8) (end 10 17))
+          )
+        )
       )
     )
   )
@@ -49,6 +54,18 @@ package Actions {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_fork_node_incoming_successions.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "fork_node_multiple_incoming")
+        (source "semantic")
+        (range (start 12 8) (end 12 37))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_fork_node_incoming_successions.md")
+            (range (start 10 8) (end 10 17))
+          )
+        )
+      )
     )
   )
 )
@@ -56,7 +73,7 @@ package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:64d3c642d72278509eeda5560b60e646705b86083edf813cc25e2c003c720db1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ed5221cc28e4b115f840d4329cdcef48d9d39e243910a2083b5f9d5329b89692"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_fork_node_incoming_successions.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_fork_node_incoming_successions.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))

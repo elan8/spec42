@@ -48,7 +48,7 @@ package GeneratedDefinitions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2d94af45d5beb978b1466a12d038964e8a6b062c139c774ba1a549a3fd6f0bf6") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e3f0c063d8d017e6dd321cb29e216ecab7ada71f67566dd23e0211c681a1d5d3") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::AllocationDefinition"))) (kind allocation-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
@@ -57,6 +57,7 @@ package GeneratedDefinitions {
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::InterfaceDefinition"))) (kind interface-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::ItemDefinition"))) (kind item-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::PortDefinition"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/generated_library_specialization_definitions.md") (path (named (kind package) (name "GeneratedDefinitions")) (named (kind port-def) (name "PortDefinition")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (kind conjugated-port-def) (membership (kind owning) (visibility default)) (effective-identification (name "~PortDefinition") (short-name absent) (provenance original-port-definition)))
   )
   (references
   )
@@ -67,6 +68,7 @@ package GeneratedDefinitions {
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::InterfaceDefinition"))) (target (node (document "memory://snapshot/sysml.library/interfaces.md") (qualified-name "Interfaces::Interface"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::ItemDefinition"))) (target (node (document "memory://snapshot/sysml.library/items.md") (qualified-name "Items::Item"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::PortDefinition"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/generated_library_specialization_definitions.md") (path (named (kind package) (name "GeneratedDefinitions")) (named (kind port-def) (name "PortDefinition")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (target (node (document "memory://snapshot/generated_library_specialization_definitions.md") (qualified-name "GeneratedDefinitions::PortDefinition"))) (provenance implied))
   )
   (evaluation
   )

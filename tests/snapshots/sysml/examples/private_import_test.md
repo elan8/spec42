@@ -63,7 +63,7 @@ package PrivateImportTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:967849580a52ec99d90195187a1cd1d0e3f21d87c1c34a526751b0de9560b2b2"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:54c7cb96a373cda4a26d37d222f973091186e36116b8e72b325f18d9dc44dab4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/private_import_test.md") (qualified-name "PrivateImportTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/private_import_test.md") (path (named (kind package) (name "PrivateImportTest")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility public)) (authored (membership (kind import) (visibility public)) (relationships (namespaceImport (reference "P2") (import (shape namespace) (recursive false))))))

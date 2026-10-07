@@ -155,58 +155,34 @@ impl IdentityIndex {
             .collect::<Vec<_>>()
             .into_boxed_slice();
         let declarations = storage.declarations.len();
-        let mut next = vec![None; declarations];
-        let hash_builder = RandomState::default();
-        let mut heads: HashTable<DeclarationId> = HashTable::new();
-        // One scratch buffer for the whole pass: the identity of each declaration is materialised
-        // to be hashed and then reused, so the index costs no resident string per element.
-        let mut current = String::new();
-        let mut lengths = vec![0u32; declarations];
-        let candidate_text = std::cell::RefCell::new(String::new());
-        // Reverse order so each chain ends up in ascending `DeclarationId` order, which keeps an
-        // ambiguous outcome's candidate list canonically ordered without a later sort.
-        for index in (0..declarations).rev() {
-            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            current.clear();
-            write_identity(storage, &occurrences, id, &mut current)?;
-            lengths[index] = u32::try_from(current.len()).map_err(|_| ResolutionError::Capacity)?;
-            let hash = hash_builder.hash_one(current.as_str());
-            let equals = |candidate: &DeclarationId, expected: &str| {
-                let mut scratch = candidate_text.borrow_mut();
-                scratch.clear();
-                write_identity(storage, &occurrences, *candidate, &mut scratch).is_ok()
-                    && scratch.as_str() == expected
-            };
-            let matches = |candidate: &DeclarationId| equals(candidate, current.as_str());
-            if let Some(existing) = heads.find_mut(hash, matches) {
-                next[index] = Some(*existing);
-                *existing = id;
-            } else {
-                let rehash = |candidate: &DeclarationId| {
-                    let mut scratch = candidate_text.borrow_mut();
-                    scratch.clear();
-                    let _ = write_identity(storage, &occurrences, *candidate, &mut scratch);
-                    hash_builder.hash_one(scratch.as_str())
-                };
-                heads
-                    .try_reserve(1, rehash)
-                    .map_err(|_| ResolutionError::Capacity)?;
-                heads.insert_unique(hash, id, rehash);
-            }
-        }
-        // The handle order is the canonical-identity order, settled once here. Sorting needs the
-        // encodings, so they are materialised for the comparison and dropped again: the index
-        // keeps the permutation (four bytes per element each way), never the strings.
+        // Every identity is materialised once, into one blob with an offset table, before it is
+        // hashed or ordered. Owners precede their members (checked above), so a declaration's
+        // identity is its owner's already-written identity followed by its own segment: copying
+        // that prefix is exactly what `write_identity` would re-render recursively, without
+        // walking the owner chain again for every element.
         //
         // One blob and one offset table rather than a `Box<str>` per declaration: the comparison
         // wants slices, and a string per element would put an allocation per element back into
-        // every relink -- which is the cost this whole change exists to remove.
+        // every relink -- which is the cost this whole change exists to remove. The blob is
+        // dropped once the hash chains and the canonical order are settled; the index keeps the
+        // permutation (four bytes per element each way), never the strings.
         let mut encodings = String::new();
         let mut encoding_bounds: Vec<u32> = Vec::with_capacity(declarations + 1);
         encoding_bounds.push(0);
         for index in 0..declarations {
             let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
-            write_identity(storage, &occurrences, id, &mut encodings)?;
+            let declaration = storage
+                .declaration(id)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            match declaration.owner {
+                Some(owner) => {
+                    let start = encoding_bounds[owner.index()] as usize;
+                    let end = encoding_bounds[owner.index() + 1] as usize;
+                    encodings.extend_from_within(start..end);
+                    push_identity_segment(storage, id, &occurrences, &mut encodings)?;
+                }
+                None => write_identity(storage, &occurrences, id, &mut encodings)?,
+            }
             encoding_bounds
                 .push(u32::try_from(encodings.len()).map_err(|_| ResolutionError::Capacity)?);
         }
@@ -215,6 +191,30 @@ impl IdentityIndex {
             let end = encoding_bounds[id.index() + 1] as usize;
             &encodings[start..end]
         };
+        let mut next = vec![None; declarations];
+        let hash_builder = RandomState::default();
+        let mut heads: HashTable<DeclarationId> = HashTable::new();
+        let mut lengths = vec![0u32; declarations];
+        // Reverse order so each chain ends up in ascending `DeclarationId` order, which keeps an
+        // ambiguous outcome's candidate list canonically ordered without a later sort.
+        for index in (0..declarations).rev() {
+            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let current = encoding_of(id);
+            lengths[index] = u32::try_from(current.len()).map_err(|_| ResolutionError::Capacity)?;
+            let hash = hash_builder.hash_one(current);
+            let matches = |candidate: &DeclarationId| encoding_of(*candidate) == current;
+            if let Some(existing) = heads.find_mut(hash, matches) {
+                next[index] = Some(*existing);
+                *existing = id;
+            } else {
+                let rehash =
+                    |candidate: &DeclarationId| hash_builder.hash_one(encoding_of(*candidate));
+                heads
+                    .try_reserve(1, rehash)
+                    .map_err(|_| ResolutionError::Capacity)?;
+                heads.insert_unique(hash, id, rehash);
+            }
+        }
         let mut order: Vec<DeclarationId> = Vec::with_capacity(declarations);
         for index in 0..declarations {
             order.push(DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?);

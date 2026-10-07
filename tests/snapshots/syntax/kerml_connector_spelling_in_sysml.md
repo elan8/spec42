@@ -40,7 +40,7 @@ package Connections {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:58d0ca8dbda9e0350dda7749a222dc045f5d04344c50a6ca2bfc3a329a34c8a2"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:38328579ad057890779209bd0687fcfc4d8f6a7fdee37ee37943174d3a0b1b62"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_connector_spelling_in_sysml.md") (qualified-name "Connections"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_connector_spelling_in_sysml.md") (qualified-name "Connections::A"))) (kind part-def) (membership (kind owning) (visibility default)))

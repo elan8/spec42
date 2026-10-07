@@ -54,7 +54,7 @@ package ConnectorIncomplete {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:98c77b035a013ff9c8fa0ec05425c27680c00bb4554b6b4eb271d00176d666e2") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c055b456b5c5a7b71e771efd51179d86452ca6fd0f4d7de6a9197c87b6d03760") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_connector_incomplete.md") (qualified-name "ConnectorIncomplete"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_connector_incomplete.md") (path (named (kind package) (name "ConnectorIncomplete")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -88,6 +88,7 @@ package ConnectorIncomplete {
     (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_interconnection_connector_incomplete.md") (qualified-name "ConnectorIncomplete::Assembly"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_interconnection_connector_incomplete.md") (path (named (kind package) (name "ConnectorIncomplete")) (named (kind part-def) (name "Assembly")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/connections.md") (qualified-name "Connections::connections"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_interconnection_connector_incomplete.md") (path (named (kind package) (name "ConnectorIncomplete")) (named (kind part-def) (name "Assembly")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_interconnection_connector_incomplete.md") (qualified-name "ConnectorIncomplete::Assembly"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_interconnection_connector_incomplete.md") (path (named (kind package) (name "ConnectorIncomplete")) (named (kind part-def) (name "Assembly")) (anonymous (kind bare-connect) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_interconnection_connector_incomplete.md") (qualified-name "ConnectorIncomplete::Assembly::input"))) (target (node (document "memory://snapshot/diagram_interconnection_connector_incomplete.md") (qualified-name "ConnectorIncomplete::Assembly"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_interconnection_connector_incomplete.md") (qualified-name "ConnectorIncomplete::Assembly::input"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_interconnection_connector_incomplete.md") (qualified-name "ConnectorIncomplete::Assembly::input"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
@@ -116,6 +117,7 @@ package ConnectorIncomplete {
       (effective-type (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::Link")) (source inherited) (from (node (document "memory://snapshot/sysml.library/links.md") (qualified-name "Links::links"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::LinkObject")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
@@ -131,6 +133,7 @@ package ConnectorIncomplete {
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::linkObjects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::parts")) (scopes any feature))
@@ -223,7 +226,7 @@ package ConnectorIncomplete {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:cf1c9801f0b858d7cc089c1a221495e2702ec9728a3dcf95d41c0c5f998c8fed",
+  "modelDigest": "blake3:5e4ecc921af98d6aec3951165ebad21b6ccec0ede77b133bc220fe2e485452bb",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_connector_incomplete.md",
@@ -231,6 +234,10 @@ package ConnectorIncomplete {
     },
     {
       "uri": "memory://snapshot/sysml.library/connections.md",
+      "sourceDomain": "standard-library"
+    },
+    {
+      "uri": "memory://snapshot/sysml.library/occurrences.md",
       "sourceDomain": "standard-library"
     },
     {
@@ -327,15 +334,20 @@ package ConnectorIncomplete {
     {
       "document": 2,
       "kind": "qualified-name",
+      "qualifiedName": "Occurrences::Occurrence::suboccurrences"
+    },
+    {
+      "document": 3,
+      "kind": "qualified-name",
       "qualifiedName": "Parts::Part"
     },
     {
-      "document": 2,
+      "document": 3,
       "kind": "qualified-name",
       "qualifiedName": "Parts::Part::ownedPorts"
     },
     {
-      "document": 3,
+      "document": 4,
       "kind": "qualified-name",
       "qualifiedName": "Ports::ports"
     },
@@ -385,6 +397,12 @@ package ConnectorIncomplete {
     {
       "kind": "relationship",
       "ordinal": 7,
+      "relationshipKind": "subsetting",
+      "source": 1
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 8,
       "relationshipKind": "typeFeaturing",
       "source": 1
     },
@@ -429,7 +447,7 @@ package ConnectorIncomplete {
         "navigation": 1,
         "origin": 2,
         "provenance": "authored",
-        "reference": 9,
+        "reference": 10,
         "source": 0,
         "target": 2
       },
@@ -438,7 +456,7 @@ package ConnectorIncomplete {
         "navigation": 2,
         "origin": 1,
         "provenance": "authored",
-        "reference": 10,
+        "reference": 11,
         "source": 0,
         "target": 1
       }
@@ -496,7 +514,7 @@ package ConnectorIncomplete {
         "name": null,
         "notationRole": "usage",
         "owner": 0,
-        "reference": 8,
+        "reference": 9,
         "source": 2,
         "typing": {
           "status": "absent"
@@ -522,19 +540,8 @@ package ConnectorIncomplete {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 11,
+        "reference": 12,
         "source": 0,
-        "target": {
-          "reference": 5,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 16,
-        "source": 2,
         "target": {
           "reference": 6,
           "status": "resolved"
@@ -544,7 +551,7 @@ package ConnectorIncomplete {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 17,
+        "reference": 18,
         "source": 2,
         "target": {
           "reference": 7,
@@ -552,10 +559,21 @@ package ConnectorIncomplete {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 19,
+        "source": 2,
+        "target": {
+          "reference": 8,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 18,
+        "reference": 20,
         "source": 2,
         "target": {
           "node": 0,
@@ -566,7 +584,7 @@ package ConnectorIncomplete {
         "kind": "connectorEnd",
         "navigation": 3,
         "provenance": "authored",
-        "reference": 12,
+        "reference": 13,
         "source": 1,
         "target": {
           "node": 2,
@@ -577,7 +595,7 @@ package ConnectorIncomplete {
         "kind": "connectorEnd",
         "navigation": 4,
         "provenance": "authored",
-        "reference": 13,
+        "reference": 14,
         "source": 1,
         "target": {
           "status": "unresolved"
@@ -587,7 +605,7 @@ package ConnectorIncomplete {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 14,
+        "reference": 15,
         "source": 1,
         "target": {
           "reference": 4,
@@ -595,10 +613,21 @@ package ConnectorIncomplete {
         }
       },
       {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 16,
+        "source": 1,
+        "target": {
+          "reference": 5,
+          "status": "resolved"
+        }
+      },
+      {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 15,
+        "reference": 17,
         "source": 1,
         "target": {
           "node": 0,

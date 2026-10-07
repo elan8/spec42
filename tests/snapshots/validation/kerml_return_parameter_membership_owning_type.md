@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.7.8:validateReturnParameterMembershipOwningType
-blocked_by=semantic-return-parameter-membership-invalid-owner
 type=file
 ~~~
 # SOURCE
@@ -36,7 +35,7 @@ package Returns {
         (severity warning)
         (code "return_parameter_membership_invalid_owner")
         (source "semantic")
-        (range (start 5 8) (end 5 38))
+        (range (start 10 8) (end 10 38))
       )
     )
   )
@@ -47,6 +46,12 @@ package Returns {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "return_parameter_membership_invalid_owner")
+        (source "semantic")
+        (range (start 10 8) (end 10 38))
+      )
     )
   )
 )
@@ -54,13 +59,13 @@ package Returns {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e5f2fdba6c1d57a562e7f98a97c4450cc5e00c7c9721709b326cfb19aa6c0e60"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b27d10e32a1e33bdd009056e64d68daa45728a4c2dd7285d4231710a4c801dd8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Computing"))) (kind kerml-function) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Computing::result"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Computing::result"))) (kind parameter) (membership (kind feature) (visibility default) (role return-parameter)) (authored (membership (kind feature) (visibility default) (role return-parameter)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Object"))) (kind kerml-structure) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Object::result"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Object::result"))) (kind parameter) (membership (kind feature) (visibility default) (role return-parameter)) (authored (membership (kind feature) (visibility default) (role return-parameter)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_return_parameter_membership_owning_type.md") (qualified-name "Returns::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
   (references

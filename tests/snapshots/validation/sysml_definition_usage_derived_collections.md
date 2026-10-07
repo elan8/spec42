@@ -101,7 +101,8 @@ package Model {
   (definition-usage-derived (rule_id "sysml-2.0:8.3.6.2:deriveDefinitionOwnedVerificationCase") (source "Model::Vehicle") (outcome absent))
   (definition-usage-derived (rule_id "sysml-2.0:8.3.6.2:deriveDefinitionOwnedView") (source "Model::Vehicle") (outcome absent))
   (definition-usage-derived (rule_id "sysml-2.0:8.3.6.2:deriveDefinitionOwnedViewpoint") (source "Model::Vehicle") (outcome absent))
-  (definition-usage-derived (rule_id "sysml-2.0:8.3.6.4:deriveUsageIsReference") (source "Model::vehicle") (outcome false))
+  (definition-usage-derived (rule_id "sysml-2.0:8.3.6.4:deriveUsageIsReference") (source "Model::vehicle") (outcome true))
+  (definition-usage-derived (rule_id "sysml-2.0:8.3.6.4:deriveUsageIsReference") (source "Model::Vehicle::wheel") (outcome false))
   (definition-usage-derived (rule_id "sysml-2.0:8.3.6.4:deriveUsageNestedAction") (source "Model::vehicle") (outcome absent))
   (definition-usage-derived (rule_id "sysml-2.0:8.3.6.4:deriveUsageNestedAllocation") (source "Model::vehicle") (outcome absent))
   (definition-usage-derived (rule_id "sysml-2.0:8.3.6.4:deriveUsageNestedAnalysisCase") (source "Model::vehicle") (outcome absent))
@@ -155,7 +156,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4893fde4d413d3a12c21a728e8a1e19ef28f7492c6476562ebcb82fb5e7b152e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:71ae1d3fd7471c9386e057524d5ca033acd523665e106b0342364802b8e95a12"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_definition_usage_derived_collections.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_definition_usage_derived_collections.md") (qualified-name "Model::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))

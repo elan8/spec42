@@ -113,7 +113,7 @@ package Entailment {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4aca82a37b0d008f9ddea9a86ec491e0b8478c66cccea1c78edeb0271285a954"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1e3e4fef2d34ec08bf3d27a2ea6028ad8a0c64b77cbba79619bcc433fbae468d"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_relationships.md") (qualified-name "Entailment"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_relationships.md") (qualified-name "Entailment::Boat"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

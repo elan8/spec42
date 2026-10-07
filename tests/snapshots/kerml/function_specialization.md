@@ -106,13 +106,15 @@ package FuncSpec {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:dfcdfda5c349979d632045feed31aec73306106fb0e6f1511d985d326a0970d9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:f086e4add91549a788c2066082904e32a93a611ddb151f07ba7e26a28540d25c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::F"))) (kind kerml-function) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::G")))))
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::FI"))) (kind kerml-function) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::G")) (intersecting (reference "Base::H")))))
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::H"))) (kind kerml-function) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::I")) (specialization (reference "Base::J")))))
-    (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I"))) (kind kerml-invariant) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (expressionOperand (reference "x")))))
+    (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I"))) (kind kerml-invariant) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind feature) (visibility default) (role result-expression)) (facts (expression-result (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))) (authored (membership (kind feature) (visibility default) (role result-expression)) (relationships (expressionOperand (reference "x")))))
+    (declaration (id (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::K"))) (kind kerml-function) (membership (kind owning) (visibility default)) (facts (modifiers abstract)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::L")))))
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::P"))) (kind kerml-predicate) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::Q")))))
     (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::PI"))) (kind kerml-predicate) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Base::Q")) (intersecting (reference "Base::R")) (intersecting (reference "Base::S")))))
@@ -134,7 +136,7 @@ package FuncSpec {
     (reference (id (source (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::H"))) (kind specialization) (ordinal 1))
       (authored-target "Base::J")
       (outcome (status unresolved)))
-    (reference (id (source (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I"))) (kind expressionOperand) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0))
       (authored-target "x")
       (outcome (status unresolved)))
     (reference (id (source (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::K"))) (kind specialization) (ordinal 0))
@@ -157,21 +159,29 @@ package FuncSpec {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
   )
   (evaluation
-    (evaluated (declaration (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I"))) (state unresolved-operand))
+    (evaluated (declaration (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0))))) (state unresolved-operand))
   )
 )
 ~~~
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I")))
+    )
+    (declaration (id (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0)))))
+    )
 )
 ~~~
 # EXPRESSIONS
 ~~~sexpr
 (expressions
-  (declaration (id (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I"))) (outcome resolved) (operator "not" (feature-reference "x" (target unresolved))))
+  (declaration (id (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0))))) (outcome resolved) (operator "not" (feature-reference "x" (target unresolved))))
 )
 ~~~
 # NAVIGATION
@@ -203,7 +213,7 @@ package FuncSpec {
     )
   )
   (query (document "memory://snapshot/function_specialization.md") (range (start 8 16) (end 8 17)) (probe (position 8 16))
-    (reference (id (source (node (document "memory://snapshot/function_specialization.md") (qualified-name "FuncSpec::I"))) (kind expressionOperand) (ordinal 0) (authored-target "x")
+    (reference (id (source (node (document "memory://snapshot/function_specialization.md") (path (named (kind package) (name "FuncSpec")) (named (kind kerml-invariant) (name "I")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind expressionOperand) (ordinal 0) (authored-target "x")
       (outcome (status unresolved)))
     )
   )

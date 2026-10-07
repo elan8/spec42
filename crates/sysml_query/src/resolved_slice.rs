@@ -8,8 +8,8 @@ pub use sysml_resolution::{ContextualExpressionOutcome, PublishedContextualExpre
 pub use sysml_resolution::{
     requirement_collection_from_kind, ActionDerivedFactCollection, ActionDerivedFactKind,
     ActionDerivedFactOutcome, ActionDerivedFactPrerequisite, AdmittedSourceCounts,
-    AffectedDocument, AnalysisEvaluation, AnnotationForm, AuthoredUnit, AuthoredValue,
-    BindingConnector, BindingConnectorCheckKind, BindingConnectorValidationOutcome,
+    AffectedDocument, AnalysisEvaluation, AnnotationForm, AnonymousElementReference, AuthoredUnit,
+    AuthoredValue, BindingConnector, BindingConnectorCheckKind, BindingConnectorValidationOutcome,
     BindingConnectorValidationPrerequisite, BuildMeasurements, Conformance, ConformanceObstacle,
     ConnectedElement, ConnectorEndpoint, ConnectorKind, DefinitionUsageDerivedKind,
     DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivationEndpoint,
@@ -660,6 +660,14 @@ impl InspectionQueries<'_> {
         reference: &QualifiedElementReference,
     ) -> QualifiedReferenceOutcome {
         self.model.resolve_qualified_reference(reference)
+    }
+
+    /// Resolves an anonymous owned member through its canonical owner-scoped identity.
+    pub fn resolve_anonymous_member(
+        &self,
+        reference: &AnonymousElementReference,
+    ) -> QualifiedReferenceOutcome {
+        self.model.resolve_anonymous_member(reference)
     }
 
     /// Everything the publication knows about one element.
@@ -1436,6 +1444,13 @@ fn write_element(
         }
         writeln!(output, ")")?;
     }
+    if !inspection.implied_modifiers.is_empty() {
+        write!(output, "{indent}  (implied-modifiers")?;
+        for modifier in inspection.implied_modifiers.iter() {
+            write!(output, " {:?}", modifier.as_str())?;
+        }
+        writeln!(output, ")")?;
+    }
     if let Some(portion) = inspection.portion_kind {
         writeln!(output, "{indent}  (portion {})", portion_name(portion))?;
     }
@@ -1660,6 +1675,7 @@ fn write_bound(output: &mut dyn fmt::Write, bound: MultiplicityBound) -> fmt::Re
     match bound {
         MultiplicityBound::Unbounded => write!(output, "unbounded"),
         MultiplicityBound::Literal(value) => write!(output, "{value}"),
+        MultiplicityBound::NonIntegerLiteral => write!(output, "non-integer-literal"),
         MultiplicityBound::Expression => write!(output, "expression"),
     }
 }

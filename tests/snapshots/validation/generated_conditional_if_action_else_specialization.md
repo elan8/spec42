@@ -8,7 +8,6 @@ rule_family=check
 expectation=semantics
 rule_id=sysml-2.0:8.3.17.10:checkIfActionUsageSpecialization
 coverage_role=secondary
-blocked_by=semantic-query-gap-anonymous-library-specialization-forms
 type=file
 libraries=standard
 ~~~
@@ -28,7 +27,7 @@ package IfActionElseSpecialization {
 # EXPECTED SEMANTICS
 ~~~sexpr
 (fixture-semantics
-  (relationship (kind specialization) (source "IfActionElseSpecialization::Decision::<anonymous>") (target "Actions::ifThenElseActions") (provenance implied) (outcome resolved)))
+  (relationship (kind subsetting) (source (anonymous (owner "IfActionElseSpecialization::Decision") (kind IfActionUsage) (ordinal 0))) (target "Actions::ifThenElseActions") (provenance implied) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
@@ -42,7 +41,7 @@ package IfActionElseSpecialization {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:47da8f6697db9994935fb4fea395a03ad759deca6d9d15d47a1986a074095958") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:bb4cee8fa88d7f9c748074c4e7276bf517f2e0c6e4a568e6469c0370ecc7845e") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (qualified-name "IfActionElseSpecialization"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (qualified-name "IfActionElseSpecialization::Decision"))) (kind action-def) (membership (kind owning) (visibility default)))
@@ -61,10 +60,13 @@ package IfActionElseSpecialization {
     (relationship (kind specialization) (source (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (qualified-name "IfActionElseSpecialization::Decision"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (path (named (kind package) (name "IfActionElseSpecialization")) (named (kind action-def) (name "Decision")) (anonymous (kind if) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::ifThenElseActions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (path (named (kind package) (name "IfActionElseSpecialization")) (named (kind action-def) (name "Decision")) (anonymous (kind if) (ordinal 0))))) (target (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (qualified-name "IfActionElseSpecialization::Decision"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (path (named (kind package) (name "IfActionElseSpecialization")) (named (kind action-def) (name "Decision")) (anonymous (kind if) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (path (named (kind package) (name "IfActionElseSpecialization")) (named (kind action-def) (name "Decision")) (anonymous (kind if) (ordinal 0)) (named (kind action) (name "elseAction"))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (path (named (kind package) (name "IfActionElseSpecialization")) (named (kind action-def) (name "Decision")) (anonymous (kind if) (ordinal 0)) (named (kind action) (name "elseAction"))))) (target (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (path (named (kind package) (name "IfActionElseSpecialization")) (named (kind action-def) (name "Decision")) (anonymous (kind if) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (path (named (kind package) (name "IfActionElseSpecialization")) (named (kind action-def) (name "Decision")) (anonymous (kind if) (ordinal 0)) (named (kind action) (name "elseAction"))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (path (named (kind package) (name "IfActionElseSpecialization")) (named (kind action-def) (name "Decision")) (anonymous (kind if) (ordinal 0)) (named (kind action) (name "thenAction"))))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (path (named (kind package) (name "IfActionElseSpecialization")) (named (kind action-def) (name "Decision")) (anonymous (kind if) (ordinal 0)) (named (kind action) (name "thenAction"))))) (target (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (path (named (kind package) (name "IfActionElseSpecialization")) (named (kind action-def) (name "Decision")) (anonymous (kind if) (ordinal 0))))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (path (named (kind package) (name "IfActionElseSpecialization")) (named (kind action-def) (name "Decision")) (anonymous (kind if) (ordinal 0)) (named (kind action) (name "thenAction"))))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (qualified-name "IfActionElseSpecialization::Decision::condition"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action::subactions"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (qualified-name "IfActionElseSpecialization::Decision::condition"))) (target (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (qualified-name "IfActionElseSpecialization::Decision::condition"))) (target (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (qualified-name "IfActionElseSpecialization::Decision"))) (provenance implied))
@@ -88,6 +90,7 @@ package IfActionElseSpecialization {
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::IfThenElseAction")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::ifThenElseActions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
@@ -101,6 +104,7 @@ package IfActionElseSpecialization {
       (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::IfThenElsePerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/control_performances.md") (qualified-name "ControlPerformances::IfThenPerformance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
@@ -109,6 +113,7 @@ package IfActionElseSpecialization {
       (featured-by (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (path (named (kind package) (name "IfActionElseSpecialization")) (named (kind action-def) (name "Decision")) (anonymous (kind if) (ordinal 0)))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
@@ -116,6 +121,7 @@ package IfActionElseSpecialization {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))
@@ -124,6 +130,7 @@ package IfActionElseSpecialization {
       (featured-by (node (document "memory://snapshot/generated_conditional_if_action_else_specialization.md") (path (named (kind package) (name "IfActionElseSpecialization")) (named (kind action-def) (name "Decision")) (anonymous (kind if) (ordinal 0)))))
       (effective-type (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (source inherited) (from (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::actions"))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (supertype (node (document "memory://snapshot/sysml.library/actions.md") (qualified-name "Actions::Action")) (scopes any))
@@ -131,6 +138,7 @@ package IfActionElseSpecialization {
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::suboccurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances")) (scopes any feature))

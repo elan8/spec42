@@ -7,6 +7,342 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Keyword-less members of a `metadata def` are reference usages.** `metadata def M { :>
+  annotatedElement : SysML::RequirementUsage; }` was lowered as an attribute, because the parser
+  returned the same node for it as for `attribute x;`. An attribute implies `Base::DataValue`,
+  which no metaclass specializes, so `metadata_annotated_element_incompatible` fired on every
+  use of such a definition, including the standard library's `MeasureOfPerformance`,
+  `CauseMetadata` and `DerivedRequirementMetadata`. The member is now a `DefaultReferenceUsage`
+  (`ref :>> annotatedElement : T;` a `ReferenceUsage`), per the grammar. Their type references
+  also seed the library closure, so `SysML::…` resolves when only such a member names it. Pins
+  sysml-v2-parser `7217b9e4` (`PARSE_AST_VERSION` 266).
+- **Association end-type rules wait for the Links library.** An end with no authored type takes
+  its type from the `Links::BinaryLink` / `Links::Link` end it redefines. Without that library
+  `assoc Pair { end feature x; end feature y; }` reported `association_end_type_not_one` twice
+  and `association_related_types_insufficient` once. An empty type set is now left unanswered
+  when the publication has no resolved link anchor.
+- **`#Tag` prefix metadata is owned through an OwningMembership.** It was published with a
+  feature membership, so `#Security enum def Level { … }` reported
+  `variation_owns_feature_membership` at the tag. `PrefixMetadataMember` is an OwningMembership,
+  as `@Tag` already was.
+- **`calc` usages keep their full prefix and every type.** `individual calc c;` and `calc c :
+  C1, C2;` lower through the shared `OccurrenceUsagePrefix` and `Typings`, and a constraint body
+  lowers its action-body members (`constraint def C { fork f; }`).
+
+- **Body result expressions are elements.** A calculation, constraint, function or KerML type
+  body expression is now its own Expression, owned through a `ResultExpressionMembership` (role
+  `result-expression`) with its own result, and owns its evaluation, operand references and
+  nested expressions; the owner's value and expression body are derived from it. The implied
+  binding connector between the owner's result and the result expression's result is published,
+  so `checkExpressionResultBindingConnector` and `checkFunctionResultBindingConnector` are decided
+  (KerML 8.3.4.7.3/4).
+
+- **Result expression memberships are checked.** A function, calculation or constraint body with
+  more than one result expression reports `function_multiple_result_expressions`, an expression
+  body `expression_multiple_result_expressions`, and a result expression in the body of a type
+  that is neither reports `result_expression_membership_invalid_owner` (KerML 8.3.4.7.3/4/7).
+
+- **Namespace-level `connection X;`, `interface X;` and `calc X;` are usages.** They take the
+  usage library-specialization anchors (`Connections::connections`, `Interfaces::interfaces`,
+  `Calculations::calculations`), and an interface usage now records its prefix modifiers,
+  direction, multiplicity and `#` extension keywords; a calculation usage records `ref` and
+  `ordered`/`nonunique`.
+
+- **A type owns at most one multiplicity.** A KerML type with both a `[m..n]` and a
+  `multiplicity` body member (or two such members) reports `type_multiple_multiplicities` at each
+  extra one (KerML 8.3.3.1.10 validateTypeOwnedMultiplicity).
+
+- **Directed control nodes are referential.** A `ControlNodePrefix` (`in fork g;`, `individual`,
+  a portion kind, `#Tag`) is now lowered onto the control node, and a control node that is not
+  composite reports `control_node_not_composite` (SysML 8.3.17.6 validateControlNodeIsComposite).
+
+- **`*` is a LiteralInfinity expression.** An unbounded multiplicity bound (`[*]`, `[0..*]`) and a
+  `*` written as a value are now published as `LiteralInfinity` elements specializing
+  `Performances::literalInfinityEvaluations` (KerML 8.3.4.8.13), and a single-bound `[n]` keeps
+  its authored form (no `lowerBound`) while its effective lower bound equals `n`. The generator
+  wire `Metaclass` gains `LiteralInfinity`, so generator guests must be rebuilt.
+
+- **Non-literal multiplicity bounds are type-checked.** A bound that references a feature (`[count]`)
+  or does integer arithmetic over feature references now resolves those names, and a bound whose
+  result is not an Integer (e.g. a `Real` feature) reports `multiplicity_bound_invalid`
+  (KerML 8.3.4.11.2).
+
+- **Filter conditions must be model-level evaluable.** A package or view `filter` whose condition
+  references a feature featured by an ordinary type (so its value depends on an instance) reports
+  `filter_condition_not_model_level_evaluable` (KerML 8.3.4.13.2).
+
+- **Metadata annotated-element restrictions are checked.** A metadata feature whose metaclass
+  restricts `annotatedElement` (for example `SemanticMetadata`, which annotates only types) now
+  reports `metadata_annotated_element_incompatible` when it annotates an element of another
+  metaclass, comparing against the reflective `KerML`/`SysML` library metaclasses.
+
+- **Feature chains resolve through imports and check featured-within conformance.** Each `.` hop
+  of a feature chain now also sees the previous feature's public imports, as a qualified name
+  does, and a hop that is not featured within the previous chaining feature is reported as
+  `feature_chaining_not_featured_within_previous` (KerML validateFeatureChainingFeatureConformance).
+
+- **Non-integer literal multiplicity bounds are rejected.** A bound written from literals alone
+  that is not an integer (`[1.5]`, `["a"]`, `[true]`) is published as a `NonIntegerLiteral`
+  multiplicity bound and reported as `multiplicity_bound_invalid` (KerML 8.3.4.11.2).
+
+- **`X.metadata` resolves its referenced element.** A metadata access expression's qualified name
+  now resolves (any Element) as a `metadataAccessTarget` relationship from its
+  `MetadataAccessExpression`, so the expression is no longer reported as unsupported. The diagram
+  relationship vocabulary gains `metadataAccessTarget`.
+
+- **Comments, documentation and textual representations are elements.** Every `comment`, `doc`
+  and `rep` member is published as a `Comment`/`Documentation`/`TextualRepresentation` element
+  owned by the namespace it is written in, carrying its body. Each `about` target of a comment is
+  an `annotation` relationship from the Comment to the named element, so `comment about Thing`
+  now annotates `Thing` rather than appearing as documentation of its package. The generator wire
+  `Metaclass` vocabulary gains `Comment` (compatibility token changed; guests must be rebuilt).
+
+- **Literal, null and metadata-access expressions are elements.** Every literal (`LiteralBoolean`,
+  `LiteralInteger`, `LiteralRational`, `LiteralString`), `null`/`()` (`NullExpression`) and
+  `X.metadata` (`MetadataAccessExpression`) is published as its own anonymous Expression of that
+  metaclass -- a FeatureValue's value Expression, a multiplicity bound, an operator argument, or a
+  node nested in a body -- and specializes its `Performances` library anchor
+  (`literalIntegerEvaluations`, ...). The generator wire `Metaclass` vocabulary gains these
+  metaclasses (compatibility token changed; guests must be rebuilt).
+
+- **Conjugated specific types.** The new `specialization_specific_conjugated` error checks KerML
+  `validateSpecializationSpecificNotConjugated` for owned specializations and standalone KerML
+  relationship declarations (`subclassifier C specializes B;` where `C` conjugates a type).
+
+- **Every state action form is a state subaction.** A bare `entry;` and the effect forms
+  (`entry assign ...;`, `do send ...;`, `do accept ...;`) now publish the action that occupies the
+  state's entry/do/exit membership and redefines `States::StateAction::entryAction`/`doAction`/
+  `exitAction`, so SysML `checkActionUsageStateActionRedefinition` is evaluated. Effect operands
+  and an entry/do/exit body on the reference form, which were silently dropped, are now reported
+  as `unsupported_state_definition_member`.
+
+- **Exhibit states.** `exhibit state s;` and `exhibit <path>;` now publish an ExhibitStateUsage
+  (`exhibit-state`), a state usage that is also a perform action usage; the path form references
+  the exhibited state, and the new `exhibit_target_invalid_kind` diagnostic checks SysML
+  `validateExhibitStateUsageReference`. An exhibited state of a part specializes
+  `Parts::Part::exhibitedStates` and keeps the `States::stateActions` default. A generated
+  library rule set with no default-supertype rule (exhibit and perform usages, occurrence
+  definitions) no longer hides the nearest general's default, so `occurrence def` now
+  specializes `Occurrences::Occurrence` and `perform` usages `Actions::actions`.
+
+- **State and transition role specializations.** A composite substate now subsets
+  `States::StateAction::exclusiveStates` (or `substates` in a parallel state), a composite
+  transition from a state in a state subsets `States::StateAction::stateTransitions`, and one in
+  an action whose source is not a state subsets `Actions::Action::decisionTransitions`, so SysML
+  `checkStateUsageExclusiveStateSpecialization`, `checkStateUsageSubstateSpecialization`,
+  `checkTransitionUsageStateSpecialization` and `checkTransitionUsageActionSpecialization` are
+  evaluated.
+
+- **Trigger argument validation.** `accept when|at|after <argument>` now lowers its
+  TriggerInvocationExpression with its kind. New diagnostics check SysML
+  `validateTriggerInvocationExpressionWhenArgument` (`trigger_when_argument_not_boolean`),
+  `validateTriggerInvocationExpressionAtArgument` (`trigger_at_argument_not_time_instant`) and
+  `validateTriggerInvocationExpressionAfterArgument` (`trigger_after_argument_not_duration`) for a
+  literal or feature-reference argument.
+
+- **Constructor argument redefinitions.** A positional `new T(...)` argument now redefines the
+  public feature of `T` at its position (owned features first, then inherited ones), and KerML
+  `checkConstructorExpressionResultFeatureRedefinition` checks that every argument redefines
+  exactly one public feature of the instantiated type.
+
+- **Positional parameter redefinitions.** A parameter of a behavior, step, calculation or action
+  now redefines the parameter at its position of every behavior or step its owner specializes
+  (KerML `checkFeatureParameterRedefinition`), and a positional invocation argument redefines the
+  callee's parameter at its position. The parameter and result redefinition checks report an
+  unsupported prerequisite, rather than a verdict, while the publication has expressions or
+  action parameters lowering does not represent.
+
+- **Assignment target parameters.** An `assign` now owns its `target` parameter, whose
+  `startingAt` feature owns the `accessedFeature`. They redefine the library's
+  `startingAt`/`accessedFeature`, and the accessed feature redefines the assignment's referent, so
+  SysML `checkAssignmentActionUsageStartingAtRedefinition`,
+  `checkAssignmentActionUsageAccessedFeatureRedefinition` and
+  `checkAssignmentActionUsageReferentRedefinition` are evaluated.
+
+- **Result redefinitions.** A Function's or Expression's result now redefines the result of
+  every Function or Expression its owner directly specializes, including the result it inherits
+  (KerML `checkFeatureResultRedefinition`): a calculation's `return` redefines
+  `Performances::Evaluation::result`, and an invocation's result redefines its Function's result
+  and so takes its type.
+
+- **Every invocation is its own expression.** A nested invocation or constructor (`f(g(x))`,
+  `new A(new B())`), and one written directly in a constraint, calculation or filter body, is now
+  its own Expression with its own result and argument features. A nested callee no longer types
+  the expression it is nested in, a nested constructor settles its own instantiated type, and a
+  calculation or constraint callee is classified as a Function, so its invocation's result is not
+  typed by it. A subject, actor or stakeholder named as an argument is an `in` parameter.
+
+- **Instantiation argument validation.** Each argument of a feature value's top-level invocation
+  or `new T(...)` is now an argument feature, and a named argument redefines the parameter it
+  names, resolved among the invoked type's members. New diagnostics check KerML
+  `validateInvocationExpressionParameterRedefinition` (`invocation_argument_redefines_no_parameter`),
+  `validateInvocationExpressionNoDuplicateParameterRedefinition`
+  (`invocation_duplicate_parameter_redefinition`) and
+  `validateConstructorExpressionNoDuplicateFeatureRedefinition`
+  (`constructor_duplicate_feature_redefinition`) over named arguments. A named argument that
+  names no member of the invoked type is now reported unresolved.
+
+- **Feature reference referent validation.** KerML 8.3.4.8.5
+  `validateFeatureReferenceExpressionReferentIsFeature` (`feature_reference_referent_not_feature`)
+  reports a name used as a value that references a type or other non-feature. The operand of
+  `meta`, a `->f g` function reference and an `accept T` payload type are not feature references.
+
+- **Implied library specializations follow the metaclass hierarchy.** A generated
+  `specializesFromLibrary` rule now applies to the specializations of its metaclass through the
+  nearest rule-carrying metaclass, as the Pilot's `ImplicitGeneralizationMap` does: successions
+  subset `Occurrences::happensBeforeLinks`, `bind` connectors `Links::selfLinks`, enumeration
+  definitions specialize `Base::DataValue` and their literals subset `Base::dataValues`. The
+  published metaclass vocabulary gains the abstract `Succession` and `ControlNode`. Dotted
+  succession ends now resolve in the succession's owning namespace.
+
+- **Cross subsetting validation.** New diagnostics check KerML 8.3.3.3.2
+  `validateCrossSubsettingCrossingFeature` (`cross_subsetting_crossing_feature_invalid`) and
+  `validateCrossSubsettingCrossedFeature` (`cross_subsetting_crossed_feature_invalid`).
+
+- **Event occurrence references.** The new `event_occurrence_reference_not_occurrence` diagnostic
+  checks SysML 8.3.9.2 `validateEventOccurrenceUsageReference`.
+
+- **Asserted constraint references.** `assert <name>;` now lowers as an `AssertConstraintUsage`
+  reference-subsetting the named feature instead of an unsupported member, and the new
+  `assert_target_invalid_kind` diagnostic checks SysML 8.3.20.2
+  `validateAssertConstraintUsageReference`.
+
+- **State subaction kind validation.** New diagnostic `state_duplicate_subaction_kind` checks SysML
+  8.3.18.5 `validateStateDefinitionStateSubactionKind` and 8.3.18.6
+  `validateStateUsageStateSubactionKind`: a state owns at most one `entry`, `do` and `exit` action.
+
+- **Invocation instantiated type validation.** KerML 8.3.4.8.8
+  `validateInvocationExpressionInstantiatedType` (`invocation_instantiated_type_not_behavior`)
+  reports an invocation `F(...)` whose callee is neither a behavior nor a feature typed by one;
+  constructing a structure or data value requires `new T(...)`.
+
+- **Return parameter memberships.** An authored `return` parameter now publishes its
+  `ReturnParameterMembership` as the `return-parameter` membership role, and new diagnostics check
+  KerML 8.3.4.7.8 `validateReturnParameterMembershipOwningType`
+  (`return_parameter_membership_invalid_owner`) and, as the Pilot does, at most one owned return
+  parameter per function or expression (`function_result_parameter_count`,
+  `expression_result_parameter_count`).
+
+- **Membership owner and metadata typing validations.** New diagnostics check SysML 8.3.26.2
+  `validateExposeOwningNamespace` (`expose_invalid_owner`), 8.3.24.2
+  `validateRequirementVerificationMembershipOwningType` (`verification_membership_invalid_owner`),
+  8.3.21.7 `validateRequirementConstraintMembershipOwningType`
+  (`requirement_constraint_invalid_owner`), 8.3.18.9 `validateTransitionUsageTriggerActions`
+  (`transition_trigger_source_not_state`), and KerML 8.3.4.12.3
+  `validateMetadataFeatureMetaclass` (`metadata_type_not_metaclass`) and
+  `validateMetadataFeatureMetaclassNotAbstract` (`metadata_metaclass_abstract`).
+  `transition_endpoint_invalid_state` now applies only to transitions owned by a state; a
+  transition in an action body legitimately moves between actions.
+
+- **Usage referentiality follows the SysML derivation.** The published `Usage::isReference` (and
+  the composition every rule reads) now treats a directed usage, an end usage, a usage with no
+  featuring type (such as a package-level part), an `event` occurrence, a perform action, and a
+  port usage outside a port as referential, as the Pilot's usage post-processing does, so
+  `validateUsageIsReferential` holds by construction. A package-level usage now reports
+  `isReference = true`.
+
+- **Feature variability and portion validations.** New diagnostics check KerML 1.0 8.3.3.3.4
+  `validateFeatureIsVariable` (`variable_feature_owner_not_occurrence`), KerML
+  `validateFeaturePortionNotVariable` (`portion_feature_is_variable`), KerML 8.3.4.10.2
+  `validateFeatureValueIsInitial` (`initial_value_feature_not_variable`, an `:=` value on a
+  feature that is not variable) and SysML 8.3.9.4 `validateOccurrenceUsagePortionKind`
+  (`portion_owner_not_occurrence`), and KerML `validateFeatureValueOverriding`
+  (`feature_value_overrides_non_default`, a value on a feature that redefines a feature whose
+  value is bound rather than `default`).
+
+- **Individual occurrence validations.** SysML 8.3.9.4 `validateOccurrenceUsageIndividualDefinition`
+  (`occurrence_multiple_individual_definitions`) and `validateOccurrenceUsageIndividualUsage`
+  (`individual_usage_without_individual_definition`) are now checked over each occurrence usage's
+  effective types.
+
+- **Namespace, type-relationship, subsetting and objective validations.** New diagnostics check
+  KerML 8.3.2.4.2 `validateImportTopLevelVisibility` (`top_level_import_not_private`), KerML
+  8.3.3.1.10 `validateType{Unioning,Intersecting,Differencing}TypesNotSelf`
+  (`type_relationship_operand_is_self`) and KerML 8.3.3.3.10
+  `validateSubsettingConstantConformance` (`subsetting_constant_mismatch`, for authored and
+  implied subsettings and redefinitions); `duplicate_role_member` now also reports a second
+  objective of a case definition or usage (SysML `validateCase{Definition,Usage}OnlyOneObjective`).
+
+- **Feature chaining validations.** KerML 8.3.3.3.4 `validateFeatureChainingFeatureNotOne`
+  (`feature_chaining_single_operand`) and `validateFeatureChainingFeaturesNotSelf`
+  (`feature_chaining_includes_self`) are now checked, as are KerML
+  `validateFeatureOwnedReferenceSubsetting` (`feature_multiple_reference_subsettings`) and
+  `validateFeatureOwnedCrossSubsetting` (`feature_multiple_cross_subsettings`).
+
+- **KerML classifier specialization kinds.** `incompatible_specializes_kind` now also reports KerML
+  `validate{DataType,Class,Structure,Behavior}Specialization` violations for KerML classifiers and
+  SysML definitions alike, at the specialization reference.
+
+- **KerML namespace distinguishability.** `duplicate_namespace_member` now also reports same-named
+  members of a package or KerML type when either member is a KerML element (or a usage form the
+  SysML family table does not classify) and one member's metaclass conforms to the other's
+  (KerML `Membership::isDistinguishableFrom`).
+
+- **Redefinitions between features with the same featuring types.**
+  `redefinition_featuring_type_incompatible` now also reports a redefinition whose redefining and
+  redefined features have the same effective featuring types, such as a feature redefining a
+  sibling (KerML `validateRedefinitionFeaturingTypes`).
+
+- **Subsetted feature accessibility.** `subsetting_target_not_accessible` reports a subsetting or
+  reference subsetting whose subsetted feature is featured by types none of the subsetting
+  feature's featuring types specialize (KerML `validateSubsettingFeaturingTypes`).
+
+- **Negative multiplicity bounds.** A signed integer literal bound (`[-1]`) is now published as a
+  literal, and a negative bound is reported as `multiplicity_bound_invalid` (KerML
+  `validateMultiplicityRangeBoundResultTypes`) instead of `invalid_multiplicity`, which now means
+  only an upper bound below the lower bound.
+
+- **Case objectives redefine the objectives they specialize.** An `objective` is now published as
+  an `objective-requirement` (a `RequirementUsage` under an `ObjectiveMembership`, membership role
+  `objective`) and implicitly redefines the objective of every case definition or case usage its
+  owner specializes, including `Cases::Case::obj` (SysML `checkRequirementUsageObjectiveRedefinition`,
+  now evaluated). Objective element identities change accordingly (kind `objective-requirement`).
+
+- **Positional end redefinitions follow KerML `checkFeatureEndRedefinition`.** An owned end now
+  redefines the end at its position in each direct supertype's full `endFeature` list (including
+  ends the supertype inherits and the ends of implied library supertypes such as
+  `Links::BinaryLink::source`/`target` or `Connections::BinaryConnection::source`/`target`), a
+  bare connector end occupies its position, and the pairing is implied alongside an authored
+  redefinition. The check is evaluated; an obligation involving a bare connector end is reported
+  unresolved. An end's owned cross feature now also subsets the cross feature of every end it
+  redefines (`checkFeatureOwnedCrossFeatureRedefinitionSpecialization`), and a connector end's
+  `[m]` is published as its cross multiplicity rather than the end's own multiplicity.
+
+- **Library-anchored implied redefinitions.** A `for` loop variable now redefines
+  `Actions::ForLoopAction::var`, a feature-chain expression's source target redefines
+  `ControlFunctions::'.'::source::target`, and an `entry`/`do`/`exit` action redefines
+  `States::StateAction::entryAction`/`doAction`/`exitAction`, as implied relationships published
+  alongside any authored redefinition. The KerML/SysML `checkForLoopActionUsageVarRedefinition`
+  and both feature-chain redefinition checks are now evaluated instead of reported unsupported.
+
+- **KerML association, connector, flow and end-feature validations.** New diagnostics check KerML
+  1.0 8.3.3.3.4 / 8.3.4.4.2 / 8.3.4.5.2-3 / 8.3.4.9.2: an end feature with a non-1..1 multiplicity
+  (`end_feature_multiplicity_not_one`), an association end without exactly one type
+  (`association_end_type_not_one`), a concrete association or connector relating fewer than two
+  types or features (`association_related_types_insufficient`,
+  `connector_related_features_insufficient`), a non-binary binding (`binding_connector_not_binary`),
+  a more-than-binary association or connector specializing `Links::BinaryLink`
+  (`binary_association_end_count`, `binary_connector_end_count`), and a flow with more than one
+  `of` payload (`flow_multiple_payload_features`). KerML `end feature` and bare
+  connector ends now count toward the implied `BinaryLink` / `BinaryLinkObject` / `binaryLinks`
+  specializations.
+
+- **Variation rules.** A `variation` definition or usage is now effectively abstract (published as
+  an implied modifier, distinct from an authored `abstract`), and new diagnostics report a
+  variation that owns non-variant features (`variation_owns_feature_membership`) or specializes
+  another variation (`variation_specializes_variation`).
+
+- **Assignment targets must be variable.** `assign x := v;` now reports
+  `assignment_target_not_time_varying` when `x` cannot have time-varying values (SysML
+  `validateAssignmentActionUsage`), e.g. a package-owned attribute or a composite action.
+
+- **Control-node succession validations.** Successions attached to `decide` / `merge` / `fork` /
+  `join` nodes are now checked against SysML 8.3.17.6-13: authored end multiplicities
+  (`control_node_incoming_multiplicity`, `control_node_outgoing_multiplicity`,
+  `decision_node_outgoing_multiplicity`, `merge_node_incoming_multiplicity`) and at-most-one
+  incoming/outgoing successions (`decision_node_multiple_incoming`, `fork_node_multiple_incoming`,
+  `join_node_multiple_outgoing`, `merge_node_multiple_outgoing`). Succession end multiplicities
+  (`first [m] a then [n] b`) are now published facts.
 - **`metadata Tag about x;` is typed by `Tag`.** A `metadata` usage without `:` or `typed by`
   was published as an untyped usage *named* `Tag`. So the SysML training examples'
   `metadata SafetyFeature about …` and `metadata ToolExecution { … }` had no metadata type, their

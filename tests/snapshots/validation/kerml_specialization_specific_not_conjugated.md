@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.1.8:validateSpecificationSpecificNotConjugated
-blocked_by=lowering-gap-kerml-relationship-declarations
 type=file
 ~~~
 # SOURCE
@@ -36,7 +35,7 @@ package Conjugations {
         (severity error)
         (code "specialization_specific_conjugated")
         (source "semantic")
-        (range (start 8 4) (end 8 53))
+        (range (start 11 4) (end 11 43))
       )
     )
   )
@@ -47,6 +46,12 @@ package Conjugations {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_specialization_specific_not_conjugated.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "specialization_specific_conjugated")
+        (source "semantic")
+        (range (start 11 4) (end 11 43))
+      )
     )
   )
 )
@@ -54,7 +59,7 @@ package Conjugations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7b0c4057f268a63a60d7af7db2bc6e03f25d431378938a20b763142c3e6ebafa"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f368780d36a72648022ea6ab2c214af2147037b9d0dc9b868f053627bdca9f66"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_specialization_specific_not_conjugated.md") (qualified-name "Conjugations"))) (kind package) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (explicitRelationshipEndpoint (reference "Conjugated")) (explicitRelationshipEndpoint (reference "B")))))
     (declaration (id (node (document "memory://snapshot/kerml_specialization_specific_not_conjugated.md") (qualified-name "Conjugations::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

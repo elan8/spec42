@@ -36,6 +36,12 @@ package FeatureCategorySpecializations {
 (fixture-diagnostics
   (document "memory://snapshot/generated_conditional_feature_category_specializations.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "association_related_types_insufficient")
+        (source "semantic")
+        (range (start 7 4) (end 9 5))
+      )
     )
   )
 )
@@ -43,7 +49,7 @@ package FeatureCategorySpecializations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:331a4230d0693e966fca0aee63e04f521c9e1e39dcf2805a0eadaa9bc9a2658e") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a34803818ac9f9552599d8419c44d7cc605cdf5f5bdb468301bd21aba73621f4") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/generated_conditional_feature_category_specializations.md") (qualified-name "FeatureCategorySpecializations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/generated_conditional_feature_category_specializations.md") (qualified-name "FeatureCategorySpecializations::Association"))) (kind kerml-association) (membership (kind owning) (visibility default)))

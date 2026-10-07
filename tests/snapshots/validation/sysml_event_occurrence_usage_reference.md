@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.9.2:validateEventOccurrenceUsageReference
-blocked_by=lowering-event-occurrence-reference
 type=file
 ~~~
 # SOURCE
@@ -35,7 +34,25 @@ package Events {
         (severity warning)
         (code "event_occurrence_reference_not_occurrence")
         (source "semantic")
-        (range (start 9 8) (end 9 48))
+        (range (start 9 40) (end 9 47))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_event_occurrence_usage_reference.md")
+            (range (start 3 8) (end 3 30))
+          )
+        )
+      )
+      (diagnostic
+        (severity warning)
+        (code "incompatible_subset_redefine_kind")
+        (source "semantic")
+        (range (start 9 40) (end 9 47))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_event_occurrence_usage_reference.md")
+            (range (start 3 8) (end 3 30))
+          )
+        )
       )
     )
   )
@@ -46,6 +63,18 @@ package Events {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_event_occurrence_usage_reference.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "event_occurrence_reference_not_occurrence")
+        (source "semantic")
+        (range (start 9 40) (end 9 47))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_event_occurrence_usage_reference.md")
+            (range (start 3 8) (end 3 30))
+          )
+        )
+      )
       (diagnostic
         (severity warning)
         (code "incompatible_subset_redefine_kind")
@@ -65,7 +94,7 @@ package Events {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:cbb3fe2e13d9390ff6c99d2650d5b330a39492d202b1cbcc6f45740de83b5768"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8713dc39c833ee718f5564164152e4518cb655bc746b09d59b0605a6136d93ae"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_event_occurrence_usage_reference.md") (qualified-name "Events::Performing"))) (kind action-def) (membership (kind owning) (visibility default)))

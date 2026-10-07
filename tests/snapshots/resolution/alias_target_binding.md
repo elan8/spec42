@@ -23,7 +23,7 @@ package AliasCoverage {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:0bfd7ddd64d09313a48eb45faaf8d8009f0991ec3c0bb996b5cd24404ac9775a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:606e7d7f6c26622ff8fc334a1e454588dd8b2f162c9fa4d16041b719b10b31d4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/alias_target_binding.md") (qualified-name "AliasCoverage::Device"))) (kind part-def) (membership (kind owning) (visibility default)))

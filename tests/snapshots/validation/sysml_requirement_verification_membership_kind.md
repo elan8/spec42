@@ -49,12 +49,12 @@ package Verification {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:0a602cf69bd1c4587cc3a3c7f00877baa8ccb3b6a822888ec06c60044900c4e7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f262cb06fad2651cf5c3c2e6ce005e358d3761c21de4e573e323d9f7294bede8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_requirement_verification_membership_kind.md") (qualified-name "Verification"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_verification_membership_kind.md") (qualified-name "Verification::Check"))) (kind verification-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_verification_membership_kind.md") (qualified-name "Verification::Check::item"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
-    (declaration (id (node (document "memory://snapshot/sysml_requirement_verification_membership_kind.md") (qualified-name "Verification::Check::objective"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_requirement_verification_membership_kind.md") (qualified-name "Verification::Check::objective"))) (kind objective-requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_verification_membership_kind.md") (qualified-name "Verification::Check::objective::limit"))) (kind verify-requirement) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Limit")))))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_verification_membership_kind.md") (qualified-name "Verification::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_verification_membership_kind.md") (qualified-name "Verification::Limit"))) (kind requirement-def) (membership (kind owning) (visibility default)))

@@ -31,7 +31,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:3a06313c1f301541b2dcca7ac0c7f9644ab836e9e88094318b5cf7bc28e77cf4"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:86f5feebfef58fc6e8de28c6ab54eb2e6d423f9e03c8f56b0450ace194811a38"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_result_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_result_specialization.md") (qualified-name "Model::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.6.2:validateDefinitionVariationSpecialization
-blocked_by=semantic-variation-specialization
 type=file
 ~~~
 # SOURCE
@@ -33,7 +32,13 @@ package Variations {
         (severity warning)
         (code "variation_specializes_variation")
         (source "semantic")
-        (range (start 8 4) (end 8 53))
+        (range (start 8 39) (end 8 43))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_definition_variation_specialization.md")
+            (range (start 1 4) (end 1 28))
+          )
+        )
       )
     )
   )
@@ -44,6 +49,18 @@ package Variations {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_definition_variation_specialization.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "variation_specializes_variation")
+        (source "semantic")
+        (range (start 8 39) (end 8 43))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_definition_variation_specialization.md")
+            (range (start 1 4) (end 1 28))
+          )
+        )
+      )
     )
   )
 )
@@ -51,13 +68,13 @@ package Variations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b75371dddbcd244802d103a9c09e6c5c6d15a030ed5049e488eba1f13b951455"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:46ac25fbf732248824f1ca4c032105e312c84c53bb16346bcb56176e89e18fcf"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_definition_variation_specialization.md") (qualified-name "Variations"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_specialization.md") (qualified-name "Variations::Bad"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Root")))))
-    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_specialization.md") (qualified-name "Variations::Good"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Plain")))))
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_specialization.md") (qualified-name "Variations::Bad"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Root")))))
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_specialization.md") (qualified-name "Variations::Good"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Plain")))))
     (declaration (id (node (document "memory://snapshot/sysml_definition_variation_specialization.md") (qualified-name "Variations::Plain"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
-    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_specialization.md") (qualified-name "Variations::Root"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation)))
+    (declaration (id (node (document "memory://snapshot/sysml_definition_variation_specialization.md") (qualified-name "Variations::Root"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/sysml_definition_variation_specialization.md") (qualified-name "Variations::Bad"))) (kind specialization) (ordinal 0))

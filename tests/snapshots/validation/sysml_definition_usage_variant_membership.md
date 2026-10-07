@@ -44,14 +44,14 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1f0786faa77e0f44ac25d18c7af515d4f87dc4af70492e811c80c1654c4955e7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:47d501b81cfac359729787bd364139073b2593d30422277aa2e72bf0dfc31dd4"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model::Choice"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation)))
+    (declaration (id (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model::Choice"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (path (named (kind package) (name "Model")) (named (kind part-def) (name "Choice")) (anonymous (kind ref) (ordinal 0))))) (kind ref) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (subsetting (reference "external")))))
     (declaration (id (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model::Choice::first"))) (kind part) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (featureTyping (reference "Base")))))
-    (declaration (id (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model::choice"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base") (variation true)))))
+    (declaration (id (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model::choice"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base") (variation true)))))
     (declaration (id (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model::choice::second"))) (kind part) (membership (kind owning) (visibility default) (role variant)) (authored (membership (kind owning) (visibility default) (role variant)) (relationships (featureTyping (reference "Base")))))
     (declaration (id (node (document "memory://snapshot/sysml_definition_usage_variant_membership.md") (qualified-name "Model::external"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Base")))))
   )

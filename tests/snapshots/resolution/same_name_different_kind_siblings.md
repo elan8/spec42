@@ -26,11 +26,11 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:a42728cc3bec5dc9052dd113711632ffe9f39b2e136b5ebec3e34c7920c679b9") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c0b92364fd76cfbe243a76e1c3d859c7d1b374d14eed23bf03e18189de9cffe7") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/same_name_different_kind_siblings.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/same_name_different_kind_siblings.md") (path (named (kind package) (name "P")) (named (kind metadata-def) (name "Safety"))))) (kind metadata-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/same_name_different_kind_siblings.md") (path (named (kind package) (name "P")) (named (kind metadata) (name "Safety"))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Safety")) (metadataAnnotationAbout (reference "Vehicle")))))
+    (declaration (id (node (document "memory://snapshot/same_name_different_kind_siblings.md") (path (named (kind package) (name "P")) (named (kind metadata) (name "Safety"))))) (kind metadata) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (featureTyping (reference "Safety")) (metadataAnnotationAbout (reference "Vehicle")))))
     (declaration (id (node (document "memory://snapshot/same_name_different_kind_siblings.md") (qualified-name "P::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
   )
   (references

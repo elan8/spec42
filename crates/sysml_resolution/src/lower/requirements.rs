@@ -58,10 +58,11 @@ impl SemanticModelBuilder {
                 ..DeclarationFacts::none()
             },
         )?;
-        self.push_membership(
+        self.push_role_membership(
             declaration,
             MembershipKind::Feature,
             Visibility::Default,
+            crate::MembershipRole::ReturnParameter,
             node.span,
         )?;
         if let ReturnRefBody::Brace { elements, .. } = &node.value.body.value {
@@ -678,17 +679,12 @@ impl SemanticModelBuilder {
                     self.push_unsupported(document, family, node.span);
                 }
             }
-            Expression::Invocation { callee, args } => {
-                self.lower_invocation_callee(document, owner, callee, args.len(), node.span)?;
+            Expression::Invocation { args, .. } | Expression::Constructor { args, .. } => {
+                let entered = self.enter_instantiation(document, owner, node)?;
                 for arg in args {
                     self.lower_satisfy_operand(document, owner, family, kind, &arg.value)?;
                 }
-            }
-            Expression::Constructor { type_name, args } => {
-                self.push_invocation_callee_reference(document, owner, *type_name)?;
-                for arg in args {
-                    self.lower_satisfy_operand(document, owner, family, kind, &arg.value)?;
-                }
+                self.leave_instantiation(entered);
             }
             _ => self.push_unsupported(document, family, node.span),
         }
@@ -1803,6 +1799,7 @@ impl SemanticModelBuilder {
             match &element.value {
                 UseCaseDefBodyElement::Error(error) => {
                     self.push_recovery(document, error.span);
+                    self.mark_result_expressions_incomplete(owner)?;
                 }
                 UseCaseDefBodyElement::AttributeDef(attribute) => {
                     self.lower_attribute_def(document, Some(owner), attribute)?;
@@ -1851,7 +1848,7 @@ impl SemanticModelBuilder {
                     self.lower_annotating_member(document, Some(owner), unsupported, member)?;
                 }
                 UseCaseDefBodyElement::AssertConstraint(node) => {
-                    self.lower_assert_constraint_member(document, owner, unsupported, node)?
+                    self.lower_assert_constraint_member(document, owner, node)?
                 }
                 UseCaseDefBodyElement::IncludeUseCase(node) => {
                     self.lower_include_use_case(document, owner, node)?;
@@ -1877,7 +1874,7 @@ impl SemanticModelBuilder {
                     self.lower_requirement_usage_as_with_implicit_name(
                         document,
                         Some(owner),
-                        DeclarationKind::RequirementUsage,
+                        DeclarationKind::ObjectiveRequirement,
                         &node.value.requirement,
                         Some("objective"),
                     )?;
@@ -1908,13 +1905,13 @@ impl SemanticModelBuilder {
                 UseCaseDefBodyElement::FlowUsage(node) => {
                     self.lower_flow_usage(document, owner, node)?;
                 }
-                // Bare result expression in an analysis/case body (validation `10a`: `vehicle.
-                // mass`) -- mirrors `CalcDefBodyElement::Expression`'s identical shape: the
-                // expression is the enclosing case-family declaration's own evaluated result, not
-                // a new nested declaration, so it is classified/lowered directly at `owner` through
-                // the same `classify_expression`/`lower_calc_expression` pipeline a calc def's
-                // bare body expression uses.
+                // Bare expression in an analysis/case body (validation `10a`: `vehicle.mass`).
+                // Unlike `CalcDefBodyElement::Expression`, it is not minted as a result
+                // expression: the parser still shreds `include` members into stray expressions
+                // here, so this may not be a ResultExpressionMember. It stays evaluated at
+                // `owner`, whose result-expression set is marked incomplete.
                 UseCaseDefBodyElement::Expression(expression) => {
+                    self.mark_result_expressions_incomplete(owner)?;
                     self.push_evaluation_fact(
                         owner,
                         self.calc_expression_site(document, &expression.value),

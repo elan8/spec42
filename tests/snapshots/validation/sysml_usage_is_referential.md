@@ -6,38 +6,27 @@ specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
 validation_rule=8.3.6.4 validateUsageIsReferential
 source_expectation=accepted
 rule_family=validate
-expectation=diagnostics
+expectation=by_construction
+evidence_reference=file:tests/snapshots/validation/sysml_usage_is_reference_derivation.md
 rule_id=sysml-2.0:8.3.6.4:validateUsageIsReferential
-blocked_by=semantic-directed-usage-not-referential
 type=file
 ~~~
 # SOURCE
 ~~~sysml
+// The violating side has no model: Usage::isReference is derived (not isComposite), and a
+// directed usage, an end usage, or a usage with no featuring type is never composite (the Pilot's
+// UsageAdapter.postProcess, which @satisfies this rule). sysml_usage_is_reference_derivation.md
+// pins the derived isReference of each such usage.
 package References {
     part def Base;
     part def Holder {
         // Conforming: a directed usage declared referential.
         in ref part directedReference : Base;
 
-        // Invalid: a directed usage that is composite rather than referential.
+        // Also conforming: a directed usage without `ref` is referential by derivation.
         in part directedComposite : Base;
     }
 }
-~~~
-# EXPECTED DIAGNOSTICS
-~~~sexpr
-(fixture-diagnostics
-  (document "memory://snapshot/sysml_usage_is_referential.md"
-    (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "directed_usage_not_referential")
-        (source "semantic")
-        (range (start 7 8) (end 7 41))
-      )
-    )
-  )
-)
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
@@ -51,7 +40,7 @@ package References {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5357ff7c0849aed983304050894df8156db2d3cd1d38242d0158a2f82cd7a46a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3c8d7c78e6ccc8a16f73527fc2e9b51e991b0a1bba2236f717bee6660827b78f"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Base"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -101,12 +90,12 @@ package References {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_usage_is_referential.md") (range (start 7 36) (end 7 40)) (probe (position 7 36))
+  (query (document "memory://snapshot/sysml_usage_is_referential.md") (range (start 11 36) (end 11 40)) (probe (position 11 36))
     (reference (id (source (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Holder::directedComposite"))) (kind featureTyping) (ordinal 0) (authored-target "Base")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Base")))))
     )
   )
-  (query (document "memory://snapshot/sysml_usage_is_referential.md") (range (start 4 40) (end 4 44)) (probe (position 4 40))
+  (query (document "memory://snapshot/sysml_usage_is_referential.md") (range (start 8 40) (end 8 44)) (probe (position 8 40))
     (reference (id (source (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Holder::directedReference"))) (kind featureTyping) (ordinal 0) (authored-target "Base")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_usage_is_referential.md") (qualified-name "References::Base")))))
     )

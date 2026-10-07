@@ -32,6 +32,8 @@ use crate::lower::facts::MetadataAnnotationForm;
 use crate::lower::facts::MetadataAnnotationRecord;
 use crate::lower::facts::OperatorExpressionKind;
 use crate::lower::facts::OperatorExpressionRecord;
+use crate::lower::facts::OwnedEndFeature;
+use crate::lower::facts::OwnedEndRecord;
 use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::ParserReferenceId;
 use crate::lower::facts::PendingEvaluationFact;
@@ -58,9 +60,11 @@ use hashbrown::HashTable;
 use std::hash::BuildHasher;
 
 use source_identity::ContentDigest;
+use source_identity::SourceLanguage;
 use source_identity::SourceRole;
 use std::collections::hash_map::RandomState;
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::sync::Arc;
 use sysml_v2_parser::ast::CollectionOperator;
 use sysml_v2_parser::ast::CommentBody;
@@ -99,6 +103,33 @@ pub(crate) struct FeatureValueEndpoints {
     pub(crate) result: DeclarationId,
 }
 
+/// The top-level instantiation expression of a FeatureValue, awaiting its callee reference.
+///
+/// `record_feature_value` mints the value Expression and knows its top-level syntax node; the
+/// expression walker that later lowers that node pushes the callee reference. The argument
+/// Features are minted there, where the callee reference that scopes a named argument exists, and
+/// only for the node recorded here; every other instantiation expression is minted as its own
+/// element by [`SemanticModelBuilder::enter_instantiation`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct PendingInstantiation {
+    pub(crate) expression: DeclarationId,
+    /// The expression for an invocation, its result for a constructor.
+    pub(crate) container: DeclarationId,
+    pub(crate) form: crate::lower::facts::InstantiationForm,
+    /// The top-level expression node's span, identifying the node within `expression`.
+    pub(crate) span: Span,
+}
+
+/// An instantiation expression whose arguments are being lowered: nested instantiations written
+/// at the same evaluation site are owned by the innermost one.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) struct InstantiationScope {
+    /// The evaluation site the expression walker sources operand references at.
+    pub(crate) site: DeclarationId,
+    /// The InvocationExpression / ConstructorExpression element.
+    pub(crate) element: DeclarationId,
+}
+
 /// One buffered body-less `#tag` prefix metadata keyword awaiting binding to the member it
 /// precedes. Both fields are arena/source identities copied out of the parser node, so the buffer
 /// does not borrow the parsed document.
@@ -130,6 +161,8 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) operator_expressions: Vec<OperatorExpressionRecord>,
     pub(crate) expression_arguments: Vec<ExpressionArgumentRecord>,
     pub(crate) constructor_expressions: Vec<ConstructorExpressionRecord>,
+    pub(crate) pending_instantiations: Vec<PendingInstantiation>,
+    pub(crate) instantiation_scopes: Vec<InstantiationScope>,
     pub(crate) feature_chain_expressions: Vec<FeatureChainExpressionRecord>,
     pub(crate) feature_reference_expressions: Vec<FeatureReferenceExpressionRecord>,
     pub(crate) metadata_annotations: Vec<MetadataAnnotationRecord>,
@@ -139,6 +172,11 @@ pub(crate) struct SemanticModelBuilder {
     pub(crate) unit_tokens: Vec<AuthoredUnitToken>,
     pub(crate) filter_conditions: Vec<AuthoredFilterCondition>,
     pub(crate) invocations: Vec<AuthoredInvocation>,
+    pub(crate) assignments: Vec<crate::lower::facts::AssignmentRecord>,
+    pub(crate) unlowered_expressions: Vec<crate::lower::facts::UnloweredExpressionSite>,
+    pub(crate) trigger_invocations: Vec<crate::lower::facts::TriggerInvocationRecord>,
+    /// Owned end Features in lowering order; sorted stably by owner at the freeze barrier.
+    pub(crate) owned_end_features: Vec<OwnedEndRecord>,
     pub(crate) symbols: SymbolTableBuilder,
     pub(crate) paths: SymbolPathArenaBuilder,
     pub(crate) path_scratch: Vec<NameId>,
@@ -174,6 +212,7 @@ impl SemanticModelBuilder {
         &mut self,
         identity: impl Into<Box<str>>,
         role: SourceRole,
+        language: SourceLanguage,
         digest: ContentDigest,
         parsed: Arc<ParsedDocument>,
         parse_errors: Vec<ParseError>,
@@ -203,6 +242,7 @@ impl SemanticModelBuilder {
         self.documents.push(AdmittedDocument {
             identity,
             role,
+            language,
             digest,
             parsed,
             parse_errors: parse_errors.into_boxed_slice(),
@@ -277,6 +317,9 @@ impl SemanticModelBuilder {
             || facts
                 .short_name
                 .is_some_and(|id| id.index() >= self.symbols.len())
+            || facts
+                .derived_name
+                .is_some_and(|id| id.index() >= self.symbols.len())
         {
             return Err(ConstructionError::InvalidIdentity);
         }
@@ -302,6 +345,12 @@ impl SemanticModelBuilder {
             span,
         });
         self.declaration_facts.push(facts);
+        if let (true, Some(owner)) = (contributes_owned_end, owner) {
+            self.owned_end_features.push(OwnedEndRecord {
+                owner,
+                end: OwnedEndFeature::Declared(id),
+            });
+        }
         if contributes_owned_end {
             if let Some(count) = owner
                 .and_then(|owner| self.declaration_facts.get_mut(owner.index()))
@@ -340,20 +389,17 @@ impl SemanticModelBuilder {
         Ok(id)
     }
 
-    /// Records one `doc`/`comment`/`rep` annotation against the declaration it annotates.
-    ///
-    /// The parser attaches these as sibling body elements with no parent link, so the binding is
-    /// made by the lowering walk rather than read off the annotated node.
+    /// Records the authored body of one `doc`/`comment`/`rep` annotating element.
     pub(crate) fn push_documentation(
         &mut self,
-        declaration: DeclarationId,
+        element: DeclarationId,
         form: AnnotationForm,
         locale: Option<NameId>,
         language: Option<NameId>,
         text: NameId,
         span: Span,
     ) -> Result<(), ConstructionError> {
-        if declaration.index() >= self.declarations.len()
+        if element.index() >= self.declarations.len()
             || text.index() >= self.symbols.len()
             || locale.is_some_and(|id| id.index() >= self.symbols.len())
             || language.is_some_and(|id| id.index() >= self.symbols.len())
@@ -361,7 +407,7 @@ impl SemanticModelBuilder {
             return Err(ConstructionError::InvalidIdentity);
         }
         self.documentation.push(DocumentationRecord {
-            declaration,
+            element,
             form,
             locale,
             language,
@@ -535,7 +581,40 @@ impl SemanticModelBuilder {
         }
     }
 
-    /// Records a `doc /* ... */` annotation against the declaration whose body it heads.
+    /// Mints the annotating element (KerML `AnnotatingElement`) of one `doc`/`comment`/`rep`
+    /// member: a declaration of `kind`, optionally named by its `Identification`, owned by the
+    /// namespace `owner` it is written in under an `OwningMembership` (KerML `NonFeatureMember`).
+    fn push_annotating_element(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        kind: DeclarationKind,
+        identification: Option<&sysml_v2_parser::ast::Identification>,
+        span: Span,
+    ) -> Result<DeclarationId, ConstructionError> {
+        let (name, short_name) = match identification {
+            Some(identification) => (
+                self.intern_declaration_name(document, identification.name)?,
+                self.intern_short_name(document, identification.short_name)?,
+            ),
+            None => (None, None),
+        };
+        let element = self.push_typed_declaration(
+            document,
+            Some(owner),
+            kind,
+            name,
+            span,
+            DeclarationFacts {
+                short_name,
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(element, MembershipKind::Owning, Visibility::Default, span)?;
+        Ok(element)
+    }
+
+    /// Lowers a `doc /* ... */` member of `declaration`'s body as a `Documentation` it owns.
     pub(crate) fn record_doc_comment(
         &mut self,
         document: DocumentIdx,
@@ -544,8 +623,15 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let locale = self.intern_string_literal(document, node.value.locale)?;
         let text = self.intern_comment_body(document, node.value.body)?;
-        self.push_documentation(
+        let element = self.push_annotating_element(
+            document,
             declaration,
+            DeclarationKind::Documentation,
+            node.value.identification.as_ref(),
+            node.span,
+        )?;
+        self.push_documentation(
+            element,
             AnnotationForm::Documentation,
             locale,
             None,
@@ -554,15 +640,9 @@ impl SemanticModelBuilder {
         )
     }
 
-    /// Records a `comment /* ... */` annotation against the declaration whose body it heads.
-    ///
-    /// An anonymous comment (no `Identification`) stays exactly as before: a documentation fact
-    /// with no element of its own. A *named* comment (`comment aboutP about p /* ... */`)
-    /// additionally mints a real, named `CommentUsage` declaration owned by `declaration`, so it
-    /// has an identity a later `metadata ... about aboutP;` reference can resolve to through the
-    /// ordinary lexical/membership lookup -- spec42 issue #201 (L-06). Before this, the name was
-    /// read nowhere: only `locale` and `body` were interned, so a named comment was
-    /// indistinguishable from an anonymous one downstream.
+    /// Lowers a `comment /* ... */` member of `declaration`'s body as a `Comment` it owns, with
+    /// one [`ReferenceKind::Annotation`] per `about` target: the Annotations the Comment owns
+    /// (KerML 8.3.2.3, `Comment = 'comment' ... 'about' ownedRelationship += Annotation`).
     pub(crate) fn record_comment_annotation(
         &mut self,
         document: DocumentIdx,
@@ -571,55 +651,43 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let locale = self.intern_string_literal(document, node.value.locale)?;
         let text = self.intern_comment_body(document, node.value.body)?;
-        self.push_documentation(
+        let element = self.push_annotating_element(
+            document,
             declaration,
-            AnnotationForm::Comment,
-            locale,
-            None,
-            text,
-            node.span,
-        )?;
-        let identification = node.value.identification.as_ref();
-        let name = self.intern_declaration_name(
-            document,
-            identification.and_then(|identification| identification.name),
-        )?;
-        let Some(name) = name else {
-            return Ok(());
-        };
-        let short_name = self.intern_short_name(
-            document,
-            identification.and_then(|identification| identification.short_name),
-        )?;
-        let comment = self.push_typed_declaration(
-            document,
-            Some(declaration),
-            DeclarationKind::CommentUsage,
-            Some(name),
-            node.span,
-            DeclarationFacts {
-                short_name,
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            comment,
-            MembershipKind::Feature,
-            Visibility::Default,
+            DeclarationKind::Comment,
+            node.value.identification.as_ref(),
             node.span,
         )?;
         self.push_documentation(
-            comment,
+            element,
             AnnotationForm::Comment,
             locale,
             None,
             text,
             node.span,
-        )
+        )?;
+        for target in &node.value.about_targets {
+            let span = self.documents[document.index()]
+                .parsed
+                .qualified_reference(*target)
+                .ok_or(ConstructionError::InvalidParserReference)?
+                .metadata
+                .span;
+            self.push_reference(PendingReference {
+                source: element,
+                kind: ReferenceKind::Annotation,
+                document,
+                local: *target,
+                flags: RelationshipFlags::default(),
+                span,
+                import: None,
+            })?;
+        }
+        Ok(())
     }
 
-    /// Records a `rep <language> "..." /* ... */` annotation against the declaration whose body it
-    /// heads.
+    /// Lowers a `rep <language> "..." /* ... */` member of `declaration`'s body as a
+    /// `TextualRepresentation` it owns.
     pub(crate) fn record_textual_representation(
         &mut self,
         document: DocumentIdx,
@@ -628,8 +696,15 @@ impl SemanticModelBuilder {
     ) -> Result<(), ConstructionError> {
         let language = self.intern_string_literal(document, node.value.language)?;
         let text = self.intern_comment_body(document, node.value.body)?;
-        self.push_documentation(
+        let element = self.push_annotating_element(
+            document,
             declaration,
+            DeclarationKind::TextualRepresentation,
+            node.value.rep_identification.as_ref(),
+            node.span,
+        )?;
+        self.push_documentation(
+            element,
             AnnotationForm::TextualRepresentation,
             None,
             language,
@@ -639,6 +714,55 @@ impl SemanticModelBuilder {
     }
 
     /// Constructs the canonical value Expression and result Feature for a `FeatureValue` clause.
+    /// Mints one anonymous `Expression` under an `OwningMembership` of `owner`, with its `out`
+    /// result parameter, and returns `(expression, result)`.
+    fn push_owned_expression(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        kind: DeclarationKind,
+        role: Option<MembershipRole>,
+        span: Span,
+    ) -> Result<(DeclarationId, DeclarationId), ConstructionError> {
+        let expression = self.push_typed_declaration(
+            document,
+            Some(owner),
+            kind,
+            None,
+            span,
+            DeclarationFacts::none(),
+        )?;
+        match role {
+            Some(role) => self.push_role_membership(
+                expression,
+                MembershipKind::Feature,
+                Visibility::Default,
+                role,
+                span,
+            )?,
+            None => self.push_membership(
+                expression,
+                MembershipKind::Owning,
+                Visibility::Default,
+                span,
+            )?,
+        }
+        let result = self.push_typed_declaration(
+            document,
+            Some(expression),
+            DeclarationKind::KermlFeature,
+            None,
+            span,
+            DeclarationFacts {
+                direction: Some(ParameterDirection::Out),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(result, MembershipKind::Feature, Visibility::Default, span)?;
+        self.declaration_facts[expression.index()].expression_result = Some(result);
+        Ok((expression, result))
+    }
+
     pub(crate) fn record_feature_value(
         &mut self,
         document: DocumentIdx,
@@ -649,105 +773,8 @@ impl SemanticModelBuilder {
             ParserFeatureValueKind::Bind => FeatureValueKind::Bind,
             ParserFeatureValueKind::Assign => FeatureValueKind::Assign,
         };
-        let expression = self.push_typed_declaration(
-            document,
-            Some(declaration),
-            DeclarationKind::KermlExpression,
-            None,
-            value.value.expression.span,
-            DeclarationFacts::none(),
-        )?;
-        self.push_membership(
-            expression,
-            MembershipKind::Owning,
-            Visibility::Default,
-            value.value.expression.span,
-        )?;
-        let result = self.push_typed_declaration(
-            document,
-            Some(expression),
-            DeclarationKind::KermlFeature,
-            None,
-            value.value.expression.span,
-            DeclarationFacts {
-                direction: Some(ParameterDirection::Out),
-                ..DeclarationFacts::none()
-            },
-        )?;
-        self.push_membership(
-            result,
-            MembershipKind::Feature,
-            Visibility::Default,
-            value.value.expression.span,
-        )?;
-        self.declaration_facts[expression.index()].expression_result = Some(result);
-        if matches!(
-            value.value.expression.value,
-            Expression::MemberAccess { .. } | Expression::FeatureChainRef(_)
-        ) {
-            let input_parameter = self.push_typed_declaration(
-                document,
-                Some(expression),
-                DeclarationKind::KermlFeature,
-                None,
-                value.value.expression.span,
-                DeclarationFacts {
-                    direction: Some(ParameterDirection::In),
-                    ..DeclarationFacts::none()
-                },
-            )?;
-            self.push_membership(
-                input_parameter,
-                MembershipKind::Feature,
-                Visibility::Default,
-                value.value.expression.span,
-            )?;
-            let source_target = self.push_typed_declaration(
-                document,
-                Some(input_parameter),
-                DeclarationKind::KermlFeature,
-                None,
-                value.value.expression.span,
-                DeclarationFacts::none(),
-            )?;
-            self.push_membership(
-                source_target,
-                MembershipKind::Feature,
-                Visibility::Default,
-                value.value.expression.span,
-            )?;
-            let subsetting_chain = self.push_typed_declaration(
-                document,
-                Some(expression),
-                DeclarationKind::KermlFeature,
-                None,
-                value.value.expression.span,
-                DeclarationFacts::none(),
-            )?;
-            self.push_membership(
-                subsetting_chain,
-                MembershipKind::Owning,
-                Visibility::Default,
-                value.value.expression.span,
-            )?;
-            self.feature_chain_expressions
-                .push(FeatureChainExpressionRecord {
-                    expression,
-                    result,
-                    input_parameter,
-                    source_target,
-                    subsetting_chain,
-                });
-        }
-        if matches!(value.value.expression.value, Expression::FeatureRef(_)) {
-            self.feature_reference_expressions
-                .push(FeatureReferenceExpressionRecord { expression, result });
-        }
-        self.record_operator_expression(document, expression, result, &value.value.expression)?;
-        if matches!(value.value.expression.value, Expression::Constructor { .. }) {
-            self.constructor_expressions
-                .push(ConstructorExpressionRecord { expression, result });
-        }
+        let (expression, result) =
+            self.mint_value_expression(document, declaration, None, &value.value.expression)?;
         let endpoints = FeatureValueEndpoints { expression, result };
         self.push_feature_value(
             declaration,
@@ -760,17 +787,150 @@ impl SemanticModelBuilder {
         Ok(endpoints)
     }
 
+    /// Mints the result expression `node` authored as a member of `owner`'s body (KerML and
+    /// SysML `ResultExpressionMember`): an Expression owned through a ResultExpressionMembership
+    /// with its own `out` result, minted exactly as a FeatureValue's value Expression is. It is
+    /// the evaluation site of `node`; `owner`'s value is derived from it
+    /// ([`crate::lower::storage::SemanticModelStorage::value_expressions`]), never evaluated at
+    /// `owner` itself.
+    pub(crate) fn mint_result_expression(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        node: &Node<Expression>,
+    ) -> Result<DeclarationId, ConstructionError> {
+        let (expression, _) = self.mint_value_expression(
+            document,
+            owner,
+            Some(MembershipRole::ResultExpression),
+            node,
+        )?;
+        Ok(expression)
+    }
+
+    /// Mints the Expression element whose value `node` is -- a FeatureValue's value or a result
+    /// expression -- owned by `owner` (through `role`, or an OwningMembership), with its own `out`
+    /// result and the records its top-level node shape needs. Returns the expression and result.
+    fn mint_value_expression(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        role: Option<MembershipRole>,
+        node: &Node<Expression>,
+    ) -> Result<(DeclarationId, DeclarationId), ConstructionError> {
+        // A literal, null or metadata-access value is itself the value Expression, an instance
+        // of that metaclass.
+        let expression_kind = crate::lower::facts::leaf_expression_kind(&node.value)
+            .unwrap_or(DeclarationKind::KermlExpression);
+        let (expression, result) =
+            self.push_owned_expression(document, owner, expression_kind, role, node.span)?;
+        if matches!(
+            node.value,
+            Expression::MemberAccess { .. } | Expression::FeatureChainRef(_)
+        ) {
+            let input_parameter = self.push_typed_declaration(
+                document,
+                Some(expression),
+                DeclarationKind::KermlFeature,
+                None,
+                node.span,
+                DeclarationFacts {
+                    direction: Some(ParameterDirection::In),
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            self.push_membership(
+                input_parameter,
+                MembershipKind::Feature,
+                Visibility::Default,
+                node.span,
+            )?;
+            let source_target = self.push_typed_declaration(
+                document,
+                Some(input_parameter),
+                DeclarationKind::KermlFeature,
+                None,
+                node.span,
+                DeclarationFacts::none(),
+            )?;
+            self.push_membership(
+                source_target,
+                MembershipKind::Feature,
+                Visibility::Default,
+                node.span,
+            )?;
+            let subsetting_chain = self.push_typed_declaration(
+                document,
+                Some(expression),
+                DeclarationKind::KermlFeature,
+                None,
+                node.span,
+                DeclarationFacts::none(),
+            )?;
+            self.push_membership(
+                subsetting_chain,
+                MembershipKind::Owning,
+                Visibility::Default,
+                node.span,
+            )?;
+            self.feature_chain_expressions
+                .push(FeatureChainExpressionRecord {
+                    expression,
+                    result,
+                    input_parameter,
+                    source_target,
+                    subsetting_chain,
+                });
+        }
+        if matches!(node.value, Expression::FeatureRef(_)) {
+            self.feature_reference_expressions
+                .push(FeatureReferenceExpressionRecord { expression, result });
+        }
+        self.record_operator_expression(document, expression, result, node)?;
+        if matches!(node.value, Expression::Constructor { .. }) {
+            self.constructor_expressions
+                .push(ConstructorExpressionRecord { expression, result });
+        }
+        let instantiation = match &node.value {
+            Expression::Invocation { callee, .. }
+                if matches!(
+                    callee.value,
+                    Expression::FeatureRef(_) | Expression::FeatureChainRef(_)
+                ) =>
+            {
+                Some((
+                    expression,
+                    crate::lower::facts::InstantiationForm::Invocation,
+                ))
+            }
+            Expression::Constructor { .. } => {
+                Some((result, crate::lower::facts::InstantiationForm::Constructor))
+            }
+            _ => None,
+        };
+        if let Some((container, form)) = instantiation {
+            self.pending_instantiations.push(PendingInstantiation {
+                expression,
+                container,
+                form,
+                span: node.span,
+            });
+        }
+        Ok((expression, result))
+    }
+
     fn push_expression_argument(
         &mut self,
         document: DocumentIdx,
         expression: DeclarationId,
         ordinal: u32,
+        kind: DeclarationKind,
         span: Span,
     ) -> Result<(), ConstructionError> {
         let argument = self.push_typed_declaration(
             document,
             Some(expression),
-            DeclarationKind::KermlExpression,
+            kind,
             None,
             span,
             DeclarationFacts::none(),
@@ -807,16 +967,25 @@ impl SemanticModelBuilder {
         result: DeclarationId,
         node: &Node<Expression>,
     ) -> Result<(), ConstructionError> {
+        // Each argument is minted at its operand's span, as an instance of the operand's leaf
+        // metaclass when it is a literal, null or metadata access.
+        let site = |operand: &Node<Expression>| {
+            (
+                operand.span,
+                crate::lower::facts::leaf_expression_kind(&operand.value)
+                    .unwrap_or(DeclarationKind::KermlExpression),
+            )
+        };
         let (kind, spans) = match &node.value {
             Expression::Index { base, operands, .. } => (
                 OperatorExpressionKind::Index,
-                std::iter::once(base.span)
+                std::iter::once(site(base))
                     .chain(
                         operands
                             .value
                             .elements
                             .iter()
-                            .map(|element| element.expression.span),
+                            .map(|element| site(&element.expression)),
                     )
                     .collect::<Vec<_>>(),
             ),
@@ -829,7 +998,10 @@ impl SemanticModelBuilder {
                     .span;
                 (
                     OperatorExpressionKind::Select,
-                    vec![base.span, selector_span],
+                    vec![
+                        site(base),
+                        (selector_span, DeclarationKind::KermlExpression),
+                    ],
                 )
             }
             Expression::CollectionOp {
@@ -840,8 +1012,8 @@ impl SemanticModelBuilder {
                 ..
             } => (
                 OperatorExpressionKind::Select,
-                std::iter::once(base.span)
-                    .chain(args.iter().map(|argument| argument.value.span))
+                std::iter::once(site(base))
+                    .chain(args.iter().map(|argument| site(&argument.value)))
                     .collect::<Vec<_>>(),
             ),
             _ => return Ok(()),
@@ -851,11 +1023,12 @@ impl SemanticModelBuilder {
             result,
             kind,
         });
-        for (ordinal, span) in spans.into_iter().enumerate() {
+        for (ordinal, (span, kind)) in spans.into_iter().enumerate() {
             self.push_expression_argument(
                 document,
                 expression,
                 u32::try_from(ordinal).map_err(|_| ConstructionError::Capacity)?,
+                kind,
                 span,
             )?;
         }
@@ -888,6 +1061,26 @@ impl SemanticModelBuilder {
             span,
         });
         Ok(())
+    }
+
+    /// Pushes a membership whose OMG metaclass carries a role the member's element kind does not
+    /// imply (a `return` parameter's `ReturnParameterMembership`, for instance).
+    pub(crate) fn push_role_membership(
+        &mut self,
+        member: DeclarationId,
+        kind: MembershipKind,
+        visibility: Visibility,
+        role: MembershipRole,
+        span: Span,
+    ) -> Result<(), ConstructionError> {
+        if self
+            .next_membership_override
+            .replace((kind, visibility, role, span))
+            .is_some()
+        {
+            return Err(ConstructionError::InvalidMembership);
+        }
+        self.push_membership(member, kind, visibility, span)
     }
 
     pub(crate) fn push_membership(
@@ -963,6 +1156,23 @@ impl SemanticModelBuilder {
             .iter()
             .any(|segment| segment.separator_before == Some(ReferenceSeparator::Dot));
         let flags = RelationshipFlags { dotted, ..flags };
+        let chaining_feature_ends = if dotted {
+            let last = reference.segments.len().saturating_sub(1);
+            reference
+                .segments
+                .iter()
+                .enumerate()
+                .filter(|(index, segment)| {
+                    *index > 0 && segment.separator_before == Some(ReferenceSeparator::Dot)
+                })
+                .map(|(index, _)| index - 1)
+                .chain(std::iter::once(last))
+                .map(|index| u32::try_from(index).map_err(|_| ConstructionError::Capacity))
+                .collect::<Result<Vec<_>, _>>()?
+                .into_boxed_slice()
+        } else {
+            Box::default()
+        };
         let ordinal = self
             .next_reference_ordinals
             .entry((source, kind))
@@ -979,6 +1189,7 @@ impl SemanticModelBuilder {
             import,
             flags,
             member_access_narrowings: Box::default(),
+            chaining_feature_ends,
             span,
         });
         Ok(id)
@@ -1191,6 +1402,7 @@ impl SemanticModelBuilder {
             import: None,
             flags: RelationshipFlags::default(),
             member_access_narrowings: Box::default(),
+            chaining_feature_ends: Box::default(),
             span,
         });
         Ok(id)
@@ -1221,19 +1433,324 @@ impl SemanticModelBuilder {
         callee: &Node<Expression>,
         argument_count: usize,
         span: Span,
-    ) -> Result<(), ConstructionError> {
+    ) -> Result<Option<AuthoredReferenceId>, ConstructionError> {
         match &callee.value {
             Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
                 let reference =
                     self.push_invocation_callee_reference(document, declaration, *target)?;
-                self.push_invocation(declaration, document, reference, argument_count, span)
+                self.push_invocation(declaration, document, reference, argument_count, span)?;
+                Ok(Some(reference))
             }
             Expression::MemberAccess { .. } => {
                 self.push_member_access_expression(declaration, document, callee)?;
-                Ok(())
+                Ok(None)
             }
-            _ => Ok(()),
+            _ => Ok(None),
         }
+    }
+
+    /// Lowers the head of the instantiation expression `node` (an `Expression::Invocation` or
+    /// `Expression::Constructor`) written at the evaluation site `site`, and returns whether it
+    /// opened an instantiation scope the caller must close with [`Self::leave_instantiation`] once
+    /// it has lowered the arguments.
+    ///
+    /// Every instantiation expression is its own KerML `InvocationExpression` /
+    /// `ConstructorExpression` element. The top-level instantiation of a FeatureValue is the value
+    /// Expression `record_feature_value` already minted (see [`PendingInstantiation`]); any other --
+    /// one nested in another expression, or written directly in a constraint, calculation, filter or
+    /// operand body -- is minted here as an anonymous Expression with its own `out` result, owned
+    /// by the innermost instantiation it is nested in at the same site (or by `site` itself). The
+    /// callee reference, the invocation record and the argument Features belong to that element,
+    /// so a nested callee never types its enclosing expression. Operand references stay sourced at
+    /// `site`: they are the evaluation site's operand slots, which evaluation pairs by ordinal.
+    ///
+    /// An invocation whose callee is a dotted member access, or a computed callee, names no callee
+    /// this helper can record, so it mints no element (see [`Self::lower_invocation_callee`]).
+    pub(crate) fn enter_instantiation(
+        &mut self,
+        document: DocumentIdx,
+        site: DeclarationId,
+        node: &Node<Expression>,
+    ) -> Result<bool, ConstructionError> {
+        use crate::lower::facts::InstantiationForm;
+        let (form, target, args) = match &node.value {
+            Expression::Invocation { callee, args } => match &callee.value {
+                Expression::FeatureRef(target) | Expression::FeatureChainRef(target) => {
+                    (InstantiationForm::Invocation, *target, args)
+                }
+                _ => {
+                    self.lower_invocation_callee(document, site, callee, args.len(), node.span)?;
+                    return Ok(false);
+                }
+            },
+            Expression::Constructor { type_name, args } => {
+                (InstantiationForm::Constructor, *type_name, args)
+            }
+            _ => return Ok(false),
+        };
+        let pending = self
+            .pending_instantiations
+            .iter()
+            .position(|pending| pending.expression == site && pending.span == node.span)
+            .map(|index| self.pending_instantiations.swap_remove(index));
+        let (element, container) = match pending {
+            Some(pending) => (pending.expression, pending.container),
+            None => {
+                let owner = self
+                    .instantiation_scopes
+                    .last()
+                    .filter(|scope| scope.site == site)
+                    .map_or(site, |scope| scope.element);
+                let element = self.push_typed_declaration(
+                    document,
+                    Some(owner),
+                    DeclarationKind::KermlExpression,
+                    None,
+                    node.span,
+                    DeclarationFacts::none(),
+                )?;
+                self.push_membership(
+                    element,
+                    MembershipKind::Owning,
+                    Visibility::Default,
+                    node.span,
+                )?;
+                let result = self.push_typed_declaration(
+                    document,
+                    Some(element),
+                    DeclarationKind::KermlFeature,
+                    None,
+                    node.span,
+                    DeclarationFacts {
+                        direction: Some(ParameterDirection::Out),
+                        ..DeclarationFacts::none()
+                    },
+                )?;
+                self.push_membership(
+                    result,
+                    MembershipKind::Feature,
+                    Visibility::Default,
+                    node.span,
+                )?;
+                self.declaration_facts[element.index()].expression_result = Some(result);
+                if form == InstantiationForm::Constructor {
+                    self.constructor_expressions
+                        .push(ConstructorExpressionRecord {
+                            expression: element,
+                            result,
+                        });
+                }
+                (
+                    element,
+                    match form {
+                        InstantiationForm::Invocation => element,
+                        InstantiationForm::Constructor => result,
+                    },
+                )
+            }
+        };
+        let callee = self.push_invocation_callee_reference(document, element, target)?;
+        if form == InstantiationForm::Invocation {
+            self.push_invocation(element, document, callee, args.len(), node.span)?;
+        }
+        self.mint_instantiation_arguments(document, container, form, callee, args)?;
+        self.instantiation_scopes
+            .push(InstantiationScope { site, element });
+        Ok(true)
+    }
+
+    /// Records what the expression node `node`, written at the evaluation site `site`, leaves out
+    /// of the publication (see [`crate::lower::facts::UnloweredExpression`]). Every expression
+    /// walker calls this once per node it visits.
+    ///
+    /// A literal (whose `LiteralExpression` owns neither parameters nor its own result), an
+    /// invocation or constructor (each its own element, see [`Self::enter_instantiation`]) and a
+    /// one-operand grouping are fully represented. The top-level node of a FeatureValue is its
+    /// value Expression: a feature reference, feature chain or body is represented with its
+    /// result (and a chain's input parameter), while an operator's operand parameters are not.
+    /// Every other node is no element at all.
+    pub(crate) fn note_expression_node(&mut self, site: DeclarationId, node: &Node<Expression>) {
+        use crate::lower::facts::UnloweredExpression;
+        match &node.value {
+            Expression::LiteralInteger(_)
+            | Expression::LiteralReal(_)
+            | Expression::LiteralBoolean(_)
+            | Expression::LiteralString(_)
+            | Expression::Null
+            | Expression::Invocation { .. }
+            | Expression::Constructor { .. } => return,
+            Expression::Sequence { operands, .. } if operands.value.elements.len() == 1 => return,
+            _ => {}
+        }
+        let top_level = self
+            .declarations
+            .get(site.index())
+            .is_some_and(|declaration| {
+                crate::model::element_kind::element_kind(declaration.kind)
+                    .conforms_to(sysml_contract::ElementKind::Expression)
+                    && declaration.span == node.span
+            });
+        let kind = match (top_level, &node.value) {
+            // A metadata access over a qualified name is its own element owning its referenced
+            // element (see `Self::lower_metadata_access`); any other base is reported unsupported.
+            (_, Expression::MetadataAccess(base))
+                if matches!(base.value, Expression::FeatureRef(_)) =>
+            {
+                return
+            }
+            (
+                true,
+                Expression::FeatureRef(_)
+                | Expression::FeatureChainRef(_)
+                | Expression::MemberAccess { .. }
+                | Expression::BodyExpr(_),
+            ) => return,
+            (true, _) => UnloweredExpression::Parameters,
+            (false, _) => UnloweredExpression::Element,
+        };
+        self.unlowered_expressions
+            .push(crate::lower::facts::UnloweredExpressionSite { site, kind });
+    }
+
+    /// Mints the element a leaf expression node `node` -- a literal, a null or a metadata access
+    /// (see [`crate::lower::facts::leaf_expression_kind`]) -- written at the evaluation site
+    /// `site` is an instance of, and returns it; `None` for any other node.
+    ///
+    /// The element is an anonymous Expression of its own metaclass under an `OwningMembership` of
+    /// the innermost instantiation it is nested in at `site` (or of `site` itself), exactly as
+    /// [`Self::enter_instantiation`] places a nested instantiation. It owns no result parameter:
+    /// a LiteralExpression's `result` is the one it inherits from its library type. A node that
+    /// already has its element -- the top-level node of a FeatureValue (its value Expression) or
+    /// an operand an operator expression minted as its argument -- is not minted twice.
+    pub(crate) fn lower_leaf_expression(
+        &mut self,
+        document: DocumentIdx,
+        site: DeclarationId,
+        node: &Node<Expression>,
+    ) -> Result<Option<DeclarationId>, ConstructionError> {
+        let Some(kind) = crate::lower::facts::leaf_expression_kind(&node.value) else {
+            return Ok(None);
+        };
+        let is_minted = |declaration: DeclarationId| {
+            self.declarations
+                .get(declaration.index())
+                .is_some_and(|declaration| declaration.span == node.span)
+        };
+        let site_is_value = self
+            .declarations
+            .get(site.index())
+            .is_some_and(|declaration| declaration.kind == kind && declaration.span == node.span);
+        if site_is_value {
+            return Ok(Some(site));
+        }
+        if let Some(argument) = self
+            .expression_arguments
+            .iter()
+            .find(|argument| argument.expression == site && is_minted(argument.argument))
+        {
+            return Ok(Some(argument.argument));
+        }
+        let owner = self
+            .instantiation_scopes
+            .last()
+            .filter(|scope| scope.site == site)
+            .map_or(site, |scope| scope.element);
+        let element = self.push_typed_declaration(
+            document,
+            Some(owner),
+            kind,
+            None,
+            node.span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            element,
+            MembershipKind::Owning,
+            Visibility::Default,
+            node.span,
+        )?;
+        Ok(Some(element))
+    }
+
+    /// Closes the instantiation scope [`Self::enter_instantiation`] opened, if it opened one.
+    pub(crate) fn leave_instantiation(&mut self, entered: bool) {
+        if entered {
+            self.instantiation_scopes.pop();
+        }
+    }
+
+    /// Mints the argument Features of one instantiation expression.
+    ///
+    /// Each argument becomes an anonymous `in` Feature of `container` (the expression for an
+    /// invocation, its result for a constructor) at its authored position. A named argument's
+    /// parameter is an authored Redefinition resolved among the members of the settled `callee` (a
+    /// lookup that starts from the callee reference's target, recorded as a root
+    /// [`MemberAccessNarrowing`]).
+    fn mint_instantiation_arguments(
+        &mut self,
+        document: DocumentIdx,
+        container: DeclarationId,
+        form: crate::lower::facts::InstantiationForm,
+        callee: AuthoredReferenceId,
+        args: &[sysml_v2_parser::ast::Argument],
+    ) -> Result<(), ConstructionError> {
+        for (position, argument) in args.iter().enumerate() {
+            // A named argument spans its parameter name through its value.
+            let parameter_span = argument
+                .parameter
+                .map(|parameter| {
+                    self.documents[document.index()]
+                        .parsed
+                        .qualified_reference(parameter)
+                        .map(|reference| reference.metadata.span)
+                        .ok_or(ConstructionError::InvalidParserReference)
+                })
+                .transpose()?;
+            let span = match parameter_span {
+                Some(start) => Span {
+                    len: (argument.value.span.offset + argument.value.span.len)
+                        .checked_sub(start.offset)
+                        .ok_or(ConstructionError::InvalidParserReference)?,
+                    ..start
+                },
+                None => argument.value.span,
+            };
+            let feature = self.push_typed_declaration(
+                document,
+                Some(container),
+                DeclarationKind::KermlFeature,
+                None,
+                span,
+                DeclarationFacts {
+                    direction: Some(ParameterDirection::In),
+                    instantiation_argument: Some(crate::lower::facts::InstantiationArgument {
+                        form,
+                        position: u32::try_from(position)
+                            .map_err(|_| ConstructionError::Capacity)?,
+                        named: argument.parameter.is_some(),
+                    }),
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            self.push_membership(feature, MembershipKind::Feature, Visibility::Default, span)?;
+            if let (Some(parameter), Some(span)) = (argument.parameter, parameter_span) {
+                let reference = self.push_reference(PendingReference {
+                    source: feature,
+                    kind: ReferenceKind::Redefinition,
+                    document,
+                    local: parameter,
+                    flags: RelationshipFlags::default(),
+                    span,
+                    import: None,
+                })?;
+                self.references[reference.index()].member_access_narrowings =
+                    Box::new([MemberAccessNarrowing {
+                        segment_count: 0,
+                        target: callee,
+                    }]);
+            }
+        }
+        Ok(())
     }
 
     /// Pushes one `ReferenceKind::InvocationCallee` reference for a callee/`Constructor` type name
@@ -1292,6 +1809,46 @@ impl SemanticModelBuilder {
         Ok(())
     }
 
+    /// Lowers a metadata access expression (`X.metadata`, KerML 8.3.4.8.15): mints its
+    /// `MetadataAccessExpression` element (see [`Self::lower_leaf_expression`]) and the
+    /// `ReferenceKind::MetadataAccessTarget` reference its `ElementReferenceMember` denotes,
+    /// sourced at that element. Returns `false`, minting nothing, when `node` is not a metadata
+    /// access whose base is a qualified name (BNF `referencedElement = [QualifiedName]`): the
+    /// caller then reports the node unsupported rather than publishing an expression without
+    /// its referenced element.
+    pub(crate) fn lower_metadata_access(
+        &mut self,
+        document: DocumentIdx,
+        site: DeclarationId,
+        node: &Node<Expression>,
+    ) -> Result<bool, ConstructionError> {
+        let Expression::MetadataAccess(base) = &node.value else {
+            return Ok(false);
+        };
+        let Expression::FeatureRef(target) = &base.value else {
+            return Ok(false);
+        };
+        let Some(element) = self.lower_leaf_expression(document, site, node)? else {
+            return Ok(false);
+        };
+        let span = self.documents[document.index()]
+            .parsed
+            .qualified_reference(*target)
+            .ok_or(ConstructionError::InvalidParserReference)?
+            .metadata
+            .span;
+        self.push_reference(PendingReference {
+            source: element,
+            kind: ReferenceKind::MetadataAccessTarget,
+            document,
+            local: *target,
+            flags: RelationshipFlags::default(),
+            span,
+            import: None,
+        })?;
+        Ok(true)
+    }
+
     /// Pushes one `ReferenceKind::TypeCheckTarget` reference for an `Expression::TypeCheck`'s
     /// `type_name` (e.g. `Type` in `x istype Type`), mirroring `push_invocation_callee_reference`'s
     /// shape but its own `ReferenceKind` since a type-check target joins the `DeclarationDomain::
@@ -1334,7 +1891,20 @@ impl SemanticModelBuilder {
         document: DocumentIdx,
         declaration: DeclarationId,
         target: QualifiedReferenceId,
+        role: crate::lower::facts::ExpressionOperandRole,
     ) -> Result<(), ConstructionError> {
+        self.push_expression_operand_reference_id(document, declaration, target, role)?;
+        Ok(())
+    }
+
+    /// [`Self::push_expression_operand_reference`], returning the reference it pushed.
+    pub(crate) fn push_expression_operand_reference_id(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        target: QualifiedReferenceId,
+        role: crate::lower::facts::ExpressionOperandRole,
+    ) -> Result<AuthoredReferenceId, ConstructionError> {
         let span = self.documents[document.index()]
             .parsed
             .qualified_reference(target)
@@ -1346,11 +1916,13 @@ impl SemanticModelBuilder {
             kind: ReferenceKind::ExpressionOperand,
             document,
             local: target,
-            flags: RelationshipFlags::default(),
+            flags: RelationshipFlags {
+                operand_role: Some(role),
+                ..RelationshipFlags::default()
+            },
             span,
             import: None,
-        })?;
-        Ok(())
+        })
     }
 
     /// The site of a constraint-body expression: what the author wrote, and where.
@@ -1417,6 +1989,19 @@ impl SemanticModelBuilder {
             declaration,
             expression,
         });
+    }
+
+    /// Records that `owner`'s ResultExpressionMemberships are not all lowered
+    /// (`DeclarationFacts::result_expressions_incomplete`).
+    pub(crate) fn mark_result_expressions_incomplete(
+        &mut self,
+        owner: DeclarationId,
+    ) -> Result<(), ConstructionError> {
+        self.declaration_facts
+            .get_mut(owner.index())
+            .ok_or(ConstructionError::InvalidMembership)?
+            .result_expressions_incomplete = true;
+        Ok(())
     }
 
     /// Records one authored unit token, in lockstep with the classifier that counts them.
@@ -1537,6 +2122,21 @@ impl SemanticModelBuilder {
             unit_tokens: self.unit_tokens.into_boxed_slice(),
             filter_conditions: self.filter_conditions.into_boxed_slice(),
             invocations: self.invocations.into_boxed_slice(),
+            assignments: self.assignments.into_boxed_slice(),
+            trigger_invocations: self.trigger_invocations.into_boxed_slice(),
+            unlowered_expressions: {
+                let mut sites = self.unlowered_expressions;
+                sites.sort_unstable();
+                sites.dedup();
+                sites.into_boxed_slice()
+            },
+            owned_end_features: {
+                let mut ends = self.owned_end_features;
+                // Lowering walks each owner's body once in source order, so a stable sort by
+                // owner keeps the authored order of every owner's ends.
+                ends.sort_by_key(|record| record.owner);
+                ends.into_boxed_slice()
+            },
         };
         (storage, ParsedSources::new(documents))
     }
@@ -1557,6 +2157,200 @@ impl SemanticModelBuilder {
         }
         // A `#tag` that ends the document's last body never met a member to bind to.
         self.flush_pending_prefix_metadata(document);
+        self.synthesize_multiplicities(document)?;
+        self.synthesize_conjugated_port_definitions(document)?;
+        self.derive_owned_cross_features(document)
+    }
+
+    /// KerML 8.3.3.3.4 `Feature::ownedCrossFeature` of every end Feature of `document` that does
+    /// not author one in the grammar's cross position:
+    ///
+    /// ```text
+    /// ownedCrossFeature = if not isEnd or owningType = null then null else
+    ///     let ownedMemberFeatures = ownedMember->selectByKind(Feature)->reject(f |
+    ///         f.oclIsKindOf(Multiplicity) or f.oclIsKindOf(MetadataFeature) or
+    ///         f.oclIsKindOf(BindingConnector) or
+    ///         f.owningMembership.oclIsKindOf(FeatureMembership) or
+    ///         f.owningMembership.oclIsKindOf(FeatureValue)) in
+    ///     if ownedMemberFeatures->isEmpty() then null else ownedMemberFeatures->first()
+    /// ```
+    ///
+    /// as the Pilot's `FeatureUtil.getOwnedCrossFeatureOf` evaluates it: the first owned Feature
+    /// under a plain OwningMembership, such as a body `member feature`. It runs after the document
+    /// walk, which pushes memberships in authored order, so memoized per-document lowering agrees.
+    fn derive_owned_cross_features(
+        &mut self,
+        document: DocumentIdx,
+    ) -> Result<(), ConstructionError> {
+        use sysml_contract::ElementKind;
+        let values: BTreeSet<DeclarationId> = self
+            .feature_values
+            .iter()
+            .map(|record| record.value)
+            .collect();
+        let mut first_by_owner: BTreeMap<DeclarationId, DeclarationId> = BTreeMap::new();
+        for membership in &self.memberships {
+            if membership.kind != MembershipKind::Owning || values.contains(&membership.member) {
+                continue;
+            }
+            let member = &self.declarations[membership.member.index()];
+            let Some(owner) = member.owner else {
+                continue;
+            };
+            let kind = crate::model::element_kind::element_kind(member.kind);
+            if member.document != document
+                || !kind.conforms_to(ElementKind::Feature)
+                || matches!(
+                    kind,
+                    ElementKind::Multiplicity
+                        | ElementKind::MultiplicityRange
+                        | ElementKind::MetadataUsage
+                        | ElementKind::MetadataFeature
+                        | ElementKind::BindingConnector
+                        | ElementKind::BindingConnectorAsUsage
+                )
+            {
+                continue;
+            }
+            first_by_owner.entry(owner).or_insert(membership.member);
+        }
+        for (end, cross_feature) in first_by_owner {
+            let end_declaration = &self.declarations[end.index()];
+            let owned_by_type = end_declaration.owner.is_some_and(|owner| {
+                crate::model::element_kind::element_kind(self.declarations[owner.index()].kind)
+                    .conforms_to(ElementKind::Type)
+            });
+            let facts = &mut self.declaration_facts[end.index()];
+            if facts.modifiers.end && owned_by_type && facts.cross_feature_projection.is_none() {
+                facts.cross_feature_projection =
+                    Some(crate::lower::facts::CrossFeatureProjection {
+                        cross_feature,
+                        owned_cross_feature: cross_feature,
+                    });
+            }
+        }
+        Ok(())
+    }
+
+    /// Mints the `ConjugatedPortDefinition` every `PortDefinition` owns (SysML 8.3.12.2,
+    /// `PortDefinition::conjugatedPortDefinition`; the Pilot grammar's
+    /// `ConjugatedPortDefinitionMember`).
+    ///
+    /// It is an owned member under an `OwningMembership`, so `~P` typing and the port-conjugation
+    /// rules have an element to name. It declares no name: its effective name `~` + the original
+    /// definition's name is a derived fact (`derived_name`), so the declared/effective provenance
+    /// stays distinguishable. Its `PortConjugation` to the original definition is an implied
+    /// relationship settled with the other implied facts; nothing about the original definition is
+    /// copied. A conjugated port definition never mints one of its own
+    /// (`validateConjugatedPortDefinitionConjugatedPortDefinitionIsEmpty`). Minting runs after the
+    /// document walk, like the multiplicity ranges, so memoized per-document lowering agrees.
+    fn synthesize_conjugated_port_definitions(
+        &mut self,
+        document: DocumentIdx,
+    ) -> Result<(), ConstructionError> {
+        let originals = self
+            .declarations
+            .iter()
+            .enumerate()
+            .filter(|(_, declaration)| {
+                declaration.document == document
+                    && declaration.kind == DeclarationKind::PortDefinition
+            })
+            .map(|(index, declaration)| {
+                DeclarationId::from_index(index).map(|id| (id, declaration.name, declaration.span))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        for (original, name, span) in originals {
+            let derived_name = match name {
+                Some(name) => {
+                    let derived = format!("~{}", self.symbols.get(name));
+                    self.intern_declared_name(&derived)?
+                }
+                None => None,
+            };
+            let conjugated = self.push_typed_declaration(
+                document,
+                Some(original),
+                DeclarationKind::ConjugatedPortDefinition,
+                None,
+                span,
+                DeclarationFacts {
+                    derived_name,
+                    ..DeclarationFacts::none()
+                },
+            )?;
+            self.push_membership(
+                conjugated,
+                MembershipKind::Owning,
+                Visibility::Default,
+                span,
+            )?;
+        }
+        Ok(())
+    }
+
+    /// Mints the anonymous Multiplicities the source implies: the `MultiplicityRange` every
+    /// authored `[m..n]` denotes (KerML 8.3.4.11), and the empty Multiplicity of an `individual`
+    /// definition.
+    ///
+    /// The range is an owned member of the declaration whose multiplicity it is, under an
+    /// `OwningMembership`, so `Type::multiplicity` (`deriveTypeMultiplicity`) and the featuring
+    /// rules have an element to name. Its bounds are deliberately not copied: the owning
+    /// declaration's authored `multiplicity` fact remains their single owner, reached through the
+    /// range's owner. Minting runs after the document walk, so no membership override pending for
+    /// an authored member can leak onto a range, and anonymous ordinals of every other kind are
+    /// unaffected (they are keyed by kind).
+    fn synthesize_multiplicities(
+        &mut self,
+        document: DocumentIdx,
+    ) -> Result<(), ConstructionError> {
+        let owners = self
+            .declarations
+            .iter()
+            .zip(self.declaration_facts.iter())
+            .enumerate()
+            .filter(|(_, (declaration, facts))| {
+                declaration.document == document && facts.multiplicity.is_some()
+            })
+            .filter_map(|(index, (_, facts))| {
+                let record = facts.multiplicity.as_ref()?;
+                let bounds = [
+                    record.bound_spans.lower.clone(),
+                    Some(record.bound_spans.upper.clone()),
+                ];
+                Some(DeclarationId::from_index(index).map(|id| (id, record.span, bounds)))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        for (owner, span, bounds) in owners {
+            let range = self.push_typed_declaration(
+                document,
+                Some(owner),
+                DeclarationKind::KermlMultiplicityRange,
+                None,
+                span,
+                DeclarationFacts::none(),
+            )?;
+            self.push_membership(range, MembershipKind::Owning, Visibility::Default, span)?;
+            // `MultiplicityRange::bound`: each authored bound is an owned Expression, in source
+            // order. Only its identity, ownership and result are minted here; the bound's value
+            // stays the owner's `multiplicity` fact; an unbounded `*` is a `LiteralInfinity` bound.
+            // Its feature-reference operands are lowered as `FeatureReferenceExpression` operands
+            // of the bound, so its result type can be derived from their referents.
+            for site in bounds.into_iter().flatten() {
+                let (expression, _) =
+                    self.push_owned_expression(document, range, site.kind, None, site.span)?;
+                self.declaration_facts[expression.index()].multiplicity_bound_form =
+                    Some(site.form);
+                for operand in site.operands.iter().copied() {
+                    self.push_expression_operand_reference(
+                        document,
+                        expression,
+                        operand,
+                        crate::lower::facts::ExpressionOperandRole::FeatureReference,
+                    )?;
+                }
+            }
+        }
         Ok(())
     }
 
@@ -1948,12 +2742,9 @@ impl SemanticModelBuilder {
                 node,
             )?,
             PackageBodyElement::AssertConstraint(node) => match owner {
-                Some(declaration) => self.lower_assert_constraint_member(
-                    document,
-                    declaration,
-                    UnsupportedFamily::PackageMember,
-                    node,
-                )?,
+                Some(declaration) => {
+                    self.lower_assert_constraint_member(document, declaration, node)?
+                }
                 None => {
                     self.push_unsupported(document, UnsupportedFamily::PackageMember, node.span)
                 }
@@ -2258,17 +3049,19 @@ impl SemanticModelBuilder {
         keywords: &[Node<sysml_v2_parser::ast::UsageExtensionKeyword>],
     ) -> Result<(), ConstructionError> {
         for keyword in keywords {
+            let kind = self.metadata_feature_kind(document)?;
             let annotation = self.push_typed_declaration(
                 document,
                 Some(declaration),
-                DeclarationKind::MetadataUsage,
+                kind,
                 None,
                 keyword.span,
                 DeclarationFacts::none(),
             )?;
+            // `PrefixMetadataMember` is an OwningMembership, not a FeatureMembership.
             self.push_membership(
                 annotation,
-                MembershipKind::Feature,
+                MembershipKind::Owning,
                 Visibility::Default,
                 keyword.span,
             )?;
@@ -2388,17 +3181,20 @@ impl SemanticModelBuilder {
         declaration: DeclarationId,
     ) -> Result<(), ConstructionError> {
         for entry in std::mem::take(&mut self.pending_prefix_metadata) {
+            let kind = self.metadata_feature_kind(document)?;
             let annotation = self.push_typed_declaration(
                 document,
                 Some(declaration),
-                DeclarationKind::MetadataUsage,
+                kind,
                 None,
                 entry.span,
                 DeclarationFacts::none(),
             )?;
+            // `PrefixMetadataMember` is an OwningMembership, as `AnnotatingMember` is: the
+            // annotation is not an `ownedFeature` of the member it prefixes.
             self.push_membership(
                 annotation,
-                MembershipKind::Feature,
+                MembershipKind::Owning,
                 Visibility::Default,
                 entry.span,
             )?;
@@ -2892,6 +3688,7 @@ mod tests {
             .admit_document(
                 "model",
                 SourceRole::Workspace,
+                SourceLanguage::SysML,
                 ContentDigest::of_bytes(&[]),
                 parsed.clone(),
                 Vec::new(),
@@ -2930,6 +3727,7 @@ mod tests {
                 .admit_document(
                     format!("model-{index}"),
                     SourceRole::Workspace,
+                    SourceLanguage::SysML,
                     ContentDigest::of_bytes(&[]),
                     parsed.clone(),
                     Vec::new(),
@@ -2943,6 +3741,7 @@ mod tests {
                 .admit_document(
                     "model-0",
                     SourceRole::Workspace,
+                    SourceLanguage::SysML,
                     ContentDigest::of_bytes(&[]),
                     parsed,
                     Vec::new(),
@@ -2961,6 +3760,7 @@ mod tests {
             .admit_document(
                 "model",
                 SourceRole::Workspace,
+                SourceLanguage::SysML,
                 ContentDigest::of_bytes(&[]),
                 parsed,
                 Vec::new(),

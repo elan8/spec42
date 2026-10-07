@@ -42,7 +42,7 @@ resolve * StandardViewDefinitions::GeneralView ViewDefinition
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:08705b01ea1da3f617bc63af56d143a3a47cf251043022b5ecb31e029805c7b6") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:acedb50b7f2ce3cda0c4f31df449d4cb00a21fbd21751cdb401183ed15452260") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/a.sysml") (qualified-name "Shared"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/a.sysml") (qualified-name "Shared::selected"))) (kind view) (membership (kind feature) (visibility default)))

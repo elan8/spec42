@@ -1031,23 +1031,53 @@ action def Act {
 }
 
 #[test]
-fn feature_reference_expression_binding_check_is_explicitly_unsupported_without_owned_facts() {
+fn binding_connector_check_without_owned_endpoint_facts_is_explicitly_unsupported() {
     let published = publication_for(&[(
         "memory://binding-rule.sysml",
         "package Binding { action def Act { action start; action done; bind start = done; } }",
     )]);
     assert!(matches!(
         published
-            .binding_connector_validation(BindingConnectorCheckKind::FeatureReferenceExpression)
+            .binding_connector_validation(BindingConnectorCheckKind::AcceptActionUsageReceiver)
             .answer,
         QueryAnswer::Resolved(BindingConnectorValidationOutcome::Unsupported {
             prerequisite:
-                BindingConnectorValidationPrerequisite::FeatureReferenceExpressionTargetAndResult,
+                BindingConnectorValidationPrerequisite::AcceptActionUsageReceiverEndpointFacts,
         })
     ));
     assert!(matches!(
         published.binding_connectors().answer,
         QueryAnswer::Resolved(values) if values.len() == 1
+    ));
+}
+
+#[test]
+fn implied_feature_reference_binding_is_unresolved_when_its_target_is_unresolved() {
+    let resolved = publication_for(&[(
+        "memory://binding-resolved.kerml",
+        "package P { classifier H { feature referent; feature reference = referent; } }",
+    )]);
+    let unresolved = publication_for(&[(
+        "memory://binding-unresolved.kerml",
+        "package P { classifier H { feature reference = missing; } }",
+    )]);
+    let outcome = |published: &PublishedResolution| {
+        published
+            .binding_connector_validation(BindingConnectorCheckKind::FeatureReferenceExpression)
+            .answer
+    };
+    assert!(matches!(
+        outcome(&resolved),
+        QueryAnswer::Resolved(BindingConnectorValidationOutcome::Satisfied)
+    ));
+    assert!(matches!(
+        outcome(&unresolved),
+        QueryAnswer::Resolved(BindingConnectorValidationOutcome::Unresolved)
+    ));
+    // Implied connectors carry no authored declaration, so the authored projection stays empty.
+    assert!(matches!(
+        resolved.binding_connectors().answer,
+        QueryAnswer::Resolved(values) if values.is_empty()
     ));
 }
 

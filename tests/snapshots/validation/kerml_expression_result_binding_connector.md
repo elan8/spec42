@@ -1,13 +1,12 @@
 # META
 ~~~ini
-description=KerML 8.3.4.7.3 checkExpressionResultBindingConnector requires each result expression membership to have its canonical binding connector
+description=KerML 8.3.4.7.3 checkExpressionResultBindingConnector holds vacuously for an expression whose ResultExpressionMembership set is exactly known and empty
 specification=OMG KerML 1.0 (formal/26-03-01)
 specification_url=https://www.omg.org/spec/KerML/1.0/PDF
 source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=kerml-1.0:8.3.4.7.3:checkExpressionResultBindingConnector
-blocked_by=lowering-result-expression-memberships
 type=file
 ~~~
 # SOURCE
@@ -38,12 +37,12 @@ package Expressions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bb997dfc7214a67c0d5af380360a278d15bca74e8edf1672f38ad47a3d532db7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fcf768d478bf17c7a6d7fd813673d37f3f5f88108ceca548f2b45aef1d0e9646"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_binding_connector.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_binding_connector.md") (qualified-name "Expressions::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_expression_result_binding_connector.md") (qualified-name "Expressions::Value"))) (kind kerml-expression) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_expression_result_binding_connector.md") (qualified-name "Expressions::Value::result"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_expression_result_binding_connector.md") (qualified-name "Expressions::Value::result"))) (kind parameter) (membership (kind feature) (visibility default) (role return-parameter)) (authored (membership (kind feature) (visibility default) (role return-parameter)) (relationships (featureTyping (reference "Thing")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/kerml_expression_result_binding_connector.md") (qualified-name "Expressions::Value::result"))) (kind featureTyping) (ordinal 0))

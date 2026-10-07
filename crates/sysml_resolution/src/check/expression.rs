@@ -27,7 +27,10 @@ use crate::index::expressions::conforms;
 use crate::index::expressions::RequiredMeasurement;
 use crate::index::expressions::UnitOutcome;
 use crate::index::types::TypeIndex;
+use crate::lower::facts::ExpressionOperandRole;
 use crate::lower::facts::FilterForm;
+use crate::lower::facts::ParameterDirection;
+use crate::model::element_kind::element_kind;
 use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
 use crate::model::span::document_range;
@@ -43,6 +46,7 @@ use crate::DiagnosticCode;
 use crate::DiagnosticLocation;
 use crate::DiagnosticOrigin;
 use crate::DiagnosticSeverity;
+use sysml_contract::ElementKind;
 
 use crate::evaluation::EvaluatedScalar;
 
@@ -78,9 +82,14 @@ impl<D> SemanticModel<D> {
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         self.collect_value_conformance(document, diagnostics)?;
+        self.collect_assignment_time_variation(document, diagnostics)?;
         self.collect_unit_conformance(document, diagnostics)?;
         self.collect_boolean_expressions(document, declared, diagnostics)?;
         self.collect_invocation_arity(document, diagnostics)?;
+        self.collect_invocation_instantiated_types(document, diagnostics)?;
+        self.collect_feature_reference_referents(document, diagnostics)?;
+        self.collect_instantiation_argument_redefinitions(document, diagnostics)?;
+        self.collect_trigger_invocation_arguments(document, diagnostics)?;
         Ok(())
     }
 
@@ -160,6 +169,64 @@ impl<D> SemanticModel<D> {
                     .describe()
                     .into(),
                 code: DiagnosticCode::AssignmentValueIncompatible,
+                severity: DiagnosticSeverity::Warning,
+                origin: DiagnosticOrigin::Semantic,
+                subject: self.symbol_id(reference.source),
+                location: DiagnosticLocation {
+                    document: writer::document_identity(self, document).into(),
+                    range: document_range(&self.storage, document, &source.span)?,
+                },
+                related: Box::from([
+                    self.related_declaration(target, conformance::RELATED_DECLARED)?
+                ]),
+            });
+        }
+        Ok(())
+    }
+
+    /// Reports an assignment whose referent cannot have time-varying values.
+    ///
+    /// SysML `validateAssignmentActionUsage` is `referent <> null implies
+    /// referent.featureTarget.isVariable`. The referent is the settled `AssignTarget` reference
+    /// (a qualified or dotted target already resolves to its featureTarget), and `isVariable` is
+    /// the canonical [`crate::index::types::TypeIndex::feature_is_variable`] fact. A target that
+    /// is unresolved, ambiguous, not a Feature, or whose variability depends on an unresolved
+    /// library anchor is left unanswered rather than reported.
+    pub(crate) fn collect_assignment_time_variation(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            if reference.kind != ReferenceKind::AssignTarget {
+                continue;
+            }
+            let source = self
+                .storage
+                .declaration(reference.source)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            if source.document != document {
+                continue;
+            }
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let Some(ResolutionStatus::Resolved(target)) = self.resolution.outcome(id) else {
+                continue;
+            };
+            if !matches!(
+                self.types.feature_is_variable(&self.storage, target),
+                Some(crate::index::types::UsageTimeVariationOutcome::Resolved(
+                    false
+                ))
+            ) {
+                continue;
+            }
+            diagnostics.push(Diagnostic {
+                payload: None,
+                message: DiagnosticCode::AssignmentTargetNotTimeVarying
+                    .describe()
+                    .into(),
+                code: DiagnosticCode::AssignmentTargetNotTimeVarying,
                 severity: DiagnosticSeverity::Warning,
                 origin: DiagnosticOrigin::Semantic,
                 subject: self.symbol_id(reference.source),
@@ -342,6 +409,30 @@ impl<D> SemanticModel<D> {
             if filter.document != document {
                 continue;
             }
+            // Every form is an ElementFilterMembership, whose condition must be model-level
+            // evaluable; only a settled `NotEvaluable` is reported.
+            if crate::index::expressions::model_level_evaluability(
+                &self.storage,
+                &self.types,
+                &self.expressions.anchors,
+                &filter.evaluability,
+            ) == crate::index::expressions::ModelLevelEvaluability::NotEvaluable
+            {
+                let code = DiagnosticCode::FilterConditionNotModelLevelEvaluable;
+                diagnostics.push(Diagnostic {
+                    payload: None,
+                    message: code.describe().into(),
+                    code,
+                    severity: DiagnosticSeverity::Warning,
+                    origin: DiagnosticOrigin::Semantic,
+                    subject: self.symbol_id(filter.owner),
+                    location: DiagnosticLocation {
+                        document: writer::document_identity(self, document).into(),
+                        range: document_range(&self.storage, document, &filter.span)?,
+                    },
+                    related: Box::default(),
+                });
+            }
             // A view filter and a package-level import filter are the same Boolean question at two
             // sites, and each keeps its own code because a consumer suppresses them separately.
             let code = match filter.form {
@@ -368,6 +459,305 @@ impl<D> SemanticModel<D> {
                 },
                 related: Box::default(),
             });
+        }
+        Ok(())
+    }
+
+    /// KerML 8.3.4.8.8 `validateInvocationExpressionParameterRedefinition` /
+    /// `validateInvocationExpressionNoDuplicateParameterRedefinition` and KerML 8.3.4.8.3
+    /// `validateConstructorExpressionNoDuplicateFeatureRedefinition` over named arguments.
+    ///
+    /// A named argument's Feature owns the authored Redefinition of the parameter it names, which
+    /// resolves among the members of the instantiated type. For an invocation that target must be
+    /// an input (`in`/`inout`) parameter; two arguments of one container must not redefine the
+    /// same target. A positional argument's redefinition is implied by its position
+    /// (`checkFeatureParameterRedefinition`), which this publication does not derive, so it is
+    /// left unanswered, as is a named argument whose parameter did not settle.
+    pub(crate) fn collect_instantiation_argument_redefinitions(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        use crate::lower::facts::InstantiationForm;
+        let mut parameters = std::collections::BTreeMap::new();
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            if reference.kind == ReferenceKind::Redefinition
+                && crate::resolve::root_narrowing(reference).is_some()
+            {
+                let id = AuthoredReferenceId::from_index(index)
+                    .map_err(|_| ResolutionError::Capacity)?;
+                parameters.insert(reference.source, id);
+            }
+        }
+        let mut bound: std::collections::BTreeSet<(DeclarationId, DeclarationId)> =
+            std::collections::BTreeSet::new();
+        for (index, declaration) in self.storage.declarations.iter().enumerate() {
+            if declaration.document != document {
+                continue;
+            }
+            let Some(argument) = self.storage.declaration_facts[index].instantiation_argument
+            else {
+                continue;
+            };
+            if !argument.named {
+                continue;
+            }
+            let id = DeclarationId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let (Some(container), Some(reference)) = (declaration.owner, parameters.get(&id))
+            else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            let Some(ResolutionStatus::Resolved(parameter)) = self.resolution.outcome(*reference)
+            else {
+                continue;
+            };
+            let code = if argument.form == InstantiationForm::Invocation
+                && !matches!(
+                    crate::model::element_kind::effective_direction(
+                        self.effective_membership_role(parameter),
+                        self.storage
+                            .declaration_facts(parameter)
+                            .and_then(|facts| facts.direction),
+                    ),
+                    Some(ParameterDirection::In) | Some(ParameterDirection::InOut)
+                ) {
+                DiagnosticCode::InvocationArgumentRedefinesNoParameter
+            } else if !bound.insert((container, parameter)) {
+                match argument.form {
+                    InstantiationForm::Invocation => {
+                        DiagnosticCode::InvocationDuplicateParameterRedefinition
+                    }
+                    InstantiationForm::Constructor => {
+                        DiagnosticCode::ConstructorDuplicateFeatureRedefinition
+                    }
+                }
+            } else {
+                continue;
+            };
+            diagnostics.push(Diagnostic {
+                payload: None,
+                message: code.describe().into(),
+                code,
+                severity: DiagnosticSeverity::Warning,
+                origin: DiagnosticOrigin::Semantic,
+                subject: self.symbol_id(id),
+                location: DiagnosticLocation {
+                    document: writer::document_identity(self, document).into(),
+                    range: document_range(&self.storage, document, &declaration.span)?,
+                },
+                related: Box::from([
+                    self.related_declaration(parameter, conformance::RELATED_DECLARED)?
+                ]),
+            });
+        }
+        Ok(())
+    }
+
+    /// KerML 8.3.4.8.5 `validateFeatureReferenceExpressionReferentIsFeature`: the referent of a
+    /// `FeatureReferenceExpression` is a Feature.
+    ///
+    /// Only an `ExpressionOperand` lowered in feature-reference position
+    /// ([`ExpressionOperandRole::FeatureReference`]) is such an expression; the operand of `meta`,
+    /// a `->f g` function reference and an `accept T` payload type legitimately name other
+    /// elements. An unresolved or ambiguous referent is its own diagnostic and is left unanswered.
+    pub(crate) fn collect_feature_reference_referents(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            if reference.kind != ReferenceKind::ExpressionOperand
+                || reference.flags.operand_role != Some(ExpressionOperandRole::FeatureReference)
+                || reference.target.document != document
+            {
+                continue;
+            }
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            let Some(ResolutionStatus::Resolved(target)) = self.resolution.outcome(id) else {
+                continue;
+            };
+            let Some(kind) = self.kind_of(target).map(element_kind) else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            if kind.conforms_to(ElementKind::Feature) {
+                continue;
+            }
+            diagnostics.push(Diagnostic {
+                payload: None,
+                message: DiagnosticCode::FeatureReferenceReferentNotFeature
+                    .describe()
+                    .into(),
+                code: DiagnosticCode::FeatureReferenceReferentNotFeature,
+                severity: DiagnosticSeverity::Warning,
+                origin: DiagnosticOrigin::Semantic,
+                subject: self.symbol_id(reference.source),
+                location: DiagnosticLocation {
+                    document: writer::document_identity(self, document).into(),
+                    range: document_range(&self.storage, document, &reference.span)?,
+                },
+                related: Box::from([
+                    self.related_declaration(target, conformance::RELATED_DECLARED)?
+                ]),
+            });
+        }
+        Ok(())
+    }
+
+    /// KerML 8.3.4.8.8 `validateInvocationExpressionInstantiatedType`: the instantiated type of
+    /// an invocation is a Behavior, or a Feature typed by a Behavior.
+    ///
+    /// A Feature callee's types are its canonical non-redundant type set
+    /// ([`TypeIndex::feature_types`], the Pilot's `Feature::type`). The Pilot additionally requires
+    /// that set to be a single type; this rule accepts any set containing a Behavior. A Feature
+    /// callee with no settled type -- an unresolved typing, or the implied library typing of an
+    /// untyped step when the library is not admitted -- is left unanswered rather than reported.
+    pub(crate) fn collect_invocation_instantiated_types(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        for invocation in self.expressions.invocations().iter() {
+            if invocation.document != document {
+                continue;
+            }
+            let Some(kind) = self.kind_of(invocation.callee).map(element_kind) else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            if kind.conforms_to(ElementKind::Behavior) {
+                continue;
+            }
+            if kind.conforms_to(ElementKind::Feature) {
+                if self.specialization_hierarchy_is_unsettled(invocation.callee) {
+                    continue;
+                }
+                let types = self.types.feature_types(invocation.callee);
+                if types.is_empty()
+                    || types.iter().any(|general| {
+                        self.kind_of(*general).is_some_and(|kind| {
+                            element_kind(kind).conforms_to(ElementKind::Behavior)
+                        })
+                    })
+                {
+                    continue;
+                }
+            }
+            diagnostics.push(Diagnostic {
+                payload: None,
+                message: DiagnosticCode::InvocationInstantiatedTypeNotBehavior
+                    .describe()
+                    .into(),
+                code: DiagnosticCode::InvocationInstantiatedTypeNotBehavior,
+                severity: DiagnosticSeverity::Warning,
+                origin: DiagnosticOrigin::Semantic,
+                subject: self.symbol_id(invocation.declaration),
+                location: DiagnosticLocation {
+                    document: writer::document_identity(self, document).into(),
+                    range: document_range(&self.storage, document, &invocation.span)?,
+                },
+                related: Box::from([self.related_declaration(invocation.callee, RELATED_CALLEE)?]),
+            });
+        }
+        Ok(())
+    }
+
+    /// SysML 8.3.17.17 `validateTriggerInvocationExpressionWhenArgument`, `...AtArgument` and
+    /// `...AfterArgument`: the argument of a `when` trigger is Boolean, of an `at` trigger a
+    /// `Time::TimeInstantValue`, of an `after` trigger an `ISQBase::DurationValue`.
+    ///
+    /// The argument's result type is known for a literal (its `LiteralExpression` type) and for a
+    /// feature reference (the settled feature's canonical types). Any other argument -- a quantity
+    /// with a unit, an operator, an invocation -- has a result type this publication does not
+    /// derive, and is left unanswered, as is a reference that did not settle, a feature whose
+    /// types or specializations did not, and a library type this publication does not admit.
+    pub(crate) fn collect_trigger_invocation_arguments(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        use crate::lower::facts::LiteralKind;
+        use crate::lower::facts::TriggerArgument;
+        use crate::lower::facts::TriggerInvocationKind;
+        use crate::resolve::implied::resolve_library_specialization_anchor;
+        use crate::resolve::implied::LibrarySpecializationAnchor;
+        let triggers = self
+            .storage
+            .trigger_invocations
+            .iter()
+            .filter(|trigger| {
+                self.storage
+                    .declaration(trigger.expression)
+                    .is_some_and(|declaration| declaration.document == document)
+            })
+            .collect::<Vec<_>>();
+        if triggers.is_empty() {
+            return Ok(());
+        }
+        let anchor = |path| match resolve_library_specialization_anchor(&self.storage, path) {
+            LibrarySpecializationAnchor::Resolved(anchor) => Some(anchor),
+            LibrarySpecializationAnchor::Missing | LibrarySpecializationAnchor::Ambiguous(_) => {
+                None
+            }
+        };
+        let boolean = anchor("ScalarValues::Boolean");
+        let time_instant = anchor("Time::TimeInstantValue");
+        let duration = anchor("ISQBase::DurationValue");
+        for trigger in triggers {
+            let (expected, code) = match trigger.kind {
+                TriggerInvocationKind::When => {
+                    (boolean, DiagnosticCode::TriggerWhenArgumentNotBoolean)
+                }
+                TriggerInvocationKind::At => (
+                    time_instant,
+                    DiagnosticCode::TriggerAtArgumentNotTimeInstant,
+                ),
+                TriggerInvocationKind::After => {
+                    (duration, DiagnosticCode::TriggerAfterArgumentNotDuration)
+                }
+            };
+            let conforms = match trigger.argument {
+                // A Boolean literal is a `LiteralBoolean`; no other literal's type is Boolean, a
+                // time instant or a duration, whatever the library admits.
+                TriggerArgument::Literal(kind) => Some(
+                    kind == LiteralKind::Boolean && trigger.kind == TriggerInvocationKind::When,
+                ),
+                TriggerArgument::FeatureReference(reference) => {
+                    match (self.resolution.outcome(reference), expected) {
+                        (Some(ResolutionStatus::Resolved(feature)), Some(expected))
+                            if self.kind_of(feature).is_some_and(|kind| {
+                                element_kind(kind).conforms_to(ElementKind::Feature)
+                            }) && !self.specialization_hierarchy_is_unsettled(feature) =>
+                        {
+                            let types = self.types.feature_types(feature);
+                            let mut verdict = if types.is_empty() { None } else { Some(false) };
+                            for general in types {
+                                match self.conformance(
+                                    general,
+                                    expected,
+                                    crate::SpecializationScope::AnySpecialization,
+                                ) {
+                                    crate::Conformance::Conforms => {
+                                        verdict = Some(true);
+                                        break;
+                                    }
+                                    crate::Conformance::DoesNotConform => {}
+                                    crate::Conformance::Indeterminate(_) => verdict = None,
+                                }
+                            }
+                            verdict
+                        }
+                        _ => None,
+                    }
+                }
+                TriggerArgument::Other => None,
+            };
+            if conforms == Some(false) {
+                diagnostics.push(self.declaration_diagnostic(
+                    trigger.expression,
+                    code,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
         }
         Ok(())
     }
@@ -429,4 +819,83 @@ pub(crate) fn states_a_constraint(kind: DeclarationKind) -> bool {
             | DeclarationKind::AssumeConstraintUsage
             | DeclarationKind::RequireConstraintUsage
     )
+}
+
+/// The result type a multiplicity `bound` Expression has, relative to `ScalarValues::Integer`
+/// (KerML 8.3.4.11.2 `validateMultiplicityRangeBoundResultTypes`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum MultiplicityBoundResult {
+    /// The result specializes `ScalarValues::Integer`.
+    Integer,
+    /// The result is typed, and none of its types specializes `ScalarValues::Integer`.
+    NonInteger,
+    /// No result type is derived: an unsupported shape, an unresolved operand, an untyped
+    /// referent, or no admitted `ScalarValues::Integer`. Never a verdict.
+    Undecided,
+}
+
+impl<D> SemanticModel<D> {
+    /// The canonical result type of a multiplicity `bound` Expression with a non-literal form: a
+    /// lone feature reference is typed by its referent's types; `+`, `-`, `*` and signs over
+    /// integer literals and feature references are an Integer when every referent is one.
+    pub(crate) fn multiplicity_bound_result(
+        &self,
+        bound: DeclarationId,
+    ) -> Result<MultiplicityBoundResult, ResolutionError> {
+        use crate::lower::facts::MultiplicityBoundForm;
+        let form = self
+            .storage
+            .declaration_facts(bound)
+            .ok_or(ResolutionError::InvalidStorage)?
+            .multiplicity_bound_form;
+        let (
+            Some(
+                form @ (MultiplicityBoundForm::FeatureReference
+                | MultiplicityBoundForm::IntegerArithmetic),
+            ),
+            Some(integer),
+        ) = (form, self.expressions.anchors.integer)
+        else {
+            return Ok(MultiplicityBoundResult::Undecided);
+        };
+        let mut result = MultiplicityBoundResult::Integer;
+        for (id, _) in self.authored_references(bound, &[ReferenceKind::ExpressionOperand]) {
+            let Some(ResolutionStatus::Resolved(referent)) = self.resolution.outcome(id) else {
+                return Ok(MultiplicityBoundResult::Undecided);
+            };
+            // A referent that authors no typing, subsetting or redefinition is typed only by
+            // implied library defaults (e.g. `attribute n = mRef.flattenedSize;`): its real result
+            // type is that of its value, which is not derived here.
+            let types = self.types.feature_types(referent);
+            if types.is_empty()
+                || self
+                    .authored_references(
+                        referent,
+                        &[
+                            ReferenceKind::FeatureTyping,
+                            ReferenceKind::Subsetting,
+                            ReferenceKind::Redefinition,
+                            ReferenceKind::References,
+                        ],
+                    )
+                    .is_empty()
+            {
+                return Ok(MultiplicityBoundResult::Undecided);
+            }
+            if !types
+                .iter()
+                .any(|declared| conforms(&self.types, *declared, integer))
+            {
+                result = MultiplicityBoundResult::NonInteger;
+            }
+        }
+        // Integer arithmetic over a non-Integer operand dispatches to another library function
+        // whose result type is not derived here.
+        Ok(match (form, result) {
+            (MultiplicityBoundForm::IntegerArithmetic, MultiplicityBoundResult::NonInteger) => {
+                MultiplicityBoundResult::Undecided
+            }
+            _ => result,
+        })
+    }
 }

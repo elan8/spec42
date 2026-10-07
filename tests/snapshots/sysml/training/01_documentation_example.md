@@ -38,11 +38,14 @@ package 'Documentation Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:32ecc55bb2194619a264cda408f62f9556562d3826918fcd0b37ee8bacfc6ed1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:52ff8fdb098b9ea0cb3ae8b4ddd16b813c3679c7d7f5fc33706554f09952f423"))
   (declarations
-    (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example"))) (kind package) (membership (kind owning) (visibility default)) (documentation (doc (text "This is documentation of the owning \npackage.\n"))))
-    (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Automobile"))) (kind part-def) (membership (kind owning) (visibility default)) (documentation (doc (text "This documentation of Automobile. "))))
-    (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Car"))) (kind alias) (membership (kind alias) (visibility default)) (documentation (doc (text "This is documentation of the alias. "))) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "Automobile")))))
+    (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (path (named (kind package) (name "Documentation Example")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This is documentation of the owning \npackage.\n"))))
+    (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Automobile"))) (kind part-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Automobile::Document1"))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This documentation of Automobile. "))))
+    (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Car"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "Automobile")))))
+    (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (path (named (kind package) (name "Documentation Example")) (named (kind alias) (name "Car")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This is documentation of the alias. "))))
     (declaration (id (node (document "memory://snapshot/01_documentation_example.md") (qualified-name "Documentation Example::Torque"))) (kind alias) (membership (kind alias) (visibility default)) (authored (membership (kind alias) (visibility default)) (relationships (aliasBinding (reference "ISQ::TorqueValue")))))
   )
   (references

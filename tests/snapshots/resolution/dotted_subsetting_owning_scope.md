@@ -61,7 +61,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:b0cee264dfb37b7ec53b114be424be8838825dae4f645221870dfc7ab1ca839c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:fa81b622f1fd2069088a8cf58b765a35ba66ee84a0ba1b921011b26ab742d3da"))
   (declarations
     (declaration (id (node (document "memory://snapshot/dotted_subsetting_owning_scope.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/dotted_subsetting_owning_scope.md") (qualified-name "P::Cell"))) (kind class-def) (membership (kind owning) (visibility default)))

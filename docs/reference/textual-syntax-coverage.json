@@ -2,7 +2,7 @@
   "source": {
     "repository": "https://github.com/Systems-Modeling/SysML-v2-Release",
     "version": "2026-04",
-    "parserRevision": "827f9b442d1efbc8fd51d9fbaf25d30b24c961e6",
+    "parserRevision": "7217b9e4df76ab31672947e53dbdd8e30b88e42f",
     "sysmlBnf": "tools/sysml_reference/SysML-textual-bnf.kebnf",
     "kermlBnf": "tools/sysml_reference/KerML-textual-bnf.kebnf",
     "sysmlBnfSha256": "sha256:6ad22f90cd5e4f1a9aed2fefdf3b96cd3e71d42607b093d7623f36c997c20d8a",

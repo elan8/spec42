@@ -34,7 +34,7 @@ package Interfaces {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:ba4b1cc4383abfda6548927c9edc7718d3f005453f01730cbc5e505f884ccdb4"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:8d13494c4c80f6bb002b03508ece459c93414f1662b3a79e1811f9b8faeba236"))
   (declarations
     (declaration (id (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::A"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -42,6 +42,7 @@ package Interfaces {
     (declaration (id (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::B"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::B::q"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Power")))))
     (declaration (id (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::Power"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/interface_def_cannot_connect.md") (path (named (kind package) (name "Interfaces")) (named (kind port-def) (name "Power")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (kind conjugated-port-def) (membership (kind owning) (visibility default)) (effective-identification (name "~Power") (short-name absent) (provenance original-port-definition)))
     (declaration (id (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::System"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::System::a"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "A")))))
     (declaration (id (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::System::b"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "B")))))
@@ -67,6 +68,7 @@ package Interfaces {
     (relationship (kind typing) (source (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::System::b"))) (target (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::B"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::System::b"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::A::p"))) (target (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::A"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::B::q"))) (target (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::B"))) (provenance implied))
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/interface_def_cannot_connect.md") (path (named (kind package) (name "Interfaces")) (named (kind port-def) (name "Power")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (target (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::Power"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::System::a"))) (target (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::System"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::System::b"))) (target (node (document "memory://snapshot/interface_def_cannot_connect.md") (qualified-name "Interfaces::System"))) (provenance implied))
   )

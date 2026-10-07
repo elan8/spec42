@@ -43,7 +43,7 @@ package BooleanFilter {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2bb87fede3aa64ee6307bdda748fe54fbdfb9ab3a530b563ae6a7a52ca1688a0"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2b859ba9b926b5c605dac9a5082b5a338082fd0612b2c5fe0fc684566be0856e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/allocation_and_filters.md") (qualified-name "Allocations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/allocation_and_filters.md") (qualified-name "Allocations::Allocating"))) (kind part-def) (membership (kind owning) (visibility default)))
@@ -56,7 +56,9 @@ package BooleanFilter {
     (declaration (id (node (document "memory://snapshot/allocation_and_filters.md") (qualified-name "Allocations::source"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Source")))))
     (declaration (id (node (document "memory://snapshot/allocation_and_filters.md") (qualified-name "Allocations::target"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Target")))))
     (declaration (id (node (document "memory://snapshot/allocation_and_filters.md") (qualified-name "BooleanFilter"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/allocation_and_filters.md") (path (named (kind package) (name "BooleanFilter")) (anonymous (kind kerml-literal-boolean) (ordinal 0))))) (kind kerml-literal-boolean) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/allocation_and_filters.md") (qualified-name "Filters"))) (kind package) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/allocation_and_filters.md") (path (named (kind package) (name "Filters")) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/allocation_and_filters.md") (path (named (kind package) (name "Allocations")) (named (kind part-def) (name "Allocating")) (anonymous (kind allocate) (ordinal 0))))) (kind allocateSource) (ordinal 0))

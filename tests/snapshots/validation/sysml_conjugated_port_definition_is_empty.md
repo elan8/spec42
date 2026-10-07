@@ -46,12 +46,13 @@ package Ports {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5081caf7b7633e996f7ffd732e70bba5ff157f3f25f87f0ced3a5971c0ed2b8a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:69e7907fe560e7cd1dfc4ba5d6ff4cabc2d8a452a8fca8a5fb7cb8d0ecf36e04"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Holder::inbound"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Signal") (conjugated true)))))
     (declaration (id (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Signal"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (path (named (kind package) (name "Ports")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (kind conjugated-port-def) (membership (kind owning) (visibility default)) (effective-identification (name "~Signal") (short-name absent) (provenance original-port-definition)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Holder::inbound"))) (kind featureTyping) (ordinal 0))
@@ -61,6 +62,8 @@ package Ports {
   (relationships
     (relationship (kind typing) (conjugated true) (source (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Holder::inbound"))) (target (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Signal"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Holder::inbound"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Holder::inbound"))) (target (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Holder"))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Holder::inbound"))) (target (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (path (named (kind package) (name "Ports")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (provenance implied))
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (path (named (kind package) (name "Ports")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Signal"))) (provenance implied))
   )
   (evaluation
   )
@@ -72,10 +75,16 @@ package Ports {
     (declaration (id (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Holder::inbound")))
       (featured-by (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Holder")))
       (type (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Signal")) (provenance authored))
+      (type (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (path (named (kind package) (name "Ports")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0)))) (provenance implied))
       (effective-type (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Signal")) (source direct))
+      (effective-type (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (path (named (kind package) (name "Ports")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0)))) (source direct))
       (supertype (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Signal")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (path (named (kind package) (name "Ports")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0)))) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Signal")))
+      (subtype (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Holder::inbound")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (path (named (kind package) (name "Ports")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0)))))
       (subtype (node (document "memory://snapshot/sysml_conjugated_port_definition_is_empty.md") (qualified-name "Ports::Holder::inbound")) (scopes any))
     )
 )

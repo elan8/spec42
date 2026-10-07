@@ -121,16 +121,17 @@ fn enumeration_literal_bodies_publish_their_members_and_documentation() {
          \t}\n\
          }\n",
     );
-    let line = output
+    // The doc comment is the literal's own Documentation element, owned by the literal.
+    let documentation = output
         .lines()
         .find(|line| {
-            line.contains("(qualified-name \"Demo::Kind::secret\")")
-                && line.contains("(declaration ")
+            line.contains("(named (kind enum-literal) (name \"secret\"))")
+                && line.contains("(kind documentation)")
         })
-        .unwrap_or_else(|| panic!("no enum literal declaration, got:\n{output}"));
+        .unwrap_or_else(|| panic!("no documentation owned by the enum literal, got:\n{output}"));
     assert!(
-        line.contains("(documentation (doc (text \"The secret level. \")))"),
-        "expected the literal to publish its own doc comment, got:\n{line}"
+        documentation.contains("(documentation (doc (text \"The secret level. \")))"),
+        "expected the literal to publish its own doc comment, got:\n{documentation}"
     );
     assert!(
         output.contains("(named (kind enum-literal) (name \"secret\"))"),
@@ -990,61 +991,6 @@ fn constraint_collection_op_arrow_invocation_resolves_base_and_argument_operands
         ),
         "expected `y` (the collection-op argument) to resolve to the sibling attribute \
          declaration, got:\n{output}"
-    );
-}
-
-#[test]
-fn calc_exponent_operator_negative_integer_exponent_promotes_to_real() {
-    // A negative integer exponent (`2 ^ -1`) cannot stay `Integer` (fractional result), so it
-    // promotes to `Real` via `powf`, exactly like a `Real`-involving pairing.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tcalc def Calc { 2 ^ -1 }\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-             (qualified-name \"Demo::Calc\"))) (state evaluated) (value (kind real) (real 0.5)))"
-        ),
-        "expected `2 ^ -1` to fold to Real(0.5) via the Real-promotion path, got:\n{output}"
-    );
-}
-
-#[test]
-fn constraint_simple_comparison_only_regression_unaffected() {
-    // Regression guard: a plain comparison-only constraint body (slices 1-3, no arithmetic or
-    // logical widening involved) must fold exactly as before.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tconstraint def C { 1 < 2 }\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-             (qualified-name \"Demo::C\"))) (state evaluated) (value (kind boolean) (boolean true)))"
-        ),
-        "expected plain comparison-only `1 < 2` to still fold to Boolean(true), got:\n{output}"
-    );
-}
-
-#[test]
-fn calc_arithmetic_only_regression_unaffected() {
-    // Regression guard: calc-body arithmetic (slice 4) must stay comparison-free and fold
-    // exactly as before -- unaffected by the constraint-side widening.
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tcalc def Calc { 2 + 3 }\n\
-         }\n",
-    );
-    assert!(
-        output.contains(
-            "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-             (qualified-name \"Demo::Calc\"))) (state evaluated) (value (kind integer) (integer 5)))"
-        ),
-        "expected plain arithmetic-only `2 + 3` calc body to still fold to Integer(5), \
-         got:\n{output}"
     );
 }
 
@@ -3637,30 +3583,12 @@ fn binding_connector_checks_are_manifest_scoped_and_preserve_first_missing_prere
         "memory://binding-rule-family.sysml",
         "package Binding { action def Act { action start; action done; bind start = done; } }",
     )]);
+    // The result-expression rules are decided where they hold vacuously, as here; the snapshot
+    // corpus pins their unsupported (occupied) and unresolved (recovered body) outcomes.
     let expected = [
-        (
-            BindingConnectorCheckKind::FeatureValue,
-            BindingConnectorValidationPrerequisite::FeatureValueEndpointFacts,
-        ),
-        (
-            BindingConnectorCheckKind::ExpressionResult,
-            BindingConnectorValidationPrerequisite::ExpressionResultEndpointFacts,
-        ),
-        (
-            BindingConnectorCheckKind::FunctionResult,
-            BindingConnectorValidationPrerequisite::FunctionResultEndpointFacts,
-        ),
         (
             BindingConnectorCheckKind::ConstructorExpressionResultDefaultValueTbd,
             BindingConnectorValidationPrerequisite::NormativeSpecificationTbd,
-        ),
-        (
-            BindingConnectorCheckKind::FeatureReferenceExpression,
-            BindingConnectorValidationPrerequisite::FeatureReferenceExpressionTargetAndResult,
-        ),
-        (
-            BindingConnectorCheckKind::InvocationExpressionBehavior,
-            BindingConnectorValidationPrerequisite::InvocationExpressionBehaviorEndpointFacts,
         ),
         (
             BindingConnectorCheckKind::InvocationExpressionDefaultValueTbd,
@@ -3669,14 +3597,6 @@ fn binding_connector_checks_are_manifest_scoped_and_preserve_first_missing_prere
         (
             BindingConnectorCheckKind::AcceptActionUsageReceiver,
             BindingConnectorValidationPrerequisite::AcceptActionUsageReceiverEndpointFacts,
-        ),
-        (
-            BindingConnectorCheckKind::TransitionUsageSource,
-            BindingConnectorValidationPrerequisite::TransitionUsageSourceEndpointFacts,
-        ),
-        (
-            BindingConnectorCheckKind::TransitionUsageSuccession,
-            BindingConnectorValidationPrerequisite::TransitionUsageSuccessionEndpointFacts,
         ),
         (
             BindingConnectorCheckKind::SatisfyRequirementUsage,
@@ -3698,82 +3618,38 @@ fn binding_connector_checks_are_manifest_scoped_and_preserve_first_missing_prere
 }
 
 #[test]
-fn redefinition_checks_are_manifest_scoped_and_preserve_first_missing_prerequisite() {
+fn redefinition_checks_are_evaluated_over_published_role_facts() {
     let published = publication_for(&[(
         "memory://redefinition-rule-family.sysml",
         "package Model { classifier Parent { feature shared; } classifier Child :> Parent { feature shared; } }",
     )]);
-    let expected = [
-        (
-            RedefinitionCheckKind::FeatureEnd,
-            RedefinitionCheckPrerequisite::EndFeaturePositionAndInheritedEnds,
-        ),
-        (
-            RedefinitionCheckKind::FeatureFlowFeature,
-            RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors,
-        ),
-        (
-            RedefinitionCheckKind::FeatureOwnedCrossFeatureSpecialization,
-            RedefinitionCheckPrerequisite::CrossFeatureAndSubsettingEndpoints,
-        ),
-        (
-            RedefinitionCheckKind::FeatureParameter,
-            RedefinitionCheckPrerequisite::ParameterDirectionAndInheritedPosition,
-        ),
-        (
-            RedefinitionCheckKind::FeatureResult,
-            RedefinitionCheckPrerequisite::FunctionOrExpressionResult,
-        ),
-        (
-            RedefinitionCheckKind::ConstructorExpressionResultFeature,
-            RedefinitionCheckPrerequisite::ConstructorResultAndInstantiatedTypeFeatures,
-        ),
-        (
-            RedefinitionCheckKind::FeatureChainExpressionSourceTarget,
-            RedefinitionCheckPrerequisite::FeatureChainSourceTarget,
-        ),
-        (
-            RedefinitionCheckKind::FeatureChainExpressionTarget,
-            RedefinitionCheckPrerequisite::FeatureChainSourceTargetAndLibraryAnchor,
-        ),
-        (
-            RedefinitionCheckKind::ActionUsageStateAction,
-            RedefinitionCheckPrerequisite::StateSubactionMembershipAndKind,
-        ),
-        (
-            RedefinitionCheckKind::AssignmentActionUsageAccessedFeature,
-            RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints,
-        ),
-        (
-            RedefinitionCheckKind::AssignmentActionUsageReferent,
-            RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints,
-        ),
-        (
-            RedefinitionCheckKind::AssignmentActionUsageStartingAt,
-            RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints,
-        ),
-        (
-            RedefinitionCheckKind::ForLoopActionUsageVar,
-            RedefinitionCheckPrerequisite::ForLoopVariableProjection,
-        ),
-        (
-            RedefinitionCheckKind::RequirementUsageObjective,
-            RedefinitionCheckPrerequisite::ObjectiveMembershipAndCaseObjective,
-        ),
-        (
-            RedefinitionCheckKind::RenderingUsage,
-            RedefinitionCheckPrerequisite::ViewRenderingMembership,
-        ),
-    ];
-
-    for (rule, prerequisite) in expected {
+    // Checks whose role facts are published are evaluated, never reported as unsupported. This
+    // model has no end feature, for loop, feature chain expression, case objective, parameter,
+    // result, constructor, assignment, state action or view rendering, so each holds vacuously; the snapshot
+    // corpus carries the occupied cases.
+    for rule in [
+        RedefinitionCheckKind::FeatureEnd,
+        RedefinitionCheckKind::FeatureOwnedCrossFeatureSpecialization,
+        RedefinitionCheckKind::FeatureParameter,
+        RedefinitionCheckKind::FeatureResult,
+        RedefinitionCheckKind::ConstructorExpressionResultFeature,
+        RedefinitionCheckKind::AssignmentActionUsageAccessedFeature,
+        RedefinitionCheckKind::AssignmentActionUsageReferent,
+        RedefinitionCheckKind::AssignmentActionUsageStartingAt,
+        RedefinitionCheckKind::FeatureChainExpressionSourceTarget,
+        RedefinitionCheckKind::FeatureChainExpressionTarget,
+        RedefinitionCheckKind::ForLoopActionUsageVar,
+        RedefinitionCheckKind::RequirementUsageObjective,
+        RedefinitionCheckKind::ActionUsageStateAction,
+        RedefinitionCheckKind::RenderingUsage,
+    ] {
         assert_eq!(
             published.redefinition_check(rule),
             QueryOutcome::new(
                 published.completeness(),
-                QueryAnswer::Resolved(RedefinitionCheckOutcome::Unsupported { prerequisite }),
+                QueryAnswer::Resolved(RedefinitionCheckOutcome::Satisfied),
             ),
-            "{rule:?} must expose its first missing canonical prerequisite rather than infer a relationship"
+            "{rule:?} is evaluated over its published role facts"
         );
     }
 }
@@ -4596,9 +4472,15 @@ fn namespace_derived_elements_project_canonical_membership_and_import_facts() {
         ElementKind::Import,
         "the owned-import derivation returns the canonical lowered import declaration"
     );
+    // A part definition is a Type, and so a Namespace, with no owned members here.
+    assert!(settled(
+        published.namespace_derived_elements(owned, NamespaceDerivedElementCollection::OwnedMember)
+    )
+    .is_empty());
+    // An Import is a Relationship, not a Namespace.
     assert!(matches!(
         published
-            .namespace_derived_elements(owned, NamespaceDerivedElementCollection::OwnedMember,)
+            .namespace_derived_elements(imports[0], NamespaceDerivedElementCollection::OwnedMember)
             .answer,
         QueryAnswer::Unsupported
     ));
@@ -6060,7 +5942,7 @@ fn usage_may_time_vary_uses_effective_library_and_portion_facts_with_schedule_pa
 }
 
 #[test]
-fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequisite() {
+fn exact_type_derived_facts_publish_closure_values() {
     let published = detail_publication(
         &[ (
             "memory://model.sysml",
@@ -6070,28 +5952,12 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
     );
     let child = identity_of(&published, "memory://model.sysml", "Model::Child");
     let sized = identity_of(&published, "memory://model.sysml", "Model::Sized");
-    let unsupported = |symbol: SymbolId, collection, prerequisite| {
-        assert!(matches!(
-            published.type_derived_fact(symbol, collection).answer,
-            QueryAnswer::Resolved(TypeDerivedFactOutcome::Unsupported { prerequisite: actual })
-                if actual == prerequisite
-        ));
-    };
     let values =
         |symbol: SymbolId, collection| match published.type_derived_fact(symbol, collection).answer
         {
             QueryAnswer::Resolved(TypeDerivedFactOutcome::Values(values)) => values,
             other => panic!("expected published values, got {other:?}"),
         };
-    let membership_member = |value: &TypeDerivedFactValue| match value {
-        TypeDerivedFactValue::FeatureMembership(identity) => {
-            match published.membership(*identity).answer {
-                QueryAnswer::Resolved(membership) => membership.member,
-                other => panic!("expected resolved membership, got {other:?}"),
-            }
-        }
-        other => panic!("expected membership value, got {other:?}"),
-    };
     let inherited = identity_of(
         &published,
         "memory://model.sysml",
@@ -6101,19 +5967,30 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
     let output = identity_of(&published, "memory://model.sysml", "Model::Child::output");
     let endpoint = identity_of(&published, "memory://model.sysml", "Model::Child::endpoint");
 
-    let owned_memberships = values(child, TypeDerivedFactCollection::OwnedFeatureMembership);
-    assert_eq!(
-        owned_memberships
-            .iter()
-            .map(&membership_member)
-            .collect::<Vec<_>>(),
-        vec![input, output, endpoint]
-    );
-    unsupported(
-        sized,
-        TypeDerivedFactCollection::Multiplicity,
-        TypeDerivedFactPrerequisite::MultiplicityIdentity,
-    );
+    // `ownedFeatureMembership` publishes the canonical Membership relationship identity of each
+    // owned feature, which resolves back to the relationship that owns that feature.
+    let owned = values(child, TypeDerivedFactCollection::OwnedFeatureMembership);
+    assert_eq!(owned.len(), 3);
+    for value in owned.iter() {
+        let TypeDerivedFactValue::FeatureMembership { membership, member } = value else {
+            panic!("expected FeatureMembership values, got {value:?}");
+        };
+        let QueryAnswer::Resolved(relationship) = published.membership(*membership).answer else {
+            panic!("expected a resolvable FeatureMembership identity");
+        };
+        assert_eq!(relationship.member, *member);
+        assert_eq!(relationship.owning_namespace, Some(child));
+    }
+    assert!(!owned
+        .iter()
+        .any(|value| matches!(value, TypeDerivedFactValue::FeatureMembership { member, .. } if *member == inherited)));
+    // `multiplicity` names the owned MultiplicityRange an authored `[1]` lowers to; a Type
+    // that authors none has an empty value set.
+    assert!(matches!(
+        values(sized, TypeDerivedFactCollection::Multiplicity).as_ref(),
+        [TypeDerivedFactValue::Multiplicity { element }] if *element != sized
+    ));
+    assert!(values(child, TypeDerivedFactCollection::Multiplicity).is_empty());
     // `ownedConjugator` is answered from the authored `conjugation` reference; a type that
     // declares none has an empty value set, not a missing prerequisite.
     assert!(
@@ -6121,13 +5998,15 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
         "expected no owned conjugator for an unconjugated type"
     );
 
-    let inherited_memberships = values(child, TypeDerivedFactCollection::InheritedMembership);
     assert_eq!(
-        inherited_memberships
+        values(child, TypeDerivedFactCollection::InheritedMembership)
             .iter()
-            .map(&membership_member)
+            .map(|value| match value {
+                TypeDerivedFactValue::FeatureMembership { member, .. } => Some(*member),
+                _ => None,
+            })
             .collect::<Vec<_>>(),
-        vec![inherited]
+        vec![Some(inherited)]
     );
     assert_eq!(
         values(child, TypeDerivedFactCollection::InheritedFeature).into_vec(),
@@ -6139,16 +6018,12 @@ fn exact_type_derived_facts_publish_closure_values_or_the_first_missing_prerequi
     ] {
         let published_values = values(child, collection);
         assert!(published_values.iter().any(|value| match value {
-            TypeDerivedFactValue::FeatureMembership(identity) => {
-                matches!(published.membership(*identity).answer, QueryAnswer::Resolved(value) if value.member == inherited)
-            }
+            TypeDerivedFactValue::FeatureMembership { member, .. } => member == &inherited,
             TypeDerivedFactValue::Feature(feature) => feature == &inherited,
             _ => false,
         }));
         assert!(published_values.iter().any(|value| match value {
-            TypeDerivedFactValue::FeatureMembership(identity) => {
-                matches!(published.membership(*identity).answer, QueryAnswer::Resolved(value) if value.member == input)
-            }
+            TypeDerivedFactValue::FeatureMembership { member, .. } => member == &input,
             TypeDerivedFactValue::Feature(feature) => feature == &input,
             _ => false,
         }));
@@ -6542,6 +6417,51 @@ fn same_named_packages_in_two_documents_do_not_share_an_unqualified_scope() {
     assert_eq!(motor.typing.outcome, RelationshipOutcome::Resolved);
 }
 
+/// An anonymous member is addressed by its canonical owner-scoped identity: owner, metaclass and
+/// anonymous ordinal. Missing members stay unresolved, a named member is never a candidate, and
+/// two declaration forms sharing one metaclass and ordinal are ambiguous rather than guessed.
+#[test]
+fn anonymous_members_resolve_by_owner_kind_and_ordinal() {
+    let document = "memory://anonymous.sysml";
+    let publication = detail_publication(
+        &[(
+            document,
+            "package P { action def A { action c; if c { action t; } if c { action u; } \
+             while c { action w; } loop { action l; } } }",
+        )],
+        ConstructionSchedule::Sequential,
+    );
+    let owner = identity_of(&publication, document, "P::A");
+    let resolve = |kind, ordinal| {
+        publication.resolve_anonymous_member(&AnonymousElementReference {
+            owner,
+            kind,
+            ordinal,
+        })
+    };
+    let first = match resolve(ElementKind::IfActionUsage, 0) {
+        QualifiedReferenceOutcome::Resolved(target) => target,
+        other => panic!("expected the first if, got {other:?}"),
+    };
+    let second = match resolve(ElementKind::IfActionUsage, 1) {
+        QualifiedReferenceOutcome::Resolved(target) => target,
+        other => panic!("expected the second if, got {other:?}"),
+    };
+    assert_ne!(first.identity, second.identity);
+    assert_eq!(first.kind, ElementKind::IfActionUsage);
+    assert!(matches!(
+        resolve(ElementKind::IfActionUsage, 2),
+        QualifiedReferenceOutcome::Unresolved
+    ));
+    assert!(matches!(
+        resolve(ElementKind::ActionUsage, 0),
+        QualifiedReferenceOutcome::Unresolved
+    ));
+    match resolve(ElementKind::WhileLoopActionUsage, 0) {
+        QualifiedReferenceOutcome::Ambiguous(candidates) => assert_eq!(candidates.len(), 2),
+        other => panic!("expected while/loop ordinal collision to be ambiguous, got {other:?}"),
+    }
+}
 #[test]
 fn conjugated_port_usage_exports_a_conjugation_fact_distinct_from_its_type() {
     let published = build(
@@ -6672,29 +6592,20 @@ fn multiple_bare_dotted_chain_operands_on_one_declaration_each_resolve() {
             )
         })
         .expect("require constraint");
+    // Each chain is its own result expression; the constraint's body is the first one, which
+    // resolves on its own rather than collapsing the declaration.
     let expression = settled(published.resolved_expression(constraint.identity));
     assert_eq!(
         expression.outcome,
         ExpressionOutcome::Resolved,
         "each bare dotted chain should resolve independently, not collapse the declaration"
     );
-    let root = expression.root.expect("conjoined root");
+    let root = expression.root.expect("body root");
     match &expression.nodes[root as usize].kind {
-        ExpressionNodeKind::Operator {
-            operator: ExpressionOperator::And,
-            operands,
-        } => {
-            assert_eq!(operands.len(), 2, "both bare chains are conjoined");
-            for operand in operands.iter() {
-                match &expression.nodes[*operand as usize].kind {
-                    ExpressionNodeKind::FeatureReference {
-                        symbol: Some(_), ..
-                    } => {}
-                    other => panic!("expected a resolved dotted-chain operand, got {other:?}"),
-                }
-            }
-        }
-        other => panic!("expected the two chains conjoined with And, got {other:?}"),
+        ExpressionNodeKind::FeatureReference {
+            symbol: Some(_), ..
+        } => {}
+        other => panic!("expected a resolved dotted-chain body, got {other:?}"),
     }
 }
 

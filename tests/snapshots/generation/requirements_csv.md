@@ -33,11 +33,13 @@ package VehicleRequirements {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:4ad1b8c2808c0284425350ca5b7b0e47a7586706a0f9fe5efe471632b3e9cc5e") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:e2fded24a198ca85d11393d7eb7a8024d13414657513a2b668041a5bc56086ad") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/requirements_csv.md") (qualified-name "VehicleRequirements"))) (kind package) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/requirements_csv.md") (qualified-name "VehicleRequirements::LowBatteryWarning"))) (kind requirement-def) (membership (kind owning) (visibility default)) (documentation (doc (text "The vehicle shall warn the operator before battery depletion."))))
-    (declaration (id (node (document "memory://snapshot/requirements_csv.md") (qualified-name "VehicleRequirements::SafeStop"))) (kind requirement-def) (membership (kind owning) (visibility default)) (documentation (doc (text "The vehicle shall stop safely after loss of propulsion."))))
+    (declaration (id (node (document "memory://snapshot/requirements_csv.md") (qualified-name "VehicleRequirements::LowBatteryWarning"))) (kind requirement-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/requirements_csv.md") (path (named (kind package) (name "VehicleRequirements")) (named (kind requirement-def) (name "LowBatteryWarning")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "The vehicle shall warn the operator before battery depletion."))))
+    (declaration (id (node (document "memory://snapshot/requirements_csv.md") (qualified-name "VehicleRequirements::SafeStop"))) (kind requirement-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/requirements_csv.md") (path (named (kind package) (name "VehicleRequirements")) (named (kind requirement-def) (name "SafeStop")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "The vehicle shall stop safely after loss of propulsion."))))
     (declaration (id (node (document "memory://snapshot/requirements_csv.md") (qualified-name "VehicleRequirements::Vehicle"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/requirements_csv.md") (qualified-name "VehicleRequirements::Vehicle::mass"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ScalarValues::Real")))))
   )

@@ -31,7 +31,7 @@ package AliasImport {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:32e32da91a3071c594a2829857bcdbdeb5ecce414c42e4751dc7d8cdc5d8416e"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7982b418013ac3e999a634d1707b1101c50b4091095172aed596c3f0060b46cc"))
   (declarations
     (declaration (id (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/alias_import.md") (qualified-name "AliasImport::Definitions"))) (kind package) (membership (kind owning) (visibility default)))

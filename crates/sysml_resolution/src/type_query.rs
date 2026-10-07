@@ -4,8 +4,8 @@
 //! from settled facts. Consumers get typed answers; they never get the closure, the scope bitset,
 //! or any other storage this crate uses to produce them.
 
-use crate::inspection::{MultiplicityFacts, RelationshipProvenance};
-use crate::{MembershipId, SymbolId};
+use crate::inspection::RelationshipProvenance;
+use crate::SymbolId;
 pub use spec42_constraint_manifest::TypeDerivedFactKind;
 pub use spec42_constraint_manifest::TypeFeaturingCheckKind;
 pub use sysml_contract::{
@@ -18,9 +18,23 @@ pub use sysml_contract::{
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TypeDerivedFactValue {
     Feature(SymbolId),
-    FeatureMembership(MembershipId),
-    Multiplicity(MultiplicityFacts),
-    Conjugator { original_type: SymbolId },
+    /// One `FeatureMembership` relationship: its canonical publication-scoped identity, which
+    /// [`crate::PublishedResolution::membership`] resolves to the full relationship, and the
+    /// `ownedMemberFeature` it owns. An owning Membership and its owned member are distinct
+    /// semantic objects that share one aligned storage slot, so the identity is derived from the
+    /// existing membership facts rather than stored a second time.
+    FeatureMembership {
+        membership: crate::MembershipId,
+        member: SymbolId,
+    },
+    /// `Type::multiplicity`: the owned `Multiplicity` element. Its bounds are not repeated here;
+    /// they remain the owning Type's authored multiplicity fact.
+    Multiplicity {
+        element: SymbolId,
+    },
+    Conjugator {
+        original_type: SymbolId,
+    },
 }
 
 /// A typed result for exact Type derivations that are not yet executable.

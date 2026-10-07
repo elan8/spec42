@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.4.2:validateAssociationBinarySpecialization
-blocked_by=semantic-binary-association-end-count
 type=file
 libraries=standard
 ~~~
@@ -38,7 +37,7 @@ package Associations {
         (severity warning)
         (code "binary_association_end_count")
         (source "semantic")
-        (range (start 8 30) (end 8 47))
+        (range (start 11 8) (end 11 44))
       )
     )
   )
@@ -49,6 +48,12 @@ package Associations {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_association_binary_specialization.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "binary_association_end_count")
+        (source "semantic")
+        (range (start 11 8) (end 11 44))
+      )
     )
   )
 )
@@ -56,7 +61,7 @@ package Associations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:0c145505999ca9183cf0e227df9c8fca4a7ad129d3f880e4790f00fb04aa94a7") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1f65b073f7fab02a8247f392679ad858ebccaac16c56ec674d6610ca74ee6050") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_association_binary_specialization.md") (qualified-name "Associations::Binary"))) (kind kerml-association) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (specialization (reference "Links::BinaryLink")))))

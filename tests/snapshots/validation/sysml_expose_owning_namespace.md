@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.26.2:validateExposeOwningNamespace
-blocked_by=semantic-expose-owner
 type=file
 ~~~
 # SOURCE
@@ -36,7 +35,7 @@ package Views {
         (severity warning)
         (code "expose_invalid_owner")
         (source "semantic")
-        (range (start 9 4) (end 9 23))
+        (range (start 10 8) (end 10 32))
       )
     )
   )
@@ -47,6 +46,12 @@ package Views {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_expose_owning_namespace.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "expose_invalid_owner")
+        (source "semantic")
+        (range (start 10 8) (end 10 32))
+      )
     )
   )
 )
@@ -54,7 +59,7 @@ package Views {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:a5367453115a38625246f3f9b79cdac4a9071e0ad56ed927504ec01656ac9861"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1d909fc5035c27db6a896537ecb93c4784cfc780b97a033be68ccd892d38c394"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_expose_owning_namespace.md") (qualified-name "Views"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_expose_owning_namespace.md") (qualified-name "Views::Component"))) (kind part-def) (membership (kind owning) (visibility default)))

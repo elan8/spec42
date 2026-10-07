@@ -33,11 +33,12 @@ package Actions { action def Procedure { action sender; action receiver; send 1 
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1470344c5745bbe8fc1b18c8f0e097a563bb59cd07f654afed1526ee55a65990"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2204439c3cf3ae8a9df8691c2f72a277360fa85ea97ed76000135a2cf08a011e"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Procedure")) (anonymous (kind send-action) (ordinal 0))))) (kind send-action) (membership (kind feature) (visibility default)) (facts (modifiers composite)) (authored (membership (kind feature) (visibility default)) (relationships (acceptVia (reference "sender")) (sendTarget (reference "receiver")))))
+    (declaration (id (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Procedure")) (anonymous (kind send-action) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::receiver"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
     (declaration (id (node (document "memory://snapshot/sysml_send_action_derived_facts.md") (qualified-name "Actions::Procedure::sender"))) (kind action) (membership (kind feature) (visibility default)) (facts (modifiers composite)))
   )

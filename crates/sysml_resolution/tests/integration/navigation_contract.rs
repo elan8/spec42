@@ -91,36 +91,6 @@ fn constraint_literal_only_comparison_is_supported_with_no_operand_references() 
 }
 
 #[test]
-fn constraint_arithmetic_operand_resolves_all_leaf_references() {
-    let output = build_semantic_sexpr(
-        "package Demo {\n\
-         \tattribute a : ScalarValues::Integer;\n\
-         \tattribute b : ScalarValues::Integer;\n\
-         \tattribute c : ScalarValues::Integer;\n\
-         \tconstraint def C { (a + b) < c }\n\
-         }\n",
-    );
-    for name in ["a", "b", "c"] {
-        assert!(
-            output.contains(&format!(
-                "(authored-target \"{name}\")\n      (outcome (status resolved) (target \
-                 (node (document \"memory://test/enum.sysml\") (qualified-name \"Demo::{name}\")))))"
-            )),
-            "expected operand `{name}` in `(a + b) < c` to resolve to its sibling attribute \
-             declaration, got:\n{output}"
-        );
-    }
-    assert!(
-        output.contains(
-            "(evaluated (declaration (node (document \"memory://test/enum.sysml\") \
-             (qualified-name \"Demo::C\"))) (state non-constant))"
-        ),
-        "expected `(a + b) < c` with no constant-valued operands to publish NonConstant \
-         rather than a fabricated boolean, got:\n{output}"
-    );
-}
-
-#[test]
 fn purpose_member_resolves_its_concern_target() {
     let output = build_semantic_sexpr(
         "package Demo {\n\

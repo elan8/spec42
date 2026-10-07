@@ -46,7 +46,7 @@ package Expressions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:2c914a6b0f13f30cfebfeac73b391abba2ba54eeb8adb713e857c20d286cda1d"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:71f62140f2cfdf6affdb97820165113814b8d3a935ccafaf394d29a28def6358"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -69,6 +69,7 @@ package Expressions {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder::items"))) (target (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder::items"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder::gathered"))) (target (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder::gathered"))) (target (node (document "memory://snapshot/kerml_collect_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "gathered")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_collect_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "gathered")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_collect_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "gathered")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_collect_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "gathered")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder::items"))) (target (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder"))) (provenance implied))
   )
@@ -83,6 +84,9 @@ package Expressions {
     (declaration (id (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder::gathered")))
       (featured-by (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder")))
       (supertype (node (document "memory://snapshot/kerml_collect_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "gathered")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_collect_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "gathered")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_collect_expression_operator.md") (qualified-name "Expressions::Holder")))
     )
     (declaration (id (node (document "memory://snapshot/kerml_collect_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "gathered")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/kerml_collect_expression_operator.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "gathered")) (anonymous (kind kerml-expression) (ordinal 0)))))

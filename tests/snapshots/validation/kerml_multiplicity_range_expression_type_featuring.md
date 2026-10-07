@@ -7,15 +7,17 @@ source_expectation=accepted
 rule_family=check
 expectation=semantics
 rule_id=kerml-1.0:8.3.4.11.2:checkMultiplicityRangeExpressionTypeFeaturing
-blocked_by=lowering-gap-type-featuring-multiplicity-range-bounds
 type=file
 ~~~
 # SOURCE
 ~~~kerml
 package Ranges {
     classifier Vehicle {
+        // Both bounds of the MultiplicityRange of `mass` are featured by `Vehicle`.
         feature mass [1..2];
     }
+    // The bound of a Feature with no featuringType has none.
+    feature unfeatured [3];
 }
 ~~~
 # EXPECTED SEMANTICS
@@ -23,10 +25,21 @@ package Ranges {
 (fixture-semantics
   (relationship
     (kind type_featuring)
-    (source "Ranges::Vehicle::mass::multiplicityRange::lowerBound")
+    (source (anonymous (owner (anonymous (owner "Ranges::Vehicle::mass") (kind MultiplicityRange) (ordinal 0))) (kind LiteralInteger) (ordinal 0)))
     (target "Ranges::Vehicle")
     (provenance implied)
-    (outcome resolved)))
+    (outcome resolved))
+  (relationship
+    (kind type_featuring)
+    (source (anonymous (owner (anonymous (owner "Ranges::Vehicle::mass") (kind MultiplicityRange) (ordinal 0))) (kind LiteralInteger) (ordinal 1)))
+    (target "Ranges::Vehicle")
+    (provenance implied)
+    (outcome resolved))
+  (relationship
+    (kind type_featuring)
+    (source (anonymous (owner (anonymous (owner "Ranges::unfeatured") (kind MultiplicityRange) (ordinal 0))) (kind LiteralInteger) (ordinal 0)))
+    (provenance implied)
+    (outcome absent)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
@@ -40,16 +53,31 @@ package Ranges {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3f4c13a00b116c10d893dbf60f108174e594704fcd98615bae160a9532a7f692"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:51d34a9e6fbf62dc8d58eae1bbd8c319b26e2682c5d6b2120775f0ba8147cd47"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges::Vehicle"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges::Vehicle::mass"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 1) (upper 2))))
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges::unfeatured"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (multiplicity (lower 3) (upper 3))))
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
   )
   (references
   )
   (relationships
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges::Vehicle::mass"))) (target (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges::Vehicle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges::Vehicle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges::Vehicle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (target (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges::Vehicle"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
   )
   (evaluation
   )
@@ -60,6 +88,24 @@ package Ranges {
 (types
     (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges::Vehicle::mass")))
       (featured-by (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges::Vehicle")))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges::Vehicle")))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges::Vehicle")))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)))))
+      (featured-by (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (qualified-name "Ranges::Vehicle")))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-classifier) (name "Vehicle")) (named (kind kerml-feature) (name "mass")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)))))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_multiplicity_range_expression_type_featuring.md") (path (named (kind package) (name "Ranges")) (named (kind kerml-feature) (name "unfeatured")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
     )
 )
 ~~~

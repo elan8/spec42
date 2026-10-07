@@ -37,7 +37,7 @@ package 'Generalization Example' {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e8d3d3407b2a23c80a57ae811f59b0d24cddac100a30d073f039b56baead36af"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:017c3ffa38765e667836e04c3b1387dda09610df3020b497c18965adca91c92c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/03_generalization_example.md") (qualified-name "Generalization Example"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/03_generalization_example.md") (qualified-name "Generalization Example::Engine"))) (kind part-def) (membership (kind owning) (visibility default)))

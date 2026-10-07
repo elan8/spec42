@@ -44,7 +44,7 @@ package PortDirectionExample {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:af39ac3b3beca23419486ae811159e0b31090f0c395503b5769b2e8b8fa6e1b8") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:cc8975f107935792c036b6b216640ff7b07cbd68bee8708b4c71ac6a351e5283") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (path (named (kind package) (name "PortDirectionExample")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -55,6 +55,7 @@ package PortDirectionExample {
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::outbound"))) (kind port) (membership (kind feature) (visibility default)) (facts (direction out)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Signal")))))
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::plain"))) (kind port) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Signal")))))
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Signal"))) (kind port-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (path (named (kind package) (name "PortDirectionExample")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (kind conjugated-port-def) (membership (kind owning) (visibility default)) (effective-identification (name "~Signal") (short-name absent) (provenance original-port-definition)))
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::selected"))) (kind view) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "InterconnectionView")))))
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (path (named (kind package) (name "PortDirectionExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind expose) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (viewExpose (reference "Node")))))
   )
@@ -101,6 +102,7 @@ package PortDirectionExample {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::inbound"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::mirrored"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::mirrored"))) (target (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node"))) (provenance implied))
+    (relationship (kind typing) (source (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::mirrored"))) (target (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (path (named (kind package) (name "PortDirectionExample")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::mirrored"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::outbound"))) (target (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::outbound"))) (target (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node"))) (provenance implied))
@@ -109,6 +111,7 @@ package PortDirectionExample {
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::plain"))) (target (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::plain"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Signal"))) (target (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port"))) (provenance implied))
+    (relationship (kind conjugation) (source (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (path (named (kind package) (name "PortDirectionExample")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Signal"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::selected"))) (target (node (document "memory://snapshot/sysml.library/views.md") (qualified-name "Views::views"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (path (named (kind package) (name "PortDirectionExample")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::selected"))) (provenance implied))
   )
@@ -173,7 +176,9 @@ package PortDirectionExample {
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::mirrored")))
       (featured-by (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node")))
       (type (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Signal")) (provenance authored))
+      (type (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (path (named (kind package) (name "PortDirectionExample")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0)))) (provenance implied))
       (effective-type (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Signal")) (source direct))
+      (effective-type (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (path (named (kind package) (name "PortDirectionExample")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0)))) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (source inherited) (from (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::objects"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence::timeEnclosedOccurrences"))))
@@ -181,6 +186,7 @@ package PortDirectionExample {
       (effective-type (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (source inherited) (from (node (document "memory://snapshot/sysml.library/parts.md") (qualified-name "Parts::Part::ownedPorts"))))
       (effective-type (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::Port")) (source inherited) (from (node (document "memory://snapshot/sysml.library/ports.md") (qualified-name "Ports::ports"))))
       (supertype (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Signal")) (scopes any))
+      (supertype (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (path (named (kind package) (name "PortDirectionExample")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0)))) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/objects.md") (qualified-name "Objects::Object")) (scopes any))
@@ -246,6 +252,9 @@ package PortDirectionExample {
       (subtype (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::mirrored")) (scopes any))
       (subtype (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::outbound")) (scopes any))
       (subtype (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::plain")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (path (named (kind package) (name "PortDirectionExample")) (named (kind port-def) (name "Signal")) (anonymous (kind conjugated-port-def) (ordinal 0)))))
+      (subtype (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::Node::mirrored")) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/diagram_interconnection_port_direction.md") (qualified-name "PortDirectionExample::selected")))
       (type (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::InterconnectionView")) (provenance authored))
@@ -325,7 +334,7 @@ package PortDirectionExample {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:5faba4214f40efc329d68402fa3522528e704d37067c8185927466248554ab17",
+  "modelDigest": "blake3:eccf52b0bb5b7e99d1a350d41607e0c11a95c364245075b89e302cdcaa007515",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_interconnection_port_direction.md",
@@ -341,6 +350,15 @@ package PortDirectionExample {
     }
   ],
   "sources": [
+    {
+      "document": 0,
+      "range": [
+        2,
+        4,
+        2,
+        20
+      ]
+    },
     {
       "document": 0,
       "range": [
@@ -507,6 +525,13 @@ package PortDirectionExample {
       "qualifiedName": "Ports::ports"
     },
     {
+      "kind": "source-anchor",
+      "metaclass": "ConjugatedPortDefinition",
+      "ownerQualifiedName": "PortDirectionExample::Signal",
+      "source": 0,
+      "sourceDomain": "workspace"
+    },
+    {
       "kind": "relationship",
       "ordinal": 0,
       "relationshipKind": "containment",
@@ -592,12 +617,6 @@ package PortDirectionExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 14,
-      "relationshipKind": "subsetting",
-      "source": 3
-    },
-    {
-      "kind": "relationship",
       "ordinal": 15,
       "relationshipKind": "subsetting",
       "source": 3
@@ -605,6 +624,12 @@ package PortDirectionExample {
     {
       "kind": "relationship",
       "ordinal": 16,
+      "relationshipKind": "subsetting",
+      "source": 3
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 17,
       "relationshipKind": "typeFeaturing",
       "source": 3
     },
@@ -616,9 +641,9 @@ package PortDirectionExample {
     },
     {
       "kind": "relationship",
-      "ordinal": 18,
-      "relationshipKind": "subsetting",
-      "source": 4
+      "ordinal": 14,
+      "relationshipKind": "typing",
+      "source": 3
     },
     {
       "kind": "relationship",
@@ -629,12 +654,18 @@ package PortDirectionExample {
     {
       "kind": "relationship",
       "ordinal": 20,
+      "relationshipKind": "subsetting",
+      "source": 4
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 21,
       "relationshipKind": "typeFeaturing",
       "source": 4
     },
     {
       "kind": "relationship",
-      "ordinal": 17,
+      "ordinal": 18,
       "relationshipKind": "typing",
       "source": 4
     },
@@ -667,7 +698,7 @@ package PortDirectionExample {
     "reference": 7,
     "kind": "interconnection-view",
     "name": "selected",
-    "source": 11
+    "source": 12
   },
   "completeness": {
     "status": "complete",
@@ -677,46 +708,46 @@ package PortDirectionExample {
     "edges": [
       {
         "kind": "containment",
-        "navigation": 5,
+        "navigation": 6,
         "origin": 1,
         "provenance": "authored",
-        "reference": 11,
+        "reference": 12,
         "source": 0,
         "target": 1
       },
       {
         "kind": "containment",
-        "navigation": 7,
+        "navigation": 8,
         "origin": 2,
         "provenance": "authored",
-        "reference": 12,
+        "reference": 13,
         "source": 0,
         "target": 2
       },
       {
         "kind": "containment",
-        "navigation": 1,
+        "navigation": 2,
         "origin": 3,
         "provenance": "authored",
-        "reference": 13,
+        "reference": 14,
         "source": 0,
         "target": 3
       },
       {
         "kind": "containment",
-        "navigation": 9,
+        "navigation": 10,
         "origin": 4,
         "provenance": "authored",
-        "reference": 14,
+        "reference": 15,
         "source": 0,
         "target": 4
       },
       {
         "kind": "containment",
-        "navigation": 3,
+        "navigation": 4,
         "origin": 5,
         "provenance": "authored",
-        "reference": 15,
+        "reference": 16,
         "source": 0,
         "target": 5
       }
@@ -760,7 +791,7 @@ package PortDirectionExample {
         "notationRole": "definition",
         "owner": null,
         "reference": 0,
-        "source": 0,
+        "source": 1,
         "typing": {
           "status": "absent"
         }
@@ -774,7 +805,7 @@ package PortDirectionExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 1,
-        "source": 5,
+        "source": 6,
         "typing": {
           "status": "resolved",
           "types": [
@@ -794,7 +825,7 @@ package PortDirectionExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 5,
-        "source": 7,
+        "source": 8,
         "typing": {
           "status": "resolved",
           "types": [
@@ -814,7 +845,7 @@ package PortDirectionExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 2,
-        "source": 1,
+        "source": 2,
         "typing": {
           "status": "resolved",
           "types": [
@@ -834,7 +865,7 @@ package PortDirectionExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 3,
-        "source": 9,
+        "source": 10,
         "typing": {
           "status": "resolved",
           "types": [
@@ -854,7 +885,7 @@ package PortDirectionExample {
         "notationRole": "usage",
         "owner": 0,
         "reference": 4,
-        "source": 3,
+        "source": 4,
         "typing": {
           "status": "resolved",
           "types": [
@@ -871,7 +902,7 @@ package PortDirectionExample {
         "kind": "specializes",
         "navigation": null,
         "provenance": "implied",
-        "reference": 16,
+        "reference": 17,
         "source": 0,
         "target": {
           "reference": 8,
@@ -880,23 +911,12 @@ package PortDirectionExample {
       },
       {
         "kind": "typing",
-        "navigation": 6,
+        "navigation": 7,
         "provenance": "authored",
-        "reference": 20,
+        "reference": 21,
         "source": 1,
         "target": {
           "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 17,
-        "source": 1,
-        "target": {
-          "reference": 9,
           "status": "resolved"
         }
       },
@@ -907,6 +927,17 @@ package PortDirectionExample {
         "reference": 18,
         "source": 1,
         "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 19,
+        "source": 1,
+        "target": {
           "reference": 10,
           "status": "resolved"
         }
@@ -915,7 +946,7 @@ package PortDirectionExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 19,
+        "reference": 20,
         "source": 1,
         "target": {
           "node": 0,
@@ -924,9 +955,9 @@ package PortDirectionExample {
       },
       {
         "kind": "typing",
-        "navigation": 8,
+        "navigation": 9,
         "provenance": "authored",
-        "reference": 36,
+        "reference": 38,
         "source": 2,
         "target": {
           "reference": 6,
@@ -937,7 +968,7 @@ package PortDirectionExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 33,
+        "reference": 35,
         "source": 2,
         "target": {
           "reference": 9,
@@ -948,7 +979,7 @@ package PortDirectionExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 34,
+        "reference": 36,
         "source": 2,
         "target": {
           "reference": 10,
@@ -959,7 +990,7 @@ package PortDirectionExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 35,
+        "reference": 37,
         "source": 2,
         "target": {
           "node": 0,
@@ -968,23 +999,12 @@ package PortDirectionExample {
       },
       {
         "kind": "typing",
-        "navigation": 2,
+        "navigation": 3,
         "provenance": "authored",
-        "reference": 24,
+        "reference": 25,
         "source": 3,
         "target": {
           "reference": 6,
-          "status": "resolved"
-        }
-      },
-      {
-        "kind": "subsetting",
-        "navigation": null,
-        "provenance": "implied",
-        "reference": 21,
-        "source": 3,
-        "target": {
-          "reference": 9,
           "status": "resolved"
         }
       },
@@ -995,6 +1015,17 @@ package PortDirectionExample {
         "reference": 22,
         "source": 3,
         "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 23,
+        "source": 3,
+        "target": {
           "reference": 10,
           "status": "resolved"
         }
@@ -1003,7 +1034,7 @@ package PortDirectionExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 23,
+        "reference": 24,
         "source": 3,
         "target": {
           "node": 0,
@@ -1012,9 +1043,9 @@ package PortDirectionExample {
       },
       {
         "kind": "typing",
-        "navigation": 10,
+        "navigation": 11,
         "provenance": "authored",
-        "reference": 28,
+        "reference": 29,
         "source": 4,
         "target": {
           "reference": 6,
@@ -1022,13 +1053,13 @@ package PortDirectionExample {
         }
       },
       {
-        "kind": "subsetting",
+        "kind": "typing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 25,
+        "reference": 30,
         "source": 4,
         "target": {
-          "reference": 9,
+          "reference": 11,
           "status": "resolved"
         }
       },
@@ -1039,6 +1070,17 @@ package PortDirectionExample {
         "reference": 26,
         "source": 4,
         "target": {
+          "reference": 9,
+          "status": "resolved"
+        }
+      },
+      {
+        "kind": "subsetting",
+        "navigation": null,
+        "provenance": "implied",
+        "reference": 27,
+        "source": 4,
+        "target": {
           "reference": 10,
           "status": "resolved"
         }
@@ -1047,7 +1089,7 @@ package PortDirectionExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 27,
+        "reference": 28,
         "source": 4,
         "target": {
           "node": 0,
@@ -1056,9 +1098,9 @@ package PortDirectionExample {
       },
       {
         "kind": "typing",
-        "navigation": 4,
+        "navigation": 5,
         "provenance": "authored",
-        "reference": 32,
+        "reference": 34,
         "source": 5,
         "target": {
           "reference": 6,
@@ -1069,7 +1111,7 @@ package PortDirectionExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 29,
+        "reference": 31,
         "source": 5,
         "target": {
           "reference": 9,
@@ -1080,7 +1122,7 @@ package PortDirectionExample {
         "kind": "subsetting",
         "navigation": null,
         "provenance": "implied",
-        "reference": 30,
+        "reference": 32,
         "source": 5,
         "target": {
           "reference": 10,
@@ -1091,7 +1133,7 @@ package PortDirectionExample {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 31,
+        "reference": 33,
         "source": 5,
         "target": {
           "node": 0,

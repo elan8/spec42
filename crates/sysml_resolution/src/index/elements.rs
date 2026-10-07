@@ -88,6 +88,9 @@ pub(crate) struct ElementFactIndex {
     /// alternative was a linear search of the evaluation table per inspected element, which made
     /// inspecting one element cost the size of the model.
     pub(crate) evaluation: Box<[Option<u32>]>,
+    /// The Expression that gives each declaration its value
+    /// ([`SemanticModelStorage::value_expressions`]), indexed by declaration.
+    pub(crate) value_expressions: Box<[Option<DeclarationId>]>,
 }
 
 /// Builds the contiguous per-declaration ranges of an ordered view of a record table.
@@ -134,9 +137,26 @@ impl ElementFactIndex {
         // declaration -- it does today, but that would be an invariant of the producer rather than
         // of this index, and slicing the raw table on ranges computed for a sorted order would be
         // silently wrong the moment it stopped holding.
-        let mut documentation_order: Vec<u32> = (0..storage.documentation.len() as u32).collect();
-        documentation_order
-            .sort_by_key(|index| storage.documentation[*index as usize].declaration.index());
+        // `Element::documentation` / owned comments: each record under the namespace that owns its
+        // annotating element. Every lowered annotating element has an owner.
+        let documentation_owner = |index: u32| -> Result<DeclarationId, ResolutionError> {
+            storage
+                .declaration(storage.documentation[index as usize].element)
+                .and_then(|element| element.owner)
+                .ok_or(ResolutionError::InvalidStorage)
+        };
+        let mut documentation_order = (0..storage.documentation.len() as u32)
+            .map(|index| documentation_owner(index).map(|owner| (owner, index)))
+            .collect::<Result<Vec<_>, _>>()?;
+        documentation_order.sort_by_key(|(owner, index)| (owner.index(), *index));
+        let documentation_owners = documentation_order
+            .iter()
+            .map(|(owner, _)| *owner)
+            .collect::<Vec<_>>();
+        let documentation_order = documentation_order
+            .into_iter()
+            .map(|(_, index)| index)
+            .collect::<Vec<_>>();
         let mut feature_value_order: Vec<u32> = (0..storage.feature_values.len() as u32).collect();
         feature_value_order
             .sort_by_key(|index| storage.feature_values[*index as usize].declaration.index());
@@ -215,12 +235,8 @@ impl ElementFactIndex {
         }
 
         Ok(Self {
-            documentation: ranges_by_declaration(
-                declarations,
-                documentation_order
-                    .iter()
-                    .map(|index| storage.documentation[*index as usize].declaration),
-            ),
+            value_expressions: storage.value_expressions(),
+            documentation: ranges_by_declaration(declarations, documentation_owners.into_iter()),
             documentation_order: documentation_order.into_boxed_slice(),
             feature_values: ranges_by_declaration(
                 declarations,
@@ -447,6 +463,9 @@ impl<D> SemanticModel<D> {
             crate::lower::facts::MultiplicityBound::Literal(value) => {
                 MultiplicityBound::Literal(value)
             }
+            crate::lower::facts::MultiplicityBound::NonIntegerLiteral => {
+                MultiplicityBound::NonIntegerLiteral
+            }
             crate::lower::facts::MultiplicityBound::Expression => MultiplicityBound::Expression,
         };
         MultiplicityFacts::Declared {
@@ -617,17 +636,10 @@ impl<D> SemanticModel<D> {
             .copied()
             .flatten()
             .or_else(|| {
-                slice_range(
-                    &self.facts.feature_value_order,
-                    &self.facts.feature_values,
-                    id,
-                )
-                .first()
-                .and_then(|index| self.storage.feature_values.get(*index as usize))
-                .and_then(|value| {
+                self.value_expression(id).and_then(|expression| {
                     self.facts
                         .evaluation
-                        .get(value.value.index())
+                        .get(expression.index())
                         .copied()
                         .flatten()
                 })
@@ -642,15 +654,18 @@ impl<D> SemanticModel<D> {
         &self,
         id: DeclarationId,
     ) -> &[crate::index::expressions::SettledUnit] {
-        let expression = slice_range(
-            &self.facts.feature_value_order,
-            &self.facts.feature_values,
-            id,
-        )
-        .first()
-        .and_then(|index| self.storage.feature_values.get(*index as usize))
-        .map_or(id, |value| value.value);
-        self.expressions.units(expression)
+        self.expressions
+            .units(self.value_expression(id).unwrap_or(id))
+    }
+
+    /// The Expression that gives `id` its value: its FeatureValue's value Expression or its
+    /// result expression ([`SemanticModelStorage::value_expressions`]).
+    pub(crate) fn value_expression(&self, id: DeclarationId) -> Option<DeclarationId> {
+        self.facts
+            .value_expressions
+            .get(id.index())
+            .copied()
+            .flatten()
     }
 
     /// The authored and implied references this declaration is the source of, in canonical order.
@@ -721,6 +736,19 @@ impl<D> SemanticModel<D> {
             documentation: self.documentation(id),
             multiplicity: self.multiplicity(id),
             modifiers: self.modifiers(id),
+            implied_modifiers: [
+                (
+                    facts.modifiers.implied_abstract(declaration.kind),
+                    ElementModifier::Abstract,
+                ),
+                (
+                    facts.modifiers.implied_variation(declaration.kind),
+                    ElementModifier::Variation,
+                ),
+            ]
+            .into_iter()
+            .filter_map(|(implied, modifier)| implied.then_some(modifier))
+            .collect(),
             portion_kind: facts.portion_kind.map(|kind| match kind {
                 crate::lower::facts::PortionKind::Snapshot => PortionKind::Snapshot,
                 crate::lower::facts::PortionKind::Timeslice => PortionKind::Timeslice,

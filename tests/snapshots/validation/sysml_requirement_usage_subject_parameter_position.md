@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.21.9:validateRequirementUsageSubjectParameterPosition
-blocked_by=semantic-subject-member-order
 type=file
 ~~~
 # SOURCE
@@ -39,6 +38,12 @@ package Roles {
         (code "subject_member_not_first")
         (source "semantic")
         (range (start 12 8) (end 12 34))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_requirement_usage_subject_parameter_position.md")
+            (range (start 11 8) (end 11 38))
+          )
+        )
       )
     )
   )
@@ -49,6 +54,18 @@ package Roles {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_requirement_usage_subject_parameter_position.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "subject_member_not_first")
+        (source "semantic")
+        (range (start 12 8) (end 12 34))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_requirement_usage_subject_parameter_position.md")
+            (range (start 11 8) (end 11 38))
+          )
+        )
+      )
     )
   )
 )
@@ -56,7 +73,7 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:66280e19e650228a42951c148a73839fc3b6ce708b1b13f2bfbcb493183cdb24"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:bb1bfe78404d5152771fbb4d7495fcf6632ddd65f57a1b429dcf3fbf5371c084"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_requirement_usage_subject_parameter_position.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_requirement_usage_subject_parameter_position.md") (qualified-name "Roles::Bad"))) (kind requirement) (membership (kind feature) (visibility default)))

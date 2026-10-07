@@ -9,10 +9,16 @@ use crate::lower::facts::multiplicity_facts;
 use crate::lower::facts::AuthoredRelationshipDeclaration;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
+use crate::lower::facts::MultiplicityRecord;
+use crate::lower::facts::OwnedEndFeature;
+use crate::lower::facts::OwnedEndRecord;
+use crate::lower::facts::ParameterDirection;
 use crate::lower::facts::PendingReference;
 use crate::lower::facts::RelationshipFlags;
+use crate::lower::facts::SuccessionEndMultiplicities;
 use crate::lower::facts::UnsupportedFamily;
 use crate::lower::SemanticModelBuilder;
+use crate::model::AuthoredReferenceId;
 use crate::model::ConstructionError;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
@@ -312,6 +318,38 @@ impl SemanticModelBuilder {
     /// formerly `KermlEndMember`), whose cross feature the grammar owns from the `EndFeaturePrefix`
     /// alternative -- so it is lowered here as an owned child through
     /// `lower_kerml_owned_cross_feature` rather than as this feature's owner.
+    /// Lowers a KerML `FeatureDeclaration`'s ordered `FeatureSpecialization` alternatives
+    /// (typing, subsetting, reference subsetting, cross subsetting, redefinition) in authored
+    /// order. Shared by every KerML feature-declaration form (features and connectors).
+    fn lower_kerml_feature_specializations(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        specializations: &[FeatureSpecialization],
+        direction: Option<ParameterDirection>,
+    ) -> Result<(), ConstructionError> {
+        for specialization in specializations {
+            match specialization {
+                FeatureSpecialization::Typing(relationship) => {
+                    self.lower_typing_relationship_impl(
+                        document,
+                        declaration,
+                        relationship,
+                        false,
+                        direction,
+                    )?;
+                }
+                FeatureSpecialization::Subsetting { relationship, .. }
+                | FeatureSpecialization::ReferenceSubsetting(relationship)
+                | FeatureSpecialization::CrossSubsetting(relationship)
+                | FeatureSpecialization::Redefinition(relationship) => {
+                    self.lower_subsetting_relationship(document, declaration, relationship)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
     pub(crate) fn lower_kerml_feature_member(
         &mut self,
         document: DocumentIdx,
@@ -339,9 +377,18 @@ impl SemanticModelBuilder {
                 ..DeclarationFacts::none()
             },
         )?;
+        // `'member' FeatureElement` is a KerML NonFeatureMember (BNF `NonFeatureMember`): an
+        // OwningMembership, so the feature is an ownedMember but not an ownedFeature. The parser
+        // records every KermlFeature's membership as a FeatureMembership; `is_member` is the
+        // authored syntax that decides the metaclass.
+        let membership_kind = if node.value.is_member {
+            MembershipKind::Owning
+        } else {
+            MembershipKind::Feature
+        };
         self.push_membership(
             declaration,
-            MembershipKind::Feature,
+            membership_kind,
             self.member_visibility(
                 &node.value.membership,
                 ParserMembershipKind::FeatureMembership,
@@ -354,25 +401,12 @@ impl SemanticModelBuilder {
         {
             self.lower_kerml_owned_cross_feature(document, declaration, cross)?;
         }
-        for specialization in &node.value.specializations {
-            match specialization {
-                FeatureSpecialization::Typing(relationship) => {
-                    self.lower_typing_relationship_impl(
-                        document,
-                        declaration,
-                        relationship,
-                        false,
-                        direction_node_fact(node.value.prefix.direction()),
-                    )?;
-                }
-                FeatureSpecialization::Subsetting { relationship, .. }
-                | FeatureSpecialization::ReferenceSubsetting(relationship)
-                | FeatureSpecialization::CrossSubsetting(relationship)
-                | FeatureSpecialization::Redefinition(relationship) => {
-                    self.lower_subsetting_relationship(document, declaration, relationship)?;
-                }
-            }
-        }
+        self.lower_kerml_feature_specializations(
+            document,
+            declaration,
+            &node.value.specializations,
+            direction_node_fact(node.value.prefix.direction()),
+        )?;
         self.lower_kerml_feature_relationship_parts(
             document,
             declaration,
@@ -414,6 +448,8 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 modifiers: DeclarationModifiers {
                     all: node.value.is_all,
+                    ordered: node.value.multiplicity_modifiers.is_ordered(),
+                    nonunique: !node.value.multiplicity_modifiers.is_unique(),
                     ..DeclarationModifiers::default()
                 },
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
@@ -426,23 +462,12 @@ impl SemanticModelBuilder {
             Visibility::Default,
             node.span,
         )?;
-        if let Some(type_name) = node.value.typing {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span;
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
-        }
+        self.lower_kerml_feature_specializations(
+            document,
+            declaration,
+            &node.value.specializations,
+            None,
+        )?;
         if let Some(end) = &node.value.from {
             self.lower_kerml_connector_end(
                 document,
@@ -549,7 +574,7 @@ impl SemanticModelBuilder {
                 name,
                 end.span,
                 DeclarationFacts {
-                    multiplicity: multiplicity_facts(end.value.multiplicity.as_ref()),
+                    cross_multiplicity: multiplicity_facts(end.value.multiplicity.as_ref()),
                     positional_end: Some(positional_end),
                     ..DeclarationFacts::none()
                 },
@@ -576,7 +601,7 @@ impl SemanticModelBuilder {
             .ok_or(ConstructionError::InvalidParserReference)?
             .metadata
             .span;
-        self.push_reference(PendingReference {
+        let reference = self.push_reference(PendingReference {
             source,
             kind,
             document,
@@ -585,6 +610,71 @@ impl SemanticModelBuilder {
             span,
             import: None,
         })?;
+        if source == owner && matches!(kind, ReferenceKind::FlowSource | ReferenceKind::FlowTarget)
+        {
+            self.mint_flow_end(document, owner, reference, end.span)?;
+        } else if source == owner {
+            // A bare end mints no end Feature declaration; its reference is the end.
+            self.owned_end_features.push(OwnedEndRecord {
+                owner,
+                end: OwnedEndFeature::Bare(reference),
+            });
+        }
+        Ok(())
+    }
+
+    /// Mints the `FlowEnd` a flow's bare `from`/`to` endpoint denotes (KerML 8.3.4.9; SysML
+    /// `FlowEnd = FlowEndSubsetting? FlowFeatureMember`, Pilot `FlowEndAdapter`): an anonymous
+    /// end Feature owned by the flow, which owns one anonymous flow feature. Neither element is
+    /// authored as a declaration; the endpoint itself stays the flow's single authored
+    /// FlowSource/FlowTarget `reference`, which the end record links to rather than copies.
+    fn mint_flow_end(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        reference: AuthoredReferenceId,
+        span: sysml_v2_parser::ast::Span,
+    ) -> Result<(), ConstructionError> {
+        let positional_end = self.next_positional_end_ordinal(owner)?;
+        let flow_end = self.push_typed_declaration(
+            document,
+            Some(owner),
+            DeclarationKind::FlowEnd,
+            None,
+            span,
+            DeclarationFacts {
+                positional_end: Some(positional_end),
+                ..DeclarationFacts::none()
+            },
+        )?;
+        self.push_membership(flow_end, MembershipKind::Feature, Visibility::Default, span)?;
+        // `push_typed_declaration` recorded the positional end as a plain declared end; a flow
+        // end is instead linked to the authored endpoint reference it stands for.
+        let record = self
+            .owned_end_features
+            .last_mut()
+            .filter(|record| {
+                record.owner == owner && record.end == OwnedEndFeature::Declared(flow_end)
+            })
+            .ok_or(ConstructionError::InvalidIdentity)?;
+        record.end = OwnedEndFeature::Flow {
+            end: flow_end,
+            reference,
+        };
+        let flow_feature = self.push_typed_declaration(
+            document,
+            Some(flow_end),
+            DeclarationKind::KermlFeature,
+            None,
+            span,
+            DeclarationFacts::none(),
+        )?;
+        self.push_membership(
+            flow_feature,
+            MembershipKind::Feature,
+            Visibility::Default,
+            span,
+        )?;
         Ok(())
     }
 
@@ -595,10 +685,9 @@ impl SemanticModelBuilder {
     /// shape difference from `KermlConnectorMember`) -- reuses `lower_kerml_connector_end`
     /// verbatim for both ends, tagged `ReferenceKind::Succession` (the same kind
     /// `lower_first_stmt`'s `FirstStmt` uses for its own `first`/`then` operands) rather than
-    /// `BindSource`/`BindTarget`, since this is a succession relationship, not a binding. `is_all`
-    /// (`all` sufficiency) and the succession's own `multiplicity` are not modeled as distinct
-    /// facts here, mirroring `KermlConnectorMember`/`KermlBindingMember`'s own unmodeled
-    /// end-level `multiplicity`/`references`.
+    /// `BindSource`/`BindTarget`, since this is a succession relationship, not a binding. A bare
+    /// end's `[n]` multiplicity is published as the succession's end fact
+    /// (`succession_end_multiplicities`).
     pub(crate) fn lower_kerml_succession_member(
         &mut self,
         document: DocumentIdx,
@@ -618,6 +707,10 @@ impl SemanticModelBuilder {
                     ..DeclarationModifiers::default()
                 },
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
+                succession_end_multiplicities: SuccessionEndMultiplicities::authored(
+                    kerml_bare_end_multiplicity(&node.value.first),
+                    kerml_bare_end_multiplicity(&node.value.then),
+                ),
                 ..DeclarationFacts::none()
             },
         )?;
@@ -730,4 +823,16 @@ impl SemanticModelBuilder {
             });
         Ok(())
     }
+}
+
+/// The multiplicity of a bare (`references`-free) KerML connector end, which has no end-feature
+/// declaration of its own and so is recorded as its connector's end fact. A `references` end is
+/// lowered as its own end feature carrying the multiplicity, so it contributes nothing here.
+pub(crate) fn kerml_bare_end_multiplicity(
+    end: &Node<KermlConnectorEnd>,
+) -> Option<MultiplicityRecord> {
+    if end.value.references.is_some() {
+        return None;
+    }
+    multiplicity_facts(end.value.multiplicity.as_ref())
 }

@@ -28,6 +28,8 @@
 use crate::lower::facts::AnnotationForm;
 use crate::lower::facts::AuthoredReference;
 use crate::lower::facts::MultiplicityBound;
+use crate::lower::facts::ParameterDirection;
+use crate::lower::facts::TransitionFeatureRole;
 use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
 use crate::model::span::document_range;
@@ -100,7 +102,9 @@ pub(crate) fn is_namespace_kind(kind: DeclarationKind) -> bool {
 pub(crate) fn is_state_kind(kind: DeclarationKind) -> bool {
     matches!(
         kind,
-        DeclarationKind::StateDefinition | DeclarationKind::StateUsage
+        DeclarationKind::StateDefinition
+            | DeclarationKind::StateUsage
+            | DeclarationKind::ExhibitStateUsage
     )
 }
 
@@ -145,6 +149,7 @@ pub(crate) fn is_requirement_kind(kind: DeclarationKind) -> bool {
         DeclarationKind::RequirementDefinition
             | DeclarationKind::RequirementUsage
             | DeclarationKind::VerifyRequirement
+            | DeclarationKind::ObjectiveRequirement
     )
 }
 
@@ -175,6 +180,7 @@ pub(crate) fn supports_subject_role(kind: DeclarationKind) -> bool {
         kind,
         DeclarationKind::RequirementDefinition
             | DeclarationKind::RequirementUsage
+            | DeclarationKind::ObjectiveRequirement
             | DeclarationKind::ConcernDefinition
             | DeclarationKind::ConcernUsage
             | DeclarationKind::CaseDefinition
@@ -426,6 +432,17 @@ impl<D> SemanticModel<D> {
                     | DeclarationKind::PartDefinition
                     | DeclarationKind::RequirementDefinition
                     | DeclarationKind::UseCaseDefinition
+                    | DeclarationKind::KermlType
+                    | DeclarationKind::KermlClassifier
+                    | DeclarationKind::KermlStructure
+                    | DeclarationKind::KermlAssociation
+                    | DeclarationKind::KermlAssociationStructure
+                    | DeclarationKind::KermlDataType
+                    | DeclarationKind::KermlMetaclass
+                    | DeclarationKind::KermlBehavior
+                    | DeclarationKind::KermlFunction
+                    | DeclarationKind::KermlPredicate
+                    | DeclarationKind::KermlInteraction
             ) {
                 continue;
             }
@@ -491,12 +508,30 @@ impl<D> SemanticModel<D> {
         members: &[DeclarationId],
     ) -> Option<(DeclarationId, DeclarationId)> {
         for (index, member) in members.iter().enumerate().skip(1) {
-            let later = self.declaration_family(*member)?;
+            let later = self.declaration_family(*member);
             for earlier_id in &members[..index] {
-                let Some(earlier) = self.declaration_family(*earlier_id) else {
-                    continue;
+                let indistinguishable = match (self.declaration_family(*earlier_id), later) {
+                    (Some(earlier), Some(later)) => {
+                        names_must_be_distinguishable(owner, earlier, later)
+                    }
+                    // A member outside the SysML family table (a KerML type or feature, or a
+                    // usage form the table does not classify) is compared by the normative
+                    // `Membership::isDistinguishableFrom`: same-named members are
+                    // indistinguishable when either member's metaclass conforms to the other's.
+                    _ => {
+                        let (Some(earlier), Some(later)) =
+                            (self.kind_of(*earlier_id), self.kind_of(*member))
+                        else {
+                            continue;
+                        };
+                        let (earlier, later) = (
+                            crate::model::element_kind::element_kind(earlier),
+                            crate::model::element_kind::element_kind(later),
+                        );
+                        earlier.conforms_to(later) || later.conforms_to(earlier)
+                    }
                 };
-                if names_must_be_distinguishable(owner, earlier, later) {
+                if indistinguishable {
                     return Some((*earlier_id, *member));
                 }
             }
@@ -1039,20 +1074,40 @@ impl<D> SemanticModel<D> {
     ) -> Result<(), ResolutionError> {
         let source = self.settled_targets(id, &[ReferenceKind::TransitionSource]);
         let target = self.settled_targets(id, &[ReferenceKind::TransitionTarget]);
-        // A guard settles through the same expression pipeline every other condition does, so a
-        // non-Boolean constant is the same fact a non-Boolean constraint is.
-        if let Some(value) = self.evaluation_for(id).value() {
-            if !matches!(value, EvaluatedScalar::Boolean(_)) {
-                diagnostics.push(self.declaration_diagnostic(
-                    id,
-                    DiagnosticCode::TransitionGuardNonBoolean,
-                    DiagnosticSeverity::Warning,
-                )?);
+        // SysML 8.3.18.8 `validateTransitionFeatureMembershipGuardExpression`: the guard is the
+        // transition's owned guard-role Boolean expression, and it settles through the same
+        // expression pipeline every other condition does, so a non-Boolean constant is the same
+        // fact a non-Boolean constraint is.
+        for guard in self.child_declarations(id).iter().copied().filter(|child| {
+            self.storage.declaration_facts(*child).is_some_and(|facts| {
+                facts.transition_feature_role == Some(TransitionFeatureRole::Guard)
+            })
+        }) {
+            if let Some(value) = self.evaluation_for(guard).value() {
+                if !matches!(value, EvaluatedScalar::Boolean(_)) {
+                    diagnostics.push(self.declaration_diagnostic(
+                        id,
+                        DiagnosticCode::TransitionGuardNonBoolean,
+                        DiagnosticSeverity::Warning,
+                    )?);
+                }
             }
         }
         let (Some(source), Some(target)) = (source.first(), target.first()) else {
             return Ok(());
         };
+        // A transition in an action body (SysML `ActionBodyItem` admits `TransitionUsage`) moves
+        // between actions, as the normative `Actions` library itself does, so the endpoint rules
+        // below are state-machine rules and apply only to a transition a state owns.
+        if !self
+            .storage
+            .declaration(id)
+            .and_then(|transition| transition.owner)
+            .and_then(|owner| self.kind_of(owner))
+            .is_some_and(is_state_kind)
+        {
+            return Ok(());
+        }
         let (Some(source_kind), Some(target_kind)) = (self.kind_of(*source), self.kind_of(*target))
         else {
             return Ok(());
@@ -1075,12 +1130,8 @@ impl<D> SemanticModel<D> {
             diagnostics.push(diagnostic);
             return Ok(());
         }
-        let source_context = self.enclosing(*source, |kind| {
-            kind == DeclarationKind::StateDefinition || kind == DeclarationKind::StateUsage
-        });
-        let target_context = self.enclosing(*target, |kind| {
-            kind == DeclarationKind::StateDefinition || kind == DeclarationKind::StateUsage
-        });
+        let source_context = self.enclosing(*source, is_state_kind);
+        let target_context = self.enclosing(*target, is_state_kind);
         if let (Some(source_context), Some(target_context)) = (source_context, target_context) {
             if source_context != target_context {
                 let mut diagnostic = self.declaration_diagnostic(
@@ -1139,17 +1190,22 @@ impl<D> SemanticModel<D> {
             if self.kind_of(id) != Some(DeclarationKind::StateDefinition) {
                 continue;
             }
-            if self
-                .storage
-                .declaration_facts(id)
-                .is_some_and(|facts| facts.modifiers.is_abstract)
-            {
+            if self.storage.declaration_facts(id).is_some_and(|facts| {
+                facts
+                    .modifiers
+                    .effectively_abstract(DeclarationKind::StateDefinition)
+            }) {
                 continue;
             }
             let states = self
                 .child_declarations(id)
                 .iter()
-                .filter(|child| self.kind_of(**child) == Some(DeclarationKind::StateUsage))
+                .filter(|child| {
+                    matches!(
+                        self.kind_of(**child),
+                        Some(DeclarationKind::StateUsage | DeclarationKind::ExhibitStateUsage)
+                    )
+                })
                 .count();
             if states == 0 {
                 continue;
@@ -1218,6 +1274,7 @@ impl<D> SemanticModel<D> {
             let kind = self.kind_of(id).ok_or(ResolutionError::InvalidStorage)?;
             if supports_subject_role(kind) {
                 self.collect_subject_roles(id, diagnostics)?;
+                self.collect_objective_roles(id, diagnostics)?;
             }
             match kind {
                 DeclarationKind::Satisfy => self.collect_satisfy(id, diagnostics)?,
@@ -1281,6 +1338,44 @@ impl<D> SemanticModel<D> {
         Ok(())
     }
 
+    /// SysML 8.3.22.2/8.3.22.3 `validateCase{Definition,Usage}OnlyOneObjective`: at most one
+    /// featureMembership is an ObjectiveMembership. Each owned objective after the first, in
+    /// source order, is reported with the first as related information, as the Pilot's
+    /// `checkAtMostOne` does.
+    pub(crate) fn collect_objective_roles(
+        &self,
+        id: DeclarationId,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        let mut objectives = self
+            .child_declarations(id)
+            .iter()
+            .copied()
+            .filter(|child| {
+                self.effective_membership_role(*child) == Some(crate::MembershipRole::Objective)
+            })
+            .collect::<Vec<_>>();
+        objectives.sort_by_key(|child| self.declaration_range(*child));
+        let Some((first, rest)) = objectives.split_first() else {
+            return Ok(());
+        };
+        for objective in rest {
+            let mut diagnostic = self.declaration_message_diagnostic(
+                *objective,
+                DiagnosticCode::DuplicateRoleMember,
+                DiagnosticSeverity::Warning,
+                Some(format!(
+                    "'{}' declares more than one objective member.",
+                    self.display_name(id)
+                )),
+            )?;
+            diagnostic.related =
+                Box::from([self.related_declaration(*first, RELATED_FIRST_DECLARATION)?]);
+            diagnostics.push(diagnostic);
+        }
+        Ok(())
+    }
+
     /// The subject-cardinality and subject-order rules of one declaration.
     pub(crate) fn collect_subject_roles(
         &self,
@@ -1292,7 +1387,16 @@ impl<D> SemanticModel<D> {
             .iter()
             .filter_map(|child| {
                 let declaration = self.storage.declaration(*child)?;
-                is_input_role_member(declaration.kind).then_some((*child, declaration.kind))
+                // `Type::input`: the subject, actor and stakeholder parameters, and every other
+                // owned feature directed `in` or `inout` (`in ref part other : P;`).
+                let directed_input = self.storage.declaration_facts(*child).is_some_and(|facts| {
+                    matches!(
+                        facts.direction,
+                        Some(ParameterDirection::In) | Some(ParameterDirection::InOut)
+                    )
+                });
+                (is_input_role_member(declaration.kind) || directed_input)
+                    .then_some((*child, declaration.kind))
             })
             .collect::<Vec<_>>();
         roles.sort_by_key(|(child, _)| self.declaration_range(*child));
@@ -1399,20 +1503,27 @@ impl<D> SemanticModel<D> {
                 Some(DeclarationKind::ViewUsage) => {
                     // A view with members that exposes nothing renders nothing. Reported as
                     // information: it is legal, and a view under construction passes through it.
+                    // The multiplicity a header `[m..n]` lowers to, and the comments and
+                    // documentation annotating the view, are not body content.
                     // The view's own `ValuePart` expression (`view v = w;`) is owned by the view
-                    // but is not a body member, so it does not count.
-                    let members: Vec<_> = self
+                    // but is not a body member either.
+                    let members = self
                         .child_declarations(id)
                         .iter()
                         .copied()
                         .filter(|child| {
-                            !self
+                            self.kind_of(*child).is_none_or(|kind| {
+                                let kind = crate::model::element_kind::element_kind(kind);
+                                !kind.conforms_to(sysml_contract::ElementKind::Multiplicity)
+                                    && !kind
+                                        .conforms_to(sysml_contract::ElementKind::AnnotatingElement)
+                            }) && !self
                                 .storage
                                 .feature_values
                                 .iter()
                                 .any(|value| value.declaration == id && value.value == *child)
                         })
-                        .collect();
+                        .collect::<Vec<_>>();
                     let owner_is_rendering = self
                         .storage
                         .declaration(id)
@@ -1539,7 +1650,7 @@ impl<D> SemanticModel<D> {
             }
             let declaration = self
                 .storage
-                .declaration(record.declaration)
+                .declaration(record.element)
                 .ok_or(ResolutionError::InvalidStorage)?;
             if declaration.document != document {
                 continue;
@@ -1552,7 +1663,7 @@ impl<D> SemanticModel<D> {
                 code: DiagnosticCode::ViewpointRepLanguageUnresolved,
                 severity: DiagnosticSeverity::Warning,
                 origin: DiagnosticOrigin::Semantic,
-                subject: self.symbol_id(record.declaration),
+                subject: self.symbol_id(record.element),
                 location: DiagnosticLocation {
                     document: writer::document_identity(self, document).into(),
                     range: document_range(&self.storage, document, &record.span)?,
@@ -1603,31 +1714,95 @@ impl<D> SemanticModel<D> {
         for id in declared.iter().copied() {
             let kind = self.kind_of(id).ok_or(ResolutionError::InvalidStorage)?;
 
-            // A multiplicity whose literal bounds cross admits nothing at all.
-            if let Some(multiplicity) = self
+            // KerML 8.3.4.11.2 `validateMultiplicityRangeBoundResultTypes`: a model-level
+            // evaluable bound must evaluate to a natural number, so a negative or non-integer
+            // literal bound is `multiplicity_bound_invalid`. Otherwise, a multiplicity whose literal bounds cross
+            // admits nothing at all. Both apply to the feature's own multiplicity and a connector
+            // end's cross multiplicity. A non-literal bound is judged below, at its own
+            // `bound` Expression, by its derived result type.
+            let facts = self
                 .storage
                 .declaration_facts(id)
-                .and_then(|facts| facts.multiplicity.as_ref())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            for multiplicity in [&facts.multiplicity, &facts.cross_multiplicity]
+                .into_iter()
+                .flatten()
             {
-                if let (MultiplicityBound::Literal(lower), MultiplicityBound::Literal(upper)) =
-                    (multiplicity.lower, multiplicity.upper)
+                // Pilot `checkMultiplicityRange`: a model-level evaluable bound is valid only when
+                // `valueOf` yields a natural, so a negative or non-integer literal is rejected.
+                let not_natural = |bound: MultiplicityBound| {
+                    matches!(bound, MultiplicityBound::Literal(value) if value < 0)
+                        || bound == MultiplicityBound::NonIntegerLiteral
+                };
+                let code = if not_natural(multiplicity.lower) || not_natural(multiplicity.upper) {
+                    DiagnosticCode::MultiplicityBoundInvalid
+                } else if let (
+                    MultiplicityBound::Literal(lower),
+                    MultiplicityBound::Literal(upper),
+                ) = (multiplicity.lower, multiplicity.upper)
                 {
-                    if lower < 0 || upper < lower {
-                        diagnostics.push(Diagnostic {
-                            payload: None,
-                            message: DiagnosticCode::InvalidMultiplicity.describe().into(),
-                            code: DiagnosticCode::InvalidMultiplicity,
-                            severity: DiagnosticSeverity::Warning,
-                            origin: DiagnosticOrigin::Semantic,
-                            subject: self.symbol_id(id),
-                            location: DiagnosticLocation {
-                                document: writer::document_identity(self, document).into(),
-                                range: document_range(&self.storage, document, &multiplicity.span)?,
-                            },
-                            related: Box::default(),
-                        });
+                    if upper < lower {
+                        DiagnosticCode::InvalidMultiplicity
+                    } else {
+                        continue;
                     }
-                }
+                } else {
+                    continue;
+                };
+                diagnostics.push(Diagnostic {
+                    payload: None,
+                    message: code.describe().into(),
+                    code,
+                    severity: DiagnosticSeverity::Warning,
+                    origin: DiagnosticOrigin::Semantic,
+                    subject: self.symbol_id(id),
+                    location: DiagnosticLocation {
+                        document: writer::document_identity(self, document).into(),
+                        range: document_range(&self.storage, document, &multiplicity.span)?,
+                    },
+                    related: Box::default(),
+                });
+            }
+
+            // KerML 8.3.4.11.2 `validateMultiplicityRangeBoundResultTypes`, non-literal half
+            // (Pilot `checkMultiplicityRange`: `!b.isInteger`): a bound whose derived result type
+            // does not specialize `ScalarValues::Integer` is `multiplicity_bound_invalid`,
+            // reported at the multiplicity of the declaration owning the range. Literal bounds
+            // were judged above; an undecided result stays unanswered.
+            if self
+                .storage
+                .declaration_facts(id)
+                .is_some_and(|facts| facts.multiplicity_bound_form.is_some())
+                && self.multiplicity_bound_result(id)?
+                    == crate::check::expression::MultiplicityBoundResult::NonInteger
+            {
+                let owner = self
+                    .storage
+                    .declaration(id)
+                    .and_then(|bound| bound.owner)
+                    .and_then(|range| self.storage.declaration(range))
+                    .and_then(|range| range.owner)
+                    .ok_or(ResolutionError::InvalidStorage)?;
+                let span = self
+                    .storage
+                    .declaration_facts(owner)
+                    .and_then(|facts| facts.multiplicity.as_ref())
+                    .ok_or(ResolutionError::InvalidStorage)?
+                    .span;
+                let code = DiagnosticCode::MultiplicityBoundInvalid;
+                diagnostics.push(Diagnostic {
+                    payload: None,
+                    message: code.describe().into(),
+                    code,
+                    severity: DiagnosticSeverity::Warning,
+                    origin: DiagnosticOrigin::Semantic,
+                    subject: self.symbol_id(owner),
+                    location: DiagnosticLocation {
+                        document: writer::document_identity(self, document).into(),
+                        range: document_range(&self.storage, document, &span)?,
+                    },
+                    related: Box::default(),
+                });
             }
 
             // A `redefines` clause naming its own feature is deliberately not its own code: the
@@ -1973,11 +2148,15 @@ impl<D> SemanticModel<D> {
                     | DeclarationKind::AssertConstraintUsage
                     | DeclarationKind::RequireConstraintUsage
             )
-        }) && self
-            .storage
-            .evaluation_facts
-            .iter()
-            .any(|fact| fact.declaration == id)
+        }) && {
+            // A constraint's body expression is its result expression, which owns the
+            // evaluation; `evaluation_for` reads it through the same bridge.
+            let value = self.value_expression(id);
+            self.storage
+                .evaluation_facts
+                .iter()
+                .any(|fact| fact.declaration == id || Some(fact.declaration) == value)
+        }
     }
 }
 

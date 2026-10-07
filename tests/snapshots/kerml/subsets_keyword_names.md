@@ -45,7 +45,7 @@ feature f2 subsets do, step;
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:870cf7bf1d066adc36b27b6839d7bcafa39bd146446f9bf73557b640a5c403bc"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:71bc273757a730818334f20af81b652150a2ccf9a320b834b4662f1c352ac9c7"))
   (declarations
     (declaration (id (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "f1"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "step")))))
     (declaration (id (node (document "memory://snapshot/subsets_keyword_names.md") (qualified-name "f2"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "do")) (subsetting (reference "step")))))

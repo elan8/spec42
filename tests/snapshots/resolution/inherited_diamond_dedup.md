@@ -28,7 +28,7 @@ package Diamond {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5f640a66de8a0500cf8788e675fd95d17030c1a22737fd8b731bc97257da2470"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:4161dac243cf691c56143b880c7fd7c91589cd03c3fc914b61c17be927ab9ad8"))
   (declarations
     (declaration (id (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/inherited_diamond_dedup.md") (qualified-name "Diamond::Base"))) (kind part-def) (membership (kind owning) (visibility default)))

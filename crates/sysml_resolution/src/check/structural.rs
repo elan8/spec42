@@ -23,12 +23,13 @@ use crate::check::conformance;
 use crate::index::expressions::conforms;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::ParameterDirection;
+use crate::model::render as writer;
 use crate::model::resolver::SemanticModel;
 use crate::model::span::document_range;
+use crate::model::AuthoredReferenceId;
 use crate::model::DeclarationId;
 use crate::model::DeclarationKind;
 use crate::model::DocumentIdx;
-use crate::model::MembershipKind;
 use crate::model::ReferenceKind;
 use crate::resolve::is_feature_declaration;
 use crate::resolve::is_usage_declaration;
@@ -38,7 +39,10 @@ use crate::type_query::Conformance;
 use crate::type_query::SpecializationScope;
 use crate::Diagnostic;
 use crate::DiagnosticCode;
+use crate::DiagnosticLocation;
+use crate::DiagnosticOrigin;
 use crate::DiagnosticSeverity;
+use crate::MembershipRole;
 
 /// Whether a declaration is a connection-like definition: one whose members include connector
 /// ends.
@@ -150,13 +154,13 @@ impl<D> SemanticModel<D> {
         Ok(false)
     }
 
-    /// Whether a declaration is a feature of its owner rather than an owned type.
-    pub(crate) fn is_feature_member(&self, declaration: DeclarationId) -> bool {
+    /// Whether a declaration is a KerML `Feature` by metamodel category, independent of the
+    /// membership that owns it (a body `metadata` usage is a Feature owned through an
+    /// OwningMembership).
+    pub(crate) fn is_feature(&self, declaration: DeclarationId) -> bool {
         self.storage
-            .memberships
-            .iter()
-            .find(|membership| membership.member == declaration)
-            .is_some_and(|membership| membership.kind == MembershipKind::Feature)
+            .declaration(declaration)
+            .is_some_and(|value| crate::resolve::is_feature_declaration(value.kind))
     }
 
     /// Whether a declaration is an end feature.
@@ -188,7 +192,7 @@ impl<D> SemanticModel<D> {
         kind: DeclarationKind,
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
-        if kind != DeclarationKind::MetadataUsage {
+        if !is_metadata_feature(kind) {
             return Ok(());
         }
         let metaclass = self
@@ -199,7 +203,15 @@ impl<D> SemanticModel<D> {
             let Some(member_kind) = self.kind_of(member) else {
                 continue;
             };
-            if !is_feature_declaration(member_kind) || self.is_metadata_annotation(member) {
+            // `ownedFeature`: a Feature owned through a FeatureMembership. A multiplicity is an
+            // ownedMember under an OwningMembership, not a body feature, and neither is a
+            // metadata annotation.
+            if !is_feature_declaration(member_kind)
+                || self.is_metadata_annotation(member)
+                || self.memberships.get(member).is_none_or(|membership| {
+                    membership.kind != crate::model::MembershipKind::Feature
+                })
+            {
                 continue;
             }
             let redefined = self.settled_targets(member, &[ReferenceKind::Redefinition]);
@@ -228,6 +240,204 @@ impl<D> SemanticModel<D> {
                     DiagnosticSeverity::Warning,
                 )?);
             }
+        }
+        Ok(())
+    }
+
+    /// KerML 8.3.4.12.3 `validateMetadataFeatureAnnotatedElement`, as the Pilot's
+    /// `checkMetadataFeature` decides it: the metadata feature's features that specialize
+    /// `Metaobjects::Metaobject::annotatedElement` (its own and its metaclass's, an inherited one
+    /// hidden by a redefinition, and only the non-abstract ones when any is) must include one
+    /// whose every type the reflective library metaclass of each annotated element specializes.
+    ///
+    /// Each input must be settled: an annotated element with no reflective metaclass in the
+    /// admitted library, an unresolved `about` target, or a missing `annotatedElement` anchor
+    /// leaves the question unanswered rather than reported.
+    fn collect_metadata_annotated_elements(
+        &self,
+        id: DeclarationId,
+        kind: DeclarationKind,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        use crate::index::types::ScopeBits;
+        use crate::resolve::implied::LibrarySpecializationAnchor;
+        if !is_metadata_feature(kind) {
+            return Ok(());
+        }
+        let anchors = &self
+            .resolution
+            .library_specialization_anchors
+            .reflective_metaclasses;
+        let LibrarySpecializationAnchor::Resolved(annotated_element) = anchors.annotated_element
+        else {
+            return Ok(());
+        };
+        let specialization = self.types.specialization();
+        let specializes = |sub: DeclarationId, general: DeclarationId| {
+            sub == general || specialization.reaches(sub, general, ScopeBits::AnySpecialization)
+        };
+        // `type.feature`: the features owned by the metadata feature and by every type it
+        // specializes, less those another of them redefines.
+        let mut owners = vec![id];
+        owners.extend(
+            specialization
+                .entries(id)
+                .iter()
+                .filter(|(_, scopes)| scopes & ScopeBits::AnySpecialization.bit() != 0)
+                .map(|(ancestor, _)| *ancestor),
+        );
+        let candidates = owners
+            .iter()
+            .flat_map(|owner| self.child_declarations(*owner).iter().copied())
+            .filter(|feature| {
+                self.kind_of(*feature).is_some_and(is_feature_declaration)
+                    && self.memberships.get(*feature).is_some_and(|membership| {
+                        membership.kind == crate::model::MembershipKind::Feature
+                    })
+                    && specializes(*feature, annotated_element)
+            })
+            .collect::<Vec<_>>();
+        let visible = candidates
+            .iter()
+            .copied()
+            .filter(|feature| {
+                !candidates.iter().any(|other| {
+                    other != feature
+                        && specialization.reaches(*other, *feature, ScopeBits::Redefinition)
+                })
+            })
+            .collect::<Vec<_>>();
+        let is_abstract = |feature: DeclarationId| {
+            self.storage
+                .declaration_facts(feature)
+                .is_some_and(|facts| facts.modifiers.is_abstract)
+        };
+        let features = if visible.iter().any(|feature| !is_abstract(*feature)) {
+            visible
+                .into_iter()
+                .filter(|feature| !is_abstract(*feature))
+                .collect::<Vec<_>>()
+        } else {
+            visible
+        };
+        if features.is_empty() {
+            return Ok(());
+        }
+        // `annotatedElement`: each resolved `about` target, or the owner without an `about`.
+        let about = self.authored_references(id, &[ReferenceKind::MetadataAnnotationAbout]);
+        let mut annotated = Vec::new();
+        if about.is_empty() {
+            let Some(record) = self
+                .storage
+                .metadata_annotations
+                .iter()
+                .find(|record| record.annotation == id)
+            else {
+                return Ok(());
+            };
+            annotated.push(record.annotated_element);
+        } else {
+            for (reference_id, _) in about {
+                match self.resolution.outcome(reference_id) {
+                    Some(ResolutionStatus::Resolved(target)) => annotated.push(target),
+                    _ => continue,
+                }
+            }
+        }
+        for element in annotated {
+            let Some(element_kind) = self.kind_of(element) else {
+                continue;
+            };
+            let LibrarySpecializationAnchor::Resolved(metaclass) =
+                *anchors.metaclass(crate::model::element_kind::element_kind(element_kind))
+            else {
+                continue;
+            };
+            let admitted = features.iter().any(|feature| {
+                self.types
+                    .effective_types(*feature)
+                    .iter()
+                    .all(|(ty, _)| specializes(metaclass, *ty))
+            });
+            if !admitted {
+                diagnostics.push(self.declaration_diagnostic(
+                    id,
+                    DiagnosticCode::MetadataAnnotatedElementIncompatible,
+                    DiagnosticSeverity::Warning,
+                )?);
+                break;
+            }
+        }
+        Ok(())
+    }
+
+    /// The ResultExpressionMembership rules over the result expressions the owner owns (members
+    /// whose membership role is `ResultExpression`), reported at the owner:
+    /// KerML 8.3.4.7.4 `validateFunctionResultExpressionMembership` and 8.3.4.7.3
+    /// `validateExpressionResultExpressionMembership` (at most one), and 8.3.4.7.7
+    /// `validateResultExpressionMembershipOwningType` (the owner is a Function or an Expression).
+    fn collect_result_expression_memberships(
+        &self,
+        id: DeclarationId,
+        kind: DeclarationKind,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        use crate::model::element_kind::element_kind;
+        use sysml_contract::ElementKind;
+        let count = self
+            .child_declarations(id)
+            .iter()
+            .filter(|member| {
+                self.effective_membership_role(**member) == Some(MembershipRole::ResultExpression)
+            })
+            .count();
+        if count == 0 {
+            return Ok(());
+        }
+        let metaclass = element_kind(kind);
+        let code = if metaclass.conforms_to(ElementKind::Function) {
+            (count > 1).then_some(DiagnosticCode::FunctionMultipleResultExpressions)
+        } else if metaclass.conforms_to(ElementKind::Expression) {
+            (count > 1).then_some(DiagnosticCode::ExpressionMultipleResultExpressions)
+        } else {
+            Some(DiagnosticCode::ResultExpressionMembershipInvalidOwner)
+        };
+        if let Some(code) = code {
+            diagnostics.push(self.declaration_diagnostic(id, code, DiagnosticSeverity::Warning)?);
+        }
+        Ok(())
+    }
+
+    /// KerML 8.3.3.1.10 `validateTypeOwnedMultiplicity`: a Type has at most one `ownedMember`
+    /// that is a Multiplicity. Its `[m..n]` and every `multiplicity` body member count alike;
+    /// each one after the first, in ownership order, is reported.
+    fn collect_owned_multiplicities(
+        &self,
+        id: DeclarationId,
+        kind: DeclarationKind,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        use crate::model::element_kind::element_kind;
+        use sysml_contract::ElementKind;
+        if !element_kind(kind).conforms_to(ElementKind::Type) {
+            return Ok(());
+        }
+        let mut multiplicities = self
+            .child_declarations(id)
+            .iter()
+            .copied()
+            .filter(|member| {
+                self.kind_of(*member).is_some_and(|member| {
+                    element_kind(member).conforms_to(ElementKind::Multiplicity)
+                })
+            });
+        multiplicities.next();
+        for member in multiplicities {
+            diagnostics.push(self.declaration_diagnostic(
+                member,
+                DiagnosticCode::TypeMultipleMultiplicities,
+                DiagnosticSeverity::Warning,
+            )?);
         }
         Ok(())
     }
@@ -277,7 +487,9 @@ impl<D> SemanticModel<D> {
     ) -> Result<(), ResolutionError> {
         if !matches!(
             kind,
-            DeclarationKind::StateDefinition | DeclarationKind::StateUsage
+            DeclarationKind::StateDefinition
+                | DeclarationKind::StateUsage
+                | DeclarationKind::ExhibitStateUsage
         ) || !facts.modifiers.parallel
         {
             return Ok(());
@@ -297,17 +509,6 @@ impl<D> SemanticModel<D> {
         Ok(())
     }
 
-    /// SysML `Usage::isComposite`, the canonical composition fact of one lowered usage.
-    ///
-    /// A SysML usage is composite by default (`UsageImpl` in the Pilot); `ref` (`isReference`)
-    /// and `end` make it referential, an attribute or enumeration usage is always referential
-    /// (`AttributeUsage` sets `isComposite = false`), and a `ReferenceUsage` is referential by
-    /// its metaclass. KerML features are composite only when authored `composite`.
-    ///
-    /// A feature direction (`in` / `out` / `inout`) also makes the usage referential: the Pilot's
-    /// `isReferenceDefault` treats every directed feature as a reference (which is why a
-    /// `ParameterUsage` above is always non-composite), so `in item rx : Signal;` inside a `port
-    /// def` is a flow feature declaration, not an owned composite subpart.
     /// Whether `declaration` is a metadata annotation (`@Tag`, `#Tag`, `metadata m : Tag about
     /// x`) rather than a feature of its owner. Both `AnnotatingMember` and `PrefixMetadataMember`
     /// are OwningMemberships, so an annotation is never an `ownedFeature` or `ownedUsage` of the
@@ -321,33 +522,25 @@ impl<D> SemanticModel<D> {
                 .any(|record| record.annotation == declaration)
     }
 
+    /// `Feature::isComposite` of one lowered declaration.
+    ///
+    /// A SysML usage's value is the complement of the canonical effective
+    /// [`crate::index::types::TypeIndex::usage_is_reference`] fact (authored `ref`, a
+    /// never-composite metaclass, a direction, an end, or no expected featuring type all make it
+    /// referential). KerML features are composite only when authored `composite`.
     pub(crate) fn usage_is_composite(&self, declaration: DeclarationId) -> bool {
         let Some(kind) = self.kind_of(declaration) else {
             return false;
         };
-        let Some(facts) = self.storage.declaration_facts(declaration) else {
-            return false;
-        };
         if !is_usage_declaration(kind) {
-            return facts.modifiers.composite;
+            return self
+                .storage
+                .declaration_facts(declaration)
+                .is_some_and(|facts| facts.modifiers.composite);
         }
-        if matches!(
-            kind,
-            DeclarationKind::AttributeUsage
-                | DeclarationKind::EnumerationUsage
-                | DeclarationKind::EnumerationLiteral
-                | DeclarationKind::ReferenceUsage
-                | DeclarationKind::DefaultReferenceUsage
-                | DeclarationKind::ParameterUsage
-                | DeclarationKind::SubjectUsage
-                | DeclarationKind::PerformParameterBinding
-        ) {
-            return false;
-        }
-        !facts.modifiers.reference
-            && !facts.modifiers.end
-            && !self.is_end_feature(declaration)
-            && facts.direction.is_none()
+        self.types
+            .usage_is_reference(&self.storage, declaration)
+            .is_some_and(|is_reference| !is_reference)
     }
 
     /// Appends every structural feature-conformance diagnostic authored in `document`.
@@ -359,7 +552,11 @@ impl<D> SemanticModel<D> {
     ) -> Result<(), ResolutionError> {
         self.collect_declaration_structure(declared, diagnostics)?;
         self.collect_structural_reference_rules(document, diagnostics)?;
+        self.collect_specialization_specific_not_conjugated(document, diagnostics)?;
         self.collect_implied_structural_rules(document, diagnostics)?;
+        self.collect_control_node_succession_rules(document, diagnostics)?;
+        self.collect_end_feature_rules(declared, diagnostics)?;
+        self.collect_feature_rules(document, declared, diagnostics)?;
         Ok(())
     }
 
@@ -385,7 +582,7 @@ impl<D> SemanticModel<D> {
             // lowered by `lower_end_decl` with the same modifier facts.
             if self.is_end_feature(id)
                 && (facts.modifiers.derived
-                    || facts.modifiers.is_abstract
+                    || facts.modifiers.effectively_abstract(declaration.kind)
                     || facts.modifiers.composite
                     || facts.modifiers.portion)
             {
@@ -404,12 +601,65 @@ impl<D> SemanticModel<D> {
                     DiagnosticSeverity::Warning,
                 )?);
             }
+            // KerML 8.3.2.4.2 `validateImportTopLevelVisibility`: an Import whose owning
+            // namespace is a root namespace (no owner) must be private. The effective visibility
+            // is the canonical membership fact, which defaults an Import to private.
+            if declaration.kind == DeclarationKind::Import
+                && declaration.owner.is_none()
+                && self.memberships.get(id).is_some_and(|membership| {
+                    membership.visibility != crate::resolve::names::EffectiveVisibility::Private
+                })
+            {
+                diagnostics.push(self.declaration_diagnostic(
+                    id,
+                    DiagnosticCode::TopLevelImportNotPrivate,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
             self.collect_metadata_body_features(id, declaration.kind, diagnostics)?;
+            self.collect_metadata_annotated_elements(id, declaration.kind, diagnostics)?;
             self.collect_port_member_composition(id, declaration.kind, diagnostics)?;
+            self.collect_owned_multiplicities(id, declaration.kind, diagnostics)?;
+            self.collect_result_expression_memberships(id, declaration.kind, diagnostics)?;
+            // SysML 8.3.17.6 `validateControlNodeIsComposite`: a control node is composite. The
+            // effective `isComposite` is the canonical usage derivation, so a directed control
+            // node (`in fork g;`, a `ControlNodePrefix` direction) is referential.
+            if matches!(
+                declaration.kind,
+                DeclarationKind::Merge
+                    | DeclarationKind::Decide
+                    | DeclarationKind::Join
+                    | DeclarationKind::Fork
+            ) && !self.usage_is_composite(id)
+            {
+                diagnostics.push(self.declaration_diagnostic(
+                    id,
+                    DiagnosticCode::ControlNodeNotComposite,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
             self.collect_parallel_state_subactions(id, declaration.kind, facts, diagnostics)?;
+            self.collect_variation_owned_features(id, diagnostics)?;
+            // SysML 8.3.6.5 `validateVariantMembershipOwningNamespace`: every definition and
+            // usage body admits `variant` members, so the owner is checked here.
+            if self.effective_membership_role(id) == Some(crate::MembershipRole::Variant)
+                && !declaration
+                    .owner
+                    .is_some_and(|owner| self.is_variation(owner))
+            {
+                diagnostics.push(self.declaration_diagnostic(
+                    id,
+                    DiagnosticCode::VariantOutsideVariation,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
+
+            self.collect_owner_rules(id, declaration.kind, declaration.owner, diagnostics)?;
 
             // An abstract declaration is deliberately incomplete, so its end count states nothing.
-            if !is_connection_like(declaration.kind) || facts.modifiers.is_abstract {
+            if !is_connection_like(declaration.kind)
+                || facts.modifiers.effectively_abstract(declaration.kind)
+            {
                 continue;
             }
             // The abstract guard above now fires for all four connection-like kinds:
@@ -448,6 +698,109 @@ impl<D> SemanticModel<D> {
     }
 
     /// The rules whose operands are an authored reference and its settled target.
+    /// KerML 8.3.3.1.8 `validateSpecializationSpecificNotConjugated`: the specific Type of every
+    /// Specialization -- an owned specialization clause or a standalone KerML relationship
+    /// declaration of any Specialization subkind -- is not conjugated, that is, owns no
+    /// Conjugation. A conjugation or specialization whose endpoints do not settle answers
+    /// nothing. Implied library specializations are not Specializations a source authors.
+    pub(crate) fn collect_specialization_specific_not_conjugated(
+        &self,
+        document: DocumentIdx,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        let mut conjugated = std::collections::BTreeSet::new();
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            if reference.kind != ReferenceKind::Conjugation {
+                continue;
+            }
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            if matches!(
+                self.resolution.outcome(id),
+                Some(ResolutionStatus::Resolved(_))
+            ) {
+                conjugated.insert(reference.source);
+            }
+        }
+        conjugated.extend(
+            self.resolution
+                .authored_relationships
+                .iter()
+                .filter(|relationship| relationship.kind == ReferenceKind::Conjugation)
+                .map(|relationship| relationship.source),
+        );
+        if conjugated.is_empty() {
+            return Ok(());
+        }
+        for (index, reference) in self.storage.references.iter().enumerate() {
+            if !reference.kind.is_specialization() || !conjugated.contains(&reference.source) {
+                continue;
+            }
+            let source = self
+                .storage
+                .declaration(reference.source)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let id =
+                AuthoredReferenceId::from_index(index).map_err(|_| ResolutionError::Capacity)?;
+            if source.document != document
+                || !matches!(
+                    self.resolution.outcome(id),
+                    Some(ResolutionStatus::Resolved(_))
+                )
+            {
+                continue;
+            }
+            diagnostics.push(self.reference_diagnostic(
+                reference,
+                DiagnosticCode::SpecializationSpecificConjugated,
+                DiagnosticSeverity::Error,
+                None,
+            )?);
+        }
+        for relationship in self.resolution.authored_relationships.iter() {
+            if !relationship.kind.is_specialization() || !conjugated.contains(&relationship.source)
+            {
+                continue;
+            }
+            let Some(declaration) = self
+                .storage
+                .relationship_declarations
+                .iter()
+                .find(|declaration| declaration.source == relationship.declaration)
+            else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            let endpoint = self
+                .storage
+                .references
+                .get(declaration.source.index())
+                .ok_or(ResolutionError::InvalidStorage)?;
+            let owner = self
+                .storage
+                .declaration(endpoint.source)
+                .ok_or(ResolutionError::InvalidStorage)?;
+            if owner.document != document {
+                continue;
+            }
+            diagnostics.push(Diagnostic {
+                payload: None,
+                message: DiagnosticCode::SpecializationSpecificConjugated
+                    .describe()
+                    .into(),
+                code: DiagnosticCode::SpecializationSpecificConjugated,
+                severity: DiagnosticSeverity::Error,
+                origin: DiagnosticOrigin::Semantic,
+                subject: self.symbol_id(relationship.source),
+                location: DiagnosticLocation {
+                    document: writer::document_identity(self, owner.document).into(),
+                    range: document_range(&self.storage, owner.document, &declaration.span)?,
+                },
+                related: Box::default(),
+            });
+        }
+        Ok(())
+    }
+
     pub(crate) fn collect_structural_reference_rules(
         &self,
         document: DocumentIdx,
@@ -465,6 +818,38 @@ impl<D> SemanticModel<D> {
             let Some(ResolutionStatus::Resolved(target)) = self.resolution.outcome(index) else {
                 continue;
             };
+            // SysML 8.3.6.2/8.3.6.4 `validate{Definition,Usage}VariationSpecialization`. The
+            // normative OCL reads `ownedSpecialization.specific`, which is always the variation
+            // itself; the Pilot's validator checks `general`, the only reading that is not
+            // vacuous, and so does this rule. Every authored Specialization subkind applies:
+            // `edge_scopes` is the canonical table of them.
+            if crate::index::types::edge_scopes(reference.kind).is_some()
+                && self.is_variation(reference.source)
+                && self.is_variation(target)
+            {
+                diagnostics.push(self.reference_diagnostic(
+                    reference,
+                    DiagnosticCode::VariationSpecializesVariation,
+                    DiagnosticSeverity::Warning,
+                    Some(target),
+                )?);
+            }
+            // A dotted target (`subsets a.b`) subsets the implicit feature chain, whose featuring
+            // types are its first chaining feature's; the settled target is only the chain's last
+            // feature, so it is not the subsetted feature this rule compares.
+            if matches!(
+                reference.kind,
+                ReferenceKind::Subsetting | ReferenceKind::References
+            ) && !reference.flags.dotted
+                && self.subsetting_target_not_accessible(reference.source, target)
+            {
+                diagnostics.push(self.reference_diagnostic(
+                    reference,
+                    DiagnosticCode::SubsettingTargetNotAccessible,
+                    DiagnosticSeverity::Warning,
+                    Some(target),
+                )?);
+            }
             match reference.kind {
                 // SysML 8.4.4: a flow payload carries an occurrence, not a value. The occurrence
                 // families are exactly those descending from `Occurrence` in the metamodel, so this
@@ -497,11 +882,7 @@ impl<D> SemanticModel<D> {
                     else {
                         continue;
                     };
-                    if !self
-                        .storage
-                        .declaration_facts(variation_source)
-                        .is_some_and(|facts| facts.modifiers.variation)
-                    {
+                    if !self.is_variation(variation_source) {
                         continue;
                     }
                     let (Some((variation, _)), Some((variant, _))) = (
@@ -520,6 +901,14 @@ impl<D> SemanticModel<D> {
                     }
                 }
                 ReferenceKind::Redefinition => {
+                    if self.subsetting_constant_mismatch(reference.source, target) {
+                        diagnostics.push(self.reference_diagnostic(
+                            reference,
+                            DiagnosticCode::SubsettingConstantMismatch,
+                            DiagnosticSeverity::Warning,
+                            Some(target),
+                        )?);
+                    }
                     for code in self.redefinition_structure(reference.source, target) {
                         diagnostics.push(self.reference_diagnostic(
                             reference,
@@ -536,6 +925,16 @@ impl<D> SemanticModel<D> {
                             Some(target),
                         )?);
                     }
+                }
+                ReferenceKind::Subsetting | ReferenceKind::References | ReferenceKind::Crosses
+                    if self.subsetting_constant_mismatch(reference.source, target) =>
+                {
+                    diagnostics.push(self.reference_diagnostic(
+                        reference,
+                        DiagnosticCode::SubsettingConstantMismatch,
+                        DiagnosticSeverity::Warning,
+                        Some(target),
+                    )?);
                 }
                 // KerML 8.3.3.3.10: a non-unique feature cannot subset a unique one, since it would
                 // admit repeated values the subsetted feature excludes.
@@ -565,7 +964,10 @@ impl<D> SemanticModel<D> {
         diagnostics: &mut Vec<Diagnostic>,
     ) -> Result<(), ResolutionError> {
         for relationship in self.resolution.implied_relationships.iter() {
-            if relationship.kind != ReferenceKind::Redefinition {
+            if !matches!(
+                relationship.kind,
+                ReferenceKind::Redefinition | ReferenceKind::Subsetting
+            ) {
                 continue;
             }
             if self
@@ -575,6 +977,16 @@ impl<D> SemanticModel<D> {
                 .document
                 != document
             {
+                continue;
+            }
+            if self.subsetting_constant_mismatch(relationship.source, relationship.target) {
+                diagnostics.push(self.declaration_diagnostic(
+                    relationship.source,
+                    DiagnosticCode::SubsettingConstantMismatch,
+                    DiagnosticSeverity::Warning,
+                )?);
+            }
+            if relationship.kind != ReferenceKind::Redefinition {
                 continue;
             }
             for code in self.redefinition_structure(relationship.source, relationship.target) {
@@ -593,6 +1005,129 @@ impl<D> SemanticModel<D> {
             }
         }
         Ok(())
+    }
+
+    /// KerML 8.3.3.3.10 `validateSubsettingConstantConformance`: `subsettedFeature.isConstant
+    /// and subsettingFeature.isVariable implies subsettingFeature.isConstant`. A Redefinition is
+    /// a Subsetting, so it applies to both. `isVariable` is the canonical
+    /// [`crate::index::types::TypeIndex::feature_is_variable`] fact; an unsettled answer is not
+    /// a violation.
+    pub(crate) fn subsetting_constant_mismatch(
+        &self,
+        subsetting: DeclarationId,
+        subsetted: DeclarationId,
+    ) -> bool {
+        let is_constant = |declaration: DeclarationId| {
+            self.storage
+                .declaration_facts(declaration)
+                .is_some_and(|facts| facts.modifiers.constant)
+        };
+        // An end feature is excluded: validateFeatureEndIsConstant already requires a variable
+        // end to be constant, and the corpus treats a variable non-constant end as having no
+        // spelling, yet `Usage::mayTimeVary` answers true for SysML connection ends (the
+        // standard library's `end occurrence theCause :> causes :>> source` subsets a constant
+        // feature). Reporting it here would restate that unresolved end-variability question.
+        is_constant(subsetted)
+            && !is_constant(subsetting)
+            && !self.is_end_feature(subsetting)
+            && matches!(
+                self.types.feature_is_variable(&self.storage, subsetting),
+                Some(crate::index::types::UsageTimeVariationOutcome::Resolved(
+                    true
+                ))
+            )
+    }
+
+    /// Whether `feature`'s canonical effective featuring-type row is complete enough to compare.
+    ///
+    /// A variable feature is featured by its owner's snapshots and a feature nested in another is
+    /// featured through that enclosing feature; neither effective featuring type is a published
+    /// fact yet, and an unresolved `featured by` or `chains` target leaves the row incomplete, so
+    /// such (possibly empty) rows are not settled.
+    pub(crate) fn featuring_row_is_settled(&self, feature: DeclarationId) -> bool {
+        !self.types.featuring_requires_snapshots(feature)
+            && self
+                .outgoing_reference_ids(feature)
+                .iter()
+                .all(|reference_id| {
+                    !matches!(
+                        self.storage.references[reference_id.index()].kind,
+                        ReferenceKind::TypeFeaturing | ReferenceKind::FeatureChaining
+                    ) || matches!(
+                        self.resolution.outcome(*reference_id),
+                        Some(ResolutionStatus::Resolved(_))
+                    )
+                })
+            && !self
+                .types
+                .featuring_types(feature)
+                .iter()
+                .any(|(featuring_type, _)| self.is_feature(*featuring_type))
+    }
+
+    /// KerML 8.3.3.3.10 `validateSubsettingFeaturingTypes`: a subsetted feature with featuring
+    /// types must be accessible by the subsetting feature (the Pilot's `FeatureUtil.canAccess`).
+    ///
+    /// Over settled type-valued featuring rows this is: some featuring type of the subsetting
+    /// feature specializes every featuring type of the subsetted feature, or the subsetted feature
+    /// is variable and that featuring type specializes its owning type. A feature-valued
+    /// featuring type (the recursive `canAccess` case) is not a published row, so such a pair is
+    /// left unanswered, as is any indeterminate conformance.
+    pub(crate) fn subsetting_target_not_accessible(
+        &self,
+        subsetting: DeclarationId,
+        subsetted: DeclarationId,
+    ) -> bool {
+        if !self.featuring_row_is_settled(subsetting) || !self.featuring_row_is_settled(subsetted) {
+            return false;
+        }
+        let subsetted_featuring = self.types.featuring_types(subsetted);
+        let subsetting_featuring = self.types.featuring_types(subsetting);
+        if subsetted_featuring.is_empty() || subsetting_featuring.is_empty() {
+            return false;
+        }
+        let subsetted_is_variable = matches!(
+            self.types.feature_is_variable(&self.storage, subsetted),
+            Some(crate::index::types::UsageTimeVariationOutcome::Resolved(
+                true
+            ))
+        );
+        let subsetted_owner = crate::index::types::TypeIndex::owning_type(&self.storage, subsetted);
+        let mut indeterminate = false;
+        for (featuring_type, _) in subsetting_featuring {
+            let mut within = true;
+            for (required, _) in subsetted_featuring {
+                match self.conformance(
+                    *featuring_type,
+                    *required,
+                    SpecializationScope::AnySpecialization,
+                ) {
+                    Conformance::Conforms => {}
+                    Conformance::DoesNotConform => within = false,
+                    Conformance::Indeterminate(_) => {
+                        indeterminate = true;
+                        within = false;
+                    }
+                }
+            }
+            if within {
+                return false;
+            }
+            if subsetted_is_variable {
+                if let Some(owner) = subsetted_owner {
+                    match self.conformance(
+                        *featuring_type,
+                        owner,
+                        SpecializationScope::AnySpecialization,
+                    ) {
+                        Conformance::Conforms => return false,
+                        Conformance::DoesNotConform => {}
+                        Conformance::Indeterminate(_) => indeterminate = true,
+                    }
+                }
+            }
+        }
+        !indeterminate
     }
 
     /// The end and direction rules of one redefinition.
@@ -651,9 +1186,26 @@ impl<D> SemanticModel<D> {
         source: DeclarationId,
         target: DeclarationId,
     ) -> Option<DiagnosticCode> {
+        // KerML 8.3.3.3.8 `validateRedefinitionFeaturingTypes`: the redefining feature must have
+        // a featuring type the redefined feature does not, so a redefinition between features
+        // with the same effective featuring types (including none at all) redefines nothing it
+        // could narrow. Compared as sets, as the Pilot's `checkRedefinition` does.
+        let featuring = |feature: DeclarationId| {
+            self.types
+                .featuring_types(feature)
+                .iter()
+                .map(|(featuring_type, _)| *featuring_type)
+                .collect::<std::collections::BTreeSet<_>>()
+        };
+        if self.featuring_row_is_settled(source)
+            && self.featuring_row_is_settled(target)
+            && featuring(source) == featuring(target)
+        {
+            return Some(DiagnosticCode::RedefinitionFeaturingTypeIncompatible);
+        }
         let redefining = self.types.featuring_type(source)?;
         let redefined = self.types.featuring_type(target)?;
-        if self.is_feature_member(redefining) || self.is_feature_member(redefined) {
+        if self.is_feature(redefining) || self.is_feature(redefined) {
             return None;
         }
         match self.conformance(
@@ -667,4 +1219,47 @@ impl<D> SemanticModel<D> {
             Conformance::Conforms | Conformance::Indeterminate(_) => None,
         }
     }
+
+    /// The effective `isVariation` of a declaration (authored, or implied by its metaclass).
+    pub(crate) fn is_variation(&self, id: DeclarationId) -> bool {
+        let (Some(declaration), Some(facts)) = (
+            self.storage.declaration(id),
+            self.storage.declaration_facts(id),
+        ) else {
+            return false;
+        };
+        facts.modifiers.effectively_variation(declaration.kind)
+    }
+
+    /// SysML 8.3.6.2/8.3.6.4 `validate{Definition,Usage}VariationOwnedFeatureMembership`:
+    /// `isVariation implies ownedFeatureMembership->isEmpty()`. A variant is owned through a
+    /// VariantMembership, which is not a FeatureMembership, so every other canonical
+    /// Feature-membership member of a variation is reported at that member.
+    fn collect_variation_owned_features(
+        &self,
+        id: DeclarationId,
+        diagnostics: &mut Vec<Diagnostic>,
+    ) -> Result<(), ResolutionError> {
+        if !self.is_variation(id) {
+            return Ok(());
+        }
+        for member in self.owned_feature_members(id) {
+            if self.effective_membership_role(member) == Some(crate::MembershipRole::Variant) {
+                continue;
+            }
+            diagnostics.push(self.declaration_diagnostic(
+                member,
+                DiagnosticCode::VariationOwnsFeatureMembership,
+                DiagnosticSeverity::Warning,
+            )?);
+        }
+        Ok(())
+    }
+}
+
+/// Whether a declaration is a KerML `MetadataFeature`: a KerML metadata feature or a SysML
+/// `MetadataUsage`, which specializes it.
+fn is_metadata_feature(kind: DeclarationKind) -> bool {
+    crate::model::element_kind::element_kind(kind)
+        .conforms_to(sysml_contract::ElementKind::MetadataFeature)
 }

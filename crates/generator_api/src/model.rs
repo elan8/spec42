@@ -405,8 +405,15 @@ impl GeneratorModelView {
             }),
             derived: has(ElementModifier::Derived),
             constant: has(ElementModifier::Constant),
-            abstract_: has(ElementModifier::Abstract),
-            variation: has(ElementModifier::Variation),
+            // Effective abstractness: authored, or implied by `variation`.
+            abstract_: has(ElementModifier::Abstract)
+                || inspection
+                    .implied_modifiers
+                    .contains(&ElementModifier::Abstract),
+            variation: has(ElementModifier::Variation)
+                || inspection
+                    .implied_modifiers
+                    .contains(&ElementModifier::Variation),
             individual: has(ElementModifier::Individual),
             conjugated: false,
             composite: has(ElementModifier::Composite).then_some(true),
@@ -1405,23 +1412,23 @@ impl GeneratorModelView {
         for child in &children {
             let inspection = self.inspection(child.entry.identity, "state-machine member")?;
             match child.entry.kind {
-                ElementKind::StateUsage | ElementKind::FinalState => {
-                    nodes.push(StateTransitionNode {
-                        semantic_id: self.token(child.entry.identity),
-                        label: display_label(&self.model, &child.entry),
-                        kind: if child.entry.kind == ElementKind::FinalState {
-                            StateTransitionNodeKind::Final
-                        } else {
-                            StateTransitionNodeKind::State
-                        },
-                        source: inspection_source(
-                            &inspection,
-                            self.model
-                                .document_identity(inspection.location.document)
-                                .unwrap_or_default(),
-                        ),
-                    })
-                }
+                ElementKind::StateUsage
+                | ElementKind::ExhibitStateUsage
+                | ElementKind::FinalState => nodes.push(StateTransitionNode {
+                    semantic_id: self.token(child.entry.identity),
+                    label: display_label(&self.model, &child.entry),
+                    kind: if child.entry.kind == ElementKind::FinalState {
+                        StateTransitionNodeKind::Final
+                    } else {
+                        StateTransitionNodeKind::State
+                    },
+                    source: inspection_source(
+                        &inspection,
+                        self.model
+                            .document_identity(inspection.location.document)
+                            .unwrap_or_default(),
+                    ),
+                }),
                 ElementKind::SuccessionAsUsage => {
                     if let Some(target) = resolved_relationship(&inspection, "initialState")? {
                         let initial_id = format!("{}#initial", self.token(child.entry.identity));
@@ -2171,7 +2178,8 @@ fn diagram_notation_role(kind: ElementKind) -> DiagramNotationRole {
         | Metaclass::ConjugatedPortDefinition => DiagramNotationRole::Definition,
         Metaclass::ReferenceUsage => DiagramNotationRole::ReferenceUsage,
         Metaclass::Package | Metaclass::Alias | Metaclass::Import => DiagramNotationRole::Namespace,
-        Metaclass::Documentation
+        Metaclass::Comment
+        | Metaclass::Documentation
         | Metaclass::MetadataUsage
         | Metaclass::TextualRepresentation
         | Metaclass::Diagnostic => DiagramNotationRole::Annotation,
@@ -2234,10 +2242,24 @@ fn diagram_notation_role(kind: ElementKind) -> DiagramNotationRole {
         | Metaclass::ParameterUsage
         | Metaclass::PurposeUsage
         | Metaclass::RequireConstraintUsage
+        | Metaclass::SuccessionFlowUsage
         | Metaclass::TerminateActionUsage
         | Metaclass::VerdictUsage
         | Metaclass::VerifyUsage
         | Metaclass::WhileLoopActionUsage => DiagramNotationRole::Usage,
+        // KerML multiplicity ranges, their bound expressions and the literal, null and
+        // metadata-access expressions written inside an expression have no SysML diagram notation.
+        Metaclass::Expression
+        | Metaclass::Feature
+        | Metaclass::FlowEnd
+        | Metaclass::MultiplicityRange
+        | Metaclass::LiteralBoolean
+        | Metaclass::LiteralInteger
+        | Metaclass::LiteralRational
+        | Metaclass::LiteralString
+        | Metaclass::MetadataAccessExpression
+        | Metaclass::LiteralInfinity
+        | Metaclass::NullExpression => DiagramNotationRole::Unsupported,
         Metaclass::Unrecognized(_) => DiagramNotationRole::Unsupported,
     }
 }
@@ -2253,9 +2275,11 @@ fn bound(value: MultiplicityBound) -> Result<Option<String>, ModelQueryError> {
     match value {
         MultiplicityBound::Unbounded => Ok(None),
         MultiplicityBound::Literal(value) => Ok(Some(value.to_string())),
-        MultiplicityBound::Expression => Err(ModelQueryError::Unsupported(
-            "generator element detail cannot serialize a non-literal multiplicity bound".into(),
-        )),
+        MultiplicityBound::NonIntegerLiteral | MultiplicityBound::Expression => {
+            Err(ModelQueryError::Unsupported(
+                "generator element detail cannot serialize a non-literal multiplicity bound".into(),
+            ))
+        }
     }
 }
 fn scalar(value: &EvaluatedScalar) -> String {

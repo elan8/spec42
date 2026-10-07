@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.3.10:validateSubsettingConstantConformance
-blocked_by=semantic-subsetting-constant-mismatch
 type=file
 ~~~
 # SOURCE
@@ -35,7 +34,13 @@ package Subsettings {
         (severity warning)
         (code "subsetting_constant_mismatch")
         (source "semantic")
-        (range (start 9 8) (end 9 47))
+        (range (start 9 42) (end 9 46))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_subsetting_constant_conformance.md")
+            (range (start 3 8) (end 3 35))
+          )
+        )
       )
     )
   )
@@ -46,6 +51,18 @@ package Subsettings {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_subsetting_constant_conformance.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "subsetting_constant_mismatch")
+        (source "semantic")
+        (range (start 9 42) (end 9 46))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_subsetting_constant_conformance.md")
+            (range (start 3 8) (end 3 35))
+          )
+        )
+      )
     )
   )
 )
@@ -53,7 +70,7 @@ package Subsettings {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ee2a3b456c9ac51decc3d70ba901e9d8e5b6b018fc4d7eb8d185a120966832b9"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5d3db94f6ae1dc36a9c3c61c70ffb5689abea9eff5a75b033d4eb28ee48fbf00"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_subsetting_constant_conformance.md") (qualified-name "Subsettings::Happening"))) (kind class-def) (membership (kind owning) (visibility default)))

@@ -7,12 +7,15 @@ validation_rule=8.3.22.4 validateObjectiveMembershipOwningType
 source_expectation=accepted
 rule_family=validate
 expectation=by_construction
+evidence_reference=file:tests/snapshots/validation/sysml_grammar_restricted_membership_owners.md
 rule_id=sysml-2.0:8.3.22.4:validateObjectiveMembershipOwningType
-blocked_by=abstract-syntax-invalid-membership-owner
 type=file
 ~~~
 # SOURCE
 ~~~sysml
+// The violating side has no textual counterpart: the grammar admits this element only in
+// case bodies (ObjectiveMember in CaseBodyItem), whose owners all satisfy the rule.
+// sysml_grammar_restricted_membership_owners.md pins the parser rejecting a forbidden owner.
 package Roles {
     part def Component;
 
@@ -35,12 +38,12 @@ package Roles {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:1dbac69c66f5c301b2d031d6f843a3d07ef042c79e2af5eb5f01fa6279125bc7"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:517dbc7ce31b793163eb13ea5d18bfc674b51f6e2980c500385231b3451330aa"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Component"))) (kind part-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Good"))) (kind case-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Good::achieved"))) (kind requirement) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Good::achieved"))) (kind objective-requirement) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (kind subject) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Component")))))
   )
   (references
@@ -77,7 +80,7 @@ package Roles {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_objective_membership_owning_type.md") (range (start 5 23) (end 5 32)) (probe (position 5 23))
+  (query (document "memory://snapshot/sysml_objective_membership_owning_type.md") (range (start 8 23) (end 8 32)) (probe (position 8 23))
     (reference (id (source (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Good::item"))) (kind featureTyping) (ordinal 0) (authored-target "Component")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_objective_membership_owning_type.md") (qualified-name "Roles::Component")))))
     )

@@ -41,13 +41,13 @@ package Variations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e5526059c961fa2c3e26cfae7487bee893a28e045b886ecc229273eec8dd24a3"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:e424a26a7473e5fe55e97f124950e6c033f0c6f955deedde4e294eb05f5d7bc0"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_type_featuring.md") (qualified-name "Variations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_type_featuring.md") (qualified-name "Variations::Holder"))) (kind part-def) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_type_featuring.md") (qualified-name "Variations::Holder::good"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Plain") (variation true)))))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_type_featuring.md") (qualified-name "Variations::Holder::good"))) (kind part) (membership (kind feature) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Plain") (variation true)))))
     (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_type_featuring.md") (qualified-name "Variations::Plain"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers abstract)))
-    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_type_featuring.md") (qualified-name "Variations::Root"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation)))
+    (declaration (id (node (document "memory://snapshot/sysml_usage_variation_usage_type_featuring.md") (qualified-name "Variations::Root"))) (kind part-def) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/sysml_usage_variation_usage_type_featuring.md") (qualified-name "Variations::Holder::good"))) (kind featureTyping) (ordinal 0))

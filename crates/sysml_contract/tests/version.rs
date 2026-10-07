@@ -11,7 +11,7 @@ use sysml_contract::{SemanticContractVersion, SEMANTIC_CONTRACT_VERSION};
 fn the_semantic_contract_version_is_the_value_every_publication_records() {
     assert_eq!(
         SEMANTIC_CONTRACT_VERSION.as_str(),
-        "owned-feature-membership-identity-v42",
+        "spec-rule-burndown-element-kinds-v43",
         "changing the semantic contract version invalidates every publication identity and every \
          serialised model; if that is intended, update this assertion in the same commit"
     );
@@ -24,7 +24,7 @@ fn the_version_displays_and_compares_as_the_recorded_string() {
         SEMANTIC_CONTRACT_VERSION.to_string(),
         SEMANTIC_CONTRACT_VERSION.as_str()
     );
-    assert!(SEMANTIC_CONTRACT_VERSION == *"owned-feature-membership-identity-v42");
+    assert!(SEMANTIC_CONTRACT_VERSION == *"spec-rule-burndown-element-kinds-v43");
     let same: SemanticContractVersion = SEMANTIC_CONTRACT_VERSION;
     assert_eq!(same, SEMANTIC_CONTRACT_VERSION);
 }

@@ -54,7 +54,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8eee46b803eed3cd3429cd5fa8a2782054db388cca72681ea12250771cff9869"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:095a81d5e5043174fed4c1f554c2b39d8a4a70b876fcb0cd00e909f022e02e19"))
   (declarations
     (declaration (id (node (document "memory://snapshot/inherited_type_relationship_operands.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/inherited_type_relationship_operands.md") (qualified-name "P::Base"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

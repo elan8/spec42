@@ -8,25 +8,25 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=sysml-2.0:8.3.17.5:validateAssignmentActionUsage
-blocked_by=semantic-assignment-action-usage
 type=file
 ~~~
 # SOURCE
 ~~~sysml
+// SysML has no `var` keyword: a Usage's isVariable is the derived mayTimeVary, true for a feature
+// of an occurrence definition or usage unless it is a portion, a link participant, or a composite
+// action. A package-owned feature has no owningType and so is never variable.
 package Actions {
     attribute def Reading;
+    attribute fixed : Reading;
     occurrence def Happening {
-        // SysML RefPrefix has `constant` but no `var`/`variable` keyword (BNF 275-278).
         attribute tracked : Reading;
     }
     action def Act {
-        constant attribute locked : Reading;
-
-        // Conforming: the assigned feature is not constant, so it may time-vary.
+        // Conforming: the assigned feature may vary over time.
         assign Happening::tracked := 1;
 
-        // Invalid: a constant feature cannot have time-varying values.
-        assign locked := 1;
+        // Invalid: the assigned feature cannot have time-varying values.
+        assign fixed := 1;
     }
 }
 ~~~
@@ -39,7 +39,13 @@ package Actions {
         (severity warning)
         (code "assignment_target_not_time_varying")
         (source "semantic")
-        (range (start 12 8) (end 12 29))
+        (range (start 14 8) (end 14 26))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_assignment_action_usage.md")
+            (range (start 5 4) (end 5 30))
+          )
+        )
       )
     )
   )
@@ -50,6 +56,18 @@ package Actions {
 (fixture-diagnostics
   (document "memory://snapshot/sysml_assignment_action_usage.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "assignment_target_not_time_varying")
+        (source "semantic")
+        (range (start 14 8) (end 14 26))
+        (related-information
+          (related
+            (uri "memory://snapshot/sysml_assignment_action_usage.md")
+            (range (start 5 4) (end 5 30))
+          )
+        )
+      )
     )
   )
 )
@@ -57,39 +75,54 @@ package Actions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:68930a7ad2309c6961cbcde0c9b9d99063afbf53f126e2659a63c9e5cf66afb1"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6f5c99b3c0b607e57988f37584f86ca8aeb729033bf262216394f7dd26adc62a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act"))) (kind action-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0))))) (kind assign) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (assignTarget (reference "Happening::tracked")))))
-    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1))))) (kind assign) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (assignTarget (reference "locked")))))
-    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::locked"))) (kind attribute) (membership (kind feature) (visibility default)) (facts (modifiers constant)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Reading")))))
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1))))) (kind assign) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (assignTarget (reference "fixed")))))
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0))))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction in)))
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind ref) (ordinal 0))))) (kind ref) (membership (kind feature) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind ref) (ordinal 0))))) (kind ref) (membership (kind feature) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening"))) (kind occurrence-def) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Reading")))))
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading"))) (kind attribute-def) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::fixed"))) (kind attribute) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Reading")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0))
       (authored-target "Happening::tracked")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked")))))
     (reference (id (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1))))) (kind assignTarget) (ordinal 0))
-      (authored-target "locked")
-      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::locked")))))
-    (reference (id (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::locked"))) (kind featureTyping) (ordinal 0))
+      (authored-target "fixed")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::fixed")))))
+    (reference (id (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked"))) (kind featureTyping) (ordinal 0))
       (authored-target "Reading")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")))))
-    (reference (id (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked"))) (kind featureTyping) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::fixed"))) (kind featureTyping) (ordinal 0))
       (authored-target "Reading")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")))))
   )
   (relationships
     (relationship (kind assignTarget) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0)))
-    (relationship (kind assignTarget) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::locked"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1))))) (kind assignTarget) (ordinal 0)))
-    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::locked"))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::locked"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind assignTarget) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::fixed"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1))))) (kind assignTarget) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked"))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::fixed"))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::fixed"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::locked"))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind ref) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind ref) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind ref) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind ref) (ordinal 0))))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::fixed"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked"))) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening"))) (provenance implied))
   )
   (evaluation
@@ -107,21 +140,46 @@ package Actions {
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)))))
       (featured-by (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act")))
     )
-    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::locked")))
-      (featured-by (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act")))
-      (type (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")) (provenance authored))
-      (effective-type (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")) (source direct))
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)))))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind ref) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")) (source inherited) (from (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked"))))
+      (supertype (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind ref) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (effective-type (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")) (source inherited) (from (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::fixed"))))
+      (supertype (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::fixed")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked")))
       (featured-by (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening")))
       (type (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")) (provenance authored))
       (effective-type (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")) (source direct))
       (supertype (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")) (scopes any))
+      (subtype (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind ref) (ordinal 0)))) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")))
-      (subtype (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::locked")) (scopes any))
       (subtype (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked")) (scopes any))
+      (subtype (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::fixed")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::fixed")))
+      (type (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")) (source direct))
+      (supertype (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")) (scopes any))
+      (subtype (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1)) (anonymous (kind parameter) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)) (anonymous (kind ref) (ordinal 0)))) (scopes any feature))
     )
 )
 ~~~
@@ -135,23 +193,23 @@ package Actions {
 # NAVIGATION
 ~~~sexpr
 (navigation
-  (query (document "memory://snapshot/sysml_assignment_action_usage.md") (range (start 10 15) (end 10 33)) (probe (position 10 15))
+  (query (document "memory://snapshot/sysml_assignment_action_usage.md") (range (start 11 15) (end 11 33)) (probe (position 11 15))
     (reference (id (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 0))))) (kind assignTarget) (ordinal 0) (authored-target "Happening::tracked")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked")))))
     )
   )
-  (query (document "memory://snapshot/sysml_assignment_action_usage.md") (range (start 13 15) (end 13 21)) (probe (position 13 15))
-    (reference (id (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1))))) (kind assignTarget) (ordinal 0) (authored-target "locked")
-      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::locked")))))
+  (query (document "memory://snapshot/sysml_assignment_action_usage.md") (range (start 14 15) (end 14 20)) (probe (position 14 15))
+    (reference (id (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (path (named (kind package) (name "Actions")) (named (kind action-def) (name "Act")) (anonymous (kind assign) (ordinal 1))))) (kind assignTarget) (ordinal 0) (authored-target "fixed")
+      (outcome (status resolved) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::fixed")))))
     )
   )
-  (query (document "memory://snapshot/sysml_assignment_action_usage.md") (range (start 7 36) (end 7 43)) (probe (position 7 36))
-    (reference (id (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Act::locked"))) (kind featureTyping) (ordinal 0) (authored-target "Reading")
+  (query (document "memory://snapshot/sysml_assignment_action_usage.md") (range (start 7 28) (end 7 35)) (probe (position 7 28))
+    (reference (id (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked"))) (kind featureTyping) (ordinal 0) (authored-target "Reading")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")))))
     )
   )
-  (query (document "memory://snapshot/sysml_assignment_action_usage.md") (range (start 4 28) (end 4 35)) (probe (position 4 28))
-    (reference (id (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Happening::tracked"))) (kind featureTyping) (ordinal 0) (authored-target "Reading")
+  (query (document "memory://snapshot/sysml_assignment_action_usage.md") (range (start 5 22) (end 5 29)) (probe (position 5 22))
+    (reference (id (source (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::fixed"))) (kind featureTyping) (ordinal 0) (authored-target "Reading")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml_assignment_action_usage.md") (qualified-name "Actions::Reading")))))
     )
   )

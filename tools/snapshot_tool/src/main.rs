@@ -38,19 +38,20 @@ use spec42_constraint_manifest::{
 };
 use sysml_query::resolved_slice::{
     ActionDerivedFactCollection, ActionDerivedFactOutcome, AnnotationForm,
-    BindingConnectorValidationOutcome, BindingConnectorValidationPrerequisite,
-    DefinitionUsageDerivedOutcome, DefinitionUsageDerivedPrerequisite, DerivedElementOwner,
-    Documentation, EditorProbe, ElementDerivedDocumentationCollection, ElementKind,
-    FeatureDerivedRelationshipCollection, NamespaceDerivedElementCollection, PublishedModel,
-    QualifiedElementReference, QualifiedReferenceOutcome, QualifiedReferenceProbe, QueryAnswer,
-    QueryOutcome, RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, RelationshipProvenance,
+    AnonymousElementReference, BindingConnectorValidationOutcome,
+    BindingConnectorValidationPrerequisite, DefinitionUsageDerivedOutcome,
+    DefinitionUsageDerivedPrerequisite, DerivedElementOwner, Documentation, EditorProbe,
+    ElementDerivedDocumentationCollection, ElementKind, FeatureDerivedRelationshipCollection,
+    NamespaceDerivedElementCollection, PublishedModel, QualifiedElementReference,
+    QualifiedReferenceOutcome, QualifiedReferenceProbe, QueryAnswer, QueryOutcome,
+    RedefinitionCheckOutcome, RedefinitionCheckPrerequisite, RelationshipProvenance,
     RelationshipTarget, RequirementDerivedFactCollection, RequirementDerivedFactOutcome,
     RequirementDerivedFactPrerequisite, SourceKind, SpecializationCheckOutcome,
     SpecializationCheckPrerequisite, SymbolId, TextPosition, TypeDerivedElementCollection,
     TypeDerivedFactCollection, TypeDerivedFactOutcome, TypeDerivedFactValue,
     TypeDerivedRelationshipCollection,
 };
-use sysml_query::source::{SourceDocument as AdmittedDocument, SourceService};
+use sysml_query::source::{SourceDocument as AdmittedDocument, SourceLanguage, SourceService};
 type QuerySourceDocument = AdmittedDocument;
 
 #[derive(Debug, Parser)]
@@ -92,6 +93,9 @@ enum ReportFormat {
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct SourceDocument {
     name: String,
+    /// Declared by the SOURCE fence's info string (`~~~kerml` / `~~~sysml`): fixture document
+    /// names do not carry the language, so the fixture declares it and admission records it.
+    language: SourceLanguage,
     text: String,
 }
 
@@ -334,10 +338,145 @@ struct SemanticExpectations {
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct RelationshipExpectation {
     kind: SemanticRelationshipKind,
-    source: String,
+    source: ElementReferenceExpectation,
     target: Option<String>,
     provenance: Option<RelationshipProvenance>,
     outcome: SemanticRelationshipOutcome,
+}
+
+/// An authored semantic source: a KerML qualified name, or an anonymous member addressed by its
+/// canonical owner-scoped identity `(anonymous (owner <reference>) (kind <ElementKind>) (ordinal
+/// <n>))`. Both resolve only through `sysml_query`; no display name is invented for an anonymous
+/// element.
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum ElementReferenceExpectation {
+    Qualified(String),
+    Anonymous {
+        owner: Box<ElementReferenceExpectation>,
+        kind: ElementKind,
+        ordinal: u32,
+    },
+}
+
+impl std::fmt::Display for ElementReferenceExpectation {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Qualified(name) => formatter.write_str(name),
+            Self::Anonymous {
+                owner,
+                kind,
+                ordinal,
+            } => write!(
+                formatter,
+                "(anonymous (owner {owner}) (kind {kind}) (ordinal {ordinal}))"
+            ),
+        }
+    }
+}
+
+fn parse_element_reference_expectation(
+    expression: &AuthoredSexpr,
+    fallback_name: &str,
+) -> Result<ElementReferenceExpectation, String> {
+    let items = match expression {
+        AuthoredSexpr::Atom(value) | AuthoredSexpr::String(value) if !value.is_empty() => {
+            return Ok(ElementReferenceExpectation::Qualified(value.clone()));
+        }
+        AuthoredSexpr::Atom(_) | AuthoredSexpr::String(_) => {
+            return Err(format!(
+                "{fallback_name}: element reference must not be empty"
+            ));
+        }
+        AuthoredSexpr::List(items) => items,
+    };
+    if items.first().and_then(authored_atom) != Some("anonymous") {
+        return Err(format!(
+            "{fallback_name}: element reference list must be (anonymous (owner ...) (kind ...) (ordinal ...))"
+        ));
+    }
+    let mut owner = None;
+    let mut kind = None;
+    let mut ordinal = None;
+    for field in &items[1..] {
+        let AuthoredSexpr::List(field_items) = field else {
+            return Err(format!(
+                "{fallback_name}: anonymous reference field must be a list"
+            ));
+        };
+        let [key, value] = field_items.as_slice() else {
+            return Err(format!(
+                "{fallback_name}: anonymous reference fields require exactly one value"
+            ));
+        };
+        let duplicate = match authored_atom(key) {
+            Some("owner") => owner
+                .replace(parse_element_reference_expectation(value, fallback_name)?)
+                .is_some(),
+            Some("kind") => {
+                let text = authored_value(value).unwrap_or_default();
+                let parsed = ElementKind::parse(text).ok_or_else(|| {
+                    format!("{fallback_name}: unknown anonymous reference kind {text:?}")
+                })?;
+                kind.replace(parsed).is_some()
+            }
+            Some("ordinal") => {
+                let text = authored_value(value).unwrap_or_default();
+                let parsed = text.parse::<u32>().map_err(|_| {
+                    format!("{fallback_name}: anonymous reference ordinal {text:?} is not a u32")
+                })?;
+                ordinal.replace(parsed).is_some()
+            }
+            other => {
+                return Err(format!(
+                    "{fallback_name}: unknown anonymous reference field {other:?}"
+                ))
+            }
+        };
+        if duplicate {
+            return Err(format!(
+                "{fallback_name}: duplicate anonymous reference field"
+            ));
+        }
+    }
+    match (owner, kind, ordinal) {
+        (Some(owner), Some(kind), Some(ordinal)) => Ok(ElementReferenceExpectation::Anonymous {
+            owner: Box::new(owner),
+            kind,
+            ordinal,
+        }),
+        _ => Err(format!(
+            "{fallback_name}: anonymous reference requires owner, kind, and ordinal"
+        )),
+    }
+}
+
+/// Removes the one `(name <value>)` field whose value may be a structured element reference, so
+/// the remaining scalar fields keep the shared parser.
+fn take_element_reference_field(
+    fields: &[AuthoredSexpr],
+    name: &str,
+    fallback_name: &str,
+) -> Result<(Option<ElementReferenceExpectation>, Vec<AuthoredSexpr>), String> {
+    let mut reference = None;
+    let mut rest = Vec::new();
+    for field in fields {
+        if let AuthoredSexpr::List(items) = field {
+            if items.len() == 2 && authored_atom(&items[0]) == Some(name) {
+                if reference
+                    .replace(parse_element_reference_expectation(
+                        &items[1],
+                        fallback_name,
+                    )?)
+                    .is_some()
+                {
+                    return Err(format!("{fallback_name}: duplicate field {name:?}"));
+                }
+                continue;
+            }
+        }
+        rest.push(field.clone());
+    }
+    Ok((reference, rest))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -354,6 +493,7 @@ enum SemanticRelationshipKind {
     Intersecting,
     Differencing,
     Disjoining,
+    Annotation,
 }
 
 impl SemanticRelationshipKind {
@@ -370,8 +510,9 @@ impl SemanticRelationshipKind {
             "intersecting" => Ok(Self::Intersecting),
             "differencing" => Ok(Self::Differencing),
             "disjoining" => Ok(Self::Disjoining),
+            "annotation" => Ok(Self::Annotation),
             _ => Err(format!(
-                "{fixture}: unknown semantic relationship kind {value:?} (expected specialization, feature_typing, subsetting, redefinition, feature_chaining, type_featuring, connector_end, unioning, intersecting, differencing, or disjoining)"
+                "{fixture}: unknown semantic relationship kind {value:?} (expected specialization, feature_typing, subsetting, redefinition, feature_chaining, type_featuring, connector_end, unioning, intersecting, differencing, disjoining, or annotation)"
             )),
         }
     }
@@ -390,6 +531,7 @@ impl SemanticRelationshipKind {
             Self::Intersecting => "intersecting",
             Self::Differencing => "differencing",
             Self::Disjoining => "disjoining",
+            Self::Annotation => "annotation",
         }
     }
 }
@@ -1048,29 +1190,8 @@ fn parse_binding_connector_prerequisite(
     fixture: &str,
 ) -> Result<BindingConnectorValidationPrerequisite, String> {
     match value {
-        "feature_reference_expression_target_and_result" => {
-            Ok(BindingConnectorValidationPrerequisite::FeatureReferenceExpressionTargetAndResult)
-        }
-        "feature_value_endpoint_facts" => {
-            Ok(BindingConnectorValidationPrerequisite::FeatureValueEndpointFacts)
-        }
-        "expression_result_endpoint_facts" => {
-            Ok(BindingConnectorValidationPrerequisite::ExpressionResultEndpointFacts)
-        }
-        "function_result_endpoint_facts" => {
-            Ok(BindingConnectorValidationPrerequisite::FunctionResultEndpointFacts)
-        }
-        "invocation_expression_behavior_endpoint_facts" => {
-            Ok(BindingConnectorValidationPrerequisite::InvocationExpressionBehaviorEndpointFacts)
-        }
         "accept_action_usage_receiver_endpoint_facts" => {
             Ok(BindingConnectorValidationPrerequisite::AcceptActionUsageReceiverEndpointFacts)
-        }
-        "transition_usage_source_endpoint_facts" => {
-            Ok(BindingConnectorValidationPrerequisite::TransitionUsageSourceEndpointFacts)
-        }
-        "transition_usage_succession_endpoint_facts" => {
-            Ok(BindingConnectorValidationPrerequisite::TransitionUsageSuccessionEndpointFacts)
         }
         "satisfy_requirement_usage_endpoint_facts" => {
             Ok(BindingConnectorValidationPrerequisite::SatisfyRequirementUsageEndpointFacts)
@@ -1136,43 +1257,11 @@ fn parse_redefinition_check_prerequisite(
     fixture: &str,
 ) -> Result<RedefinitionCheckPrerequisite, String> {
     match value {
-        "end_feature_position_and_inherited_ends" => {
-            Ok(RedefinitionCheckPrerequisite::EndFeaturePositionAndInheritedEnds)
-        }
-        "flow_end_ordinal_and_library_anchors" => {
-            Ok(RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors)
-        }
-        "cross_feature_and_subsetting_endpoints" => {
-            Ok(RedefinitionCheckPrerequisite::CrossFeatureAndSubsettingEndpoints)
-        }
-        "parameter_direction_and_inherited_position" => {
-            Ok(RedefinitionCheckPrerequisite::ParameterDirectionAndInheritedPosition)
-        }
-        "function_or_expression_result" => {
-            Ok(RedefinitionCheckPrerequisite::FunctionOrExpressionResult)
-        }
-        "constructor_result_and_instantiated_type_features" => {
-            Ok(RedefinitionCheckPrerequisite::ConstructorResultAndInstantiatedTypeFeatures)
-        }
-        "feature_chain_source_target" => {
-            Ok(RedefinitionCheckPrerequisite::FeatureChainSourceTarget)
-        }
-        "feature_chain_source_target_and_library_anchor" => {
-            Ok(RedefinitionCheckPrerequisite::FeatureChainSourceTargetAndLibraryAnchor)
-        }
+        "grammar_parameters" => Ok(RedefinitionCheckPrerequisite::GrammarParameters),
+        "expression_elements" => Ok(RedefinitionCheckPrerequisite::ExpressionElements),
         "state_subaction_membership_and_kind" => {
             Ok(RedefinitionCheckPrerequisite::StateSubactionMembershipAndKind)
         }
-        "assignment_action_input_parameter_endpoints" => {
-            Ok(RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints)
-        }
-        "for_loop_variable_projection" => {
-            Ok(RedefinitionCheckPrerequisite::ForLoopVariableProjection)
-        }
-        "objective_membership_and_case_objective" => {
-            Ok(RedefinitionCheckPrerequisite::ObjectiveMembershipAndCaseObjective)
-        }
-        "view_rendering_membership" => Ok(RedefinitionCheckPrerequisite::ViewRenderingMembership),
         "rule_not_published" => Ok(RedefinitionCheckPrerequisite::RuleNotPublished),
         _ => Err(format!(
             "{fixture}: unknown redefinition check prerequisite {value:?}"
@@ -1240,9 +1329,6 @@ fn parse_specialization_check_prerequisite(
             Ok(SpecializationCheckPrerequisite::UseCaseOwnerAndLibraryAnchor)
         }
         "usage_variation_owner" => Ok(SpecializationCheckPrerequisite::UsageVariationOwner),
-        "individual_multiplicity_and_library_anchor" => {
-            Ok(SpecializationCheckPrerequisite::IndividualMultiplicityAndLibraryAnchor)
-        }
         "occurrence_owner_typing_and_library_anchor" => {
             Ok(SpecializationCheckPrerequisite::OccurrenceOwnerTypingAndLibraryAnchor)
         }
@@ -2125,6 +2211,7 @@ fn load_standard_library_documents(
                         document.text,
                         SourceKind::StandardLibrary,
                     )
+                    .map(|admitted| admitted.with_language(document.language))
                     .map_err(|error| error.to_string())?,
             );
         }
@@ -2630,6 +2717,7 @@ fn regenerate_snapshot(
                         SourceKind::Workspace
                     },
                 )
+                .map(|admitted| admitted.with_language(document.language))
                 .map_err(|error| error.to_string())
         })
         .collect::<Result<Vec<_>, _>>()?;
@@ -3426,9 +3514,12 @@ fn parse_relationship_expectation(
             "{fallback_name}: EXPECTED SEMANTICS only accepts relationship expectations"
         ));
     }
+    let (source, rest) = take_element_reference_field(&items[1..], "source", fallback_name)?;
+    let source =
+        source.ok_or_else(|| format!("{fallback_name}: semantic relationship requires source"))?;
     let fields = parse_semantic_assertion_fields(
-        &items[1..],
-        &["kind", "source", "target", "provenance", "outcome"],
+        &rest,
+        &["kind", "target", "provenance", "outcome"],
         "semantic relationship",
         fallback_name,
     )?;
@@ -3438,11 +3529,6 @@ fn parse_relationship_expectation(
             .ok_or_else(|| format!("{fallback_name}: semantic relationship requires kind"))?,
         fallback_name,
     )?;
-    let source = fields
-        .get("source")
-        .filter(|value| !value.is_empty())
-        .cloned()
-        .ok_or_else(|| format!("{fallback_name}: semantic relationship requires source"))?;
     let outcome = SemanticRelationshipOutcome::parse(
         fields
             .get("outcome")
@@ -4716,7 +4802,6 @@ enum TypeDerivedFactObservation {
     Outcome {
         value: TypeDerivedFactOutcome,
         expected: Option<SymbolId>,
-        membership_members: Box<[SymbolId]>,
     },
     Incomplete,
 }
@@ -4841,7 +4926,7 @@ fn observe_semantic_relationship(
     model: &PublishedModel,
     expectation: &RelationshipExpectation,
 ) -> Result<SemanticRelationshipObservation, String> {
-    let source = match resolve_semantic_identity(model, &expectation.source) {
+    let source = match resolve_element_reference(model, &expectation.source) {
         Ok(source) => source,
         Err(SemanticIdentityStatus::Incomplete) => {
             return Ok(SemanticRelationshipObservation::Incomplete)
@@ -5024,27 +5109,7 @@ fn observe_type_derived_fact(
                 .map_err(|status| format!("target reference is {}", status.description()))
         })
         .transpose()?;
-    let membership_members = match &value {
-        TypeDerivedFactOutcome::Values(values) => values
-            .iter()
-            .filter_map(|value| match value {
-                TypeDerivedFactValue::FeatureMembership(identity) => {
-                    match model.inspection().membership(*identity).answer {
-                        QueryAnswer::Resolved(membership) => Some(membership.member),
-                        _ => None,
-                    }
-                }
-                _ => None,
-            })
-            .collect::<Vec<_>>()
-            .into_boxed_slice(),
-        TypeDerivedFactOutcome::Unsupported { .. } => Box::new([]),
-    };
-    Ok(TypeDerivedFactObservation::Outcome {
-        value,
-        expected,
-        membership_members,
-    })
+    Ok(TypeDerivedFactObservation::Outcome { value, expected })
 }
 
 fn observe_action_derived_fact(
@@ -5476,17 +5541,48 @@ fn observe_expected_relationship(
     })
 }
 
+fn resolve_element_reference(
+    model: &PublishedModel,
+    reference: &ElementReferenceExpectation,
+) -> Result<SymbolId, SemanticIdentityStatus> {
+    match reference {
+        ElementReferenceExpectation::Qualified(name) => resolve_semantic_identity(model, name),
+        ElementReferenceExpectation::Anonymous {
+            owner,
+            kind,
+            ordinal,
+        } => {
+            let owner = resolve_element_reference(model, owner)?;
+            reference_identity(model.inspection().resolve_anonymous_member(
+                &AnonymousElementReference {
+                    owner,
+                    kind: *kind,
+                    ordinal: *ordinal,
+                },
+            ))
+        }
+    }
+}
+
 fn resolve_semantic_identity(
     model: &PublishedModel,
     qualified_name: &str,
 ) -> Result<SymbolId, SemanticIdentityStatus> {
-    match model
-        .inspection()
-        .resolve_qualified_reference(&QualifiedElementReference {
-            document: None,
-            qualified_name: qualified_name.into(),
-            expected_kind: None,
-        }) {
+    reference_identity(
+        model
+            .inspection()
+            .resolve_qualified_reference(&QualifiedElementReference {
+                document: None,
+                qualified_name: qualified_name.into(),
+                expected_kind: None,
+            }),
+    )
+}
+
+fn reference_identity(
+    outcome: QualifiedReferenceOutcome,
+) -> Result<SymbolId, SemanticIdentityStatus> {
+    match outcome {
         QualifiedReferenceOutcome::Resolved(target)
         | QualifiedReferenceOutcome::Recovered(target)
         | QualifiedReferenceOutcome::UnsupportedWith(target) => Ok(target.identity),
@@ -5510,7 +5606,7 @@ fn compare_semantic_expectations(
     {
         compare_semantic_relationship_observation(
             expectation.outcome,
-            &expectation.source,
+            &expectation.source.to_string(),
             expectation.kind,
             observation,
         )?;
@@ -5901,13 +5997,12 @@ fn compare_type_derived_fact_observation(
             TypeDerivedFactObservation::Outcome {
                 value: TypeDerivedFactOutcome::Values(values),
                 expected: Some(expected),
-                membership_members,
             },
         ) if values.iter().any(|value| match value {
             TypeDerivedFactValue::Feature(actual) => actual == expected,
-            TypeDerivedFactValue::FeatureMembership(_) => membership_members.contains(expected),
+            TypeDerivedFactValue::FeatureMembership { member, .. } => member == expected,
             TypeDerivedFactValue::Conjugator { original_type } => original_type == expected,
-            TypeDerivedFactValue::Multiplicity(_) => false,
+            TypeDerivedFactValue::Multiplicity { element } => element == expected,
         }) =>
         {
             Ok(())
@@ -5922,7 +6017,7 @@ fn compare_type_derived_fact_observation(
         ) if expectation.collection == TypeDerivedFactCollection::Multiplicity
             && values
                 .iter()
-                .any(|value| matches!(value, TypeDerivedFactValue::Multiplicity(_))) =>
+                .any(|value| matches!(value, TypeDerivedFactValue::Multiplicity { .. })) =>
         {
             Ok(())
         }
@@ -6804,6 +6899,7 @@ fn load_repository_sources(
         })?;
         documents.push(SourceDocument {
             name: relative.clone(),
+            language: SourceLanguage::of_path(relative),
             text,
         });
     }
@@ -7307,6 +7403,7 @@ fn parse_source_documents(
         };
         named.push(SourceDocument {
             name: name.trim().to_string(),
+            language: source_fence_language(rest, fallback_name)?,
             text,
         });
         cursor = after;
@@ -7314,14 +7411,31 @@ fn parse_source_documents(
     if !named.is_empty() {
         return Ok(named);
     }
+    let language = source_fence_language(source, fallback_name)?;
     fenced_block(source)
         .map(|(text, _)| {
             vec![SourceDocument {
                 name: fallback_name.to_string(),
+                language,
                 text,
             }]
         })
         .ok_or_else(|| format!("{fallback_name}: malformed SOURCE fence"))
+}
+
+/// The language a SOURCE fence declares by its info string. Every SOURCE fence must name one.
+fn source_fence_language(input: &str, fallback_name: &str) -> Result<SourceLanguage, String> {
+    let info = input
+        .find("~~~")
+        .and_then(|start| input[start + 3..].split_once('\n'))
+        .map(|(info, _)| info.trim());
+    match info {
+        Some("sysml") => Ok(SourceLanguage::SysML),
+        Some("kerml") => Ok(SourceLanguage::KerML),
+        other => Err(format!(
+            "{fallback_name}: SOURCE fence must declare `sysml` or `kerml`, found {other:?}"
+        )),
+    }
 }
 
 /// Reads execution-affecting META keys. Descriptive keys remain open-ended, but malformed lines,
@@ -8364,14 +8478,18 @@ mod tests {
                 relationships: vec![
                     RelationshipExpectation {
                         kind: SemanticRelationshipKind::Specialization,
-                        source: "Model::Component".to_string(),
+                        source: ElementReferenceExpectation::Qualified(
+                            "Model::Component".to_string()
+                        ),
                         target: Some("Parts::Part".to_string()),
                         provenance: Some(RelationshipProvenance::Implied),
                         outcome: SemanticRelationshipOutcome::Resolved,
                     },
                     RelationshipExpectation {
                         kind: SemanticRelationshipKind::Specialization,
-                        source: "Model::Equivalent".to_string(),
+                        source: ElementReferenceExpectation::Qualified(
+                            "Model::Equivalent".to_string()
+                        ),
                         target: None,
                         provenance: Some(RelationshipProvenance::Implied),
                         outcome: SemanticRelationshipOutcome::Absent,
@@ -8416,7 +8534,7 @@ mod tests {
 
     #[test]
     fn parses_manifest_scoped_binding_connector_check_expectations_strictly() {
-        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (binding-connector-check\n    (rule_id \"kerml-1.0:8.3.4.8.5:checkFeatureReferenceExpressionBindingConnector\")\n    (outcome unsupported)\n    (prerequisite feature_reference_expression_target_and_result))\n  (binding-connector-check\n    (rule_id \"kerml-1.0:8.3.4.8.3:checkConstructorExpressionResultDefaultValueBindingConnector\")\n    (outcome satisfied)))\n~~~\n";
+        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (binding-connector-check\n    (rule_id \"sysml-2.0:8.3.17.2:checkAcceptActionUsageReceiverBindingConnector\")\n    (outcome unsupported)\n    (prerequisite accept_action_usage_receiver_endpoint_facts))\n  (binding-connector-check\n    (rule_id \"kerml-1.0:8.3.4.8.3:checkConstructorExpressionResultDefaultValueBindingConnector\")\n    (outcome satisfied)))\n~~~\n";
         let parsed = parse_expected_semantics(fixture, "fixture.md")
             .unwrap()
             .expect("semantic expectations");
@@ -8424,9 +8542,9 @@ mod tests {
             parsed.binding_connector_checks,
             vec![
                 BindingConnectorCheckExpectation {
-                    rule: BindingConnectorCheckKind::FeatureReferenceExpression,
+                    rule: BindingConnectorCheckKind::AcceptActionUsageReceiver,
                     outcome: BindingConnectorCheckOutcome::Unsupported(
-                        BindingConnectorValidationPrerequisite::FeatureReferenceExpressionTargetAndResult,
+                        BindingConnectorValidationPrerequisite::AcceptActionUsageReceiverEndpointFacts,
                     ),
                 },
                 BindingConnectorCheckExpectation {
@@ -8444,7 +8562,7 @@ mod tests {
 
     #[test]
     fn parses_manifest_scoped_redefinition_check_expectations_strictly() {
-        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (redefinition-check\n    (rule_id \"kerml-1.0:8.3.3.3.4:checkFeatureEndRedefinition\")\n    (outcome unsupported)\n    (prerequisite end_feature_position_and_inherited_ends))\n  (redefinition-check\n    (rule_id \"sysml-2.0:8.3.26.6:checkRenderingUsageRedefinition\")\n    (outcome unsupported)\n    (prerequisite view_rendering_membership)))\n~~~\n";
+        let fixture = "# EXPECTED SEMANTICS\n~~~sexpr\n(fixture-semantics\n  (redefinition-check\n    (rule_id \"kerml-1.0:8.3.3.3.4:checkFeatureParameterRedefinition\")\n    (outcome unsupported)\n    (prerequisite grammar_parameters))\n  (redefinition-check\n    (rule_id \"kerml-1.0:8.3.3.3.4:checkFeatureResultRedefinition\")\n    (outcome unsupported)\n    (prerequisite expression_elements)))\n~~~\n";
         let parsed = parse_expected_semantics(fixture, "fixture.md")
             .unwrap()
             .expect("semantic expectations");
@@ -8452,15 +8570,15 @@ mod tests {
             parsed.redefinition_checks,
             vec![
                 RedefinitionCheckExpectation {
-                    rule: RedefinitionCheckKind::FeatureEnd,
+                    rule: RedefinitionCheckKind::FeatureParameter,
                     outcome: RedefinitionCheckExpectationOutcome::Unsupported(
-                        RedefinitionCheckPrerequisite::EndFeaturePositionAndInheritedEnds,
+                        RedefinitionCheckPrerequisite::GrammarParameters,
                     ),
                 },
                 RedefinitionCheckExpectation {
-                    rule: RedefinitionCheckKind::RenderingUsage,
+                    rule: RedefinitionCheckKind::FeatureResult,
                     outcome: RedefinitionCheckExpectationOutcome::Unsupported(
-                        RedefinitionCheckPrerequisite::ViewRenderingMembership,
+                        RedefinitionCheckPrerequisite::ExpressionElements,
                     ),
                 },
             ]
@@ -9790,6 +9908,39 @@ mod tests {
     }
 
     #[test]
+    fn parses_nested_anonymous_element_references() {
+        let expression = parse_authored_sexpr(
+            "(anonymous (owner (anonymous (owner \"M::S\") (kind TransitionUsage) (ordinal 0))) (kind AcceptActionUsage) (ordinal 1))",
+        )
+        .unwrap();
+        assert_eq!(
+            parse_element_reference_expectation(&expression, "fixture.md").unwrap(),
+            ElementReferenceExpectation::Anonymous {
+                owner: Box::new(ElementReferenceExpectation::Anonymous {
+                    owner: Box::new(ElementReferenceExpectation::Qualified("M::S".to_string())),
+                    kind: ElementKind::TransitionUsage,
+                    ordinal: 0,
+                }),
+                kind: ElementKind::AcceptActionUsage,
+                ordinal: 1,
+            }
+        );
+        for invalid in [
+            "(anonymous (owner \"M\") (kind IfActionUsage))",
+            "(anonymous (owner \"M\") (kind NotAKind) (ordinal 0))",
+            "(anonymous (owner \"M\") (kind IfActionUsage) (ordinal -1))",
+            "(anonymous (owner \"M\") (owner \"N\") (kind IfActionUsage) (ordinal 0))",
+            "(named (owner \"M\"))",
+        ] {
+            let expression = parse_authored_sexpr(invalid).unwrap();
+            assert!(
+                parse_element_reference_expectation(&expression, "fixture.md").is_err(),
+                "{invalid} should be rejected"
+            );
+        }
+    }
+
+    #[test]
     fn parses_qualified_reference_probe_mechanics() {
         let fixture = "# SOURCE\n## model.sysml\n~~~sysml\npackage Example {}\n~~~\n# QUALIFIED REFERENCE QUERIES\n~~~text\nresolve model.sysml Example::selected ViewUsage\nresolve * StandardViewDefinitions::GeneralView *\n~~~\n";
         assert_eq!(
@@ -9797,6 +9948,7 @@ mod tests {
                 fixture,
                 &[SourceDocument {
                     name: "model.sysml".to_string(),
+                    language: SourceLanguage::SysML,
                     text: "package Example {}".to_string(),
                 }],
                 "fixture.md",
@@ -9824,6 +9976,7 @@ mod tests {
             fixture,
             &[SourceDocument {
                 name: "model.sysml".to_string(),
+                language: SourceLanguage::SysML,
                 text: "package Example {}".to_string(),
             }],
             "fixture.md",

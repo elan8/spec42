@@ -38,11 +38,11 @@ package Invocations {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:609c4cd625050b90063ee6adae6685a48d8cfe7bd87d12b8c16abf3db5eae3bd"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:ebb82e21dfe9e108f6f4360bc40bb17b42839e1ab5d1879b820b82d67cd695d5"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_default_value_binding_connector.md") (qualified-name "Invocations"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_default_value_binding_connector.md") (qualified-name "Invocations::Identity"))) (kind kerml-function) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_default_value_binding_connector.md") (qualified-name "Invocations::Identity::result"))) (kind parameter) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "Thing")))))
+    (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_default_value_binding_connector.md") (qualified-name "Invocations::Identity::result"))) (kind parameter) (membership (kind feature) (visibility default) (role return-parameter)) (authored (membership (kind feature) (visibility default) (role return-parameter)) (relationships (featureTyping (reference "Thing")))))
     (declaration (id (node (document "memory://snapshot/kerml_invocation_expression_default_value_binding_connector.md") (qualified-name "Invocations::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
   )
   (references

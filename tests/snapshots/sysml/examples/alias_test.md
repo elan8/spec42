@@ -58,7 +58,7 @@ package AliasTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7cea3549e21bfc7a29a70f9088bd3189e97e433d93d0a0d957aec1ba8062489a"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:f3f0dfa1d424ef9e1be08a5a95e2f2bade33c32abb03ab93bbc1c863e613a9b1"))
   (declarations
     (declaration (id (node (document "memory://snapshot/alias_test.md") (qualified-name "AliasTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/alias_test.md") (path (named (kind package) (name "AliasTest")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ISQSpaceTime::breadth") (import (shape membership) (recursive false))))))

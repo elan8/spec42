@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.1.10:validateTypeIntersectingTypesNotSelf
-blocked_by=semantic-type-relationship-operand-is-self
 type=file
 ~~~
 # SOURCE
@@ -44,6 +43,12 @@ package Intersections {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_type_intersecting_self.md"
     (diagnostics
+      (diagnostic
+        (severity error)
+        (code "type_relationship_operand_is_self")
+        (source "semantic")
+        (range (start 8 33) (end 8 36))
+      )
     )
   )
 )
@@ -51,7 +56,7 @@ package Intersections {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7920f1b64ca3b9a539dbe11a91d5782c4bc8fba1a0bc6a535b9c00184a292d1c"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8eed344276ba0022f77983521b5ef99ba76b3ee342ca9786c92e37103beb9dfa"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_type_intersecting_self.md") (qualified-name "Intersections"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_type_intersecting_self.md") (qualified-name "Intersections::A"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))

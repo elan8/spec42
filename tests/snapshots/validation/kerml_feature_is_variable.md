@@ -8,7 +8,7 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.3.3.4:validateFeatureIsVariable
-blocked_by=semantic-variable-feature-owner-not-occurrence
+libraries=standard
 type=file
 ~~~
 # SOURCE
@@ -47,6 +47,12 @@ package Variables {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_is_variable.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "variable_feature_owner_not_occurrence")
+        (source "semantic")
+        (range (start 10 8) (end 10 37))
+      )
     )
   )
 )
@@ -54,7 +60,7 @@ package Variables {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:7e4e5d04e4af8e4d4a48b4220382cac2d101179157f48c7076da0115a2ac1a7b"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:fcee1f3810830c808a2b443e0d3cca2c44b157277f5b223433e94f88ace5bf1d") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Happening"))) (kind class-def) (membership (kind owning) (visibility default)))
@@ -74,6 +80,10 @@ package Variables {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Happening::snapshotted"))) (target (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Happening::snapshotted"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Value::shifting"))) (target (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Value::shifting"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Happening"))) (target (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Happening::snapshotted"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Value"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Value::shifting"))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
   )
   (evaluation
   )
@@ -82,19 +92,33 @@ package Variables {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Happening")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Happening::snapshotted")))
       (type (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing")) (source direct))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (supertype (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing")))
       (subtype (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Happening::snapshotted")) (scopes any))
       (subtype (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Value::shifting")) (scopes any))
     )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Value")))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any subclassification))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any subclassification))
+    )
     (declaration (id (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Value::shifting")))
       (type (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing")) (provenance authored))
       (effective-type (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing")) (source direct))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (supertype (node (document "memory://snapshot/kerml_feature_is_variable.md") (qualified-name "Variables::Thing")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
     )
 )
 ~~~

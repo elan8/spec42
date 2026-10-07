@@ -3,26 +3,26 @@ source: crates/sysml_resolution/tests/integration/incremental_vs_full.rs
 expression: report
 ---
 step 0 baseline
-  source blake3:d88b65746e5efc516146403f53b84ffed277aaeaae8584652c2a7b0162c5f961
-  model blake3:3297dc2f706ba2a004dcfe920d7e593e339815d7cf85526e749652d0e1c4bca9
+  source blake3:89ec7007eba9121d20d9fca2837f8bb577613369ff6e0309cec390229bafb3bf
+  model blake3:f56e8656251fea0b7d1320b26cf0483bdac92bffb02ec1cc51813fb5900568a0
   codes []
 step 1 comment-only-on-fleet
-  source blake3:dca87ffc7bde204a43fe06c34ec5ed835160dc685cff0300167d01194ce28cc3
-  model blake3:23c3bc940e3cefb38abd59dd37a68a9cdc3e42c8d1408b1a896c6ee6a8039eac
+  source blake3:1d0acd44b8c385bdfea6f74cf2b42064ba0011f34988e7a7fb957e10b392140b
+  model blake3:782fb0a624054034a2292a9c7f4dc0e66f0ee989cc214a353ddbe1eab73b8c3a
   codes []
 step 2 unresolved-type-on-fleet
-  source blake3:63d88de5c429464846b368337de7b41d1d510dde1ece66462bcdc383fa7c8b19
-  model blake3:2abf0a44b63a8896e6a0489dccb83150e893f26c9beac7bfbf65bf189649e736
+  source blake3:ffec89f44a339788a783d053c65efe18adaaccba56dcf502a1c7fbe9a15eba1a
+  model blake3:42389ee6d58f943c1759efc22140edbdb1e3bbe2713d9dc3487fd58924be4cfc
   codes [missing_library_context, unresolved_type_reference]
 step 3 revert-fleet-to-baseline
-  source blake3:d88b65746e5efc516146403f53b84ffed277aaeaae8584652c2a7b0162c5f961
-  model blake3:3297dc2f706ba2a004dcfe920d7e593e339815d7cf85526e749652d0e1c4bca9
+  source blake3:89ec7007eba9121d20d9fca2837f8bb577613369ff6e0309cec390229bafb3bf
+  model blake3:f56e8656251fea0b7d1320b26cf0483bdac92bffb02ec1cc51813fb5900568a0
   codes []
 step 4 add-driver
-  source blake3:0681d1c3268e340ced5fa85a3d03292a17f5204560f9d7720611a267592ff097
-  model blake3:a8aba6252005c0c984a22fc628251a541d6492dd5c928544e1183a1d939d5da8
+  source blake3:8d95a91341a0d6654dccbac2cd2a6b6872063c1b74da57e6d213824617528ebd
+  model blake3:2ac569d95d663d2284a568102a362b202a3bad68cd7448a0deebc2e266cb7a9b
   codes []
 step 5 remove-driver
-  source blake3:d88b65746e5efc516146403f53b84ffed277aaeaae8584652c2a7b0162c5f961
-  model blake3:3297dc2f706ba2a004dcfe920d7e593e339815d7cf85526e749652d0e1c4bca9
+  source blake3:89ec7007eba9121d20d9fca2837f8bb577613369ff6e0309cec390229bafb3bf
+  model blake3:f56e8656251fea0b7d1320b26cf0483bdac92bffb02ec1cc51813fb5900568a0
   codes []

@@ -84,12 +84,15 @@ package ConnectorAll {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:5544e6186e9524f6031d7e6095efc59b0e47848e1809c9197683ca088ff33162"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:287606424d412f61cd8a0e5bdef8073743fe379505d48f9fff44f2c9c0ff4cf9"))
   (declarations
     (declaration (id (node (document "memory://snapshot/connector_all.md") (qualified-name "ConnectorAll"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/connector_all.md") (path (named (kind package) (name "ConnectorAll")) (anonymous (kind kerml-connector) (ordinal 0))))) (kind kerml-connector) (membership (kind feature) (visibility default)) (facts (modifiers all)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "a")) (connectorEnd (reference "b")))))
     (declaration (id (node (document "memory://snapshot/connector_all.md") (qualified-name "ConnectorAll::during"))) (kind kerml-connector) (membership (kind feature) (visibility default)) (facts (modifiers all)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "HappensDuring")) (connectorEnd (reference "self")) (connectorEnd (reference "occ")))))
     (declaration (id (node (document "memory://snapshot/connector_all.md") (qualified-name "ConnectorAll::guardConstraint"))) (kind kerml-connector) (membership (kind feature) (visibility default)) (facts (modifiers all) (multiplicity (lower unbounded) (upper unbounded))) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TPCGuardConstraint")) (connectorEnd (reference "transitionLink")) (connectorEnd (reference "guard")))))
+    (declaration (id (node (document "memory://snapshot/connector_all.md") (path (named (kind package) (name "ConnectorAll")) (named (kind kerml-connector) (name "guardConstraint")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/connector_all.md") (path (named (kind package) (name "ConnectorAll")) (named (kind kerml-connector) (name "guardConstraint")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (kind kerml-literal-infinity) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/connector_all.md") (path (named (kind package) (name "ConnectorAll")) (named (kind kerml-connector) (name "guardConstraint")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/connector_all.md") (path (named (kind package) (name "ConnectorAll")) (named (kind kerml-connector) (name "guardConstraint")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/connector_all.md") (qualified-name "ConnectorAll::x"))) (kind kerml-connector) (membership (kind feature) (visibility default)) (facts (modifiers all)) (authored (membership (kind feature) (visibility default)) (relationships (connectorEnd (reference "a")) (connectorEnd (reference "b")))))
   )
   (references
@@ -125,6 +128,7 @@ package ConnectorAll {
       (outcome (status unresolved)))
   )
   (relationships
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/connector_all.md") (path (named (kind package) (name "ConnectorAll")) (named (kind kerml-connector) (name "guardConstraint")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/connector_all.md") (path (named (kind package) (name "ConnectorAll")) (named (kind kerml-connector) (name "guardConstraint")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0))))) (provenance implied))
   )
   (evaluation
   )
@@ -133,6 +137,9 @@ package ConnectorAll {
 # TYPES
 ~~~sexpr
 (types
+    (declaration (id (node (document "memory://snapshot/connector_all.md") (path (named (kind package) (name "ConnectorAll")) (named (kind kerml-connector) (name "guardConstraint")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/connector_all.md") (path (named (kind package) (name "ConnectorAll")) (named (kind kerml-connector) (name "guardConstraint")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-infinity) (ordinal 0)))))
+    )
 )
 ~~~
 # CONNECTIONS

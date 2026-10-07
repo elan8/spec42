@@ -1,5 +1,7 @@
 //! Phase 9: the read-only query surface over a finished model.
 
+pub(crate) mod ends;
+mod redefinition;
 mod visible;
 
 pub use visible::VisibleMemberRef;
@@ -43,9 +45,6 @@ use crate::projection::ProjectionPhase;
 use crate::projection::ProjectionTruncation;
 use crate::projection::PublishedModelProjection;
 use crate::projection::MODEL_PROJECTION_SCHEMA_VERSION;
-use crate::redefinition_query::RedefinitionCheckKind;
-use crate::redefinition_query::RedefinitionCheckOutcome;
-use crate::redefinition_query::RedefinitionCheckPrerequisite;
 use crate::requirement_query::RequirementDerivedFactCollection;
 use crate::requirement_query::RequirementDerivedFactOutcome;
 use crate::requirement_query::RequirementDerivedFactPrerequisite;
@@ -61,7 +60,6 @@ use crate::resolve::implied::feature_derived_relationship_rule;
 use crate::resolve::implied::lowered_redefinition_source_kind;
 use crate::resolve::implied::namespace_derived_element_rule;
 use crate::resolve::implied::namespace_import_derived_element_rule;
-use crate::resolve::implied::redefinition_check_rule;
 use crate::resolve::implied::requirement_derived_fact_rule;
 use crate::resolve::implied::specialization_check_rule;
 use crate::resolve::implied::type_derived_element_rule;
@@ -1252,20 +1250,23 @@ impl<D> SemanticModel<D> {
             return self.query_outcome(QueryAnswer::Unsupported);
         }
         let _rule_id = rule.rule_id;
-        let unavailable = match collection {
-            TypeDerivedFactCollection::Multiplicity => {
-                Some(TypeDerivedFactPrerequisite::MultiplicityIdentity)
-            }
-            _ => None,
-        };
-        if let Some(prerequisite) = unavailable {
-            return self.resolved_outcome(TypeDerivedFactOutcome::Unsupported { prerequisite });
+        if collection == TypeDerivedFactCollection::Multiplicity {
+            let values = self
+                .storage
+                .type_multiplicity(declaration)
+                .and_then(|element| self.symbol_id(element))
+                .map(|element| TypeDerivedFactValue::Multiplicity { element })
+                .into_iter()
+                .collect::<Vec<_>>();
+            return self
+                .resolved_outcome(TypeDerivedFactOutcome::Values(values.into_boxed_slice()));
         }
         if collection == TypeDerivedFactCollection::OwnedConjugator {
-            // `ownedConjugator` is the one `Conjugation` a type owns (KerML 8.3.3.1.10); the
-            // lowering sources it at the conjugated type, so the authored reference *is* the
-            // owned relationship and its settled target is `originalType`.
-            let values = self
+            // `ownedConjugator` is the one `Conjugation` a type owns (KerML 8.3.3.1.10). An
+            // authored `conjugates` is sourced at the conjugated type, so the authored reference
+            // *is* the owned relationship and its settled target is `originalType`; a minted
+            // `ConjugatedPortDefinition` owns an implied `PortConjugation` instead.
+            let mut values = self
                 .storage
                 .references
                 .iter()
@@ -1285,48 +1286,63 @@ impl<D> SemanticModel<D> {
                     }
                 })
                 .collect::<Vec<_>>();
+            values.extend(
+                self.outgoing_implied_indices(declaration)
+                    .iter()
+                    .map(|index| &self.resolution.implied_relationships[*index as usize])
+                    .filter(|implied| implied.kind == ReferenceKind::Conjugation)
+                    .filter_map(|implied| {
+                        Some(TypeDerivedFactValue::Conjugator {
+                            original_type: self.symbol_id(implied.target)?,
+                        })
+                    }),
+            );
             return self
                 .resolved_outcome(TypeDerivedFactOutcome::Values(values.into_boxed_slice()));
         }
-        let inherited = self.inherited_feature_members(declaration);
         let members = match collection {
             TypeDerivedFactCollection::OwnedFeatureMembership => {
                 self.owned_feature_members(declaration)
             }
             TypeDerivedFactCollection::InheritedMembership
-            | TypeDerivedFactCollection::InheritedFeature => inherited,
+            | TypeDerivedFactCollection::InheritedFeature => {
+                self.inherited_feature_members(declaration)
+            }
             _ => self
                 .owned_feature_members(declaration)
                 .into_iter()
-                .chain(inherited)
+                .chain(self.inherited_feature_members(declaration))
                 .collect(),
         };
+        // `FeatureMembership`-valued collections publish the canonical Membership relationship
+        // identity of each member's owning membership, alongside the member it owns.
         let membership_valued = matches!(
             collection,
             TypeDerivedFactCollection::OwnedFeatureMembership
                 | TypeDerivedFactCollection::InheritedMembership
                 | TypeDerivedFactCollection::FeatureMembership
         );
-        let selected = members
+        // Canonical symbol order, one value per member (as `symbols` orders element results).
+        let mut selected = members
             .into_iter()
-            .filter(|member| self.type_derived_fact_selects(collection, *member));
-        let values = if membership_valued {
-            selected
-                .map(|member| {
-                    TypeDerivedFactValue::FeatureMembership(
-                        crate::MembershipId::from_index(member.index()).expect(
-                            "a declaration has a representable aligned membership identity",
-                        ),
-                    )
+            .filter(|member| self.type_derived_fact_selects(collection, *member))
+            .filter_map(|member| Some((self.symbol_id(member)?, member)))
+            .collect::<Vec<_>>();
+        selected.sort_by_key(|(symbol, _)| *symbol);
+        selected.dedup_by_key(|(symbol, _)| *symbol);
+        let values = selected
+            .into_iter()
+            .filter_map(|(symbol, member)| {
+                Some(if membership_valued {
+                    TypeDerivedFactValue::FeatureMembership {
+                        membership: crate::MembershipId::from_index(member.index())?,
+                        member: symbol,
+                    }
+                } else {
+                    TypeDerivedFactValue::Feature(symbol)
                 })
-                .collect::<Vec<_>>()
-        } else {
-            self.symbols(selected)
-                .into_vec()
-                .into_iter()
-                .map(TypeDerivedFactValue::Feature)
-                .collect::<Vec<_>>()
-        };
+            })
+            .collect::<Vec<_>>();
         self.resolved_outcome(TypeDerivedFactOutcome::Values(values.into_boxed_slice()))
     }
 
@@ -1755,7 +1771,8 @@ impl<D> SemanticModel<D> {
                 .get(target)
                 .is_some_and(|membership| membership.kind == MembershipKind::Feature)
                 && self.storage.declaration(target).is_some_and(|target| {
-                    element_kind::element_kind(target.kind) != crate::ElementKind::MetadataUsage
+                    !element_kind::element_kind(target.kind)
+                        .conforms_to(crate::ElementKind::MetadataFeature)
                 });
             let values = selects_referent
                 .then(|| {
@@ -1868,70 +1885,6 @@ impl<D> SemanticModel<D> {
             TypeFeaturingCheckOutcome::Satisfied
         };
         self.resolved_outcome(outcome)
-    }
-
-    /// Returns the first missing canonical prerequisite for one exact redefinition check.
-    ///
-    /// Authored and implied redefinition edges are already settled in this publication. None of
-    /// these predicates is reducible to merely having an edge: each selects a particular endpoint
-    /// through a metamodel role (for example an end position, state subaction kind, or constructor
-    /// result). Those role facts are not yet published as canonical query inputs, so this method
-    /// deliberately does not walk source syntax, inspect names, or turn an arbitrary redefinition
-    /// into a satisfied result.
-    pub(crate) fn redefinition_check(
-        &self,
-        kind: RedefinitionCheckKind,
-    ) -> QueryOutcome<RedefinitionCheckOutcome> {
-        let Some(rule) = redefinition_check_rule(kind) else {
-            return self.resolved_outcome(RedefinitionCheckOutcome::Unsupported {
-                prerequisite: RedefinitionCheckPrerequisite::RuleNotPublished,
-            });
-        };
-        let _normative_rule = (rule.rule_id, rule.metaclass);
-        let prerequisite = match kind {
-            RedefinitionCheckKind::FeatureEnd => {
-                RedefinitionCheckPrerequisite::EndFeaturePositionAndInheritedEnds
-            }
-            RedefinitionCheckKind::FeatureFlowFeature => {
-                RedefinitionCheckPrerequisite::FlowEndOrdinalAndLibraryAnchors
-            }
-            RedefinitionCheckKind::FeatureOwnedCrossFeatureSpecialization => {
-                RedefinitionCheckPrerequisite::CrossFeatureAndSubsettingEndpoints
-            }
-            RedefinitionCheckKind::FeatureParameter => {
-                RedefinitionCheckPrerequisite::ParameterDirectionAndInheritedPosition
-            }
-            RedefinitionCheckKind::FeatureResult => {
-                RedefinitionCheckPrerequisite::FunctionOrExpressionResult
-            }
-            RedefinitionCheckKind::ConstructorExpressionResultFeature => {
-                RedefinitionCheckPrerequisite::ConstructorResultAndInstantiatedTypeFeatures
-            }
-            RedefinitionCheckKind::FeatureChainExpressionSourceTarget => {
-                RedefinitionCheckPrerequisite::FeatureChainSourceTarget
-            }
-            RedefinitionCheckKind::FeatureChainExpressionTarget => {
-                RedefinitionCheckPrerequisite::FeatureChainSourceTargetAndLibraryAnchor
-            }
-            RedefinitionCheckKind::ActionUsageStateAction => {
-                RedefinitionCheckPrerequisite::StateSubactionMembershipAndKind
-            }
-            RedefinitionCheckKind::AssignmentActionUsageAccessedFeature
-            | RedefinitionCheckKind::AssignmentActionUsageReferent
-            | RedefinitionCheckKind::AssignmentActionUsageStartingAt => {
-                RedefinitionCheckPrerequisite::AssignmentActionInputParameterEndpoints
-            }
-            RedefinitionCheckKind::ForLoopActionUsageVar => {
-                RedefinitionCheckPrerequisite::ForLoopVariableProjection
-            }
-            RedefinitionCheckKind::RequirementUsageObjective => {
-                RedefinitionCheckPrerequisite::ObjectiveMembershipAndCaseObjective
-            }
-            RedefinitionCheckKind::RenderingUsage => {
-                RedefinitionCheckPrerequisite::ViewRenderingMembership
-            }
-        };
-        self.resolved_outcome(RedefinitionCheckOutcome::Unsupported { prerequisite })
     }
 
     /// Returns the first unpublished canonical input for one exact specialization predicate.
@@ -2587,6 +2540,19 @@ impl<D> SemanticModel<D> {
         }
         if matches!(
             kind,
+            SpecializationCheckKind::StateUsageExclusiveState
+                | SpecializationCheckKind::StateUsageSubstate
+                | SpecializationCheckKind::TransitionUsageAction
+                | SpecializationCheckKind::TransitionUsageState
+                | SpecializationCheckKind::FeatureSuboccurrence
+                | SpecializationCheckKind::FeaturePortion
+                | SpecializationCheckKind::FeatureSubobject
+                | SpecializationCheckKind::OccurrenceUsageSuboccurrence
+        ) {
+            return self.resolved_outcome(self.library_role_specialization_check(kind));
+        }
+        if matches!(
+            kind,
             SpecializationCheckKind::UsageVariationDefinition
                 | SpecializationCheckKind::UsageVariationUsage
         ) {
@@ -2611,10 +2577,7 @@ impl<D> SemanticModel<D> {
                     break;
                 };
                 if is_usage_declaration(owner_declaration.kind) != owner_is_usage
-                    || !self
-                        .storage
-                        .declaration_facts(owner)
-                        .is_some_and(|facts| facts.modifiers.variation)
+                    || !self.is_variation(owner)
                 {
                     continue;
                 }
@@ -2641,9 +2604,7 @@ impl<D> SemanticModel<D> {
             SpecializationCheckKind::FeatureOwnedCrossFeature => unreachable!("handled above"),
             SpecializationCheckKind::FeaturePortion
             | SpecializationCheckKind::FeatureSubobject
-            | SpecializationCheckKind::FeatureSuboccurrence => {
-                SpecializationCheckPrerequisite::FeatureModifiersOwnerTypingAndLibraryAnchor
-            }
+            | SpecializationCheckKind::FeatureSuboccurrence => unreachable!("handled above"),
             SpecializationCheckKind::FeatureValuation => unreachable!("handled above"),
             SpecializationCheckKind::MetadataFeatureSemantic => unreachable!("handled above"),
             SpecializationCheckKind::ConnectorBinaryObject
@@ -2673,13 +2634,9 @@ impl<D> SemanticModel<D> {
                 unreachable!("handled above")
             }
             SpecializationCheckKind::StateUsageExclusiveState
-            | SpecializationCheckKind::StateUsageSubstate => {
-                SpecializationCheckPrerequisite::StateSubactionKindAndLibraryAnchor
-            }
-            SpecializationCheckKind::TransitionUsageAction
-            | SpecializationCheckKind::TransitionUsageState => {
-                SpecializationCheckPrerequisite::TransitionOwnerSourceAndLibraryAnchor
-            }
+            | SpecializationCheckKind::StateUsageSubstate
+            | SpecializationCheckKind::TransitionUsageAction
+            | SpecializationCheckKind::TransitionUsageState => unreachable!("handled above"),
             SpecializationCheckKind::TransitionUsagePayload => unreachable!("handled above"),
             SpecializationCheckKind::TransitionUsageSuccessionSource => {
                 unreachable!("handled above")
@@ -2692,14 +2649,75 @@ impl<D> SemanticModel<D> {
             }
             SpecializationCheckKind::UsageVariationDefinition
             | SpecializationCheckKind::UsageVariationUsage => unreachable!("handled above"),
-            SpecializationCheckKind::OccurrenceDefinitionMultiplicity => {
+            SpecializationCheckKind::OccurrenceDefinitionMultiplicity
+            | SpecializationCheckKind::OccurrenceUsageSuboccurrence => {
                 unreachable!("handled above")
-            }
-            SpecializationCheckKind::OccurrenceUsageSuboccurrence => {
-                SpecializationCheckPrerequisite::OccurrenceOwnerTypingAndLibraryAnchor
             }
         };
         self.resolved_outcome(SpecializationCheckOutcome::Unsupported { prerequisite })
+    }
+
+    /// `specializesFromLibrary(anchor)` for every occupant of the roles `kind` constrains, read
+    /// from the same occupant derivation that synthesized the implied edges.
+    fn library_role_specialization_check(
+        &self,
+        kind: SpecializationCheckKind,
+    ) -> SpecializationCheckOutcome {
+        use crate::resolve::role_specializations::library_specialization_role_occupants;
+
+        let Ok(occupants) =
+            library_specialization_role_occupants(&self.storage, &self.resolution.outcomes)
+        else {
+            return SpecializationCheckOutcome::Unresolved;
+        };
+        if occupants.transitions_unsettled
+            && matches!(
+                kind,
+                SpecializationCheckKind::TransitionUsageAction
+                    | SpecializationCheckKind::TransitionUsageState
+            )
+        {
+            return SpecializationCheckOutcome::Unresolved;
+        }
+        if occupants.features_unsettled
+            && matches!(
+                kind,
+                SpecializationCheckKind::FeatureSuboccurrence
+                    | SpecializationCheckKind::FeaturePortion
+                    | SpecializationCheckKind::FeatureSubobject
+                    | SpecializationCheckKind::OccurrenceUsageSuboccurrence
+            )
+        {
+            return SpecializationCheckOutcome::Unresolved;
+        }
+        let anchors = &self
+            .resolution
+            .library_specialization_anchors
+            .specialization_roles;
+        let mut outcome = SpecializationCheckOutcome::Satisfied;
+        for occupant in occupants
+            .occupants
+            .iter()
+            .filter(|occupant| occupant.role.check() == kind)
+        {
+            let LibrarySpecializationAnchor::Resolved(anchor) = anchors.anchor(occupant.role)
+            else {
+                return SpecializationCheckOutcome::Unresolved;
+            };
+            if occupant.source == *anchor {
+                continue;
+            }
+            match self.conformance(
+                occupant.source,
+                *anchor,
+                SpecializationScope::FeatureSpecialization,
+            ) {
+                Conformance::Conforms => {}
+                Conformance::DoesNotConform => outcome = SpecializationCheckOutcome::Violated,
+                Conformance::Indeterminate(_) => return SpecializationCheckOutcome::Unresolved,
+            }
+        }
+        outcome
     }
 
     /// Projects the exact `deriveElementOwner` result from the canonical declaration ownership
@@ -3068,11 +3086,12 @@ impl<D> SemanticModel<D> {
             Ok(declaration) => declaration,
             Err(outcome) => return outcome,
         };
-        if self
-            .storage
-            .declaration(declaration)
-            .is_none_or(|value| value.kind != DeclarationKind::RequirementUsage)
-        {
+        if self.storage.declaration(declaration).is_none_or(|value| {
+            !matches!(
+                value.kind,
+                DeclarationKind::RequirementUsage | DeclarationKind::ObjectiveRequirement
+            )
+        }) {
             return self.query_outcome(QueryAnswer::Unsupported);
         }
         let relationships = self.relationships(declaration);
@@ -3355,20 +3374,25 @@ impl<D> SemanticModel<D> {
             .facts()
             .iter()
             .filter_map(|fact| {
-                let declaration = self.storage.declaration(fact.connector)?;
+                // Implied connectors have no authored declaration; this projection lists the
+                // workspace-authored ones, and the exact rule query evaluates the implied ones.
+                let binding::BindingConnectorOrigin::Authored(connector) = fact.origin else {
+                    return None;
+                };
+                let declaration = self.storage.declaration(connector)?;
                 let document = self.storage.document(declaration.document)?;
                 if document.role != SourceRole::Workspace {
                     return None;
                 }
                 Some(BindingConnector {
-                    identity: self.symbol_id(fact.connector)?,
+                    identity: self.symbol_id(connector)?,
                     source: endpoint(&fact.source),
                     target: endpoint(&fact.target),
                     provenance: match fact.provenance {
                         types::FactProvenance::Authored => RelationshipProvenance::Authored,
                         types::FactProvenance::Implied => RelationshipProvenance::Implied,
                     },
-                    location: self.source_location(fact.connector)?,
+                    location: self.source_location(connector)?,
                 })
             })
             .collect::<Vec<_>>();
@@ -3469,7 +3493,7 @@ impl<D> SemanticModel<D> {
                                 })
                         })?;
                 let element = self.symbol_id(*child)?;
-                let value_declaration = self.feature_value_expression(*child).unwrap_or(*child);
+                let value_declaration = self.value_expression(*child).unwrap_or(*child);
                 Some(MetadataAnnotationValue {
                     redefined_feature: self.settled_relationship_target(*redefinition),
                     value: self
@@ -3538,15 +3562,6 @@ impl<D> SemanticModel<D> {
             }
         }
         !any_resolved && record.annotated_element == element
-    }
-
-    /// The synthesized expression declaration holding one feature's authored `= value`, if any.
-    fn feature_value_expression(&self, feature: DeclarationId) -> Option<DeclarationId> {
-        self.storage
-            .feature_values
-            .iter()
-            .find(|record| record.declaration == feature)
-            .map(|record| record.value)
     }
 
     /// One authored reference's settled target, as the public [`RelationshipTarget`].
@@ -3922,7 +3937,10 @@ impl<D> SemanticModel<D> {
         // Both fields are manifest-owned contract data. Touch them here so a generated table
         // cannot quietly become a kind-only lookalike while the query retains no rule-ID map.
         let _normative_rule = (contract.rule_id, contract.metaclass);
-        self.resolved_outcome(self.bindings.validation(rule))
+        self.resolved_outcome(
+            self.bindings
+                .validation(&self.storage, &self.resolution, rule),
+        )
     }
 
     pub(crate) fn requirement_verifications(&self) -> QueryOutcome<Box<[RequirementVerification]>> {
@@ -3975,7 +3993,7 @@ impl<D> SemanticModel<D> {
             else {
                 continue;
             };
-            if objective.kind != DeclarationKind::RequirementUsage {
+            if objective.kind != DeclarationKind::ObjectiveRequirement {
                 continue;
             }
             let Some(case_id) = objective.owner else {
@@ -4311,7 +4329,7 @@ impl<D> SemanticModel<D> {
     /// checks that turn a failed reachability probe into a violation use this companion query so
     /// an unresolved, ambiguous, unsupported, or non-converged edge on the reachable hierarchy is
     /// not mistaken for proof of non-conformance.
-    fn specialization_hierarchy_is_unsettled(&self, specific: DeclarationId) -> bool {
+    pub(crate) fn specialization_hierarchy_is_unsettled(&self, specific: DeclarationId) -> bool {
         std::iter::once(specific)
             .chain(
                 self.types

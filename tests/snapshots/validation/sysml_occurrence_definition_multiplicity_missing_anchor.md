@@ -33,6 +33,18 @@ package Model {
 (fixture-diagnostics
   (document "memory://snapshot/fake-base.kerml"
     (diagnostics
+      (diagnostic
+        (severity information)
+        (code "missing_library_anchor")
+        (source "semantic")
+        (range (start 0 39) (end 0 40))
+      )
+      (diagnostic
+        (severity information)
+        (code "missing_library_anchor")
+        (source "semantic")
+        (range (start 0 39) (end 0 40))
+      )
     )
   )
   (document "memory://snapshot/model.sysml"
@@ -57,6 +69,18 @@ package Model {
 (fixture-diagnostics
   (document "memory://snapshot/fake-base.kerml"
     (diagnostics
+      (diagnostic
+        (severity information)
+        (code "missing_library_anchor")
+        (source "semantic")
+        (range (start 0 39) (end 0 40))
+      )
+      (diagnostic
+        (severity information)
+        (code "missing_library_anchor")
+        (source "semantic")
+        (range (start 0 39) (end 0 40))
+      )
     )
   )
   (document "memory://snapshot/model.sysml"
@@ -74,10 +98,15 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:6254fe42fa2ac140aab0cf04db82df22099a3457692277b56f8050535bb75b5b") (admitted (standard-library 1)))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:827e8973a7f365858c47042319c2241122a9202e14da4ddf40b9bf45a219a6ba") (admitted (standard-library 1)))
   (declarations
     (declaration (id (node (document "memory://snapshot/fake-base.kerml") (qualified-name "Base"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fake-base.kerml") (qualified-name "Base::zeroOrOne"))) (kind kerml-multiplicity) (membership (kind owning) (visibility default)) (facts (multiplicity (lower 0) (upper 1))))
+    (declaration (id (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (kind kerml-multiplicity-range) (membership (kind owning) (visibility default)))
+    (declaration (id (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (kind kerml-literal-integer) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))))
+    (declaration (id (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
+    (declaration (id (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Model::Individual"))) (kind occurrence-def) (membership (kind owning) (visibility default)) (facts (modifiers individual) (individual-multiplicity (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind occurrence-def) (name "Individual")) (anonymous (kind kerml-multiplicity) (ordinal 0)))))))
     (declaration (id (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind occurrence-def) (name "Individual")) (anonymous (kind kerml-multiplicity) (ordinal 0))))) (kind kerml-multiplicity) (membership (kind owning) (visibility default)) (facts (origin individual-multiplicity)))
@@ -86,7 +115,11 @@ package Model {
   )
   (relationships
     (relationship (kind subsetting) (source (node (document "memory://snapshot/fake-base.kerml") (qualified-name "Base::zeroOrOne"))) (target (node (document "memory://snapshot/occurrences.kerml") (qualified-name "Base::naturals"))) (provenance implied))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0))))) (target (node (document "memory://snapshot/occurrences.kerml") (qualified-name "Base::naturals"))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1))))) (provenance implied))
     (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Model::Individual"))) (target (node (document "memory://snapshot/occurrences.kerml") (qualified-name "Occurrences::Life"))) (provenance implied))
+    (relationship (kind specialization) (source (node (document "memory://snapshot/model.sysml") (qualified-name "Model::Individual"))) (target (node (document "memory://snapshot/occurrences.kerml") (qualified-name "Occurrences::Occurrence"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/model.sysml") (path (named (kind package) (name "Model")) (named (kind occurrence-def) (name "Individual")) (anonymous (kind kerml-multiplicity) (ordinal 0))))) (target (node (document "memory://snapshot/occurrences.kerml") (qualified-name "Base::naturals"))) (provenance implied))
   )
   (evaluation
@@ -98,6 +131,15 @@ package Model {
 (types
     (declaration (id (node (document "memory://snapshot/fake-base.kerml") (qualified-name "Base::zeroOrOne")))
       (supertype (node (document "memory://snapshot/occurrences.kerml") (qualified-name "Base::naturals")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)))))
+      (supertype (node (document "memory://snapshot/occurrences.kerml") (qualified-name "Base::naturals")) (scopes any feature))
+    )
+    (declaration (id (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 0)))))
+    )
+    (declaration (id (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)) (anonymous (kind kerml-feature) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/fake-base.kerml") (path (named (kind package) (name "Base")) (named (kind kerml-multiplicity) (name "zeroOrOne")) (anonymous (kind kerml-multiplicity-range) (ordinal 0)) (anonymous (kind kerml-literal-integer) (ordinal 1)))))
     )
     (declaration (id (node (document "memory://snapshot/model.sysml") (qualified-name "Model::Individual")))
       (supertype (node (document "memory://snapshot/occurrences.kerml") (qualified-name "Occurrences::Life")) (scopes any subclassification))

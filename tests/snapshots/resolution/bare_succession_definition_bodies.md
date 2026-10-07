@@ -42,7 +42,7 @@ package Demo {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:2b1682eaeebe6814be34bff45e0840a557d63b907c7ec4f1f2c436bab31d0dda"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:3617ad2b944c7d4defa2616a1653d339f0bae1529a5a877ce3bc5fc8ac1b2998"))
   (declarations
     (declaration (id (node (document "memory://snapshot/bare_succession_definition_bodies.md") (qualified-name "Demo"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/bare_succession_definition_bodies.md") (qualified-name "Demo::ItemSequence"))) (kind item-def) (membership (kind owning) (visibility default)))

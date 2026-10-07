@@ -30,7 +30,7 @@ package Model {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:026cf3977ddcfe3abe622fbfae6def29eee17d27c6df7564e5e25ad68d4f81d4") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:22b2dbfd0872bafdf443e049cb45de8c93a8c5f7b97d27fb5793f484cad85895") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (qualified-name "Model"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (qualified-name "Model::Thing"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -52,6 +52,8 @@ package Model {
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "made")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))) (provenance implied))
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "made")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (qualified-name "Model::Thing"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "made")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "made")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "made")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation::result"))) (provenance implied))
+    (relationship (kind redefinition) (source (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "made")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::constructorEvaluations::result"))) (provenance implied))
   )
   (evaluation
     (evaluated (declaration (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "made")) (anonymous (kind kerml-expression) (ordinal 0))))) (state non-constant))
@@ -67,10 +69,13 @@ package Model {
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (qualified-name "Model::made")))
       (effective-type (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (qualified-name "Model::Thing")) (source inherited) (from (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "made")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation::result"))))
       (supertype (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (qualified-name "Model::Thing")) (scopes any))
       (supertype (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "made")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation::result")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::constructorEvaluations::result")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (path (named (kind package) (name "Model")) (named (kind kerml-feature) (name "made")) (anonymous (kind kerml-expression) (ordinal 0)))))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
@@ -92,9 +97,12 @@ package Model {
       (type (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (qualified-name "Model::Thing")) (provenance implied))
       (effective-type (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (qualified-name "Model::Thing")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation::result"))))
       (supertype (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (qualified-name "Model::Thing")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation::result")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::constructorEvaluations::result")) (scopes any feature))
       (subtype (node (document "memory://snapshot/kerml_constructor_expression_specialization.md") (qualified-name "Model::made")) (scopes any feature))
     )
 )

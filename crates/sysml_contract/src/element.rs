@@ -77,6 +77,9 @@ pub enum MultiplicityBound {
     Unbounded,
     /// A bound that folds to a literal integer.
     Literal(i64),
+    /// A literal-only bound whose value is not an integer (a real, string, boolean or null
+    /// literal). It is model-level evaluable, but its value is not a natural number.
+    NonIntegerLiteral,
     /// A bound authored as a non-literal expression, published as an explicit non-literal fact
     /// rather than guessed at.
     Expression,

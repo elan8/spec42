@@ -35,6 +35,7 @@ use crate::model::ReferenceKind;
 use crate::model::SymbolPathId;
 use crate::model::Visibility;
 use crate::resolve::results::EffectiveNameOutcome;
+use crate::resolve::results::EffectiveNameProvenance;
 use crate::resolve::results::ImpliedRelationship;
 use crate::resolve::results::ResolutionStatus;
 use crate::Diagnostic;
@@ -288,13 +289,7 @@ pub(crate) fn write_metadata_annotations(
             output.write_str(" (value (redefines ")?;
             write_target(model, *redefinition, output)?;
             output.write_char(')')?;
-            let value_declaration = model
-                .storage
-                .feature_values
-                .iter()
-                .find(|record| record.declaration == *child)
-                .map(|record| record.value)
-                .unwrap_or(*child);
+            let value_declaration = model.value_expression(*child).unwrap_or(*child);
             match model.resolved_expressions.row(value_declaration) {
                 Some(row) => {
                     write!(output, " (outcome {})", row.outcome.as_str())?;
@@ -612,6 +607,17 @@ pub(crate) fn write_connections(
                 .and_then(|facts| facts.multiplicity.as_ref())
             {
                 output.write_str(" (multiplicity (lower ")?;
+                write_multiplicity_bound(multiplicity.lower, output)?;
+                output.write_str(") (upper ")?;
+                write_multiplicity_bound(multiplicity.upper, output)?;
+                output.write_str("))")?;
+            }
+            if let Some(multiplicity) = model
+                .storage
+                .declaration_facts(child)
+                .and_then(|facts| facts.cross_multiplicity.as_ref())
+            {
+                output.write_str(" (cross-multiplicity (lower ")?;
                 write_multiplicity_bound(multiplicity.lower, output)?;
                 output.write_str(") (upper ")?;
                 write_multiplicity_bound(multiplicity.upper, output)?;
@@ -1013,9 +1019,11 @@ fn write_effective_identification(
     let Some(facts) = model.resolution.effective_names.get(declaration.index()) else {
         return Ok(());
     };
-    if !facts.derived_from_redefinition {
-        return Ok(());
-    }
+    let provenance = match facts.provenance {
+        EffectiveNameProvenance::Declared => return Ok(()),
+        EffectiveNameProvenance::FirstRedefinition => "first-redefinition",
+        EffectiveNameProvenance::OriginalPortDefinition => "original-port-definition",
+    };
     output.write_str(" (effective-identification")?;
     match facts.name {
         EffectiveNameOutcome::Resolved(name) => {
@@ -1035,7 +1043,7 @@ fn write_effective_identification(
         EffectiveNameOutcome::Unresolved => output.write_str(" (short-name unresolved)")?,
         EffectiveNameOutcome::NonConverged => output.write_str(" (short-name non-converged)")?,
     }
-    output.write_str(" (provenance first-redefinition))")
+    write!(output, " (provenance {provenance}))")
 }
 
 fn write_constructor_expression(
@@ -1109,11 +1117,22 @@ pub(crate) fn write_declaration_facts(
         return Ok(());
     };
     let modifiers = declaration_modifier_names(&facts.modifiers);
+    let kind = model
+        .storage
+        .declaration(declaration)
+        .ok_or(fmt::Error)?
+        .kind;
+    let implied_abstract = facts.modifiers.implied_abstract(kind);
+    let implied_variation = facts.modifiers.implied_variation(kind);
     if facts.short_name.is_none()
         && modifiers.is_empty()
+        && !implied_abstract
+        && !implied_variation
         && facts.portion_kind.is_none()
         && facts.direction.is_none()
         && facts.multiplicity.is_none()
+        && facts.cross_multiplicity.is_none()
+        && facts.succession_end_multiplicities.is_none()
         && facts.positional_end.is_none()
         && facts.cross_feature_projection.is_none()
         && facts.expression_result.is_none()
@@ -1133,6 +1152,16 @@ pub(crate) fn write_declaration_facts(
         }
         output.write_char(')')?;
     }
+    if implied_abstract || implied_variation {
+        output.write_str(" (implied-modifiers")?;
+        if implied_abstract {
+            output.write_str(" abstract")?;
+        }
+        if implied_variation {
+            output.write_str(" variation")?;
+        }
+        output.write_char(')')?;
+    }
     if let Some(portion_kind) = facts.portion_kind {
         write!(output, " (portion {})", portion_kind_name(portion_kind))?;
     }
@@ -1145,6 +1174,25 @@ pub(crate) fn write_declaration_facts(
         output.write_str(") (upper ")?;
         write_multiplicity_bound(multiplicity.upper, output)?;
         output.write_str("))")?;
+    }
+    if let Some(multiplicity) = &facts.cross_multiplicity {
+        output.write_str(" (cross-multiplicity (lower ")?;
+        write_multiplicity_bound(multiplicity.lower, output)?;
+        output.write_str(") (upper ")?;
+        write_multiplicity_bound(multiplicity.upper, output)?;
+        output.write_str("))")?;
+    }
+    if let Some(ends) = &facts.succession_end_multiplicities {
+        for (end, multiplicity) in [("source", &ends.source), ("target", &ends.target)] {
+            let Some(multiplicity) = multiplicity else {
+                continue;
+            };
+            write!(output, " (end-multiplicity (end {end}) (lower ")?;
+            write_multiplicity_bound(multiplicity.lower, output)?;
+            output.write_str(") (upper ")?;
+            write_multiplicity_bound(multiplicity.upper, output)?;
+            output.write_str("))")?;
+        }
     }
     if let Some(position) = facts.positional_end {
         write!(output, " (positional-end {position})")?;
@@ -1179,6 +1227,7 @@ pub(crate) fn write_multiplicity_bound(
     match bound {
         MultiplicityBound::Unbounded => output.write_str("unbounded"),
         MultiplicityBound::Literal(value) => write!(output, "{value}"),
+        MultiplicityBound::NonIntegerLiteral => output.write_str("non-integer-literal"),
         MultiplicityBound::Expression => output.write_str("expression"),
     }
 }
@@ -1237,7 +1286,7 @@ pub(crate) fn write_documentation(
         .storage
         .documentation
         .iter()
-        .filter(|record| record.declaration == declaration)
+        .filter(|record| record.element == declaration)
     {
         if !wrote_header {
             output.write_str(" (documentation")?;
@@ -2087,6 +2136,7 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::RequirementDefinition => "requirement-def",
         DeclarationKind::RequirementUsage => "requirement",
         DeclarationKind::PortDefinition => "port-def",
+        DeclarationKind::ConjugatedPortDefinition => "conjugated-port-def",
         DeclarationKind::PortUsage => "port",
         DeclarationKind::ItemDefinition => "item-def",
         DeclarationKind::ItemUsage => "item",
@@ -2098,9 +2148,9 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::Succession => "succession",
         DeclarationKind::StateDefinition => "state-def",
         DeclarationKind::StateUsage => "state",
+        DeclarationKind::ExhibitStateUsage => "exhibit-state",
         DeclarationKind::MetadataDefinition => "metadata-def",
         DeclarationKind::MetadataUsage => "metadata",
-        DeclarationKind::CommentUsage => "comment",
         DeclarationKind::ConnectionDefinition => "connection-def",
         DeclarationKind::InterfaceDefinition => "interface-def",
         DeclarationKind::ConnectionUsage => "connection",
@@ -2152,11 +2202,13 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::Join => "join",
         DeclarationKind::ThenContinuation => "then-continuation",
         DeclarationKind::Flow => "flow",
+        DeclarationKind::SuccessionFlow => "succession-flow",
         DeclarationKind::StakeholderUsage => "stakeholder",
         DeclarationKind::RequirementActor => "requirement-actor",
         DeclarationKind::CaseActor => "case-actor",
         DeclarationKind::Frame => "frame",
         DeclarationKind::VerifyRequirement => "verify-requirement",
+        DeclarationKind::ObjectiveRequirement => "objective-requirement",
         // One name per KerML metaclass; see `DeclarationKind`'s own doc comments for why the
         // keyword spellings are distinct metaclasses rather than one bucket.
         DeclarationKind::KermlClassifier => "kerml-classifier",
@@ -2170,17 +2222,27 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::KermlPredicate => "kerml-predicate",
         DeclarationKind::KermlInteraction => "kerml-interaction",
         DeclarationKind::KermlMultiplicity => "kerml-multiplicity",
+        DeclarationKind::KermlMultiplicityRange => "kerml-multiplicity-range",
         DeclarationKind::KermlType => "kerml-type",
         DeclarationKind::KermlStep => "kerml-step",
         DeclarationKind::KermlExpression => "kerml-expression",
         DeclarationKind::KermlBooleanExpression => "kerml-boolean-expression",
+        DeclarationKind::KermlLiteralBoolean => "kerml-literal-boolean",
+        DeclarationKind::KermlLiteralInteger => "kerml-literal-integer",
+        DeclarationKind::KermlLiteralRational => "kerml-literal-rational",
+        DeclarationKind::KermlLiteralString => "kerml-literal-string",
+        DeclarationKind::KermlLiteralInfinity => "kerml-literal-infinity",
+        DeclarationKind::KermlNullExpression => "kerml-null-expression",
+        DeclarationKind::KermlMetadataAccessExpression => "kerml-metadata-access-expression",
         DeclarationKind::KermlFeature => "kerml-feature",
         DeclarationKind::DefaultReferenceUsage => "default-reference",
         DeclarationKind::ExtendedUsage => "extended-usage",
         DeclarationKind::KermlConnector => "kerml-connector",
         DeclarationKind::KermlBinding => "kerml-binding",
         DeclarationKind::KermlInvariant => "kerml-invariant",
+        DeclarationKind::KermlMetadataFeature => "kerml-metadata-feature",
         DeclarationKind::KermlEnd => "kerml-end",
+        DeclarationKind::FlowEnd => "flow-end",
         DeclarationKind::Assign => "assign",
         DeclarationKind::While => "while",
         DeclarationKind::Loop => "loop",
@@ -2188,6 +2250,9 @@ pub(crate) fn declaration_kind(kind: DeclarationKind) -> &'static str {
         DeclarationKind::ForLoop => "for-loop",
         DeclarationKind::ForLoopVariable => "for-loop-variable",
         DeclarationKind::Dependency => "dependency",
+        DeclarationKind::Comment => "comment",
+        DeclarationKind::Documentation => "documentation",
+        DeclarationKind::TextualRepresentation => "textual-representation",
         DeclarationKind::ExtendedDefinition => "extended-definition",
         DeclarationKind::BareConnect => "bare-connect",
         DeclarationKind::PerformParameterBinding => "perform-parameter-binding",
@@ -2247,6 +2312,7 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::TransitionEffect => "transitionEffect",
         ReferenceKind::MetadataAnnotation => "metadataAnnotation",
         ReferenceKind::MetadataAnnotationAbout => "metadataAnnotationAbout",
+        ReferenceKind::Annotation => "annotation",
         ReferenceKind::FilterMetadataTest => "filterMetadataTest",
         ReferenceKind::SatisfySource => "satisfySource",
         ReferenceKind::SatisfyTarget => "satisfyTarget",
@@ -2267,6 +2333,7 @@ pub(crate) fn reference_kind(kind: ReferenceKind) -> &'static str {
         ReferenceKind::FlowTarget => "flowTarget",
         ReferenceKind::TypeCheckTarget => "typeCheckTarget",
         ReferenceKind::MetaCastTarget => "metaCastTarget",
+        ReferenceKind::MetadataAccessTarget => "metadataAccessTarget",
         ReferenceKind::StakeholderTarget => "stakeholderTarget",
         ReferenceKind::PurposeTarget => "purposeTarget",
         ReferenceKind::VerifyRequirementTarget => "verifyRequirementTarget",
@@ -2315,6 +2382,7 @@ pub(crate) fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::TransitionEffect => Some("transitionEffect"),
         ReferenceKind::MetadataAnnotation => Some("metadataAnnotation"),
         ReferenceKind::MetadataAnnotationAbout => Some("metadataAnnotationAbout"),
+        ReferenceKind::Annotation => Some("annotation"),
         ReferenceKind::FilterMetadataTest => Some("filterMetadataTest"),
         ReferenceKind::SatisfySource => Some("satisfySource"),
         ReferenceKind::SatisfyTarget => Some("satisfyTarget"),
@@ -2335,6 +2403,7 @@ pub(crate) fn relationship_kind(kind: ReferenceKind) -> Option<&'static str> {
         ReferenceKind::FlowTarget => Some("flowTarget"),
         ReferenceKind::TypeCheckTarget => Some("typeCheckTarget"),
         ReferenceKind::MetaCastTarget => Some("metaCastTarget"),
+        ReferenceKind::MetadataAccessTarget => Some("metadataAccessTarget"),
         ReferenceKind::StakeholderTarget => Some("stakeholderTarget"),
         ReferenceKind::PurposeTarget => Some("purposeTarget"),
         ReferenceKind::VerifyRequirementTarget => Some("verifyRequirementTarget"),
@@ -2378,6 +2447,10 @@ mod tests {
             unit_tokens: Box::new([]),
             filter_conditions: Box::new([]),
             invocations: Box::new([]),
+            assignments: Box::new([]),
+            trigger_invocations: Box::new([]),
+            unlowered_expressions: Box::new([]),
+            owned_end_features: Box::new([]),
         };
         let (model, _) = crate::pipeline::phase::build_model(
             storage,

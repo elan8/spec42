@@ -8,7 +8,6 @@ source_expectation=accepted
 rule_family=validate
 expectation=diagnostics
 rule_id=kerml-1.0:8.3.4.8.5:validateFeatureReferenceExpressionReferentIsFeature
-blocked_by=semantic-feature-reference-referent-not-feature
 type=file
 ~~~
 # SOURCE
@@ -35,7 +34,13 @@ package Expressions {
         (severity warning)
         (code "feature_reference_referent_not_feature")
         (source "semantic")
-        (range (start 9 8) (end 9 28))
+        (range (start 9 22) (end 9 27))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md")
+            (range (start 1 4) (end 1 21))
+          )
+        )
       )
     )
   )
@@ -46,6 +51,18 @@ package Expressions {
 (fixture-diagnostics
   (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md"
     (diagnostics
+      (diagnostic
+        (severity warning)
+        (code "feature_reference_referent_not_feature")
+        (source "semantic")
+        (range (start 9 22) (end 9 27))
+        (related-information
+          (related
+            (uri "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md")
+            (range (start 1 4) (end 1 21))
+          )
+        )
+      )
     )
   )
 )
@@ -53,7 +70,7 @@ package Expressions {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:1b19a6b1586cf8ae6dd7995497c2d289ba4456d25e363dba6fd35eeacc83a753"))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:25e19ce4aa3781aac07fd33911b3d6e1dea72317e9705211ebc6a2416e77308c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder"))) (kind kerml-classifier) (membership (kind owning) (visibility default)))
@@ -83,9 +100,11 @@ package Expressions {
     (relationship (kind typing) (source (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder::referent"))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Thing"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder::referent"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder::bad"))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder::bad"))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bad")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bad")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bad")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bad")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder::good"))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder"))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder::good"))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "good")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (provenance implied))
+    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "good")) (anonymous (kind kerml-expression) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "good")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "good")) (anonymous (kind kerml-expression) (ordinal 0))))) (provenance implied))
     (relationship (kind subsetting) (source (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "good")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder::referent"))) (provenance implied))
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder::referent"))) (target (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder"))) (provenance implied))
@@ -103,6 +122,9 @@ package Expressions {
       (featured-by (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder")))
       (supertype (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bad")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
     )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bad")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder")))
+    )
     (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bad")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "bad")) (anonymous (kind kerml-expression) (ordinal 0)))))
       (subtype (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder::bad")) (scopes any feature))
@@ -113,6 +135,9 @@ package Expressions {
       (supertype (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "good")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))) (scopes any feature))
       (supertype (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder::referent")) (scopes any feature))
       (supertype (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Thing")) (scopes any))
+    )
+    (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "good")) (anonymous (kind kerml-expression) (ordinal 0)))))
+      (featured-by (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (qualified-name "Expressions::Holder")))
     )
     (declaration (id (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "good")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/kerml_feature_reference_expression_referent_is_feature.md") (path (named (kind package) (name "Expressions")) (named (kind kerml-classifier) (name "Holder")) (named (kind kerml-feature) (name "good")) (anonymous (kind kerml-expression) (ordinal 0)))))

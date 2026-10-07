@@ -84,37 +84,23 @@ pub(crate) fn compute_evaluation(
                     state: skipped(&classify_authored(sources, &pending.expression)),
                 })
                 .collect(),
-            filters: settled_filters(storage, |condition| {
-                skipped(&classify_authored(sources, &condition.expression))
-            }),
+            filters: {
+                let operand_targets = operand_targets(storage, resolution);
+                settled_filters(storage, |condition| {
+                    let shape = classify_authored(sources, &condition.expression);
+                    (
+                        skipped(&shape),
+                        evaluability_inputs(&shape, condition.owner, &operand_targets),
+                    )
+                })
+            },
         };
     }
     if resolution.solver_status != SolverStatus::Converged {
         return SettledEvaluation::Vacuous;
     }
 
-    // operand_targets[declaration][ordinal] = the ExpressionOperand reference's resolved target,
-    // or None when that reference did not resolve to exactly one declaration.
-    let mut operand_targets: std::collections::BTreeMap<DeclarationId, Vec<Option<DeclarationId>>> =
-        Default::default();
-    for (index, reference) in storage.references.iter().enumerate() {
-        if reference.kind != ReferenceKind::ExpressionOperand {
-            continue;
-        }
-        let Ok(id) = AuthoredReferenceId::from_index(index) else {
-            continue;
-        };
-        let target = match resolution.outcome(id) {
-            Some(ResolutionStatus::Resolved(target)) => Some(target),
-            _ => None,
-        };
-        let ordinal = reference.ordinal as usize;
-        let slot = operand_targets.entry(reference.source).or_default();
-        if slot.len() <= ordinal {
-            slot.resize(ordinal + 1, None);
-        }
-        slot[ordinal] = target;
-    }
+    let operand_targets = operand_targets(storage, resolution);
 
     // Every authored expression, classified exactly once. Classification walks the expression
     // tree, so the five passes below read this vector rather than re-deriving the shape each time
@@ -140,15 +126,11 @@ pub(crate) fn compute_evaluation(
         .filter(|(_, shape)| !matches!(shape, ExpressionEvalShape::Unsupported))
         .map(|(pending, _)| pending.declaration)
         .collect();
-    // Operand references resolve to the valued Feature, while evaluation is owned by its value
+    // Operand references resolve to the valued declaration (a Feature with a value, or a
+    // Function or Expression with a result expression), while evaluation is owned by its value
     // Expression. This projection is the one canonical bridge between those identity domains;
-    // the fixed point never duplicates an outcome onto the Feature.
-    let value_expression_by_feature: std::collections::BTreeMap<DeclarationId, DeclarationId> =
-        storage
-            .feature_values
-            .iter()
-            .map(|value| (value.declaration, value.value))
-            .collect();
+    // the fixed point never duplicates an outcome onto the valued declaration.
+    let value_expressions = storage.value_expressions();
 
     let mut outcomes: std::collections::BTreeMap<DeclarationId, EvaluatedValue> =
         Default::default();
@@ -176,9 +158,10 @@ pub(crate) fn compute_evaluation(
                 match targets.and_then(|targets| targets.get(ordinal as usize).copied().flatten()) {
                     None => Some(EvaluatedValue::UnresolvedOperand),
                     Some(target) => {
-                        let target = value_expression_by_feature
-                            .get(&target)
+                        let target = value_expressions
+                            .get(target.index())
                             .copied()
+                            .flatten()
                             .unwrap_or(target);
                         match outcomes.get(&target) {
                             Some(value) => Some(value.clone()),
@@ -232,11 +215,10 @@ pub(crate) fn compute_evaluation(
     // read-only consumers of it: a condition defines no declaration's value, so nothing can depend
     // on one, and folding them here cannot change what any declaration evaluated to.
     let filters = settled_filters(storage, |condition| {
-        fold_settled_expression(
-            &classify_authored(sources, &condition.expression),
-            condition.owner,
-            &operand_targets,
-            &outcomes,
+        let shape = classify_authored(sources, &condition.expression);
+        (
+            fold_settled_expression(&shape, condition.owner, &operand_targets, &outcomes),
+            evaluability_inputs(&shape, condition.owner, &operand_targets),
         )
     });
 
@@ -254,20 +236,100 @@ pub(crate) fn compute_evaluation(
 /// that could not produce a state for every condition broke it by publishing none.
 pub(crate) fn settled_filters(
     storage: &SemanticModelStorage,
-    mut state_of: impl FnMut(&AuthoredFilterCondition) -> EvaluationState,
+    mut settle: impl FnMut(
+        &AuthoredFilterCondition,
+    ) -> (EvaluationState, expression::EvaluabilityInputs),
 ) -> Box<[expression::SettledFilter]> {
     storage
         .filter_conditions
         .iter()
-        .map(|condition| expression::SettledFilter {
-            owner: condition.owner,
-            document: condition.document,
-            form: condition.form,
-            span: condition.span,
-            state: state_of(condition),
-            predicate: condition.predicate.clone(),
+        .map(|condition| {
+            let (state, evaluability) = settle(condition);
+            expression::SettledFilter {
+                owner: condition.owner,
+                document: condition.document,
+                form: condition.form,
+                span: condition.span,
+                state,
+                predicate: condition.predicate.clone(),
+                evaluability,
+            }
         })
         .collect()
+}
+
+/// `operand_targets[declaration][ordinal]`: each `ExpressionOperand` reference's resolved target,
+/// or `None` when that reference did not resolve to exactly one declaration.
+fn operand_targets(
+    storage: &SemanticModelStorage,
+    resolution: &ResolutionResults,
+) -> std::collections::BTreeMap<DeclarationId, Vec<Option<DeclarationId>>> {
+    let mut operand_targets: std::collections::BTreeMap<DeclarationId, Vec<Option<DeclarationId>>> =
+        Default::default();
+    for (index, reference) in storage.references.iter().enumerate() {
+        if reference.kind != ReferenceKind::ExpressionOperand {
+            continue;
+        }
+        let Ok(id) = AuthoredReferenceId::from_index(index) else {
+            continue;
+        };
+        let target = match resolution.outcome(id) {
+            Some(ResolutionStatus::Resolved(target)) => Some(target),
+            _ => None,
+        };
+        let ordinal = reference.ordinal as usize;
+        let slot = operand_targets.entry(reference.source).or_default();
+        if slot.len() <= ordinal {
+            slot.resize(ordinal + 1, None);
+        }
+        slot[ordinal] = target;
+    }
+    operand_targets
+}
+
+/// The model-level evaluability inputs of one classified expression: its feature-reference
+/// referents when every node is a literal, an operand, or an operator the classifier admits (each
+/// of which a model-level evaluable Kernel Function Library function implements), and
+/// `Undecided` for anything else.
+fn evaluability_inputs(
+    shape: &ExpressionEvalShape,
+    owner: DeclarationId,
+    operand_targets: &std::collections::BTreeMap<DeclarationId, Vec<Option<DeclarationId>>>,
+) -> expression::EvaluabilityInputs {
+    fn collect(node: &fold::EvalNode, ordinals: &mut Vec<u32>) -> bool {
+        match node {
+            fold::EvalNode::Literal(_) => true,
+            fold::EvalNode::Operand(ordinal) => {
+                ordinals.push(*ordinal);
+                true
+            }
+            fold::EvalNode::Comparison(_, left, right)
+            | fold::EvalNode::Arithmetic(_, left, right)
+            | fold::EvalNode::Logical(_, left, right) => {
+                collect(left, ordinals) && collect(right, ordinals)
+            }
+            fold::EvalNode::Unary(_, operand) => collect(operand, ordinals),
+            fold::EvalNode::Invocation(_) => false,
+        }
+    }
+    let mut ordinals = Vec::new();
+    let composed = match shape {
+        ExpressionEvalShape::Literal(_) | ExpressionEvalShape::ConstantFolded(_) => true,
+        ExpressionEvalShape::HasOperand(tree) => collect(tree, &mut ordinals),
+        ExpressionEvalShape::Unsupported => false,
+    };
+    if !composed {
+        return expression::EvaluabilityInputs::Undecided;
+    }
+    let targets = operand_targets.get(&owner);
+    expression::EvaluabilityInputs::Composed {
+        referents: ordinals
+            .into_iter()
+            .map(|ordinal| {
+                targets.and_then(|targets| targets.get(ordinal as usize).copied().flatten())
+            })
+            .collect(),
+    }
 }
 
 /// Everything the evaluation pass settled.

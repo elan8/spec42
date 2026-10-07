@@ -34,7 +34,7 @@ package SequenceNegative {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:eaed36cecf940a559efe2d04a551b1fb5ca6dface7d64a8d171729a1f39f9c4f") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:8e77318b3df28695c167d3ed558fb09f83b564d8d2a89412ce3dbe46a15fcbde") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_sequence_unresolved.md") (qualified-name "SequenceNegative"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_sequence_unresolved.md") (path (named (kind package) (name "SequenceNegative")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -136,7 +136,7 @@ package SequenceNegative {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:44af99205aa8a798d1a76a967d3a4caf33eca2e7b843e39e635ba0cb7fe73c4d",
+  "modelDigest": "blake3:9fdb760bc6da80b43fd50e5684e1fea5a2d9314b87b52ddfbc2e2eda75272d1d",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_sequence_unresolved.md",

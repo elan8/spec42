@@ -45,7 +45,7 @@ perform action doS : Dff {     for y // ndent g {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:dd299cf26d8301e7e63c85e3d821fcc1050bf3e826a926bc09df6e79a2e6bea3"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:5ac3bc1f2eccde1f0ac0a96375328a8951839d33059c4ea9c508c21b2ea97b1c"))
   (declarations
     (declaration (id (node (document "memory://snapshot/fuzz_crash_for_loop_multicomment.md") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/fuzz_crash_for_loop_multicomment.md") (qualified-name "P::A"))) (kind action-def) (membership (kind owning) (visibility default)))

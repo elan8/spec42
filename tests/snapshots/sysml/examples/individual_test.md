@@ -57,7 +57,7 @@ package IndividualTest {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:8aaa76503e399a4d53a6404f73f0aaba1f59f191abfdc503b8a7730f70e140fd"))
+  (publication (phase resolved) (completeness complete) (has-evaluation false) (source-digest "blake3:9fad642d0341d33154e7d20e6683de6492d26a4969d349f3f3dff377a19eec5b"))
   (declarations
     (declaration (id (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/individual_test.md") (qualified-name "IndividualTest::A"))) (kind action-def) (membership (kind owning) (visibility default)))
