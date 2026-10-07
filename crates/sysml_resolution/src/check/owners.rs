@@ -102,6 +102,11 @@ impl<D> SemanticModel<D> {
             // SysML 8.3.18.9 `validateTransitionUsageTriggerActions`: a transition owning a
             // trigger membership has a StateUsage source. Reported at the trigger member, as the
             // Pilot reports it at the trigger TransitionFeatureMembership.
+            //
+            // Known library deviation: the pinned Systems Library breaks this rule itself.
+            // `Actions::AcceptAction::aState::aTransition` (`first start accept ... then done`)
+            // has the ActionUsage `start` as its source, so it is reported when the library's
+            // own diagnostics are requested. The rule is as specified.
             Some(MembershipRole::TransitionTriggerAction) => {
                 if let Some(transition) = owner {
                     if let Some(source) = self
@@ -279,10 +284,8 @@ impl<D> SemanticModel<D> {
                 ReferenceKind::MetadataAnnotation,
             ],
         );
-        // The grammar requires a typing on every metadata feature. None is authored only for
-        // the `metadata T about x;` shorthand, which the pinned parser reads as a declared name
-        // (planning/UPSTREAM_PARSER_GAPS.md `metadata-usage-shorthand`); the type is then
-        // unknown rather than absent.
+        // The grammar requires a typing on every metadata feature, so a metadata feature
+        // without one was not fully parsed; its type is unknown rather than absent.
         if typings.is_empty() {
             return Ok(());
         }

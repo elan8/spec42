@@ -103,9 +103,9 @@ package FeatureAdvancedCoverage {
       )
       (diagnostic
         (severity warning)
-        (code "unsupported_package_member")
+        (code "unresolved_reference")
         (source "semantic")
-        (range (start 17 4) (end 17 11))
+        (range (start 17 5) (end 17 11))
       )
       (diagnostic
         (severity error)
@@ -154,6 +154,7 @@ package FeatureAdvancedCoverage {
     (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::y"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (referenceSubsetting (reference "myFeature")))))
     (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::z"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (redefinition (reference "myFeature")))))
     (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::z1"))) (kind kerml-feature) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "T")))))
+    (declaration (id (node (document "memory://snapshot/coverage_features_advanced.md") (path (named (kind package) (name "FeatureAdvancedCoverage")) (named (kind kerml-feature) (name "z1")) (anonymous (kind kerml-metadata-feature) (ordinal 0))))) (kind kerml-metadata-feature) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (metadataAnnotation (reference "Safety")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/coverage_features_advanced.md") (path (named (kind package) (name "FeatureAdvancedCoverage")) (anonymous (kind import) (ordinal 0))))) (kind membershipImport) (ordinal 0))
@@ -183,6 +184,9 @@ package FeatureAdvancedCoverage {
     (reference (id (source (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::z1"))) (kind featureTyping) (ordinal 0))
       (authored-target "T")
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::T")))))
+    (reference (id (source (node (document "memory://snapshot/coverage_features_advanced.md") (path (named (kind package) (name "FeatureAdvancedCoverage")) (named (kind kerml-feature) (name "z1")) (anonymous (kind kerml-metadata-feature) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0))
+      (authored-target "Safety")
+      (outcome (status unresolved)))
   )
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::C::m"))) (target (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::T"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::C::m"))) (kind featureTyping) (ordinal 0)))
@@ -227,6 +231,12 @@ package FeatureAdvancedCoverage {
       (effective-type (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::T")) (source direct))
       (supertype (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::T")) (scopes any))
     )
+)
+~~~
+# METADATA ANNOTATIONS
+~~~sexpr
+(metadata-annotations
+  (annotation (element (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::z1"))) (form prefix-keyword) (definition unresolved))
 )
 ~~~
 # NAVIGATION
@@ -275,6 +285,11 @@ package FeatureAdvancedCoverage {
   (query (document "memory://snapshot/coverage_features_advanced.md") (range (start 17 25) (end 17 26)) (probe (position 17 25))
     (reference (id (source (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::z1"))) (kind featureTyping) (ordinal 0) (authored-target "T")
       (outcome (status resolved) (target (node (document "memory://snapshot/coverage_features_advanced.md") (qualified-name "FeatureAdvancedCoverage::T")))))
+    )
+  )
+  (query (document "memory://snapshot/coverage_features_advanced.md") (range (start 17 5) (end 17 11)) (probe (position 17 5))
+    (reference (id (source (node (document "memory://snapshot/coverage_features_advanced.md") (path (named (kind package) (name "FeatureAdvancedCoverage")) (named (kind kerml-feature) (name "z1")) (anonymous (kind kerml-metadata-feature) (ordinal 0))))) (kind metadataAnnotation) (ordinal 0) (authored-target "Safety")
+      (outcome (status unresolved)))
     )
   )
 )

@@ -140,6 +140,10 @@ pub(crate) struct PendingPrefixMetadata {
     /// The `#tag` keyword span, used both for the minted annotation's declaration and, when the
     /// prefix never binds, for its unsupported-member diagnostic.
     pub(crate) span: Span,
+    /// The namespace whose body holds the tag. It only ever binds to a member of this namespace.
+    pub(crate) owner: Option<DeclarationId>,
+    /// The body family an unbound tag is reported under.
+    pub(crate) family: UnsupportedFamily,
 }
 
 #[derive(Debug, Default)]
@@ -462,9 +466,12 @@ impl SemanticModelBuilder {
         self.intern_declared_name(decoded.as_ref())
     }
 
-    /// Interns the authored bytes of a regular-comment body. Normalized comment text is a
-    /// separate parser query; documentation publication has historically preserved the authored
-    /// body and continues to do so across the span-backed AST migration.
+    /// Interns a regular-comment body processed per KerML 8.2.3.3.2 note 1 (shared by
+    /// `Comment`, `Documentation`, and, through 8.2.3.3.3 note 1, `TextualRepresentation`):
+    /// whitespace after `/*` up to the first line terminator is dropped and each later line loses
+    /// its leading whitespace, one `*`, and one following space. The parser owns that lexical
+    /// rule, so consumers (hover, reports, generated documents) never re-implement it -- spec42
+    /// issue #210.
     pub(crate) fn intern_comment_body(
         &mut self,
         document: DocumentIdx,
@@ -478,9 +485,9 @@ impl SemanticModelBuilder {
                 .parsed,
         );
         let text = parsed
-            .comment_body(body)
+            .normalized_comment_body(body)
             .ok_or(ConstructionError::InvalidParserReference)?;
-        self.intern_name(text)
+        self.intern_name(text.as_ref())
     }
 
     /// Interns an optional authored `<shortName>` prefix; see `intern_declaration_name`.
@@ -2148,6 +2155,8 @@ impl SemanticModelBuilder {
         for element in &parsed.root.elements {
             self.lower_root_element(document, element)?;
         }
+        // A `#tag` that ends the document's last body never met a member to bind to.
+        self.flush_pending_prefix_metadata(document);
         self.synthesize_multiplicities(document)?;
         self.synthesize_conjugated_port_definitions(document)?;
         self.derive_owned_cross_features(document)
@@ -2470,6 +2479,29 @@ impl SemanticModelBuilder {
     }
 
     pub(crate) fn lower_package_element(
+        &mut self,
+        document: DocumentIdx,
+        owner: Option<DeclarationId>,
+        element: &Node<PackageBodyElement>,
+    ) -> Result<(), ConstructionError> {
+        // A body-less `#tag` (`PrefixMetadataMember`, `#Tag requirement r;`) is a standalone
+        // sibling that annotates the member after it.
+        if let PackageBodyElement::MetadataKeywordUsage(keyword) = &element.value {
+            if keyword.value.body.is_none() {
+                self.buffer_prefix_metadata_keyword(
+                    owner,
+                    UnsupportedFamily::PackageMember,
+                    keyword,
+                );
+                return Ok(());
+            }
+        }
+        self.lower_prefixable_member(document, owner, element.span, |this| {
+            this.lower_package_member(document, owner, element)
+        })
+    }
+
+    fn lower_package_member(
         &mut self,
         document: DocumentIdx,
         owner: Option<DeclarationId>,
@@ -3026,9 +3058,10 @@ impl SemanticModelBuilder {
                 keyword.span,
                 DeclarationFacts::none(),
             )?;
+            // `PrefixMetadataMember` is an OwningMembership, not a FeatureMembership.
             self.push_membership(
                 annotation,
-                MembershipKind::Feature,
+                MembershipKind::Owning,
                 Visibility::Default,
                 keyword.span,
             )?;
@@ -3062,12 +3095,81 @@ impl SemanticModelBuilder {
     /// the walker's responsibility, exactly as it is for sibling `doc`/`comment` annotations.
     pub(crate) fn buffer_prefix_metadata_keyword(
         &mut self,
+        owner: Option<DeclarationId>,
+        family: UnsupportedFamily,
         node: &Node<sysml_v2_parser::ast::MetadataKeywordUsage>,
     ) {
         self.pending_prefix_metadata.push(PendingPrefixMetadata {
             reference: node.value.reference,
             span: node.span,
+            owner,
+            family,
         });
+    }
+
+    /// Lowers one member of `owner`'s body through `lower` and binds the body-less `#tag` prefixes
+    /// buffered for `owner` to the declaration that member mints: the first new declaration owned
+    /// by `owner` whose span lies within `member_span`. A member that mints no such declaration
+    /// (an import, a recovery node) leaves its prefixes as explicit unsupported members.
+    ///
+    /// The prefixes are taken before `lower` runs, so a nested body cannot bind them, and any
+    /// prefix a nested body left unbound is reported once `lower` returns, because that body has
+    /// ended. Walkers that use this need no end-of-body flush: a trailing prefix is reported when
+    /// the enclosing body's next member is lowered, or at the end of the document.
+    pub(crate) fn lower_prefixable_member(
+        &mut self,
+        document: DocumentIdx,
+        owner: Option<DeclarationId>,
+        member_span: Span,
+        lower: impl FnOnce(&mut Self) -> Result<(), ConstructionError>,
+    ) -> Result<(), ConstructionError> {
+        let (prefixes, foreign): (Vec<_>, Vec<_>) =
+            std::mem::take(&mut self.pending_prefix_metadata)
+                .into_iter()
+                .partition(|entry| entry.owner == owner);
+        self.report_unbound_prefix_metadata(document, foreign);
+        let first_new = self.declarations.len();
+        lower(self)?;
+        let nested = std::mem::take(&mut self.pending_prefix_metadata);
+        self.report_unbound_prefix_metadata(document, nested);
+        if prefixes.is_empty() {
+            return Ok(());
+        }
+        let member = self.declarations[first_new..]
+            .iter()
+            .position(|declaration| {
+                declaration.document == document
+                    && declaration.owner == owner
+                    && declaration.kind != DeclarationKind::Import
+                    && declaration.span.offset >= member_span.offset
+                    && declaration.span.offset + declaration.span.len
+                        <= member_span.offset + member_span.len
+            })
+            .map(|offset| DeclarationId::from_index(first_new + offset))
+            .transpose()
+            .map_err(|_| ConstructionError::Capacity)?;
+        match member {
+            Some(member) => {
+                self.pending_prefix_metadata = prefixes;
+                self.bind_pending_prefix_metadata(document, member)
+            }
+            None => {
+                self.report_unbound_prefix_metadata(document, prefixes);
+                Ok(())
+            }
+        }
+    }
+
+    /// Reports each prefix in `entries` as an explicit unsupported member of the body it was
+    /// authored in.
+    fn report_unbound_prefix_metadata(
+        &mut self,
+        document: DocumentIdx,
+        entries: Vec<PendingPrefixMetadata>,
+    ) {
+        for entry in entries {
+            self.push_unsupported(document, entry.family, entry.span);
+        }
     }
 
     /// Binds every buffered body-less `#tag` prefix metadata keyword to `declaration` -- the member
@@ -3088,9 +3190,11 @@ impl SemanticModelBuilder {
                 entry.span,
                 DeclarationFacts::none(),
             )?;
+            // `PrefixMetadataMember` is an OwningMembership, as `AnnotatingMember` is: the
+            // annotation is not an `ownedFeature` of the member it prefixes.
             self.push_membership(
                 annotation,
-                MembershipKind::Feature,
+                MembershipKind::Owning,
                 Visibility::Default,
                 entry.span,
             )?;
@@ -3122,14 +3226,9 @@ impl SemanticModelBuilder {
     /// as an explicit unsupported member of `family`. Called before any non-prefixable member and
     /// at the end of a body so a dangling prefix stays visible rather than leaking onto a later
     /// declaration.
-    pub(crate) fn flush_pending_prefix_metadata(
-        &mut self,
-        document: DocumentIdx,
-        family: UnsupportedFamily,
-    ) {
-        for entry in std::mem::take(&mut self.pending_prefix_metadata) {
-            self.push_unsupported(document, family, entry.span);
-        }
+    pub(crate) fn flush_pending_prefix_metadata(&mut self, document: DocumentIdx) {
+        let entries = std::mem::take(&mut self.pending_prefix_metadata);
+        self.report_unbound_prefix_metadata(document, entries);
     }
 
     /// Lowers a package-level `alias X for Y;` member into a declaration plus an authored

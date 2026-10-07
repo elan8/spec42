@@ -3238,10 +3238,14 @@ mod tests {
 
         assert!(index.is_public(DeclarationId(0)));
         assert!(index.is_public(DeclarationId(1)));
-        // A Membership defaults to public whatever kind of Namespace owns it; only an Import
-        // defaults to private.
-        assert!(index.is_public(DeclarationId(2)));
-        assert!(!index.is_public(DeclarationId(3)));
+        assert!(
+            index.is_public(DeclarationId(2)),
+            "a default membership is public in any namespace, not only a package (#231)"
+        );
+        assert!(
+            !index.is_public(DeclarationId(3)),
+            "an import is the one membership that defaults to private"
+        );
     }
 
     #[test]

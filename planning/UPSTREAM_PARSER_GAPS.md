@@ -3,10 +3,12 @@
 This is the active record of information the parser must preserve or distinguish before spec42 can
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
-The parser currently pinned by the root workspace is the fork commit
-`lukewilliamboswell/sysml-v2-parser@532fb0a66fe75693cdaed009b7f49d181fcd0d97` (branch
-`spec42-parser-gaps`, `PARSE_AST_VERSION` 265), pending upstream merge as
-`elan8/sysml-v2-parser#161`; only the rows this pin closed or narrowed were re-verified against it. The last
+The parser currently pinned by the root workspace is
+`elan8/sysml-v2-parser@5073edfb297089b9c4b9cd56af6d2d10845a006f` (`PARSE_AST_VERSION` 266): parser
+`main` at `ecdd07bc` (`elan8/sysml-v2-parser#172`, which carries the grammar work first proposed as
+`#161`) plus the `metadata def` member fix on branch `fix/metadata-def-default-reference-members`.
+That commit is not on parser `main` yet: re-pin to the merge commit once the branch lands. Only
+the rows this pin closed or narrowed were re-verified against it. An earlier
 canonical upstream pin was `elan8/sysml-v2-parser@9f00caf353581a3c0ccc13676c5d8829f90708b3`
 (parser `main`, `PARSE_AST_VERSION` 256), which added `elan8/sysml-v2-parser#139` (`elan8/spec42#140`): a targeted
 `verify_requirement_expects_declaration` recovery for the invalid `verify requirement
@@ -101,7 +103,6 @@ rerun against the exact replacement revision when fixed.
 | 41 | Lexically distinguished implicit `that` self-reference | Produce a dedicated typed form that cannot collide with a user declaration; cover bare, cast, and member-access expressions |
 | 55 | `//` and `/** ... */` comment fidelity, and `DocComment` text normalization | Decide and test whether doc-style trivia is syntax; if syntax, preserve kind, raw span, and one normalized-text policy centrally |
 | view-rendering-usage | Which `ViewRenderingUsage` alternative was written: `ast::ViewRenderingUsage` drops the `rendering` keyword and reads the `OwnedReferenceSubsetting` shorthand's target (`render asTreeDiagram;`) as a declared `name`, so a qualified target cannot be represented and a reference is indistinguishable from a declaration | Distinguish `render <QualifiedName> ...;` (ReferenceSubsetting target, qualified allowed) from `render rendering r : R;` / `render <keyword>+ r;` (declared Usage); prove both produce distinct typed nodes, so spec42 can lower the ViewRenderingMembership member (`lowering-gap-redefinition-view-rendering-membership`) |
-| metadata-usage-shorthand | Which `MetadataFeatureDeclaration` alternative was written: `ast::MetadataUsage` reads the typing-only shorthand `metadata Marker about x;` as a declared `name` with no `type_reference`, so its `OwnedFeatureTyping` (the metaclass) cannot be represented | Parse `metadata <QualifiedName> (about ...)? body` as a typing reference with no declared name, and `metadata <name> (':' \| 'typed by') <QualifiedName>` as a declared name plus typing; prove both produce a typed metaclass reference, so spec42 can check `validateMetadataFeatureMetaclass` over the shorthand |
 | state-action-declaration | Which `PerformActionUsageDeclaration` alternative an `entry`/`do`/`exit` member wrote: `entry action started;` is `'action' UsageDeclaration` (a new action named `started`), but the parser reads it as `action_reference` and only treats the name as declared when a `: Type`, `:>>` clause or owned body follows | Read `(entry\|do\|exit) action <Name> ...;` as `declared_name` and keep `action_reference` for the keyword-less `OwnedReferenceSubsetting` form (`entry started;`); prove `entry action started;` yields a declared action, so spec42 snapshots can use the plain spelling for StateSubactionMembership rules |
 | body-member-expression-shredding | Use-case-family body members the dispatcher does not recognise still fall through to the terminal `expression` arm: `include system.uc1;` and `include use case u :> v [1..5];` in a `use case` body yield stray `Expression` elements (`include`, ...). Constraint, calculation and KerML type bodies are fixed | Dispatch every use-case-family body member keyword (`include` with a feature-chain or `use case` target) before the expression fallback; prove `use case uc { include a.b; }` yields no expression element. spec42 can then lower case-body result expressions as ResultExpressionMemberships (constraint/calc/KerML bodies already are) |
 

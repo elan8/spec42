@@ -100,6 +100,49 @@ fn contextual_expressions_and_connector_paths_have_seeded_schedule_parity() {
     }
 }
 
+/// An enumeration literal owns the members and documentation authored in its body.
+///
+/// `EnumeratedValue.body` is a full `PartUsageBody`, the same shape `lower_part_usage` walks,
+/// so its members go through the same `lower_part_usage_body_element`. Before it was walked, a
+/// literal's redefinitions and its own doc comment were both unreachable -- the per-literal
+/// half of the old Gap 56.
+#[test]
+fn enumeration_literal_bodies_publish_their_members_and_documentation() {
+    let output = build_semantic_sexpr(
+        "package Demo {\n\
+         \tattribute def Level {\n\
+         \t\tattribute code : String;\n\
+         \t}\n\
+         \tenum def Kind specializes Level {\n\
+         \t\tsecret {\n\
+         \t\t\tdoc /* The secret level. */\n\
+         \t\t\t:>> code = \"secr\";\n\
+         \t\t}\n\
+         \t}\n\
+         }\n",
+    );
+    // The doc comment is the literal's own Documentation element, owned by the literal.
+    let documentation = output
+        .lines()
+        .find(|line| {
+            line.contains("(named (kind enum-literal) (name \"secret\"))")
+                && line.contains("(kind documentation)")
+        })
+        .unwrap_or_else(|| panic!("no documentation owned by the enum literal, got:\n{output}"));
+    assert!(
+        documentation.contains("(documentation (doc (text \"The secret level. \")))"),
+        "expected the literal to publish its own doc comment, got:\n{documentation}"
+    );
+    assert!(
+        output.contains("(named (kind enum-literal) (name \"secret\"))"),
+        "expected the literal to own the members authored in its body, got:\n{output}"
+    );
+    assert!(
+        output.contains("(redefinition (reference \"code\"))"),
+        "expected the literal body's `:>>` redefinition to reach the model, got:\n{output}"
+    );
+}
+
 /// The authored value spelling on a requirement subject and an enumeration literal.
 ///
 /// `SubjectDecl.value` became a `FeatureValue` and `EnumeratedValue` gained one, so both can
@@ -3268,13 +3311,12 @@ fn a_non_literal_multiplicity_bound_is_published_as_an_expression() {
 }
 
 /// A `doc` body element annotates the declaration owning that body, and the recorded text is
-/// the raw content between the comment delimiters -- the parser performs no leading-`*`
-/// stripping or dedent, so neither does this fact.
+/// the body processed per KerML 8.2.3.3.2 note 1 (leading white space after `/*` removed).
 #[test]
 fn doc_comments_bind_to_the_declaration_owning_their_body() {
     let sexpr = semantic_sexpr_for("package P { part def Wheel { doc /* a wheel */ } }");
     assert!(
-        sexpr.contains(r#"(documentation (doc (text " a wheel ")))"#),
+        sexpr.contains(r#"(documentation (doc (text "a wheel ")))"#),
         "expected the doc comment bound to the part def, got: {sexpr}"
     );
 }
@@ -3866,24 +3908,6 @@ part vehicle : Vehicle;
     );
 }
 
-/// A name shared by siblings of *different* kinds needs no occurrence ordinal -- the kind on
-/// every path segment already separates them. This is the sibling `sysml-compiler`'s tag byte:
-/// `metadata def X` and the `metadata X about ...` annotating it are distinct elements.
-#[test]
-fn same_name_different_kind_siblings_are_separated_by_kind() {
-    let sexpr = semantic_sexpr_for(
-        "package P { part def Vehicle; metadata def Safety; metadata Safety about Vehicle; }",
-    );
-    assert!(
-        sexpr.contains(r#"(named (kind metadata-def) (name "Safety"))"#),
-        "expected the metadata definition's kind in its identity, got: {sexpr}"
-    );
-    assert!(
-        sexpr.contains(r#"(named (kind metadata) (name "Safety"))"#),
-        "expected the metadata usage's kind in its identity, got: {sexpr}"
-    );
-}
-
 #[test]
 fn conformance_is_reflexive_and_transitive() {
     let published = publication_for(&[(
@@ -4335,7 +4359,7 @@ fn derived_element_documentation_filters_canonical_typed_forms() {
     assert_eq!(documentation[0].form, AnnotationForm::Documentation);
     assert_eq!(
         published.text(documentation[0].text).unwrap_or_default(),
-        " vehicle documentation "
+        "vehicle documentation "
     );
     assert!(documentation[0].language.is_none());
 
@@ -4351,7 +4375,46 @@ fn derived_element_documentation_filters_canonical_typed_forms() {
     assert_eq!(representations[0].language.as_deref(), Some("Alf"));
     assert_eq!(
         published.text(representations[0].text).unwrap_or_default(),
-        " vehicle implementation "
+        "vehicle implementation "
+    );
+}
+
+/// Comment, documentation, and textual-representation bodies publish the text KerML 8.2.3.3.2
+/// note 1 defines, not the authored bytes: the continuation `*` and the indentation before it
+/// are removed, while line structure (paragraphs, list items) survives -- spec42 issue #210.
+#[test]
+fn derived_element_documentation_publishes_processed_comment_bodies() {
+    let source = "package Model {\n    view overview {\n        doc /* The system consists of the airframe\n             * and the flight controller.\n             *\n             * - patrol\n             * - search */\n        comment /*\n           * first\n           *   indented\n           */\n        language \"Alf\" /*\n            *  x = 1;\n            */\n    }\n}";
+    let published = detail_publication(
+        &[("memory://model.sysml", source)],
+        ConstructionSchedule::Sequential,
+    );
+    let overview = identity_of(&published, "memory://model.sysml", "Model::overview");
+    let body = |collection| {
+        let records = settled(published.element_derived_documentation(overview, collection));
+        assert_eq!(records.len(), 1, "{collection:?}");
+        published
+            .text(records[0].text)
+            .unwrap_or_default()
+            .to_string()
+    };
+    assert_eq!(
+        body(ElementDerivedDocumentationCollection::Documentation),
+        "The system consists of the airframe\nand the flight controller.\n\n- patrol\n- search "
+    );
+    let inspection = settled(published.inspect(overview));
+    let comment = inspection
+        .documentation
+        .iter()
+        .find(|record| record.form == AnnotationForm::Comment)
+        .expect("expected the comment annotation");
+    assert_eq!(
+        published.text(comment.text).unwrap_or_default(),
+        "first\n  indented\n"
+    );
+    assert_eq!(
+        body(ElementDerivedDocumentationCollection::TextualRepresentation),
+        " x = 1;\n"
     );
 }
 

@@ -16,7 +16,7 @@ use std::fmt::Write as _;
 use std::fs;
 use std::io::Write as _;
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, OnceLock};
+use std::sync::Arc;
 
 use clap::{Parser, Subcommand};
 use generator_api::{ArtifactLimits, DiagramSemanticReference, GeneratorModelView, QueryLimits};
@@ -2151,30 +2151,30 @@ impl GeneratedArtifacts {
 /// sections, so they are the admission input as well as fixtures in their own right.
 const STANDARD_LIBRARY_DIRECTORY: &str = "sysml.library";
 
-/// Lazily loaded library sources, shared by every fixture that admits them.
+/// Library sources loaded before fixture workers start, then shared immutably.
 struct LibraryCorpus {
-    root: PathBuf,
     services: sysml_query::Services,
-    standard_documents: OnceLock<Result<Vec<AdmittedDocument>, String>>,
+    standard_documents: Result<Vec<AdmittedDocument>, String>,
 }
 
 impl LibraryCorpus {
     fn new(root: PathBuf) -> Self {
+        let services = sysml_query::Services::new();
+        // Remove the worker-side OnceLock hazard identified in #237: if admission invokes
+        // nested Rayon work, stolen fixture jobs could re-enter initialization and deadlock.
+        // Complete admission before installing fixture jobs; workers only read it.
+        // Retain failures so only fixtures selecting the standard library report them.
+        let standard_documents = load_standard_library_documents(&root, &services.source);
         Self {
-            root,
-            services: sysml_query::Services::new(),
-            standard_documents: OnceLock::new(),
+            services,
+            standard_documents,
         }
     }
 
     fn documents(&self, selection: LibrarySelection) -> Result<&[AdmittedDocument], String> {
         match selection {
             LibrarySelection::None => Ok(&[]),
-            LibrarySelection::Standard => self
-                .standard_documents
-                .get_or_init(|| load_standard_library_documents(&self.root, &self.services.source))
-                .as_deref()
-                .map_err(Clone::clone),
+            LibrarySelection::Standard => self.standard_documents.as_deref().map_err(Clone::clone),
         }
     }
 }
@@ -8166,6 +8166,46 @@ fn fenced_block(input: &str) -> Option<(String, &str)> {
 mod tests {
     use super::*;
     use spec42_constraint_manifest::{SpecificationManifest, SCHEMA_VERSION};
+
+    #[test]
+    fn library_corpus_is_admitted_before_parallel_fixture_reads() {
+        let directory = tempfile::tempdir().unwrap();
+        let library = directory.path().join(STANDARD_LIBRARY_DIRECTORY);
+        fs::create_dir(&library).unwrap();
+        let fixture = library.join("library.md");
+        fs::write(&fixture, "# SOURCE\n~~~sysml\npackage Library {}\n~~~\n").unwrap();
+        let corpus = LibraryCorpus::new(directory.path().to_path_buf());
+        assert_eq!(corpus.standard_documents.as_ref().unwrap().len(), 1);
+        // Subsequent fixture reads cannot perform source I/O or trigger admission.
+        fs::remove_file(fixture).unwrap();
+        for threads in [1, 2, 4] {
+            let pool = rayon::ThreadPoolBuilder::new()
+                .num_threads(threads)
+                .build()
+                .unwrap();
+            pool.install(|| {
+                (0..32).into_par_iter().for_each(|_| {
+                    assert_eq!(
+                        corpus.documents(LibrarySelection::Standard).unwrap().len(),
+                        1
+                    );
+                    assert!(corpus.documents(LibrarySelection::None).unwrap().is_empty());
+                });
+            });
+        }
+    }
+
+    #[test]
+    fn library_admission_failure_only_affects_standard_library_fixtures() {
+        let directory = tempfile::tempdir().unwrap();
+        let corpus = LibraryCorpus::new(directory.path().to_path_buf());
+        let admission_error = corpus.standard_documents.as_ref().unwrap_err();
+        assert_eq!(
+            corpus.documents(LibrarySelection::Standard).unwrap_err(),
+            *admission_error
+        );
+        assert!(corpus.documents(LibrarySelection::None).unwrap().is_empty());
+    }
 
     #[test]
     fn snapshot_replacement_is_atomic_per_file() {

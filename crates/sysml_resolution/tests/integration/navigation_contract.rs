@@ -1054,7 +1054,7 @@ fn inspection_publishes_every_authored_fact_of_an_element() {
         published
             .text(car.documentation[0].text)
             .unwrap_or_default(),
-        " the car "
+        "the car "
     );
     assert_eq!(car.documentation[0].form, AnnotationForm::Documentation);
 }

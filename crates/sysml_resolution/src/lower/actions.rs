@@ -107,22 +107,23 @@ impl SemanticModelBuilder {
                 ActionDefBodyElement::MetadataKeywordUsage(keyword)
                     if keyword.value.body.is_none() =>
                 {
-                    self.buffer_prefix_metadata_keyword(keyword);
+                    self.buffer_prefix_metadata_keyword(
+                        Some(owner),
+                        UnsupportedFamily::ActionDefinitionMember,
+                        keyword,
+                    );
                 }
                 ActionDefBodyElement::Dependency(node) => {
                     let dependency = self.lower_dependency(document, Some(owner), node)?;
                     self.bind_pending_prefix_metadata(document, dependency)?;
                 }
                 _ => {
-                    self.flush_pending_prefix_metadata(
-                        document,
-                        UnsupportedFamily::ActionDefinitionMember,
-                    );
+                    self.flush_pending_prefix_metadata(document);
                     self.lower_action_def_body_element(document, owner, element)?;
                 }
             }
         }
-        self.flush_pending_prefix_metadata(document, UnsupportedFamily::ActionDefinitionMember);
+        self.flush_pending_prefix_metadata(document);
         Ok(())
     }
 

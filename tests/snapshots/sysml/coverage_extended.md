@@ -106,11 +106,11 @@ package ExtendedExamples {
     (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::V"))) (kind extended-definition) (membership (kind owning) (visibility default)) (facts (modifiers variation) (implied-modifiers abstract)))
     (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::Vulnerability"))) (kind extended-definition) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::batteryLow"))) (kind extended-usage) (membership (kind feature) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "batteryLow")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "situation")))))
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "batteryLow")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (metadataAnnotation (reference "situation")))))
     (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x"))))) (kind extended-usage) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "T")))))
     (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x") (occurrence 1))))) (kind extended-usage) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "T")))))
-    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "situation")))))
-    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x") (occurrence 1)) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (metadataAnnotation (reference "situation")))))
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x")) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (metadataAnnotation (reference "situation")))))
+    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x") (occurrence 1)) (anonymous (kind metadata) (ordinal 0))))) (kind metadata) (membership (kind owning) (visibility default)) (authored (membership (kind owning) (visibility default)) (relationships (metadataAnnotation (reference "situation")))))
   )
   (references
     (reference (id (source (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure") (occurrence 1))))) (kind specialization) (ordinal 0))
@@ -134,9 +134,6 @@ package ExtendedExamples {
   )
   (relationships
     (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::Failure::p"))) (target (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure") (occurrence 2))))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "batteryLow")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::batteryLow"))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x")) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x"))))) (provenance implied))
-    (relationship (kind typeFeaturing) (source (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x") (occurrence 1)) (anonymous (kind metadata) (ordinal 0))))) (target (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x") (occurrence 1))))) (provenance implied))
   )
   (evaluation
   )
@@ -147,15 +144,6 @@ package ExtendedExamples {
 (types
     (declaration (id (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::Failure::p")))
       (featured-by (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-definition) (name "Failure") (occurrence 2)))))
-    )
-    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "batteryLow")) (anonymous (kind metadata) (ordinal 0)))))
-      (featured-by (node (document "memory://snapshot/coverage_extended.md") (qualified-name "ExtendedExamples::batteryLow")))
-    )
-    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x")) (anonymous (kind metadata) (ordinal 0)))))
-      (featured-by (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x")))))
-    )
-    (declaration (id (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x") (occurrence 1)) (anonymous (kind metadata) (ordinal 0)))))
-      (featured-by (node (document "memory://snapshot/coverage_extended.md") (path (named (kind package) (name "ExtendedExamples")) (named (kind extended-usage) (name "x") (occurrence 1)))))
     )
 )
 ~~~

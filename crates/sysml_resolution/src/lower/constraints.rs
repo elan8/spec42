@@ -7,8 +7,10 @@ use crate::evaluate::classify::is_logical_operator;
 use crate::evaluate::classify::is_range_or_coalesce_operator;
 use crate::evaluate::classify::is_unary_operator;
 use crate::evaluate::fold::quantity_unit_text;
-use crate::lower::facts::direction_fact;
 use crate::lower::facts::multiplicity_facts;
+use crate::lower::facts::occurrence_prefix_direction;
+use crate::lower::facts::occurrence_prefix_modifiers;
+use crate::lower::facts::portion_kind_node_fact;
 use crate::lower::facts::AuthoredExpression;
 use crate::lower::facts::DeclarationFacts;
 use crate::lower::facts::DeclarationModifiers;
@@ -737,6 +739,12 @@ impl SemanticModelBuilder {
                             UnsupportedFamily::ConstraintDefinitionMember,
                             node,
                         )?,
+                    // `CalculationBodyItem = ActionBodyItem | ReturnParameterMember`: a
+                    // constraint body is a `CalculationBody`, so its action-body members lower
+                    // through the owner that lowers them in a calculation body.
+                    ConstraintDefBodyElement::ActionMember(node) => {
+                        self.lower_action_def_body_element(document, declaration, node)?;
+                    }
                 }
             }
         }
@@ -1162,13 +1170,12 @@ impl SemanticModelBuilder {
     }
 
     /// Lowers a package/definition/usage-level `calc` feature member (BNF CalculationUsage),
-    /// mirroring `lower_analysis_case_usage`: ownership, membership, a `:` typing target, and
-    /// `redefines` targets. Unlike other usage kinds, `CalcUsage::redefines` is a bare
-    /// `Vec<QualifiedReferenceId>` rather than a `Node<SubsettingRelationship>` (and there is no
-    /// `subsets` field at all), so each target is pushed as its own `Redefinition` reference
-    /// using that target's own resolved span (via `qualified_reference`) rather than through
-    /// `lower_subsetting_relationship`. `in`/`out`/`inout` direction, value binding, and
-    /// calculation-expression body content are out of scope, sharing
+    /// mirroring `lower_analysis_case_usage`: ownership, membership, the shared
+    /// `OccurrenceUsagePrefix`, every `Typings` target, and `redefines` targets.
+    /// `CalcUsage::redefines` is a bare `Vec<QualifiedReferenceId>` rather than a
+    /// `Node<SubsettingRelationship>`, so each target is pushed as its own `Redefinition`
+    /// reference using that target's own resolved span (via `qualified_reference`) rather than
+    /// through `lower_subsetting_relationship`. Body content shares
     /// `UnsupportedFamily::CalcDefinitionMember` with the `def` form.
     pub(crate) fn lower_calc_usage(
         &mut self,
@@ -1187,13 +1194,12 @@ impl SemanticModelBuilder {
             DeclarationFacts {
                 short_name,
                 modifiers: DeclarationModifiers {
-                    is_abstract: node.value.is_abstract,
-                    reference: node.value.is_reference,
                     ordered: node.value.multiplicity_modifiers.is_ordered(),
                     nonunique: !node.value.multiplicity_modifiers.is_unique(),
-                    ..DeclarationModifiers::default()
+                    ..occurrence_prefix_modifiers(&node.value.prefix)
                 },
-                direction: direction_fact(node.value.direction.as_ref()),
+                direction: occurrence_prefix_direction(&node.value.prefix),
+                portion_kind: portion_kind_node_fact(node.value.prefix.portion()),
                 multiplicity: multiplicity_facts(node.value.multiplicity.as_ref()),
                 ..DeclarationFacts::none()
             },
@@ -1207,27 +1213,14 @@ impl SemanticModelBuilder {
             )?,
             node.value.membership.span,
         )?;
+        self.lower_occurrence_prefix_members(document, declaration, &node.value.prefix)?;
         // Constructs the canonical value Expression/result and preserves its authored spelling.
         // This usage family does not yet classify the expression operands.
         if let Some(feature_value) = &node.value.value {
             self.record_feature_value(document, declaration, feature_value)?;
         }
-        if let Some(type_name) = node.value.type_name {
-            let span = self.documents[document.index()]
-                .parsed
-                .qualified_reference(type_name)
-                .ok_or(ConstructionError::InvalidParserReference)?
-                .metadata
-                .span;
-            self.push_reference(PendingReference {
-                source: declaration,
-                kind: ReferenceKind::FeatureTyping,
-                document,
-                local: type_name,
-                flags: RelationshipFlags::default(),
-                span,
-                import: None,
-            })?;
+        if let Some(relationship) = &node.value.typing {
+            self.lower_typing_relationship(document, declaration, relationship)?;
         }
         if let Some(targets) = &node.value.redefines {
             for target in targets.iter().copied() {

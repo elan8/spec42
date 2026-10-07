@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Keyword-less members of a `metadata def` are reference usages.** `metadata def M { :>
+  annotatedElement : SysML::RequirementUsage; }` was lowered as an attribute, because the parser
+  returned the same node for it as for `attribute x;`. An attribute implies `Base::DataValue`,
+  which no metaclass specializes, so `metadata_annotated_element_incompatible` fired on every
+  use of such a definition, including the standard library's `MeasureOfPerformance`,
+  `CauseMetadata` and `DerivedRequirementMetadata`. The member is now a `DefaultReferenceUsage`
+  (`ref :>> annotatedElement : T;` a `ReferenceUsage`), per the grammar. Their type references
+  also seed the library closure, so `SysML::…` resolves when only such a member names it. Pins
+  sysml-v2-parser `5073edfb` (`PARSE_AST_VERSION` 266).
+- **Association end-type rules wait for the Links library.** An end with no authored type takes
+  its type from the `Links::BinaryLink` / `Links::Link` end it redefines. Without that library
+  `assoc Pair { end feature x; end feature y; }` reported `association_end_type_not_one` twice
+  and `association_related_types_insufficient` once. An empty type set is now left unanswered
+  when the publication has no resolved link anchor.
+- **`#Tag` prefix metadata is owned through an OwningMembership.** It was published with a
+  feature membership, so `#Security enum def Level { … }` reported
+  `variation_owns_feature_membership` at the tag. `PrefixMetadataMember` is an OwningMembership,
+  as `@Tag` already was.
+- **`calc` usages keep their full prefix and every type.** `individual calc c;` and `calc c :
+  C1, C2;` lower through the shared `OccurrenceUsagePrefix` and `Typings`, and a constraint body
+  lowers its action-body members (`constraint def C { fork f; }`).
+
 - **Body result expressions are elements.** A calculation, constraint, function or KerML type
   body expression is now its own Expression, owned through a `ResultExpressionMembership` (role
   `result-expression`) with its own result, and owns its evaluation, operand references and
@@ -321,6 +343,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   incoming/outgoing successions (`decision_node_multiple_incoming`, `fork_node_multiple_incoming`,
   `join_node_multiple_outgoing`, `merge_node_multiple_outgoing`). Succession end multiplicities
   (`first [m] a then [n] b`) are now published facts.
+- **`metadata Tag about x;` is typed by `Tag`.** A `metadata` usage without `:` or `typed by`
+  was published as an untyped usage *named* `Tag`. So the SysML training examples'
+  `metadata SafetyFeature about …` and `metadata ToolExecution { … }` had no metadata type, their
+  body redefinitions did not resolve, and `metadata Thing about Thing;` reported spurious
+  `ambiguous_reference` errors. Per `MetadataUsageDeclaration` the lone name is the type; a name
+  is declared only before `:` / `typed by`. Pins sysml-v2-parser `827f9b44`.
+- **`#Tag` prefix metadata in package and part-usage bodies annotates the member after it.**
+  `#Tag requirement r;` in a package and `#moe attribute range;` in a part body were reported as
+  `unsupported_package_member` / `unsupported_part_usage_member` and the annotation was dropped.
+  They now publish a metadata annotation on that member, like `@Tag` and `#refinement
+  dependency` already did. A tag with no member to bind to (before an `import`, say) is still
+  reported as unsupported.
+- **Metadata annotations no longer count as owned usages or metadata body features.** `@Tag`
+  inside a `port def`, a port usage or a metadata usage's body reported
+  `port_owned_usage_composite`, `port_nested_usage_composite` or `metadata_body_feature_invalid`.
+  An annotation is owned through an OwningMembership, so it is not an `ownedUsage` or
+  `ownedFeature` of its owner.
+- **Members without authored visibility are public in every namespace (#231).** A member of a
+  definition or usage with no `public`/`private`/`protected` keyword was treated as private,
+  because only package members got the public default. So `import vehicle::*;` (a part usage) and
+  `import Vehicle::*;` (a part definition) imported nothing, and inspection published
+  `(visibility private)` for such members. KerML/SysML make every membership public by default
+  except imports, which stay private. `expose vehicle::*` now uses the same rule instead of its
+  own workaround.
+- **Comment, documentation and textual-representation bodies are published as KerML defines
+  them (#210).** The published body was the authored text between `/*` and `*/`, so a multi-line
+  `doc` kept every continuation `*` and the indentation before it, and consumers (hover, reports,
+  generated documents) each had to strip them. Bodies are now processed per KerML 8.2.3.3.2
+  note 1: the white space after `/*` up to the first line break is dropped, and on each later
+  line the leading white space, one `*`, and one following space are removed. Line structure
+  (paragraphs, list items) is kept. `doc /* a wheel */` now publishes `"a wheel "` instead of
+  `" a wheel "`.
 
 ## [0.54.1] - 2026-10-02
 

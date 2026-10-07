@@ -50,8 +50,7 @@ clap = { version = "4", features = ["derive"] }
 petgraph = { version = "0.8", features = ["serde-1"] }
 sha2 = "0.10"
 blake3 = "1"
-# Fork commit of elan8/sysml-v2-parser#161 (rebased on upstream 3ccf83e), pending upstream merge.
-sysml-v2-parser = { git = "https://github.com/lukewilliamboswell/sysml-v2-parser.git", rev = "532fb0a66fe75693cdaed009b7f49d181fcd0d97", features = ["serde"] }
+sysml-v2-parser = { git = "https://github.com/elan8/sysml-v2-parser.git", rev = "5073edfb297089b9c4b9cd56af6d2d10845a006f", features = ["serde"] }
 ts-rs = { version = "11", features = ["serde-compat", "serde-json-impl"] }
 zstd = "0.13"
 toml = "0.8"

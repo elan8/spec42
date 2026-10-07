@@ -1697,7 +1697,7 @@ fn bind_body_doc_comment_is_recorded() {
         "did not expect unsupported_action_definition_member for a doc comment in a bind body, got: {sexpr}"
     );
     assert!(
-        sexpr.contains(r#"(documentation (doc (text " note ")))"#),
+        sexpr.contains(r#"(documentation (doc (text "note ")))"#),
         "expected the bind body's doc comment recorded against the bind declaration, got: {sexpr}"
     );
 }
@@ -1798,7 +1798,7 @@ fn authored_short_names_are_recorded() {
 fn comment_and_rep_annotations_are_recorded_as_distinct_forms() {
     let comment = semantic_sexpr_for(r#"package P { calc def C { comment /* note */ } }"#);
     assert!(
-        comment.contains(r#"(comment (text " note "))"#),
+        comment.contains(r#"(comment (text "note "))"#),
         "expected the comment annotation recorded, got: {comment}"
     );
 
@@ -1806,7 +1806,7 @@ fn comment_and_rep_annotations_are_recorded_as_distinct_forms() {
     // def body; the `rep <name> language ...` spelling is not reachable in every scope.
     let rep = semantic_sexpr_for(r#"package P { action def A { language "Alf" /* body */ } }"#);
     assert!(
-        rep.contains(r#"(rep (language "Alf") (text " body "))"#),
+        rep.contains(r#"(rep (language "Alf") (text "body "))"#),
         "expected the textual representation recorded with its language, got: {rep}"
     );
 }

@@ -170,8 +170,8 @@ impl MembershipIndex {
                 Visibility::Public => EffectiveVisibility::Public,
                 Visibility::Private => EffectiveVisibility::Private,
                 Visibility::Protected => EffectiveVisibility::Protected,
-                // KerML 8.3.2.4: `Import::visibility` defaults to private, and
-                // `Membership::visibility` to public whatever kind of Namespace owns it.
+                // KerML/SysML: a membership without authored visibility is public, whatever kind
+                // of namespace owns it; only an import defaults to private (spec42 issue #231).
                 Visibility::Default if membership.kind == MembershipKind::Import => {
                     EffectiveVisibility::Private
                 }

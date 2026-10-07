@@ -38,24 +38,6 @@ package Associations {
 (fixture-diagnostics
   (document "memory://snapshot/associations.md"
     (diagnostics
-      (diagnostic
-        (severity warning)
-        (code "association_related_types_insufficient")
-        (source "semantic")
-        (range (start 14 1) (end 17 2))
-      )
-      (diagnostic
-        (severity warning)
-        (code "association_end_type_not_one")
-        (source "semantic")
-        (range (start 15 2) (end 15 26))
-      )
-      (diagnostic
-        (severity warning)
-        (code "association_end_type_not_one")
-        (source "semantic")
-        (range (start 16 2) (end 16 22))
-      )
     )
   )
 )

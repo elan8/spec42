@@ -72,7 +72,6 @@ use crate::resolve::implied::GENERATED_LIBRARY_REDEFINITION_RULES;
 use crate::resolve::is_action_usage_declaration;
 use crate::resolve::is_usage_declaration;
 use crate::resolve::names::lookup_lexical_into;
-use crate::resolve::names::EffectiveVisibility;
 use crate::resolve::names::FirstScopePolicy;
 use crate::resolve::names::LookupTarget;
 use crate::resolve::requirement_derived_membership_role;
@@ -2993,8 +2992,8 @@ impl<D> SemanticModel<D> {
         })
     }
 
-    /// The visible members of a Namespace: its owned members that are public or carry no
-    /// authored visibility, plus its public imports. Every Type is a Namespace, so this covers
+    /// The visible members of a Namespace: its public owned members (an unauthored visibility is
+    /// public), plus its public imports. Every Type is a Namespace, so this covers
     /// `vehicle::*` on a part usage as well as `Catalog::*` on a package. A recursive expose
     /// descends into each such member. Inherited memberships are not expanded: through the
     /// library specialization chain they would expose every standard feature of `Part`.
@@ -3004,13 +3003,7 @@ impl<D> SemanticModel<D> {
         recursive: bool,
         into: &mut std::collections::BTreeSet<DeclarationId>,
     ) {
-        // The name index treats a default-visibility member of a non-package owner as private
-        // for name lookup; for exposure only an authored `private`/`protected` hides a member.
-        let exposable = |member: DeclarationId| {
-            self.memberships.get(member).is_some_and(|membership| {
-                membership.visibility == EffectiveVisibility::Public || !membership.authored
-            })
-        };
+        let exposable = |member: DeclarationId| self.memberships.is_public(member);
         let mut pending = vec![target];
         let mut visited = std::collections::BTreeSet::new();
         while let Some(namespace) = pending.pop() {

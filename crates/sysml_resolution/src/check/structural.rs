@@ -204,8 +204,10 @@ impl<D> SemanticModel<D> {
                 continue;
             };
             // `ownedFeature`: a Feature owned through a FeatureMembership. A multiplicity is an
-            // ownedMember under an OwningMembership, not a body feature.
+            // ownedMember under an OwningMembership, not a body feature, and neither is a
+            // metadata annotation.
             if !is_feature_declaration(member_kind)
+                || self.is_metadata_annotation(member)
                 || self.memberships.get(member).is_none_or(|membership| {
                     membership.kind != crate::model::MembershipKind::Feature
                 })
@@ -458,7 +460,10 @@ impl<D> SemanticModel<D> {
             let Some(member_kind) = self.kind_of(member) else {
                 continue;
             };
-            if member_kind == DeclarationKind::PortUsage || !self.usage_is_composite(member) {
+            if member_kind == DeclarationKind::PortUsage
+                || self.is_metadata_annotation(member)
+                || !self.usage_is_composite(member)
+            {
                 continue;
             }
             diagnostics.push(self.declaration_diagnostic(
@@ -502,6 +507,19 @@ impl<D> SemanticModel<D> {
             }
         }
         Ok(())
+    }
+
+    /// Whether `declaration` is a metadata annotation (`@Tag`, `#Tag`, `metadata m : Tag about
+    /// x`) rather than a feature of its owner. Both `AnnotatingMember` and `PrefixMetadataMember`
+    /// are OwningMemberships, so an annotation is never an `ownedFeature` or `ownedUsage` of the
+    /// element that owns it, and rules over those collections must not see it.
+    fn is_metadata_annotation(&self, declaration: DeclarationId) -> bool {
+        self.kind_of(declaration) == Some(DeclarationKind::MetadataUsage)
+            && self
+                .storage
+                .metadata_annotations
+                .iter()
+                .any(|record| record.annotation == declaration)
     }
 
     /// `Feature::isComposite` of one lowered declaration.

@@ -27,10 +27,8 @@ const AUTHORITY_CRATE: &str = "sysml_resolution";
 /// The upstream package name, as `Cargo.lock` spells it -- renames do not survive into the lockfile.
 const PARSER_PACKAGE: &str = "sysml-v2-parser";
 
-/// The repository the pin must come from. Temporarily the fork carrying
-/// elan8/sysml-v2-parser#161 (pending upstream merge); restore
-/// `https://github.com/elan8/sysml-v2-parser.git` when the pin returns upstream.
-const PARSER_GIT_URL: &str = "https://github.com/lukewilliamboswell/sysml-v2-parser.git";
+/// The upstream the pin must come from.
+const PARSER_GIT_URL: &str = "https://github.com/elan8/sysml-v2-parser.git";
 
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))

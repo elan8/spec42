@@ -295,12 +295,6 @@ standard library package TransitionPerformances {
       )
       (diagnostic
         (severity warning)
-        (code "association_end_type_not_one")
-        (source "semantic")
-        (range (start 61 2) (end 61 28))
-      )
-      (diagnostic
-        (severity warning)
         (code "unresolved_reference")
         (source "semantic")
         (range (start 63 16) (end 63 23))
@@ -315,7 +309,7 @@ standard library package TransitionPerformances {
   (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:c148df36eb4343c1eebf2c05c8432afdcf9bab9cb69c2f8eea8fdaa84d595629"))
   (declarations
     (declaration (id (node (document "memory://snapshot/transition_performances.md") (qualified-name "TransitionPerformances"))) (kind library-package) (membership (kind owning) (visibility default)) (facts (modifiers standard)))
-    (declaration (id (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "\n\t * This package contains a library model of the semantics of conditional transitions between occurrences, \n\t * including the performance of specified Behaviors when the transition occurs.\n\t "))))
+    (declaration (id (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (anonymous (kind documentation) (ordinal 0))))) (kind documentation) (membership (kind owning) (visibility default)) (documentation (doc (text "This package contains a library model of the semantics of conditional transitions between occurrences, \nincluding the performance of specified Behaviors when the transition occurs.\n"))))
     (declaration (id (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Boolean") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "ScalarValues::Natural") (import (shape membership) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/transition_performances.md") (path (named (kind library-package) (name "TransitionPerformances")) (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (membershipImport (reference "SequenceFunctions::isEmpty") (import (shape membership) (recursive false))))))

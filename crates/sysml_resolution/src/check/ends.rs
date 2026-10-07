@@ -269,8 +269,9 @@ impl<D> SemanticModel<D> {
             let OwnedEndFeature::Declared(end) = record.end else {
                 continue;
             };
-            if !self.specialization_hierarchy_is_unsettled(end)
-                && self.types.feature_types(end).len() != 1
+            if self
+                .settled_end_type_count(association, end)
+                .is_some_and(|count| count != 1)
             {
                 diagnostics.push(self.declaration_diagnostic(
                     end,
@@ -382,10 +383,28 @@ impl<D> SemanticModel<D> {
                     }
                 }
             };
-            if self.specialization_hierarchy_is_unsettled(feature) {
-                return None;
-            }
-            count += self.types.feature_types(feature).len();
+            count += self.settled_end_type_count(association, feature)?;
+        }
+        Some(count)
+    }
+
+    /// How many types one end feature of `association` has, or `None` when they are not settled.
+    ///
+    /// An end with no authored type gets its types from the library: the association's implied
+    /// specialization of `Links::Link` / `Links::BinaryLink` makes the end redefine `participant`
+    /// / `source` / `target`. When this publication has no resolved link anchor those implied
+    /// types are missing rather than absent, so an empty type set is not an answer.
+    fn settled_end_type_count(
+        &self,
+        association: DeclarationId,
+        end: DeclarationId,
+    ) -> Option<usize> {
+        if self.specialization_hierarchy_is_unsettled(end) {
+            return None;
+        }
+        let count = self.types.feature_types(end).len();
+        if count == 0 && self.types.specializes_binary_link(association).is_none() {
+            return None;
         }
         Some(count)
     }
