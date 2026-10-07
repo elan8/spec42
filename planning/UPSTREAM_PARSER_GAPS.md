@@ -4,10 +4,9 @@ This is the active record of information the parser must preserve or distinguish
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
 The parser currently pinned by the root workspace is
-`elan8/sysml-v2-parser@5073edfb297089b9c4b9cd56af6d2d10845a006f` (`PARSE_AST_VERSION` 266): parser
-`main` at `ecdd07bc` (`elan8/sysml-v2-parser#172`, which carries the grammar work first proposed as
-`#161`) plus the `metadata def` member fix on branch `fix/metadata-def-default-reference-members`.
-That commit is not on parser `main` yet: re-pin to the merge commit once the branch lands. Only
+`elan8/sysml-v2-parser@7217b9e4df76ab31672947e53dbdd8e30b88e42f` (parser `main`,
+`PARSE_AST_VERSION` 266). It carries `elan8/sysml-v2-parser#172` (the grammar work first proposed
+as `#161`) and `#183` (keyword-less `metadata def` members are `DefaultReferenceUsage`s). Only
 the rows this pin closed or narrowed were re-verified against it. An earlier
 canonical upstream pin was `elan8/sysml-v2-parser@9f00caf353581a3c0ccc13676c5d8829f90708b3`
 (parser `main`, `PARSE_AST_VERSION` 256), which added `elan8/sysml-v2-parser#139` (`elan8/spec42#140`): a targeted

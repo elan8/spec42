@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `CauseMetadata` and `DerivedRequirementMetadata`. The member is now a `DefaultReferenceUsage`
   (`ref :>> annotatedElement : T;` a `ReferenceUsage`), per the grammar. Their type references
   also seed the library closure, so `SysML::…` resolves when only such a member names it. Pins
-  sysml-v2-parser `5073edfb` (`PARSE_AST_VERSION` 266).
+  sysml-v2-parser `7217b9e4` (`PARSE_AST_VERSION` 266).
 - **Association end-type rules wait for the Links library.** An end with no authored type takes
   its type from the `Links::BinaryLink` / `Links::Link` end it redefines. Without that library
   `assoc Pair { end feature x; end feature y; }` reported `association_end_type_not_one` twice
