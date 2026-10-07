@@ -78,11 +78,8 @@ impl SemanticModelBuilder {
         }
         if let PartDefBody::Brace { elements, .. } = &node.value.body {
             for element in elements {
-                // A body-less `#tag` prefix (`#refinement dependency X to Y;`) is a standalone
-                // sibling that annotates the member immediately after it; buffer it and bind it to
-                // that member's declaration. Any other member flushes an unbound prefix as an
-                // explicit unsupported member first, so a stray `#tag` never leaks onto a later
-                // declaration.
+                // A body-less `#tag` prefix (`#refinement dependency X to Y;`, `#Tag calc c;`) is
+                // a standalone sibling that annotates the member immediately after it.
                 if let PartDefBodyElement::MetadataKeywordUsage(keyword) = &element.value {
                     if keyword.value.body.is_none() {
                         self.buffer_prefix_metadata_keyword(
@@ -93,313 +90,297 @@ impl SemanticModelBuilder {
                         continue;
                     }
                 }
-                if !matches!(&element.value, PartDefBodyElement::Dependency(_)) {
-                    self.flush_pending_prefix_metadata(document);
-                }
-                match &element.value {
-                    PartDefBodyElement::Error(error) => {
-                        self.push_recovery(document, error.span);
-                    }
-                    PartDefBodyElement::Package(node) => {
-                        // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(
-                            document,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node.span,
-                        );
-                    }
-                    PartDefBodyElement::LibraryPackage(node) => {
-                        // New upstream member kind: kept visible as unsupported rather than dropped.
-                        self.push_unsupported(
-                            document,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node.span,
-                        );
-                    }
-                    PartDefBodyElement::AttributeDef(attribute) => {
-                        self.lower_attribute_def(document, Some(declaration), attribute)?;
-                    }
-                    PartDefBodyElement::AttributeUsage(attribute) => {
-                        self.lower_attribute_usage(document, Some(declaration), attribute)?;
-                    }
-                    PartDefBodyElement::PartUsage(part) => {
-                        self.lower_part_usage(document, Some(declaration), part)?;
-                    }
-                    PartDefBodyElement::PartDef(part) => {
-                        self.lower_part_def(document, Some(declaration), part)?;
-                    }
-                    PartDefBodyElement::Import(import) => {
-                        self.lower_import(document, Some(declaration), import)?;
-                    }
-                    PartDefBodyElement::EnumDef(enum_def) => {
-                        self.lower_enum_def(document, Some(declaration), enum_def)?;
-                    }
-                    PartDefBodyElement::EnumerationUsage(enum_usage) => {
-                        self.lower_enum_usage(document, Some(declaration), enum_usage)?;
-                    }
-                    PartDefBodyElement::RequirementDef(requirement_def) => {
-                        self.lower_requirement_def(document, Some(declaration), requirement_def)?;
-                    }
-                    PartDefBodyElement::AnalysisCaseDef(analysis_case_def) => {
-                        self.lower_analysis_case_def(
-                            document,
-                            Some(declaration),
-                            analysis_case_def,
-                        )?;
-                    }
-                    PartDefBodyElement::CaseDef(case_def) => {
-                        self.lower_case_def(document, Some(declaration), case_def)?;
-                    }
-                    PartDefBodyElement::CaseUsage(case_usage) => {
-                        self.lower_case_usage(document, Some(declaration), case_usage)?;
-                    }
-                    PartDefBodyElement::ConcernUsage(concern_usage) => {
-                        self.lower_concern_usage(document, Some(declaration), concern_usage)?;
-                    }
-                    PartDefBodyElement::AnalysisCaseUsage(analysis_case_usage) => {
-                        self.lower_analysis_case_usage(
-                            document,
-                            Some(declaration),
-                            analysis_case_usage,
-                        )?;
-                    }
-                    PartDefBodyElement::VerificationCaseDef(verification_case_def) => {
-                        self.lower_verification_case_def(
-                            document,
-                            Some(declaration),
-                            verification_case_def,
-                        )?;
-                    }
-                    PartDefBodyElement::UseCaseDef(use_case_def) => {
-                        self.lower_use_case_def(document, Some(declaration), use_case_def)?;
-                    }
-                    PartDefBodyElement::RequirementUsage(requirement_usage) => {
-                        self.lower_requirement_usage(
-                            document,
-                            Some(declaration),
-                            requirement_usage,
-                        )?;
-                    }
-                    PartDefBodyElement::RequireConstraint(node) => {
-                        self.lower_require_constraint_member(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::PortDef(port_def) => {
-                        self.lower_port_def(document, Some(declaration), port_def)?;
-                    }
-                    PartDefBodyElement::PortUsage(port_usage) => {
-                        self.lower_port_usage(document, Some(declaration), port_usage)?;
-                    }
-                    PartDefBodyElement::ItemDef(item_def) => {
-                        self.lower_item_def(document, Some(declaration), item_def)?;
-                    }
-                    PartDefBodyElement::ItemUsage(item_usage) => {
-                        self.lower_item_usage(document, Some(declaration), item_usage)?;
-                    }
-                    PartDefBodyElement::MetadataDef(metadata_def) => {
-                        self.lower_metadata_def(document, Some(declaration), metadata_def)?;
-                    }
-                    PartDefBodyElement::MetadataUsage(metadata_usage) => {
-                        self.lower_metadata_usage(document, Some(declaration), metadata_usage)?;
-                    }
-                    PartDefBodyElement::ActionDef(action_def) => {
-                        self.lower_action_def(document, Some(declaration), action_def)?;
-                    }
-                    PartDefBodyElement::ActionUsage(action_usage) => {
-                        self.lower_action_usage(document, Some(declaration), action_usage)?;
-                    }
-                    PartDefBodyElement::StateDef(state_def) => {
-                        self.lower_state_def(document, Some(declaration), state_def)?;
-                    }
-                    PartDefBodyElement::StateUsage(state_usage) => {
-                        self.lower_state_usage(document, Some(declaration), state_usage)?;
-                    }
-                    PartDefBodyElement::ConnectionDef(connection_def) => {
-                        self.lower_connection_def(document, Some(declaration), connection_def)?;
-                    }
-                    PartDefBodyElement::InterfaceDef(interface_def) => {
-                        self.lower_interface_def(document, Some(declaration), interface_def)?;
-                    }
-                    PartDefBodyElement::ViewDef(view_def) => {
-                        self.lower_view_def(document, Some(declaration), view_def)?;
-                    }
-                    PartDefBodyElement::ViewpointDef(viewpoint_def) => {
-                        self.lower_viewpoint_def(document, Some(declaration), viewpoint_def)?;
-                    }
-                    PartDefBodyElement::RenderingDef(rendering_def) => {
-                        self.lower_rendering_def(document, Some(declaration), rendering_def)?;
-                    }
-                    PartDefBodyElement::AllocationDef(allocation_def) => {
-                        self.lower_allocation_def(document, Some(declaration), allocation_def)?;
-                    }
-                    PartDefBodyElement::FlowDef(flow_def) => {
-                        self.lower_flow_def(document, Some(declaration), flow_def)?;
-                    }
-                    PartDefBodyElement::Connection(connection_usage) => {
-                        self.lower_connection_usage(document, Some(declaration), connection_usage)?;
-                    }
-                    PartDefBodyElement::OccurrenceDef(occurrence_def) => {
-                        self.lower_occurrence_def(document, Some(declaration), occurrence_def)?;
-                    }
-                    PartDefBodyElement::OccurrenceUsage(occurrence_usage) => {
-                        self.lower_occurrence_usage(document, Some(declaration), occurrence_usage)?;
-                    }
-                    PartDefBodyElement::InterfaceUsage(interface_usage) => {
-                        self.lower_interface_usage(document, Some(declaration), interface_usage)?;
-                    }
-                    PartDefBodyElement::ViewUsage(view_usage) => {
-                        self.lower_view_usage(document, Some(declaration), view_usage)?;
-                    }
-                    PartDefBodyElement::RenderingUsage(node) => {
-                        self.lower_rendering_usage(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::ViewRendering(node) => {
-                        self.lower_view_rendering_usage(document, declaration, node)?;
-                    }
-                    PartDefBodyElement::VerifyRequirement(node) => {
-                        self.lower_verify_requirement_member(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::UseCaseUsage(node) => {
-                        self.lower_use_case_usage(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::VerificationCaseUsage(node) => {
-                        self.lower_verification_case_usage(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::ConstraintDef(constraint_def) => {
-                        self.lower_constraint_def(document, Some(declaration), constraint_def)?;
-                    }
-                    PartDefBodyElement::ConstraintUsage(constraint_usage) => {
-                        self.lower_constraint_usage(document, Some(declaration), constraint_usage)?;
-                    }
-                    PartDefBodyElement::CalcDef(calc_def) => {
-                        self.lower_calc_def(document, Some(declaration), calc_def)?;
-                    }
-                    PartDefBodyElement::CalcUsage(calc_usage) => {
-                        self.lower_calc_usage(document, Some(declaration), calc_usage)?;
-                    }
-                    PartDefBodyElement::AliasDef(alias_def) => {
-                        self.lower_alias_def(document, Some(declaration), alias_def)?;
-                    }
-                    PartDefBodyElement::Perform(perform) => {
-                        self.lower_perform(document, Some(declaration), perform)?;
-                    }
-                    PartDefBodyElement::Annotating(member) => {
-                        self.lower_annotating_member(
-                            document,
-                            Some(declaration),
-                            UnsupportedFamily::PartDefinitionMember,
-                            member,
-                        )?;
-                    }
-                    PartDefBodyElement::Satisfy(node) => {
-                        self.lower_satisfy(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::Allocate(node) => {
-                        self.lower_allocate(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::Bind(node) => {
-                        self.lower_bind(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::FirstStmt(first_stmt) => {
-                        self.lower_first_stmt(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            first_stmt,
-                        )?;
-                    }
-                    PartDefBodyElement::VariantUsage(node) => {
-                        self.lower_variant_usage(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::AssertConstraint(node) => {
-                        self.lower_assert_constraint_member(document, declaration, node)?
-                    }
-                    PartDefBodyElement::Ref(node) => {
-                        self.lower_ref_decl(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::DefaultReferenceUsage(node) => {
-                        self.lower_default_reference_usage(
-                            document,
-                            Some(declaration),
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::Dependency(node) => {
-                        let dependency =
-                            self.lower_dependency(document, Some(declaration), node)?;
-                        self.bind_pending_prefix_metadata(document, dependency)?;
-                    }
-                    PartDefBodyElement::Connect(node) => {
-                        self.lower_bare_connect(
-                            document,
-                            declaration,
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::ViewpointUsage(node) => {
-                        self.lower_viewpoint_usage(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::KermlClassifier(node) => {
-                        self.lower_kerml_classifier_decl(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::ExhibitState(node) => {
-                        self.lower_exhibit_state(
-                            document,
-                            Some(declaration),
-                            UnsupportedFamily::PartDefinitionMember,
-                            node,
-                        )?;
-                    }
-                    PartDefBodyElement::AllocationUsage(node) => {
-                        self.lower_allocation_usage(document, Some(declaration), node)?;
-                    }
-                    PartDefBodyElement::FlowUsage(node) => {
-                        self.lower_flow_usage(document, declaration, node)?;
-                    }
-                    PartDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
-                        document,
-                        UnsupportedFamily::PartDefinitionMember,
-                        element.span,
-                    ),
-                    PartDefBodyElement::UnsupportedMember(node) => self.push_unsupported(
-                        document,
-                        UnsupportedFamily::ParserUnsupported,
-                        node.span,
-                    ),
-                }
+                self.lower_prefixable_member(document, Some(declaration), element.span, |this| {
+                    this.lower_part_def_body_member(document, declaration, element)
+                })?;
             }
-            self.flush_pending_prefix_metadata(document);
+        }
+        Ok(())
+    }
+
+    fn lower_part_def_body_member(
+        &mut self,
+        document: DocumentIdx,
+        declaration: DeclarationId,
+        element: &Node<PartDefBodyElement>,
+    ) -> Result<(), ConstructionError> {
+        match &element.value {
+            PartDefBodyElement::Error(error) => {
+                self.push_recovery(document, error.span);
+            }
+            PartDefBodyElement::Package(node) => {
+                // New upstream member kind: kept visible as unsupported rather than dropped.
+                self.push_unsupported(document, UnsupportedFamily::PartDefinitionMember, node.span);
+            }
+            PartDefBodyElement::LibraryPackage(node) => {
+                // New upstream member kind: kept visible as unsupported rather than dropped.
+                self.push_unsupported(document, UnsupportedFamily::PartDefinitionMember, node.span);
+            }
+            PartDefBodyElement::AttributeDef(attribute) => {
+                self.lower_attribute_def(document, Some(declaration), attribute)?;
+            }
+            PartDefBodyElement::AttributeUsage(attribute) => {
+                self.lower_attribute_usage(document, Some(declaration), attribute)?;
+            }
+            PartDefBodyElement::PartUsage(part) => {
+                self.lower_part_usage(document, Some(declaration), part)?;
+            }
+            PartDefBodyElement::PartDef(part) => {
+                self.lower_part_def(document, Some(declaration), part)?;
+            }
+            PartDefBodyElement::Import(import) => {
+                self.lower_import(document, Some(declaration), import)?;
+            }
+            PartDefBodyElement::EnumDef(enum_def) => {
+                self.lower_enum_def(document, Some(declaration), enum_def)?;
+            }
+            PartDefBodyElement::EnumerationUsage(enum_usage) => {
+                self.lower_enum_usage(document, Some(declaration), enum_usage)?;
+            }
+            PartDefBodyElement::RequirementDef(requirement_def) => {
+                self.lower_requirement_def(document, Some(declaration), requirement_def)?;
+            }
+            PartDefBodyElement::AnalysisCaseDef(analysis_case_def) => {
+                self.lower_analysis_case_def(document, Some(declaration), analysis_case_def)?;
+            }
+            PartDefBodyElement::CaseDef(case_def) => {
+                self.lower_case_def(document, Some(declaration), case_def)?;
+            }
+            PartDefBodyElement::CaseUsage(case_usage) => {
+                self.lower_case_usage(document, Some(declaration), case_usage)?;
+            }
+            PartDefBodyElement::ConcernUsage(concern_usage) => {
+                self.lower_concern_usage(document, Some(declaration), concern_usage)?;
+            }
+            PartDefBodyElement::AnalysisCaseUsage(analysis_case_usage) => {
+                self.lower_analysis_case_usage(document, Some(declaration), analysis_case_usage)?;
+            }
+            PartDefBodyElement::VerificationCaseDef(verification_case_def) => {
+                self.lower_verification_case_def(
+                    document,
+                    Some(declaration),
+                    verification_case_def,
+                )?;
+            }
+            PartDefBodyElement::UseCaseDef(use_case_def) => {
+                self.lower_use_case_def(document, Some(declaration), use_case_def)?;
+            }
+            PartDefBodyElement::RequirementUsage(requirement_usage) => {
+                self.lower_requirement_usage(document, Some(declaration), requirement_usage)?;
+            }
+            PartDefBodyElement::RequireConstraint(node) => {
+                self.lower_require_constraint_member(
+                    document,
+                    declaration,
+                    UnsupportedFamily::PartDefinitionMember,
+                    node,
+                )?;
+            }
+            PartDefBodyElement::PortDef(port_def) => {
+                self.lower_port_def(document, Some(declaration), port_def)?;
+            }
+            PartDefBodyElement::PortUsage(port_usage) => {
+                self.lower_port_usage(document, Some(declaration), port_usage)?;
+            }
+            PartDefBodyElement::ItemDef(item_def) => {
+                self.lower_item_def(document, Some(declaration), item_def)?;
+            }
+            PartDefBodyElement::ItemUsage(item_usage) => {
+                self.lower_item_usage(document, Some(declaration), item_usage)?;
+            }
+            PartDefBodyElement::MetadataDef(metadata_def) => {
+                self.lower_metadata_def(document, Some(declaration), metadata_def)?;
+            }
+            PartDefBodyElement::MetadataUsage(metadata_usage) => {
+                self.lower_metadata_usage(document, Some(declaration), metadata_usage)?;
+            }
+            PartDefBodyElement::ActionDef(action_def) => {
+                self.lower_action_def(document, Some(declaration), action_def)?;
+            }
+            PartDefBodyElement::ActionUsage(action_usage) => {
+                self.lower_action_usage(document, Some(declaration), action_usage)?;
+            }
+            PartDefBodyElement::StateDef(state_def) => {
+                self.lower_state_def(document, Some(declaration), state_def)?;
+            }
+            PartDefBodyElement::StateUsage(state_usage) => {
+                self.lower_state_usage(document, Some(declaration), state_usage)?;
+            }
+            PartDefBodyElement::ConnectionDef(connection_def) => {
+                self.lower_connection_def(document, Some(declaration), connection_def)?;
+            }
+            PartDefBodyElement::InterfaceDef(interface_def) => {
+                self.lower_interface_def(document, Some(declaration), interface_def)?;
+            }
+            PartDefBodyElement::ViewDef(view_def) => {
+                self.lower_view_def(document, Some(declaration), view_def)?;
+            }
+            PartDefBodyElement::ViewpointDef(viewpoint_def) => {
+                self.lower_viewpoint_def(document, Some(declaration), viewpoint_def)?;
+            }
+            PartDefBodyElement::RenderingDef(rendering_def) => {
+                self.lower_rendering_def(document, Some(declaration), rendering_def)?;
+            }
+            PartDefBodyElement::AllocationDef(allocation_def) => {
+                self.lower_allocation_def(document, Some(declaration), allocation_def)?;
+            }
+            PartDefBodyElement::FlowDef(flow_def) => {
+                self.lower_flow_def(document, Some(declaration), flow_def)?;
+            }
+            PartDefBodyElement::Connection(connection_usage) => {
+                self.lower_connection_usage(document, Some(declaration), connection_usage)?;
+            }
+            PartDefBodyElement::OccurrenceDef(occurrence_def) => {
+                self.lower_occurrence_def(document, Some(declaration), occurrence_def)?;
+            }
+            PartDefBodyElement::OccurrenceUsage(occurrence_usage) => {
+                self.lower_occurrence_usage(document, Some(declaration), occurrence_usage)?;
+            }
+            PartDefBodyElement::InterfaceUsage(interface_usage) => {
+                self.lower_interface_usage(document, Some(declaration), interface_usage)?;
+            }
+            PartDefBodyElement::ViewUsage(view_usage) => {
+                self.lower_view_usage(document, Some(declaration), view_usage)?;
+            }
+            PartDefBodyElement::RenderingUsage(node) => {
+                self.lower_rendering_usage(document, Some(declaration), node)?;
+            }
+            PartDefBodyElement::ViewRendering(node) => {
+                self.lower_view_rendering_usage(document, declaration, node)?;
+            }
+            PartDefBodyElement::VerifyRequirement(node) => {
+                self.lower_verify_requirement_member(
+                    document,
+                    declaration,
+                    UnsupportedFamily::PartDefinitionMember,
+                    node,
+                )?;
+            }
+            PartDefBodyElement::UseCaseUsage(node) => {
+                self.lower_use_case_usage(document, Some(declaration), node)?;
+            }
+            PartDefBodyElement::VerificationCaseUsage(node) => {
+                self.lower_verification_case_usage(document, Some(declaration), node)?;
+            }
+            PartDefBodyElement::ConstraintDef(constraint_def) => {
+                self.lower_constraint_def(document, Some(declaration), constraint_def)?;
+            }
+            PartDefBodyElement::ConstraintUsage(constraint_usage) => {
+                self.lower_constraint_usage(document, Some(declaration), constraint_usage)?;
+            }
+            PartDefBodyElement::CalcDef(calc_def) => {
+                self.lower_calc_def(document, Some(declaration), calc_def)?;
+            }
+            PartDefBodyElement::CalcUsage(calc_usage) => {
+                self.lower_calc_usage(document, Some(declaration), calc_usage)?;
+            }
+            PartDefBodyElement::AliasDef(alias_def) => {
+                self.lower_alias_def(document, Some(declaration), alias_def)?;
+            }
+            PartDefBodyElement::Perform(perform) => {
+                self.lower_perform(document, Some(declaration), perform)?;
+            }
+            PartDefBodyElement::Annotating(member) => {
+                self.lower_annotating_member(
+                    document,
+                    Some(declaration),
+                    UnsupportedFamily::PartDefinitionMember,
+                    member,
+                )?;
+            }
+            PartDefBodyElement::Satisfy(node) => {
+                self.lower_satisfy(
+                    document,
+                    declaration,
+                    UnsupportedFamily::PartDefinitionMember,
+                    node,
+                )?;
+            }
+            PartDefBodyElement::Allocate(node) => {
+                self.lower_allocate(
+                    document,
+                    declaration,
+                    UnsupportedFamily::PartDefinitionMember,
+                    node,
+                )?;
+            }
+            PartDefBodyElement::Bind(node) => {
+                self.lower_bind(
+                    document,
+                    declaration,
+                    UnsupportedFamily::PartDefinitionMember,
+                    node,
+                )?;
+            }
+            PartDefBodyElement::FirstStmt(first_stmt) => {
+                self.lower_first_stmt(
+                    document,
+                    declaration,
+                    UnsupportedFamily::PartDefinitionMember,
+                    first_stmt,
+                )?;
+            }
+            PartDefBodyElement::VariantUsage(node) => {
+                self.lower_variant_usage(
+                    document,
+                    declaration,
+                    UnsupportedFamily::PartDefinitionMember,
+                    node,
+                )?;
+            }
+            PartDefBodyElement::AssertConstraint(node) => {
+                self.lower_assert_constraint_member(document, declaration, node)?
+            }
+            PartDefBodyElement::Ref(node) => {
+                self.lower_ref_decl(document, Some(declaration), node)?;
+            }
+            PartDefBodyElement::DefaultReferenceUsage(node) => {
+                self.lower_default_reference_usage(
+                    document,
+                    Some(declaration),
+                    UnsupportedFamily::PartDefinitionMember,
+                    node,
+                )?;
+            }
+            PartDefBodyElement::Dependency(node) => {
+                self.lower_dependency(document, Some(declaration), node)?;
+            }
+            PartDefBodyElement::Connect(node) => {
+                self.lower_bare_connect(
+                    document,
+                    declaration,
+                    UnsupportedFamily::PartDefinitionMember,
+                    node,
+                )?;
+            }
+            PartDefBodyElement::ViewpointUsage(node) => {
+                self.lower_viewpoint_usage(document, Some(declaration), node)?;
+            }
+            PartDefBodyElement::KermlClassifier(node) => {
+                self.lower_kerml_classifier_decl(document, Some(declaration), node)?;
+            }
+            PartDefBodyElement::ExhibitState(node) => {
+                self.lower_exhibit_state(
+                    document,
+                    Some(declaration),
+                    UnsupportedFamily::PartDefinitionMember,
+                    node,
+                )?;
+            }
+            PartDefBodyElement::AllocationUsage(node) => {
+                self.lower_allocation_usage(document, Some(declaration), node)?;
+            }
+            PartDefBodyElement::FlowUsage(node) => {
+                self.lower_flow_usage(document, declaration, node)?;
+            }
+            PartDefBodyElement::MetadataKeywordUsage(_) => self.push_unsupported(
+                document,
+                UnsupportedFamily::PartDefinitionMember,
+                element.span,
+            ),
+            PartDefBodyElement::UnsupportedMember(node) => {
+                self.push_unsupported(document, UnsupportedFamily::ParserUnsupported, node.span)
+            }
         }
         Ok(())
     }
