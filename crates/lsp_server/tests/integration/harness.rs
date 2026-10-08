@@ -3,6 +3,8 @@
 use std::io::{Read, Write};
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicI64, Ordering};
+use std::sync::mpsc;
+use std::time::Duration;
 
 pub static NEXT_ID: AtomicI64 = AtomicI64::new(1);
 
@@ -12,35 +14,131 @@ pub fn server_binary_path() -> std::path::PathBuf {
     std::path::PathBuf::from(env!("CARGO_BIN_EXE_spec42_core_lsp_test"))
 }
 
+/// How long one spawned server may live before the watchdog ends it.
+///
+/// A healthy test finishes in seconds. A server that outlives this budget is one a test is
+/// blocked on: every harness read is a blocking read of the server's stdout, so a notification
+/// or response that never comes would otherwise hang the test run forever (issue #248).
+const SERVER_BUDGET: Duration = Duration::from_secs(300);
+
+fn server_budget() -> Duration {
+    std::env::var("SPEC42_LSP_TEST_SERVER_BUDGET_SECS")
+        .ok()
+        .and_then(|secs| secs.parse().ok())
+        .map_or(SERVER_BUDGET, Duration::from_secs)
+}
+
 /// Owns a server process until it has been terminated and reaped, including during unwinding.
-pub struct TestServer(Child);
+///
+/// A watchdog thread ends a server that outlives [`SERVER_BUDGET`]. That closes its stdout, so
+/// the blocked harness read returns and the test fails at the wait it was stuck in, with that
+/// wait's own message (the pending URIs, the awaited response). The watchdog first reports what
+/// it can see of the stalled server: its threads' states and the tail of its stderr.
+pub struct TestServer {
+    child: Child,
+    stderr_path: std::path::PathBuf,
+    // Dropped with the server: disconnecting the channel is what stops the watchdog.
+    _finished: mpsc::Sender<()>,
+}
 
 impl std::ops::Deref for TestServer {
     type Target = Child;
 
     fn deref(&self) -> &Child {
-        &self.0
+        &self.child
     }
 }
 
 impl std::ops::DerefMut for TestServer {
     fn deref_mut(&mut self) -> &mut Child {
-        &mut self.0
+        &mut self.child
     }
 }
 
 impl Drop for TestServer {
     fn drop(&mut self) {
-        let _ = self.0.kill();
-        let _ = self.0.wait();
+        let _ = self.child.kill();
+        let _ = self.child.wait();
+        let _ = std::fs::remove_file(&self.stderr_path);
     }
 }
+
+fn watch_server(pid: u32, stderr_path: std::path::PathBuf, budget: Duration) -> mpsc::Sender<()> {
+    let (finished, watchdog) = mpsc::channel::<()>();
+    std::thread::spawn(move || {
+        // The sender is dropped with the `TestServer`, which ends the wait with `Disconnected`.
+        if watchdog.recv_timeout(budget) != Err(mpsc::RecvTimeoutError::Timeout) {
+            return;
+        }
+        eprintln!(
+            "spec42 integration harness: server {pid} is still running after {}s; a test is \
+             blocked on it. Ending it so the test fails where it is waiting.",
+            budget.as_secs()
+        );
+        eprintln!("{}", stalled_server_report(pid, &stderr_path));
+        end_process(pid);
+    });
+    finished
+}
+
+/// What is observable of a stalled server from outside: its threads' scheduler states (Linux)
+/// and the end of its stderr. An idle server and a deadlocked one both show every thread asleep
+/// (`S`), so the states only rule out a busy loop; which wait the test was in tells them apart.
+fn stalled_server_report(pid: u32, stderr_path: &std::path::Path) -> String {
+    let mut report = String::new();
+    if let Ok(tasks) = std::fs::read_dir(format!("/proc/{pid}/task")) {
+        let mut threads = tasks
+            .filter_map(Result::ok)
+            .filter_map(|task| {
+                let stat = std::fs::read_to_string(task.path().join("stat")).ok()?;
+                // `pid (comm) state ...`; the command may itself contain spaces or parentheses.
+                let (head, tail) = stat.rsplit_once(") ")?;
+                let name = head.split_once('(')?.1.to_owned();
+                Some((name, tail.chars().next()?))
+            })
+            .collect::<Vec<_>>();
+        threads.sort();
+        let running = threads.iter().filter(|(_, state)| *state == 'R').count();
+        report.push_str(&format!(
+            "server threads: {} total, {running} runnable\n",
+            threads.len()
+        ));
+        // One line per thread name and state, with how many threads share it.
+        for group in threads.chunk_by(|left, right| left == right) {
+            let (name, state) = &group[0];
+            report.push_str(&format!("  {state} {name} x{}\n", group.len()));
+        }
+    }
+    let stderr = std::fs::read_to_string(stderr_path).unwrap_or_default();
+    let tail = stderr.lines().rev().take(40).collect::<Vec<_>>();
+    report.push_str(&format!("server stderr (last {} lines):\n", tail.len()));
+    for line in tail.into_iter().rev() {
+        report.push_str(&format!("  {line}\n"));
+    }
+    report
+}
+
+/// Ends a process by id. The watchdog thread has no handle on the `Child`, which the test owns.
+fn end_process(pid: u32) {
+    let pid = pid.to_string();
+    let _ = if cfg!(windows) {
+        Command::new("taskkill").args(["/F", "/PID", &pid]).output()
+    } else {
+        Command::new("kill").args(["-KILL", &pid]).output()
+    };
+}
+
+static NEXT_SERVER: AtomicI64 = AtomicI64::new(0);
 
 pub fn spawn_server() -> TestServer {
     spawn_server_with_env(&[])
 }
 
 pub fn spawn_server_with_env(env: &[(&str, &std::path::Path)]) -> TestServer {
+    spawn_server_with_budget(env, server_budget())
+}
+
+fn spawn_server_with_budget(env: &[(&str, &std::path::Path)], budget: Duration) -> TestServer {
     let server_path = server_binary_path();
     eprintln!("spec42 integration harness launch_mode={INTEGRATION_LAUNCH_MODE}");
     let mut command = Command::new(&server_path);
@@ -50,16 +148,55 @@ pub fn spawn_server_with_env(env: &[(&str, &std::path::Path)]) -> TestServer {
             command.env("SPEC42_LIBRARY_FULL_SCAN", "1");
         }
     }
-    TestServer(
-        command
-            // Keep debug diagnostics enabled during integration tests.
-            .env("SPEC42_ELK_DEBUG", "1")
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::null())
-            .spawn()
-            .unwrap_or_else(|err| panic!("spawn server binary {}: {err}", server_path.display())),
-    )
+    // The server's stderr goes to a file rather than nowhere, so the watchdog can show what a
+    // stalled server last logged. A file cannot fill up and block the server the way a pipe can.
+    let stderr_path = std::env::temp_dir().join(format!(
+        "spec42-lsp-test-{}-{}.stderr",
+        std::process::id(),
+        NEXT_SERVER.fetch_add(1, Ordering::SeqCst)
+    ));
+    let stderr = std::fs::File::create(&stderr_path)
+        .map(Stdio::from)
+        .unwrap_or_else(|_| Stdio::null());
+    let child = command
+        // Keep debug diagnostics enabled during integration tests.
+        .env("SPEC42_ELK_DEBUG", "1")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(stderr)
+        .spawn()
+        .unwrap_or_else(|err| panic!("spawn server binary {}: {err}", server_path.display()));
+    let finished = watch_server(child.id(), stderr_path.clone(), budget);
+    TestServer {
+        child,
+        stderr_path,
+        _finished: finished,
+    }
+}
+
+/// A read that would block forever returns once the watchdog ends the server (issue #248).
+#[test]
+fn watchdog_ends_a_server_a_test_is_blocked_on() {
+    let mut server = spawn_server_with_budget(&[], Duration::from_secs(1));
+    let mut stdout = server.stdout.take().expect("stdout");
+    // Nothing was sent, so the server never writes: without the watchdog this read never returns.
+    let started = std::time::Instant::now();
+    assert_eq!(read_message(&mut stdout), None);
+    assert!(
+        started.elapsed() >= Duration::from_secs(1),
+        "the server must live for its whole budget"
+    );
+}
+
+/// The report names what is observable from outside: thread states (Linux) and stderr.
+#[test]
+fn watchdog_reports_thread_states_and_stderr_of_a_live_server() {
+    let server = spawn_server();
+    let report = stalled_server_report(server.id(), &server.stderr_path);
+    assert!(report.contains("server stderr (last"), "{report}");
+    if cfg!(target_os = "linux") {
+        assert!(report.contains("server threads:"), "{report}");
+    }
 }
 
 #[test]
