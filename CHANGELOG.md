@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **`#Tag` before a member of a part, requirement or action definition body annotates that
+  member.** `part def P { #Tag calc c; }` and `requirement def R { #Tag attribute note; }`
+  reported `unsupported_part_definition_member` / `unsupported_requirement_definition_member` and
+  dropped the annotation; only `#Tag dependency` was bound there. These bodies now use the same
+  binding as package and part usage bodies.
+
 - **Keyword-less members of a `metadata def` are reference usages.** `metadata def M { :>
   annotatedElement : SysML::RequirementUsage; }` was lowered as an attribute, because the parser
   returned the same node for it as for `attribute x;`. An attribute implies `Base::DataValue`,
