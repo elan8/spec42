@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **A usage typed by a usage is reported (#251).** `out power : electricPower;`, where
   `electricPower` is an ISQ attribute usage, types a feature by a feature. `incompatible_type_kind`
   covered only a part typed by a part; it now covers every SysML usage, since `Usage::definition`
-  is a Classifier. KerML features are not affected. Pins sysml-v2-parser `2718803e`
+  is a Classifier. KerML features are not affected. Pins sysml-v2-parser `b4a26e22`
   (`PARSE_AST_VERSION` 267), which reads `ref x :> y` in an action body as a subsetting; before,
   the Systems Library's `ForLoopAction` would have been reported.
 
