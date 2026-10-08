@@ -1478,10 +1478,16 @@ impl<D> SemanticModel<D> {
                 DiagnosticCode::ViewpointConformanceInvalidTargetKind,
                 diagnostics,
             ),
+            // SysML 8.3.21.10 `validateSatisfyRequirementUsageReference`: the satisfied feature
+            // is a RequirementUsage. A requirement definition is not one, so `satisfy ReqDef by
+            // x;` is reported; a viewpoint or concern usage is a RequirementUsage.
             (false, false) => self.collect_target_kind(
                 id,
                 &[ReferenceKind::SatisfySource],
-                |kind| is_requirement_kind(kind) || is_viewpoint_kind(kind),
+                |kind| {
+                    crate::model::element_kind::element_kind(kind)
+                        .conforms_to(sysml_contract::ElementKind::RequirementUsage)
+                },
                 DiagnosticCode::SatisfyInvalidEndpointKind,
                 diagnostics,
             ),

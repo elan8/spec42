@@ -248,8 +248,8 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     DiagnosticCatalogEntry {
         code: "incompatible_type_kind",
         severity: "warning",
-        meaning: "A usage is typed by a definition of an incompatible kind.",
-        typical_fix: "Use a compatible definition kind for the usage (for example part def for part).",
+        meaning: "A usage is typed by a definition of an incompatible kind, or by another usage.",
+        typical_fix: "Use a compatible definition kind for the usage (for example part def for part). To build on another usage, specialize it with ':>' instead of typing by it.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {
@@ -892,8 +892,8 @@ const CATALOG: &[DiagnosticCatalogEntry] = &[
     DiagnosticCatalogEntry {
         code: "satisfy_invalid_endpoint_kind",
         severity: "warning",
-        meaning: "A satisfy relationship has incompatible requirement or use-case endpoint kinds.",
-        typical_fix: "Satisfy requirements with requirements and use cases with use cases.",
+        meaning: "A satisfy relationship does not name a requirement usage (for example it names a requirement definition or a part).",
+        typical_fix: "Satisfy a requirement usage. For a requirement definition R, write 'satisfy requirement : R by x;'.",
         editor_quick_fixes: None,
     },
     DiagnosticCatalogEntry {

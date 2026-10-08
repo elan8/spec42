@@ -49,7 +49,7 @@ package TimerGeometry {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:6628c431ab0e62ff56b48cae14c19141f2619a9d1b29907e2df34695813910cc") (admitted (standard-library 94)))
+  (publication (phase resolved) (completeness complete) (has-evaluation true) (source-digest "blake3:31fdbaacdb6bce0314cbebc8ef28ba8cbc5ed1c03d5ef2ca232472079154806a") (admitted (standard-library 94)))
   (declarations
     (declaration (id (node (document "memory://snapshot/diagram_timer_geometry.md") (qualified-name "TimerGeometry"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/diagram_timer_geometry.md") (path (named (kind package) (name "TimerGeometry")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "StandardViewDefinitions") (import (shape namespace) (recursive false))))))
@@ -62,13 +62,13 @@ package TimerGeometry {
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind import) (ordinal 1))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "KitchenTimerStructure") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind import) (ordinal 2))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "KitchenTimerBehavior") (import (shape namespace) (recursive false))))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind import) (ordinal 3))))) (kind import) (membership (kind import) (visibility default)) (authored (membership (kind import) (visibility default)) (relationships (namespaceImport (reference "KitchenTimerRequirements") (import (shape namespace) (recursive false))))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "TimerRangeReq")) (satisfyTarget (reference "timerInstance::pcb::mcu")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "DisplayFormatReq")) (satisfyTarget (reference "timerInstance::pcb::display")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "AccuracyReq")) (satisfyTarget (reference "timerInstance::pcb::mcu")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "BuzzerAudibilityReq")) (satisfyTarget (reference "timerInstance::buzzer")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "ButtonResponsivenessReq")) (satisfyTarget (reference "timerInstance::pcb::mcu")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "StateConsistencyReq")) (satisfyTarget (reference "timerInstance::pcb::mcu")))))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (satisfySource (reference "BatteryRuntimeReq")) (satisfyTarget (reference "timerInstance::battery")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "TimerRangeReq")) (satisfyTarget (reference "timerInstance::pcb::mcu")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "DisplayFormatReq")) (satisfyTarget (reference "timerInstance::pcb::display")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "AccuracyReq")) (satisfyTarget (reference "timerInstance::pcb::mcu")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BuzzerAudibilityReq")) (satisfyTarget (reference "timerInstance::buzzer")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "ButtonResponsivenessReq")) (satisfyTarget (reference "timerInstance::pcb::mcu")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "StateConsistencyReq")) (satisfyTarget (reference "timerInstance::pcb::mcu")))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6))))) (kind satisfy) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "BatteryRuntimeReq")) (satisfyTarget (reference "timerInstance::battery")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (qualified-name "KitchenTimer::timerInstance"))) (kind part) (membership (kind feature) (visibility default)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "KitchenTimer")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (anonymous (kind import) (ordinal 0))))) (kind import) (membership (kind import) (visibility private)) (authored (membership (kind import) (visibility private)) (relationships (namespaceImport (reference "ScalarValues") (import (shape namespace) (recursive false))))))
@@ -162,7 +162,7 @@ package TimerGeometry {
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "maxCurrent")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-literal-rational) (ordinal 0))))) (kind kerml-literal-rational) (membership (kind owning) (visibility default)))
-    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction out)) (authored (membership (kind feature) (visibility default)) (relationships (featureTyping (reference "electricPower") (direction out)))))
+    (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power"))) (kind parameter) (membership (kind feature) (visibility default)) (facts (direction out)) (authored (membership (kind feature) (visibility default)) (relationships (subsetting (reference "electricPower")))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::voltage"))) (kind attribute) (membership (kind feature) (visibility default)) (feature-value (kind bind) (value (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0))))) (result (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0))))) (kind kerml-expression) (membership (kind owning) (visibility default)) (facts (expression-result (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0)))))))
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (named (kind port-def) (name "BatteryOutlet")) (named (kind attribute) (name "voltage")) (anonymous (kind kerml-expression) (ordinal 0)) (anonymous (kind kerml-feature) (ordinal 0))))) (kind kerml-feature) (membership (kind feature) (visibility default)) (facts (direction out)))
@@ -388,25 +388,25 @@ package TimerGeometry {
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind import) (ordinal 3))))) (kind namespaceImport) (ordinal 0))
       (authored-target "KitchenTimerRequirements")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfySource) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (kind featureTyping) (ordinal 0))
       (authored-target "TimerRangeReq")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1))))) (kind satisfySource) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1))))) (kind featureTyping) (ordinal 0))
       (authored-target "DisplayFormatReq")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2))))) (kind satisfySource) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2))))) (kind featureTyping) (ordinal 0))
       (authored-target "AccuracyReq")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3))))) (kind satisfySource) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3))))) (kind featureTyping) (ordinal 0))
       (authored-target "BuzzerAudibilityReq")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4))))) (kind satisfySource) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4))))) (kind featureTyping) (ordinal 0))
       (authored-target "ButtonResponsivenessReq")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5))))) (kind satisfySource) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5))))) (kind featureTyping) (ordinal 0))
       (authored-target "StateConsistencyReq")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6))))) (kind satisfySource) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6))))) (kind featureTyping) (ordinal 0))
       (authored-target "BatteryRuntimeReq")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfyTarget) (ordinal 0))
@@ -583,7 +583,7 @@ package TimerGeometry {
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (path (named (kind package) (name "KitchenTimerPorts")) (anonymous (kind import) (ordinal 3))))) (kind membershipImport) (ordinal 0))
       (authored-target "ISQElectromagnetism::electricPower")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::electricPower")))))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power"))) (kind featureTyping) (ordinal 0))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power"))) (kind subsetting) (ordinal 0))
       (authored-target "electricPower")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::electricPower")))))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::decrementPressed"))) (kind featureTyping) (ordinal 0))
@@ -902,13 +902,13 @@ package TimerGeometry {
   (relationships
     (relationship (kind typing) (source (node (document "memory://snapshot/diagram_timer_geometry.md") (qualified-name "TimerGeometry::selected"))) (target (node (document "memory://snapshot/sysml.library/standard_view_definitions.md") (qualified-name "StandardViewDefinitions::GeometryView"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_timer_geometry.md") (qualified-name "TimerGeometry::selected"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind viewExpose) (source (node (document "memory://snapshot/diagram_timer_geometry.md") (path (named (kind package) (name "TimerGeometry")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (qualified-name "KitchenTimer::timerInstance"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/diagram_timer_geometry.md") (path (named (kind package) (name "TimerGeometry")) (named (kind view) (name "selected")) (anonymous (kind expose) (ordinal 0))))) (kind viewExpose) (ordinal 0)))
-    (relationship (kind satisfySource) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfySource) (ordinal 0)))
-    (relationship (kind satisfySource) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1))))) (kind satisfySource) (ordinal 0)))
-    (relationship (kind satisfySource) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2))))) (kind satisfySource) (ordinal 0)))
-    (relationship (kind satisfySource) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3))))) (kind satisfySource) (ordinal 0)))
-    (relationship (kind satisfySource) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4))))) (kind satisfySource) (ordinal 0)))
-    (relationship (kind satisfySource) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5))))) (kind satisfySource) (ordinal 0)))
-    (relationship (kind satisfySource) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6))))) (kind satisfySource) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1))))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2))))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3))))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4))))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5))))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind typing) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6))))) (kind featureTyping) (ordinal 0)))
     (relationship (kind satisfyTarget) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::PCB::mcu"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfyTarget) (ordinal 0)))
     (relationship (kind satisfyTarget) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::PCB::display"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1))))) (kind satisfyTarget) (ordinal 0)))
     (relationship (kind satisfyTarget) (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::PCB::mcu"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2))))) (kind satisfyTarget) (ordinal 0)))
@@ -962,7 +962,7 @@ package TimerGeometry {
     (relationship (kind transitionTrigger) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::StartPressed"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::to_running_resume"))) (kind transitionTrigger) (ordinal 0)))
     (relationship (kind succession) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::paused"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 0)))
     (relationship (kind succession) (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind succession) (ordinal 0))))) (target (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (qualified-name "KitchenTimerBehavior::TimerStateMachine::running"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerBehavior.sysml") (path (named (kind package) (name "KitchenTimerBehavior")) (named (kind state-def) (name "TimerStateMachine")) (named (kind transition) (name "to_running_resume")) (anonymous (kind succession) (ordinal 0))))) (kind succession) (ordinal 1)))
-    (relationship (kind typing) (direction out) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power"))) (target (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::electricPower"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power"))) (kind featureTyping) (ordinal 0)))
+    (relationship (kind subsetting) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power"))) (target (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::electricPower"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power"))) (kind subsetting) (ordinal 0)))
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::decrementPressed"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::decrementPressed"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::incrementPressed"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::incrementPressed"))) (kind featureTyping) (ordinal 0)))
     (relationship (kind typing) (direction in) (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::resetPressed"))) (target (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::Boolean"))) (provenance authored) (authored-reference (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::ButtonInputPort::resetPressed"))) (kind featureTyping) (ordinal 0)))
@@ -1628,6 +1628,8 @@ package TimerGeometry {
       (featured-by (node (document "memory://snapshot/diagram_timer_geometry.md") (qualified-name "TimerGeometry::selected")))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0)))))
+      (type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
@@ -1635,6 +1637,7 @@ package TimerGeometry {
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
@@ -1655,6 +1658,8 @@ package TimerGeometry {
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1)))))
+      (type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
@@ -1662,6 +1667,7 @@ package TimerGeometry {
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
@@ -1682,6 +1688,8 @@ package TimerGeometry {
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2)))))
+      (type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
@@ -1689,6 +1697,7 @@ package TimerGeometry {
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
@@ -1709,6 +1718,8 @@ package TimerGeometry {
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3)))))
+      (type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
@@ -1716,6 +1727,7 @@ package TimerGeometry {
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
@@ -1736,6 +1748,8 @@ package TimerGeometry {
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4)))))
+      (type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
@@ -1743,6 +1757,7 @@ package TimerGeometry {
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
@@ -1763,6 +1778,8 @@ package TimerGeometry {
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5)))))
+      (type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
@@ -1770,6 +1787,7 @@ package TimerGeometry {
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
@@ -1790,6 +1808,8 @@ package TimerGeometry {
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::satisfiedRequirementChecks")) (scopes any feature))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6)))))
+      (type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq")) (provenance authored))
+      (effective-type (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq")) (source direct))
       (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
       (effective-type (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::constraintChecks"))))
       (effective-type (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::Occurrence")) (source inherited) (from (node (document "memory://snapshot/sysml.library/occurrences.md") (qualified-name "Occurrences::occurrences"))))
@@ -1797,6 +1817,7 @@ package TimerGeometry {
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Evaluation")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::evaluations"))))
       (effective-type (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (source inherited) (from (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::performances"))))
       (effective-type (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (source inherited) (from (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::requirementChecks"))))
+      (supertype (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/constraints.md") (qualified-name "Constraints::ConstraintCheck")) (scopes any))
@@ -3221,23 +3242,27 @@ package TimerGeometry {
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power")))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet")))
-      (type (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::electricPower")) (provenance authored))
-      (effective-type (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::electricPower")) (source direct))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (source inherited) (from (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/isq_mechanics.md") (qualified-name "ISQMechanics::PowerValue")) (source inherited) (from (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::electricPower"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::ScalarQuantityValue")) (source inherited) (from (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::scalarQuantities"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::TensorQuantityValue")) (source inherited) (from (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::tensorQuantities"))))
+      (effective-type (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::VectorQuantityValue")) (source inherited) (from (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::vectorQuantities"))))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::Anything")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::DataValue")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::dataValues")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/base.md") (qualified-name "Base::things")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::Array")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::Collection")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/collections.md") (qualified-name "Collections::OrderedCollection")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::electricPower")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::electricPower")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/isq_mechanics.md") (qualified-name "ISQMechanics::PowerValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::ScalarQuantityValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::TensorQuantityValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::VectorQuantityValue")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::scalarQuantities")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::tensorQuantities")) (scopes any))
-      (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::vectorQuantities")) (scopes any))
+      (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::scalarQuantities")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::tensorQuantities")) (scopes any feature))
+      (supertype (node (document "memory://snapshot/sysml.library/quantities.md") (qualified-name "Quantities::vectorQuantities")) (scopes any feature))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::NumericalValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/scalar_values.md") (qualified-name "ScalarValues::ScalarValue")) (scopes any))
       (supertype (node (document "memory://snapshot/sysml.library/vector_values.md") (qualified-name "VectorValues::NumericalVectorValue")) (scopes any))
@@ -3424,6 +3449,7 @@ package TimerGeometry {
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2)))) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "AccuracyReq")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq")))
@@ -3563,6 +3589,7 @@ package TimerGeometry {
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6)))) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "BatteryRuntimeReq")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq")))
@@ -3617,6 +3644,7 @@ package TimerGeometry {
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4)))) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "ButtonResponsivenessReq")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq")))
@@ -3671,6 +3699,7 @@ package TimerGeometry {
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3)))) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "BuzzerAudibilityReq")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq")))
@@ -3725,6 +3754,7 @@ package TimerGeometry {
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1)))) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "DisplayFormatReq")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq")))
@@ -4174,6 +4204,7 @@ package TimerGeometry {
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5)))) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "StateConsistencyReq")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq")))
@@ -4327,6 +4358,7 @@ package TimerGeometry {
       (supertype (node (document "memory://snapshot/sysml.library/performances.md") (qualified-name "Performances::Performance")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementCheck")) (scopes any subclassification))
       (supertype (node (document "memory://snapshot/sysml.library/requirements.md") (qualified-name "Requirements::RequirementConstraintCheck")) (scopes any subclassification))
+      (subtype (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0)))) (scopes any))
     )
     (declaration (id (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (path (named (kind package) (name "KitchenTimerRequirements")) (named (kind requirement-def) (name "TimerRangeReq")) (anonymous (kind require-constraint) (ordinal 0)))))
       (featured-by (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq")))
@@ -5892,72 +5924,72 @@ package TimerGeometry {
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 13 9) (end 13 22)) (probe (position 13 9))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfySource) (ordinal 0) (authored-target "TimerRangeReq")
+  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 13 23) (end 13 36)) (probe (position 13 23))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (kind featureTyping) (ordinal 0) (authored-target "TimerRangeReq")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::TimerRangeReq")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 14 9) (end 14 25)) (probe (position 14 9))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1))))) (kind satisfySource) (ordinal 0) (authored-target "DisplayFormatReq")
+  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 14 23) (end 14 39)) (probe (position 14 23))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1))))) (kind featureTyping) (ordinal 0) (authored-target "DisplayFormatReq")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::DisplayFormatReq")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 15 9) (end 15 20)) (probe (position 15 9))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2))))) (kind satisfySource) (ordinal 0) (authored-target "AccuracyReq")
+  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 15 23) (end 15 34)) (probe (position 15 23))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2))))) (kind featureTyping) (ordinal 0) (authored-target "AccuracyReq")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::AccuracyReq")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 16 9) (end 16 28)) (probe (position 16 9))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3))))) (kind satisfySource) (ordinal 0) (authored-target "BuzzerAudibilityReq")
+  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 16 23) (end 16 42)) (probe (position 16 23))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3))))) (kind featureTyping) (ordinal 0) (authored-target "BuzzerAudibilityReq")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BuzzerAudibilityReq")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 17 9) (end 17 32)) (probe (position 17 9))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4))))) (kind satisfySource) (ordinal 0) (authored-target "ButtonResponsivenessReq")
+  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 17 23) (end 17 46)) (probe (position 17 23))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4))))) (kind featureTyping) (ordinal 0) (authored-target "ButtonResponsivenessReq")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::ButtonResponsivenessReq")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 18 9) (end 18 28)) (probe (position 18 9))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5))))) (kind satisfySource) (ordinal 0) (authored-target "StateConsistencyReq")
+  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 18 23) (end 18 42)) (probe (position 18 23))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5))))) (kind featureTyping) (ordinal 0) (authored-target "StateConsistencyReq")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::StateConsistencyReq")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 19 9) (end 19 26)) (probe (position 19 9))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6))))) (kind satisfySource) (ordinal 0) (authored-target "BatteryRuntimeReq")
+  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 19 23) (end 19 40)) (probe (position 19 23))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6))))) (kind featureTyping) (ordinal 0) (authored-target "BatteryRuntimeReq")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerRequirements.sysml") (qualified-name "KitchenTimerRequirements::BatteryRuntimeReq")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 13 26) (end 13 47)) (probe (position 13 26))
+  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 13 40) (end 13 61)) (probe (position 13 40))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 0))))) (kind satisfyTarget) (ordinal 0) (authored-target "timerInstance::pcb::mcu")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::PCB::mcu")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 14 29) (end 14 54)) (probe (position 14 29))
+  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 14 43) (end 14 68)) (probe (position 14 43))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 1))))) (kind satisfyTarget) (ordinal 0) (authored-target "timerInstance::pcb::display")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::PCB::display")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 15 24) (end 15 45)) (probe (position 15 24))
+  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 15 38) (end 15 59)) (probe (position 15 38))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 2))))) (kind satisfyTarget) (ordinal 0) (authored-target "timerInstance::pcb::mcu")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::PCB::mcu")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 16 32) (end 16 52)) (probe (position 16 32))
+  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 16 46) (end 16 66)) (probe (position 16 46))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 3))))) (kind satisfyTarget) (ordinal 0) (authored-target "timerInstance::buzzer")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::buzzer")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 17 36) (end 17 57)) (probe (position 17 36))
+  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 17 50) (end 17 71)) (probe (position 17 50))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 4))))) (kind satisfyTarget) (ordinal 0) (authored-target "timerInstance::pcb::mcu")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::PCB::mcu")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 18 32) (end 18 53)) (probe (position 18 32))
+  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 18 46) (end 18 67)) (probe (position 18 46))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 5))))) (kind satisfyTarget) (ordinal 0) (authored-target "timerInstance::pcb::mcu")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::PCB::mcu")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 19 30) (end 19 51)) (probe (position 19 30))
+  (query (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (range (start 19 44) (end 19 65)) (probe (position 19 44))
     (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimer.sysml") (path (named (kind package) (name "KitchenTimer")) (anonymous (kind satisfy) (ordinal 6))))) (kind satisfyTarget) (ordinal 0) (authored-target "timerInstance::battery")
       (outcome (status resolved) (target (node (document "memory://snapshot/examples/timer/KitchenTimerStructure.sysml") (qualified-name "KitchenTimerStructure::KitchenTimer::battery")))))
     )
@@ -6217,8 +6249,8 @@ package TimerGeometry {
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::electricPower")))))
     )
   )
-  (query (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (range (start 8 14) (end 8 27)) (probe (position 8 14))
-    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power"))) (kind featureTyping) (ordinal 0) (authored-target "electricPower")
+  (query (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (range (start 8 15) (end 8 28)) (probe (position 8 15))
+    (reference (id (source (node (document "memory://snapshot/examples/timer/KitchenTimerPorts.sysml") (qualified-name "KitchenTimerPorts::BatteryOutlet::power"))) (kind subsetting) (ordinal 0) (authored-target "electricPower")
       (outcome (status resolved) (target (node (document "memory://snapshot/sysml.library/isq_electromagnetism.md") (qualified-name "ISQElectromagnetism::electricPower")))))
     )
   )
@@ -6749,7 +6781,7 @@ package TimerGeometry {
 ~~~json
 {
   "schemaVersion": 5,
-  "modelDigest": "blake3:54d6a98ee7ea12757132ba106b5761595fdbe5f8b1003e4b02b18d225217ba70",
+  "modelDigest": "blake3:9140c2170c7b3a066cbeb46a436da7651e7fd45aaa2c84c9aa08766f394b09d6",
   "documents": [
     {
       "uri": "memory://snapshot/diagram_timer_geometry.md",
@@ -7333,9 +7365,9 @@ package TimerGeometry {
       "document": 3,
       "range": [
         8,
-        14,
+        15,
         8,
-        27
+        28
       ]
     },
     {
@@ -12003,6 +12035,48 @@ package TimerGeometry {
     },
     {
       "kind": "relationship",
+      "ordinal": 15,
+      "relationshipKind": "subsetting",
+      "source": 46
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 313,
+      "relationshipKind": "subsetting",
+      "source": 46
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 371,
+      "relationshipKind": "subsetting",
+      "source": 46
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 418,
+      "relationshipKind": "subsetting",
+      "source": 46
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 457,
+      "relationshipKind": "subsetting",
+      "source": 46
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 485,
+      "relationshipKind": "subsetting",
+      "source": 46
+    },
+    {
+      "kind": "relationship",
+      "ordinal": 549,
+      "relationshipKind": "subsetting",
+      "source": 46
+    },
+    {
+      "kind": "relationship",
       "ordinal": 16,
       "relationshipKind": "typeFeaturing",
       "source": 46
@@ -12041,48 +12115,6 @@ package TimerGeometry {
       "kind": "relationship",
       "ordinal": 550,
       "relationshipKind": "typeFeaturing",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 15,
-      "relationshipKind": "typing",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 313,
-      "relationshipKind": "typing",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 371,
-      "relationshipKind": "typing",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 418,
-      "relationshipKind": "typing",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 457,
-      "relationshipKind": "typing",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 485,
-      "relationshipKind": "typing",
-      "source": 46
-    },
-    {
-      "kind": "relationship",
-      "ordinal": 549,
-      "relationshipKind": "typing",
       "source": 46
     },
     {
@@ -17387,13 +17419,7 @@ package TimerGeometry {
         "reference": 46,
         "source": 55,
         "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "electricPower",
-              "reference": 133
-            }
-          ]
+          "status": "absent"
         }
       },
       {
@@ -17556,13 +17582,7 @@ package TimerGeometry {
         "reference": 46,
         "source": 55,
         "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "electricPower",
-              "reference": 133
-            }
-          ]
+          "status": "absent"
         }
       },
       {
@@ -19055,13 +19075,7 @@ package TimerGeometry {
         "reference": 46,
         "source": 55,
         "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "electricPower",
-              "reference": 133
-            }
-          ]
+          "status": "absent"
         }
       },
       {
@@ -19597,13 +19611,7 @@ package TimerGeometry {
         "reference": 46,
         "source": 55,
         "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "electricPower",
-              "reference": 133
-            }
-          ]
+          "status": "absent"
         }
       },
       {
@@ -20039,13 +20047,7 @@ package TimerGeometry {
         "reference": 46,
         "source": 55,
         "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "electricPower",
-              "reference": 133
-            }
-          ]
+          "status": "absent"
         }
       },
       {
@@ -20367,13 +20369,7 @@ package TimerGeometry {
         "reference": 46,
         "source": 55,
         "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "electricPower",
-              "reference": 133
-            }
-          ]
+          "status": "absent"
         }
       },
       {
@@ -20642,13 +20638,7 @@ package TimerGeometry {
         "reference": 46,
         "source": 55,
         "typing": {
-          "status": "resolved",
-          "types": [
-            {
-              "label": "electricPower",
-              "reference": 133
-            }
-          ]
+          "status": "absent"
         }
       },
       {
@@ -20948,10 +20938,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typing",
+        "kind": "subsetting",
         "navigation": 56,
         "provenance": "authored",
-        "reference": 584,
+        "reference": 577,
         "source": 113,
         "target": {
           "reference": 133,
@@ -20962,7 +20952,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 577,
+        "reference": 584,
         "source": 113,
         "target": {
           "reference": 42,
@@ -24226,10 +24216,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typing",
+        "kind": "subsetting",
         "navigation": 56,
         "provenance": "authored",
-        "reference": 585,
+        "reference": 578,
         "source": 141,
         "target": {
           "reference": 133,
@@ -24240,7 +24230,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 578,
+        "reference": 585,
         "source": 141,
         "target": {
           "reference": 42,
@@ -24864,10 +24854,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typing",
+        "kind": "subsetting",
         "navigation": 56,
         "provenance": "authored",
-        "reference": 586,
+        "reference": 579,
         "source": 164,
         "target": {
           "reference": 133,
@@ -24878,7 +24868,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 579,
+        "reference": 586,
         "source": 164,
         "target": {
           "reference": 42,
@@ -25381,10 +25371,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typing",
+        "kind": "subsetting",
         "navigation": 56,
         "provenance": "authored",
-        "reference": 587,
+        "reference": 580,
         "source": 31,
         "target": {
           "reference": 133,
@@ -25395,7 +25385,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 580,
+        "reference": 587,
         "source": 31,
         "target": {
           "reference": 42,
@@ -25810,10 +25800,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typing",
+        "kind": "subsetting",
         "navigation": 56,
         "provenance": "authored",
-        "reference": 588,
+        "reference": 581,
         "source": 21,
         "target": {
           "reference": 133,
@@ -25824,7 +25814,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 581,
+        "reference": 588,
         "source": 21,
         "target": {
           "reference": 42,
@@ -26118,10 +26108,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typing",
+        "kind": "subsetting",
         "navigation": 56,
         "provenance": "authored",
-        "reference": 589,
+        "reference": 582,
         "source": 182,
         "target": {
           "reference": 133,
@@ -26132,7 +26122,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 582,
+        "reference": 589,
         "source": 182,
         "target": {
           "reference": 42,
@@ -26822,10 +26812,10 @@ package TimerGeometry {
         }
       },
       {
-        "kind": "typing",
+        "kind": "subsetting",
         "navigation": 56,
         "provenance": "authored",
-        "reference": 590,
+        "reference": 583,
         "source": 198,
         "target": {
           "reference": 133,
@@ -26836,7 +26826,7 @@ package TimerGeometry {
         "kind": "typeFeaturing",
         "navigation": null,
         "provenance": "implied",
-        "reference": 583,
+        "reference": 590,
         "source": 198,
         "target": {
           "reference": 42,
