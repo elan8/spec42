@@ -949,133 +949,140 @@ impl SemanticModelBuilder {
             return Ok(());
         };
         for element in elements {
-            // A body-less `#tag` prefix (`#refinement dependency X to Y;`) is a standalone sibling
-            // that annotates the member immediately after it; buffer it and bind it to that
-            // member's declaration. Any other member flushes an unbound prefix as an explicit
-            // unsupported member first, so a stray `#tag` never leaks onto a later declaration.
+            // A body-less `#tag` prefix (`#refinement dependency X to Y;`, `#Tag attribute a;`)
+            // is a standalone sibling that annotates the member immediately after it.
             if let RequirementDefBodyElement::MetadataKeywordUsage(keyword) = &element.value {
                 if keyword.value.body.is_none() {
                     self.buffer_prefix_metadata_keyword(Some(owner), unsupported, keyword);
                     continue;
                 }
             }
-            if !matches!(&element.value, RequirementDefBodyElement::Dependency(_)) {
-                self.flush_pending_prefix_metadata(document);
-            }
-            match &element.value {
-                RequirementDefBodyElement::Error(error) => {
-                    self.push_recovery(document, error.span);
-                }
-                RequirementDefBodyElement::AttributeDef(attribute) => {
-                    self.lower_attribute_def(document, Some(owner), attribute)?;
-                }
-                RequirementDefBodyElement::AttributeUsage(attribute) => {
-                    self.lower_attribute_usage(document, Some(owner), attribute)?;
-                }
-                RequirementDefBodyElement::RequirementUsage(requirement) => {
-                    self.lower_requirement_usage(document, Some(owner), requirement)?;
-                }
-                RequirementDefBodyElement::Import(import) => {
-                    self.lower_import(document, Some(owner), import)?;
-                }
-                RequirementDefBodyElement::SubjectDecl(subject) => {
-                    self.lower_subject_decl(document, Some(owner), subject)?;
-                }
-                RequirementDefBodyElement::Constraint(constraint) => {
-                    self.lower_constraint_usage(document, Some(owner), constraint)?;
-                }
-                RequirementDefBodyElement::Annotating(member) => {
-                    self.lower_annotating_member(document, Some(owner), unsupported, member)?;
-                }
-                // `subject;` shorthand: an entirely empty AST node (`ast::requirement::SubjectRef`
-                // has no fields at all) referencing the case-family subject already established
-                // elsewhere -- nothing to lower, so it is recognized and silently ignored rather
-                // than reported as an unsupported member, mirroring `Doc`/`TextualRep`'s inert
-                // handling above.
-                RequirementDefBodyElement::SubjectRef(_) => {}
-                RequirementDefBodyElement::RequirementActorDecl(actor) => {
-                    self.lower_requirement_actor_decl(document, Some(owner), actor)?;
-                }
-                RequirementDefBodyElement::Stakeholder(stakeholder) => {
-                    self.lower_stakeholder_member(document, Some(owner), stakeholder)?;
-                }
-                RequirementDefBodyElement::Purpose(purpose) => {
-                    self.lower_purpose_member(document, owner, purpose)?;
-                }
-                RequirementDefBodyElement::VerifyRequirement(verify) => {
-                    self.lower_verify_requirement_member(document, owner, unsupported, verify)?;
-                }
-                RequirementDefBodyElement::Frame(frame) => {
-                    self.lower_frame_member(document, owner, unsupported, frame)?;
-                }
-                RequirementDefBodyElement::VariantUsage(node) => {
-                    self.lower_variant_usage(document, owner, unsupported, node)?;
-                }
-                RequirementDefBodyElement::RequireConstraint(node) => {
-                    self.lower_require_constraint_member(document, owner, unsupported, node)?;
-                }
-                RequirementDefBodyElement::RefDecl(node) => {
-                    self.lower_ref_decl(document, Some(owner), node)?;
-                }
-                // The usage families a `requirement def` body inherits from the general member
-                // grammar, admitted upstream in `ec47463` (planning/UPSTREAM_PARSER_GAPS.md gap 42).
-                // Each dispatches to the lowering its package- or part-level spelling already uses;
-                RequirementDefBodyElement::ActionUsage(node) => {
-                    self.lower_action_usage(document, Some(owner), node)?;
-                }
-                RequirementDefBodyElement::Perform(node) => {
-                    self.lower_perform(document, Some(owner), node)?;
-                }
-                RequirementDefBodyElement::StateUsage(node) => {
-                    self.lower_state_usage(document, Some(owner), node)?;
-                }
-                RequirementDefBodyElement::ItemUsage(node) => {
-                    self.lower_item_usage(document, Some(owner), node)?;
-                }
-                RequirementDefBodyElement::PartUsage(node) => {
-                    self.lower_part_usage(document, Some(owner), node)?;
-                }
-                RequirementDefBodyElement::ConnectionUsage(node) => {
-                    self.lower_connection_usage(document, Some(owner), node)?;
-                }
-                RequirementDefBodyElement::Connect(node) => {
-                    self.lower_bare_connect(document, owner, unsupported, node)?;
-                }
-                RequirementDefBodyElement::SuccessionUsage(node) => {
-                    self.lower_succession_usage(document, owner, unsupported, node)?;
-                }
-                // The three member families upstream added to close the `requirement def` half of
-                // planning/UPSTREAM_PARSER_GAPS.md gap 42: a nested definition of the body's own
-                // kind, and the `port`/`allocate` members the SysML v2 spec annex authors. Each
-                // dispatches to the lowering its package-level spelling already uses.
-                RequirementDefBodyElement::RequirementDef(node) => {
-                    self.lower_requirement_def(document, Some(owner), node)?;
-                }
-                RequirementDefBodyElement::PortUsage(node) => {
-                    self.lower_port_usage(document, Some(owner), node)?;
-                }
-                RequirementDefBodyElement::AllocationUsage(node) => {
-                    self.lower_allocation_usage(document, Some(owner), node)?;
-                }
-                RequirementDefBodyElement::ConcernUsage(node) => {
-                    self.lower_concern_usage(document, Some(owner), node)?;
-                }
-                RequirementDefBodyElement::CalcUsage(node) => {
-                    self.lower_calc_usage(document, Some(owner), node)?;
-                }
-                RequirementDefBodyElement::Dependency(node) => {
-                    let dependency = self.lower_dependency(document, Some(owner), node)?;
-                    self.bind_pending_prefix_metadata(document, dependency)?;
-                }
-                RequirementDefBodyElement::Satisfy(node) => {
-                    self.lower_satisfy(document, owner, unsupported, node)?;
-                }
-                RequirementDefBodyElement::MetadataKeywordUsage(_) => {
-                    self.push_unsupported(document, unsupported, element.span)
-                }
-            }
+            self.lower_prefixable_member(document, Some(owner), element.span, |this| {
+                this.lower_requirement_shaped_member(document, owner, unsupported, element)
+            })?;
         }
         self.flush_pending_prefix_metadata(document);
+        Ok(())
+    }
+
+    fn lower_requirement_shaped_member(
+        &mut self,
+        document: DocumentIdx,
+        owner: DeclarationId,
+        unsupported: UnsupportedFamily,
+        element: &Node<RequirementDefBodyElement>,
+    ) -> Result<(), ConstructionError> {
+        match &element.value {
+            RequirementDefBodyElement::Error(error) => {
+                self.push_recovery(document, error.span);
+            }
+            RequirementDefBodyElement::AttributeDef(attribute) => {
+                self.lower_attribute_def(document, Some(owner), attribute)?;
+            }
+            RequirementDefBodyElement::AttributeUsage(attribute) => {
+                self.lower_attribute_usage(document, Some(owner), attribute)?;
+            }
+            RequirementDefBodyElement::RequirementUsage(requirement) => {
+                self.lower_requirement_usage(document, Some(owner), requirement)?;
+            }
+            RequirementDefBodyElement::Import(import) => {
+                self.lower_import(document, Some(owner), import)?;
+            }
+            RequirementDefBodyElement::SubjectDecl(subject) => {
+                self.lower_subject_decl(document, Some(owner), subject)?;
+            }
+            RequirementDefBodyElement::Constraint(constraint) => {
+                self.lower_constraint_usage(document, Some(owner), constraint)?;
+            }
+            RequirementDefBodyElement::Annotating(member) => {
+                self.lower_annotating_member(document, Some(owner), unsupported, member)?;
+            }
+            // `subject;` shorthand: an entirely empty AST node (`ast::requirement::SubjectRef`
+            // has no fields at all) referencing the case-family subject already established
+            // elsewhere -- nothing to lower, so it is recognized and silently ignored rather
+            // than reported as an unsupported member, mirroring `Doc`/`TextualRep`'s inert
+            // handling above.
+            RequirementDefBodyElement::SubjectRef(_) => {}
+            RequirementDefBodyElement::RequirementActorDecl(actor) => {
+                self.lower_requirement_actor_decl(document, Some(owner), actor)?;
+            }
+            RequirementDefBodyElement::Stakeholder(stakeholder) => {
+                self.lower_stakeholder_member(document, Some(owner), stakeholder)?;
+            }
+            RequirementDefBodyElement::Purpose(purpose) => {
+                self.lower_purpose_member(document, owner, purpose)?;
+            }
+            RequirementDefBodyElement::VerifyRequirement(verify) => {
+                self.lower_verify_requirement_member(document, owner, unsupported, verify)?;
+            }
+            RequirementDefBodyElement::Frame(frame) => {
+                self.lower_frame_member(document, owner, unsupported, frame)?;
+            }
+            RequirementDefBodyElement::VariantUsage(node) => {
+                self.lower_variant_usage(document, owner, unsupported, node)?;
+            }
+            RequirementDefBodyElement::RequireConstraint(node) => {
+                self.lower_require_constraint_member(document, owner, unsupported, node)?;
+            }
+            RequirementDefBodyElement::RefDecl(node) => {
+                self.lower_ref_decl(document, Some(owner), node)?;
+            }
+            // The usage families a `requirement def` body inherits from the general member
+            // grammar, admitted upstream in `ec47463` (planning/UPSTREAM_PARSER_GAPS.md gap 42).
+            // Each dispatches to the lowering its package- or part-level spelling already uses;
+            RequirementDefBodyElement::ActionUsage(node) => {
+                self.lower_action_usage(document, Some(owner), node)?;
+            }
+            RequirementDefBodyElement::Perform(node) => {
+                self.lower_perform(document, Some(owner), node)?;
+            }
+            RequirementDefBodyElement::StateUsage(node) => {
+                self.lower_state_usage(document, Some(owner), node)?;
+            }
+            RequirementDefBodyElement::ItemUsage(node) => {
+                self.lower_item_usage(document, Some(owner), node)?;
+            }
+            RequirementDefBodyElement::PartUsage(node) => {
+                self.lower_part_usage(document, Some(owner), node)?;
+            }
+            RequirementDefBodyElement::ConnectionUsage(node) => {
+                self.lower_connection_usage(document, Some(owner), node)?;
+            }
+            RequirementDefBodyElement::Connect(node) => {
+                self.lower_bare_connect(document, owner, unsupported, node)?;
+            }
+            RequirementDefBodyElement::SuccessionUsage(node) => {
+                self.lower_succession_usage(document, owner, unsupported, node)?;
+            }
+            // The three member families upstream added to close the `requirement def` half of
+            // planning/UPSTREAM_PARSER_GAPS.md gap 42: a nested definition of the body's own
+            // kind, and the `port`/`allocate` members the SysML v2 spec annex authors. Each
+            // dispatches to the lowering its package-level spelling already uses.
+            RequirementDefBodyElement::RequirementDef(node) => {
+                self.lower_requirement_def(document, Some(owner), node)?;
+            }
+            RequirementDefBodyElement::PortUsage(node) => {
+                self.lower_port_usage(document, Some(owner), node)?;
+            }
+            RequirementDefBodyElement::AllocationUsage(node) => {
+                self.lower_allocation_usage(document, Some(owner), node)?;
+            }
+            RequirementDefBodyElement::ConcernUsage(node) => {
+                self.lower_concern_usage(document, Some(owner), node)?;
+            }
+            RequirementDefBodyElement::CalcUsage(node) => {
+                self.lower_calc_usage(document, Some(owner), node)?;
+            }
+            RequirementDefBodyElement::Dependency(node) => {
+                self.lower_dependency(document, Some(owner), node)?;
+            }
+            RequirementDefBodyElement::Satisfy(node) => {
+                self.lower_satisfy(document, owner, unsupported, node)?;
+            }
+            RequirementDefBodyElement::MetadataKeywordUsage(_) => {
+                self.push_unsupported(document, unsupported, element.span)
+            }
+        }
         Ok(())
     }
 
