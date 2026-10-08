@@ -18,8 +18,8 @@ type=file
 # SOURCE
 ## control_node.sysml
 ~~~sysml
-// ControlNode appears only through ActionNode in ActionBodyItem, whose owners are all action
-// definitions or usages.
+// ControlNode appears only through ActionNode in ActionBodyItem. Action bodies and calculation
+// bodies admit it (see sysml_control_node_owning_type.md); a part definition body does not.
 package P {
     part def Holder {
         fork f;
@@ -207,7 +207,7 @@ package P {
 # SMG
 ~~~sexpr
 (semantic-model
-  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:c1cc6c2f94c14179fbda8ad43363970943c6dd5cbe41d4bf5636682a19fa131c"))
+  (publication (phase resolved) (completeness parse-recovery) (has-evaluation false) (source-digest "blake3:da551eafebdb2ec0a9d6546b9fd539d8df7d9803ebd1489cd1b1c508e5f9634a"))
   (declarations
     (declaration (id (node (document "memory://snapshot/actor.sysml") (qualified-name "P"))) (kind package) (membership (kind owning) (visibility default)))
     (declaration (id (node (document "memory://snapshot/actor.sysml") (qualified-name "P::C"))) (kind part-def) (membership (kind owning) (visibility default)))

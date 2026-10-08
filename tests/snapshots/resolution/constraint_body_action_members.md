@@ -1,10 +1,15 @@
 # META
 ~~~ini
-description=A constraint body is a CalculationBody, so its action-body members are owned members: a control node in a constraint definition is lowered, not reported as a parse error or dropped
+description=A constraint body is a CalculationBody, so its action-body members are owned members: control nodes in a constraint definition take their library specializations. Whether a constraint may own a control node is validation/sysml_control_node_owning_type.md
+specification=OMG SysML 2.0 Language (formal/26-03-02)
+specification_url=https://www.omg.org/spec/SysML/2.0/Language/PDF
+source_expectation=accepted
+rule_family=check
+expectation=semantics
+rule_id=sysml-2.0:8.3.17.8:checkForkNodeSpecialization
+rule_id=sysml-2.0:8.3.17.13:checkMergeNodeSpecialization
 type=file
 libraries=standard
-require_no_diagnostics=true
-require_complete_publication=true
 ~~~
 # SOURCE
 ~~~sysml
@@ -14,6 +19,12 @@ package Constraints {
         merge joined;
     }
 }
+~~~
+# EXPECTED SEMANTICS
+~~~sexpr
+(fixture-semantics
+  (relationship (kind subsetting) (source "Constraints::Guarded::split") (target "Actions::Action::forks") (provenance implied) (outcome resolved))
+  (relationship (kind subsetting) (source "Constraints::Guarded::joined") (target "Actions::Action::merges") (provenance implied) (outcome resolved)))
 ~~~
 # DIAGNOSTICS
 ~~~sexpr
