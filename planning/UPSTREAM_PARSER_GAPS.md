@@ -4,7 +4,7 @@ This is the active record of information the parser must preserve or distinguish
 implement the corresponding semantic or syntax-fidelity behavior without guessing.
 
 The parser currently pinned by the root workspace is
-`elan8/sysml-v2-parser@e7baa31839e70823a40cdac0bb99fd5a6747d80a` (`PARSE_AST_VERSION` 268): the
+`elan8/sysml-v2-parser@7e12c5f4db604dc7df5e9eaa44abcb4e4feb5a2d` (`PARSE_AST_VERSION` 268): the
 head of `elan8/sysml-v2-parser#185` (`perform` members and a value on action usages, loop nodes as
 `then` targets, `perform` in occurrence usage bodies), to be re-pinned to its merge commit. Only
 the rows this pin closed or narrowed were re-verified against it. An earlier

@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   usages. Accepted with it: an action usage with a value (`action :>> generate = fourCylinder;`),
   `then while`, `then loop` and `then for` succession targets, `perform` inside a `timeslice` or
   other occurrence usage body, `perform a redefines b;`, and a keyword-less action body member
-  that starts with `:`, `:>` or `:>>`. Pins sysml-v2-parser `e7baa318` (`PARSE_AST_VERSION` 268).
+  that starts with `:`, `:>` or `:>>`. Pins sysml-v2-parser `7e12c5f4` (`PARSE_AST_VERSION` 268).
 - **`satisfy` of a requirement definition is reported (#251).** `satisfy ReqDef by drone;`
   reported nothing: `satisfy_invalid_endpoint_kind` accepted any requirement, definition or
   usage. `validateSatisfyRequirementUsageReference` requires a requirement usage. Write `satisfy
