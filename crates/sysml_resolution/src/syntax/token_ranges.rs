@@ -1267,6 +1267,9 @@ fn collect_semantic_ranges_occurrence_body_element(
             }
         }
         OBE::Satisfy(satisfy) => collect_semantic_ranges_satisfy(ctx, satisfy, out),
+        OBE::Perform(perform) => {
+            out.push((span_to_source_range(&perform.span), SyntaxRole::Function))
+        }
         OBE::Error(_)
         | OBE::AssertConstraint(_)
         | OBE::Allocate(_)
@@ -1933,6 +1936,9 @@ fn collect_semantic_ranges_action_usage_body_element(
             }
         }
         AUBE::RefDecl(ref_decl) => collect_semantic_ranges_ref_decl(ref_decl, out),
+        AUBE::Perform(perform) => {
+            out.push((span_to_source_range(&perform.span), SyntaxRole::Function))
+        }
         AUBE::StateUsage(state_usage) => collect_semantic_ranges_state_usage(ctx, state_usage, out),
         AUBE::Assign(assign) => {
             out.push((span_to_source_range(&assign.span), SyntaxRole::Property))

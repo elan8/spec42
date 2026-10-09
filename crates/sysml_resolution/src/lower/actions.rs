@@ -430,6 +430,10 @@ impl SemanticModelBuilder {
         if let Some(relationship) = &node.value.redefines {
             self.lower_subsetting_relationship(document, declaration, relationship)?;
         }
+        // `ActionUsageDeclaration = UsageDeclaration ValuePart?`.
+        if let Some(feature_value) = &node.value.value {
+            self.record_feature_value(document, declaration, feature_value)?;
+        }
         self.lower_accept_send_clauses(document, declaration, node)?;
         // An action usage is one of the two constructs whose body may not be written at all --
         // `action a accept M via v;` ends at the statement after it -- so an absent body is a
@@ -566,6 +570,11 @@ impl SemanticModelBuilder {
             }
             ActionUsageBodyElement::ActionUsage(action_usage) => {
                 self.lower_action_usage(document, Some(owner), action_usage)?;
+            }
+            // An action usage body is the same `ActionBody` as a definition body, so it owns
+            // `perform` members the same way (#256).
+            ActionUsageBodyElement::Perform(perform) => {
+                self.lower_perform(document, Some(owner), perform)?;
             }
             ActionUsageBodyElement::ItemUsage(item_usage) => {
                 self.lower_item_usage(document, Some(owner), item_usage)?;
@@ -1209,6 +1218,29 @@ impl SemanticModelBuilder {
             // through the same owner the standalone `if` body element uses.
             ThenTarget::If(if_stmt) => {
                 self.lower_if_stmt(document, owner, family, if_stmt.span, &if_stmt.value)?
+            }
+            // `then while`, `then loop` and `then for` are the same nodes as the standalone
+            // body elements.
+            ThenTarget::While(stmt) => self.lower_while_or_loop_stmt(
+                document,
+                owner,
+                family,
+                DeclarationKind::While,
+                stmt.span,
+                Some(&stmt.value.condition),
+                &stmt.value.body.body,
+            )?,
+            ThenTarget::Loop(stmt) => self.lower_while_or_loop_stmt(
+                document,
+                owner,
+                family,
+                DeclarationKind::Loop,
+                stmt.span,
+                None,
+                &stmt.value.body.body,
+            )?,
+            ThenTarget::For(stmt) => {
+                self.lower_for_loop(document, owner, family, stmt.span, &stmt.value)?
             }
             ThenTarget::Feature(expression) => {
                 let declaration = self.push_typed_declaration(
