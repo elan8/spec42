@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **An inherited `perform Pkg::action;` can be redefined by name.** `part variant :> family {
+  perform action :>> providePower { ... } }` reported `unresolved_reference` when `family` wrote
+  `perform Tree::providePower;`. An anonymous perform usage is named by the action it performs
+  (`PerformActionUsage::namingFeature`); spec42 only derived names from redefinitions, so it
+  resolved the name only when the action happened to be lexically visible.
 - **`perform` in an action usage body is accepted (#256).** `action group { perform stepA; }`
   reported `unexpected keyword perform in action body`; only an action definition body took the
   member, although both are the same `ActionBody`. A function tree can now be written with
