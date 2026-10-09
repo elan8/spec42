@@ -1375,6 +1375,11 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
 /// identification. An anonymous Feature delegates to the first Feature named by an owned
 /// Redefinition; reverse edges make a chain linear in declarations plus references, while any
 /// dependency left after propagation is an explicit naming cycle.
+///
+/// SysML `PerformActionUsage::namingFeature` overrides the delegate: a perform usage whose
+/// `performedAction` is another action (`perform Pkg::a;`) is named by that action, and only
+/// otherwise by its first Redefinition. That is what lets `perform action :>> a { ... }` in a
+/// specializing part find the inherited, anonymous `perform Pkg::a;`.
 fn derive_effective_names<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
     declaration_facts: Option<&[DeclarationFacts]>,
@@ -1397,16 +1402,25 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
     let mut dependency = vec![None; declarations.len()];
     let mut dependants = vec![Vec::new(); declarations.len()];
     let mut queue = std::collections::VecDeque::new();
+    let mut provenance = vec![EffectiveNameProvenance::FirstRedefinition; declarations.len()];
     let mut first_redefinition = vec![None; declarations.len()];
+    let mut performed_action = vec![None; declarations.len()];
     for (reference_index, reference) in references.iter().enumerate() {
-        if reference.kind() == ReferenceKind::Redefinition {
-            let source = reference.source().index();
-            let slot = first_redefinition
-                .get_mut(source)
-                .ok_or(ResolutionError::InvalidStorage)?;
-            if slot.is_none() {
-                *slot = Some(reference_index);
+        let source = reference.source().index();
+        let slot = match reference.kind() {
+            ReferenceKind::Redefinition => first_redefinition.get_mut(source),
+            ReferenceKind::References
+                if declarations
+                    .get(source)
+                    .is_some_and(|source| source.kind == DeclarationKind::PerformActionUsage) =>
+            {
+                performed_action.get_mut(source)
             }
+            _ => continue,
+        }
+        .ok_or(ResolutionError::InvalidStorage)?;
+        if slot.is_none() {
+            *slot = Some(reference_index);
         }
     }
 
@@ -1443,7 +1457,18 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
             queue.push_back(index);
             continue;
         }
-        let Some(reference_index) = first_redefinition[index] else {
+        let (naming_reference, naming_provenance) = match performed_action[index] {
+            Some(reference_index) => (
+                Some(reference_index),
+                EffectiveNameProvenance::PerformedAction,
+            ),
+            None => (
+                first_redefinition[index],
+                EffectiveNameProvenance::FirstRedefinition,
+            ),
+        };
+        provenance[index] = naming_provenance;
+        let Some(reference_index) = naming_reference else {
             settled[index] = true;
             queue.push_back(index);
             continue;
@@ -1463,14 +1488,14 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
             ResolutionStatus::NonConverged => {
                 facts[index].name = EffectiveNameOutcome::NonConverged;
                 facts[index].short_name = EffectiveNameOutcome::NonConverged;
-                facts[index].provenance = EffectiveNameProvenance::FirstRedefinition;
+                facts[index].provenance = naming_provenance;
                 settled[index] = true;
                 queue.push_back(index);
             }
             _ => {
                 facts[index].name = EffectiveNameOutcome::Unresolved;
                 facts[index].short_name = EffectiveNameOutcome::Unresolved;
-                facts[index].provenance = EffectiveNameProvenance::FirstRedefinition;
+                facts[index].provenance = naming_provenance;
                 settled[index] = true;
                 queue.push_back(index);
             }
@@ -1485,7 +1510,7 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
             facts[source] = EffectiveNameFacts {
                 name: facts[target].name,
                 short_name: facts[target].short_name,
-                provenance: EffectiveNameProvenance::FirstRedefinition,
+                provenance: provenance[source],
             };
             settled[source] = true;
             queue.push_back(source);
@@ -1496,7 +1521,7 @@ fn derive_effective_names<R: ResolutionReferenceFact>(
             facts[index] = EffectiveNameFacts {
                 name: EffectiveNameOutcome::NonConverged,
                 short_name: EffectiveNameOutcome::NonConverged,
-                provenance: EffectiveNameProvenance::FirstRedefinition,
+                provenance: provenance[index],
             };
         }
     }
@@ -2276,6 +2301,10 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
     // is a lowering defect -- an unnamed member must not acquire a declared name -- and it is
     // recorded in planning/UPSTREAM_PARSER_GAPS.md rather than compensated for here.
     let excluded = (reference.kind() == ReferenceKind::Redefinition).then(|| reference.source());
+    // The reference that names a perform usage's performed action does not see anonymous perform
+    // usages, which are named by what they perform (see `is_anonymous_perform`).
+    let excludes_anonymous_performs = reference.kind() == ReferenceKind::References
+        && source.kind == DeclarationKind::PerformActionUsage;
     scratch.candidates.clear();
     scratch.next_candidates.clear();
     if rooted {
@@ -2375,6 +2404,7 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
             LookupTarget {
                 domain: first_segment_domain,
                 excluded,
+                excludes_anonymous_performs,
                 first_scope: if qualified_redefinition_owner.is_some() {
                     FirstScopePolicy::InheritedOnly
                 } else {
@@ -2437,6 +2467,11 @@ pub(crate) fn resolve_reference<R: ResolutionReferenceFact>(
         scratch
             .candidates
             .retain(|candidate| *candidate != excluded);
+    }
+    if excludes_anonymous_performs {
+        scratch
+            .candidates
+            .retain(|candidate| !names::is_anonymous_perform(declarations, *candidate));
     }
     status_from_candidates(scratch.candidates, scratch.ambiguous_candidates)
 }
@@ -2582,6 +2617,7 @@ pub(crate) fn resolve_member_access_reference_with_path<R: ResolutionReferenceFa
             LookupTarget {
                 domain: DeclarationDomain::Any,
                 excluded: None,
+                excludes_anonymous_performs: false,
                 first_scope: FirstScopePolicy::OwnedThenInherited,
             },
             scratch.candidates,

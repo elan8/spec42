@@ -841,6 +841,9 @@ pub(crate) struct LookupTarget {
     pub(crate) domain: DeclarationDomain,
     /// A declaration that is not in its own scope for this reference, if any.
     pub(crate) excluded: Option<DeclarationId>,
+    /// Anonymous perform usages are not in scope for this reference. See
+    /// [`is_anonymous_perform`].
+    pub(crate) excludes_anonymous_performs: bool,
     /// Redefinition is scoped from the general Types of the redefining Feature, not from its
     /// owned memberships. Other reference kinds use ordinary owned-before-inherited lookup.
     pub(crate) first_scope: FirstScopePolicy,
@@ -850,6 +853,16 @@ pub(crate) struct LookupTarget {
 pub(crate) enum FirstScopePolicy {
     OwnedThenInherited,
     InheritedOnly,
+}
+
+/// An anonymous perform usage is named by the action it performs (SysML
+/// `PerformActionUsage::namingFeature`), so it carries that action's name in its own scope. The
+/// reference that names the performed action must not find such a usage: it would find itself,
+/// or a sibling `perform` of the same action, and the name would then depend on itself.
+pub(crate) fn is_anonymous_perform(declarations: &[Declaration], entry: DeclarationId) -> bool {
+    declarations.get(entry.index()).is_some_and(|declaration| {
+        declaration.kind == DeclarationKind::PerformActionUsage && declaration.name.is_none()
+    })
 }
 
 pub(crate) fn lookup_lexical_into(
@@ -864,6 +877,7 @@ pub(crate) fn lookup_lexical_into(
     let LookupTarget {
         domain,
         excluded,
+        excludes_anonymous_performs,
         first_scope,
     } = target;
     let select_tier = |raw: &[DeclarationId], out: &mut Vec<DeclarationId>| {
@@ -884,15 +898,16 @@ pub(crate) fn lookup_lexical_into(
     };
     // Applied before the tier is tested for emptiness, so a tier whose only binding is the
     // excluded declaration does not shadow the tiers below it.
+    let hidden = |entry: DeclarationId| {
+        excluded == Some(entry)
+            || (excludes_anonymous_performs && is_anonymous_perform(declarations, entry))
+    };
     let visible = |raw: &[DeclarationId], scratch: &mut Vec<DeclarationId>| -> bool {
-        let Some(excluded) = excluded else {
-            return false;
-        };
-        if !raw.contains(&excluded) {
+        if !raw.iter().copied().any(hidden) {
             return false;
         }
         scratch.clear();
-        scratch.extend(raw.iter().copied().filter(|entry| *entry != excluded));
+        scratch.extend(raw.iter().copied().filter(|entry| !hidden(*entry)));
         true
     };
     let mut filtered = Vec::new();
@@ -911,7 +926,10 @@ pub(crate) fn lookup_lexical_into(
         }
         if let Some(inherited) = indexes.inherited_names {
             record_lookup(work)?;
-            let inherited = inherited.candidates(owner, name);
+            let mut inherited = inherited.candidates(owner, name);
+            if excludes_anonymous_performs && visible(inherited, &mut filtered) {
+                inherited = &filtered;
+            }
             if !inherited.is_empty() {
                 select_tier(inherited, candidates);
                 return Ok(());
@@ -919,7 +937,10 @@ pub(crate) fn lookup_lexical_into(
         }
         if let Some(imports) = indexes.effective_imports {
             record_lookup(work)?;
-            let imported = imports.candidates(owner, name);
+            let mut imported = imports.candidates(owner, name);
+            if excludes_anonymous_performs && visible(imported, &mut filtered) {
+                imported = &filtered;
+            }
             if !imported.is_empty() {
                 select_tier(imported, candidates);
                 return Ok(());

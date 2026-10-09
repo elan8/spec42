@@ -1961,6 +1961,9 @@ impl SemanticModelBuilder {
             OccurrenceBodyElement::ConnectionUsage(connection_usage) => {
                 self.lower_connection_usage(document, Some(owner), connection_usage)?;
             }
+            OccurrenceBodyElement::Perform(perform) => {
+                self.lower_perform(document, Some(owner), perform)?;
+            }
             OccurrenceBodyElement::StateUsage(state_usage) => {
                 self.lower_state_usage(document, Some(owner), state_usage)?;
             }
