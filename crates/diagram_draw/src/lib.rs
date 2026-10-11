@@ -22,6 +22,7 @@ mod ibd_route;
 mod json_util;
 mod layout;
 mod markers;
+pub mod nesting;
 mod node_notation;
 mod nodes;
 pub mod pipeline;
@@ -87,6 +88,9 @@ fn content_bounds(nodes: &[LaidOutNode]) -> (f64, f64, f64, f64) {
     (min_x, min_y, max_x - min_x, max_y - min_y)
 }
 
+/// The margin around a diagram's content inside its view box.
+const VIEW_MARGIN: f64 = 16.0;
+
 /// Port of `renderVisualization`'s shared SVG skeleton in `renderer.ts`, as it actually reaches
 /// serialized output through `exportHeadlessSvg`/`controller.exportSvg()` (`render/export.ts`):
 /// `svg.sysml-viz-svg` -> `rect.viz-bg` + `defs` (the 8 general/IBD markers, plus `extra_marker`
@@ -106,18 +110,28 @@ fn render_svg_document(
     root_content: Element,
 ) -> String {
     let (bounds_x, bounds_y, bounds_width, bounds_height) = bounds;
+    // The view box is the content with a margin, and the background covers exactly the view
+    // box, so an exported figure is neither cropped nor padded out to a viewer's canvas.
+    let (view_x, view_y) = (bounds_x - VIEW_MARGIN, bounds_y - VIEW_MARGIN);
+    let (view_width, view_height) = (
+        bounds_width + 2.0 * VIEW_MARGIN,
+        bounds_height + 2.0 * VIEW_MARGIN,
+    );
+    let _ = (width, height);
     let viz_bg = Element::new("rect")
         .attr("class", "viz-bg")
-        .attr_f("width", width)
-        .attr_f("height", height)
+        .attr_f("x", view_x)
+        .attr_f("y", view_y)
+        .attr_f("width", view_width)
+        .attr_f("height", view_height)
         .attr("fill", theme.canvas_background);
 
     let view_box = format!(
         "{} {} {} {}",
-        n(bounds_x - 40.0),
-        n(bounds_y - 40.0),
-        n(bounds_width + 80.0),
-        n(bounds_height + 80.0)
+        n(view_x),
+        n(view_y),
+        n(view_width),
+        n(view_height)
     );
 
     let defs = markers::markers(theme).maybe_child(extra_marker);
@@ -434,6 +448,7 @@ pub use disclosure::DisclosureState;
 pub use draw_input::{
     render_svg_from_json, render_svg_from_json_with_theme, render_svg_from_str, DrawError,
 };
+pub use nesting::Nesting;
 pub use pipeline::{
     draw_input_from_payload, draw_input_from_payload_with_disclosure, render_svg_from_payload,
     render_svg_from_payload_str, render_svg_from_payload_with_options,

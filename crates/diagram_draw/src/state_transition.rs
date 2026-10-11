@@ -243,8 +243,8 @@ pub fn render_state_transition_view(
     prepared: &PreparedView,
     layout: &BehaviorLayoutResult,
     theme: &Theme,
-    width: f64,
-    height: f64,
+    _width: f64,
+    _height: f64,
 ) -> (Element, (f64, f64, f64, f64)) {
     let nodes_by_id: HashMap<&str, &PreparedNode> = prepared
         .nodes
@@ -382,20 +382,9 @@ pub fn render_state_transition_view(
     }
     root = root.child(node_layer);
 
-    let mut min_x = 0.0_f64;
-    let mut min_y = 0.0_f64;
-    let mut max_x = width;
-    let mut max_y = height;
-    for rect in layout.positions.values() {
-        min_x = min_x.min(rect.x);
-        min_y = min_y.min(rect.y);
-        max_x = max_x.max(rect.x + rect.width);
-        max_y = max_y.max(rect.y + rect.height + 20.0);
-    }
-    (
-        root,
-        (min_x - 40.0, min_y - 40.0, max_x + 40.0, max_y + 40.0),
-    )
+    // The figure is as large as what is drawn. The viewer's canvas does not enter into it: a
+    // diagram smaller than a screen must not be padded out to one.
+    (root, crate::behavior_common::layout_extent(layout))
 }
 
 /// Port of `addStateTransitionMarkers`.

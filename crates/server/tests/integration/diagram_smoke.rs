@@ -218,6 +218,7 @@ fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
                     kind: None,
                     document: None,
                     format,
+                    depth: diagram_draw::Nesting::Levels(1),
                     output: Some(path.clone()),
                 },
             )
@@ -255,6 +256,7 @@ fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
                 kind: None,
                 document: None,
                 format: DiagramFormat::Svg,
+                depth: diagram_draw::Nesting::Levels(1),
                 output: None,
             },
         )
@@ -290,6 +292,7 @@ fn the_diagram_command_selects_each_kind_of_a_view_typed_by_several_view_definit
                     kind: kind.map(str::to_owned),
                     document: document.map(str::to_owned),
                     format: DiagramFormat::Json,
+                    depth: diagram_draw::Nesting::Levels(1),
                     output: Some(path.clone()),
                 },
             )

@@ -81,7 +81,7 @@ pub fn node_kind(node: &PreparedNode) -> String {
     }
 }
 
-fn section_points(section: &EdgeSection) -> Vec<Point> {
+pub(crate) fn section_points(section: &EdgeSection) -> Vec<Point> {
     let mut points = Vec::new();
     if let Some(start) = section.start_point {
         points.push(start);
@@ -91,6 +91,37 @@ fn section_points(section: &EdgeSection) -> Vec<Point> {
         points.push(end);
     }
     points
+}
+
+/// The extent of a laid-out behaviour graph: its nodes, its routed edges and their labels,
+/// from the origin, where the view's title is anchored. `{min_x, min_y, max_x, max_y}`.
+pub fn layout_extent(layout: &BehaviorLayoutResult) -> (f64, f64, f64, f64) {
+    let mut extent = (0.0_f64, 0.0_f64, 0.0_f64, 0.0_f64);
+    let mut include = |x: f64, y: f64| {
+        extent = (
+            extent.0.min(x),
+            extent.1.min(y),
+            extent.2.max(x),
+            extent.3.max(y),
+        );
+    };
+    for rect in layout.positions.values() {
+        include(rect.x, rect.y);
+        include(rect.x + rect.width, rect.y + rect.height);
+    }
+    for point in layout
+        .edge_sections_by_id
+        .values()
+        .flatten()
+        .flat_map(section_points)
+    {
+        include(point.x, point.y);
+    }
+    for label in layout.edge_labels_by_id.values().flatten() {
+        include(label.x, label.y);
+        include(label.x + label.width, label.y + label.height);
+    }
+    extent
 }
 
 /// Port of `pathFromSections`.

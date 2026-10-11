@@ -7,6 +7,7 @@ use serde_json::Value;
 use crate::disclosure::{apply_general_disclosure, DisclosureState};
 use crate::draw_input::DrawError;
 use crate::layout::layout_to_draw_input;
+use crate::nesting::{apply_interconnection_nesting, Nesting};
 use crate::prepare::prepare_view_data;
 use crate::theme::{Theme, LIGHT};
 
@@ -53,11 +54,38 @@ pub fn draw_input_from_payload_with_disclosure(
     payload: &Value,
     disclosure: Option<&DisclosureState>,
 ) -> Result<Value, PipelineError> {
+    draw_input_from_payload_with_presentation(payload, disclosure, Nesting::All)
+}
+
+/// Prepare + layout with the renderer-owned presentation choices: which nested nodes a general
+/// view discloses, and how many levels of parts an interconnection view draws.
+pub fn draw_input_from_payload_with_presentation(
+    payload: &Value,
+    disclosure: Option<&DisclosureState>,
+    nesting: Nesting,
+) -> Result<Value, PipelineError> {
     let mut prepared = prepare_view_data(payload).map_err(PipelineError::InvalidPayload)?;
     if let Some(state) = disclosure {
         apply_general_disclosure(&mut prepared, state);
     }
+    apply_interconnection_nesting(&mut prepared, nesting);
     Ok(layout_to_draw_input(&prepared)?)
+}
+
+/// Renders a payload for a document or a file: the light theme and a nesting limit.
+pub fn render_svg_from_payload_str_nested(
+    payload_json: &str,
+    nesting: Nesting,
+) -> Result<String, PipelineError> {
+    let payload: Value = serde_json::from_str(payload_json)
+        .map_err(|err| PipelineError::InvalidPayload(err.to_string()))?;
+    let draw_input = draw_input_from_payload_with_presentation(&payload, None, nesting)?;
+    Ok(crate::draw_input::render_svg_from_json_with_theme(
+        &draw_input,
+        &LIGHT,
+        0.0,
+        0.0,
+    )?)
 }
 
 pub fn render_svg_from_payload(

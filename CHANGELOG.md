@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Diagrams are laid out to be read on a page.** A figure exported for a document came out
+  with text of 0.2 to 4 pt once it was fitted to an A4 page: boxes had a fixed size whatever
+  they held, parts and states were 140 to 230 px apart, a state machine always ran left to
+  right, and every figure was padded out to a 1280 x 900 canvas. The editor shows the same
+  layout, so the same diagrams needed constant panning there.
+  - A state is as large as its name and its `entry`/`do`/`exit` lines; a part in an
+    interconnection view as large as its name, type and port labels. A container takes the size
+    of its content.
+  - Spacing is what orthogonal routing and labels need. In an interconnection view the gap
+    between facing parts grows with the longest connector name it has to hold.
+  - A state machine is laid out both across and down, and the one that is larger on an A4 page
+    is kept, unless `stateLayoutDirection` chooses. It starts at its initial state.
+  - A port of the outermost part of an interconnection view sits on the side its inner
+    connectors lead away from.
+  - An exported figure is as large as its content plus a 16 px margin; the background covers
+    exactly the view box.
+  - `spec42 diagram --depth <levels|all>` (default `1`) limits how many levels of parts an
+    interconnection view draws below its exposed parts. A part with deeper content is drawn
+    closed and says how many inner parts it leaves out; a connector that ends inside it is
+    drawn to the part. The diagram product is unchanged. `diagram_draw::Nesting` and
+    `pipeline::render_svg_from_payload_str_nested` expose the same choice to embedders; the
+    editor still draws every level.
+
 - **`satisfy` of a requirement definition is reported (#251).** `satisfy ReqDef by drone;`
   reported nothing: `satisfy_invalid_endpoint_kind` accepted any requirement, definition or
   usage. `validateSatisfyRequirementUsageReference` requires a requirement usage. Write `satisfy

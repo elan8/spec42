@@ -132,9 +132,23 @@ pub struct DiagramArgs {
     /// as JSON when no view is given.
     #[arg(long = "format", value_enum, default_value_t = DiagramFormat::Svg)]
     pub format: DiagramFormat,
+    /// For an interconnection view: how many levels of parts to draw below the exposed parts.
+    /// A part with deeper content is drawn closed. `all` draws every level.
+    #[arg(long = "depth", default_value = "1", value_parser = parse_depth)]
+    pub depth: diagram_draw::Nesting,
     /// Write to this file instead of standard output.
     #[arg(long = "output", short = 'o')]
     pub output: Option<PathBuf>,
+}
+
+fn parse_depth(value: &str) -> Result<diagram_draw::Nesting, String> {
+    if value.eq_ignore_ascii_case("all") {
+        return Ok(diagram_draw::Nesting::All);
+    }
+    value
+        .parse()
+        .map(diagram_draw::Nesting::Levels)
+        .map_err(|_| format!("`{value}` is not a number of levels or `all`"))
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]

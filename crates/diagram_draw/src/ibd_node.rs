@@ -215,6 +215,29 @@ pub fn render_ibd_node(
         }
     }
 
+    // A part drawn closed says so: its inner parts exist in the model and are left out here.
+    if let Some(closed) = node
+        .attributes
+        .get("closedParts")
+        .and_then(Value::as_u64)
+        .filter(|count| *count > 0)
+    {
+        children.push(
+            Element::new("text")
+                .attr("class", "closed-parts-note")
+                .attr_f("x", width / 2.0)
+                .attr_f("y", height - 7.0)
+                .attr("text-anchor", "middle")
+                .text(format!(
+                    "{closed} inner part{} not shown",
+                    if closed == 1 { "" } else { "s" }
+                ))
+                .style("font-size", "8px")
+                .style("font-style", "italic")
+                .style("fill", theme.text_secondary),
+        );
+    }
+
     let ports = draw_ibd_ports(node, width, content_start_y + 20.0, theme, layout_node);
     IbdNodeRender { children, ports }
 }

@@ -26,24 +26,44 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
     match view.as_str() {
         "sequence-view" | "browser-view" | "grid-view" | "geometry-view" => Ok(prepared.clone()),
         "action-flow-view" | "state-transition-view" => {
-            let horizontal = as_string(field(field(prepared, "meta"), "layoutDirection"), "")
-                .eq_ignore_ascii_case("horizontal");
-            let mode = if view == "state-transition-view" {
-                BehaviorMode::State
-            } else {
-                BehaviorMode::Action
-            };
-            let behavior_layout = if view == "action-flow-view" {
+            let direction = as_string(field(field(prepared, "meta"), "layoutDirection"), "");
+            let horizontal = direction.eq_ignore_ascii_case("horizontal");
+            if view == "state-transition-view" {
+                // A state machine has no natural direction. Unless the caller chose one, lay it
+                // out both ways and keep the one that is larger on the reference page.
+                let (behavior_layout, horizontal) =
+                    if horizontal || direction.eq_ignore_ascii_case("vertical") {
+                        let (layout, _) =
+                            layout_behavior_graph(prepared, horizontal, BehaviorMode::State)?;
+                        (layout, horizontal)
+                    } else {
+                        let (across, across_size) =
+                            layout_behavior_graph(prepared, true, BehaviorMode::State)?;
+                        let (down, down_size) =
+                            layout_behavior_graph(prepared, false, BehaviorMode::State)?;
+                        // On a tie the horizontal layout wins, so the choice is deterministic.
+                        if reference_page_scale(down_size) > reference_page_scale(across_size) {
+                            (down, false)
+                        } else {
+                            (across, true)
+                        }
+                    };
+                let mut prepared = prepared.clone();
+                prepared["meta"]["layoutDirection"] =
+                    json!(if horizontal { "horizontal" } else { "vertical" });
+                return Ok(json!({
+                    "prepared": prepared,
+                    "behaviorLayout": behavior_layout,
+                }));
+            }
+            let behavior_layout =
                 if let Some(nested) = layout_nested_action_flow(prepared, horizontal)? {
                     nested
                 } else if let Some(compact) = layout_simple_action_chain(prepared) {
                     compact
                 } else {
-                    layout_behavior_graph(prepared, horizontal, mode)?
-                }
-            } else {
-                layout_behavior_graph(prepared, horizontal, mode)?
-            };
+                    layout_behavior_graph(prepared, horizontal, BehaviorMode::Action)?.0
+                };
             Ok(json!({
                 "prepared": prepared,
                 "behaviorLayout": behavior_layout,
@@ -52,6 +72,24 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
         "interconnection-view" => layout_interconnection_prepared(prepared),
         _ => layout_general_prepared(prepared),
     }
+}
+
+/// The page a diagram is laid out to be readable on, in CSS pixels: the text area of an A4
+/// sheet, upright (165 x 215 mm) or turned (245 x 135 mm). A diagram is placed on whichever of
+/// the two shows it larger. Layout aims at this page so that a figure in a document keeps
+/// legible text; on a screen the same compact layout simply needs less panning.
+const REFERENCE_PAGE_UPRIGHT: (f64, f64) = (624.0, 813.0);
+const REFERENCE_PAGE_TURNED: (f64, f64) = (926.0, 510.0);
+
+/// The factor a diagram of `size` is scaled by to fit the reference page. A diagram is never
+/// enlarged, so 1.0 means it fits at its drawn size and its text keeps its authored size.
+fn reference_page_scale((width, height): (f64, f64)) -> f64 {
+    let fit = |(page_width, page_height): (f64, f64)| {
+        (page_width / width.max(1.0)).min(page_height / height.max(1.0))
+    };
+    fit(REFERENCE_PAGE_UPRIGHT)
+        .max(fit(REFERENCE_PAGE_TURNED))
+        .min(1.0)
 }
 
 #[derive(Clone, Copy)]
@@ -88,24 +126,29 @@ fn build_elk_layout_options(
         ElkViewKind::Interconnection => &[
             ("elk.hierarchyHandling", "INCLUDE_CHILDREN"),
             ("elk.direction", "RIGHT"),
-            ("elk.spacing.nodeNode", "150"),
-            ("elk.layered.spacing.nodeNodeBetweenLayers", "220"),
-            ("elk.spacing.edgeNode", "110"),
-            ("elk.spacing.edgeEdge", "90"),
+            ("elk.spacing.nodeNode", "36"),
+            ("elk.layered.spacing.nodeNodeBetweenLayers", "88"),
+            ("elk.spacing.edgeNode", "24"),
+            ("elk.spacing.edgeEdge", "14"),
             ("elk.layered.crossingMinimization.strategy", "LAYER_SWEEP"),
-            ("elk.padding", "[top=70,left=70,bottom=70,right=70]"),
+            ("elk.padding", "[top=20,left=20,bottom=20,right=20]"),
             ("org.eclipse.elk.portConstraints", "FIXED_ORDER"),
             ("org.eclipse.elk.portAlignment.default", "CENTER"),
         ],
         ElkViewKind::BehaviorState => &[
             ("elk.hierarchyHandling", "INCLUDE_CHILDREN"),
             ("elk.layered.crossingMinimization.strategy", "LAYER_SWEEP"),
-            ("elk.layered.spacing.nodeNodeBetweenLayers", "230"),
-            ("elk.spacing.nodeNode", "190"),
-            ("elk.spacing.edgeNode", "130"),
-            ("elk.spacing.edgeEdge", "110"),
-            ("elk.spacing.edgeLabel", "12"),
-            ("elk.padding", "[top=100,left=90,bottom=90,right=90]"),
+            // Room for one orthogonal channel with its transition label between two layers,
+            // and for an arrowhead between two states of a layer.
+            // Follow the transitions from the initial state, so that the layers read in the
+            // order a run passes through the states and only the returns go backwards.
+            ("elk.layered.cycleBreaking.strategy", "DEPTH_FIRST"),
+            ("elk.layered.spacing.nodeNodeBetweenLayers", "40"),
+            ("elk.spacing.nodeNode", "28"),
+            ("elk.spacing.edgeNode", "18"),
+            ("elk.spacing.edgeEdge", "14"),
+            ("elk.spacing.edgeLabel", "6"),
+            ("elk.padding", "[top=48,left=24,bottom=24,right=24]"),
         ],
         ElkViewKind::BehaviorAction => &[
             ("elk.layered.crossingMinimization.strategy", "LAYER_SWEEP"),
@@ -786,7 +829,7 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
             } else if kind.contains("composite") {
                 (340.0, 320.0)
             } else {
-                (240.0, 180.0)
+                state_box(node)
             }
         }
         BehaviorMode::Action => {
@@ -805,6 +848,41 @@ fn node_dimensions(node: &Value, mode: BehaviorMode) -> (f64, f64) {
             }
         }
     }
+}
+
+/// The box of a simple state: as wide as its name and its `entry`/`do`/`exit` lines need, and as
+/// high as the lines it shows. The drawing truncates the name at 28 and an action line at 34
+/// characters, so the box never has to grow beyond those.
+fn state_box(node: &Value) -> (f64, f64) {
+    const NAME_CHARACTER: f64 = 7.4; // 12 px bold
+    const ACTION_CHARACTER: f64 = 5.6; // 10 px
+    let attributes = field(node, "attributes");
+    let characters = |text: &str, limit: usize| text.chars().count().min(limit) as f64;
+    let name = as_string(
+        first_nonempty([field(node, "label"), field(node, "name")]),
+        "",
+    );
+    let mut width = characters(&name, 28) * NAME_CHARACTER + 32.0;
+    let mut actions = 0.0;
+    for (prefix, keys) in [
+        ("entry / ", ["entry", "entryAction"]),
+        ("do / ", ["do", "doAction"]),
+        ("exit / ", ["exit", "exitAction"]),
+    ] {
+        let action = as_string(first_nonempty(keys.map(|key| field(attributes, key))), "");
+        if !action.is_empty() {
+            actions += 1.0;
+            let line = format!("{prefix}{action}");
+            width = width.max(characters(&line, 34) * ACTION_CHARACTER + 24.0);
+        }
+    }
+    // The name sits on a 34 px header; action lines follow on a 16 px pitch.
+    let height = if actions == 0.0 {
+        40.0
+    } else {
+        46.0 + actions * 16.0
+    };
+    (width.max(96.0).ceil(), height)
 }
 
 /// Space inside an action container: the name compartment on top, then padding around the flow.
@@ -903,7 +981,7 @@ fn layout_nested_action_flow(
                     }
                 },
             }),
-            None => layout_behavior_graph(&level, horizontal, BehaviorMode::Action)?,
+            None => layout_behavior_graph(&level, horizontal, BehaviorMode::Action)?.0,
         };
         let positions = as_object(field(&laid_out, "positions"));
         let sections = as_object(field(&laid_out, "edgeSectionsById"));
@@ -1203,11 +1281,17 @@ fn build_behavior_elk_graph(prepared: &Value, horizontal: bool, mode: BehaviorMo
         .iter()
         .map(|node| {
             let (width, height) = node_dimensions(node, mode);
-            json!({
+            let mut child = json!({
                 "id": field(node, "id"),
                 "width": width,
                 "height": height,
-            })
+            });
+            // A state machine reads from its initial state, so that state leads the layout
+            // whatever cycles the transitions form.
+            if matches!(mode, BehaviorMode::State) && node_kind(node).contains("initial") {
+                child["layoutOptions"] = json!({ "elk.layered.layering.layerConstraint": "FIRST" });
+            }
+            child
         })
         .collect();
     let edges: Vec<Value> = as_array(field(prepared, "edges"))
@@ -1317,11 +1401,12 @@ fn collect_elk_edge_labels(
     }
 }
 
+/// Lays out a behaviour graph; returns the layout and the size of the laid-out graph.
 fn layout_behavior_graph(
     prepared: &Value,
     horizontal: bool,
     mode: BehaviorMode,
-) -> Result<Value, diagram_layout::LayoutError> {
+) -> Result<(Value, (f64, f64)), diagram_layout::LayoutError> {
     let graph = build_behavior_elk_graph(prepared, horizontal, mode);
     let laid_out = diagram_layout::layout_value(&graph)?;
     let mut positions = Map::new();
@@ -1347,11 +1432,18 @@ fn layout_behavior_graph(
     }
     let mut edge_labels = BTreeMap::new();
     collect_elk_edge_labels(&laid_out, Point { x: 0.0, y: 0.0 }, &mut edge_labels);
-    Ok(json!({
-        "positions": positions,
-        "edgeSectionsById": edge_sections,
-        "edgeLabelsById": edge_labels,
-    }))
+    let size = (
+        num(field(&laid_out, "width")),
+        num(field(&laid_out, "height")),
+    );
+    Ok((
+        json!({
+            "positions": positions,
+            "edgeSectionsById": edge_sections,
+            "edgeLabelsById": edge_labels,
+        }),
+        size,
+    ))
 }
 
 #[derive(Clone)]
@@ -1433,6 +1525,14 @@ fn js_hash_stable_side(key: &str) -> &'static str {
 struct PortUsage {
     source_count: i32,
     target_count: i32,
+}
+
+/// The part that contains `node` in a prepared interconnection view, when it has one.
+fn container_of_node(node: &Value) -> Option<String> {
+    match field(field(node, "attributes"), "containerId") {
+        Value::String(id) if !id.is_empty() => Some(id.clone()),
+        _ => None,
+    }
 }
 
 fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_layout::LayoutError> {
@@ -1622,10 +1722,19 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
             return "EAST";
         }
         let usage = usage_for_port(node, port);
-        if usage.target_count > usage.source_count {
+        // A port of the outermost part is only used from inside: what it feeds lies to its
+        // right, so it sits on the left, and what feeds it lies to its left.
+        let used_from_inside = container_of_node(node).is_none()
+            && children_by_parent.contains_key(&as_string(field(node, "id"), ""));
+        let (toward_right, toward_left) = if used_from_inside {
+            (usage.source_count, usage.target_count)
+        } else {
+            (usage.target_count, usage.source_count)
+        };
+        if toward_right > toward_left {
             return "WEST";
         }
-        if usage.source_count > usage.target_count {
+        if toward_left > toward_right {
             return "EAST";
         }
         let fallback_key = format!("{}::{}", as_string(field(node, "id"), ""), port.name);
@@ -1676,17 +1785,50 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
             .iter()
             .filter(|child| child.is_object() && !as_string(field(child, "name"), "").is_empty())
             .count();
-        let content_height = (content_line_count.min(8) as f64) * 12.0 + 10.0;
+        let content_height = if content_line_count == 0 {
+            0.0
+        } else {
+            (content_line_count.min(8) as f64) * 12.0 + 10.0
+        };
+        // A port row is the 10 px port with its label and the gap to the next one.
         let ports_height = if ports.is_empty() {
             0.0
         } else {
-            port_rows as f64 * 26.0 + 22.0
+            port_rows as f64 * 16.0 + 12.0
         };
-        IBD_NODE_HEIGHT
-            .max(header_height + content_height + ports_height)
-            .min(340.0)
+        // The note that inner parts are not shown takes one line at the bottom.
+        let note_height = if field(attrs, "closedParts").as_u64().unwrap_or(0) > 0 {
+            14.0
+        } else {
+            0.0
+        };
+        (header_height + content_height + ports_height + note_height + 8.0).clamp(56.0, 340.0)
     }
 
+    // Two parts that face each other are far enough apart for a visible run of connector, the
+    // labels of their facing ports, and the longest connector name set beside its line with
+    // clear space to both parts. Unnamed connectors need only the first two.
+    let layer_gap = {
+        const GENERIC: [&str; 7] = [
+            "",
+            "connect",
+            "connection",
+            "connector",
+            "flow",
+            "binding",
+            "interface",
+        ];
+        let longest_name = as_array(field(prepared, "edges"))
+            .iter()
+            .map(|edge| as_string(field(edge, "label"), ""))
+            .filter(|label| !GENERIC.contains(&label.trim().to_ascii_lowercase().as_str()))
+            .map(|label| label.trim().encode_utf16().count().min(18))
+            .max();
+        match longest_name {
+            Some(characters) => (characters as f64 * 6.5 + 10.0 + 44.0).max(88.0),
+            None => 88.0,
+        }
+    };
     let root_header_height = 28.0;
     let container_top_inset = root_header_height + 20.0;
 
@@ -1700,6 +1842,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         port_details_for: &impl Fn(&Value) -> Vec<PreparedPort>,
         root_header_height: f64,
         container_top_inset: f64,
+        layer_gap: f64,
     ) -> Value {
         let ports = port_details_for(node);
         let (west_ports, east_ports) = split_ports(node, &ports);
@@ -1722,6 +1865,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
                             port_details_for,
                             root_header_height,
                             container_top_inset,
+                            layer_gap,
                         )
                     })
                     .collect()
@@ -1731,28 +1875,30 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         let is_synthetic_package = field(attrs, "isSyntheticPackage") == &json!(true);
         let is_container =
             field(attrs, "isSyntheticContainer") == &json!(true) || !children.is_empty();
-        let base_width = if is_container { 420.0 } else { IBD_NODE_WIDTH };
-        let label_width = as_string(field(node, "label"), "").encode_utf16().count() as f64 * 6.0;
-        let port_width = ports
-            .iter()
-            .map(|port| port.name.encode_utf16().count() as f64 * 5.0)
-            .fold(0.0, f64::max);
-        let mut width = base_width.max(180.0 + label_width.max(port_width));
+        // A part is as wide as its name, its type and the labels of the ports that face each
+        // other across it need. The drawing truncates a name and a type at 18 characters.
+        let characters = |text: &str| text.encode_utf16().count().min(18) as f64;
+        let label_width = characters(&as_string(field(node, "label"), "")) * 6.8;
+        let type_width = (characters(&as_string(field(attrs, "partType"), "")) + 2.0) * 5.4;
+        let port_width = |ports: &[PreparedPort]| {
+            ports
+                .iter()
+                .map(|port| port.name.encode_utf16().count() as f64 * 5.0)
+                .fold(0.0, f64::max)
+        };
+        let base_width: f64 = if is_container { 220.0 } else { 132.0 };
+        let width = base_width
+            .max(label_width.max(type_width) + 28.0)
+            .max(port_width(&west_ports) + port_width(&east_ports) + 44.0)
+            .ceil();
         let mut height = if is_container {
             root_header_height + 72.0
         } else {
             compute_ibd_leaf_height(node, &ports, port_rows)
         };
         if is_container && !children.is_empty() {
-            let child_width_sum: f64 = children
-                .iter()
-                .map(|child| field(child, "width").as_f64().unwrap_or(IBD_NODE_WIDTH))
-                .sum();
-            width = if is_synthetic_package {
-                width.max((child_width_sum + children.len() as f64 * 44.0).min(980.0))
-            } else {
-                width.max((child_width_sum + children.len() as f64 * 72.0).min(1040.0))
-            };
+            // A container is as large as the layout of its parts makes it; this is only the
+            // least it needs for its own name and boundary ports.
             height = if is_synthetic_package {
                 root_header_height + 72.0
             } else {
@@ -1760,6 +1906,13 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
                     + 72.0_f64.max(132.0_f64.min(58.0 + children.len() as f64 * 14.0))
             };
         }
+        let ports_top = if is_container {
+            container_top_inset
+        } else if as_string(field(attrs, "partType"), "").is_empty() {
+            38.0
+        } else {
+            50.0
+        };
         let build_elk_port = |port: &PreparedPort, side: &str, index: usize| {
             let id = port_id_for(&as_string(field(node, "id"), ""), &port.name);
             let label_text = ibd_port_label_text(&port.name);
@@ -1785,6 +1938,9 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
             "org.eclipse.elk.portLabels.placement": "INSIDE",
             "org.eclipse.elk.spacing.labelPortHorizontal": "6",
             "org.eclipse.elk.spacing.labelPortVertical": "4",
+            // Ports start below the name and type of the part, never on top of them.
+            "org.eclipse.elk.spacing.portsSurrounding":
+                format!("[top={ports_top},left=0,bottom=6,right=0]"),
             "org.eclipse.elk.nodeSize.constraints": "PORTS PORT_LABELS MINIMUM_SIZE",
             "org.eclipse.elk.nodeSize.minimum": format!("({width},{height})"),
         });
@@ -1795,13 +1951,17 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
             // ELK does not inherit the root graph's spacing for nested layered graphs. Without
             // these options, sibling parts are separated by the default 40 px, leaving only a
             // 20 px line between two 10 px boundary ports (the office two-monitor case).
-            options.insert("elk.spacing.nodeNode".into(), json!("90"));
+            // A gap leaves room for the connector channels between two parts and for the labels
+            // of the boundary ports that face each other.
+            // Two parts that face each other keep 88 px between them: the labels of their ports
+            // sit outside the boxes, and a connector needs a visible run and room for its name.
+            options.insert("elk.spacing.nodeNode".into(), json!("36"));
             options.insert(
                 "elk.layered.spacing.nodeNodeBetweenLayers".into(),
-                json!("140"),
+                json!(layer_gap.to_string()),
             );
-            options.insert("elk.spacing.edgeNode".into(), json!("50"));
-            options.insert("elk.spacing.edgeEdge".into(), json!("30"));
+            options.insert("elk.spacing.edgeNode".into(), json!("24"));
+            options.insert("elk.spacing.edgeEdge".into(), json!("14"));
             options.insert(
                 "elk.padding".into(),
                 Value::String(if is_synthetic_package {
@@ -1846,6 +2006,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
             &port_details_for,
             root_header_height,
             container_top_inset,
+            layer_gap,
         ));
     }
 
@@ -1891,9 +2052,33 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         })
         .collect();
 
+    // Roots that are not connected to each other would all fall into one layer and stack into
+    // one tall column, so a layer holds at most about the square root of the largest group of
+    // siblings. (This does not yet reach the parts inside one container: there the layering
+    // follows their connectors to the container's boundary ports.)
+    let widest_layer = children_by_parent
+        .values()
+        .map(Vec::len)
+        .max()
+        .map_or(4, |siblings| {
+            ((siblings as f64).sqrt().ceil() as usize).max(3)
+        });
     let elk_graph_input = json!({
         "id": "root",
-        "layoutOptions": build_elk_layout_options(ElkViewKind::Interconnection, &[]),
+        "layoutOptions": build_elk_layout_options(
+            ElkViewKind::Interconnection,
+            &[
+                (
+                    "elk.layered.spacing.nodeNodeBetweenLayers",
+                    Some(&layer_gap.to_string()),
+                ),
+                ("elk.layered.layering.strategy", Some("COFFMAN_GRAHAM")),
+                (
+                    "elk.layered.layering.coffmanGraham.layerBound",
+                    Some(&widest_layer.to_string()),
+                ),
+            ],
+        ),
         "children": elk_children,
         "edges": elk_edges.iter().map(|edge| json!({
             "id": field(edge, "id"),
