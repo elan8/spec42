@@ -14,8 +14,10 @@ use crate::theme::Theme;
 
 const HEADER_Y: f64 = 64.0;
 const LIFELINE_TOP: f64 = 118.0;
-const LIFELINE_GAP: f64 = 220.0;
-const MESSAGE_GAP: f64 = 78.0;
+// Two lifelines are far enough apart for a message name of 28 characters, the longest that is
+// drawn, above the arrow between them. Messages are a line of text and its arrow apart.
+const LIFELINE_GAP: f64 = 176.0;
+const MESSAGE_GAP: f64 = 52.0;
 const LIFELINE_BOX_WIDTH: f64 = 132.0;
 const LIFELINE_BOX_HEIGHT: f64 = 38.0;
 
@@ -128,9 +130,19 @@ pub fn render_sequence_view(
 
     root = root.child(
         Element::new("text")
-            .attr_f("x", width / 2.0)
+            // At the left edge of the first lifeline, like the title of every other view; not
+            // centred on a viewer's canvas.
+            .attr_f(
+                "x",
+                (80.0_f64).max(
+                    (width
+                        - ((lifelines.len() as f64 - 1.0).max(0.0) * LIFELINE_GAP
+                            + LIFELINE_BOX_WIDTH))
+                        / 2.0,
+                ) - LIFELINE_BOX_WIDTH / 2.0,
+            )
             .attr_f("y", 32.0)
-            .attr("text-anchor", "middle")
+            .attr("text-anchor", "start")
             .style("font-size", "14px")
             .style("font-weight", "700")
             .style("fill", theme.text_primary)
@@ -528,11 +540,15 @@ pub fn render_sequence_view(
     }
     root = root.insert_before_child("sequence-messages", fragment_layer);
 
+    // From the first lifeline's box to the last one's, not out to a viewer's canvas.
+    let half_box = LIFELINE_BOX_WIDTH / 2.0;
     let extents = (
+        (x_offset - half_box)
+            .min(0.0)
+            .max(x_offset - half_box - 16.0),
         0.0,
-        0.0,
-        x_offset + lifelines.len() as f64 * LIFELINE_GAP + 80.0,
-        lifeline_bottom + 60.0,
+        x_offset + (lifelines.len() as f64 - 1.0).max(0.0) * LIFELINE_GAP + half_box + 16.0,
+        lifeline_bottom + 24.0,
     );
     (root, extents)
 }

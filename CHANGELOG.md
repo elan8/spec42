@@ -26,6 +26,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     dashed with an open arrowhead.
   - The shaded header of a part in an interconnection view holds its keyword, name and type;
     the type line hung below it. The shading no longer paints over the part's border.
+  - Roots of an interconnection view that are not connected to each other are spread over
+    columns with layout partitions instead of stacking in one. The same is prepared for the
+    parts inside a container, but the pinned `elkrs` honours partitions on the top-level
+    graph only.
+  - A sequence view places lifelines 176 px apart and messages 52 px, and an exported one is
+    as wide as its lifelines.
+  - The figure of an interconnection view includes its ports and their labels.
 
 - **Diagrams are laid out to be read on a page.** A figure exported for a document came out
   with text of 0.2 to 4 pt once it was fitted to an A4 page: boxes had a fixed size whatever

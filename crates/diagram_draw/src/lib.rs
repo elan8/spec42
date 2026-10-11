@@ -434,12 +434,36 @@ pub fn render_interconnection_view_svg(
         } else {
             (width, height)
         };
+    // Ports and their labels lie outside the parts, so the figure is larger than its parts.
+    let mut extent = (bounds.0, bounds.1, bounds.0 + bounds.2, bounds.1 + bounds.3);
+    let mut include = |left: f64, top: f64, right: f64, bottom: f64| {
+        extent = (
+            extent.0.min(left),
+            extent.1.min(top),
+            extent.2.max(right),
+            extent.3.max(bottom),
+        );
+    };
+    for node in graph
+        .interconnection_layout
+        .iter()
+        .flat_map(|layout| &layout.nodes)
+    {
+        for anchor in node.port_anchors.values() {
+            let (x, y) = (node.x + anchor.x, node.y + anchor.y);
+            include(x - 6.0, y - 6.0, x + 6.0, y + 6.0);
+            if let Some(label) = &anchor.label {
+                let (left, top) = (node.x + label.x, node.y + label.y);
+                include(left, top, left + label.width, top + label.height + 2.0);
+            }
+        }
+    }
     render_svg_document(
         theme,
         background_width,
         background_height,
         &graph.title,
-        bounds,
+        (extent.0, extent.1, extent.2 - extent.0, extent.3 - extent.1),
         None,
         root,
     )

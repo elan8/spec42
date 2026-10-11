@@ -1,7 +1,7 @@
 //! Port of `render/layout.ts`, `views/behavior-common.ts` layout, and
 //! `render/interconnection-elk-input.ts` onto `diagram_layout` (elkrs).
 
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 use serde_json::{json, Map, Value};
 
@@ -1442,6 +1442,113 @@ struct PortUsage {
     target_count: i32,
 }
 
+/// Spreads the children of every container of an ELK graph over several layers when too many of
+/// them would share one.
+///
+/// A layered layout puts a part in the layer its connectors to its siblings call for. Parts that
+/// connect only to the boundary of their container, or to nothing, all land in the first layer
+/// and stack into one tall column. Here each layer the sibling connectors call for is split into
+/// columns of at most about the square root of the number of siblings, and the order of the
+/// columns is given to ELK as partitions. Connectors between siblings keep their direction:
+/// a part never moves in front of a sibling that feeds it.
+///
+/// The pinned `elkrs` reads `elk.partitioning.activate` on the top-level graph only, so today
+/// this spreads the roots of a view and not yet the parts inside one container.
+fn spread_crowded_layers(graph: &mut Value) {
+    let edges: Vec<(String, String)> = as_array(field(graph, "edges"))
+        .iter()
+        .filter_map(|edge| {
+            Some((
+                as_array(field(edge, "sources"))
+                    .first()?
+                    .as_str()?
+                    .to_owned(),
+                as_array(field(edge, "targets"))
+                    .first()?
+                    .as_str()?
+                    .to_owned(),
+            ))
+        })
+        .collect();
+    fn collect_ids(node: &Value, ids: &mut Vec<String>) {
+        ids.push(as_string(field(node, "id"), ""));
+        for port in as_array(field(node, "ports")) {
+            ids.push(as_string(field(port, "id"), ""));
+        }
+        for child in as_array(field(node, "children")) {
+            collect_ids(child, ids);
+        }
+    }
+    fn spread(node: &mut Value, edges: &[(String, String)]) {
+        let count = as_array(field(node, "children")).len();
+        // Which child each node or port below this container belongs to.
+        let mut child_of: HashMap<String, usize> = HashMap::new();
+        for (index, child) in as_array(field(node, "children")).iter().enumerate() {
+            let mut ids = Vec::new();
+            collect_ids(child, &mut ids);
+            for id in ids {
+                child_of.insert(id, index);
+            }
+        }
+        let mut feeds: Vec<BTreeSet<usize>> = vec![BTreeSet::new(); count];
+        for (source, target) in edges {
+            if let (Some(&from), Some(&to)) = (child_of.get(source), child_of.get(target)) {
+                if from != to {
+                    feeds[from].insert(to);
+                }
+            }
+        }
+        // The layer the sibling connectors call for: the longest chain of siblings that leads
+        // to the child. A cycle stops counting after as many steps as there are children.
+        let mut layer = vec![0usize; count];
+        for _ in 0..count {
+            let mut changed = false;
+            for from in 0..count {
+                for &to in &feeds[from] {
+                    if layer[to] < layer[from] + 1 && layer[from] + 1 < count {
+                        layer[to] = layer[from] + 1;
+                        changed = true;
+                    }
+                }
+            }
+            if !changed {
+                break;
+            }
+        }
+        let column = ((count as f64).sqrt().ceil() as usize).max(3);
+        let layers = layer.iter().copied().max().map_or(0, |deepest| deepest + 1);
+        let crowded =
+            (0..layers).any(|wanted| layer.iter().filter(|l| **l == wanted).count() > column);
+        if crowded {
+            let mut partition = vec![0usize; count];
+            let mut next = 0;
+            for wanted in 0..layers {
+                let members: Vec<usize> =
+                    (0..count).filter(|child| layer[*child] == wanted).collect();
+                for chunk in members.chunks(column) {
+                    for child in chunk {
+                        partition[*child] = next;
+                    }
+                    next += 1;
+                }
+            }
+            node["layoutOptions"]["elk.partitioning.activate"] = json!("true");
+            if let Some(children) = node.get_mut("children").and_then(Value::as_array_mut) {
+                for (child, partition) in children.iter_mut().zip(partition) {
+                    child["layoutOptions"]["elk.partitioning.partition"] =
+                        json!(partition.to_string());
+                }
+            }
+        }
+        if let Some(children) = node.get_mut("children").and_then(Value::as_array_mut) {
+            for child in children {
+                spread(child, edges);
+            }
+        }
+    }
+    spread(graph, &edges);
+}
+
 /// The part that contains `node` in a prepared interconnection view, when it has one.
 fn container_of_node(node: &Value) -> Option<String> {
     match field(field(node, "attributes"), "containerId") {
@@ -1959,18 +2066,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         })
         .collect();
 
-    // Roots that are not connected to each other would all fall into one layer and stack into
-    // one tall column, so a layer holds at most about the square root of the largest group of
-    // siblings. (This does not yet reach the parts inside one container: there the layering
-    // follows their connectors to the container's boundary ports.)
-    let widest_layer = children_by_parent
-        .values()
-        .map(Vec::len)
-        .max()
-        .map_or(4, |siblings| {
-            ((siblings as f64).sqrt().ceil() as usize).max(3)
-        });
-    let elk_graph_input = json!({
+    let mut elk_graph_input = json!({
         "id": "root",
         "layoutOptions": build_elk_layout_options(
             ElkViewKind::Interconnection,
@@ -1978,11 +2074,6 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
                 (
                     "elk.layered.spacing.nodeNodeBetweenLayers",
                     Some(&layer_gap.to_string()),
-                ),
-                ("elk.layered.layering.strategy", Some("COFFMAN_GRAHAM")),
-                (
-                    "elk.layered.layering.coffmanGraham.layerBound",
-                    Some(&widest_layer.to_string()),
                 ),
             ],
         ),
@@ -1994,6 +2085,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         })).collect::<Vec<_>>(),
     });
 
+    spread_crowded_layers(&mut elk_graph_input);
     let laid_out = diagram_layout::layout_value(&elk_graph_input)?;
 
     let mut laid_out_nodes: HashMap<String, LaidOutNode> = HashMap::new();
@@ -2350,4 +2442,68 @@ fn fallback_edge_sections(
         ],
         "endPoint": { "x": end.x, "y": end.y },
     })])
+}
+
+#[cfg(test)]
+mod crowded_layer_tests {
+    use super::*;
+
+    fn partitions(graph: &Value) -> Vec<Option<String>> {
+        as_array(field(graph, "children"))
+            .iter()
+            .map(|child| {
+                field(field(child, "layoutOptions"), "elk.partitioning.partition")
+                    .as_str()
+                    .map(str::to_owned)
+            })
+            .collect()
+    }
+
+    fn graph(children: usize, edges: &[(&str, &str)]) -> Value {
+        json!({
+            "id": "root",
+            "children": (0..children).map(|i| json!({ "id": format!("n{i}") })).collect::<Vec<_>>(),
+            "edges": edges
+                .iter()
+                .map(|(from, to)| json!({ "sources": [from], "targets": [to] }))
+                .collect::<Vec<_>>(),
+        })
+    }
+
+    #[test]
+    fn unconnected_siblings_are_spread_over_columns() {
+        let mut crowded = graph(10, &[]);
+        spread_crowded_layers(&mut crowded);
+        let columns: Vec<String> = partitions(&crowded).into_iter().flatten().collect();
+        // Ten siblings: columns of four, in order.
+        assert_eq!(columns, ["0", "0", "0", "0", "1", "1", "1", "1", "2", "2"]);
+        assert_eq!(
+            field(
+                field(&crowded, "layoutOptions"),
+                "elk.partitioning.activate"
+            ),
+            &json!("true")
+        );
+    }
+
+    #[test]
+    fn a_sibling_never_moves_in_front_of_one_that_feeds_it() {
+        // n0 feeds n9, so n9 belongs to a later layer than every column of the first.
+        let mut crowded = graph(10, &[("n0", "n9")]);
+        spread_crowded_layers(&mut crowded);
+        let columns: Vec<usize> = partitions(&crowded)
+            .into_iter()
+            .map(|partition| partition.unwrap().parse().unwrap())
+            .collect();
+        assert!(columns[9] > columns[0]);
+        assert_eq!(columns[9], *columns.iter().max().unwrap());
+    }
+
+    #[test]
+    fn a_layout_that_is_not_crowded_is_left_alone() {
+        let mut small = graph(3, &[]);
+        let before = small.clone();
+        spread_crowded_layers(&mut small);
+        assert_eq!(small, before);
+    }
 }
