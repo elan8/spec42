@@ -163,7 +163,7 @@ pub fn render_ibd_node(
             .attr_f("x", width / 2.0)
             .attr_f("y", 31.0)
             .attr("text-anchor", "middle")
-            .text(truncate(&node.label, 18))
+            .text(truncate(&node.label, 32))
             .style("font-size", "11px")
             .style("font-weight", "bold")
             .style("fill", theme.text_primary),
@@ -176,7 +176,7 @@ pub fn render_ibd_node(
                 .attr_f("x", width / 2.0)
                 .attr_f("y", 43.0)
                 .attr("text-anchor", "middle")
-                .text(format!(": {}", truncate(&typed_by, 18)))
+                .text(format!(": {}", truncate(&typed_by, 32)))
                 .style("font-size", "10px")
                 .style("font-style", "italic")
                 .style("fill", theme.text_primary),
@@ -222,19 +222,21 @@ pub fn render_ibd_node(
         .and_then(Value::as_u64)
         .filter(|count| *count > 0)
     {
+        // SysML 8.2.3.2: content that is left out is marked by an ellipsis in the lower left
+        // corner. How much is left out is in the element's title, for a viewer that shows it.
         children.push(
             Element::new("text")
-                .attr("class", "closed-parts-note")
-                .attr_f("x", width / 2.0)
-                .attr_f("y", height - 7.0)
-                .attr("text-anchor", "middle")
-                .text(format!(
+                .attr("class", "elided-content")
+                .attr_f("x", 8.0)
+                .attr_f("y", height - 6.0)
+                .text("...")
+                .style("font-size", "12px")
+                .style("font-weight", "bold")
+                .style("fill", theme.text_secondary)
+                .child(Element::new("title").text(format!(
                     "{closed} inner part{} not shown",
                     if closed == 1 { "" } else { "s" }
-                ))
-                .style("font-size", "8px")
-                .style("font-style", "italic")
-                .style("fill", theme.text_secondary),
+                ))),
         );
     }
 

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **Diagram notation follows SysML 8.2.3 more closely.** An assessment of the general,
+  interconnection, state transition and action flow views against the graphical notation is
+  in `docs/reference/DIAGRAM-NOTATION-ASSESSMENT.md`. Fixed from it:
+  - A transition ends in an open arrowhead and its label is plain text, not a framed box.
+  - A state shows `«state»` above its name.
+  - A part that shows its parts keeps the solid outline of a part; it was dashed, which is the
+    notation of a reference.
+  - A part drawn closed is marked by `...` in its lower left corner, and a connector that ends
+    on a feature inside it ends on a proxy, a filled dot on the boundary labelled with the
+    feature's path. Each proxy has its own row, like a port.
+  - Names and types in an interconnection view are no longer cut at 18 characters, nor port
+    labels at 20; the part is as wide as its labels need.
+
 - **Diagrams are laid out to be read on a page.** A figure exported for a document came out
   with text of 0.2 to 4 pt once it was fitted to an A4 page: boxes had a fixed size whatever
   they held, parts and states were 140 to 230 px apart, a state machine always ran left to
@@ -29,8 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     is kept. A box is as narrow as 120 px when its text allows.
   - `spec42 diagram --depth <levels|all>` (default `1`) limits how many levels a view draws
     below its exposed elements. In an interconnection view a part with deeper content is drawn
-    closed and says how many inner parts it leaves out, and a connector that ends inside it
-    is drawn to the part. In a general view deeper members stay listed in the compartments
+    closed, and a connector that ends inside it ends on a proxy on its boundary. In a general view deeper members stay listed in the compartments
     of the last level drawn, as in the editor before an element is expanded. The diagram
     product is unchanged. `diagram_draw::Nesting` and
     `pipeline::render_svg_from_payload_str_nested` expose the same choice to embedders; the

@@ -3,11 +3,12 @@
 //! An interconnection view projects every part below its exposed roots. Drawn in full, a root with
 //! a few levels of parts cannot be read at any size a page or a screen offers. A nesting limit
 //! draws the roots and that many levels of parts below them; a part with deeper content is drawn
-//! closed and says how many parts it holds. This is presentation only: the projection, and the
+//! closed, with the ellipsis that marks left-out content (SysML 8.2.3.2). This is presentation only: the projection, and the
 //! product a consumer reads, still carry every part and connector.
 //!
-//! A connector that ends inside a closed part is drawn to that part, without a port, because the
-//! port it ends on is not drawn. A connector that lies wholly inside one closed part is not drawn.
+//! A connector that ends inside a closed part is drawn to a proxy on that part's boundary that
+//! names the feature it ends on (SysML 8.2.3.12). A connector that lies wholly inside one closed
+//! part is not drawn.
 
 use std::collections::{BTreeSet, HashMap};
 
@@ -156,24 +157,40 @@ pub fn apply_interconnection_nesting(prepared: &mut Value, nesting: Nesting) {
         Some(current)
     };
 
+    // The path of a feature inside a closed part, from that part: the names of the parts down
+    // to the one that owns the port, then the port (`motor.shaft`).
+    let feature_path = |closed_part: &str, owner: &str, port: &Value| -> String {
+        let mut names = Vec::new();
+        let mut current = owner.to_owned();
+        while current != closed_part {
+            names.push(as_string(field(by_id[current.as_str()], "label"), ""));
+            match parent(&current) {
+                Some(above) => current = above,
+                None => break,
+            }
+        }
+        names.reverse();
+        let port_id = as_string(port, "");
+        let port_name = as_array(field(field(by_id[owner], "attributes"), "portDetails"))
+            .iter()
+            .find(|detail| as_string(field(detail, "id"), "") == port_id)
+            .map(|detail| as_string(field(detail, "name"), ""))
+            .unwrap_or_default();
+        if !port_name.is_empty() {
+            names.push(port_name);
+        }
+        names.join(".")
+    };
+
     let mut closed: HashMap<String, usize> = HashMap::new();
     for id in by_id.keys().filter(|id| !drawn.contains(*id)) {
         if let Some(owner) = drawn_owner(id) {
             *closed.entry(owner).or_default() += 1;
         }
     }
-    let kept_nodes: Vec<Value> = nodes
-        .iter()
-        .filter(|node| drawn.contains(&as_string(field(node, "id"), "")))
-        .map(|node| {
-            let mut node = node.clone();
-            if let Some(count) = closed.get(&as_string(field(&node, "id"), "")) {
-                node["attributes"]["closedParts"] = json!(count);
-            }
-            node
-        })
-        .collect();
-
+    // The proxies each drawn part gets, by the path of the feature they stand for.
+    let mut proxies: HashMap<String, BTreeSet<String>> = HashMap::new();
+    let proxy_id = |part: &str, path: &str| format!("proxy:{part}:{path}");
     let mut seen = BTreeSet::new();
     let mut kept_edges = Vec::new();
     for edge in as_array(field(prepared, "edges")) {
@@ -203,12 +220,21 @@ pub fn apply_interconnection_nesting(prepared: &mut Value, nesting: Nesting) {
         };
         let source_port = port("sourcePortId", moved_source);
         let target_port = port("targetPortId", moved_target);
-        // Several connectors into one closed part read as one line once their ports are gone.
+        let proxy_source = moved_source
+            .then(|| feature_path(&drawn_source, &source, field(&attributes, "sourcePortId")));
+        let proxy_target = moved_target
+            .then(|| feature_path(&drawn_target, &target, field(&attributes, "targetPortId")));
+        // Each distinct inner feature keeps its own line and proxy; two connectors between the
+        // same two ends would draw the same line twice.
         let key = (
             drawn_source.clone(),
-            source_port.to_string(),
+            proxy_source
+                .clone()
+                .unwrap_or_else(|| source_port.to_string()),
             drawn_target.clone(),
-            target_port.to_string(),
+            proxy_target
+                .clone()
+                .unwrap_or_else(|| target_port.to_string()),
         );
         if !seen.insert(key) {
             continue;
@@ -221,9 +247,54 @@ pub fn apply_interconnection_nesting(prepared: &mut Value, nesting: Nesting) {
         edge["attributes"]["sourceId"] = source_port;
         edge["attributes"]["targetPortId"] = target_port.clone();
         edge["attributes"]["targetId"] = target_port;
-        edge["attributes"]["endsInClosedPart"] = json!(true);
+        // A hidden end attaches to a proxy of the drawn part, which the layout places and
+        // labels like a port.
+        if let Some(path) = proxy_source {
+            let id = proxy_id(&drawn_source, &path);
+            edge["attributes"]["sourcePortId"] = json!(id);
+            edge["attributes"]["sourceId"] = json!(id);
+            edge["attributes"]["proxySource"] = json!(path);
+            proxies
+                .entry(drawn_source.clone())
+                .or_default()
+                .insert(path);
+        }
+        if let Some(path) = proxy_target {
+            let id = proxy_id(&drawn_target, &path);
+            edge["attributes"]["targetPortId"] = json!(id);
+            edge["attributes"]["targetId"] = json!(id);
+            edge["attributes"]["proxyTarget"] = json!(path);
+            proxies
+                .entry(drawn_target.clone())
+                .or_default()
+                .insert(path);
+        }
         kept_edges.push(edge);
     }
+
+    let kept_nodes: Vec<Value> = nodes
+        .iter()
+        .filter(|node| drawn.contains(&as_string(field(node, "id"), "")))
+        .map(|node| {
+            let mut node = node.clone();
+            let id = as_string(field(&node, "id"), "");
+            if let Some(count) = closed.get(&id) {
+                node["attributes"]["closedParts"] = json!(count);
+            }
+            if let Some(paths) = proxies.get(&id) {
+                let mut details =
+                    as_array(field(field(&node, "attributes"), "portDetails")).to_vec();
+                let mut names = as_array(field(field(&node, "attributes"), "ports")).to_vec();
+                for path in paths {
+                    details.push(json!({ "id": proxy_id(&id, path), "name": path, "proxy": true }));
+                    names.push(json!(path));
+                }
+                node["attributes"]["portDetails"] = Value::Array(details);
+                node["attributes"]["ports"] = Value::Array(names);
+            }
+            node
+        })
+        .collect();
 
     prepared["nodes"] = Value::Array(kept_nodes);
     prepared["edges"] = Value::Array(kept_edges);
@@ -236,7 +307,14 @@ mod tests {
     use super::*;
 
     fn part(id: &str, container: Option<&str>) -> Value {
-        json!({ "id": id, "attributes": { "containerId": container } })
+        json!({
+            "id": id,
+            "label": id,
+            "attributes": {
+                "containerId": container,
+                "portDetails": [{ "id": "shaft", "name": "shaft" }, { "id": "out", "name": "out" }],
+            },
+        })
     }
 
     fn connector(id: &str, source: (&str, &str), target: (&str, &str)) -> Value {
@@ -286,18 +364,37 @@ mod tests {
         assert_eq!(ids(&prepared, "nodes"), ["robot", "base", "top"]);
         let base = &as_array(field(&prepared, "nodes"))[1];
         assert_eq!(field(field(base, "attributes"), "closedParts"), &json!(3));
-        // The connector inside the closed part is gone; the two that reach into it are one
-        // line to the part, without the ports that are not drawn.
-        assert_eq!(ids(&prepared, "edges"), ["between-modules", "deep-to-top"]);
+        // The connector inside the closed part is gone; each one that reaches into it ends on
+        // the part, without the port that is not drawn.
+        assert_eq!(
+            ids(&prepared, "edges"),
+            ["between-modules", "deep-to-top", "deep-to-top-again"]
+        );
         let moved = &as_array(field(&prepared, "edges"))[1];
         assert_eq!(field(moved, "source"), &json!("base"));
         assert_eq!(
             field(field(moved, "attributes"), "sourcePortId"),
-            &Value::Null
+            &json!("proxy:base:motor.rotor.shaft")
         );
+        // The closed part carries the proxies as ports of its own, so they are laid out.
+        let proxy_ports: Vec<String> = as_array(field(field(base, "attributes"), "portDetails"))
+            .iter()
+            .filter(|detail| field(detail, "proxy") == &json!(true))
+            .map(|detail| as_string(field(detail, "name"), ""))
+            .collect();
+        assert_eq!(proxy_ports, ["gear.out", "motor.rotor.shaft"]);
         assert_eq!(
             field(field(moved, "attributes"), "targetPortId"),
             &json!("p3")
+        );
+        // The hidden end is remembered by its path from the closed part, for the proxy label.
+        assert_eq!(
+            field(field(moved, "attributes"), "proxySource"),
+            &json!("motor.rotor.shaft")
+        );
+        assert_eq!(
+            field(field(moved, "attributes"), "proxyTarget"),
+            &Value::Null
         );
         assert_eq!(
             field(field(&prepared, "meta"), "closedPartCount"),

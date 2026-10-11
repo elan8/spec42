@@ -791,11 +791,11 @@ fn state_box(node: &Value) -> (f64, f64) {
             width = width.max(characters(&line, 34) * ACTION_CHARACTER + 24.0);
         }
     }
-    // The name sits on a 34 px header; action lines follow on a 16 px pitch.
+    // The keyword and the name sit on a 38 px header; action lines follow on a 16 px pitch.
     let height = if actions == 0.0 {
-        40.0
+        42.0
     } else {
-        46.0 + actions * 16.0
+        48.0 + actions * 16.0
     };
     (width.max(96.0).ceil(), height)
 }
@@ -1791,8 +1791,8 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         let is_container =
             field(attrs, "isSyntheticContainer") == &json!(true) || !children.is_empty();
         // A part is as wide as its name, its type and the labels of the ports that face each
-        // other across it need. The drawing truncates a name and a type at 18 characters.
-        let characters = |text: &str| text.encode_utf16().count().min(18) as f64;
+        // other across it need. The drawing truncates a name and a type at 32 characters.
+        let characters = |text: &str| text.encode_utf16().count().min(32) as f64;
         let label_width = characters(&as_string(field(node, "label"), "")) * 6.8;
         let type_width = (characters(&as_string(field(attrs, "partType"), "")) + 2.0) * 5.4;
         let port_width = |ports: &[PreparedPort]| {
