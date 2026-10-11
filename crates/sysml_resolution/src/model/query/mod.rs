@@ -667,6 +667,7 @@ impl<D> SemanticModel<D> {
             LookupTarget {
                 domain: DeclarationDomain::Any,
                 excluded: None,
+                excludes_anonymous_performs: false,
                 first_scope: FirstScopePolicy::OwnedThenInherited,
             },
             &mut candidates,

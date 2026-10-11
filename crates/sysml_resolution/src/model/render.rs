@@ -1022,6 +1022,7 @@ fn write_effective_identification(
     let provenance = match facts.provenance {
         EffectiveNameProvenance::Declared => return Ok(()),
         EffectiveNameProvenance::FirstRedefinition => "first-redefinition",
+        EffectiveNameProvenance::PerformedAction => "performed-action",
         EffectiveNameProvenance::OriginalPortDefinition => "original-port-definition",
     };
     output.write_str(" (effective-identification")?;
