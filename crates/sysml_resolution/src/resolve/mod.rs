@@ -805,13 +805,14 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
         // declaration whose authored or effective long/short name occurs before the final
         // segment. KerML 7.3.4.5 makes an unnamed redefining Feature's first redefined Feature its
         // effective name and requires that implicit name to participate in resolution exactly as
-        // an authored name does. Omitting those declarations here makes paths such as
-        // `Mid::faces::edge` stop at an anonymous `:>> faces` redefinition.
+        // an authored name does. SysML `PerformActionUsage::namingFeature` does the same for an
+        // anonymous `perform Pkg::action`. Omitting those declarations here makes paths such as
+        // `Mid::faces::edge` or `:>> providePower::generate` stop at the anonymous feature.
         //
-        // Only Redefinition sources can acquire a new effective name during this fixed point, so
-        // track that bounded candidate set rather than rescanning every declaration on every
-        // relationship pass. The final publication index is still rebuilt without a filter after
-        // the relationships converge.
+        // Only those two families acquire an effective name during this fixed point, so track that
+        // bounded candidate set rather than rescanning every declaration on every relationship
+        // pass. The final publication index is still rebuilt without a filter after the
+        // relationships converge.
         let mut relationship_intermediate_names = std::collections::BTreeSet::new();
         for index in subsetting_slots.iter().chain(&redefinition_slots) {
             let (segments, _) = paths
@@ -826,10 +827,13 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             );
         }
         let mut effective_scope_candidates = std::collections::BTreeSet::new();
-        for reference in references
-            .iter()
-            .filter(|reference| reference.kind() == ReferenceKind::Redefinition)
-        {
+        for reference in references.iter().filter(|reference| {
+            reference.kind() == ReferenceKind::Redefinition
+                || (reference.kind() == ReferenceKind::References
+                    && declarations
+                        .get(reference.source().index())
+                        .is_some_and(|source| source.kind == DeclarationKind::PerformActionUsage))
+        }) {
             effective_scope_candidates.insert(reference.source());
         }
         for (index, declaration) in declarations.iter().enumerate() {
@@ -894,6 +898,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
                     references,
                     &direct_names,
                     &outcomes,
+                    &effective_names,
                 )?
                 .into_vec(),
             );
@@ -1240,6 +1245,7 @@ pub(crate) fn resolve_dense_with_limit<R: ResolutionReferenceFact>(
             references,
             &direct_names,
             &outcomes,
+            &effective_names,
         )?
         .into_vec();
         // Positional end redefinitions are not settled here: their pairing reads the owning

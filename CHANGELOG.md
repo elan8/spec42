@@ -11,14 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   perform action :>> providePower { ... } }` reported `unresolved_reference` when `family` wrote
   `perform Tree::providePower;`. An anonymous perform usage is named by the action it performs
   (`PerformActionUsage::namingFeature`); spec42 only derived names from redefinitions, so it
-  resolved the name only when the action happened to be lexically visible.
+  resolved the name only when the action happened to be lexically visible. That name does not
+  also implied-redefine the performed action, and a qualified redefinition can step through the
+  perform (`action :>> providePower::generate`).
 - **`perform` in an action usage body is accepted (#256).** `action group { perform stepA; }`
   reported `unexpected keyword perform in action body`; only an action definition body took the
   member, although both are the same `ActionBody`. A function tree can now be written with
   usages. Accepted with it: an action usage with a value (`action :>> generate = fourCylinder;`),
   `then while`, `then loop` and `then for` succession targets, `perform` inside a `timeslice` or
   other occurrence usage body, `perform a redefines b;`, and a keyword-less action body member
-  that starts with `:`, `:>` or `:>>`. Pins sysml-v2-parser `7e12c5f4` (`PARSE_AST_VERSION` 268).
+  that starts with `:`, `:>` or `:>>`. Pins sysml-v2-parser `c28ca768` (`PARSE_AST_VERSION` 268),
+  the merge commit of `elan8/sysml-v2-parser#185`.
 - **`satisfy` of a requirement definition is reported (#251).** `satisfy ReqDef by drone;`
   reported nothing: `satisfy_invalid_endpoint_kind` accepted any requirement, definition or
   usage. `validateSatisfyRequirementUsageReference` requires a requirement usage. Write `satisfy

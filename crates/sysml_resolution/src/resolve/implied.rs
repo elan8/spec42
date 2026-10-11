@@ -25,6 +25,8 @@ use crate::resolve::results::ConstructorExpressionProjectionStatus;
 use crate::resolve::results::ConstructorExpressionSpecializationStatus;
 use crate::resolve::results::ControlNodeSuccession;
 use crate::resolve::results::ControlNodeSuccessionEnd;
+use crate::resolve::results::EffectiveNameFacts;
+use crate::resolve::results::EffectiveNameProvenance;
 use crate::resolve::results::ExpressionArgumentProjectionStatus;
 use crate::resolve::results::FeatureChainExpressionProjection;
 use crate::resolve::results::FeatureChainExpressionSpecializationStatus;
@@ -839,12 +841,17 @@ pub(crate) struct LibrarySpecializationDiagnosticKey {
 /// feature candidate, no implied fact is synthesized for that pair rather than guessing. A member
 /// that already carries an explicit `:>>` redefinition to any target is left to that authored fact
 /// and is never also given an implied one.
+///
+/// An anonymous perform usage is named by the action it performs. That name is not a second
+/// feature competing with the performed action, so the perform does not also implied-redefine
+/// that same action. A different inherited feature that merely shares the name still matches.
 pub(crate) fn synthesize_implied_redefinitions<R: ResolutionReferenceFact>(
     declarations: &[Declaration],
     memberships: &[MembershipRecord],
     references: &[R],
     direct_names: &NameIndex,
     outcomes: &[ResolutionStatus],
+    effective_names: &[EffectiveNameFacts],
 ) -> Result<Box<[ImpliedRelationship]>, ResolutionError> {
     let mut membership_kind: Vec<Option<MembershipKind>> = vec![None; declarations.len()];
     for membership in memberships {
@@ -857,9 +864,38 @@ pub(crate) fn synthesize_implied_redefinitions<R: ResolutionReferenceFact>(
     };
 
     let mut explicitly_redefines: std::collections::BTreeSet<DeclarationId> = Default::default();
-    for reference in references {
+    // The first `References` edge of a perform usage, matching `derive_effective_names`. A later
+    // edge is not the name, including when the first edge did not resolve.
+    let mut saw_performed_action = vec![false; declarations.len()];
+    let mut performed_action_of: Vec<Option<DeclarationId>> = vec![None; declarations.len()];
+    for (index, reference) in references.iter().enumerate() {
         if reference.kind() == ReferenceKind::Redefinition {
             explicitly_redefines.insert(reference.source());
+        }
+        if reference.kind() != ReferenceKind::References {
+            continue;
+        }
+        let source_index = reference.source().index();
+        let Some(seen) = saw_performed_action.get_mut(source_index) else {
+            return Err(ResolutionError::InvalidStorage);
+        };
+        if *seen {
+            continue;
+        }
+        let Some(declaration) = declarations.get(source_index) else {
+            return Err(ResolutionError::InvalidStorage);
+        };
+        if declaration.kind != DeclarationKind::PerformActionUsage {
+            continue;
+        }
+        *seen = true;
+        if let Some(ResolutionStatus::Resolved(target)) = outcomes.get(index).copied() {
+            let Some(slot) = performed_action_of.get_mut(source_index) else {
+                return Err(ResolutionError::InvalidStorage);
+            };
+            *slot = Some(target);
+        } else if outcomes.get(index).is_none() {
+            return Err(ResolutionError::InvalidStorage);
         }
     }
 
@@ -884,6 +920,14 @@ pub(crate) fn synthesize_implied_redefinitions<R: ResolutionReferenceFact>(
                 };
                 if matches.next().is_some() {
                     // Ambiguous immediate-parent candidates: leave unresolved rather than guess.
+                    continue;
+                }
+                let named_by_performed_action =
+                    effective_names.get(member.index()).is_some_and(|facts| {
+                        facts.provenance == EffectiveNameProvenance::PerformedAction
+                    }) && performed_action_of.get(member.index()).copied().flatten()
+                        == Some(single_match);
+                if named_by_performed_action {
                     continue;
                 }
                 implied.push(ImpliedRelationship {
