@@ -32,7 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     notation of a reference.
   - A part drawn closed is marked by `...` in its lower left corner, and a connector that ends
     on a feature inside it ends on a proxy, a filled dot on the boundary labelled with the
-    feature's path. Each proxy has its own row, like a port.
+    feature's path. Each proxy has its own row, like a port. Parallel relationships retain
+    their identities and kinds when they share a proxy.
   - Names and types in an interconnection view are no longer cut at 18 characters, nor port
     labels at 20; the part is as wide as its labels need.
   - A port label sits outside the part, beside its port, and a port usage with an authored
@@ -47,7 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     parts inside a container, but the pinned `elkrs` honours partitions on the top-level
     graph only.
   - A sequence view places lifelines 176 px apart and messages 52 px, and an exported one is
-    as wide as its lifelines.
+    as wide as its lifelines and title, so long titles are not cropped.
   - The figure of an interconnection view includes its ports and their labels.
 
 - **Diagrams are laid out to be read on a page.** A figure exported for a document came out

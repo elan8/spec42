@@ -191,7 +191,6 @@ pub fn apply_interconnection_nesting(prepared: &mut Value, nesting: Nesting) {
     // The proxies each drawn part gets, by the path of the feature they stand for.
     let mut proxies: HashMap<String, BTreeSet<String>> = HashMap::new();
     let proxy_id = |part: &str, path: &str| format!("proxy:{part}:{path}");
-    let mut seen = BTreeSet::new();
     let mut kept_edges = Vec::new();
     for edge in as_array(field(prepared, "edges")) {
         let source = as_string(field(edge, "source"), "");
@@ -224,21 +223,8 @@ pub fn apply_interconnection_nesting(prepared: &mut Value, nesting: Nesting) {
             .then(|| feature_path(&drawn_source, &source, field(&attributes, "sourcePortId")));
         let proxy_target = moved_target
             .then(|| feature_path(&drawn_target, &target, field(&attributes, "targetPortId")));
-        // Each distinct inner feature keeps its own line and proxy; two connectors between the
-        // same two ends would draw the same line twice.
-        let key = (
-            drawn_source.clone(),
-            proxy_source
-                .clone()
-                .unwrap_or_else(|| source_port.to_string()),
-            drawn_target.clone(),
-            proxy_target
-                .clone()
-                .unwrap_or_else(|| target_port.to_string()),
-        );
-        if !seen.insert(key) {
-            continue;
-        }
+        // Sharing a proxy does not make relationships identical: parallel connectors can
+        // have different names, kinds and provenance. Preserve each projected edge.
         edge["source"] = json!(drawn_source);
         edge["target"] = json!(drawn_target);
         edge["attributes"]["sourceNodeId"] = json!(drawn_source);
@@ -400,6 +386,59 @@ mod tests {
             field(field(&prepared, "meta"), "closedPartCount"),
             &json!(3)
         );
+    }
+
+    #[test]
+    fn shared_proxies_preserve_parallel_relationships() {
+        for kinds in [["connection", "flow"], ["connection", "connection"]] {
+            let mut prepared = view();
+            let edges: Vec<Value> = kinds
+                .iter()
+                .enumerate()
+                .map(|(index, kind)| {
+                    let mut edge = connector(
+                        &format!("parallel-{index}"),
+                        ("motor", "out"),
+                        ("top", "in"),
+                    );
+                    edge["label"] = json!(format!("relationship-{index}"));
+                    edge["edgeKind"] = json!(kind);
+                    edge["attributes"]["semanticReference"] = json!(index);
+                    edge
+                })
+                .collect();
+            prepared["edges"] = json!(edges);
+
+            apply_nesting(&mut prepared, Nesting::Levels(1));
+
+            let drawn = as_array(field(&prepared, "edges"));
+            assert_eq!(drawn.len(), edges.len());
+            for (actual, original) in drawn.iter().zip(&edges) {
+                for key in ["id", "label", "edgeKind"] {
+                    assert_eq!(field(actual, key), field(original, key));
+                }
+                let attributes = field(actual, "attributes");
+                assert_eq!(field(actual, "source"), &json!("base"));
+                assert_eq!(
+                    field(attributes, "sourcePortId"),
+                    &json!("proxy:base:motor.out")
+                );
+                assert_eq!(field(attributes, "targetPortId"), &json!("in"));
+                assert_eq!(
+                    field(attributes, "semanticReference"),
+                    field(field(original, "attributes"), "semanticReference")
+                );
+            }
+            // Both relationships share one proxy without losing their own identities.
+            let base = &as_array(field(&prepared, "nodes"))[1];
+            assert_eq!(
+                as_array(field(field(base, "attributes"), "portDetails"))
+                    .iter()
+                    .filter(|detail| field(detail, "proxy") == &json!(true))
+                    .count(),
+                1
+            );
+        }
     }
 
     #[test]
