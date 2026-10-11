@@ -36,7 +36,7 @@ pub const BADGE_MIN_WIDTH: f64 = 18.0;
 const OVERFLOW_LINE_HEIGHT: f64 = 12.0;
 const AVERAGE_GLYPH_RATIO_REGULAR: f64 = 0.54;
 const AVERAGE_GLYPH_RATIO_BOLD: f64 = 0.6;
-pub const NODE_WIDTH_MIN: f64 = 200.0;
+pub const NODE_WIDTH_MIN: f64 = 120.0;
 pub const NODE_WIDTH_MAX: f64 = 320.0;
 
 /// General View nodes cap each compartment at this many rows and show a `+n more` line

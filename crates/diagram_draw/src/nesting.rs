@@ -1,4 +1,4 @@
-//! Renderer-owned nesting limit for interconnection views.
+//! Renderer-owned nesting limit for interconnection and general views.
 //!
 //! An interconnection view projects every part below its exposed roots. Drawn in full, a root with
 //! a few levels of parts cannot be read at any size a page or a screen offers. A nesting limit
@@ -35,6 +35,66 @@ fn container_of(node: &Value) -> Option<String> {
 
 fn is_synthetic(node: &Value) -> bool {
     field(field(node, "attributes"), "isSyntheticContainer") == &json!(true)
+}
+
+/// Applies `nesting` to a prepared view: an interconnection view closes its deeper parts, a
+/// general view keeps its deeper members in the compartments of the last level drawn. Other
+/// views are left as they are.
+pub fn apply_nesting(prepared: &mut Value, nesting: Nesting) {
+    match as_string(field(prepared, "view"), "").as_str() {
+        "interconnection-view" => apply_interconnection_nesting(prepared, nesting),
+        "general-view" => apply_general_nesting(prepared, nesting),
+        _ => {}
+    }
+}
+
+/// Draws the exposed elements of a general view and `levels` of members below them as boxes.
+/// A member further down stays listed in the compartment of its owner, which is how the editor
+/// shows an element that has not been expanded.
+fn apply_general_nesting(prepared: &mut Value, nesting: Nesting) {
+    let Nesting::Levels(levels) = nesting else {
+        return;
+    };
+    let owner_id = |node: &Value| -> Option<String> {
+        match field(field(node, "attributes"), "owner") {
+            Value::Number(index) => index.as_u64().map(|index| format!("n:{index}")),
+            Value::String(id) if !id.is_empty() => Some(id.clone()),
+            _ => None,
+        }
+    };
+    let nodes = as_array(field(prepared, "nodes")).to_vec();
+    let owner: HashMap<String, String> = nodes
+        .iter()
+        .filter_map(|node| Some((as_string(field(node, "id"), ""), owner_id(node)?)))
+        .collect();
+    let level = |id: &str| -> usize {
+        let mut level = 0;
+        let mut current = id;
+        while let Some(above) = owner.get(current) {
+            level += 1;
+            current = above;
+            if level > nodes.len() {
+                break;
+            }
+        }
+        level
+    };
+    // An owner is expanded when its members are within the levels drawn.
+    let mut expanded: Vec<String> = owner
+        .values()
+        .filter(|id| level(id) < levels)
+        .cloned()
+        .collect();
+    expanded.sort();
+    expanded.dedup();
+    crate::disclosure::apply_general_disclosure(
+        prepared,
+        &crate::disclosure::DisclosureState {
+            expanded_node_ids: expanded,
+            section_states: Vec::new(),
+        },
+    );
+    prepared["meta"]["nestingLevels"] = json!(levels);
 }
 
 /// Applies `nesting` to a prepared interconnection view. Other views are left as they are.
@@ -255,11 +315,57 @@ mod tests {
     }
 
     #[test]
+    fn a_general_view_keeps_deeper_members_in_compartments() {
+        let member =
+            |id: &str, owner: Option<u64>| json!({ "id": id, "attributes": { "owner": owner } });
+        let view = json!({
+            "view": "general-view",
+            "nodes": [member("n:0", None), member("n:1", Some(0)), member("n:2", Some(1))],
+            "edges": [
+                { "id": "a", "source": "n:0", "target": "n:1" },
+                { "id": "b", "source": "n:1", "target": "n:2" },
+            ],
+            "meta": {},
+        });
+        let drawn = |levels: usize| {
+            let mut prepared = view.clone();
+            apply_nesting(&mut prepared, Nesting::Levels(levels));
+            (ids(&prepared, "nodes"), ids(&prepared, "edges"))
+        };
+        assert_eq!(drawn(0), (vec!["n:0".to_owned()], Vec::<String>::new()));
+        assert_eq!(
+            drawn(1),
+            (
+                vec!["n:0".to_owned(), "n:1".to_owned()],
+                vec!["a".to_owned()]
+            )
+        );
+        assert_eq!(drawn(2).0.len(), 3);
+
+        // The last level drawn is marked collapsed, so the drawing lists its members.
+        let mut prepared = view.clone();
+        apply_nesting(&mut prepared, Nesting::Levels(1));
+        let nodes = as_array(field(&prepared, "nodes"));
+        assert_eq!(
+            field(field(&nodes[0], "attributes"), "disclosure"),
+            &json!("expanded")
+        );
+        assert_eq!(
+            field(field(&nodes[1], "attributes"), "disclosure"),
+            &json!("collapsed")
+        );
+
+        let mut everything = view.clone();
+        apply_nesting(&mut everything, Nesting::All);
+        assert_eq!(everything, view);
+    }
+
+    #[test]
     fn other_views_are_untouched() {
         let mut prepared = view();
-        prepared["view"] = json!("general-view");
+        prepared["view"] = json!("state-transition-view");
         let before = prepared.clone();
-        apply_interconnection_nesting(&mut prepared, Nesting::Levels(0));
+        apply_nesting(&mut prepared, Nesting::Levels(0));
         assert_eq!(prepared, before);
     }
 }

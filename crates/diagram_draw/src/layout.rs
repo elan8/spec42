@@ -548,183 +548,98 @@ fn fallback_general_layout(nodes: &[Value], edges: &[Value]) -> Value {
     json!({ "nodes": laid_out_nodes, "edges": laid_out_edges })
 }
 
+/// Lays out a general view that shows containment as a tree: boxes by `tree_layout`, aimed at
+/// the reference page, with each containment line following the tree and every other
+/// relationship drawn as a three-segment line between the two boxes.
 fn hierarchy_general_layout(
     nodes: &[Value],
     edges: &[Value],
     parent_by_id: &HashMap<String, String>,
 ) -> Value {
-    let node_order: HashMap<String, usize> = nodes
+    let order: Vec<String> = nodes
         .iter()
-        .enumerate()
-        .map(|(index, node)| (as_string(field(node, "id"), ""), index))
+        .map(|node| as_string(field(node, "id"), ""))
         .collect();
-    let mut children_by_parent: HashMap<String, Vec<Value>> = HashMap::new();
-    for node in nodes {
-        if let Some(parent) = parent_by_id.get(&as_string(field(node, "id"), "")) {
-            children_by_parent
-                .entry(parent.clone())
-                .or_default()
-                .push(node.clone());
-        }
-    }
-    for children in children_by_parent.values_mut() {
-        children.sort_by_key(|node| {
-            node_order
+    let measured: Vec<(f64, f64, crate::sysml_node::Compartments)> =
+        nodes.iter().map(general_node_box).collect();
+    let sizes: HashMap<String, (f64, f64)> = order
+        .iter()
+        .zip(&measured)
+        .map(|(id, (width, height, _))| (id.clone(), (*width, *height)))
+        .collect();
+    let tree =
+        crate::tree_layout::layout_tree_for(&order, &sizes, parent_by_id, reference_page_scale);
+    let laid_out_nodes: Vec<Value> = nodes
+        .iter()
+        .zip(&measured)
+        .map(|(node, (width, height, compartments))| {
+            let (x, y) = tree
+                .positions
                 .get(&as_string(field(node, "id"), ""))
                 .copied()
-                .unwrap_or(0)
-        });
-    }
-    let mut rows: Vec<Vec<Value>> = Vec::new();
-    let mut visited = HashSet::new();
-    let mut current: Vec<Value> = nodes
-        .iter()
-        .filter(|node| !parent_by_id.contains_key(&as_string(field(node, "id"), "")))
-        .cloned()
-        .collect();
-    while !current.is_empty() {
-        let row: Vec<Value> = current
-            .iter()
-            .filter(|node| !visited.contains(&as_string(field(node, "id"), "")))
-            .cloned()
-            .collect();
-        if row.is_empty() {
-            break;
-        }
-        for node in &row {
-            visited.insert(as_string(field(node, "id"), ""));
-        }
-        current = row
-            .iter()
-            .flat_map(|node| {
-                children_by_parent
-                    .get(&as_string(field(node, "id"), ""))
-                    .cloned()
-                    .unwrap_or_default()
-            })
-            .collect();
-        rows.push(row);
-    }
-    let unvisited: Vec<Value> = nodes
-        .iter()
-        .filter(|node| !visited.contains(&as_string(field(node, "id"), "")))
-        .cloned()
-        .collect();
-    if !unvisited.is_empty() {
-        rows.push(unvisited);
-    }
-    let horizontal_gap = 140.0;
-    let vertical_gap = 180.0;
-    let measured_rows: Vec<Vec<(Value, f64, f64, crate::sysml_node::Compartments)>> = rows
-        .iter()
-        .map(|row| {
-            row.iter()
-                .map(|node| {
-                    let (width, height, compartments) = general_node_box(node);
-                    (node.clone(), width, height, compartments)
-                })
-                .collect()
-        })
-        .collect();
-    let row_widths: Vec<f64> = measured_rows
-        .iter()
-        .map(|row| {
-            row.iter().map(|(_, width, _, _)| *width).sum::<f64>()
-                + (row.len().saturating_sub(1) as f64) * horizontal_gap
-        })
-        .collect();
-    let diagram_width = row_widths.iter().copied().fold(0.0, f64::max);
-    let mut laid_out_nodes = Vec::new();
-    let mut y = 0.0;
-    for (row_index, row) in measured_rows.iter().enumerate() {
-        let mut x = (diagram_width - row_widths[row_index]) / 2.0;
-        let row_height = NODE_HEIGHT.max(
-            row.iter()
-                .map(|(_, _, height, _)| *height)
-                .fold(0.0, f64::max),
-        );
-        for (node, width, height, compartments) in row {
+                .unwrap_or((0.0, 0.0));
             let mut out = node.clone();
             out["compartments"] = compartments_to_value(compartments);
             out["x"] = json!(x);
             out["y"] = json!(y);
             out["width"] = json!(*width);
             out["height"] = json!(*height);
-            laid_out_nodes.push(out);
-            x += width + horizontal_gap;
-        }
-        y += row_height + vertical_gap;
-    }
-    let by_id: HashMap<String, Value> = laid_out_nodes
-        .iter()
-        .map(|node| (as_string(field(node, "id"), ""), node.clone()))
-        .collect();
-    let row_for: HashMap<String, usize> = rows
-        .iter()
-        .enumerate()
-        .flat_map(|(depth, row)| {
-            row.iter()
-                .map(move |node| (as_string(field(node, "id"), ""), depth))
+            out
         })
         .collect();
-    let mut same_row_lane = 0usize;
+    let rect = |id: &str| -> Option<(f64, f64, f64, f64)> {
+        let (x, y) = tree.positions.get(id).copied()?;
+        let (width, height) = sizes.get(id).copied()?;
+        Some((x, y, width, height))
+    };
+    let section = |points: &[(f64, f64)]| -> Value {
+        let point = |(x, y): &(f64, f64)| json!({ "x": x, "y": y });
+        json!({
+            "startPoint": point(&points[0]),
+            "bendPoints": points[1..points.len() - 1].iter().map(point).collect::<Vec<_>>(),
+            "endPoint": point(&points[points.len() - 1]),
+        })
+    };
     let laid_out_edges: Vec<Value> = edges
         .iter()
         .map(|edge| {
-            let source_node = by_id.get(&as_string(field(edge, "source"), ""));
-            let target_node = by_id.get(&as_string(field(edge, "target"), ""));
-            let (Some(source_node), Some(target_node)) = (source_node, target_node) else {
-                return edge.clone();
+            let source = as_string(field(edge, "source"), "");
+            let target = as_string(field(edge, "target"), "");
+            // A containment line follows the tree, from the parent to the child.
+            let along_tree = |parent: &str, child: &str| {
+                (parent_by_id.get(child).map(String::as_str) == Some(parent))
+                    .then(|| tree.routes.get(child))
+                    .flatten()
             };
-            let source_x = num(field(source_node, "x")) + num(field(source_node, "width")) / 2.0;
-            let target_x = num(field(target_node, "x")) + num(field(target_node, "width")) / 2.0;
-            let source_depth = row_for
-                .get(&as_string(field(edge, "source"), ""))
-                .copied()
-                .unwrap_or(0);
-            let target_depth = row_for
-                .get(&as_string(field(edge, "target"), ""))
-                .copied()
-                .unwrap_or(0);
-            let section = if source_depth == target_depth {
-                let lane_y = num(field(source_node, "y")).min(num(field(target_node, "y")))
-                    - 28.0
-                    - (same_row_lane % 12) as f64 * 10.0;
-                same_row_lane += 1;
-                json!({
-                    "startPoint": { "x": source_x, "y": field(source_node, "y") },
-                    "bendPoints": [
-                        { "x": source_x, "y": lane_y },
-                        { "x": target_x, "y": lane_y },
-                    ],
-                    "endPoint": { "x": target_x, "y": field(target_node, "y") },
-                })
+            let points: Vec<(f64, f64)> = if let Some(route) = along_tree(&source, &target) {
+                route.clone()
+            } else if let Some(route) = along_tree(&target, &source) {
+                route.iter().rev().copied().collect()
             } else {
-                let downward = num(field(target_node, "y")) > num(field(source_node, "y"));
-                let start_y = num(field(source_node, "y"))
-                    + if downward {
-                        num(field(source_node, "height"))
-                    } else {
-                        0.0
-                    };
-                let end_y = num(field(target_node, "y"))
-                    + if downward {
-                        0.0
-                    } else {
-                        num(field(target_node, "height"))
-                    };
-                let middle_y = (start_y + end_y) / 2.0;
-                json!({
-                    "startPoint": { "x": source_x, "y": start_y },
-                    "bendPoints": [
-                        { "x": source_x, "y": middle_y },
-                        { "x": target_x, "y": middle_y },
-                    ],
-                    "endPoint": { "x": target_x, "y": end_y },
-                })
+                let (Some(from), Some(to)) = (rect(&source), rect(&target)) else {
+                    return edge.clone();
+                };
+                let from_x = from.0 + from.2 / 2.0;
+                let to_x = to.0 + to.2 / 2.0;
+                if (from.1 - to.1).abs() < 1.0 {
+                    // Two boxes at the same height: over the top of both.
+                    let lane = from.1 - 14.0;
+                    vec![(from_x, from.1), (from_x, lane), (to_x, lane), (to_x, to.1)]
+                } else {
+                    let downward = to.1 > from.1;
+                    let start = if downward { from.1 + from.3 } else { from.1 };
+                    let end = if downward { to.1 } else { to.1 + to.3 };
+                    let middle = (start + end) / 2.0;
+                    vec![
+                        (from_x, start),
+                        (from_x, middle),
+                        (to_x, middle),
+                        (to_x, end),
+                    ]
+                }
             };
             let mut out = edge.clone();
-            out["layout"] = json!({ "sections": [section] });
+            out["layout"] = json!({ "sections": [section(&points)] });
             out
         })
         .collect();

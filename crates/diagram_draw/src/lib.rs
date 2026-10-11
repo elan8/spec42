@@ -34,6 +34,7 @@ pub mod svg_markers;
 mod sysml_node;
 pub mod theme;
 mod tooltip;
+mod tree_layout;
 pub mod types;
 pub mod xml;
 

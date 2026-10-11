@@ -7,7 +7,7 @@ use serde_json::Value;
 use crate::disclosure::{apply_general_disclosure, DisclosureState};
 use crate::draw_input::DrawError;
 use crate::layout::layout_to_draw_input;
-use crate::nesting::{apply_interconnection_nesting, Nesting};
+use crate::nesting::{apply_nesting, Nesting};
 use crate::prepare::prepare_view_data;
 use crate::theme::{Theme, LIGHT};
 
@@ -58,7 +58,7 @@ pub fn draw_input_from_payload_with_disclosure(
 }
 
 /// Prepare + layout with the renderer-owned presentation choices: which nested nodes a general
-/// view discloses, and how many levels of parts an interconnection view draws.
+/// view discloses, and how many levels below its exposed elements a view draws.
 pub fn draw_input_from_payload_with_presentation(
     payload: &Value,
     disclosure: Option<&DisclosureState>,
@@ -68,7 +68,7 @@ pub fn draw_input_from_payload_with_presentation(
     if let Some(state) = disclosure {
         apply_general_disclosure(&mut prepared, state);
     }
-    apply_interconnection_nesting(&mut prepared, nesting);
+    apply_nesting(&mut prepared, nesting);
     Ok(layout_to_draw_input(&prepared)?)
 }
 

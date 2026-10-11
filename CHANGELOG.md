@@ -23,12 +23,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     connectors lead away from.
   - An exported figure is as large as its content plus a 16 px margin; the background covers
     exactly the view box.
-  - `spec42 diagram --depth <levels|all>` (default `1`) limits how many levels of parts an
-    interconnection view draws below its exposed parts. A part with deeper content is drawn
-    closed and says how many inner parts it leaves out; a connector that ends inside it is
-    drawn to the part. The diagram product is unchanged. `diagram_draw::Nesting` and
+  - A general view that shows containment is laid out as a compact tree instead of one row
+    for each depth: members without members of their own are listed below their owner, other
+    members stand side by side and wrap into rows, and the wrap that is largest on an A4 page
+    is kept. A box is as narrow as 120 px when its text allows.
+  - `spec42 diagram --depth <levels|all>` (default `1`) limits how many levels a view draws
+    below its exposed elements. In an interconnection view a part with deeper content is drawn
+    closed and says how many inner parts it leaves out, and a connector that ends inside it
+    is drawn to the part. In a general view deeper members stay listed in the compartments
+    of the last level drawn, as in the editor before an element is expanded. The diagram
+    product is unchanged. `diagram_draw::Nesting` and
     `pipeline::render_svg_from_payload_str_nested` expose the same choice to embedders; the
-    editor still draws every level.
+    editor still draws every level of an interconnection view.
 
 - **`satisfy` of a requirement definition is reported (#251).** `satisfy ReqDef by drone;`
   reported nothing: `satisfy_invalid_endpoint_kind` accepted any requirement, definition or
