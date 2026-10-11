@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- **An inherited `perform Pkg::action;` can be redefined by name.** `part variant :> family {
+  perform action :>> providePower { ... } }` reported `unresolved_reference` when `family` wrote
+  `perform Tree::providePower;`. An anonymous perform usage is named by the action it performs
+  (`PerformActionUsage::namingFeature`); spec42 only derived names from redefinitions, so it
+  resolved the name only when the action happened to be lexically visible. That name does not
+  also implied-redefine the performed action, and a qualified redefinition can step through the
+  perform (`action :>> providePower::generate`).
+- **`perform` in an action usage body is accepted (#256).** `action group { perform stepA; }`
+  reported `unexpected keyword perform in action body`; only an action definition body took the
+  member, although both are the same `ActionBody`. A function tree can now be written with
+  usages. Accepted with it: an action usage with a value (`action :>> generate = fourCylinder;`),
+  `then while`, `then loop` and `then for` succession targets, `perform` inside a `timeslice` or
+  other occurrence usage body, `perform a redefines b;`, and a keyword-less action body member
+  that starts with `:`, `:>` or `:>>`. Pins sysml-v2-parser `c28ca768` (`PARSE_AST_VERSION` 268),
+  the merge commit of `elan8/sysml-v2-parser#185`.
+
 - **Diagram notation follows SysML 8.2.3 more closely.** An assessment of the general,
   interconnection, state transition and action flow views against the graphical notation is
   in `docs/reference/DIAGRAM-NOTATION-ASSESSMENT.md`. Fixed from it:

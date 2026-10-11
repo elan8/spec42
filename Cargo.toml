@@ -50,7 +50,7 @@ clap = { version = "4", features = ["derive"] }
 petgraph = { version = "0.8", features = ["serde-1"] }
 sha2 = "0.10"
 blake3 = "1"
-sysml-v2-parser = { git = "https://github.com/elan8/sysml-v2-parser.git", rev = "b4a26e22ec5241aeaeb15ef726a6f6b183bdd1ab", features = ["serde"] }
+sysml-v2-parser = { git = "https://github.com/elan8/sysml-v2-parser.git", rev = "c28ca7680856cb5ab5cb10ea1e87e111619f73f2", features = ["serde"] }
 ts-rs = { version = "11", features = ["serde-compat", "serde-json-impl"] }
 zstd = "0.13"
 toml = "0.8"

@@ -58,6 +58,9 @@ pub(crate) enum EffectiveNameProvenance {
     Declared,
     /// Both components come from the first Feature it redefines (KerML `Feature::effectiveName`).
     FirstRedefinition,
+    /// Both components come from the action a perform usage performs (SysML
+    /// `PerformActionUsage::namingFeature`).
+    PerformedAction,
     /// `~` + the original definition's name (SysML `ConjugatedPortDefinition::effectiveName`).
     OriginalPortDefinition,
 }
