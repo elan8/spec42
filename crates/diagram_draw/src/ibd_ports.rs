@@ -206,6 +206,53 @@ pub fn draw_ibd_ports(
         }
         if !is_proxy {
             elements.push(icon_el);
+            // SysML 8.2.3.12: a directed port carries an arrow in its square: into the part
+            // for `in`, out of it for `out`, both ways for `inout`.
+            let direction = detail
+                .and_then(|d| d.get("direction"))
+                .and_then(Value::as_str)
+                .unwrap_or("");
+            let into_part = if resolved_side == "WEST" { 1.0 } else { -1.0 };
+            let head = |toward: f64| {
+                let tip = x + toward * 3.0;
+                let back = x + toward * 0.8;
+                format!(
+                    "M{},{}L{},{}L{},{}",
+                    crate::svg::format_number(back),
+                    crate::svg::format_number(y - 2.2),
+                    crate::svg::format_number(tip),
+                    crate::svg::format_number(y),
+                    crate::svg::format_number(back),
+                    crate::svg::format_number(y + 2.2),
+                )
+            };
+            let heads = match direction {
+                "in" => Some(head(into_part)),
+                "out" => Some(head(-into_part)),
+                "inout" => Some(format!("{}{}", head(1.0), head(-1.0))),
+                _ => None,
+            };
+            if let Some(heads) = heads {
+                elements.push(
+                    Element::new("path")
+                        .attr("class", "port-direction")
+                        .attr("data-port-name", name)
+                        .attr(
+                            "d",
+                            format!(
+                                "M{},{}L{},{}{heads}",
+                                crate::svg::format_number(x - 3.0),
+                                crate::svg::format_number(y),
+                                crate::svg::format_number(x + 3.0),
+                                crate::svg::format_number(y),
+                            ),
+                        )
+                        .style("fill", "none")
+                        .style("stroke", color)
+                        .style("stroke-width", "1px")
+                        .style("pointer-events", "none"),
+                );
+            }
         }
 
         let label_x = label_layout

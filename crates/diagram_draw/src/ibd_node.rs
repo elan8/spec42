@@ -95,11 +95,13 @@ pub fn render_ibd_node(
     let header_height = if is_container {
         IBD_CONTAINER_HEADER_HEIGHT
     } else {
+        // The shaded header holds every line of the name compartment: the keyword, the name
+        // and, when the part is typed, its type, whose baseline is at 43.
         let part_type = attr_text(&node.attributes, "partType");
         if !part_type.is_empty() {
-            41.0
+            49.0
         } else {
-            33.0
+            37.0
         }
     };
 
@@ -121,10 +123,14 @@ pub fn render_ibd_node(
                 format!("{}px", crate::svg::format_number(body.stroke_width_px)),
             )
             .style("stroke-dasharray", body.stroke_dasharray),
+        // Inside the outline, so the shading does not paint over the part's border.
         Element::new("rect")
-            .attr_f("width", width)
-            .attr_f("height", header_height)
-            .attr("rx", "6")
+            .attr("class", "node-header")
+            .attr_f("x", 1.0)
+            .attr_f("y", 1.0)
+            .attr_f("width", width - 2.0)
+            .attr_f("height", header_height - 1.0)
+            .attr_f("rx", (body.corner_radius - 1.0).max(0.0))
             .style("fill", theme.panel_background),
     ];
 

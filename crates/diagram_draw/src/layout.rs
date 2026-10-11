@@ -1790,22 +1790,14 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         let is_synthetic_package = field(attrs, "isSyntheticPackage") == &json!(true);
         let is_container =
             field(attrs, "isSyntheticContainer") == &json!(true) || !children.is_empty();
-        // A part is as wide as its name, its type and the labels of the ports that face each
-        // other across it need. The drawing truncates a name and a type at 32 characters.
+        // A part is as wide as its name and its type need. The drawing truncates a name and a
+        // type at 32 characters.
         let characters = |text: &str| text.encode_utf16().count().min(32) as f64;
         let label_width = characters(&as_string(field(node, "label"), "")) * 6.8;
         let type_width = (characters(&as_string(field(attrs, "partType"), "")) + 2.0) * 5.4;
-        let port_width = |ports: &[PreparedPort]| {
-            ports
-                .iter()
-                .map(|port| port.name.encode_utf16().count() as f64 * 5.0)
-                .fold(0.0, f64::max)
-        };
         let base_width: f64 = if is_container { 220.0 } else { 132.0 };
-        let width = base_width
-            .max(label_width.max(type_width) + 28.0)
-            .max(port_width(&west_ports) + port_width(&east_ports) + 44.0)
-            .ceil();
+        // Port labels sit outside the part, so they do not make it wider.
+        let width = base_width.max(label_width.max(type_width) + 28.0).ceil();
         let mut height = if is_container {
             root_header_height + 72.0
         } else {
@@ -1850,7 +1842,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
         let node_layout_options = json!({
             "org.eclipse.elk.portConstraints": "FIXED_ORDER",
             "org.eclipse.elk.portAlignment.default": "CENTER",
-            "org.eclipse.elk.portLabels.placement": "INSIDE",
+            "org.eclipse.elk.portLabels.placement": "OUTSIDE",
             "org.eclipse.elk.spacing.labelPortHorizontal": "6",
             "org.eclipse.elk.spacing.labelPortVertical": "4",
             // Ports start below the name and type of the part, never on top of them.

@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     feature's path. Each proxy has its own row, like a port.
   - Names and types in an interconnection view are no longer cut at 18 characters, nor port
     labels at 20; the part is as wide as its labels need.
+  - A port label sits outside the part, beside its port, and a port usage with an authored
+    direction carries an arrow in its square. A part is as wide as its name and type.
+  - In a general view the definition (typing) line is solid with a hollow triangle and two
+    dots at the definition, and the subsetting line is solid with a hollow triangle. Both were
+    dashed with an open arrowhead.
+  - The shaded header of a part in an interconnection view holds its keyword, name and type;
+    the type line hung below it. The shading no longer paints over the part's border.
 
 - **Diagrams are laid out to be read on a page.** A figure exported for a document came out
   with text of 0.2 to 4 pt once it was fitted to an A4 page: boxes had a fixed size whatever

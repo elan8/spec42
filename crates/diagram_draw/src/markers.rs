@@ -70,6 +70,57 @@ pub fn markers(theme: &Theme) -> Element {
                         .style("stroke-width", "1.2"),
                 ),
         )
+        // SysML 8.2.3.6 `definition`: a hollow triangle at the definition, with two dots
+        // behind it, one on each side of the line.
+        .child(
+            Element::new("marker")
+                .attr("id", "general-d3-defined-by")
+                .attr("viewBox", "-8 -6 20 12")
+                .attr("refX", "11")
+                .attr("refY", "0")
+                .attr("markerWidth", "13.5")
+                .attr("markerHeight", "8")
+                .attr("orient", "auto")
+                .child(
+                    Element::new("path")
+                        .attr("d", "M1,-4.5L11,0L1,4.5Z")
+                        .style("fill", theme.node_fill)
+                        .style("stroke", theme.edge_default)
+                        .style("stroke-width", "1.2"),
+                )
+                .child(
+                    Element::new("circle")
+                        .attr("cx", "-2.5")
+                        .attr("cy", "-3")
+                        .attr("r", "1.2")
+                        .style("fill", theme.edge_default),
+                )
+                .child(
+                    Element::new("circle")
+                        .attr("cx", "-2.5")
+                        .attr("cy", "3")
+                        .attr("r", "1.2")
+                        .style("fill", theme.edge_default),
+                ),
+        )
+        // SysML 8.2.3.6 `subsetting`: a hollow triangle at the subsetted feature.
+        .child(
+            Element::new("marker")
+                .attr("id", "general-d3-subsets")
+                .attr("viewBox", "0 -6 12 12")
+                .attr("refX", "11")
+                .attr("refY", "0")
+                .attr("markerWidth", "8")
+                .attr("markerHeight", "8")
+                .attr("orient", "auto")
+                .child(
+                    Element::new("path")
+                        .attr("d", "M1,-4.5L11,0L1,4.5Z")
+                        .style("fill", theme.node_fill)
+                        .style("stroke", theme.edge_default)
+                        .style("stroke-width", "1.2"),
+                ),
+        )
         .child(
             Element::new("marker")
                 .attr("id", "general-d3-diamond")

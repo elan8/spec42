@@ -26,9 +26,9 @@ code and not seen in a rendered diagram, because the assessed models do not use 
 | Keyword | `«part def»`, `«part»` above the name | As specified | Conforms |
 | Name compartment | The declaration, `name : Type` | Name, then `: Type` on its own line | Deviates, layout only |
 | Composite membership | Line with a filled diamond at the owner | Filled diamond at the owner | Conforms |
-| Definition (feature typing) | Solid line, hollow triangle with two dots at the definition | Dashed line, open arrowhead | Deviates |
+| Definition (feature typing) | Solid line, hollow triangle with two dots at the definition | As specified since this change; it was dashed with an open arrowhead. Drawn thinner than a membership line | Conforms |
 | Subclassification | Solid line, hollow triangle | Solid line, hollow triangle | Conforms |
-| Subsetting | Solid line, hollow triangle (open) at the subsetted feature | Dashed line, open arrowhead | Deviates |
+| Subsetting | Solid line, hollow triangle at the subsetted feature | As specified since this change; it was dashed with an open arrowhead | Conforms |
 | Compartment label | Centred, italic, lower case (`parts`) | Left, bold, capitalised (`Parts`), with an expand control | Deviates |
 | Left-out content | `…` after the listed members, or `...` in the lower left corner | A collapsed compartment with an expand control | Deviates |
 | Reference usage | Dashed outline | Dashed outline | Conforms |
@@ -37,11 +37,11 @@ code and not seen in a rendered diagram, because the assessed models do not use 
 
 | Notation | Specification | Drawn | Status |
 | --- | --- | --- | --- |
-| Part usage | Rounded rectangle, solid | Rounded rectangle, solid | Conforms |
+| Part usage | Rounded rectangle, solid | Rounded rectangle, solid; the shaded name compartment holds the keyword, name and type | Conforms |
 | Part that shows its parts | The same solid part symbol with the nested view inside | Solid since this change; it was dashed, the notation of a reference | Conforms |
 | Port | Small square on the boundary | Small square on the boundary | Conforms |
-| Port label | Beside the port, outside the part | Inside the part | Deviates |
-| Port direction | Arrow inside the port square for `in`, `out`, `inout` | No arrow | Missing |
+| Port label | Beside the port, outside the part | Outside the part, below the connector, since this change; it was inside | Conforms |
+| Port direction | Arrow inside the port square for `in`, `out`, `inout` | Drawn for a port usage with an authored direction. A port whose direction follows only from the features of its definition gets none | Conforms for authored directions |
 | Conjugated port | `~` in the port label | Not shown | Missing |
 | Connection | Solid line between ports or parts, optional name | Solid line, name or `: Type` where there is room | Conforms |
 | Connection colour | Not defined | One colour for each port type | Extension, harmless |
@@ -83,10 +83,9 @@ code and not seen in a rendered diagram, because the assessed models do not use 
 
 ## What to change next, by effect on a reader
 
-1. Port labels outside the part, with direction arrows and `~` for a conjugated port. This is
-   the most visible difference from a diagram drawn by hand to the specification.
-2. The definition (typing) and subsetting lines in a general view.
-3. Compartment labels and the ellipsis for left-out members in a general view.
-4. `«action»` on each action, and parameters on the boundary.
-5. A composite state that shows its nested states.
-6. `entry`, `do` and `exit` as labelled compartments.
+1. Compartment labels and the ellipsis for left-out members in a general view.
+2. `«action»` on each action, and parameters on the boundary.
+3. A composite state that shows its nested states.
+4. `entry`, `do` and `exit` as labelled compartments.
+5. `~` for a conjugated port, and the direction a port takes from its definition.
+6. Flows on connections.

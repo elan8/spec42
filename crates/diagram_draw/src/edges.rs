@@ -27,6 +27,8 @@ fn marker_url(id: &'static str) -> &'static str {
         "general-d3-arrow-open" => "url(#general-d3-arrow-open)",
         "general-d3-diamond" => "url(#general-d3-diamond)",
         "general-d3-arrow" => "url(#general-d3-arrow)",
+        "general-d3-defined-by" => "url(#general-d3-defined-by)",
+        "general-d3-subsets" => "url(#general-d3-subsets)",
         other => other,
     }
 }
@@ -44,18 +46,18 @@ fn apply_edge_marker(edge_kind: &str) -> MarkerStyle {
                 ("stroke-width", "1.7px"),
             ],
         ),
+        // SysML 8.2.3.6: subsetting and definition (feature typing) are solid lines.
         "subsetting" => ms(
             false,
-            vec![
-                ("marker-end", marker_url("general-d3-arrow-open")),
-                ("stroke-dasharray", "6,3"),
-            ],
+            vec![("marker-end", marker_url("general-d3-subsets"))],
         ),
+        // A typing line is thinner than a membership line: a view that shows usages beside
+        // their definitions has one for every usage, and the tree is what a reader follows.
         "typing" => ms(
             false,
             vec![
-                ("marker-end", marker_url("general-d3-arrow-open")),
-                ("stroke-dasharray", "5,3"),
+                ("marker-end", marker_url("general-d3-defined-by")),
+                ("stroke-width", "1px"),
             ],
         ),
         "hierarchy" => ms(
