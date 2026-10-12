@@ -178,6 +178,8 @@ pub struct DiagramNode {
     pub state_subaction: Option<String>,
     /// On a conditional succession: its guard expression as written, or `"else"`.
     pub succession_guard: Option<String>,
+    /// On a port: the direction its directed features give it as a whole. Derived.
+    pub feature_direction: Option<String>,
 }
 
 #[derive(Deserialize, TS)]

@@ -788,6 +788,18 @@ impl<D> SemanticModel<D> {
         Some((direction, self.port_is_conjugated(id)))
     }
 
+    /// The direction a port's directed features give it, keyed by [`SymbolId`]. Derived, and
+    /// kept apart from the authored direction of [`Self::port_direction_and_conjugation`].
+    /// See [`Self::port_feature_direction`].
+    pub(crate) fn port_feature_direction_of(&self, symbol: SymbolId) -> Option<FeatureDirection> {
+        let id = self.declaration_of(symbol)?;
+        Some(match self.port_feature_direction(id)? {
+            ParameterDirection::In => FeatureDirection::In,
+            ParameterDirection::Out => FeatureDirection::Out,
+            ParameterDirection::InOut => FeatureDirection::InOut,
+        })
+    }
+
     /// Whether an element is the entry, do or exit action of the state that owns it, keyed by
     /// [`SymbolId`] like [`Self::port_direction_and_conjugation`]. The three are action usages;
     /// only their membership tells them apart. `None` for every other element.

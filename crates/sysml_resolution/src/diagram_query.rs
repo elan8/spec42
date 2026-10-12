@@ -121,6 +121,10 @@ pub struct DiagramElement {
     pub state_subaction: Option<StateSubactionKind>,
     /// On a conditional succession: when it is taken. `None` for every other element.
     pub succession_guard: Option<DiagramSuccessionGuard>,
+    /// On a port: the direction its directed features give it as a whole, with a conjugated
+    /// typing applied. Derived from the port's own features and those of its definitions, and
+    /// kept apart from the authored `direction`. `None` when it has no directed feature.
+    pub feature_direction: Option<FeatureDirection>,
 }
 
 /// When a conditional succession is taken (SysML 7.17.5).
@@ -689,6 +693,11 @@ impl PublishedResolution {
                     conjugated,
                     state_subaction: self.model.state_subaction_kind(entry.identity),
                     succession_guard: self.model.succession_guard(entry.identity),
+                    feature_direction: if is_port_kind(entry.kind) {
+                        self.model.port_feature_direction_of(entry.identity)
+                    } else {
+                        None
+                    },
                 }
             })
             .collect::<Vec<_>>();

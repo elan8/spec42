@@ -699,6 +699,36 @@ fn an_action_flow_written_with_then_draws_its_whole_flow() {
 }
 
 #[test]
+fn a_port_takes_its_direction_from_the_features_of_its_definition() {
+    let payload = generated_diagram(include_str!(
+        "../../../tests/snapshots/generation/diagram_interconnection_feature_direction.md"
+    ));
+    let input = draw_input_from_payload(&payload).expect("interconnection lays out");
+    let direction = |part: &str, port: &str| {
+        input["nodes"]
+            .as_array()
+            .expect("nodes")
+            .iter()
+            .find(|node| node["label"] == part)
+            .unwrap_or_else(|| panic!("no part `{part}`"))["attributes"]["portDetails"]
+            .as_array()
+            .expect("port details")
+            .iter()
+            .find(|detail| detail["name"] == port)
+            .unwrap_or_else(|| panic!("no port `{port}` on `{part}`"))["direction"]
+            .clone()
+    };
+    // `Supply` has one `out` feature: the port sends, and its conjugate receives.
+    assert_eq!(direction("source", "feed"), "out");
+    assert_eq!(direction("load", "feed"), "in");
+    // Features both ways make the port bidirectional; none leave it without a direction.
+    assert_eq!(direction("source", "link"), "inout");
+    assert!(direction("source", "tag").is_null());
+    // A direction written on the port itself is what is drawn.
+    assert_eq!(direction("load", "forced"), "in");
+}
+
+#[test]
 fn conditional_successions_carry_their_guards() {
     let payload = generated_diagram(include_str!(
         "../../../tests/snapshots/generation/diagram_action_flow_conditional_successions.md"

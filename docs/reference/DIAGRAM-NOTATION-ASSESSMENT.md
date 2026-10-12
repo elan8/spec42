@@ -15,13 +15,11 @@ How each row was established: the rows on node shapes, keywords, the composite, 
 subclassification and subsetting lines, ports, proxies, the ellipsis, compartments, states,
 transitions and the view frame were checked in rendered diagrams against the notation images.
 
-A row marked **not published** is drawn as the notation defines it when the diagram product
-carries the element, and was checked in the drawing code and its tests, but `spec42 diagram`
-does not yet show it: the typed projection of the view leaves the element out. That holds for
-the entry, do and exit actions of a state, and in an action flow view for parameters, accept and
-send actions, the start and done nodes, decision, merge, fork and join nodes, and a succession
-written as `then` after an action (`first a then b;` is drawn). These were found by rendering
-models written to use them.
+The rows on the action flow and state transition views were checked on models written to use
+each element (`tests/snapshots/generation/diagram_action_flow_then_successions.md`,
+`diagram_action_flow_conditional_successions.md`, `diagram_state_actions.md`,
+`diagram_composite_state.md`), since the example models use few of
+them.
 
 ## General view (8.2.3.6, 8.2.3.11)
 
@@ -47,7 +45,7 @@ models written to use them.
 | Part that shows its parts | The same solid part symbol with the nested view inside | Solid since this change; it was dashed, the notation of a reference | Conforms |
 | Port | Small square on the boundary | Small square on the boundary | Conforms |
 | Port label | Beside the port, outside the part | Outside the part, below the connector, since this change; it was inside | Conforms |
-| Port direction | Arrow inside the port square for `in`, `out`, `inout` | Drawn for a port usage with an authored direction. A port whose direction follows only from the features of its definition gets none | Conforms for authored directions |
+| Port direction | Arrow inside the port square for `in`, `out`, `inout` | Drawn from the direction written on the port usage, or else from the directed features of the port and of its definitions, reversed by a conjugated typing. Features a definition inherits are not followed | Conforms |
 | Conjugated port | `~` before the type in the port's declaration | The port is labelled `name : ~Type`; other ports by name only | Conforms |
 | Connection | Solid line between ports or parts, optional name | Solid line, name or `: Type` where there is room | Conforms |
 | Connection colour | Not defined | One colour for each port type | Extension, harmless |
@@ -62,13 +60,13 @@ models written to use them.
 | --- | --- | --- | --- |
 | State | Rounded rectangle | Rounded rectangle | Conforms |
 | Name compartment | `«state»`, then the name | `«state»`, then the name | Conforms |
-| Entry, do and exit actions | A state actions compartment listing `entry x`, `do x`, `exit x` | A labelled state actions compartment with those lines | Not published |
+| Entry, do and exit actions | A state actions compartment listing `entry x`, `do x`, `exit x` | A labelled state actions compartment with those lines. An action without a name is listed by the action it is typed by | Conforms |
 | Start node | Filled circle | Filled circle | Conforms |
 | Done node | Circle around a filled circle | Drawn for a final state | Conforms |
 | Terminate node | Circle with a cross | Circle with a cross | Conforms |
 | Transition | Solid line, open arrowhead | Solid line, open arrowhead since this change; it was filled | Conforms |
 | Transition label | Plain text: trigger, guard, `/` effect | Plain text. Trigger, guard and effect are joined as published. Three or more transitions with one label into one state share a line and one label at that state | Conforms; the shared line is an extension |
-| Composite state | The state symbol with its state transition view inside | Named regions, not the nested states | Deviates |
+| Composite state | The state symbol with its state transition view inside | The state with its states, their transitions and its initial node inside it. A transition between a nested state and a state outside is drawn straight, without a route | Conforms |
 | View frame | Frame with the view's name compartment | A frame with the name in a compartment in its upper left corner, also for the action flow view. The sequence view still has a title | Conforms |
 
 ## Action flow view (8.2.3.17)
@@ -77,23 +75,20 @@ models written to use them.
 | --- | --- | --- | --- |
 | Action | Rounded rectangle, `«action»` and name | Rounded rectangle with `«action»` and the name | Conforms |
 | Action definition | Rectangle with square corners, `«action def»` | Drawn as the frame of the flow | Conforms |
-| Start node | Filled circle | Filled circle | Not published |
-| Done node | Circle around a filled circle | Circle around a filled circle | Not published |
-| Succession | Dashed line, open arrowhead, optional guard | Dashed line, open arrowhead, for `first a then b;` | Conforms; `then` after an action is not published |
-| Flow | Solid line, filled arrowhead, optional `«flow»` and item | Solid line, filled arrowhead | Conforms |
-| Decision and merge | Diamond | Diamond | Not published |
-| Fork and join | Bar | Bar | Not published |
-| Parameters | Small squares on the action's boundary, with direction | Small squares on the boundary with the name beside them; no direction | Not published |
-| Accept and send actions | The action symbol with a notched or a pointed flag in its upper left corner | As specified | Not published |
+| Start node | Filled circle | Filled circle, where a succession starts at `start` | Conforms |
+| Done node | Circle around a filled circle | Circle around a filled circle, where a succession ends at `done` | Conforms |
+| Succession | Dashed line, open arrowhead, optional guard | Dashed line, open arrowhead, for `first a then b;` and for the `then` shorthand, from the nearest occurrence before it (7.17.4) | Conforms |
+| Conditional succession | A succession with its guard in brackets | The guard as it is written, in brackets beside the line, for `first a if g then b;` and for `if g then b;` in the `then` shorthand; `[else]` for `else b;` | Conforms |
+| Decision and merge | Diamond | Diamond | Conforms |
+| Fork and join | Bar | Bar | Conforms |
+| Parameters | Small squares on the action's boundary, with direction | Small squares on the boundary, inputs on the left and outputs on the right, with the name beside them. Inherited parameters are included | Conforms; the side stands for the direction |
+| Flow | Solid line, filled arrowhead, optional `«flow»` and item | Solid line with a filled arrowhead between the actions that own the two parameters; the item is not named | Conforms without the item |
+| Accept and send actions | The action symbol with a notched or a pointed flag in its upper left corner | As specified. An accept or send action without a name is labelled `accept` or `send` | Conforms |
 | Swimlanes | Supported by the notation | Not drawn | Missing |
 
 ## What to change next, by effect on a reader
 
-1. Publish what the action flow view leaves out: successions written with `then`, the start
-   and done nodes, control nodes, accept and send actions, and parameters.
-2. Publish the entry, do and exit actions of a state.
-3. A composite state that shows its nested states.
-4. The direction a port takes from the features of its definition.
-5. Flows on connections.
+1. Flows on connections in an interconnection view.
+2. Routes for transitions that cross the boundary of a containing state.
+3. Swimlanes in an action flow.
 
-Each of these extends the diagram product, and with it the generator protocol that carries it.

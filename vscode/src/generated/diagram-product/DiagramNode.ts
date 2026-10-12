@@ -11,4 +11,8 @@ stateSubaction: string | null,
 /**
  * On a conditional succession: its guard expression as written, or `"else"`.
  */
-successionGuard: string | null, };
+successionGuard: string | null, 
+/**
+ * On a port: the direction its directed features give it as a whole. Derived.
+ */
+featureDirection: string | null, };
