@@ -18,7 +18,10 @@ fn is_initial(kind: &str) -> bool {
     kind.contains("initial") || kind.contains("start")
 }
 fn is_final(kind: &str) -> bool {
-    kind.contains("final") || kind.contains("done") || kind.contains("end")
+    // `send` contains `end`, and a send action is not a final node.
+    kind.contains("final")
+        || kind.contains("done")
+        || (kind.contains("end") && !kind.contains("send"))
 }
 fn is_flow_final(kind: &str) -> bool {
     kind.contains("flow-final") || kind.contains("flow final") || kind.contains("terminate")
@@ -77,6 +80,9 @@ fn parameter_name(item: &Value) -> String {
     }
 }
 
+/// Side of the square a parameter is drawn as.
+const PARAMETER_SIZE: f64 = 10.0;
+
 fn draw_parameters(
     mut g: Element,
     items: &[Value],
@@ -87,20 +93,24 @@ fn draw_parameters(
     for (index, item) in items.iter().take(4).enumerate() {
         let name = parameter_name(item);
         let y = 20.0 + index as f64 * 14.0;
+        let boundary = if side == "input" { 0.0 } else { layout.width };
         let x = if side == "input" {
-            -9.0
+            -PARAMETER_SIZE / 2.0
         } else {
-            layout.width + 9.0
+            layout.width + PARAMETER_SIZE / 2.0
         };
+        // SysML 8.2.3.17: a parameter is a small square on the boundary of its action.
         g = g.child(
-            Element::new("circle")
+            Element::new("rect")
                 .attr(
                     "class",
                     format!("action-parameter-badge action-parameter-{side}"),
                 )
-                .attr_f("cx", x)
-                .attr_f("cy", y)
-                .attr_f("r", 5.0)
+                .attr_f("x", boundary - PARAMETER_SIZE / 2.0)
+                .attr_f("y", y - PARAMETER_SIZE / 2.0)
+                .attr_f("width", PARAMETER_SIZE)
+                .attr_f("height", PARAMETER_SIZE)
+                .attr("rx", "2")
                 .style("fill", theme.canvas_background)
                 .style("stroke", theme.node_border)
                 .style("stroke-width", "1.5px"),
@@ -111,7 +121,7 @@ fn draw_parameters(
                     "class",
                     format!("action-parameter-label action-parameter-{side}-label"),
                 )
-                .attr_f("x", if side == "input" { x - 8.0 } else { x + 8.0 })
+                .attr_f("x", if side == "input" { x - 4.0 } else { x + 4.0 })
                 .attr_f("y", y + 3.0)
                 .attr("text-anchor", if side == "input" { "end" } else { "start" })
                 .style("font-size", "8px")
@@ -265,6 +275,24 @@ fn draw_action_node(
                 .style("stroke-width", "2px")
                 .style("stroke-dasharray", if is_perform { "5,3" } else { "none" }),
         );
+        // SysML 8.2.3.17: an accept action carries a notched flag in its upper left corner, a
+        // send action a pointed one.
+        let signal_icon = if kind.contains("accept") {
+            Some(("accept-action-icon", "M8,8 H22 V18 H8 L12,13 Z"))
+        } else if kind.contains("send") {
+            Some(("send-action-icon", "M8,8 H18 L22,13 L18,18 H8 Z"))
+        } else {
+            None
+        };
+        if let Some((class, path)) = signal_icon {
+            g = g.child(
+                Element::new("path")
+                    .attr("class", class)
+                    .attr("d", path)
+                    .style("fill", theme.node_border)
+                    .style("stroke", "none"),
+            );
+        }
         if typed_action {
             g = g.child(
                 Element::new("text")
@@ -720,4 +748,35 @@ pub fn typed_action_flow_markers(theme: &Theme) -> Element {
                     .style("stroke-width", "1.5"),
             ),
     )
+}
+
+#[cfg(test)]
+mod signal_action_tests {
+    use super::*;
+    use crate::behavior_common::LaidOutRect;
+    use crate::theme::LIGHT;
+
+    fn drawn(kind: &str) -> String {
+        let node = PreparedNode {
+            id: "a".into(),
+            label: "a".into(),
+            kind: kind.into(),
+            attributes: Default::default(),
+        };
+        let rect = LaidOutRect {
+            x: 0.0,
+            y: 0.0,
+            width: 160.0,
+            height: 60.0,
+        };
+        draw_action_node(&node, &rect, &LIGHT).to_string()
+    }
+
+    #[test]
+    fn accept_and_send_actions_carry_their_icons() {
+        assert!(drawn("accept").contains("accept-action-icon"));
+        assert!(drawn("send").contains("send-action-icon"));
+        let plain = drawn("action");
+        assert!(!plain.contains("accept-action-icon") && !plain.contains("send-action-icon"));
+    }
 }

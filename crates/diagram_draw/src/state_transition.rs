@@ -52,6 +52,9 @@ fn drawn_regions(node: &PreparedNode) -> Vec<String> {
     }
 }
 
+/// Baseline area of the state actions compartment: its label ends here and its lines follow.
+pub(crate) const STATE_ACTIONS_TOP: f64 = 52.0;
+
 fn draw_state_node(node: &PreparedNode, layout: &LaidOutRect, theme: &Theme) -> Element {
     let kind = node_kind(node);
     let entry = first_non_empty(node, &["entry", "entryAction"]);
@@ -168,14 +171,16 @@ fn draw_state_node(node: &PreparedNode, layout: &LaidOutRect, theme: &Theme) -> 
                 .text(truncate_label(&node.label, 28)),
         );
         let mut action_lines = Vec::new();
+        // SysML 8.2.3.18: the state actions compartment lists the entry, do and exit actions
+        // as they are declared.
         if let Some(entry) = &entry {
-            action_lines.push(format!("entry / {entry}"));
+            action_lines.push(format!("entry {entry}"));
         }
         if let Some(do_action) = &do_action {
-            action_lines.push(format!("do / {do_action}"));
+            action_lines.push(format!("do {do_action}"));
         }
         if let Some(exit) = &exit {
-            action_lines.push(format!("exit / {exit}"));
+            action_lines.push(format!("exit {exit}"));
         }
         if !action_lines.is_empty() || is_composite {
             g = g.child(
@@ -189,12 +194,25 @@ fn draw_state_node(node: &PreparedNode, layout: &LaidOutRect, theme: &Theme) -> 
                     .style("stroke-width", "1px"),
             );
         }
+        if !action_lines.is_empty() {
+            g = g.child(
+                Element::new("text")
+                    .attr("class", "state-compartment-label")
+                    .attr_f("x", layout.width / 2.0)
+                    .attr_f("y", STATE_ACTIONS_TOP - 2.0)
+                    .attr("text-anchor", "middle")
+                    .style("font-size", "9px")
+                    .style("font-style", "italic")
+                    .style("fill", theme.text_secondary)
+                    .text("state actions"),
+            );
+        }
         for (index, line) in action_lines.iter().enumerate() {
             g = g.child(
                 Element::new("text")
                     .attr("class", "state-action-compartment")
                     .attr_f("x", 12.0)
-                    .attr_f("y", 56.0 + index as f64 * 16.0)
+                    .attr_f("y", STATE_ACTIONS_TOP + 14.0 + index as f64 * 16.0)
                     .style("font-size", "10px")
                     .style("fill", theme.text_secondary)
                     .text(truncate_label(line, 34)),
@@ -202,7 +220,8 @@ fn draw_state_node(node: &PreparedNode, layout: &LaidOutRect, theme: &Theme) -> 
         }
         if is_composite {
             let action_count = action_lines.len() as f64;
-            let region_top = (52.0 + action_count * 16.0).max(80.0);
+            let label_height = if action_lines.is_empty() { 0.0 } else { 14.0 };
+            let region_top = (52.0 + label_height + action_count * 16.0).max(80.0);
             let region_count = if regions.is_empty() {
                 1.0
             } else {
