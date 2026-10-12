@@ -2880,7 +2880,39 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                         .map(str::to_owned)
                 })
         };
-        let nodes: Vec<Value> = as_array(field(scene, "vertices"))
+        // A state that owns states shows them inside it (SysML 8.2.3.18). The vertex of a
+        // nested state, or of the initial node of a nested machine, is contained in the vertex
+        // of the nearest state that owns its node.
+        let vertices = as_array(field(scene, "vertices"));
+        let vertex_id = |index: usize, vertex: &Value| {
+            let id = as_string(field(vertex, "id"), "");
+            format!(
+                "state:{}",
+                if id.is_empty() { index.to_string() } else { id }
+            )
+        };
+        let node_of = |vertex: &Value| {
+            projected_nodes
+                .iter()
+                .position(|node| field(node, "source") == field(vertex, "navigation"))
+        };
+        let state_vertex_of_node: HashMap<usize, String> = vertices
+            .iter()
+            .enumerate()
+            .filter(|(_, vertex)| as_string(field(vertex, "kind"), "") == "state")
+            .filter_map(|(index, vertex)| Some((node_of(vertex)?, vertex_id(index, vertex))))
+            .collect();
+        let container_of = |vertex: &Value| -> Option<String> {
+            let mut current = node_of(vertex)?;
+            for _ in 0..projected_nodes.len() {
+                current = field(&projected_nodes[current], "owner").as_u64()? as usize;
+                if let Some(container) = state_vertex_of_node.get(&current) {
+                    return Some(container.clone());
+                }
+            }
+            None
+        };
+        let nodes: Vec<Value> = vertices
             .iter()
             .enumerate()
             .map(|(index, vertex)| {
@@ -2901,6 +2933,7 @@ fn prepare_typed_diagram_product(input: &Value) -> Option<Result<Value, String>>
                     "range": field(&source, "range"),
                     "attributes": {
                         "semanticSceneId": field(vertex, "id"),
+                        "containerId": container_of(vertex),
                         "entry": subaction(vertex, "entry"),
                         "do": subaction(vertex, "do"),
                         "exit": subaction(vertex, "exit"),

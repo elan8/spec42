@@ -31,23 +31,52 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
             if view == "state-transition-view" {
                 // A state machine has no natural direction. Unless the caller chose one, lay it
                 // out both ways and keep the one that is larger on the reference page.
-                let (behavior_layout, horizontal) =
-                    if horizontal || direction.eq_ignore_ascii_case("vertical") {
-                        let (layout, _) =
-                            layout_behavior_graph(prepared, horizontal, BehaviorMode::State)?;
-                        (layout, horizontal)
-                    } else {
-                        let (across, across_size) =
-                            layout_behavior_graph(prepared, true, BehaviorMode::State)?;
-                        let (down, down_size) =
-                            layout_behavior_graph(prepared, false, BehaviorMode::State)?;
-                        // On a tie the horizontal layout wins, so the choice is deterministic.
-                        if reference_page_scale(down_size) > reference_page_scale(across_size) {
+                // States that own states are laid out level by level, each machine on its own.
+                // Like a flat machine, it is laid out both ways and the one that is larger on
+                // the reference page is kept; on a tie the horizontal one.
+                let extent = |layout: &Value| {
+                    let rects = as_object(field(layout, "positions"));
+                    let far = |origin: &str, size: &str| {
+                        rects
+                            .values()
+                            .map(|rect| num(field(rect, origin)) + num(field(rect, size)))
+                            .fold(0.0_f64, f64::max)
+                    };
+                    (far("x", "width"), far("y", "height"))
+                };
+                let nested = match (
+                    layout_nested_behavior(prepared, true, BehaviorMode::State)?,
+                    layout_nested_behavior(prepared, false, BehaviorMode::State)?,
+                ) {
+                    (Some(across), Some(down)) => Some(
+                        if reference_page_scale(extent(&down))
+                            > reference_page_scale(extent(&across))
+                        {
                             (down, false)
                         } else {
                             (across, true)
-                        }
-                    };
+                        },
+                    ),
+                    _ => None,
+                };
+                let (behavior_layout, horizontal) = if let Some(nested) = nested {
+                    nested
+                } else if horizontal || direction.eq_ignore_ascii_case("vertical") {
+                    let (layout, _) =
+                        layout_behavior_graph(prepared, horizontal, BehaviorMode::State)?;
+                    (layout, horizontal)
+                } else {
+                    let (across, across_size) =
+                        layout_behavior_graph(prepared, true, BehaviorMode::State)?;
+                    let (down, down_size) =
+                        layout_behavior_graph(prepared, false, BehaviorMode::State)?;
+                    // On a tie the horizontal layout wins, so the choice is deterministic.
+                    if reference_page_scale(down_size) > reference_page_scale(across_size) {
+                        (down, false)
+                    } else {
+                        (across, true)
+                    }
+                };
                 let mut prepared = prepared.clone();
                 prepared["meta"]["layoutDirection"] =
                     json!(if horizontal { "horizontal" } else { "vertical" });
@@ -56,14 +85,15 @@ pub fn layout_to_draw_input(prepared: &Value) -> Result<Value, diagram_layout::L
                     "behaviorLayout": behavior_layout,
                 }));
             }
-            let behavior_layout =
-                if let Some(nested) = layout_nested_action_flow(prepared, horizontal)? {
-                    nested
-                } else if let Some(compact) = layout_simple_action_chain(prepared) {
-                    compact
-                } else {
-                    layout_behavior_graph(prepared, horizontal, BehaviorMode::Action)?.0
-                };
+            let behavior_layout = if let Some(nested) =
+                layout_nested_behavior(prepared, horizontal, BehaviorMode::Action)?
+            {
+                nested
+            } else if let Some(compact) = layout_simple_action_chain(prepared) {
+                compact
+            } else {
+                layout_behavior_graph(prepared, horizontal, BehaviorMode::Action)?.0
+            };
             Ok(json!({
                 "prepared": prepared,
                 "behaviorLayout": behavior_layout,
@@ -848,8 +878,21 @@ struct ActionFlowLevel {
     positions: Map<String, Value>,
     sections: Map<String, Value>,
     labels: Map<String, Value>,
+    /// Edges whose label another edge of their group carries (`shared_transition_ports`).
+    shared_labels: Vec<Value>,
     /// Extent of the content, `(min_x, min_y, max_x, max_y)`.
     bounds: (f64, f64, f64, f64),
+    /// Room above this content in the container that holds it (`container_header`).
+    header: f64,
+}
+
+/// The room at the top of a container for its own name compartment: fixed for an action, and
+/// for a state what the state alone would draw, its name and its state actions.
+fn container_header(node: &Value, mode: BehaviorMode) -> f64 {
+    match mode {
+        BehaviorMode::Action => ACTION_CONTAINER_HEADER,
+        BehaviorMode::State => state_box(node).1.max(42.0) - 4.0,
+    }
 }
 
 /// An action flow in which some actions own other actions (`attributes.containerId`). Each such
@@ -857,9 +900,12 @@ struct ActionFlowLevel {
 /// first, and a container is then sized to fit its content. A succession or flow is routed at the
 /// level where both ends are; one that crosses a container boundary gets the renderer's fallback
 /// route. Returns `None` when no action contains another.
-fn layout_nested_action_flow(
+///
+/// A state machine in which states own states is laid out the same way.
+fn layout_nested_behavior(
     prepared: &Value,
     horizontal: bool,
+    mode: BehaviorMode,
 ) -> Result<Option<Value>, diagram_layout::LayoutError> {
     let nodes = as_array(field(prepared, "nodes"));
     let ids: HashSet<String> = nodes
@@ -885,6 +931,7 @@ fn layout_nested_action_flow(
         members: &[&Value],
         children: &BTreeMap<String, Vec<&Value>>,
         horizontal: bool,
+        mode: BehaviorMode,
         levels: &mut BTreeMap<String, ActionFlowLevel>,
         depth: usize,
     ) -> Result<ActionFlowLevel, diagram_layout::LayoutError> {
@@ -894,12 +941,21 @@ fn layout_nested_action_flow(
             let mut node = (*member).clone();
             // `depth` bounds the recursion should `containerId` ever form a cycle.
             if let Some(inner) = children.get(&id).filter(|_| depth <= children.len()) {
-                let content =
-                    lay_out_level(prepared, inner, children, horizontal, levels, depth + 1)?;
+                let mut content = lay_out_level(
+                    prepared,
+                    inner,
+                    children,
+                    horizontal,
+                    mode,
+                    levels,
+                    depth + 1,
+                )?;
+                content.header = container_header(member, mode);
                 let (min_x, min_y, max_x, max_y) = content.bounds;
+                let (own_width, _) = node_dimensions(member, mode);
                 node["attributes"]["layoutSize"] = json!([
-                    (max_x - min_x) + 2.0 * ACTION_CONTAINER_PADDING,
-                    (max_y - min_y) + ACTION_CONTAINER_HEADER + 2.0 * ACTION_CONTAINER_PADDING,
+                    ((max_x - min_x) + 2.0 * ACTION_CONTAINER_PADDING).max(own_width),
+                    (max_y - min_y) + content.header + 2.0 * ACTION_CONTAINER_PADDING,
                 ]);
                 levels.insert(id, content);
             }
@@ -919,24 +975,29 @@ fn layout_nested_action_flow(
             .collect();
         let level = json!({
             "title": field(prepared, "title"),
-            "view": "action-flow-view",
+            "view": field(prepared, "view"),
             "nodes": level_nodes,
             "edges": level_edges,
             "meta": field(prepared, "meta"),
         });
-        let laid_out = match layout_simple_action_chain(&level) {
+        let chain = match mode {
+            BehaviorMode::Action => layout_simple_action_chain(&level),
+            BehaviorMode::State => None,
+        };
+        let laid_out = match chain {
             Some(compact) => compact,
             None if level_nodes.len() == 1 => json!({
                 "positions": {
                     as_string(field(&level_nodes[0], "id"), ""): {
                         "x": 0.0, "y": 0.0,
-                        "width": node_dimensions(&level_nodes[0], BehaviorMode::Action).0,
-                        "height": node_dimensions(&level_nodes[0], BehaviorMode::Action).1,
+                        "width": node_dimensions(&level_nodes[0], mode).0,
+                        "height": node_dimensions(&level_nodes[0], mode).1,
                     }
                 },
             }),
-            None => layout_behavior_graph(&level, horizontal, BehaviorMode::Action)?.0,
+            None => layout_behavior_graph(&level, horizontal, mode)?.0,
         };
+        let shared_labels = as_array(field(&laid_out, "sharedLabelEdgeIds")).to_vec();
         let positions = as_object(field(&laid_out, "positions"));
         let sections = as_object(field(&laid_out, "edgeSectionsById"));
         let labels = as_object(field(&laid_out, "edgeLabelsById"));
@@ -988,7 +1049,9 @@ fn layout_nested_action_flow(
             positions,
             sections,
             labels,
+            shared_labels,
             bounds,
+            header: 0.0,
         })
     }
 
@@ -1019,6 +1082,7 @@ fn layout_nested_action_flow(
                 .collect();
             out.sections.insert(id, Value::Array(moved));
         }
+        out.shared_labels.extend(level.shared_labels);
         for (id, labels) in level.labels {
             let moved: Vec<Value> = as_array(&labels)
                 .iter()
@@ -1035,10 +1099,11 @@ fn layout_nested_action_flow(
             let (x, y) = (num(field(&rect, "x")) + dx, num(field(&rect, "y")) + dy);
             if let Some(content) = levels.remove(&id) {
                 let (min_x, min_y, _, _) = content.bounds;
+                let header = content.header;
                 place(
                     content,
                     x + ACTION_CONTAINER_PADDING - min_x,
-                    y + ACTION_CONTAINER_HEADER + ACTION_CONTAINER_PADDING - min_y,
+                    y + header + ACTION_CONTAINER_PADDING - min_y,
                     levels,
                     out,
                 );
@@ -1051,19 +1116,30 @@ fn layout_nested_action_flow(
     }
 
     let mut levels = BTreeMap::new();
-    let top = lay_out_level(prepared, &roots, &children, horizontal, &mut levels, 0)?;
+    let top = lay_out_level(
+        prepared,
+        &roots,
+        &children,
+        horizontal,
+        mode,
+        &mut levels,
+        0,
+    )?;
     let (min_x, min_y, _, _) = top.bounds;
     let mut out = ActionFlowLevel {
         positions: Map::new(),
         sections: Map::new(),
         labels: Map::new(),
+        shared_labels: Vec::new(),
         bounds: (0.0, 0.0, 0.0, 0.0),
+        header: 0.0,
     };
     place(top, 80.0 - min_x, 80.0 - min_y, &mut levels, &mut out);
     Ok(Some(json!({
         "positions": out.positions,
         "edgeSectionsById": out.sections,
         "edgeLabelsById": out.labels,
+        "sharedLabelEdgeIds": out.shared_labels,
     })))
 }
 

@@ -13,6 +13,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   parts of its own carries the `+` / `-` control the general view has; opening it draws its parts
   and the connectors between them, and a connector that ends inside a closed part ends on a
   proxy at its boundary. The exposed parts are always open. `spec42 diagram` output is unchanged.
+- **An action flow view shows the whole flow (#262).** Only `first a then b;` between two
+  named actions was drawn. Now drawn as well:
+  - the `then` shorthand. Its succession starts at the nearest occurrence usage written before
+    it (SysML 7.17.4), so several `then`s after a fork or a `first start;` all leave that node.
+    The source is settled where the body is lowered and published to the diagram projection;
+  - the start and done nodes, where a succession begins at `start` or ends at `done`;
+  - decision, merge, fork and join nodes, and accept, send, perform, assignment, if and loop
+    actions. They were published with the notation role `unsupported`, because the generator
+    vocabulary has no name for `ForkNode`, `AcceptActionUsage` or `PerformActionUsage`; a kind
+    it has no name for now takes its role from the metamodel. This also gives a `perform` in a
+    general view its usage notation;
+  - parameters, as squares on the boundary of their action with their names beside them,
+    inherited ones included, and flows between the actions that own the two parameters. An
+    accept action carries a notched flag and a send action a pointed one. A send action was
+    drawn as a final node.
+  Not drawn yet: conditional successions (`first a if g then b;`), and `then accept ...;`.
+- **A state transition view shows state actions and nested states (#262).** The entry, do and
+  exit actions of a state are listed in a `state actions` compartment, and a state that owns
+  states shows them, their transitions and its initial node inside it. Three or more
+  transitions with one trigger into one state share a line and are labelled once, at that
+  state. The view is drawn in a frame that carries its name, as is the action flow view.
+- **Diagram product and generator ABI (#262).** A diagram node carries `stateSubaction`
+  (`"entry"`, `"do"`, `"exit"` or `null`), and `direction` is now set for every directed
+  feature, not only for a port; `schemaVersion` stays 5, as both are additions. In the generator
+  protocol `DiagramElement` gains `state_subaction`, which changes the compatibility token:
+  **a generator plugin built against 0.55.0 is refused and must be rebuilt.**
+- **Figures read better on a page (#262).** A long list of members in a general view continues
+  in columns (webshop structure: 256 × 1949 px at 2.8 pt becomes 622 × 831 px at 6.6 pt). Action
+  flows and sequences are spaced by the labels they hold, not by fixed gaps. Interconnection
+  views write names and port labels in full and label a conjugated port `name : ~Type`. General
+  view compartment labels are centred, italic and lower case, with `…` for members left out.
+  `docs/reference/DIAGRAM-MEASUREMENTS.md` records the size and smallest text of every
+  reference view (`node scripts/measure-diagrams.mjs`).
+- **`spec42 diagram --style <file>` gives a figure a house style (#262):** a font family and
+  any of the theme's colours, from a JSON file. See `docs/user/DIAGRAM-VIEW.md`.
 
 ## [0.55.0] - 2026-10-12
 
