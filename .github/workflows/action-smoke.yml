@@ -9,7 +9,6 @@ on:
       - .github/workflows/action-smoke.yml
       - examples/timer/**
   pull_request:
-    branches: [main, master]
     paths:
       - action.yml
       - .github/workflows/action-smoke.yml
