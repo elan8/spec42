@@ -219,6 +219,7 @@ fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
                     document: None,
                     format,
                     depth: diagram_draw::Nesting::Levels(1),
+                    style: None,
                     output: Some(path.clone()),
                 },
             )
@@ -257,6 +258,7 @@ fn the_diagram_command_lists_views_and_renders_one_by_qualified_name() {
                 document: None,
                 format: DiagramFormat::Svg,
                 depth: diagram_draw::Nesting::Levels(1),
+                style: None,
                 output: None,
             },
         )
@@ -293,6 +295,7 @@ fn the_diagram_command_selects_each_kind_of_a_view_typed_by_several_view_definit
                     document: document.map(str::to_owned),
                     format: DiagramFormat::Json,
                     depth: diagram_draw::Nesting::Levels(1),
+                    style: None,
                     output: Some(path.clone()),
                 },
             )
@@ -333,5 +336,64 @@ fn the_diagram_command_selects_each_kind_of_a_view_typed_by_several_view_definit
             mismatch.contains("no `Garage::both` view matches"),
             "{mismatch}"
         );
+    });
+}
+
+#[test]
+fn the_diagram_command_applies_a_house_style() {
+    with_isolated_data_dir(|| {
+        let workspace = repo_root().join("vscode/testFixture/workspaces/state-view");
+        let output = tempfile::tempdir().expect("output directory");
+        let args =
+            |view: Option<String>, style: Option<std::path::PathBuf>, file: &str| DiagramArgs {
+                path: workspace.clone(),
+                workspace_root: Some(workspace.clone()),
+                view,
+                kind: None,
+                document: None,
+                format: if file.ends_with(".json") {
+                    DiagramFormat::Json
+                } else {
+                    DiagramFormat::Svg
+                },
+                depth: diagram_draw::Nesting::Levels(1),
+                style,
+                output: Some(output.path().join(file)),
+            };
+        spec42::diagram::run_diagram(&stdlib_cli(), &args(None, None, "views.json"))
+            .unwrap_or_else(|error| panic!("spec42 diagram: {error}"));
+        let listing: serde_json::Value = serde_json::from_str(
+            &std::fs::read_to_string(output.path().join("views.json")).expect("view list"),
+        )
+        .expect("JSON");
+        let view = listing[0]["qualifiedName"]
+            .as_str()
+            .expect("qualified name")
+            .to_owned();
+
+        let style = output.path().join("style.json");
+        std::fs::write(
+            &style,
+            r##"{ "fontFamily": "Inter, sans-serif", "colors": { "nodeBorder": "#003366" } }"##,
+        )
+        .expect("style file");
+        spec42::diagram::run_diagram(
+            &stdlib_cli(),
+            &args(Some(view.clone()), Some(style.clone()), "styled.svg"),
+        )
+        .unwrap_or_else(|error| panic!("spec42 diagram --style: {error}"));
+        let svg = std::fs::read_to_string(output.path().join("styled.svg")).expect("SVG");
+        assert!(svg.contains("font-family: Inter, sans-serif"), "{svg}");
+        assert!(svg.contains("#003366"), "{svg}");
+
+        // A style that names no colour of the theme is refused, not ignored.
+        std::fs::write(&style, r##"{ "colors": { "nodeColour": "#003366" } }"##)
+            .expect("style file");
+        let error = spec42::diagram::run_diagram(
+            &stdlib_cli(),
+            &args(Some(view), Some(style), "refused.svg"),
+        )
+        .expect_err("an unknown colour name is an error");
+        assert!(error.contains("nodeColour"), "{error}");
     });
 }

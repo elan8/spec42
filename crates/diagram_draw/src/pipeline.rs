@@ -77,12 +77,21 @@ pub fn render_svg_from_payload_str_nested(
     payload_json: &str,
     nesting: Nesting,
 ) -> Result<String, PipelineError> {
+    render_svg_from_payload_str_styled(payload_json, nesting, &LIGHT)
+}
+
+/// As `render_svg_from_payload_str_nested`, in the theme a document's style gives.
+pub fn render_svg_from_payload_str_styled(
+    payload_json: &str,
+    nesting: Nesting,
+    theme: &Theme,
+) -> Result<String, PipelineError> {
     let payload: Value = serde_json::from_str(payload_json)
         .map_err(|err| PipelineError::InvalidPayload(err.to_string()))?;
     let draw_input = draw_input_from_payload_with_presentation(&payload, None, nesting)?;
     Ok(crate::draw_input::render_svg_from_json_with_theme(
         &draw_input,
-        &LIGHT,
+        theme,
         0.0,
         0.0,
     )?)

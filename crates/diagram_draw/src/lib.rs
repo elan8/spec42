@@ -137,8 +137,14 @@ fn render_svg_document(
 
     let defs = markers::markers(theme).maybe_child(extra_marker);
 
-    Element::new("svg")
-        .attr("class", "sysml-viz-svg")
+    let svg = Element::new("svg");
+    // A document's style may name the font of every text in the figure.
+    let svg = if theme.font_family.is_empty() {
+        svg
+    } else {
+        svg.style("font-family", theme.font_family)
+    };
+    svg.attr("class", "sysml-viz-svg")
         .attr("width", "100%")
         .attr("height", "100%")
         .attr("viewBox", view_box)
@@ -479,3 +485,4 @@ pub use pipeline::{
     render_svg_from_payload_str, render_svg_from_payload_with_options,
     render_svg_from_payload_with_theme, PipelineError,
 };
+pub use theme::Style;

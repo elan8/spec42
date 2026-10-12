@@ -45,6 +45,49 @@ restart, or a stalled webview all recover with no user action.
 `SVG` and `PNG` export re-render with a literal colour scheme so the file stands alone outside the
 webview.
 
+## Opening nested content
+
+A general view starts with its exposed elements; the `+` on an element draws the members it
+owns, and the `+` on a compartment lists them. An interconnection view starts with the exposed
+parts and their direct parts. A part that has parts of its own carries the same `+`: opening it
+draws the parts inside it and the connectors between them. A connector that ends inside a part
+that is still closed ends on a dot at its boundary, labelled with the feature it stands for.
+
+## Figures for documents
+
+`spec42 diagram <path> --view <qualified name>` writes a view as an SVG that is as large as its
+content. Without `--view` it lists the diagram views of the model.
+
+| Option | Effect |
+| --- | --- |
+| `--depth <n>` or `--depth all` | For an interconnection view, how many levels of parts to draw below the exposed parts (default 1). |
+| `--style <file>` | A JSON file with the house style of the figure. |
+| `--format json` | The diagram product instead of the drawing. |
+| `-o <file>` | Write to a file. |
+
+A style file names a font family and any of the colours of the figure. What it leaves out keeps
+the default:
+
+```json
+{
+  "fontFamily": "Inter, sans-serif",
+  "colors": {
+    "canvasBackground": "#ffffff",
+    "nodeFill": "#ffffff",
+    "nodeBorder": "#003366",
+    "edgeDefault": "#003366",
+    "panelBackground": "#e6eef7",
+    "textPrimary": "#001a33",
+    "textSecondary": "#4d5d6c"
+  }
+}
+```
+
+The colours are `canvasBackground`, `panelBackground` (name compartments), `nodeFill`,
+`nodeBorder`, `textPrimary`, `textSecondary`, `divider`, `highlight`, `edgeDefault`,
+`frameStroke`, `frameText`, `badgeFill` and `badgeText`. Boxes are sized by the number of
+characters in their text, so a font much wider than a common sans-serif can overrun them.
+
 ## Working with the Feature Inspector
 
 The Diagram view is paired with the [Feature Inspector](FEATURE-INSPECTOR.md) in the same

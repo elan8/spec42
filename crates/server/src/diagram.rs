@@ -58,7 +58,9 @@ pub fn run_diagram(cli: &Cli, args: &DiagramArgs) -> Result<ExitCode, String> {
             let product = String::from_utf8(product).expect("serde_json writes UTF-8");
             match args.format {
                 DiagramFormat::Json => product,
-                DiagramFormat::Svg => render_nested_svg(&product, args.depth)?,
+                DiagramFormat::Svg => {
+                    render_nested_svg(&product, args.depth, &figure_theme(args.style.as_deref())?)?
+                }
             }
         }
     };
@@ -68,6 +70,20 @@ pub fn run_diagram(cli: &Cli, args: &DiagramArgs) -> Result<ExitCode, String> {
         None => print!("{output}"),
     }
     Ok(ExitCode::SUCCESS)
+}
+
+/// The light theme, with the house style of `--style` applied when one is given.
+fn figure_theme(style: Option<&std::path::Path>) -> Result<diagram_draw::theme::Theme, String> {
+    let base = diagram_draw::theme::LIGHT;
+    let Some(path) = style else {
+        return Ok(base);
+    };
+    let text = fs::read_to_string(path)
+        .map_err(|error| format!("could not read {}: {error}", path.display()))?;
+    let style: diagram_draw::Style = serde_json::from_str(&text)
+        .map_err(|error| format!("{} is not a diagram style: {error}", path.display()))?;
+    base.with_style(&style)
+        .map_err(|error| format!("{}: {error}", path.display()))
 }
 
 fn qualified_name(view: &DiagramViewSummary) -> String {

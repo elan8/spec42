@@ -136,6 +136,11 @@ pub struct DiagramArgs {
     /// A part with deeper content is drawn closed. `all` draws every level.
     #[arg(long = "depth", default_value = "1", value_parser = parse_depth)]
     pub depth: diagram_draw::Nesting,
+    /// A JSON file with the house style of the figure: `fontFamily`, and `colors` by name
+    /// (`canvasBackground`, `nodeFill`, `nodeBorder`, `textPrimary`, ...). What it leaves out
+    /// keeps the default. See docs/user/DIAGRAM-VIEW.md.
+    #[arg(long = "style", value_name = "FILE", requires = "view")]
+    pub style: Option<PathBuf>,
     /// Write to this file instead of standard output.
     #[arg(long = "output", short = 'o')]
     pub output: Option<PathBuf>,
