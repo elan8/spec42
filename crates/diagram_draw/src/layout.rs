@@ -2081,7 +2081,8 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
 
     // Two parts that face each other are far enough apart for a visible run of connector, the
     // labels of their facing ports, and the longest connector name set beside its line with
-    // clear space to both parts. Unnamed connectors need only the first two.
+    // clear space to both parts. Unnamed connectors need only the first two: the layout adds
+    // the width of the port labels to this gap, and they sit beside the line, not on it.
     let layer_gap = {
         const GENERIC: [&str; 7] = [
             "",
@@ -2100,7 +2101,7 @@ fn layout_interconnection_prepared(prepared: &Value) -> Result<Value, diagram_la
             .max();
         match longest_name {
             Some(characters) => (characters as f64 * 6.5 + 10.0 + 44.0).max(88.0),
-            None => 88.0,
+            None => 48.0,
         }
     };
     let root_header_height = 28.0;
